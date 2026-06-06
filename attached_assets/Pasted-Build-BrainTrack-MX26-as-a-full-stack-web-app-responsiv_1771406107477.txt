@@ -1,0 +1,199 @@
+Build “BrainTrack MX26” as a full-stack web app (responsive, mobile-first) using:
+- Frontend: React + Tailwind
+- Backend: Node/Express (or Next.js API routes) + PostgreSQL
+- ORM: Prisma
+- Auth: email + password (plus optional magic link)
+- Payments: Paystack + Yoco + Mobicred (in-app checkout only). Do NOT use WhatsApp payment links.
+
+CORE PRODUCT LOGIC
+- Product: Brain Boost (MX26)
+- Pricing:
+  - MX26 Monthly Access: R169/month (auto-adjust to Nov 30, 2026)
+  - MX26 Full Access (once-off): R1,299
+- Contribution rules:
+  - Monthly subscription: add R25 per active learner per month
+  - Once-off: add 5.5% of once-off price (R1,299 * 0.055)
+- Contributions are collected in checkout and recorded separately from subscription revenue.
+
+GATING RULE (MANDATORY)
+- Learner cannot purchase until completing:
+  1) Learner Diagnostic Test
+  2) Topic Mastery Test
+- After completion, show results + improvement roadmap + CTA to purchase.
+- If not completed, hide pricing CTA and show “Complete your tests to unlock purchase”.
+
+THEMES (LIGHT BASE + 3 LEARNER THEMES)
+- Base is always Light (no dark mode).
+- Theme selector:
+  1) Clear Classroom (default)
+  2) Rainbow Pop
+  3) Neon Glow
+- Rainbow usage allowed only for: keywords, borders, headings, progress bars, badges.
+- Body text must remain black.
+- Buttons:
+  - Clear Classroom + Rainbow Pop: rainbow gradient buttons
+  - Neon Glow: solid neon buttons (mint/sky/purple/coral)
+
+TYPOGRAPHY (MAX 2 FONTS, COMPACT)
+- Headings: Poppins
+- Body/UI: Inter
+- Sizes:
+  - Page title 26px
+  - Section header 18px
+  - Sub header 16px
+  - Body 14px
+  - Label 13px
+  - Footer/meta 11px
+
+NAVIGATION (HEADER TABS MUST BE ICONS)
+- Top header icon-only tabs:
+  Home, Practice, Topic Tests, Exam Mode, Progress, Rewards, Settings
+- Tooltips on hover (desktop)
+- Bottom icon nav (mobile)
+- Active tab: theme-aware rainbow glow ring/underline
+
+LANGUAGE TOGGLE (EN | AF)
+- Global EN | AF toggle in header
+- Persist in DB + localStorage
+- Entire UI switches language; no mixed language on same screen.
+- Provide translation dictionary for ALL UI strings (EN and AF).
+
+NOVA SUPPORT AGENT (TECH ONLY)
+- Nova appears ONLY when logged-in.
+- Nova supports navigation/account/payment/planner help only.
+- Nova must NOT tutor academic content.
+- Implement support chat widget + ticket creation.
+
+PAYMENTS (PAYSTACK + YOCO + MOBICRED) — REQUIRED ARCHITECTURE
+Implement a payment orchestration layer that supports:
+- Paystack (card/EFT options as supported)
+- Yoco (card payments)
+- Mobicred (buy-now-pay-later flow)
+
+Create a unified interface:
+- createCheckoutSession(provider, payload)
+- verifyPayment(provider, reference)
+- handleWebhook(provider, event)
+- issueReceipt(transactionId)
+
+Checkout must offer three payment method tiles:
+1) Paystack
+2) Yoco
+3) Mobicred
+
+Payment requirements:
+- NEVER store raw card details (PCI compliance). Use provider hosted checkout or tokenization.
+- Must support both:
+  A) Monthly subscription (auto-adjusted remaining cycles)
+  B) Once-off MX26 Full Access
+- Webhooks must update transaction status reliably (idempotent).
+- Receipts must reflect:
+  - plan selected
+  - contribution amount
+  - MX26 end date rules if monthly
+  - provider used
+- Analytics must reflect revenue and contributions separately.
+
+AUTO-ADJUSTED MONTHLY SUBSCRIPTION (MX26 END DATE)
+- Window: Mar 1, 2026 → Nov 30, 2026
+- Monthly purchase:
+  - compute remaining months until 2026-11-30 inclusive
+  - show checkout text: “You will be charged monthly for X remaining months until MX26 ends (30 Nov 2026). Billing stops automatically.”
+  - Store:
+    subscriptionStartDate, subscriptionEndDate=2026-11-30,
+    remainingBillingCycles, autoStop=true
+- Implement a scheduled job to:
+  - charge monthly cycles through provider tokens where supported, OR
+  - generate payment request each cycle and notify user if provider requires re-auth.
+- Stop billing automatically at end date or when remainingBillingCycles reaches 0.
+- After 2026-11-30: disable monthly and show “MX26 closed”.
+
+DATABASE (PRISMA MODELS) — INCLUDE THESE
+User (role: learner/admin), Subject, Topic, Subtopic,
+ExamPaper, ExamSection, ExamQuestion, QuestionOption,
+ExamAttempt, ExamResponse, TopicMastery,
+Subscription,
+PaymentTransaction,
+Receipt,
+SupportTicket
+
+Key payment fields:
+PaymentTransaction:
+- id, userId
+- provider: PAYSTACK | YOCO | MOBICRED
+- type: SUBSCRIPTION | ONCE_OFF
+- amount_subscription, amount_contribution, amount_total
+- currency = ZAR
+- status: INITIATED | PENDING | PAID | FAILED | REFUNDED
+- provider_reference, idempotency_key
+- createdAt, updatedAt
+
+Subscription:
+- id, userId
+- plan: MONTHLY | ONCE_OFF
+- subscriptionStartDate
+- subscriptionEndDate (always 2026-11-30 for monthly)
+- remainingBillingCycles
+- autoStop
+- status: ACTIVE | COMPLETED | EXPIRED
+- lastBilledAt, nextBillAt
+
+Receipt:
+- id, paymentTransactionId
+- receiptNumber, issuedAt
+- pdfUrl (optional later)
+- lineItems JSON (show split: subscription vs contribution)
+
+EXAM MODE + DATA MODEL (BUSINESS STUDIES BASELINE)
+- Support question types:
+  MCQ, TRUE_FALSE, MATCHING, SHORT, CASE_STUDY, ESSAY
+- Store bilingual content in *_en and *_af fields.
+- Store correct answers in ExamQuestion.correct_answer_json
+- Store learner answers in ExamResponse.response_json
+- Auto-mark MCQ/TRUE_FALSE/MATCHING on submit
+- Manual marking queue for SHORT/CASE_STUDY/ESSAY
+
+CORE UX SCREENS (BUILD THESE)
+Public:
+1) Landing page (MX26 branding, theme preview, register/login)
+2) Login / Register
+
+Learner (logged in):
+3) Onboarding: choose language + theme + subject
+4) Learner Diagnostic Test (Business Studies baseline)
+5) Topic Mastery Test
+6) Results + Improvement Roadmap screen
+7) Checkout:
+   - choose Monthly vs Once-off
+   - show remaining months for monthly
+   - show contribution amounts (R25 monthly, 5.5% once-off)
+   - payment provider selection (Paystack/Yoco/Mobicred)
+8) Learner Home Dashboard (classroom vibe)
+9) Practice
+10) Topic Tests
+11) Exam Mode (timed exam player + results breakdown)
+12) Progress dashboard
+13) Rewards (Starter → Focused → Strong → Exam Ready → SuperStar)
+14) Settings (language/theme/account)
+
+Admin/Management:
+15) Admin dashboard: active users, funnel, revenue, contributions, exports
+16) Content manager: create/edit exams/questions bilingual + marking queue
+
+SCALING REQUIREMENTS
+- Design for 7,000 total users, 1,000 active:
+  - indexes on userId/examPaperId/topicId
+  - pagination
+  - caching exam catalogue
+  - autosave responses efficiently
+
+SEED DATA
+- Seed Business Studies Grade 12 (EN/AF) subject + topics + subtopics
+- Seed diagnostic test + topic mastery test
+- Seed 1 mock exam “MX26 Business Studies Mock 01” with 3 sections and mixed question types
+
+DELIVERABLES
+- Working app with all screens
+- Prisma schema + migrations + seed script
+- Payment provider abstraction + webhook handlers for Paystack/Yoco/Mobicred
+- Example API endpoints/payloads for checkout + verify + webhook + receipts

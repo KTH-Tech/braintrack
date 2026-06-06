@@ -1,0 +1,134 @@
+Build a secure payment system for the BrainTrack learning platform.
+
+TECH STACK
+Frontend: React / Next.js
+Backend: Node.js + Express
+Database: PostgreSQL
+Hosting: Replit
+
+PAYMENT PROVIDERS
+Primary gateway: Paystack (subscriptions)
+Secondary gateway: Ozow (instant EFT)
+Optional gateway: Yoco
+
+BUSINESS RULES
+
+BrainTrack subscription price:
+R169 per month
+
+Trial period:
+14 days free
+
+Payment must always be owned by the parent.
+
+Learners cannot activate the platform until a parent payment method is registered.
+
+SIGNUP FLOW
+
+1 Parent creates account
+2 Parent enters learner details
+3 Parent chooses payment method
+
+Options:
+• Card (Paystack subscription)
+• Instant EFT (Ozow)
+• Card payment (Yoco optional)
+
+4 Parent enters payment details
+
+If Paystack is selected:
+
+• Create a Paystack customer
+• Create subscription plan (R169 monthly)
+• Save authorization token securely
+• Start 14 day free trial
+• Automatically activate subscription after trial
+
+If Ozow is selected:
+
+• Create once-off payment
+• If successful activate learner for 30 days
+• Send reminder before expiry
+
+PAYSTACK IMPLEMENTATION
+
+Create endpoints:
+
+POST /create-paystack-customer
+POST /start-subscription
+POST /verify-payment
+POST /webhook/paystack
+
+Webhooks must listen for:
+
+subscription.create
+charge.success
+invoice.payment_failed
+
+Store data:
+
+parent_id
+learner_id
+subscription_status
+trial_end_date
+payment_provider
+payment_reference
+
+OZOW IMPLEMENTATION
+
+Endpoints:
+
+POST /create-ozow-payment
+POST /verify-ozow-payment
+
+If successful:
+
+activate learner account
+set expiry date = 30 days
+
+SECURITY
+
+• No card data stored locally
+• All payments tokenized via gateway
+• HTTPS required
+• POPIA compliant
+• Validate webhooks using signatures
+
+DASHBOARD LOGIC
+
+Parent dashboard shows:
+
+active learners
+subscription status
+next billing date
+payment method
+upgrade / cancel option
+
+ADMIN PANEL (BrainTrack founder only)
+
+Admin dashboard must show:
+
+total subscriptions
+trial conversions
+monthly revenue
+failed payments
+payment provider used
+school linked to learner
+
+ADMIN must be IP restricted.
+
+UX RULES
+
+Learners may browse the platform but cannot start exam mode until payment is active.
+
+On day 12 of trial send reminder notification.
+
+On day 14 automatically charge subscription.
+
+If payment fails:
+
+lock premium content
+notify parent
+retry payment.
+
+Ensure entire payment flow is mobile friendly.

@@ -1,0 +1,53 @@
+Build a production-ready, mobile-first landing page for BrainTrack using Next.js (App Router) + TypeScript + TailwindCSS on Replit.
+
+Requirements:
+1) Domain branding: braintrack.app
+2) Bilingual toggle: English (EN) and Afrikaans (AF). Default EN. Toggle must switch ALL page copy instantly client-side.
+3) Layout: clean, premium EdTech, teen-friendly but credible for parents and schools. Minimal clutter, lots of whitespace, rounded cards, subtle shadows, strong CTAs.
+4) Page sections in this order:
+   A) Sticky top nav with links: For Parents, For Schools, View Plans, plus EN/AF toggle.
+   B) HERO (above the fold):
+      - Headline (EN): "Smarter Learning. Real Results."
+      - Headline (AF): "Slim leer. Regte resultate."
+      - Subline (EN): "Built on real exam patterns. Powered by learning science."
+      - Subline (AF): "Gebou op regte eksamenpatrone. Aangedryf deur leerwetenskap."
+      - Promise (EN): "Know exactly what to study. Improve faster. Stress less."
+      - Promise (AF): "Weet presies wat om te leer. Verbeter vinniger. Minder stres."
+      - CTA buttons: Primary "Start Free Today" / "Begin Vandag Gratis"
+        Secondary: "For Parents" / "Vir Ouers" and "For Schools" / "Vir Skole"
+      - Include a right-side “UI mock” card placeholder showing: Exam Readiness bar, Today’s Smart Plan list, Progress Trend chart placeholder (no external images).
+   C) Problem → Solution split cards:
+      - EN: "Studying feels overwhelming." bullets: Too much content. No structure. No clarity on weak areas.
+      - AF: "Studying voel oorweldigend." bullets: Te veel inhoud. Geen struktuur. Geen duidelikheid oor swak areas.
+      - Fix heading: "BrainTrack fixes that." / "BrainTrack los dit op."
+      - Fix bullets: Daily personalised study plan, Weak-area detection, Instant feedback, Gamified motivation (translate to AF).
+   D) “How BrainTrack Works” infographic copy section:
+      - Title/subtitle in both languages
+      - 5 step cards: Diagnose, Personalise, Strengthen Memory, Practice Like the Exam, Track & Improve (translate to AF equivalents)
+      - Add a small pill showing cycle text: "Diagnose → Personalise → Practice → Improve → Repeat" (translate for AF).
+   E) Features grid (5 cards): Learn & Practice, Track Progress, Smart Planner, Motivation (XP/levels/badges), Nova Smart Tutor (translate).
+   F) Teen section: "Study Mode: Activated." with 4 bullets (XP, badges, levels, growth) + closing line "Not harder. Smarter." (translate).
+   G) Parent section (anchor id=parents): weekly summaries, engagement alerts, tracking, structured learning + closing line "No more guessing if studying is happening." (translate).
+   H) School section (anchor id=schools): results uplift, digital tracking (optional cohort view), intervention, motivated classrooms + CTA button "Partner With Us" / "Word ’n Vennoot".
+   I) Giving Back section:
+      - Must state clearly: "For each active BrainTrack subscription, R25 is donated directly back to the learner’s school to support academic development and learner success initiatives."
+      - Include bullet list of uses: learning resources, exam prep programmes, technology improvements, academic support, learner development projects (translate).
+      - Add note: "(All at the school’s discretion.)" (translate).
+   J) Pricing teaser (anchor id=pricing): "Simple pricing. Big value." + "Flexible monthly plans. No long-term contracts." + CTA "View Plans"/"Sien Pakkette" and a secondary CTA "Join BrainTrack Now"/"Sluit Nou Aan".
+   K) Final CTA section: "Ready to learn smarter?" + "Start today. Improve faster. Stress less." + CTA to pricing.
+   L) Footer: © 2026 BrainTrack. All rights reserved. (and Afrikaans version)
+
+5) Implementation details:
+   - Use a single file for the main page: app/page.tsx with client-side state for language.
+   - Put all bilingual copy into a single constant object (COPY) with keys en/af.
+   - Use semantic HTML and Tailwind for styling; no external UI libraries required.
+   - Ensure sections have IDs for nav anchors (parents, schools, pricing).
+   - Buttons should be accessible (focus states) and links should work.
+   - Do not include payment integration or backend; only the landing page.
+   - Provide clear instructions in a README on how to run: npm install, npm run dev.
+
+Deliverables:
+- A working Next.js app with Tailwind configured.
+- The complete app/page.tsx implementing the above.
+- Minimal globals.css including Tailwind directives.
+- A short README.md with run steps.

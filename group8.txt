@@ -1,0 +1,721 @@
+  app.get("/api/admin/reports/stats", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    try {
+      const userCounts = await db.execute(sql`
+        SELECT
+          COUNT(*) AS total,
+          COUNT(*) FILTER (WHERE role = 'learner') AS learners,
+          COUNT(*) FILTER (WHERE role = 'parent') AS parents,
+          COUNT(*) FILTER (WHERE role = 'admin') AS admins
+        FROM users
+      `);
+      const subCounts = await db.execute(sql`
+        SELECT
+          COUNT(*) FILTER (WHERE status = 'active') AS subscribed,
+          COUNT(*) FILTER (WHERE status = 'trial') AS trial
+        FROM subscriptions
+      `);
+      const row = userCounts.rows[0] ?? {};
+      const subRow = subCounts.rows[0] ?? {};
+      res.json({
+        totalUsers: Number(row.total ?? 0),
+        learners: Number(row.learners ?? 0),
+        parents: Number(row.parents ?? 0),
+        admins: Number(row.admins ?? 0),
+        activeToday: 0,
+        activeThisWeek: 0,
+        trialUsers: Number(subRow.trial ?? 0),
+        subscribedUsers: Number(subRow.subscribed ?? 0),
+      });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/admin/reports/parents", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    try {
+      const parentUsers = await db.execute(sql`
+        SELECT u.id, u.email, u.first_name, u.last_name,
+               COALESCE(SUM(up.questions_attempted), 0) AS questions,
+               CASE WHEN COALESCE(SUM(up.questions_attempted), 0) > 0
+                    THEN ROUND(SUM(up.correct_answers)::numeric / SUM(up.questions_attempted) * 100)
+                    ELSE 0 END AS accuracy
+        FROM users u
+        LEFT JOIN user_progress up ON up.user_id = u.id
+        WHERE u.role = 'parent'
+        GROUP BY u.id, u.email, u.first_name, u.last_name, u.created_at
+        ORDER BY u.created_at DESC
+        LIMIT 100
+      `);
+      const reports = parentUsers.rows.map((r: any) => ({
+        parentName: r.first_name && r.last_name ? `${r.first_name} ${r.last_name}` : r.email ?? 'Unknown',
+        childCount: 1,
+        subjectCount: 0,
+        accuracy: Number(r.accuracy ?? 0),
+        questionsAnswered: Number(r.questions ?? 0),
+        isSubscribed: false,
+      }));
+      res.json({ reports });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/admin/reports/learners", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    try {
+      const learners = await db.execute(sql`
+        SELECT u.id, u.email, u.first_name, u.last_name, u.role, u.created_at,
+               u.last_login_at, u.theme, u.preferred_language,
+               o.learning_style, o.study_preference, o.focus_duration, o.selected_subjects,
+               COALESCE(SUM(up.questions_attempted), 0)::int AS questions_attempted,
+               CASE WHEN COALESCE(SUM(up.questions_attempted), 0) > 0
+                    THEN ROUND(SUM(up.correct_answers)::numeric / SUM(up.questions_attempted) * 100)::int
+                    ELSE 0 END AS accuracy,
+               COALESCE(SUM(up.papers_completed), 0)::int AS papers_completed,
+               COALESCE(us.current_streak, 0)::int AS streak,
+               COALESCE(uc.balance, 0)::int AS coins
+        FROM users u
+        LEFT JOIN onboarding_results o ON o.user_id = u.id
+        LEFT JOIN user_progress up ON up.user_id = u.id
+        LEFT JOIN user_streaks us ON us.user_id = u.id
+        LEFT JOIN user_coins uc ON uc.user_id = u.id
+        WHERE u.role = 'learner'
+        GROUP BY u.id, u.email, u.first_name, u.last_name, u.role, u.created_at,
+                 u.last_login_at, u.theme, u.preferred_language,
+                 o.learning_style, o.study_preference, o.focus_duration, o.selected_subjects,
+                 us.current_streak, uc.balance
+        ORDER BY u.last_login_at DESC NULLS LAST
+      `);
+      res.json({ learners: learners.rows });
+    } catch (err: any) {
+      console.error("Admin learners error:", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/admin/reports/schools", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    try {
+      res.json({ schools: [] });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/admin/reports/partners", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    try {
+      const referralCounts = await db.execute(sql`
+        SELECT
+          r.referrer_id AS partner_code,
+          COUNT(*) AS referrals,
+          COUNT(*) FILTER (WHERE r.status = 'completed') AS conversions
+        FROM user_referrals r
+        GROUP BY r.referrer_id
+        ORDER BY referrals DESC
+      `);
+      const partners = referralCounts.rows.map((r: any) => ({
+        partnerCode: r.partner_code,
+        partnerName: r.partner_code,
+        referrals: Number(r.referrals ?? 0),
+        conversions: Number(r.conversions ?? 0),
+        revenue: Number(r.conversions ?? 0) * 169,
+        donationAmount: Math.round(Number(r.conversions ?? 0) * 169 * 0.3),
+      }));
+      res.json({ partners });
+    } catch (err: any) {
+      res.json({ partners: [] });
+    }
+  });
+
+  // POST /api/admin/dbe-ingestion/fix-all — runs all pending fixes for a subject in sequence:
+  // 1. Retry failed papers, 2. Fix hash mismatches, 3. Quality check, 4. Rebuild mastery
+  app.post("/api/admin/dbe-ingestion/fix-all", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    const { subject } = req.body;
+    if (!subject) return res.status(400).json({ error: "subject is required" });
+    if (ingestionRunning.get(subject)) {
+      return res.status(409).json({ error: `Already running for "${subject}"` });
+    }
+
+    res.json({ message: `Fix All started for "${subject}"`, subject });
+
+    (async () => {
+      ingestionRunning.set(subject, true);
+      ingestionPhase.set(subject, "ingesting");
+      try {
+        // Phase 1: Retry ingestion (picks up failed papers)
+        const { runIngestionBatch, rebuildMasteryFromExisting } = await import("./dbe-ingestion");
+        const catalog: any[] = (await import("./data/dbe-papers-catalog.json")).default as any[];
+        const summary = await runIngestionBatch(catalog, { subject });
+        ingestionLastResult.set(subject, {
+          completed: summary.completed,
+          failed: summary.failed,
+          errors: summary.errors.slice(0, 10),
+          finishedAt: new Date().toISOString(),
+        });
+
+        // Phase 2: Rebuild mastery
+        ingestionPhase.set(subject, "rebuilding_mastery");
+        await rebuildMasteryFromExisting(subject);
+
+        ingestionPhase.set(subject, "ready");
+      } catch (err: any) {
+        ingestionPhase.set(subject, "failed");
+      } finally {
+        ingestionRunning.set(subject, false);
+      }
+    })();
+  });
+
+  // POST /api/admin/dbe-ingestion/restart — clear failed/pending logs for a subject, then re-run full pipeline
+  app.post("/api/admin/dbe-ingestion/restart", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    const { subject } = req.body;
+    if (!subject) return res.status(400).json({ error: "subject is required" });
+    if (ingestionRunning.get(subject)) {
+      return res.status(409).json({ error: `Already running for "${subject}"` });
+    }
+
+    const adminId = req.user.claims.sub;
+    await storage.insertAuditLog({
+      userId: adminId,
+      action: "DBE_INGESTION_RESTART",
+      target: subject,
+      metadata: { subject },
+      ipAddress: req.ip,
+    });
+
+    await db.execute(sql`DELETE FROM dbe_verbatim_questions WHERE subject = ${subject}`);
+    await db.execute(sql`DELETE FROM dbe_topic_coverage WHERE subject = ${subject}`);
+    await db.execute(sql`DELETE FROM dbe_topic_frequency WHERE subject = ${subject}`);
+    await db.execute(sql`DELETE FROM dbe_ingestion_log WHERE subject = ${subject}`);
+
+    res.json({ message: `Restart initiated for "${subject}" — all data cleared, re-ingesting from scratch`, subject });
+
+    // Fire the full pipeline in the background
+    (async () => {
+      ingestionRunning.set(subject, true);
+      ingestionPhase.set(subject, "ingesting");
+      try {
+        const { runIngestionBatch, rebuildMasteryFromExisting } = await import("./dbe-ingestion");
+        const catalog: any[] = (await import("./data/dbe-papers-catalog.json")).default as any[];
+        const summary = await runIngestionBatch(catalog, { subject });
+        ingestionLastResult.set(subject, {
+          completed: summary.completed,
+          failed: summary.failed,
+          errors: summary.errors.slice(0, 10),
+          finishedAt: new Date().toISOString(),
+        });
+
+        ingestionPhase.set(subject, "rebuilding_mastery");
+        try {
+          await rebuildMasteryFromExisting(subject);
+        } catch (masteryErr: any) {
+          // non-fatal
+        }
+
+        ingestionPhase.set(subject, "ready");
+      } catch (err: any) {
+        ingestionLastResult.set(subject, {
+          completed: 0,
+          failed: 1,
+          errors: [err?.message ?? String(err)],
+          finishedAt: new Date().toISOString(),
+        });
+        ingestionPhase.set(subject, "failed");
+      } finally {
+        ingestionRunning.set(subject, false);
+      }
+    })();
+  });
+
+  // POST /api/admin/dbe-ingestion/clear-all — wipe ALL ingestion data (papers, questions, coverage, frequency, logs)
+  app.post("/api/admin/dbe-ingestion/clear-all", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    try {
+      const adminId = req.user.claims.sub;
+      await storage.insertAuditLog({
+        userId: adminId,
+        action: "DBE_INGESTION_CLEAR_ALL",
+        target: "all",
+        metadata: {},
+        ipAddress: req.ip,
+      });
+
+      await db.execute(sql`DELETE FROM dbe_verbatim_questions`);
+      await db.execute(sql`DELETE FROM dbe_topic_coverage`);
+      await db.execute(sql`DELETE FROM dbe_topic_frequency`);
+      await db.execute(sql`DELETE FROM dbe_ingestion_log`);
+
+      ingestionRunning.clear();
+      ingestionPhase.clear();
+      ingestionLastResult.clear();
+
+      res.json({ message: "All ingestion data cleared" });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // GET /api/subjects/:code/high-yield-topics
+  // Returns topic frequency rankings for a subject — powers adaptive study recommendations.
+  app.get("/api/subjects/:code/high-yield-topics", isAuthenticated, async (req: any, res) => {
+    try {
+      const { code } = req.params;
+      const { dbeTopicFrequency: freqTable, topics: topicsTable } = await import("@shared/schema");
+      const rows = await db
+        .select({
+          topicId: freqTable.topicId,
+          topicName: topicsTable.name,
+          topicNameAf: topicsTable.nameAfrikaans,
+          capsCode: topicsTable.capsCode,
+          appearancesCount: freqTable.appearancesCount,
+          totalYearsSampled: freqTable.totalYearsSampled,
+          avgMarksPerAppearance: freqTable.avgMarksPerAppearance,
+          frequencyRank: freqTable.frequencyRank,
+        })
+        .from(freqTable)
+        .innerJoin(topicsTable, eq(freqTable.topicId, topicsTable.id))
+        .where(sql`upper(${freqTable.subject}) LIKE upper(${"%" + code + "%"}) OR upper(${topicsTable.capsCode}) LIKE upper(${code + "-%"})`)
+        .orderBy(freqTable.frequencyRank);
+      return res.json(rows);
+    } catch (err: any) {
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
+  // ── Learner-facing DBE endpoints (real ingestion data only) ──────────────
+
+  // GET /api/dbe/available — which subjects have real ingested questions
+  app.get("/api/dbe/available", isAuthenticated, async (_req: any, res) => {
+    try {
+      const { dbeVerbatimQuestions } = await import("@shared/schema");
+      const rows = await db
+        .select({
+          subject: dbeVerbatimQuestions.subject,
+          year: dbeVerbatimQuestions.year,
+          paperNumber: dbeVerbatimQuestions.paperNumber,
+          session: dbeVerbatimQuestions.session,
+          questionCount: sql<number>`COUNT(*)::int`,
+          totalMarks: sql<number>`COALESCE(SUM(${dbeVerbatimQuestions.marks}), 0)::int`,
+        })
+        .from(dbeVerbatimQuestions)
+        .groupBy(
+          dbeVerbatimQuestions.subject,
+          dbeVerbatimQuestions.year,
+          dbeVerbatimQuestions.paperNumber,
+          dbeVerbatimQuestions.session,
+        )
+        .orderBy(dbeVerbatimQuestions.subject, dbeVerbatimQuestions.year, dbeVerbatimQuestions.paperNumber);
+
+      // Group by subject
+      const bySubject: Record<string, { subject: string; papers: typeof rows }> = {};
+      for (const row of rows) {
+        if (!bySubject[row.subject]) bySubject[row.subject] = { subject: row.subject, papers: [] };
+        bySubject[row.subject].papers.push(row);
+      }
+      return res.json(Object.values(bySubject));
+    } catch (err: any) {
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
+  // GET /api/dbe/questions — paginated questions for a given subject/year/paper
+  app.get("/api/dbe/questions", isAuthenticated, async (req: any, res) => {
+    const { subject, year, paperNumber, page = "1", limit = "50" } = req.query as Record<string, string>;
+    if (!subject) return res.status(400).json({ error: "subject required" });
+    try {
+      const { dbeVerbatimQuestions } = await import("@shared/schema");
+      const conditions = [eq(dbeVerbatimQuestions.subject, subject)];
+      if (year) conditions.push(eq(dbeVerbatimQuestions.year, Number(year)));
+      if (paperNumber) conditions.push(eq(dbeVerbatimQuestions.paperNumber, Number(paperNumber)));
+      const offset = (Number(page) - 1) * Number(limit);
+      const [rows, countResult] = await Promise.all([
+        db.select().from(dbeVerbatimQuestions)
+          .where(and(...conditions))
+          .orderBy(dbeVerbatimQuestions.year, dbeVerbatimQuestions.paperNumber, dbeVerbatimQuestions.questionNumber)
+          .limit(Number(limit))
+          .offset(offset),
+        db.select({ total: sql<number>`COUNT(*)::int` }).from(dbeVerbatimQuestions).where(and(...conditions)),
+      ]);
+      return res.json({ questions: rows, total: countResult[0]?.total ?? 0, page: Number(page), limit: Number(limit) });
+    } catch (err: any) {
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
+  // GET /api/admin/dbe-ingestion/years — per-year catalog stats + DB ingestion status
+  app.get("/api/admin/dbe-ingestion/years", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    try {
+      const catalog: any[] = (await import("./data/dbe-papers-catalog.json")).default as any[];
+
+      // Build per-year stats from catalog
+      const yearMap = new Map<number, { papers: number; memos: number; subjects: Set<string> }>();
+      for (const entry of catalog) {
+        const y = entry.year as number;
+        if (!yearMap.has(y)) yearMap.set(y, { papers: 0, memos: 0, subjects: new Set() });
+        const stats = yearMap.get(y)!;
+        if (entry.isMemo) stats.memos++;
+        else { stats.papers++; stats.subjects.add(entry.subject); }
+      }
+
+      // Query DB for per-year ingestion counts
+      const dbRows = await db.execute(sql`
+        SELECT
+          year,
+          COUNT(*) FILTER (WHERE status = 'completed' AND is_memo = false) AS papers_done,
+          COUNT(*) FILTER (WHERE status = 'failed') AS papers_failed,
+          SUM(question_count) FILTER (WHERE is_memo = false AND status = 'completed') AS questions_extracted,
+          MAX(ingested_at) AS last_ingested
+        FROM dbe_ingestion_log
+        GROUP BY year
+        ORDER BY year
+      `);
+
+      const dbByYear = new Map<number, any>();
+      for (const row of dbRows.rows) dbByYear.set(Number(row.year), row);
+
+      const years = Array.from(yearMap.entries())
+        .sort(([a], [b]) => a - b)
+        .map(([year, counts]) => {
+          const dbRow = dbByYear.get(year);
+          return {
+            year,
+            catalogPapers: counts.papers,
+            catalogMemos: counts.memos,
+            subjectCount: counts.subjects.size,
+            subjects: Array.from(counts.subjects).sort(),
+            papersDone: Number(dbRow?.papers_done ?? 0),
+            papersFailed: Number(dbRow?.papers_failed ?? 0),
+            questionsExtracted: Number(dbRow?.questions_extracted ?? 0),
+            lastIngested: dbRow?.last_ingested ?? null,
+            isRunning: ingestionRunning.get(`__year_${year}`) ?? false,
+          };
+        });
+
+      return res.json({ years });
+    } catch (err: any) {
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
+  // POST /api/admin/dbe-ingestion/run-year — trigger background ingestion for ALL subjects in a given year
+  app.post("/api/admin/dbe-ingestion/run-year", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    const { year } = req.body;
+    if (!year) return res.status(400).json({ error: "year is required" });
+    const yr = Number(year);
+    const runKey = `__year_${yr}`;
+    if (ingestionRunning.get(runKey)) {
+      return res.status(409).json({ error: `Ingestion already running for year ${yr}` });
+    }
+
+    const adminId = req.user.claims.sub;
+    await storage.insertAuditLog({
+      userId: adminId,
+      action: "DBE_INGESTION_RUN_YEAR",
+      target: String(yr),
+      metadata: { year: yr },
+      ipAddress: req.ip,
+    });
+
+    (async () => {
+      ingestionRunning.set(runKey, true);
+      try {
+        const { runIngestionBatch } = await import("./dbe-ingestion");
+        const catalog: any[] = (await import("./data/dbe-papers-catalog.json")).default as any[];
+        // Get all unique subjects that have papers (non-memo) for this year
+        const subjectsForYear = [...new Set(
+          catalog.filter((e: any) => e.year === yr && !e.isMemo).map((e: any) => e.subject)
+        )];
+        // Run ingestion for each subject sequentially
+        for (const subject of subjectsForYear) {
+          if (!ingestionRunning.get(subject)) {
+            ingestionRunning.set(subject, true);
+            try {
+              const summary = await runIngestionBatch(catalog, { subject, year: yr });
+              ingestionLastResult.set(subject, {
+                completed: summary.completed,
+                failed: summary.failed,
+                errors: summary.errors.slice(0, 5),
+                finishedAt: new Date().toISOString(),
+              });
+            } catch (err: any) {
+              ingestionLastResult.set(subject, {
+                completed: 0, failed: 1,
+                errors: [err?.message ?? String(err)],
+                finishedAt: new Date().toISOString(),
+              });
+            } finally {
+              ingestionRunning.set(subject, false);
+            }
+          }
+        }
+      } catch (err: any) {
+        console.error(`Year ${yr} batch ingestion error:`, err);
+      } finally {
+        ingestionRunning.set(runKey, false);
+      }
+    })();
+
+    return res.json({ message: `Year ${yr} ingestion started`, year: yr });
+  });
+
+  // GET /api/admin/dbe-ingestion/questions — browse verbatim questions for a subject
+  app.get("/api/admin/dbe-ingestion/questions", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    const { subject, year, paperNumber, limit = "20", offset = "0" } = req.query as Record<string, string>;
+    try {
+      const { dbeVerbatimQuestions } = await import("@shared/schema");
+      const conditions: any[] = [];
+      if (subject) conditions.push(eq(dbeVerbatimQuestions.subject, subject));
+      if (year) conditions.push(eq(dbeVerbatimQuestions.year, Number(year)));
+      if (paperNumber) conditions.push(eq(dbeVerbatimQuestions.paperNumber, Number(paperNumber)));
+      const rows = await db
+        .select()
+        .from(dbeVerbatimQuestions)
+        .where(conditions.length ? and(...conditions) : undefined)
+        .limit(Number(limit))
+        .offset(Number(offset));
+      return res.json({ questions: rows, count: rows.length });
+    } catch (err: any) {
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
+  // ============================================
+  // CRUNCH TIME EXAM ENGINE API (Business Studies Template)
+  // ============================================
+  
+  const { EXAM_PAPERS } = await import("./data/business-studies-exams");
+  const { BUSINESS_STUDIES_TOPIC_WEIGHTS, MASTERY_THRESHOLDS, EXAM_STRUCTURE, REFERENCES } = await import("./data/business-studies-weights");
+
+  app.get("/api/bst/papers", isAuthenticated, async (req: any, res) => {
+    try {
+      const lang = (req.query.lang as string) || "en";
+      const papers = EXAM_PAPERS.map(p => ({
+        id: p.id,
+        name: lang === "af" ? p.nameAf : p.name,
+        paperNumber: p.paperNumber,
+        totalMarks: p.totalMarks,
+        duration: p.duration,
+        sectionA: p.sectionA.length,
+        sectionB: p.sectionB.length,
+        sectionC: p.sectionC.length,
+      }));
+      res.json({ papers, structure: EXAM_STRUCTURE, disclaimer: lang === "af" ? REFERENCES.disclaimerAf : REFERENCES.disclaimer });
+    } catch (error) {
+      console.error("Error fetching BST papers:", error);
+      res.status(500).json({ error: "Failed to fetch papers" });
+    }
+  });
+
+  app.get("/api/bst/paper/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const paper = EXAM_PAPERS.find(p => p.id === req.params.id);
+      if (!paper) return res.status(404).json({ error: "Paper not found" });
+      const lang = (req.query.lang as string) || "en";
+      
+      const formatted = {
+        id: paper.id,
+        name: lang === "af" ? paper.nameAf : paper.name,
+        paperNumber: paper.paperNumber,
+        totalMarks: paper.totalMarks,
+        duration: paper.duration,
+        disclaimer: lang === "af" ? REFERENCES.disclaimerAf : REFERENCES.disclaimer,
+        sectionA: paper.sectionA.map(q => ({
+          id: q.id,
+          questionNumber: q.questionNumber,
+          question: lang === "af" ? q.questionAf : q.question,
+          options: q.options.map(o => ({ label: o.label, text: lang === "af" ? o.textAf : o.text })),
+          marks: q.marks,
+          topic: q.topic,
+        })),
+        sectionB: paper.sectionB.map(cs => ({
+          id: cs.id,
+          questionNumber: cs.questionNumber,
+          scenario: lang === "af" ? cs.scenarioAf : cs.scenario,
+          totalMarks: cs.totalMarks,
+          topic: cs.topic,
+          subQuestions: cs.subQuestions.map(sq => ({
+            id: sq.id,
+            question: lang === "af" ? sq.questionAf : sq.question,
+            marks: sq.marks,
+            topic: sq.topic,
+          })),
+        })),
+        sectionC: paper.sectionC.map(eq => ({
+          id: eq.id,
+          questionNumber: eq.questionNumber,
+          question: lang === "af" ? eq.questionAf : eq.question,
+          marks: eq.marks,
+          topic: eq.topic,
+        })),
+      };
+      res.json(formatted);
+    } catch (error) {
+      console.error("Error fetching BST paper:", error);
+      res.status(500).json({ error: "Failed to fetch paper" });
+    }
+  });
+
+  app.post("/api/bst/submit", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { paperId, answers, timeUsedSeconds, integrityLog } = req.body;
+      
+      const paper = EXAM_PAPERS.find(p => p.id === paperId);
+      if (!paper) return res.status(404).json({ error: "Paper not found" });
+
+      let totalScore = 0;
+      let totalMarks = 0;
+      const results: any = { sectionA: [], sectionB: [], sectionC: [] };
+      const topicScores: Record<string, { earned: number; available: number }> = {};
+
+      const addTopicScore = (topic: string, earned: number, available: number) => {
+        if (!topicScores[topic]) topicScores[topic] = { earned: 0, available: 0 };
+        topicScores[topic].earned += earned;
+        topicScores[topic].available += available;
+      };
+
+      for (const q of paper.sectionA) {
+        const userAnswer = answers?.sectionA?.[q.id];
+        const correct = userAnswer === q.correctAnswer;
+        const earned = correct ? q.marks : 0;
+        totalScore += earned;
+        totalMarks += q.marks;
+        addTopicScore(q.topic, earned, q.marks);
+        results.sectionA.push({ id: q.id, userAnswer, correctAnswer: q.correctAnswer, correct, earned, marks: q.marks });
+      }
+
+      for (const cs of paper.sectionB) {
+        const csResult: any = { id: cs.id, subQuestions: [] };
+        for (const sq of cs.subQuestions) {
+          const userAnswer = answers?.sectionB?.[sq.id] || "";
+          const rawPaper = paper.sectionB.find(b => b.id === cs.id);
+          const rawSq = rawPaper?.subQuestions.find(s => s.id === sq.id);
+          let earned = 0;
+          const feedback: string[] = [];
+          
+          if (rawSq && userAnswer.trim()) {
+            const lowerAnswer = userAnswer.toLowerCase();
+            let keywordsFound = 0;
+            for (const kw of rawSq.automark.keywords) {
+              if (lowerAnswer.includes(kw.toLowerCase())) {
+                keywordsFound++;
+                feedback.push(`Found: "${kw}"`);
+              }
+            }
+            const ratio = keywordsFound / rawSq.automark.keywords.length;
+            earned = Math.round(sq.marks * Math.min(ratio * 1.3, 1));
+          }
+          
+          totalScore += earned;
+          totalMarks += sq.marks;
+          addTopicScore(sq.topic, earned, sq.marks);
+          csResult.subQuestions.push({ id: sq.id, userAnswer, earned, marks: sq.marks, feedback });
+        }
+        results.sectionB.push(csResult);
+      }
+
+      for (const eq of paper.sectionC) {
+        const userAnswer = answers?.sectionC?.[eq.id] || "";
+        let earned = 0;
+        const feedback: string[] = [];
+        
+        if (userAnswer.trim()) {
+          const lowerAnswer = userAnswer.toLowerCase();
+          let keywordsFound = 0;
+          for (const kw of eq.automark.keywords) {
+            if (lowerAnswer.includes(kw.toLowerCase())) {
+              keywordsFound++;
+              feedback.push(`Found: "${kw}"`);
+            }
+          }
+          let structureScore = 0;
+          for (const sp of eq.automark.structurePoints) {
+            if (lowerAnswer.includes(sp.toLowerCase()) || 
+                (sp === "introduction" && lowerAnswer.length > 100) ||
+                (sp === "conclusion" && lowerAnswer.includes("conclusion")) ||
+                (sp === "body with headings" && lowerAnswer.length > 300) ||
+                (sp === "examples" && (lowerAnswer.includes("example") || lowerAnswer.includes("for instance")))) {
+              structureScore++;
+            }
+          }
+          const keywordRatio = keywordsFound / eq.automark.keywords.length;
+          const structureRatio = structureScore / eq.automark.structurePoints.length;
+          const combined = (keywordRatio * 0.7 + structureRatio * 0.3);
+          earned = Math.round(eq.marks * Math.min(combined * 1.2, 1));
+        }
+        
+        totalScore += earned;
+        totalMarks += eq.marks;
+        addTopicScore(eq.topic, earned, eq.marks);
+        results.sectionC.push({ id: eq.id, userAnswer, earned, marks: eq.marks, feedback });
+      }
+
+      const percentage = totalMarks > 0 ? Math.round((totalScore / totalMarks) * 100) : 0;
+      let masteryBand = "red";
+      if (percentage >= 85) masteryBand = "mastery";
+      else if (percentage >= 75) masteryBand = "green";
+      else if (percentage >= 60) masteryBand = "amber";
+
+      const topicBreakdown = Object.entries(topicScores).map(([topic, scores]) => ({
+        topic,
+        earned: scores.earned,
+        available: scores.available,
+        percentage: scores.available > 0 ? Math.round((scores.earned / scores.available) * 100) : 0,
+        band: scores.available > 0 
+          ? (scores.earned / scores.available) >= 0.85 ? "mastery"
+            : (scores.earned / scores.available) >= 0.75 ? "green"
+            : (scores.earned / scores.available) >= 0.60 ? "amber" : "red"
+          : "red"
+      }));
+
+      const [bstSubject] = await db.select().from(subjects).where(eq(subjects.capsCode, "BUS"));
+      if (bstSubject) {
+        for (const r of results.sectionA) {
+          await storage.updateUserProgress(userId, bstSubject.id, r.correct);
+        }
+        for (const cs of results.sectionB) {
+          for (const sq of cs.subQuestions) {
+            await storage.updateUserProgress(userId, bstSubject.id, sq.earned > 0);
+          }
+        }
+        for (const eq2 of results.sectionC) {
+          await storage.updateUserProgress(userId, bstSubject.id, eq2.earned > 0);
+        }
+      }
+
+      if (percentage >= 80) {
+        await storage.awardBadge(userId, "high_score");
+      }
+      await storage.checkAndAwardBadges(userId);
+
+      const examResult = {
+        paperId,
+        paperName: paper.name,
+        totalScore,
+        totalMarks,
+        percentage,
+        masteryBand,
+        timeUsedSeconds: timeUsedSeconds || 0,
+        integrityLog: integrityLog || [],
+        results,
+        topicBreakdown,
+        thresholds: MASTERY_THRESHOLDS,
+        submittedAt: new Date().toISOString(),
+      };
+
+      res.json(examResult);
+    } catch (error) {
+      console.error("Error submitting BST exam:", error);
+      res.status(500).json({ error: "Failed to submit exam" });
+    }
+  });
+
+  app.get("/api/bst/topic-weights", isAuthenticated, async (req: any, res) => {
+    try {
+      res.json({ weights: BUSINESS_STUDIES_TOPIC_WEIGHTS, thresholds: MASTERY_THRESHOLDS, structure: EXAM_STRUCTURE });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch topic weights" });
+    }
+  });
+
+  // ============================================
+  // DAILY CHALLENGE ENDPOINTS
+  // ============================================
+

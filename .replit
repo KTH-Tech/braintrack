@@ -1,0 +1,178 @@
+modules = ["nodejs-20", "python-3.11", "postgresql-16"]
+[nix]
+channel = "stable-25_05"
+packages = ["unzip"]
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Start application"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "DBE Ingestion"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Topic Audio Pre-Generation"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Daily Focus Push"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Trial Reminders"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "security-scan"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "e2e-tests"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Topic Content Seeder"
+
+[[workflows.workflow]]
+name = "Start application"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "DBE Ingestion"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx tsx scripts/run-ingest-2015-2025.ts"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow]]
+name = "Topic Audio Pre-Generation"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "bash scripts/nightly-topic-audio.sh"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow]]
+name = "Daily Focus Push"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "bash scripts/nightly-daily-focus.sh"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow]]
+name = "Trial Reminders"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "bash scripts/nightly-trial-reminders.sh"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow]]
+name = "security-scan"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "bash scripts/security-scan.sh"
+
+[workflows.workflow.metadata]
+isValidation = true
+
+[[workflows.workflow]]
+name = "e2e-tests"
+author = "agent"
+
+[workflows.workflow.metadata]
+isValidation = true
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "TEST_MODE=true BASE_URL=http://localhost:5000 npx playwright test --project=page-and-public --reporter=line"
+
+[[workflows.workflow]]
+name = "Topic Content Seeder"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "bash scripts/nightly-topic-content.sh"
+
+[agent]
+expertMode = true
+integrations = ["javascript_openai_ai_integrations:2.0.0", "resend:1.0.0"]
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[[ports]]
+localPort = 23636
+externalPort = 3000
+
+[[ports]]
+localPort = 23637
+externalPort = 3001
+
+[[ports]]
+localPort = 23638
+externalPort = 3002
+
+[[ports]]
+localPort = 23639
+externalPort = 3003
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["npm", "run", "start"]
+build = ["npm", "run", "build"]
+
+[postMerge]
+path = "scripts/post-merge.sh"
+timeoutMs = 180000
+
+[userenv]
+
+[userenv.development]
+TEST_MODE = "true"
+
+[userenv.production]
+ADMIN_EMAILS = "karlit@kthtech.co.za,kreativethinkinghub@gmail.com"
+
+[userenv.shared]
+VAPID_PUBLIC_KEY = "BGA_0915m_SqCQq_8XLxpGx01cxlB1Y4PyY7miFKT0voxzLSa6j5SBowhi4ZVonmKAbO9HcniM0_811cTFQdgw8"
+EMAIL_FROM = "learn@braintrack.app"

@@ -1,0 +1,628 @@
+  app.get("/api/daily-challenge", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const saOffset = 2;
+      const now = new Date();
+      const saTime = new Date(now.getTime() + saOffset * 60 * 60 * 1000);
+      const today = saTime.toISOString().split('T')[0];
+
+      const existing = await storage.getDailyChallenge(userId, today);
+      if (existing) {
+        const streak = await storage.getDailyChallengeStreak(userId);
+        const safeChallenge = stripAnswersFromChallenge(existing);
+        return res.json({ challenge: safeChallenge, streak });
+      }
+
+      const profile = await storage.getOnboardingResult(userId);
+      const allSubjects = await storage.getAllSubjects();
+      
+      let selectedSubjects = allSubjects;
+      if (profile?.selectedSubjects && (profile.selectedSubjects as number[]).length > 0) {
+        const selectedIds = profile.selectedSubjects as number[];
+        selectedSubjects = allSubjects.filter(s => selectedIds.includes(s.id));
+      }
+      if (selectedSubjects.length === 0) selectedSubjects = allSubjects;
+
+      const language = profile?.preferredLanguage === 'afrikaans' ? 'af' : 'en';
+
+      const challengeQuestions = generateDailyChallengeQuestions(selectedSubjects, language);
+
+      const challenge = await storage.createDailyChallenge({
+        userId,
+        challengeDate: today,
+        questionsJson: challengeQuestions,
+        totalQuestions: challengeQuestions.length,
+        streak: 0,
+      });
+
+      const streak = await storage.getDailyChallengeStreak(userId);
+      const safeChallenge = stripAnswersFromChallenge(challenge);
+      res.json({ challenge: safeChallenge, streak });
+    } catch (error) {
+      console.error("Error getting daily challenge:", error);
+      res.status(500).json({ error: "Failed to get daily challenge" });
+    }
+  });
+
+  app.post("/api/daily-challenge/:id/submit", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const challengeId = parseInt(req.params.id);
+      const { answers, timeSpentSeconds } = req.body;
+
+      if (!Array.isArray(answers)) {
+        return res.status(400).json({ error: "Answers must be an array" });
+      }
+
+      const saOffset = 2;
+      const now = new Date();
+      const saTime = new Date(now.getTime() + saOffset * 60 * 60 * 1000);
+      const today = saTime.toISOString().split('T')[0];
+      const yesterday = new Date(saTime.getTime() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+      let challenge = await storage.getDailyChallenge(userId, today);
+      if (!challenge || challenge.id !== challengeId) {
+        challenge = await storage.getDailyChallenge(userId, yesterday);
+        if (!challenge || challenge.id !== challengeId) {
+          return res.status(404).json({ error: "Challenge not found" });
+        }
+      }
+
+      if (challenge.completedAt) {
+        return res.status(400).json({ error: "Challenge already completed" });
+      }
+
+      const questions = challenge.questionsJson as any[];
+      
+      if (answers.length !== questions.length) {
+        return res.status(400).json({ error: `Expected ${questions.length} answers, got ${answers.length}` });
+      }
+
+      let score = 0;
+      const answerResults = answers.map((answer: number, index: number) => {
+        const correct = questions[index]?.correctIndex === answer;
+        if (correct) score++;
+        return { selected: answer, correct, correctIndex: questions[index]?.correctIndex };
+      });
+
+      const updated = await storage.completeDailyChallenge(
+        challengeId,
+        answerResults,
+        score,
+        typeof timeSpentSeconds === 'number' ? timeSpentSeconds : 0
+      );
+
+      await storage.updateUserStreak(userId);
+
+      for (let i = 0; i < answerResults.length; i++) {
+        const qSubjectId = questions[i]?.subjectId;
+        if (qSubjectId) {
+          try {
+            await storage.updateUserProgress(userId, qSubjectId, answerResults[i].correct);
+          } catch (_) { /* non-fatal */ }
+        }
+      }
+
+      // Award coins: 5 per correct answer
+      const coinsEarned = score * 5;
+      if (coinsEarned > 0) {
+        try {
+          await storage.awardCoins(
+            userId,
+            coinsEarned,
+            "daily_challenge",
+            `Daily challenge: ${score}/${questions.length} correct answers`,
+            String(challengeId)
+          );
+        } catch (_) { /* non-fatal */ }
+      }
+
+      // Send push notification on challenge completion
+      try {
+        const pushSubs = await storage.getPushSubscriptions(userId);
+        if (pushSubs.length > 0 && process.env.VAPID_PUBLIC_KEY) {
+          const percentage = Math.round((score / questions.length) * 100);
+          const emoji = percentage >= 80 ? "🏆" : percentage >= 60 ? "✅" : "💪";
+          const pushPayload = JSON.stringify({
+            title: `Daily Challenge Complete! ${emoji}`,
+            body: `You scored ${percentage}% — ${score}/${questions.length} correct.${coinsEarned > 0 ? ` +${coinsEarned} coins earned!` : ""}`,
+            url: "/dashboard",
+            tag: "daily-challenge",
+            icon: "/favicon.png",
+          });
+          await Promise.allSettled(
+            pushSubs.map(s =>
+              webpush.sendNotification(
+                { endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } },
+                pushPayload
+              )
+            )
+          );
+        }
+      } catch (pushErr) {
+        console.error("Daily challenge push notification error (non-fatal):", pushErr);
+      }
+
+      const streak = await storage.getDailyChallengeStreak(userId);
+
+      const fullQuestions = questions.map((q: any, i: number) => ({
+        ...q,
+        correctIndex: q.correctIndex,
+        explanation: q.explanation,
+        explanationAf: q.explanationAf,
+      }));
+
+      res.json({ 
+        challenge: { ...updated, questionsJson: fullQuestions }, 
+        score, 
+        total: questions.length, 
+        percentage: Math.round((score / questions.length) * 100),
+        streak
+      });
+    } catch (error) {
+      console.error("Error submitting daily challenge:", error);
+      res.status(500).json({ error: "Failed to submit daily challenge" });
+    }
+  });
+
+  app.get("/api/daily-challenge/history", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const history = await storage.getDailyChallengeHistory(userId, 30);
+      const streak = await storage.getDailyChallengeStreak(userId);
+      res.json({ history, streak });
+    } catch (error) {
+      console.error("Error getting challenge history:", error);
+      res.status(500).json({ error: "Failed to get challenge history" });
+    }
+  });
+
+  // ============================================
+  // COIN WALLET ROUTES
+  // ============================================
+
+  app.get("/api/user/coins", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const wallet = await storage.getUserCoins(userId);
+      res.json({ balance: wallet.balance, totalEarned: wallet.totalEarned, totalSpent: wallet.totalSpent });
+    } catch (error) {
+      console.error("Error getting user coins:", error);
+      res.status(500).json({ error: "Failed to get coin balance" });
+    }
+  });
+
+  app.get("/api/user/coins/transactions", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const transactions = await storage.getCoinTransactions(userId);
+      res.json(transactions);
+    } catch (error) {
+      console.error("Error getting coin transactions:", error);
+      res.status(500).json({ error: "Failed to get transactions" });
+    }
+  });
+
+  // ============================================
+  // THEME UNLOCK ROUTES
+  // ============================================
+
+  const THEME_CATALOG = [
+    { key: "blanc",        name: "Clean Girl",    nameAf: "Skoon Meisie",    coinCost: 0,  isLocked: false },
+    { key: "coastal",      name: "Beach Era",     nameAf: "Strand Era",      coinCost: 0,  isLocked: false },
+    { key: "dopamine",     name: "Dopamine",      nameAf: "Dopamien",        coinCost: 0,  isLocked: false },
+    { key: "vaporwave",    name: "Y2K",           nameAf: "Y2K",             coinCost: 0,  isLocked: false },
+    { key: "obsidian",     name: "After Dark",    nameAf: "Na Donker",       coinCost: 20, isLocked: true  },
+    { key: "dusk",         name: "Dusk",          nameAf: "Skemer",          coinCost: 30, isLocked: true  },
+    { key: "coquette",     name: "Coquette",      nameAf: "Sjarmant",        coinCost: 30, isLocked: true  },
+    { key: "lemonade",    name: "Lemonade",      nameAf: "Lemoensap",       coinCost: 30, isLocked: true  },
+    { key: "bubblegum",  name: "Bubblegum",     nameAf: "Borrelgom",       coinCost: 30, isLocked: true  },
+    { key: "golden-hour",  name: "Golden Hour",   nameAf: "Goue Uur",        coinCost: 50, isLocked: true  },
+    { key: "thunder",      name: "Thunder",       nameAf: "Donderstorm",     coinCost: 50, isLocked: true  },
+    { key: "glitter",    name: "Glitter",       nameAf: "Glinster",        coinCost: 50, isLocked: true  },
+    { key: "velvet",       name: "Sunset",        nameAf: "Sonsondergang",   coinCost: 65, isLocked: true  },
+    { key: "midnight",     name: "Midnight",      nameAf: "Middernag",       coinCost: 75, isLocked: true  },
+    { key: "holographic",  name: "Holographic",   nameAf: "Holografies",     coinCost: 75, isLocked: true  },
+  ];
+
+  app.get("/api/user/themes", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const unlocked = await storage.getUserUnlockedThemes(userId);
+      res.json({ unlocked, catalog: THEME_CATALOG });
+    } catch (error) {
+      console.error("Error getting user themes:", error);
+      res.status(500).json({ error: "Failed to get themes" });
+    }
+  });
+
+  app.post("/api/user/themes/unlock", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { themeName } = z.object({ themeName: z.string() }).parse(req.body);
+
+      const themeConfig = THEME_CATALOG.find((t) => t.key === themeName);
+      if (!themeConfig) return res.status(400).json({ error: "Unknown theme" });
+      if (!themeConfig.isLocked) return res.status(400).json({ error: "Theme is already free" });
+
+      const alreadyUnlocked = await storage.getUserUnlockedThemes(userId);
+      if (alreadyUnlocked.includes(themeName)) {
+        return res.status(400).json({ error: "Theme already unlocked" });
+      }
+
+      const wallet = await storage.getUserCoins(userId);
+      if (wallet.balance < themeConfig.coinCost) {
+        return res.status(400).json({ error: "Insufficient coins", balance: wallet.balance, required: themeConfig.coinCost });
+      }
+
+      await storage.unlockTheme(userId, themeName, themeConfig.coinCost);
+      const updatedWallet = await storage.spendCoins(
+        userId,
+        themeConfig.coinCost,
+        "spend_theme",
+        `Unlocked theme: ${themeConfig.name}`,
+        themeName
+      );
+
+      res.json({ success: true, wallet: { balance: updatedWallet.balance, totalSpent: updatedWallet.totalSpent } });
+    } catch (error: any) {
+      if (error?.name === "ZodError") return res.status(400).json({ error: "Invalid request body" });
+      console.error("Error unlocking theme:", error);
+      res.status(500).json({ error: "Failed to unlock theme" });
+    }
+  });
+
+  // ============================================
+  // HELP ESCALATION ROUTES
+  // ============================================
+
+  const ESCALATION_CATEGORIES_LEARNER = [
+    { key: "stuck-on-topic", label: "I'm stuck on a topic", labelAf: "Ek sukkel met 'n onderwerp" },
+    { key: "marks-dropping", label: "My marks are dropping", labelAf: "My punte daal" },
+    { key: "technical-issue", label: "Technical issue", labelAf: "Tegniese probleem" },
+    { key: "need-motivation", label: "I need motivation", labelAf: "Ek het motivering nodig" },
+    { key: "report-problem", label: "Report a problem", labelAf: "Rapporteer 'n probleem" },
+  ];
+  const ESCALATION_CATEGORIES_PARENT = [
+    { key: "child-not-studying", label: "My child isn't studying", labelAf: "My kind studeer nie" },
+    { key: "child-struggling", label: "My child is struggling", labelAf: "My kind sukkel" },
+    { key: "billing-issue", label: "Billing/subscription issue", labelAf: "Fakturering/intekening-probleem" },
+    { key: "cant-see-progress", label: "I can't see my child's progress", labelAf: "Ek kan nie my kind se vordering sien nie" },
+    { key: "request-callback", label: "Request a callback", labelAf: "Versoek 'n terugbel" },
+  ];
+
+  const ADMIN_WHATSAPP = "+27783451313";
+
+  async function sendWhatsAppNotification(escalation: { userName: string | null; userRole: string; category: string; subject: string | null; message: string }) {
+    try {
+      const text = `🚨 BrainTrack Help Request\n\nFrom: ${escalation.userName ?? "Unknown"} (${escalation.userRole})\nCategory: ${escalation.category}\n${escalation.subject ? `Subject: ${escalation.subject}\n` : ""}Message: ${escalation.message}\n\nReply in admin dashboard.`;
+      const waUrl = `https://wa.me/${ADMIN_WHATSAPP.replace("+", "")}?text=${encodeURIComponent(text)}`;
+      console.log(`[ESCALATION] WhatsApp notification: ${waUrl}`);
+
+      if (process.env.WHATSAPP_WEBHOOK_URL) {
+        await fetch(process.env.WHATSAPP_WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            phone: ADMIN_WHATSAPP,
+            message: text,
+            escalation,
+          }),
+        }).catch(err => console.error("[ESCALATION] Webhook failed:", err.message));
+      }
+    } catch (err) {
+      console.error("[ESCALATION] WhatsApp notification error:", err);
+    }
+  }
+
+  app.get("/api/help/categories", isAuthenticated, (req: any, res) => {
+    const role = req.user?.claims?.metadata?.role ?? "learner";
+    res.json({
+      categories: role === "parent" ? ESCALATION_CATEGORIES_PARENT : ESCALATION_CATEGORIES_LEARNER,
+    });
+  });
+
+  app.post("/api/help/escalate", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const role = req.user?.claims?.metadata?.role ?? "learner";
+      const profile = await storage.getUser(userId);
+      const { category, subject, message } = req.body;
+      if (!category || !message) return res.status(400).json({ error: "category and message are required" });
+
+      const { helpEscalations } = await import("@shared/schema");
+      const [escalation] = await db.insert(helpEscalations).values({
+        userId,
+        userName: profile ? `${profile.firstName ?? ""} ${profile.lastName ?? ""}`.trim() : null,
+        userRole: role,
+        category,
+        subject: subject ?? null,
+        message,
+        status: "open",
+      }).returning();
+
+      await sendWhatsAppNotification({
+        userName: escalation.userName,
+        userRole: role,
+        category,
+        subject,
+        message,
+      });
+
+      res.json({ success: true, escalation });
+    } catch (err: any) {
+      console.error("[ESCALATION] Create error:", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/help/my-tickets", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { helpEscalations } = await import("@shared/schema");
+      const tickets = await db.select().from(helpEscalations)
+        .where(eq(helpEscalations.userId, userId))
+        .orderBy(desc(helpEscalations.createdAt));
+      res.json({ tickets });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/admin/escalations", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    try {
+      const { helpEscalations } = await import("@shared/schema");
+      const statusFilter = req.query.status;
+      const query = statusFilter
+        ? db.select().from(helpEscalations).where(eq(helpEscalations.status, statusFilter as string)).orderBy(desc(helpEscalations.createdAt))
+        : db.select().from(helpEscalations).orderBy(desc(helpEscalations.createdAt));
+      const tickets = await query;
+      res.json({ tickets, total: tickets.length, open: tickets.filter(t => t.status === "open").length });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.patch("/api/admin/escalations/:id", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    try {
+      const id = Number(req.params.id);
+      const adminId = req.user.claims.sub;
+      const { status, adminNote } = req.body;
+      const { helpEscalations } = await import("@shared/schema");
+      const updates: any = {};
+      if (status) updates.status = status;
+      if (adminNote !== undefined) updates.adminNote = adminNote;
+      if (status === "resolved") {
+        updates.resolvedAt = new Date();
+        updates.resolvedBy = adminId;
+      }
+      const [updated] = await db.update(helpEscalations).set(updates).where(eq(helpEscalations.id, id)).returning();
+      if (!updated) return res.status(404).json({ error: "Ticket not found" });
+      res.json({ ticket: updated });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // ============================================
+  // PUSH NOTIFICATION ROUTES
+  // ============================================
+
+  // Setup VAPID once (idempotent)
+  if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+    webpush.setVapidDetails(
+      process.env.VAPID_SUBJECT || "mailto:Brain-support@kthtech.co.za",
+      process.env.VAPID_PUBLIC_KEY,
+      process.env.VAPID_PRIVATE_KEY
+    );
+  }
+
+  // Return the public VAPID key so the frontend can subscribe
+  app.get("/api/push/vapid-public-key", (req, res) => {
+    const key = process.env.VAPID_PUBLIC_KEY;
+    if (!key) return res.status(503).json({ error: "Push notifications not configured" });
+    res.json({ publicKey: key });
+  });
+
+  // Subscribe: save push subscription for this user
+  app.post("/api/push/subscribe", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { endpoint, keys } = req.body;
+      if (!endpoint || !keys?.p256dh || !keys?.auth) {
+        return res.status(400).json({ error: "Invalid subscription object" });
+      }
+      const sub = await storage.savePushSubscription(userId, endpoint, keys.p256dh, keys.auth);
+      res.json({ success: true, id: sub.id });
+    } catch (error) {
+      console.error("Push subscribe error:", error);
+      res.status(500).json({ error: "Failed to save subscription" });
+    }
+  });
+
+  // Unsubscribe: remove push subscription
+  app.post("/api/push/unsubscribe", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { endpoint } = req.body;
+      if (!endpoint) return res.status(400).json({ error: "endpoint required" });
+      await storage.deletePushSubscription(userId, endpoint);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Push unsubscribe error:", error);
+      res.status(500).json({ error: "Failed to remove subscription" });
+    }
+  });
+
+  // Check if this user has an active push subscription
+  app.get("/api/push/status", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const subs = await storage.getPushSubscriptions(userId);
+      res.json({ subscribed: subs.length > 0 });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to get push status" });
+    }
+  });
+
+  // Send a test notification to the current user
+  app.post("/api/push/test", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const subs = await storage.getPushSubscriptions(userId);
+      if (subs.length === 0) return res.status(404).json({ error: "No push subscription found" });
+
+      const payload = JSON.stringify({
+        title: "BrainTrack 🧠",
+        body: "Push notifications are working! You're all set.",
+        url: "/dashboard",
+        tag: "test-notification",
+      });
+
+      const results = await Promise.allSettled(
+        subs.map(s =>
+          webpush.sendNotification({ endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } }, payload)
+        )
+      );
+
+      const sent = results.filter(r => r.status === "fulfilled").length;
+      res.json({ success: true, sent });
+    } catch (error) {
+      console.error("Push test error:", error);
+      res.status(500).json({ error: "Failed to send test notification" });
+    }
+  });
+
+  return httpServer;
+}
+
+function stripAnswersFromChallenge(challenge: any) {
+  if (challenge.completedAt) return challenge;
+  
+  const questions = (challenge.questionsJson as any[]).map((q: any) => ({
+    id: q.id,
+    question: q.question,
+    questionAf: q.questionAf,
+    options: q.options,
+    optionsAf: q.optionsAf,
+    subject: q.subject,
+    subjectAf: q.subjectAf,
+    topic: q.topic,
+    difficulty: q.difficulty,
+  }));
+  
+  return { ...challenge, questionsJson: questions };
+}
+
+function generateDailyChallengeQuestions(subjects: any[], language: string) {
+  const subjectPool = [...subjects];
+  const questions: any[] = [];
+  const totalQuestions = 5;
+
+  for (let i = 0; i < totalQuestions; i++) {
+    const subject = subjectPool[i % subjectPool.length];
+    const isAf = language === 'af';
+    
+    const questionTemplates = getQuestionTemplatesForSubject(subject, isAf);
+    const template = questionTemplates[Math.floor(Math.random() * questionTemplates.length)];
+    
+    questions.push({
+      id: i + 1,
+      question: template.question,
+      questionAf: template.questionAf,
+      options: template.options,
+      optionsAf: template.optionsAf,
+      correctIndex: template.correctIndex,
+      subject: subject.name,
+      subjectAf: subject.nameAfrikaans,
+      subjectId: subject.id,
+      difficulty: ["easy", "medium", "hard"][Math.floor(Math.random() * 3)],
+      explanation: template.explanation,
+      explanationAf: template.explanationAf,
+    });
+  }
+
+  return questions;
+}
+
+function getQuestionTemplatesForSubject(subject: any, isAf: boolean) {
+  const subjectName = (subject.name || '').toLowerCase();
+  
+  if (subjectName.includes('math') && !subjectName.includes('literacy')) {
+    return [
+      { question: "What is the derivative of f(x) = 3x² + 2x - 5?", questionAf: "Wat is die afgeleide van f(x) = 3x² + 2x - 5?", options: ["6x + 2", "3x + 2", "6x² + 2", "6x - 5"], optionsAf: ["6x + 2", "3x + 2", "6x² + 2", "6x - 5"], correctIndex: 0, explanation: "Using the power rule: d/dx(3x²) = 6x, d/dx(2x) = 2, d/dx(-5) = 0. So f'(x) = 6x + 2", explanationAf: "Gebruik die magtsreël: d/dx(3x²) = 6x, d/dx(2x) = 2, d/dx(-5) = 0. So f'(x) = 6x + 2" },
+      { question: "Solve for x: 2x² - 8 = 0", questionAf: "Los op vir x: 2x² - 8 = 0", options: ["x = ±2", "x = ±4", "x = 2", "x = 4"], optionsAf: ["x = ±2", "x = ±4", "x = 2", "x = 4"], correctIndex: 0, explanation: "2x² = 8, x² = 4, x = ±2", explanationAf: "2x² = 8, x² = 4, x = ±2" },
+      { question: "What is the sum of the interior angles of a hexagon?", questionAf: "Wat is die som van die binnehoeke van 'n seshoek?", options: ["720°", "540°", "360°", "1080°"], optionsAf: ["720°", "540°", "360°", "1080°"], correctIndex: 0, explanation: "Sum = (n-2) × 180° = (6-2) × 180° = 720°", explanationAf: "Som = (n-2) × 180° = (6-2) × 180° = 720°" },
+      { question: "If log₂(x) = 5, what is x?", questionAf: "As log₂(x) = 5, wat is x?", options: ["32", "25", "10", "16"], optionsAf: ["32", "25", "10", "16"], correctIndex: 0, explanation: "log₂(x) = 5 means 2⁵ = x = 32", explanationAf: "log₂(x) = 5 beteken 2⁵ = x = 32" },
+      { question: "What is the probability of rolling a 6 on a fair die?", questionAf: "Wat is die waarskynlikheid om 'n 6 te gooi met 'n regverdige dobbelsteen?", options: ["1/6", "1/3", "1/2", "1/4"], optionsAf: ["1/6", "1/3", "1/2", "1/4"], correctIndex: 0, explanation: "A fair die has 6 faces, each equally likely. P(6) = 1/6", explanationAf: "'n Regverdige dobbelsteen het 6 vlakke, elk ewe waarskynlik. P(6) = 1/6" },
+    ];
+  }
+  
+  if (subjectName.includes('physical science') || subjectName.includes('fisika')) {
+    return [
+      { question: "What is Newton's Second Law of Motion?", questionAf: "Wat is Newton se Tweede Wet van Beweging?", options: ["F = ma", "F = mv", "E = mc²", "p = mv"], optionsAf: ["F = ma", "F = mv", "E = mc²", "p = mv"], correctIndex: 0, explanation: "Newton's Second Law states that Force equals mass times acceleration (F = ma)", explanationAf: "Newton se Tweede Wet stel dat Krag gelyk is aan massa maal versnelling (F = ma)" },
+      { question: "What is the SI unit of electric current?", questionAf: "Wat is die SI-eenheid van elektriese stroom?", options: ["Ampere (A)", "Volt (V)", "Ohm (Ω)", "Watt (W)"], optionsAf: ["Ampere (A)", "Volt (V)", "Ohm (Ω)", "Watt (W)"], correctIndex: 0, explanation: "The SI unit of electric current is the Ampere (A)", explanationAf: "Die SI-eenheid van elektriese stroom is die Ampere (A)" },
+      { question: "Which type of reaction is: Zn + CuSO₄ → ZnSO₄ + Cu?", questionAf: "Watter tipe reaksie is: Zn + CuSO₄ → ZnSO₄ + Cu?", options: ["Displacement", "Decomposition", "Synthesis", "Combustion"], optionsAf: ["Verplasing", "Ontbinding", "Sintese", "Verbranding"], correctIndex: 0, explanation: "Zinc displaces copper from the copper sulfate solution — a single displacement reaction", explanationAf: "Sink verplaas koper uit die kopersulfaatoplossing — 'n enkelverplasingsreaksie" },
+    ];
+  }
+  
+  if (subjectName.includes('life science') || subjectName.includes('lewenswetenskap')) {
+    return [
+      { question: "What is the powerhouse of the cell?", questionAf: "Wat is die kragsentrale van die sel?", options: ["Mitochondria", "Nucleus", "Ribosome", "Golgi apparatus"], optionsAf: ["Mitochondria", "Kern", "Ribosoom", "Golgi-apparaat"], correctIndex: 0, explanation: "Mitochondria produce ATP through cellular respiration, earning them the title 'powerhouse of the cell'", explanationAf: "Mitochondria produseer ATP deur sellulêre respirasie" },
+      { question: "What process converts glucose to energy in cells?", questionAf: "Watter proses skakel glukose om na energie in selle?", options: ["Cellular respiration", "Photosynthesis", "Fermentation", "Osmosis"], optionsAf: ["Sellulêre respirasie", "Fotosintese", "Fermentasie", "Osmose"], correctIndex: 0, explanation: "Cellular respiration breaks down glucose to produce ATP energy", explanationAf: "Sellulêre respirasie breek glukose af om ATP-energie te produseer" },
+      { question: "Which blood type is the universal donor?", questionAf: "Watter bloedgroep is die universele skenker?", options: ["O negative", "AB positive", "A positive", "B negative"], optionsAf: ["O negatief", "AB positief", "A positief", "B negatief"], correctIndex: 0, explanation: "O negative blood can be given to any blood type as it lacks A, B antigens and Rh factor", explanationAf: "O negatiewe bloed kan aan enige bloedgroep gegee word" },
+    ];
+  }
+
+  if (subjectName.includes('accounting') || subjectName.includes('rekeningkunde')) {
+    return [
+      { question: "Which financial statement shows a company's revenues and expenses?", questionAf: "Watter finansiële staat toon 'n maatskappy se inkomste en uitgawes?", options: ["Income Statement", "Balance Sheet", "Cash Flow Statement", "Trial Balance"], optionsAf: ["Inkomstestaat", "Balansstaat", "Kontantvloeistaat", "Proefbalans"], correctIndex: 0, explanation: "The Income Statement (Statement of Comprehensive Income) reports revenues, expenses, and profit/loss", explanationAf: "Die Inkomstestaat rapporteer inkomste, uitgawes en wins/verlies" },
+      { question: "What is the accounting equation?", questionAf: "Wat is die rekeningkundige vergelyking?", options: ["Assets = Liabilities + Owner's Equity", "Assets = Revenue - Expenses", "Profit = Revenue - Cost", "Assets + Liabilities = Equity"], optionsAf: ["Bates = Laste + Eienaarsbelang", "Bates = Inkomste - Uitgawes", "Wins = Inkomste - Koste", "Bates + Laste = Ekwiteit"], correctIndex: 0, explanation: "The fundamental accounting equation: Assets = Liabilities + Owner's Equity", explanationAf: "Die fundamentele rekeningkundige vergelyking: Bates = Laste + Eienaarsbelang" },
+      { question: "What does GAAP stand for?", questionAf: "Waarvoor staan AARP?", options: ["Generally Accepted Accounting Principles", "General Audit & Accounting Procedures", "Global Accounting Analysis Protocol", "Gross Annual Accounting Plan"], optionsAf: ["Algemeen Aanvaarde Rekeningkundige Praktyk", "Algemene Oudit en Rekeningkundige Prosedures", "Globale Rekeningkundige Analise Protokol", "Bruto Jaarlikse Rekeningkundige Plan"], correctIndex: 0, explanation: "GAAP stands for Generally Accepted Accounting Principles", explanationAf: "AARP staan vir Algemeen Aanvaarde Rekeningkundige Praktyk" },
+    ];
+  }
+
+  if (subjectName.includes('business') || subjectName.includes('besigheid')) {
+    return [
+      { question: "What are the four functions of management?", questionAf: "Wat is die vier funksies van bestuur?", options: ["Planning, Organising, Leading, Controlling", "Marketing, Finance, HR, Operations", "Producing, Selling, Accounting, Managing", "Hiring, Training, Paying, Firing"], optionsAf: ["Beplanning, Organisering, Leiding, Beheer", "Bemarking, Finansies, MH, Bedrywighede", "Produseer, Verkoop, Rekeningkunde, Bestuur", "Aanstel, Opleiding, Betaal, Ontslaan"], correctIndex: 0, explanation: "The four functions of management are Planning, Organising, Leading, and Controlling (POLC)", explanationAf: "Die vier funksies van bestuur is Beplanning, Organisering, Leiding en Beheer (BOLB)" },
+      { question: "What is a SWOT analysis?", questionAf: "Wat is 'n SWOT-analise?", options: ["Strengths, Weaknesses, Opportunities, Threats", "Sales, Wages, Output, Targets", "Strategy, Workforce, Operations, Technology", "Systems, Work, Organisation, Training"], optionsAf: ["Sterkpunte, Swakpunte, Geleenthede, Bedreigings", "Verkope, Lone, Uitset, Teikens", "Strategie, Werksmag, Bedrywighede, Tegnologie", "Stelsels, Werk, Organisasie, Opleiding"], correctIndex: 0, explanation: "SWOT stands for Strengths, Weaknesses, Opportunities, and Threats — a strategic planning tool", explanationAf: "SWOT staan vir Sterkpunte, Swakpunte, Geleenthede en Bedreigings" },
+    ];
+  }
+
+  if (subjectName.includes('english') || subjectName.includes('engels')) {
+    return [
+      { question: "What is a metaphor?", questionAf: "Wat is 'n metafoor?", options: ["A direct comparison without 'like' or 'as'", "A comparison using 'like' or 'as'", "Giving human qualities to non-human things", "An exaggeration for effect"], optionsAf: ["'n Direkte vergelyking sonder 'soos'", "'n Vergelyking met 'soos'", "Menslike eienskappe gee aan nie-menslike dinge", "'n Oordrywing vir effek"], correctIndex: 0, explanation: "A metaphor directly compares two unlike things without using 'like' or 'as'", explanationAf: "'n Metafoor vergelyk twee ongelyke dinge direk sonder om 'soos' te gebruik" },
+      { question: "What is the correct form: 'He ___ to school every day'?", questionAf: "Wat is die korrekte vorm: 'Hy ___ elke dag skool toe'?", options: ["goes", "go", "going", "gone"], optionsAf: ["gaan", "gegaan", "sal gaan", "gaande"], correctIndex: 0, explanation: "Third person singular present tense requires 'goes'", explanationAf: "Derde persoon enkelvoud teenwoordige tyd vereis 'gaan'" },
+    ];
+  }
+
+  if (subjectName.includes('geography') || subjectName.includes('geografie')) {
+    return [
+      { question: "What causes tectonic plates to move?", questionAf: "Wat veroorsaak dat tektoniese plate beweeg?", options: ["Convection currents in the mantle", "Gravity from the moon", "Earth's rotation", "Solar energy"], optionsAf: ["Konveksiestrome in die mantel", "Swaartekrag van die maan", "Die Aarde se rotasie", "Sonenergie"], correctIndex: 0, explanation: "Convection currents in the Earth's mantle drive the movement of tectonic plates", explanationAf: "Konveksiestrome in die Aarde se mantel dryf die beweging van tektoniese plate" },
+      { question: "What is the difference between weather and climate?", questionAf: "Wat is die verskil tussen weer en klimaat?", options: ["Weather is short-term; climate is long-term average", "They are the same thing", "Climate is daily; weather is yearly", "Weather is global; climate is local"], optionsAf: ["Weer is korttermyn; klimaat is langtermyn gemiddeld", "Hulle is dieselfde ding", "Klimaat is daagliks; weer is jaarliks", "Weer is globaal; klimaat is plaaslik"], correctIndex: 0, explanation: "Weather refers to short-term atmospheric conditions; climate is the average weather over 30+ years", explanationAf: "Weer verwys na korttermyn atmosferiese toestande; klimaat is die gemiddelde weer oor 30+ jaar" },
+    ];
+  }
+
+  if (subjectName.includes('history') || subjectName.includes('geskiedenis')) {
+    return [
+      { question: "In what year did South Africa become a democracy?", questionAf: "In watter jaar het Suid-Afrika 'n demokrasie geword?", options: ["1994", "1990", "1996", "1961"], optionsAf: ["1994", "1990", "1996", "1961"], correctIndex: 0, explanation: "South Africa held its first democratic elections on 27 April 1994", explanationAf: "Suid-Afrika het sy eerste demokratiese verkiesing op 27 April 1994 gehou" },
+      { question: "What was apartheid?", questionAf: "Wat was apartheid?", options: ["A system of racial segregation in South Africa", "A trade agreement", "An economic policy", "A military alliance"], optionsAf: ["'n Stelsel van rasseskeiding in Suid-Afrika", "'n Handelsooreenkoms", "'n Ekonomiese beleid", "'n Militêre alliansie"], correctIndex: 0, explanation: "Apartheid was a system of institutionalised racial segregation in South Africa from 1948 to 1994", explanationAf: "Apartheid was 'n stelsel van geïnstitusionaliseerde rasseskeiding in Suid-Afrika van 1948 tot 1994" },
+    ];
+  }
+
+  return [
+    { question: `Which of these is a key concept in ${subject.name}?`, questionAf: `Watter een van hierdie is 'n sleutelbegrip in ${subject.nameAfrikaans}?`, options: ["Critical thinking and analysis", "Random guessing", "Ignoring the textbook", "Skipping class"], optionsAf: ["Kritiese denke en analise", "Lukraak raai", "Ignoreer die handboek", "Klas afwesig wees"], correctIndex: 0, explanation: "Critical thinking and analysis are fundamental to academic success in any subject", explanationAf: "Kritiese denke en analise is fundamenteel tot akademiese sukses in enige vak" },
+    { question: `What is the best study strategy for ${subject.name}?`, questionAf: `Wat is die beste studiestrategia vir ${subject.nameAfrikaans}?`, options: ["Active recall and spaced repetition", "Reading once the night before", "Copying notes without understanding", "Only studying during exams"], optionsAf: ["Aktiewe herroeping en gespasieerde herhaling", "Lees een keer die aand voor", "Afskryf van notas sonder begrip", "Slegs studeer tydens eksamens"], correctIndex: 0, explanation: "Research shows active recall and spaced repetition are the most effective study methods", explanationAf: "Navorsing toon aktiewe herroeping en gespasieerde herhaling is die mees effektiewe studiemetodes" },
+  ];
+}
+
+// Helper function to generate school code
+function generateSchoolCode(schoolName: string): string {
+  const prefix = schoolName
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase())
+    .join('')
+    .slice(0, 4);
+  const randomSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
+  return `${prefix}${randomSuffix}`;
+}

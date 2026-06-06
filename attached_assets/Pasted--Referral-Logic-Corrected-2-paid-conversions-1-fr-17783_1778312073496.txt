@@ -1,0 +1,96 @@
+________________________________________
+🔗 Referral Logic (Corrected)
+•	2 paid conversions → 1 free month 
+•	Not based on signups 
+________________________________________
+🎨 7. UI/UX Direction (STRICT RULE)
+🚫 Do NOT:
+•	Redesign 
+•	Change look & feel 
+✅ Do:
+•	Align UI across all screens 
+Fix:
+•	Broken grid layout 
+•	Inconsistent spacing 
+•	Random neon elements 
+•	Floating links 
+________________________________________
+🧩 Key Fixes
+•	Remove: 
+o	Random neon line 
+o	“Official Sources” from classroom 
+•	Standardise: 
+o	Buttons 
+o	Cards 
+o	Spacing 
+•	Fix: 
+o	Study Plan layout (must be primary) 
+________________________________________
+📩 8. Communication & Branding Issues
+Email Issues:
+•	Coming from Replit instead of BrainTrack 
+Fix:
+•	Brand all emails as BrainTrack 
+•	Personalise: 
+o	“Dear Learner [Name]” 
+o	“Dear Parent [Name]” 
+________________________________________
+Onboarding Flow Issues:
+•	Missing: 
+o	Learner vs Parent entry 
+o	Parent consent flow 
+________________________________________
+👨‍👩‍👧 9. Parent Portal Issue
+•	Not visible in production 
+Fix:
+•	Restore access 
+•	Ensure: 
+o	Progress tracking 
+o	Subscription visibility 
+________________________________________
+🔊 10. Missing Features (Required for Value)
+•	Audio learning (per topic) 
+•	Learner voice recording 
+•	Rizz adaptive tutor 
+•	Avatars + themes (XP-based) 
+•	Holographic mastery celebration 
+________________________________________
+🎯 11. Expected Final Product State
+Learner Experience:
+👉 Login → Classroom
+👉 Subject → Topic
+Sees immediately:
+•	Notes 
+•	Audio 
+•	Quiz 
+•	Exam questions 
+✔ No placeholders
+✔ No delays
+✔ Fully CAPS-aligned
+________________________________________
+🔥 12. Final Verdict
+This is NOT a UI problem.
+It is a combination of:
+•	❗ Pipeline failure 
+•	❗ Data inconsistency 
+•	❗ Product structure misalignment 
+________________________________________
+🚀 13. Priority Order (Execution)
+1.	Fix ingestion + seeding 
+2.	Fix database sync 
+3.	Secure admin access 
+4.	Fix payment + subscription 
+5.	Remove AI generation from learner flow 
+6.	Implement structured learning system 
+7.	Fix Study Plan functionality 
+________________________________________
+✅ 14. Final Instruction to Replit Team
+•	Development is complete 
+•	This is now a stabilisation and alignment phase 
+👉 Do NOT break any existing working functionality
+👉 Do NOT change the current look & feel
+Focus only on:
+•	Fixing production issues 
+•	Completing missing logic 
+•	Aligning the system end-to-end 
+________________________________________

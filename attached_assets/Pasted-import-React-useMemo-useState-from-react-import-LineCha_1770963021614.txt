@@ -1,0 +1,662 @@
+import React, { useMemo, useState } from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  ResponsiveContainer,
+} from "recharts";
+
+/**
+ * BrainTrack™ powered by KTH Tech
+ * Subject Dashboard (Learner) + Parent Dashboard + Gamification
+ * 
+ * Notes:
+ * - This is a layout + logic scaffold you can wire to your API.
+ * - Uses Tailwind utility classes.
+ * - Uses recharts for the trend graph.
+ */
+
+type MasteryStatus = "red" | "amber" | "green";
+
+type TrendPoint = {
+  label: string; // e.g., "Exam 1"
+  score: number; // percent
+};
+
+type Topic = {
+  id: string;
+  name: string;
+  strand: "Environments" | "Ventures" | "Roles" | "Operations";
+  mastery: number; // 0..100
+  probability: number; // 0..1 (trend weight)
+};
+
+type SubjectSnapshot = {
+  subjectId: string;
+  subjectName: string;
+  grade: number;
+  overallMastery: number; // 0..100
+  lastExamScore: number; // 0..100
+  avgMcq: number;
+  avgCases: number;
+  avgEssays: number;
+  integrityScore: number; // 0..100
+  strands: Record<"Environments" | "Ventures" | "Roles" | "Operations", number>; // 0..100
+  topics: Topic[];
+  trend: TrendPoint[];
+  timeThisWeekMins: number;
+};
+
+type Badge = {
+  id: string;
+  title: string;
+  description: string;
+  earned: boolean;
+  earnedAt?: string;
+  icon: string; // emoji for now
+};
+
+type WeeklyPlanItem = {
+  day: "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | "Sun";
+  label: string;
+  durationMins: number;
+  marks?: number;
+  completed: boolean;
+};
+
+function statusFromMastery(m: number): MasteryStatus {
+  if (m < 60) return "red";
+  if (m < 85) return "amber";
+  return "green";
+}
+
+function statusPill(status: MasteryStatus) {
+  switch (status) {
+    case "green":
+      return "bg-emerald-500/15 text-emerald-300 border-emerald-500/30";
+    case "amber":
+      return "bg-amber-500/15 text-amber-300 border-amber-500/30";
+    case "red":
+      return "bg-rose-500/15 text-rose-300 border-rose-500/30";
+  }
+}
+
+function clampPct(n: number) {
+  return Math.max(0, Math.min(100, Math.round(n)));
+}
+
+function fmtPct(n: number) {
+  return `${clampPct(n)}%`;
+}
+
+function readinessScore(overall: number, highProbAvg: number, recentTrendAvg: number) {
+  // Exam readiness composite
+  return clampPct(overall * 0.5 + highProbAvg * 0.3 + recentTrendAvg * 0.2);
+}
+
+function calcHighProbabilityAvg(topics: Topic[], threshold = 0.85) {
+  const hp = topics.filter((t) => t.probability >= threshold);
+  if (!hp.length) return 0;
+  return hp.reduce((a, t) => a + t.mastery, 0) / hp.length;
+}
+
+function calcRecentTrendAvg(trend: TrendPoint[], lastN = 3) {
+  const slice = trend.slice(-lastN);
+  if (!slice.length) return 0;
+  return slice.reduce((a, p) => a + p.score, 0) / slice.length;
+}
+
+function riskLabel(integrityScore: number) {
+  if (integrityScore >= 95) return { label: "Clean", cls: "text-emerald-300" };
+  if (integrityScore >= 80) return { label: "Monitor", cls: "text-amber-300" };
+  return { label: "High Risk", cls: "text-rose-300" };
+}
+
+const demo: SubjectSnapshot = {
+  subjectId: "bst",
+  subjectName: "Business Studies",
+  grade: 12,
+  overallMastery: 74,
+  lastExamScore: 68,
+  avgMcq: 82,
+  avgCases: 70,
+  avgEssays: 61,
+  integrityScore: 100,
+  timeThisWeekMins: 145,
+  strands: {
+    Environments: 81,
+    Ventures: 69,
+    Roles: 77,
+    Operations: 58,
+  },
+  topics: [
+    { id: "leg", name: "Legislation", strand: "Environments", mastery: 83, probability: 0.93 },
+    { id: "lead", name: "Leadership & Management", strand: "Roles", mastery: 79, probability: 0.91 },
+    { id: "env", name: "Business Environments", strand: "Environments", mastery: 81, probability: 0.90 },
+    { id: "qual", name: "Quality Management", strand: "Operations", mastery: 54, probability: 0.89 },
+    { id: "strat", name: "Business Strategies", strand: "Environments", mastery: 72, probability: 0.78 },
+    { id: "hr", name: "HR & SETAs", strand: "Operations", mastery: 62, probability: 0.75 },
+    { id: "eth", name: "Ethics/CSR/Governance", strand: "Roles", mastery: 66, probability: 0.55 },
+    { id: "fin", name: "Finance & Insurance", strand: "Ventures", mastery: 59, probability: 0.52 },
+  ],
+  trend: [
+    { label: "Exam 1", score: 61 },
+    { label: "Exam 2", score: 64 },
+    { label: "Exam 3", score: 68 },
+    { label: "Exam 4", score: 71 },
+    { label: "Exam 5", score: 74 },
+  ],
+};
+
+const demoBadges: Badge[] = [
+  {
+    id: "streak_7",
+    title: "7-Day Streak",
+    description: "Completed at least one drill for 7 consecutive days.",
+    earned: true,
+    earnedAt: "2026-02-10",
+    icon: "🔥",
+  },
+  {
+    id: "mcq_90",
+    title: "MCQ Sniper",
+    description: "Scored 90%+ on an MCQ sprint.",
+    earned: false,
+    icon: "🎯",
+  },
+  {
+    id: "case_closer",
+    title: "Case Closer",
+    description: "Improved case-study score by 10% over two weeks.",
+    earned: true,
+    earnedAt: "2026-02-05",
+    icon: "🧩",
+  },
+  {
+    id: "essay_builder",
+    title: "Essay Builder",
+    description: "Achieved 70%+ on essay structure rubric.",
+    earned: false,
+    icon: "📝",
+  },
+];
+
+const demoPlan: WeeklyPlanItem[] = [
+  { day: "Mon", label: "20 MCQ Sprint (High Probability)", durationMins: 10, completed: true },
+  { day: "Wed", label: "25-Mark Case Burst (Quality)", durationMins: 20, marks: 25, completed: false },
+  { day: "Fri", label: "Timed Mixed Drill (40 Marks)", durationMins: 25, marks: 40, completed: false },
+  { day: "Sun", label: "Mini Mock (80 Marks)", durationMins: 55, marks: 80, completed: false },
+];
+
+function Tile({ label, value, sub }: { label: string; value: string; sub?: string }) {
+  return (
+    <div className="rounded-2xl border border-slate-700/60 bg-slate-900/40 p-4 shadow-sm">
+      <div className="text-xs text-slate-300/80">{label}</div>
+      <div className="mt-1 text-2xl font-semibold text-slate-100">{value}</div>
+      {sub ? <div className="mt-1 text-xs text-slate-400">{sub}</div> : null}
+    </div>
+  );
+}
+
+function ProgressBar({ label, value }: { label: string; value: number }) {
+  const status = statusFromMastery(value);
+  const cls =
+    status === "green"
+      ? "bg-emerald-400"
+      : status === "amber"
+      ? "bg-amber-400"
+      : "bg-rose-400";
+  return (
+    <div className="rounded-2xl border border-slate-700/60 bg-slate-900/40 p-4">
+      <div className="flex items-center justify-between">
+        <div className="text-sm font-medium text-slate-100">{label}</div>
+        <span className={`rounded-full border px-2 py-1 text-xs ${statusPill(status)}`}>{fmtPct(value)}</span>
+      </div>
+      <div className="mt-3 h-2 w-full rounded-full bg-slate-800">
+        <div className={`h-2 rounded-full ${cls}`} style={{ width: `${clampPct(value)}%` }} />
+      </div>
+    </div>
+  );
+}
+
+function HeatRow({ name, mastery, probability }: { name: string; mastery: number; probability: number }) {
+  const status = statusFromMastery(mastery);
+  const probBand = probability >= 0.85 ? "High" : probability >= 0.7 ? "Med" : "Low";
+  const risk = probability >= 0.85 && mastery < 70;
+  return (
+    <div className="grid grid-cols-12 items-center gap-2 rounded-xl border border-slate-700/50 bg-slate-950/40 p-3">
+      <div className="col-span-6">
+        <div className="text-sm font-medium text-slate-100">{name}</div>
+        <div className="text-xs text-slate-400">Probability band: {probBand}</div>
+      </div>
+      <div className="col-span-4">
+        <div className="h-2 w-full rounded-full bg-slate-800">
+          <div
+            className={
+              status === "green"
+                ? "h-2 rounded-full bg-emerald-400"
+                : status === "amber"
+                ? "h-2 rounded-full bg-amber-400"
+                : "h-2 rounded-full bg-rose-400"
+            }
+            style={{ width: `${clampPct(mastery)}%` }}
+          />
+        </div>
+      </div>
+      <div className="col-span-2 flex justify-end">
+        <span className={`rounded-full border px-2 py-1 text-xs ${statusPill(status)}`}>{fmtPct(mastery)}</span>
+        {risk ? <span className="ml-2 rounded-full bg-rose-500/20 px-2 py-1 text-xs text-rose-200">High Risk</span> : null}
+      </div>
+    </div>
+  );
+}
+
+function BadgeCard({ b }: { b: Badge }) {
+  return (
+    <div className={`rounded-2xl border p-4 ${b.earned ? "border-emerald-500/30 bg-emerald-500/10" : "border-slate-700/60 bg-slate-900/40"}`}>
+      <div className="flex items-center gap-3">
+        <div className="text-2xl">{b.icon}</div>
+        <div>
+          <div className="text-sm font-semibold text-slate-100">{b.title}</div>
+          <div className="text-xs text-slate-400">{b.description}</div>
+          {b.earned ? <div className="mt-1 text-xs text-emerald-300">Earned: {b.earnedAt}</div> : <div className="mt-1 text-xs text-slate-400">Not earned yet</div>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PlanRow({ item }: { item: WeeklyPlanItem }) {
+  return (
+    <div className="flex items-center justify-between rounded-xl border border-slate-700/60 bg-slate-950/40 px-3 py-2">
+      <div>
+        <div className="text-sm font-medium text-slate-100">
+          {item.day} — {item.label}
+        </div>
+        <div className="text-xs text-slate-400">
+          {item.durationMins} mins{item.marks ? ` • ${item.marks} marks` : ""}
+        </div>
+      </div>
+      <div className="flex items-center gap-2">
+        {item.completed ? (
+          <span className="rounded-full bg-emerald-500/15 px-2 py-1 text-xs text-emerald-300">Completed</span>
+        ) : (
+          <span className="rounded-full bg-amber-500/15 px-2 py-1 text-xs text-amber-300">Pending</span>
+        )}
+        <button className="rounded-xl border border-slate-700/60 bg-slate-900/60 px-3 py-2 text-xs text-slate-100 hover:bg-slate-800">
+          {item.completed ? "Review" : "Start"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function TrendChart({ data }: { data: TrendPoint[] }) {
+  return (
+    <div className="h-52 w-full">
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={data} margin={{ top: 10, right: 20, left: -10, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="label" />
+          <YAxis domain={[0, 100]} />
+          <Tooltip />
+          <Line type="monotone" dataKey="score" strokeWidth={2} dot />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+function RecommendationPanel({ snapshot }: { snapshot: SubjectSnapshot }) {
+  const highProb = snapshot.topics
+    .filter((t) => t.probability >= 0.85)
+    .sort((a, b) => b.probability - a.probability);
+
+  const weakestHighProb = highProb
+    .map((t) => ({ ...t }))
+    .sort((a, b) => a.mastery - b.mastery)[0];
+
+  const weakestOverall = snapshot.topics
+    .map((t) => ({ ...t }))
+    .sort((a, b) => a.mastery - b.mastery)[0];
+
+  const essayLow = snapshot.avgEssays < 65;
+  const casesLow = snapshot.avgCases < 65;
+
+  const recs: { title: string; desc: string; cta: string }[] = [];
+
+  if (weakestHighProb && weakestHighProb.mastery < 70) {
+    recs.push({
+      title: `High Priority Fix: ${weakestHighProb.name}`,
+      desc: `This topic is high-probability across DBE patterns. Your mastery is ${fmtPct(weakestHighProb.mastery)}.`,
+      cta: "Run 25-mark Case Burst",
+    });
+  }
+  if (essayLow) {
+    recs.push({
+      title: "Essay Upgrade",
+      desc: `Your essay average is ${fmtPct(snapshot.avgEssays)}. Improve structure and insight scoring.`,
+      cta: "Start Essay Planner",
+    });
+  }
+  if (casesLow) {
+    recs.push({
+      title: "Application Boost",
+      desc: `Case study average is ${fmtPct(snapshot.avgCases)}. Shift into timed application drills.`,
+      cta: "Start Timed Case Drill",
+    });
+  }
+  if (!recs.length && weakestOverall) {
+    recs.push({
+      title: `Next Best Move: ${weakestOverall.name}`,
+      desc: `Your lowest topic mastery is ${fmtPct(weakestOverall.mastery)}. Fixing it lifts your overall readiness fast.`,
+      cta: "Start Micro Drill",
+    });
+  }
+
+  return (
+    <div className="rounded-2xl border border-slate-700/60 bg-slate-900/40 p-4">
+      <div className="flex items-center justify-between">
+        <div className="text-sm font-semibold text-slate-100">Recommended Next Actions</div>
+        <span className="text-xs text-slate-400">Adaptive engine</span>
+      </div>
+      <div className="mt-3 grid gap-3">
+        {recs.map((r) => (
+          <div key={r.title} className="rounded-xl border border-slate-700/60 bg-slate-950/40 p-3">
+            <div className="text-sm font-semibold text-slate-100">{r.title}</div>
+            <div className="mt-1 text-xs text-slate-400">{r.desc}</div>
+            <div className="mt-2">
+              <button className="rounded-xl bg-indigo-600 px-3 py-2 text-xs font-semibold text-white hover:bg-indigo-500">
+                {r.cta}
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function EndOnlyReferences() {
+  return (
+    <div className="rounded-2xl border border-slate-700/60 bg-slate-950/40 p-4">
+      <div className="text-sm font-semibold text-slate-100">References (end-only)</div>
+      <div className="mt-2 text-xs text-slate-400">
+        This subject dashboard is CAPS-aligned and informed by analysis of DBE NSC examination patterns (10-year window). Official sources include:
+        <div className="mt-2 space-y-1">
+          <div className="break-all">https://www.education.gov.za/Curriculum/CAPS.aspx</div>
+          <div className="break-all">https://www.education.gov.za/Examinations/PastExamPapers.aspx</div>
+          <div className="break-all">https://www.education.gov.za/2024NSCNovemberpastpapers.aspx</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LearnerSubjectDashboard({ snapshot, badges, plan }: { snapshot: SubjectSnapshot; badges: Badge[]; plan: WeeklyPlanItem[] }) {
+  const overallStatus = statusFromMastery(snapshot.overallMastery);
+
+  const highProbAvg = useMemo(() => calcHighProbabilityAvg(snapshot.topics), [snapshot.topics]);
+  const recentTrendAvg = useMemo(() => calcRecentTrendAvg(snapshot.trend), [snapshot.trend]);
+  const readiness = useMemo(
+    () => readinessScore(snapshot.overallMastery, highProbAvg, recentTrendAvg),
+    [snapshot.overallMastery, highProbAvg, recentTrendAvg]
+  );
+
+  const readinessStatus = statusFromMastery(readiness);
+  const integrity = riskLabel(snapshot.integrityScore);
+
+  const topProb = useMemo(
+    () =>
+      snapshot.topics
+        .slice()
+        .sort((a, b) => b.probability - a.probability)
+        .slice(0, 4),
+    [snapshot.topics]
+  );
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-100">
+      <div className="mx-auto max-w-6xl p-4 md:p-6">
+        {/* Header */}
+        <div className="flex flex-col gap-3 rounded-3xl border border-slate-700/60 bg-slate-900/40 p-5 shadow-sm md:flex-row md:items-center md:justify-between">
+          <div>
+            <div className="text-xs text-slate-400">BrainTrack™ powered by KTH Tech</div>
+            <div className="mt-1 text-2xl font-semibold">{snapshot.subjectName} — Grade {snapshot.grade}</div>
+            <div className="mt-1 text-xs text-slate-400">CAPS aligned • Trend-informed • Adaptive mode</div>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className={`rounded-full border px-3 py-2 text-sm ${statusPill(overallStatus)}`}>
+              Overall Mastery: {fmtPct(snapshot.overallMastery)}
+            </span>
+            <button className="rounded-2xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">
+              Start Exam Mode
+            </button>
+          </div>
+        </div>
+
+        {/* KPI Tiles */}
+        <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-3 lg:grid-cols-6">
+          <Tile label="Overall Mastery" value={fmtPct(snapshot.overallMastery)} />
+          <Tile label="Last Exam Score" value={fmtPct(snapshot.lastExamScore)} />
+          <Tile label="Average MCQ" value={fmtPct(snapshot.avgMcq)} />
+          <Tile label="Case Studies" value={fmtPct(snapshot.avgCases)} />
+          <Tile label="Essays" value={fmtPct(snapshot.avgEssays)} />
+          <Tile label="Integrity" value={`${fmtPct(snapshot.integrityScore)}`} sub={integrity.label} />
+        </div>
+
+        <div className="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-3">
+          {/* Left column */}
+          <div className="lg:col-span-2 space-y-4">
+            {/* Strands */}
+            <div className="rounded-3xl border border-slate-700/60 bg-slate-900/40 p-5">
+              <div className="flex items-center justify-between">
+                <div className="text-sm font-semibold">CAPS Strand Mastery</div>
+                <div className="text-xs text-slate-400">Click a strand in production to drill down</div>
+              </div>
+              <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
+                <ProgressBar label="Business Environments" value={snapshot.strands.Environments} />
+                <ProgressBar label="Business Ventures" value={snapshot.strands.Ventures} />
+                <ProgressBar label="Business Roles" value={snapshot.strands.Roles} />
+                <ProgressBar label="Business Operations" value={snapshot.strands.Operations} />
+              </div>
+            </div>
+
+            {/* Topic heat rows */}
+            <div className="rounded-3xl border border-slate-700/60 bg-slate-900/40 p-5">
+              <div className="flex items-center justify-between">
+                <div className="text-sm font-semibold">Topic Mastery (weighted by probability)</div>
+                <span className={`rounded-full border px-2 py-1 text-xs ${statusPill(readinessStatus)}`}>
+                  Exam Readiness: {fmtPct(readiness)}
+                </span>
+              </div>
+              <div className="mt-3 space-y-2">
+                {snapshot.topics
+                  .slice()
+                  .sort((a, b) => (b.probability - a.probability) || (a.mastery - b.mastery))
+                  .map((t) => (
+                    <HeatRow key={t.id} name={t.name} mastery={t.mastery} probability={t.probability} />
+                  ))}
+              </div>
+            </div>
+
+            {/* Trend */}
+            <div className="rounded-3xl border border-slate-700/60 bg-slate-900/40 p-5">
+              <div className="flex items-center justify-between">
+                <div className="text-sm font-semibold">Performance Trend</div>
+                <div className="text-xs text-slate-400">Last 5 full exams</div>
+              </div>
+              <div className="mt-3">
+                <TrendChart data={snapshot.trend} />
+              </div>
+            </div>
+          </div>
+
+          {/* Right column */}
+          <div className="space-y-4">
+            {/* Trend priority */}
+            <div className="rounded-3xl border border-slate-700/60 bg-slate-900/40 p-5">
+              <div className="text-sm font-semibold">High-Probability Focus</div>
+              <div className="mt-2 text-xs text-slate-400">Based on 10-year DBE patterns</div>
+              <div className="mt-3 space-y-2">
+                {topProb.map((t) => (
+                  <div key={t.id} className="flex items-center justify-between rounded-xl border border-slate-700/60 bg-slate-950/40 px-3 py-2">
+                    <div>
+                      <div className="text-sm font-medium">{t.name}</div>
+                      <div className="text-xs text-slate-400">Probability: {Math.round(t.probability * 100)}%</div>
+                    </div>
+                    <span className={`rounded-full border px-2 py-1 text-xs ${statusPill(statusFromMastery(t.mastery))}`}>{fmtPct(t.mastery)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <RecommendationPanel snapshot={snapshot} />
+
+            {/* Weekly plan */}
+            <div className="rounded-3xl border border-slate-700/60 bg-slate-900/40 p-5">
+              <div className="flex items-center justify-between">
+                <div className="text-sm font-semibold">Weekly Exam Plan</div>
+                <div className="text-xs text-slate-400">This week: {snapshot.timeThisWeekMins} mins</div>
+              </div>
+              <div className="mt-3 space-y-2">
+                {plan.map((p) => (
+                  <PlanRow key={`${p.day}-${p.label}`} item={p} />
+                ))}
+              </div>
+            </div>
+
+            {/* Gamification */}
+            <div className="rounded-3xl border border-slate-700/60 bg-slate-900/40 p-5">
+              <div className="flex items-center justify-between">
+                <div className="text-sm font-semibold">Badges & Mastery Levels</div>
+                <span className="text-xs text-slate-400">Motivation layer</span>
+              </div>
+              <div className="mt-3 grid gap-3">
+                {badges.map((b) => (
+                  <BadgeCard key={b.id} b={b} />
+                ))}
+              </div>
+            </div>
+
+            <EndOnlyReferences />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ParentSubjectDashboard({ snapshot }: { snapshot: SubjectSnapshot }) {
+  // Parent view: high-level only, no question-level detail.
+  const overallStatus = statusFromMastery(snapshot.overallMastery);
+  const highProbAvg = calcHighProbabilityAvg(snapshot.topics);
+  const recentTrendAvg = calcRecentTrendAvg(snapshot.trend);
+  const readiness = readinessScore(snapshot.overallMastery, highProbAvg, recentTrendAvg);
+
+  const topRisks = snapshot.topics
+    .filter((t) => t.probability >= 0.85)
+    .sort((a, b) => a.mastery - b.mastery)
+    .slice(0, 3);
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-100">
+      <div className="mx-auto max-w-5xl p-4 md:p-6">
+        <div className="rounded-3xl border border-slate-700/60 bg-slate-900/40 p-5">
+          <div className="text-xs text-slate-400">BrainTrack™ powered by KTH Tech — Parent View</div>
+          <div className="mt-1 text-2xl font-semibold">{snapshot.subjectName} — Grade {snapshot.grade}</div>
+          <div className="mt-1 text-xs text-slate-400">High-level progress only • No question-level details</div>
+
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <span className={`rounded-full border px-3 py-2 text-sm ${statusPill(overallStatus)}`}>Overall: {fmtPct(snapshot.overallMastery)}</span>
+            <span className={`rounded-full border px-3 py-2 text-sm ${statusPill(statusFromMastery(readiness))}`}>Exam readiness: {fmtPct(readiness)}</span>
+            <span className="rounded-full border border-slate-700/60 bg-slate-950/40 px-3 py-2 text-sm text-slate-100">This week: {snapshot.timeThisWeekMins} mins</span>
+          </div>
+        </div>
+
+        <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="rounded-3xl border border-slate-700/60 bg-slate-900/40 p-5">
+            <div className="text-sm font-semibold">Strand Progress</div>
+            <div className="mt-3 space-y-3">
+              <ProgressBar label="Business Environments" value={snapshot.strands.Environments} />
+              <ProgressBar label="Business Ventures" value={snapshot.strands.Ventures} />
+              <ProgressBar label="Business Roles" value={snapshot.strands.Roles} />
+              <ProgressBar label="Business Operations" value={snapshot.strands.Operations} />
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-slate-700/60 bg-slate-900/40 p-5">
+            <div className="text-sm font-semibold">Top Priority Support Areas</div>
+            <div className="mt-2 text-xs text-slate-400">High-probability topics where mastery is currently lowest</div>
+            <div className="mt-3 space-y-2">
+              {topRisks.map((t) => (
+                <div key={t.id} className="rounded-xl border border-slate-700/60 bg-slate-950/40 p-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-sm font-medium">{t.name}</div>
+                      <div className="text-xs text-slate-400">Probability: {Math.round(t.probability * 100)}%</div>
+                    </div>
+                    <span className={`rounded-full border px-2 py-1 text-xs ${statusPill(statusFromMastery(t.mastery))}`}>{fmtPct(t.mastery)}</span>
+                  </div>
+                  <div className="mt-2 text-xs text-slate-400">Suggested: 2 short drills + 1 case practice this week.</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-slate-700/60 bg-slate-900/40 p-5 md:col-span-2">
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-semibold">Progress Trend</div>
+              <div className="text-xs text-slate-400">Last 5 full exams</div>
+            </div>
+            <div className="mt-3">
+              <TrendChart data={snapshot.trend} />
+            </div>
+            <div className="mt-3 text-xs text-slate-400">
+              Note: Performance improves fastest when high-probability topics reach 75%+ mastery and weekly exam practice stays consistent.
+            </div>
+          </div>
+
+          <EndOnlyReferences />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function SubjectDashboardDemo() {
+  const [mode, setMode] = useState<"learner" | "parent">("learner");
+
+  return (
+    <div>
+      {/* Top mode toggle (dev/demo) */}
+      <div className="fixed bottom-4 right-4 z-50 flex items-center gap-2 rounded-2xl border border-slate-700/60 bg-slate-900/80 p-2 shadow-lg backdrop-blur">
+        <button
+          className={`rounded-xl px-3 py-2 text-xs font-semibold ${
+            mode === "learner" ? "bg-indigo-600 text-white" : "bg-slate-800 text-slate-200"
+          }`}
+          onClick={() => setMode("learner")}
+        >
+          Learner
+        </button>
+        <button
+          className={`rounded-xl px-3 py-2 text-xs font-semibold ${
+            mode === "parent" ? "bg-indigo-600 text-white" : "bg-slate-800 text-slate-200"
+          }`}
+          onClick={() => setMode("parent")}
+        >
+          Parent
+        </button>
+      </div>
+
+      {mode === "learner" ? (
+        <LearnerSubjectDashboard snapshot={demo} badges={demoBadges} plan={demoPlan} />
+      ) : (
+        <ParentSubjectDashboard snapshot={demo} />
+      )}
+    </div>
+  );
+}

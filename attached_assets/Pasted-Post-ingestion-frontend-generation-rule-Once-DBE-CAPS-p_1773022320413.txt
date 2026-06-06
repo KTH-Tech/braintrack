@@ -1,0 +1,352 @@
+Post-ingestion frontend generation rule
+
+Once DBE/CAPS papers and memoranda are ingested successfully, the frontend must automatically generate the correct learner, parent, school, partner, and admin experiences from the ingested dataset.
+
+The frontend must not treat ingestion as a file dump.
+It must convert ingestion output into structured, usable product logic.
+
+Ingestion status model
+
+For each subject and year from 2015 to 2025, the frontend must recognise and display one of these states:
+- not started
+- queued
+- processing
+- partial
+- ready
+- failed
+
+A subject is only fully ready when both paper and memo ingestion are complete and the dataset is mapped correctly for learner use.
+
+Frontend readiness rules
+
+For each subject, generate frontend readiness using these checks:
+- paper exists
+- memo exists
+- ingestion completed
+- topic mapping completed
+- question mapping completed
+- CAPS term mapping completed where available
+- year coverage status from 2015 to 2025
+
+If a subject is incomplete, the frontend must show it as partial and prevent incorrect learner experiences from rendering.
+
+Subject availability logic
+
+Once a subject is fully ready, the frontend must automatically generate:
+- subject card in learner subject library
+- year coverage metadata
+- topic map
+- baseline eligibility
+- daily quiz eligibility
+- mixed quiz eligibility
+- exam mode eligibility
+- crunch time eligibility
+- notes generation eligibility
+- readiness tracking eligibility
+
+If the subject is not ready, hide or disable advanced actions safely.
+
+Admin frontend logic after ingestion
+
+For system admin, generate a subject ingestion control view showing:
+- subject name
+- year coverage 2015 to 2025
+- paper status per year
+- memo status per year
+- ingestion status per year
+- topic mapping status
+- question mapping status
+- completeness status
+- failed ingestion alerts
+- retry action
+- last processed timestamp
+
+Generate an admin matrix per subject:
+- rows = years 2015 to 2025
+- columns = paper, memo, ingestion, mapping, status
+
+This must become the main paper completeness control surface.
+
+Learner frontend logic after ingestion
+
+Once a learner selects subjects, the frontend must use the ingested dataset to generate:
+- onboarding baseline subject availability
+- first-question session readiness
+- daily subject quizzes
+- mixed quiz composition
+- exam mode subject options
+- crunch time subject options
+- topic-level study guidance
+- subject performance scaffolding
+- focus-next recommendations
+
+The learner must never see raw ingestion outputs.
+The learner must only see structured study experiences.
+
+Onboarding baseline generation logic
+
+If a learner selects a subject that is marked ready, the frontend must generate a baseline test flow for that subject based on:
+- term 1 CAPS topic mapping
+- learner grade
+- learner current mark
+- ingested question bank
+- mapped topic relevance
+
+If multiple subjects are selected, generate baseline availability per selected subject.
+
+The baseline UI must show:
+- subject
+- baseline ready state
+- estimated number of questions
+- start action
+
+First-question rendering logic
+
+After learner onboarding is completed and current marks and goals are captured, the frontend must automatically render the learner’s first recommended question set using:
+- selected subjects
+- baseline results
+- current marks
+- prelim goals
+- final goals
+- ingested paper coverage
+- topic relevance
+- question availability
+
+Do not send the learner to an empty dashboard.
+The frontend must present a start-now state immediately.
+
+Subject page generation logic
+
+Once a subject is ready, generate a structured subject page with:
+- subject overview card
+- current mark
+- prelim goal
+- final goal
+- readiness summary
+- strongest topic
+- weakest topic
+- focus next
+- topic list
+- daily quiz entry
+- exam mode entry
+- crunch time entry
+- notes entry
+
+Only display topics that have valid mapped content from the ingested dataset.
+
+Topic page logic
+
+For each mapped topic within a ready subject, generate:
+- topic title
+- CAPS term reference where available
+- importance level
+- appeared in X of last Y available years where relevant
+- learner mastery state
+- practice entry point
+- notes entry point
+- revision card entry point
+
+Do not expose memo text verbatim.
+Only show transformed support content.
+
+Daily quiz frontend logic
+
+If a subject is ready and the learner is enrolled in it, generate a daily subject quiz card automatically.
+
+Each daily subject quiz card must show:
+- subject name
+- number of questions
+- topic focus
+- readiness relevance
+- completion state
+- start or continue action
+
+Also generate one daily mixed quiz card across all ready learner subjects.
+
+The mixed quiz card must show:
+- included subjects
+- question count
+- mixed revision label
+- completion state
+- quick start action
+
+Exam mode frontend logic
+
+If a subject has enough mapped question coverage, show Exam mode as available.
+
+When the learner clicks Exam mode, the frontend must generate:
+- selected subject header
+- 35-question session shell
+- timed exam UI
+- progress tracker
+- question navigation
+- locked answer reveal state
+- submit action
+- completion summary state
+
+Only render Exam mode for subjects with sufficient ready content.
+
+Crunch time frontend logic
+
+If a subject has enough mapped question coverage, show Crunch Time as available.
+
+When the learner clicks Crunch Time, the frontend must generate:
+- selected subject header
+- 35-question high-priority revision session
+- weak-topic emphasis
+- high-importance topic emphasis
+- progress tracker
+- submit state
+- post-session review guidance
+
+Crunch Time must feel more urgent and revision-focused than Exam mode.
+
+Notes generation frontend logic
+
+If a subject and topic are ready, the frontend must generate:
+- Generate notes action
+- note format options driven by learner VARK result
+- note viewer
+- watermark display
+- optional audio action if enabled
+
+Show note generation only where mapped content is actually available.
+
+Dashboard generation logic after ingestion
+
+The learner dashboard must update automatically once ready subjects exist.
+
+Generate these dashboard elements from ingestion-aware readiness:
+- ready subjects count
+- next available baseline
+- first recommended session
+- daily subject quizzes
+- daily mixed quiz
+- focus next card
+- subject readiness cards
+- today’s schedule items linked to ready subjects
+
+Do not display broken cards for subjects that are not ready.
+
+Focus-next frontend logic
+
+Generate a focus-next recommendation only when:
+- subject is ready
+- learner has a current mark or baseline result
+- enough mapped topic data exists
+
+Focus-next card must use:
+- weak topic
+- goal gap
+- term relevance
+- question availability
+- importance level
+
+Parent dashboard logic after ingestion
+
+For parent dashboards, generate:
+- subjects available to the learner
+- baseline completion status
+- subject readiness summary
+- exam mode availability
+- quiz completion overview
+- schedule-linked learning activity
+
+Do not surface technical ingestion details to parents.
+Surface only learner-relevant readiness and progress.
+
+School dashboard logic after ingestion
+
+For school admins, generate:
+- school subject availability coverage
+- how many learners have fully ready subjects
+- readiness by subject
+- subject usage trends
+- incomplete subject warnings if relevant to school-supported subjects
+
+Keep technical paper ingestion detail limited to authorised roles.
+
+Partner dashboard logic after ingestion
+
+For partner admins, generate aggregated readiness views such as:
+- schools with ready subject coverage
+- active learner subject readiness levels
+- high-level usage of ready content
+- readiness adoption trend
+
+Do not expose paper-by-paper admin controls to partner roles.
+
+Frontend guardrails
+
+The frontend must never:
+- show broken subject cards
+- show empty exam mode for unready subjects
+- show daily quiz actions with no question coverage
+- expose memo text verbatim
+- expose raw ingestion file content
+- display years as complete when they are not complete
+
+Instead, the frontend must:
+- hide unavailable experiences
+- disable unavailable actions with clear messaging
+- show loading, partial, or incomplete states properly
+- surface retry or remediation only to authorised admin roles
+
+Recommended UI states
+
+Use clean user-facing states such as:
+- Ready
+- Preparing
+- Incomplete
+- Not available yet
+- Needs review
+- Retry required
+
+Do not expose overly technical backend language to learners or parents.
+
+Caching and refresh logic
+
+Once ingestion is completed, the frontend must refresh and cache:
+- subject availability
+- year coverage
+- topic maps
+- question counts
+- baseline eligibility
+- quiz eligibility
+- exam mode eligibility
+- crunch time eligibility
+
+Refresh these safely without forcing the learner into broken or stale views.
+
+Async task status frontend logic
+
+Where async tasks are used, the frontend must show safe visible task states for authorised roles:
+- queued
+- processing
+- completed
+- failed
+- retrying
+
+Generate progress feedback in admin and other authorised dashboards where appropriate.
+
+Single source of truth rule
+
+All frontend paper-driven experiences must be generated from the structured ingested dataset and mapped readiness model.
+
+Do not duplicate subject readiness logic separately across:
+- dashboard
+- subjects
+- quizzes
+- exam mode
+- crunch time
+- notes
+- reports
+
+Use one shared readiness model across the app.
+
+Final post-ingestion frontend rule
+
+Once papers are ingested, the frontend must transform the dataset into ready-to-use learner journeys, structured subject experiences, quiz flows, exam sessions, notes availability, dashboard visibility, and admin completeness controls.
+
+Do not treat ingestion as storage only.
+Treat ingestion as the trigger for generating all valid product experiences safely and consistently.

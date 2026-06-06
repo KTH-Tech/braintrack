@@ -1,0 +1,186 @@
+Onboarding assessment and personalisation rule
+
+The learner must complete an onboarding assessment as part of onboarding.
+
+Do not treat onboarding as profile capture only.
+Onboarding must include a real learner assessment flow that helps establish the learner’s starting point.
+
+The onboarding assessment must capture:
+- selected subjects
+- current marks per subject
+- prelim goal per subject
+- final goal per subject
+- learning style
+- baseline subject readiness
+- first support preferences
+
+Assessment rule
+
+The learner assessment must be part of onboarding and must not be optional for the core learner experience.
+
+The assessment must include:
+- a learning style step
+- a baseline academic assessment per selected subject
+- term 1 CAPS-aligned diagnostic questions
+- a first readiness starting point
+
+The assessment must be structured so the learner finishes onboarding with:
+- a complete learner profile
+- a baseline result
+- personalised first questions
+- a personalised classroom state
+- a first study path
+
+Audio voice clone rule
+
+If audio support is enabled, allow the learner to create a voice clone using their own voice only.
+
+The platform must allow:
+- upload voice sample
+- record voice sample
+- create voice clone from that learner’s own voice
+- use the cloned voice for learner audio explanations where enabled
+
+Voice cloning must only use the learner’s own submitted voice sample.
+Do not allow cloning of another person’s voice.
+
+Where required, parent or guardian consent must apply before voice cloning is activated for a learner.
+
+Voice clone usage rule
+
+The learner’s cloned voice may be used for:
+- audio notes
+- spoken revision summaries
+- explanation playback
+- study recap support
+- guided revision audio
+
+Do not let voice clone logic break existing audio flows.
+If no clone exists, fall back safely to the default audio support experience.
+
+Voice clone UI rule
+
+In onboarding or settings, provide a simple step:
+- Record your voice
+- Upload your voice
+- Create my study voice
+
+Show clear states:
+- not started
+- recording
+- uploaded
+- processing
+- ready
+- failed
+
+Visual learning preference rule
+
+If the learner selects Visual as the primary learning style, allow the learner to choose three visual support options that work best for them.
+
+The learner must choose three visual options during onboarding.
+
+Example prompt title:
+Choose three visual study styles that help you most
+
+Example helper text:
+Pick the three visual formats that make learning easier for you.
+
+Visual option examples:
+- Diagrams
+- Mind maps
+- Colour-coded summaries
+- Charts and graphs
+- Flashcards
+- Visual step-by-step breakdowns
+- Infographics
+- Highlighted key points
+
+Visual selection rule
+
+Store the learner’s three chosen visual options against the learner profile.
+
+Use these selections to personalise:
+- notes layout
+- revision cards
+- summary design
+- topic support
+- explanation format
+- dashboard support cards where relevant
+
+Do not ask visual learners to choose more than three during onboarding.
+Keep the step fast and clean.
+
+Learning style assessment flow rule
+
+The onboarding assessment must follow this personalisation sequence:
+
+1. Learner profile capture
+2. Subject selection
+3. Current marks capture
+4. Prelim goal capture
+5. Final goal capture
+6. Learning style selection
+7. Visual option selection if Visual is chosen
+8. Audio voice setup if Auditory is chosen or audio support is enabled
+9. Baseline assessment per selected subject
+10. First question set generation
+11. Personalised classroom rendering
+
+Auditory learner rule
+
+If the learner selects Auditory, prioritise:
+- voice support
+- spoken explanations
+- audio revision summaries
+- audio recap options
+- optional learner voice clone setup
+
+Visual learner rule
+
+If the learner selects Visual, prioritise:
+- diagrams
+- mind maps
+- colour-coded notes
+- visual summaries
+- the three chosen visual support formats
+
+Reading/Writing learner rule
+
+If the learner selects Reading/Writing, prioritise:
+- structured written notes
+- key summaries
+- text explanations
+- written revision prompts
+
+Kinaesthetic learner rule
+
+If the learner selects Kinaesthetic, prioritise:
+- worked examples
+- practice-first flows
+- active drills
+- step-by-step doing
+
+Assessment completion rule
+
+The learner must not exit onboarding into an empty classroom.
+
+Once onboarding assessment is completed:
+- baseline results must be saved
+- learning style preferences must be saved
+- visual preferences must be saved where applicable
+- audio or voice clone state must be saved where applicable
+- first questions must be generated
+- first study path must be generated
+- learner classroom must render in a personalised ready state
+
+One learner profile rule
+
+All learning style choices, visual preferences, voice clone setup, and onboarding assessment data must attach to one unique learner profile only.
+
+Do not create duplicate learner profiles.
+Do not spread learner preference data across multiple records.
+
+Final onboarding personalisation rule
+
+Make onboarding a real learner assessment and personalisation flow.
+Capture learning style, visual preferences, voice support preferences, current marks, goals, and baseline data so the platform can immediately generate a personalised learner experience.

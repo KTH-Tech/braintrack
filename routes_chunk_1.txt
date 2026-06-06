@@ -1,0 +1,534 @@
+  app.post("/api/tutor/feedback", isAuthenticated, async (req: any, res) => {
+    try {
+      const data = tutorFeedbackSchema.parse(req.body);
+      const feedback = await storage.createTutorFeedback(data);
+      res.status(201).json(feedback);
+    } catch (error) {
+      console.error("Error saving tutor feedback:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json(formatZodError(error));
+      }
+      res.status(500).json({ error: "Failed to save feedback" });
+    }
+  });
+  
+  // Apply rate limiting to API routes
+  app.use("/api/", apiLimiter);
+
+  // Brute-force protection on auth endpoints
+  app.use("/api/login", authLimiter);
+  app.use("/api/callback", authLimiter);
+
+  // Emergency endpoint blocklist middleware (T018) — returns 503 for administratively disabled paths
+  app.use((req: Request, res: Response, next: Function) => {
+    if (disabledEndpoints.has(req.path)) {
+      return res.status(503).json({ error: "This endpoint is temporarily disabled by an administrator." });
+    }
+    next();
+  });
+
+  // Security event monitoring middleware — track 401/403 spikes and temp-block abusive IPs
+  app.use("/api/", securityResponseMonitor as any);
+
+  // Bot detection middleware — applied to high-value content endpoints
+  app.use("/api/tutor", botDetectionMiddleware as any);
+  app.use("/api/exam", botDetectionMiddleware as any);
+  app.use("/api/notes", botDetectionMiddleware as any);
+  app.use("/api/progress", botDetectionMiddleware as any);
+
+  // DBE CORPUS ACCESS CONTROL (T012)
+  // Block any future endpoint that might attempt to serve raw DBE corpus content.
+  // These paths are reserved and must NEVER return raw PDFs, raw extracted text,
+  // or direct DBE fileticket download URLs. Any request to these paths returns 403.
+  app.use("/api/dbe-corpus", blockDbeCorpusAccess as any);
+  app.use("/api/dbe-papers", blockDbeCorpusAccess as any);
+  app.use("/api/dbe-pdf", blockDbeCorpusAccess as any);
+  app.use("/api/dbe-text", blockDbeCorpusAccess as any);
+  app.use("/api/corpus", blockDbeCorpusAccess as any);
+
+  // RBAC blanket guard — block all /api/admin/* and /api/billing/admin/* for non-admins
+  app.use("/api/admin", isAuthenticated as any, requireRole("admin") as any);
+  app.use("/api/billing/admin", isAuthenticated as any, requireRole("admin") as any);
+
+  // Health check endpoint (no auth required — for infrastructure monitoring)
+  app.get("/api/health", async (_req: Request, res: Response) => {
+    try {
+      const client = await pool.connect();
+      await client.query("SELECT 1");
+      client.release();
+      res.json({ status: "ok", db: "ok", uptime: Math.floor(process.uptime()) });
+    } catch {
+      res.status(503).json({ status: "error", db: "unreachable" });
+    }
+  });
+
+  // Seed subjects and exam papers on startup
+  await storage.seedSubjects();
+  await storage.seedExamPapers();
+  await storage.seedMockExams();
+
+  async function seedTopicMasteryForUser(userId: string, subjectId: number) {
+    const topics = await storage.getTopicsBySubject(subjectId);
+    const existing = await storage.getTopicMasteryBySubject(userId, subjectId);
+    const existingTopicIds = new Set(existing.map(m => m.topicId));
+    for (const topic of topics) {
+      if (!existingTopicIds.has(topic.id)) {
+        await storage.createOrUpdateTopicMastery(userId, topic.id, subjectId, {
+          masteryScore: 0,
+          masteryBand: "red",
+          questionsAttempted: 0,
+          questionsCorrect: 0,
+        });
+      }
+    }
+  }
+
+  app.get("/api/exam-dates", (req, res) => {
+    res.json({
+      prelims: "2026-08-31T09:00:00.000Z", // Late August start
+      finals: "2026-10-26T09:00:00.000Z"   // Late October start
+    });
+  });
+  app.get("/api/user/onboarding-status", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const hasCompleted = await storage.hasCompletedOnboarding(userId);
+      res.json(hasCompleted);
+    } catch (error) {
+      console.error("Error checking onboarding status:", error);
+      res.status(500).json({ error: "Failed to check onboarding status" });
+    }
+  });
+
+  // Role selection — called once after first login. Cannot downgrade admin or re-confirm already confirmed roles.
+  app.post("/api/auth/set-role", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { role } = req.body;
+      if (!role || !["learner", "parent"].includes(role)) {
+        return res.status(400).json({ error: "Invalid role. Must be 'learner' or 'parent'." });
+      }
+      const currentUser = await authStorage.getUser(userId);
+      if (!currentUser) return res.status(404).json({ error: "User not found" });
+      if (currentUser.roleConfirmed) return res.status(400).json({ error: "Role already confirmed" });
+      if (currentUser.role === "admin") return res.status(403).json({ error: "Cannot change admin role" });
+      await db.update(users).set({ role, roleConfirmed: true, updatedAt: new Date() }).where(eq(users.id, userId));
+      res.json({ success: true, role });
+    } catch (error) {
+      console.error("Error setting role:", error);
+      res.status(500).json({ error: "Failed to set role" });
+    }
+  });
+
+  app.get("/api/user/subscription-status", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const isActive = await storage.hasActiveSubscription(userId);
+      res.json(isActive);
+    } catch (error) {
+      console.error("Error checking subscription status:", error);
+      res.status(500).json({ error: "Failed to check subscription status" });
+    }
+  });
+
+  app.get("/api/user/onboarding", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const result = await storage.getOnboardingResult(userId);
+      if (!result) {
+        return res.status(404).json({ error: "Onboarding not completed" });
+      }
+      res.json(result);
+    } catch (error) {
+      console.error("Error fetching onboarding result:", error);
+      res.status(500).json({ error: "Failed to fetch onboarding result" });
+    }
+  });
+
+  app.get("/api/user/stats", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const stats = await storage.getUserStats(userId);
+      
+      // Check for Rescue Pack triggers
+      const weakTopics = await storage.getWeakTopics(userId, 1);
+      if (weakTopics.length > 0 && weakTopics[0].masteryScore < 40) {
+        await storage.triggerRescuePack(userId, 'topic', weakTopics[0].topicId);
+      }
+      
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching user stats:", error);
+      res.status(500).json({ error: "Failed to fetch stats" });
+    }
+  });
+
+  // Subject Boost Pack Routes
+  app.get("/api/subjects/:id/boost", isAuthenticated, async (req: any, res) => {
+    const userId = req.user.claims.sub;
+    const subjectId = parseInt(req.params.id);
+    const isBoosted = await storage.getSubjectBoostStatus(userId, subjectId);
+    res.json({ isBoosted });
+  });
+
+  app.post("/api/subjects/:id/boost", isAuthenticated, async (req: any, res) => {
+    const userId = req.user.claims.sub;
+    const subjectId = parseInt(req.params.id);
+    await storage.activateSubjectBoost(userId, subjectId);
+    res.json({ success: true });
+  });
+
+  // Boost Quiz session store — keyed by `userId:subjectId:date`
+  const boostQuizSessions = new Map<string, { questions: any[]; expiresAt: number }>();
+
+  function getBoostQuizKey(userId: string, subjectId: number): string {
+    const saDate = new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString().split("T")[0];
+    return `${userId}:${subjectId}:${saDate}`;
+  }
+
+  app.get("/api/subjects/:id/boost/quiz", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const subjectId = parseInt(req.params.id);
+      const lang = (req.query.lang as string) === "af" ? "af" : "en";
+      const isAf = lang === "af";
+
+      const sessionKey = getBoostQuizKey(userId, subjectId);
+      const cached = boostQuizSessions.get(sessionKey);
+      if (cached && cached.expiresAt > Date.now()) {
+        return res.json({ questions: cached.questions });
+      }
+
+      const [subjectRow] = await db.select().from(subjects).where(eq(subjects.id, subjectId));
+      if (!subjectRow) return res.status(404).json({ error: "Subject not found" });
+
+      const topicRows = await db.select().from(topics).where(eq(topics.subjectId, subjectId));
+      const topicNames = topicRows.slice(0, 12).map(t => isAf ? (t.nameAfrikaans || t.name) : t.name);
+      const subjectName = isAf ? (subjectRow.nameAfrikaans || subjectRow.name) : subjectRow.name;
+
+      const topicList = topicNames.length > 0
+        ? topicNames.join(", ")
+        : subjectName;
+
+      const systemPrompt = `You are an expert South African Grade 12 NSC (National Senior Certificate) curriculum specialist.
+Generate CAPS-aligned, SIMULATED practice multiple-choice questions. NEVER use verbatim text from DBE exam papers.
+All questions must be original, clearly worded, and curriculum-appropriate.
+Cognitive level distribution: 40% knowledge/recall, 30% application, 30% higher-order reasoning.
+Respond ONLY with valid JSON — no markdown, no code fences.`;
+
+      const userPrompt = `Generate exactly 10 multiple-choice questions for Grade 12 ${subjectName} (CAPS curriculum).
+Topics to draw from: ${topicList}.
+Language: ${isAf ? "Afrikaans" : "English"}.
+
+Return a JSON object with this exact structure:
+{
+  "questions": [
+    {
+      "id": 1,
+      "question": "Question text here",
+      "options": [
+        { "label": "A", "text": "Option A text" },
+        { "label": "B", "text": "Option B text" },
+        { "label": "C", "text": "Option C text" },
+        { "label": "D", "text": "Option D text" }
+      ],
+      "correctAnswer": "A",
+      "topic": "Topic name",
+      "explanation": "Brief explanation of why this is correct"
+    }
+  ]
+}
+
+Rules:
+- Each question must have exactly 4 options labeled A, B, C, D
+- correctAnswer must be exactly one of: "A", "B", "C", "D"
+- Vary the correct answer position (not always A)
+- Questions must be factually accurate and curriculum-appropriate
+- No verbatim DBE exam text`;
+
+      const response = await callOpenAIWithRetry(() =>
+        openai.chat.completions.create({
+          model: "gpt-4o-mini",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userPrompt },
+          ],
+          response_format: { type: "json_object" },
+          max_completion_tokens: 3000,
+        })
+      );
+
+      const content = response.choices[0]?.message?.content || "{}";
+      const parsed = JSON.parse(content);
+      const questions: any[] = Array.isArray(parsed.questions) ? parsed.questions : [];
+
+      if (questions.length === 0) {
+        return res.status(500).json({ error: "Failed to generate quiz questions" });
+      }
+
+      const saNow = new Date(Date.now() + 2 * 60 * 60 * 1000);
+      const saTomorrow = new Date(saNow);
+      saTomorrow.setHours(23, 59, 59, 999);
+      const msUntilMidnight = saTomorrow.getTime() - saNow.getTime();
+      boostQuizSessions.set(sessionKey, {
+        questions,
+        expiresAt: Date.now() + msUntilMidnight,
+      });
+
+      res.json({ questions, subjectName });
+    } catch (error: any) {
+      console.error("Error generating boost quiz:", error);
+      const status = error?.status || error?.response?.status;
+      if (status === 429 || status === 503) {
+        return res.status(503).json(aiOverloadResponse());
+      }
+      res.status(500).json({ error: "Failed to generate quiz" });
+    }
+  });
+
+  app.post("/api/subjects/:id/boost/quiz/submit", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const subjectId = parseInt(req.params.id);
+      const { answers } = req.body;
+
+      if (!Array.isArray(answers)) {
+        return res.status(400).json({ error: "answers must be an array" });
+      }
+
+      const sessionKey = getBoostQuizKey(userId, subjectId);
+      const session = boostQuizSessions.get(sessionKey);
+
+      let questions: any[];
+      if (session && session.expiresAt > Date.now()) {
+        questions = session.questions;
+      } else if (Array.isArray(req.body.questions) && req.body.questions.length > 0) {
+        questions = req.body.questions;
+      } else {
+        return res.status(400).json({ error: "Quiz session expired. Please start a new quiz." });
+      }
+      let score = 0;
+      const results = questions.map((q: any) => {
+        const submitted = answers.find((a: any) => a.questionId === q.id);
+        const correct = submitted?.selected === q.correctAnswer;
+        if (correct) score++;
+        return {
+          questionId: q.id,
+          question: q.question,
+          selected: submitted?.selected ?? null,
+          correct,
+          correctAnswer: q.correctAnswer,
+          explanation: q.explanation,
+          topic: q.topic,
+        };
+      });
+
+      const total = questions.length;
+      const percentage = Math.round((score / total) * 100);
+      const coinsEarned = score * 5;
+
+      if (coinsEarned > 0) {
+        await storage.awardCoins(
+          userId,
+          coinsEarned,
+          "boost_quiz",
+          `Boost quiz: ${score}/${total} correct answers`,
+          subjectId.toString()
+        );
+      }
+
+      boostQuizSessions.delete(sessionKey);
+
+      for (const r of results) {
+        await storage.updateUserProgress(userId, subjectId, r.correct);
+      }
+
+      if (percentage >= 80) {
+        await storage.awardBadge(userId, "high_score");
+      }
+      await storage.checkAndAwardBadges(userId);
+
+      res.json({ score, total, percentage, coinsEarned, results });
+    } catch (error: any) {
+      console.error("Error submitting boost quiz:", error);
+      res.status(500).json({ error: "Failed to submit quiz" });
+    }
+  });
+
+  // Rescue Packs Route
+  app.get("/api/user/rescue-packs", isAuthenticated, async (req: any, res) => {
+    const userId = req.user.claims.sub;
+    const packs = await storage.getTriggeredRescuePacks(userId);
+    res.json(packs);
+  });
+
+  app.patch("/api/user/onboarding", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { selectedSubjects } = req.body;
+      
+      if (!Array.isArray(selectedSubjects)) {
+        return res.status(400).json({ error: "selectedSubjects must be an array" });
+      }
+
+      const userRole = req.user.claims.metadata?.role;
+      if (userRole === "learner" || !userRole) {
+        const existing = await storage.getOnboardingResult(userId);
+        if (existing?.scheduleLastUpdatedAt) {
+          const lastUpdate = new Date(existing.scheduleLastUpdatedAt);
+          const daysSince = (Date.now() - lastUpdate.getTime()) / (1000 * 60 * 60 * 24);
+          if (daysSince < 7) {
+            const nextDate = new Date(lastUpdate.getTime() + 7 * 24 * 60 * 60 * 1000);
+            return res.status(429).json({ 
+              error: "You can only update your subjects once per week.",
+              nextUpdateDate: nextDate.toISOString(),
+              daysRemaining: Math.ceil(7 - daysSince)
+            });
+          }
+        }
+      }
+      
+      const result = await storage.updateOnboardingSelectedSubjects(userId, selectedSubjects);
+
+      await db
+        .update(onboardingResults)
+        .set({ scheduleLastUpdatedAt: new Date() })
+        .where(eq(onboardingResults.userId, userId));
+
+      res.json(result);
+    } catch (error) {
+      console.error("Error updating onboarding:", error);
+      res.status(500).json({ error: "Failed to update onboarding" });
+    }
+  });
+
+  // GET /api/user/literature — load saved literature selections
+  app.get("/api/user/literature", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const result = await storage.getOnboardingResult(userId);
+      res.json((result?.literatureSelectionsJson as any) ?? {});
+    } catch (err: any) {
+      res.status(500).json({ error: "Failed to load literature selections" });
+    }
+  });
+
+  // PATCH /api/user/literature — save literature selections per subject code
+  app.patch("/api/user/literature", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { subjectCode, selections } = req.body;
+      if (!subjectCode || typeof subjectCode !== "string") {
+        return res.status(400).json({ error: "subjectCode required" });
+      }
+      const existing = await storage.getOnboardingResult(userId);
+      const current = (existing?.literatureSelectionsJson as any) ?? {};
+      const updated = { ...current, [subjectCode]: selections };
+      await db
+        .update(onboardingResults)
+        .set({ literatureSelectionsJson: updated })
+        .where(eq(onboardingResults.userId, userId));
+
+      const allSubjects = await storage.getAllSubjects();
+      const matchedSubject = allSubjects.find(s => s.code === subjectCode);
+      if (matchedSubject) {
+        try {
+          await seedTopicMasteryForUser(userId, matchedSubject.id);
+        } catch (_) { /* non-fatal */ }
+      }
+
+      res.json({ ok: true, selections: updated });
+    } catch (err: any) {
+      res.status(500).json({ error: "Failed to save literature selections" });
+    }
+  });
+
+  app.get("/api/user/subscription", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const subscription = await storage.getSubscription(userId);
+      res.json(subscription || null);
+    } catch (error) {
+      console.error("Error fetching subscription:", error);
+      res.status(500).json({ error: "Failed to fetch subscription" });
+    }
+  });
+
+  // Onboarding endpoint
+  app.post("/api/onboarding", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const data = onboardingSchema.parse(req.body);
+      
+      // Extract selected subject IDs from subjectMarks in rawAnswersJson
+      let selectedSubjects: number[] = [];
+      if (data.rawAnswersJson && typeof data.rawAnswersJson === 'object') {
+        const rawAnswers = data.rawAnswersJson as any;
+        if (Array.isArray(rawAnswers.subjectMarks)) {
+          const allSubjects = await storage.getAllSubjects();
+          selectedSubjects = rawAnswers.subjectMarks
+            .map((sm: { subjectCode: string }) => {
+              const subject = allSubjects.find(s => s.code === sm.subjectCode);
+              return subject?.id;
+            })
+            .filter((id: number | undefined): id is number => id !== undefined);
+        }
+      }
+      
+      const result = await storage.createOnboardingResult({
+        userId,
+        ...data,
+        selectedSubjects,
+      });
+      
+      res.status(201).json(result);
+    } catch (error) {
+      console.error("Error saving onboarding:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json(formatZodError(error));
+      }
+      res.status(500).json({ error: "Failed to save onboarding results" });
+    }
+  });
+
+  // Subscribe via Paystack — verifies transaction reference then activates subscription
+  app.post("/api/subscribe/paystack", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { reference, plan = "standard" } = req.body;
+
+      if (!reference) {
+        return res.status(400).json({ error: "Payment reference is required" });
+      }
+
+      // Verify with Paystack API if secret key is available
+      const secretKey = process.env.PAYSTACK_SECRET_KEY;
+      if (secretKey) {
+        try {
+          const verifyRes = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
+            headers: { Authorization: `Bearer ${secretKey}` },
+          });
+          const verifyData = await verifyRes.json() as { status: boolean; data?: { status: string; amount: number; currency: string } };
+          if (!verifyData.status || verifyData.data?.status !== "success") {
+            return res.status(402).json({ error: "Payment not verified by Paystack" });
+          }
+          // Confirm amount (R169 = 16900 kobo/cents)
+          if (!verifyData.data?.amount || verifyData.data.amount < 16900) {
+            return res.status(402).json({ error: "Payment amount does not match subscription price" });
+          }
+        } catch (verifyErr) {
+          console.error("Paystack verification error:", verifyErr);
+          // Allow through in dev/test mode if verification call itself fails
+          if (process.env.NODE_ENV === "production") {
+            return res.status(500).json({ error: "Could not verify payment" });
+          }
+        }
+      }
+
+      const existing = await storage.getSubscription(userId);
+      if (existing?.status === "active") {
+        return res.json(existing);
+      }
+
+      const subscription = await storage.createSubscription({
+        userId,

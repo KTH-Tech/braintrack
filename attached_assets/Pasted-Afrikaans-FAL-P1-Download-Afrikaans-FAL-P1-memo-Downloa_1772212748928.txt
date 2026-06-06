@@ -1,0 +1,466 @@
+Afrikaans FAL P1	Download
+Afrikaans FAL P1 memo	Download
+Afrikaans FAL P2	Download
+Afrikaans FAL P2 memo	Download
+Afrikaans FAL P3	Download
+Afrikaans FAL P3 memo	Download
+Afrikaans HL P1	Download
+Afrikaans HL P1 memo	Download
+Afrikaans HL P2	Download
+Afrikaans HL P2 memo	Download
+Afrikaans HL P3	Download
+Afrikaans HL P3 memo	Download
+Afrikaans SAL P1	Download
+Afrikaans SAL P1 memo	Download
+Afrikaans SAL P2 (Eastern Cape)	Download
+Afrikaans SAL P2 (Free State)	Download
+Afrikaans SAL P2 (Gauteng)	Download
+Afrikaans SAL P2 (KwaZulu-Natal)	Download
+Afrikaans SAL P2 (Limpopo)	Download
+Afrikaans SAL P2 (Mpumalanga)	Download
+Afrikaans SAL P2 (North West)	Download
+Afrikaans SAL P2 (Northern Cape)	Download
+Afrikaans SAL P2 (Western Cape)	Download
+Afrikaans SAL P2 memo (Eastern Cape)	Download
+Afrikaans SAL P2 memo (Free State)	Download
+Afrikaans SAL P2 memo (Gauteng)	Download
+Afrikaans SAL P2 memo (KwaZulu-Natal)	Download
+Afrikaans SAL P2 memo (Limpopo)	Download
+Afrikaans SAL P2 memo (Mpumalanga)	Download
+Afrikaans SAL P2 memo (North West)	Download
+Afrikaans SAL P2 memo (Northern Cape)	Download
+Afrikaans SAL P2 memo (Western Cape)	Download
+Afrikaans SAL P3	Download
+Afrikaans SAL P3 memo	Download
+English
+ 	Title	 
+English FAL P1	Download
+English FAL P1 memo	Download
+English FAL P2	Download
+English FAL P2 memo	Download
+English FAL P3	Download
+English FAL P3 memo	Download
+English HL P1	Download
+English HL P1 memo	Download
+English HL P2	Download
+English HL P2 memo	Download
+English HL P3	Download
+English HL P3 memo	Download
+IsiNdebele
+ 	Title	 
+IsiNdebele FAL P1	Download
+IsiNdebele FAL P1 Memo	Download
+IsiNdebele FAL P2	Download
+IsiNdebele FAL P2 Memo	Download
+IsiNdebele FAL P3	Download
+IsiNdebele FAL P3 Memo	Download
+IsiNdebele HL P1	Download
+IsiNdebele HL P1 Memo	Download
+IsiNdebele HL P2	Download
+IsiNdebele HL P2 Memo	Download
+IsiNdebele HL P3	Download
+IsiNdebele HL P3 Memo	Download
+IsiXhosa
+ 	Title	 
+IsiXhosa FAL P1	Download
+IsiXhosa FAL P1 Memo	Download
+IsiXhosa FAL P2	Download
+IsiXhosa FAL P2 Memo	Download
+IsiXhosa FAL P3	Download
+IsiXhosa FAL P3 Memo	Download
+IsiXhosa HL P1	Download
+IsiXhosa HL P1 Memo	Download
+IsiXhosa HL P2	Download
+IsiXhosa HL P2 Memo	Download
+IsiXhosa HL P3	Download
+IsiXhosa HL P3 Memo	Download
+IsiZulu
+ 	Title	 
+IsiZulu FAL P1	Download
+IsiZulu FAL P1 Memo	Download
+IsiZulu FAL P2	Download
+IsiZulu FAL P2 Memo	Download
+IsiZulu FAL P3	Download
+IsiZulu FAL P3 Memo	Download
+IsiZulu HL P1	Download
+IsiZulu HL P1 Memo	Download
+IsiZulu HL P2	Download
+IsiZulu HL P2 Memo	Download
+IsiZulu HL P3	Download
+IsiZulu HL P3 Memo	Download
+South African Sign Language (Final)
+ 	Title	 
+SASL HL Memo 1	Download
+SASL HL Memo 2	Download
+SASL HL Memo 3	Download
+SASL HL Paper 1	Download
+SASL HL Paper 2	Download
+SASL HL Paper 3	Download
+Sepedi
+ 	Title	 
+Sepedi FAL P1	Download
+Sepedi FAL P1 memo	Download
+Sepedi FAL P2	Download
+Sepedi FAL P2 memo	Download
+Sepedi FAL P3	Download
+Sepedi FAL P3 Memo	Download
+Sepedi HL P1	Download
+Sepedi HL P1 memo	Download
+Sepedi HL P2	Download
+Sepedi HL P2 memo	Download
+Sepedi HL P3	Download
+Sepedi HL P3 memo	Download
+Setswana
+ 	Title	 
+Setswana FAL P1	Download
+Setswana Fal P1 Memo	Download
+Setswana FAL P2	Download
+Setswana FAL P2 Memo	Download
+Setswana FAL P3	Download
+Setswana FAL P3 Memo	Download
+Setswana HL P1	Download
+Setswana HL P1 memo	Download
+Setswana HL P2	Download
+Setswana HL P2 memo	Download
+Setswana HL P3	Download
+Setswana HL P3 memo	Download
+Sesotho
+ 	Title	 
+Sesotho FAL P1	Download
+Sesotho FAL P1 Memo	Download
+Sesotho FAL P2	Download
+Sesotho FAL P2 Memo	Download
+Sesotho FAL P3	Download
+Sesotho FAL P3 Memo	Download
+Sesotho HL P1	Download
+Sesotho HL P1 Memo	Download
+Sesotho HL P2	Download
+Sesotho HL P2 Memo	Download
+Sesotho HL P3	Download
+Sesotho HL P3 Memo	Download
+Sesotho SAL P1	Download
+Sesotho SAL P1 Memo	Download
+Sesotho SAL P2	Download
+Sesotho SAL P2 Memo	Download
+Sesotho SAL P3	Download
+Sesotho SAL P3 Memo	Download
+Siswati
+ 	Title	 
+Siswati FAL P1	Download
+Siswati FAL P1 memo	Download
+Siswati FAL P2	Download
+Siswati FAL P2 memo	Download
+Siswati FAL P3	Download
+Siswati FAL P3 memo	Download
+Siswati HL P1	Download
+Siswati HL P1 memo	Download
+Siswati HL P2	Download
+Siswati HL P2 memo	Download
+Siswati HL P3	Download
+Siswati HL P3 memo	Download
+Tshivenda
+ 	Title	 
+Tshivenda FAL P1	Download
+Tshivenda FAL P1 memo	Download
+Tshivenda FAL P2	Download
+Tshivenda FAL P2 memo	Download
+Tshivenda FAL P3	Download
+Tshivenda FAL P3 memo	Download
+Tshivenda HL P1	Download
+Tshivenda HL P1 Memo	Download
+Tshivenda HL P2	Download
+Tshivenda HL P2 Memo	Download
+Tshivenda HL P3	Download
+Tshivenda HL P3 memo	Download
+Xitsonga
+ 	Title	 
+Xitsonga FAL P1	Download
+Xitsonga FAL P1 memo	Download
+Xitsonga FAL P2	Download
+Xitsonga FAL P2 memo	Download
+Xitsonga FAL P3	Download
+Xitsonga FAL P3 memo	Download
+Xitsonga HL P1	Download
+Xitsonga HL P1 Memo	Download
+Xitsonga HL P2	Download
+Xitsonga HL P2 Memo	Download
+Xitsonga HL P3	Download
+Xitsonga HL P3 Memo	Download
+NON LANGUAGES
+Accounting
+ 	Title	 
+Memo 1 (Afrikaans)	Download
+Memo 1 (English)	Download
+Memo 2 (Afrikaans)	Download
+Memo 2 (English)	Download
+Paper 1 (Afrikaans)	Download
+Paper 1 (English)	Download
+Paper 1 Answer Book (Afrikaans)	Download
+Paper 1 Answer Book (English)	Download
+Paper 2 (Afrikaans)	Download
+Paper 2 (English)	Download
+Paper 2 Answerbook (Afrikaans)	Download
+Paper 2 Answerbook (English)	Download
+Agricultural Management Practices
+ 	Title	 
+Memo 1 (Afrikaans)	Download
+Memo 1 (English)	Download
+Paper 1 (Afrikaans)	Download
+Paper 1 (English)	Download
+Agricultural Sciences
+ 	Title	 
+Memo 1 (Afrikaans)	Download
+Memo 1 (English)	Download
+Memo 2 (Afrikaans)	Download
+Memo 2 (English)	Download
+Paper 1 (Afrikaans)	Download
+Paper 1 (English)	Download
+Paper 2 (Afrikaans)	Download
+Paper 2 (English)	Download
+Agricultural Technology
+ 	Title	 
+Memo 1 (Afrikaans)	Download
+Memo 1 (English)	Download
+Paper 1 (Afrikaans)	Download
+Paper 1 (English)	Download
+Business Studies
+ 	Title	 
+Memo 1 (Afrikaans)	Download
+Memo 1 (English)	Download
+Memo 2 (Afrikaans)	Download
+Memo 2 (English)	Download
+Paper 1 (Afrikaans)	Download
+Paper 1 (English)	Download
+Paper 2 (Afrikaans)	Download
+Paper 2 (English)	Download
+Civil Technology
+ 	Title	 
+Civil Services Paper 1 (English)	Download
+Woodworking Memo 1 (Afrikaans)	Download
+Woodworking Memo 1 (English)	Download
+Woodworking Paper 1 (Afrikaans)	Download
+Civil Services Memo 1 (Afrikaans)	Download
+Civil Services Memo 1 (English)	Download
+Civil Services Paper 1 (Afrikaans)	Download
+Construction Memo 1 (Afrikaans)	Download
+Construction Memo 1 (English)	Download
+Construction Paper 1 (Afrikaans)	Download
+Construction Paper 1 (English)	Download
+Woodworking Paper 1 (English)	Download
+Computer Application Technology
+ 	Title	 
+Data Files (MS Office)	Download
+Memo 1 (Afrikaans)	Download
+Memo 1 (English)	Download
+Memo 2 (Afrikaans)	Download
+Memo 2 (English)	Download
+Paper 1 (Afrikaans)	Download
+Paper 1 (English)	Download
+Paper 2 (Afrikaans)	Download
+Paper 2 (English)	Download
+Consumer Studies
+ 	Title	 
+Memo 1 (Afrikaans)	Download
+Memo 1 (English)	Download
+Paper 1 (Afrikaans)	Download
+Paper 1 (English)	Download
+Dance studies
+ 	Title	 
+Memo 1 (Afrikaans)	Download
+Memo 1 (English)	Download
+Paper 1 (Afrikaans)	Download
+Paper 1 (English)	Download
+Design
+ 	Title	 
+Memo 1 (Afrikaans)	Download
+Memo 1 (English)	Download
+Paper 1 (Afrikaans)	Download
+Paper 1 (English)	Download
+Dramatic Arts
+ 	Title	 
+Memo 1 (Afrikaans)	Download
+Memo 1 (English)	Download
+Paper 1 (Afrikaans)	Download
+Paper 1 (English)	Download
+Economics
+ 	Title	 
+Memo 1 (Afrikaans)	Download
+Memo 1 (English)	Download
+Memo 2 (Afrikaans)	Download
+Memo 2 (English)	Download
+Paper 1 (Afrikaans)	Download
+Paper 1 (English)	Download
+Paper 2 (Afrikaans)	Download
+Paper 2 (English)	Download
+Electrical Technology
+ 	Title	 
+Digital Electronics Memo 1 (Afrikaans)	Download
+Digital Electronics Memo 1 (English)	Download
+Digital Electronics Paper 1 (Afrikaans)	Download
+Digital Electronics Paper 1 (English)	Download
+Electronics Memo 1 (Afrikaans)	Download
+Electronics Memo 1 (English)	Download
+Electronics Paper 1 (Afrikaans)	Download
+Electronics Paper 1 (English)	Download
+Power Systems Memo 1 (Afrikaans)	Download
+Power Systems Memo 1 (English)	Download
+Power Systems Paper 1 (Afrikaans)	Download
+Power Systems Paper 1 (English)	Download
+Engineering Graphic and Design
+ 	Title	 
+Memo 1 - Question 4 A3 (Afrikaans)	Download
+Memo 1 - Question 4 A3 (English)	Download
+Memo 1 (Afrikaans)	Download
+Memo 1 (English)	Download
+Memo 2 - Question 4 A3 (Afrikaans)	Download
+Memo 2 - Question 4 A3 (English)	Download
+Memo 2 (Afrikaans)	Download
+Memo 2 (English)	Download
+Paper 1 (Afrikaans)	Download
+Paper 1 (English)	Download
+Paper 2 (Afrikaans)	Download
+Paper 2 (English)	Download
+Geography
+ 	Title	 
+Memo 1 (Afrikaans)	Download
+Memo 1 (English)	Download
+Memo 2 (Afrikaans)	Download
+Memo 2 (English)	Download
+Paper 1 (Afrikaans)	Download
+Paper 1 (English)	Download
+Paper 2 (Afrikaans)	Download
+Paper 2 (English)	Download
+History
+ 	Title	 
+Memo 1 (Afrikaans)	Download
+Memo 1 (English)	Download
+Memo 2 (Afrikaans)	Download
+Memo 2 (English)	Download
+Paper 1 (Afrikaans)	Download
+Paper 1 (English)	Download
+Paper 1 Addendum (Afrikaans)	Download
+Paper 1 Addendum (English)	Download
+Paper 2 (Afrikaans)	Download
+Paper 2 (English)	Download
+Paper 2 Addendum (Afrikaans)	Download
+Paper 2 Addendum (English)	Download
+Hospitality Studies
+ 	Title	 
+Memo 1 (Afrikaans)	Download
+Memo 1 (English)	Download
+Paper 1 (Afrikaans)	Download
+Paper 1 (English)	Download
+Information Technology
+ 	Title	Modified Date	 
+Data Files	10/15/2025	Download
+Memo 1 (Afrikaans)	10/15/2025	Download
+Memo 1 (English)	10/15/2025	Download
+Memo 2 (Afrikaans)	10/15/2025	Download
+Memo 2 (English)	10/15/2025	Download
+Paper 1 (Afrikaans)	10/15/2025	Download
+Paper 1 (English)	10/15/2025	Download
+Paper 2 (Afrikaans)	10/15/2025	Download
+Paper 2 (English)	10/15/2025	Download
+Life Sciences
+ 	Title	Modified Date	 
+Memo 1 (Afrikaans)	10/15/2025	Download
+Memo 1 (English)	10/15/2025	Download
+Memo 2 (Afrikaans)	10/15/2025	Download
+Memo 2 (English)	10/15/2025	Download
+Paper 1 (Afrikaans)	10/15/2025	Download
+Paper 1 (English)	10/15/2025	Download
+Paper 2 (Afrikaans)	10/15/2025	Download
+Paper 2 (English)	10/15/2025	Download
+Mathematical Literacy
+ 	Title	Modified Date	 
+Memo 1 (Afrikaans and English)	10/15/2025	Download
+Memo 2 (Afrikaans and English)	10/15/2025	Download
+Paper 1 (Afrikaans)	10/15/2025	Download
+Paper 1 (English)	10/15/2025	Download
+Paper 1 Answerbook (Afrikaans)	10/15/2025	Download
+Paper 1 Answerbook (English)	10/15/2025	Download
+Paper 2 (Afrikaans)	10/15/2025	Download
+Paper 2 (English)	10/15/2025	Download
+Paper 2 Answerbook (Afrikaans)	10/15/2025	Download
+Paper 2 Answerbook (English)	10/15/2025	Download
+Mathematics
+ 	Title	Modified Date	 
+Paper 2 Answerbook (English & Afrikaans)	10/15/2025	Download
+Paper 2 (English)	10/15/2025	Download
+Paper 2 (Afrikaans)	10/15/2025	Download
+Paper 1 (English)	10/15/2025	Download
+Paper 1 (Afrikaans)	10/15/2025	Download
+Memo 2 (Afrikaans & English)	10/15/2025	Download
+Memo 1 (Afrikaans and English)	10/15/2025	Download
+Mechanical Technology
+ 	Title	Modified Date	 
+Welding and Metalwork Paper 1 (English)	10/15/2025	Download
+Welding and Metalwork Paper 1 (Afrikaans)	10/15/2025	Download
+Welding and Metalwork Memo 1 (English)	10/15/2025	Download
+Welding and Metalwork Memo 1 (Afrikaans)	10/15/2025	Download
+Fitting and Machining Paper 1 (English)	10/15/2025	Download
+Fitting and Machining Paper 1 (Afrikaans)	10/15/2025	Download
+Fitting and Machining Memo 1 (English)	10/15/2025	Download
+Fitting and Machining Memo 1 (Afrikaans)	10/15/2025	Download
+Automotive Paper 1 (English)	10/15/2025	Download
+Automotive Paper 1 (Afrikaans)	10/15/2025	Download
+Automotive Memo 1 (English)	10/15/2025	Download
+Automotive Memo 1 (Afrikaans)	10/15/2025	Download
+Music
+ 	Title	Modified Date	 
+Paper 2 (English)	10/15/2025	Download
+Paper 2 (Afrikaans)	10/15/2025	Download
+Paper 1 (English)	10/15/2025	Download
+Paper 1 (Afrikaans)	10/15/2025	Download
+Memo 2 (English)	10/15/2025	Download
+Memo 2 (Afrikaans)	10/15/2025	Download
+Memo 1 (English)	10/15/2025	Download
+Memo 1 (Afrikaans)	10/15/2025	Download
+Physical Sciences
+ 	Title	Modified Date	 
+Paper 2 (English)	10/15/2025	Download
+Paper 2 (Afrikaans)	10/15/2025	Download
+Paper 1 (English)	10/15/2025	Download
+Paper 1 (Afrikaans)	10/15/2025	Download
+Memo 2 (English & Afrikaans)	10/15/2025	Download
+Memo 1 (English & Afrikaans)	10/15/2025	Download
+Religion Studies
+ 	Title	Modified Date	 
+Paper 2 (English)	10/15/2025	Download
+Paper 2 (Afrikaans)	10/15/2025	Download
+Paper 1 (English)	10/15/2025	Download
+Paper 1 (Afrikaans)	10/15/2025	Download
+Memo 2 (English)	10/15/2025	Download
+Memo 2 (Afrikaans)	10/15/2025	Download
+Memo 1 (English)	10/15/2025	Download
+Memo 1 (Afrikaans)	10/15/2025	Download
+Technical Mathematics
+ 	Title	Modified Date	 
+Paper 2 Answerbook (Afrikaans and English)	10/15/2025	Download
+Paper 2 (English)	10/15/2025	Download
+Paper 2 (Afrikaans)	10/15/2025	Download
+Paper 1 Answerbook (Afrikaans and English)	10/15/2025	Download
+Paper 1 (English)	10/15/2025	Download
+Paper 1 (Afrikaans)	10/15/2025	Download
+Memo 2 (Afrikaans and English)	10/15/2025	Download
+Memo 1 (Afrikaans and English)	10/15/2025	Download
+Technical Sciences
+ 	Title	Modified Date	 
+Paper 2 (English)	10/15/2025	Download
+Paper 2 (Afrikaans)	10/15/2025	Download
+Paper 1 (English)	10/15/2025	Download
+Paper 1 (Afrikaans)	10/15/2025	Download
+Memo 2 (English and Afrikaans)	10/15/2025	Download
+Memo 1 (English and Afrikaans)	10/15/2025	Download
+Tourism
+ 	Title	Modified Date	 
+Paper 1 (English)	10/15/2025	Download
+Paper 1 (Afrikaans)	10/15/2025	Download
+Memo 1 (English)	10/15/2025	Download
+Memo 1 (Afrikaans)	10/15/2025	Download
+Visual Arts
+ 	Title	 
+Paper 1 (English)	Download
+Paper 1 (Afrikaans)	Download
+Memo 1 (English)	Download
+Memo 1 (Afrikaans)	Download

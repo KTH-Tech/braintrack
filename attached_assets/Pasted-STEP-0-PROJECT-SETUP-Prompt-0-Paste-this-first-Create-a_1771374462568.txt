@@ -1,0 +1,212 @@
+STEP 0 — PROJECT SETUP (Prompt 0)
+
+Paste this first.
+
+Create a full-stack web app called BrainTrack.
+
+Stack (mandatory):
+- Frontend: React + Vite + Tailwind CSS
+- Backend: Node.js + Express
+- Database: PostgreSQL
+- ORM: Prisma
+- Auth: JWT + httpOnly cookies
+
+Core rules (from our style guide):
+- Font: Inter everywhere
+- Body text: always black (#000000) and same size
+- Headings (H1): rainbow gradient text, hover shimmer
+- Accent words: use rainbow colors (rotation classes)
+- Buttons: rainbow gradient background with BLACK text (#000000), consistent size and radius
+- Logged-in UI: dark charcoal background with white cards
+- Nova: smart support agent only on logged-in pages; no academic tutoring
+
+Build initial scaffold with:
+- working dev scripts
+- env templates
+- database connection ready
+- prisma schema placeholder
+- basic routes for auth and health check
+Return a runnable project that starts successfully.
+
+STEP 1 — BRAND THE UI FOUNDATION (Prompt 1)
+
+Goal: lock the visual system so everything inherits it.
+
+Implement the BrainTrack design system globally.
+
+Add:
+- Tailwind config with brand tokens:
+  - charcoal background: #111827
+  - card background: #FFFFFF
+  - body text: #000000
+  - rainbow gradient: #FF0000, #FF7F00, #FFFF00, #00FF00, #0000FF, #4B0082, #9400D3
+
+Create reusable UI components:
+- Container layout
+- Card component (rounded 16px, soft shadow)
+- Button component (Primary/Secondary) where ALL button text is black
+- RainbowHeading component with gradient text and hover shimmer
+- AccentWord classes for rainbow rotation
+
+Enforce:
+- Inter font globally
+- Body text size 16px everywhere
+- No random colors outside the brand tokens
+
+Update all pages to use these components.
+
+STEP 2 — ROUTING + LANGUAGE TOGGLE (Prompt 2)
+
+Goal: English/Afrikaans toggle across all UI copy.
+
+Implement bilingual language toggle across the app (English/Afrikaans).
+
+Requirements:
+- A global language context/provider (en/af)
+- Language toggle in top nav for public pages and logged-in pages
+- Store language choice in localStorage and persist across sessions
+- All visible text must use a translation dictionary (no hardcoded UI strings)
+
+Add initial translations for:
+Home, How It Works, Pricing, FAQs, Login, Sign Up, Dashboard,
+Subjects, Practice, Tests, Exam Mode, Progress, Study Planner, Support, Admin,
+Buttons: Start Now, Continue, Practice, Submit, Back, Help
+
+Tone:
+Modern, relatable, teen-friendly but parent-trusted. No slang, no childish tone.
+
+STEP 3 — PUBLIC SITE PAGES (Prompt 3)
+
+Goal: Landing page hero + conversion flow (no Nova here).
+
+Build public (pre-login) pages with BrainTrack branding:
+
+Pages:
+- Home (hero + value props)
+- How It Works
+- Pricing
+- FAQs
+- Sign Up
+- Login
+
+Brand requirements:
+- H1 headings rainbow gradient
+- Buttons gradient background with BLACK text
+- Body text black
+
+Functional requirements:
+- Sign Up and Login forms connected to backend auth endpoints
+- No Nova visible on any public page
+- Add CTA sections and clean cards
+
+FAQs: include the clarified positioning:
+- BrainTrack is CAPS aligned
+- Practice + feedback + progress tracking
+- Nova is a smart support agent for platform help only (not tutoring)
+
+STEP 4 — DATABASE SCHEMA (Prompt 4)
+
+Goal: data model for end-to-end functionality.
+
+Create Prisma schema and migrations for BrainTrack.
+
+Entities (minimum):
+- User (id, email, passwordHash, role: learner|parent|admin, language: en|af, createdAt)
+- LearnerProfile (userId, grade, goalScore)
+- ParentLink (parentUserId, learnerUserId)
+- Subject (id, name_en, name_af)
+- Term (id, subjectId, name_en, name_af, order)
+- Topic (id, termId, name_en, name_af, order, summary_en, summary_af)
+- Question (id, topicId, type: mcq|short, prompt_en, prompt_af, options JSON, correctAnswer JSON, explanation_en, explanation_af, difficulty)
+- Attempt (id, learnerUserId, mode: quick|topic|exam|revision, subjectId?, topicId?, startedAt, submittedAt, score)
+- AttemptAnswer (id, attemptId, questionId, answer JSON, isCorrect, timeSpentSec)
+- StudyPlan (id, learnerUserId, dailyGoalMin, weeklyTargets JSON, createdAt)
+- SupportTicket (id, userId, category, message, status: open|in_progress|resolved, createdAt)
+- AuditLog (id, adminUserId, action, entity, entityId, createdAt)
+
+Generate:
+- Prisma client
+- Seed script: add 2 demo subjects, terms, topics, and sample questions
+
+Ensure app runs with database.
+
+STEP 5 — AUTH + ROLES (Prompt 5)
+
+Goal: secure access and correct page visibility.
+
+Implement full authentication and role-based access control.
+
+Requirements:
+- Signup/login with JWT stored in httpOnly cookies
+- Protect API routes server-side
+- Protect UI routes client-side
+- Roles:
+  - learner: main learning features
+  - parent: view-only progress dashboards for linked learner(s)
+  - admin: manage content, users, support tickets
+
+Add middleware:
+- requireAuth
+- requireRole
+
+Make sure:
+- Nova only renders when user is logged in
+- Admin routes blocked for non-admin
+
+STEP 6 — LEARNER ONBOARDING (Prompt 6)
+
+Goal: first login setup.
+
+Create learner onboarding after first login.
+
+Flow:
+1) Select Grade (default Grade 12)
+2) Choose Subjects
+3) Set target goal score (%)
+4) Confirm language (from toggle)
+
+Store selections in LearnerProfile and learner-subject mapping table.
+After onboarding, route to Learner Dashboard.
+
+Tone:
+Modern and relatable, e.g. “Set your target. Let’s build towards it.”
+No slang, no childish phrasing.
+
+STEP 7 — LEARNER DASHBOARD (Prompt 7)
+
+Goal: performance hub.
+
+Build Learner Dashboard (logged-in).
+
+Show:
+- Today’s focus (next recommended topic)
+- Mastery summary per subject (progress bars)
+- Weak areas list
+- “Continue where you left off”
+- Exam readiness score (simple computed metric from attempts)
+- Weekly activity summary (sessions completed, minutes)
+
+Add quick actions (buttons with black text):
+- Practice Now
+- Review Mistakes
+- Continue
+
+Dashboard must use:
+- dark charcoal background
+- white cards
+- rainbow H1
+- body text black
+
+STEP 8 — SUBJECTS / TOPICS NAVIGATION (Prompt 8)
+
+Goal: content structure.
+
+Create Subjects -> Terms -> Topics navigation.
+
+Features:
+- Subject list cards
+- Term tabs or accordion
+- Topic list showing status: Not started / In progress / Mastered
+- Topic page shows summary (bilingual) + start practice button
+
+Pull data from database

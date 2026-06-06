@@ -1,0 +1,558 @@
+PROMPT 0 — Replit setup (project + dependencies + env)
+Act as my Replit setup assistant.
+
+Goal: Create a Next.js (App Router) + TypeScript app called Brain Track with Tailwind, Prisma, Postgres, and OpenAI server-side.
+
+Give:
+1) Exact Replit template to use
+2) Exact npm install commands
+3) Tailwind setup files (tailwind.config, postcss.config, globals.css)
+4) Prisma init + migrate steps
+5) .env.example with: DATABASE_URL, OPENAI_API_KEY, ADMIN_EMAILS, COVERAGE_MODE
+6) A sanity checklist (run app, verify DB, verify env)
+
+Keep it short and actionable.
+
+PROMPT 1 — App scaffold + teen UI + navigation
+You are a senior Next.js engineer.
+
+Build the Brain Track scaffold with Next.js App Router + TypeScript + Tailwind.
+
+Requirements:
+- Dark mode by default, calm teen-friendly UI
+- Layout with top nav (Home, Subjects, Progress)
+- Routes:
+  /auth
+  /onboarding/test
+  /onboarding/results
+  /subscribe
+  /
+  /subjects
+  /subject/[id]
+  /topic/[id]
+  /question/[id]
+  /progress
+  /admin
+
+Provide full code with file paths. No external UI libraries.
+
+PROMPT 2 — Route guards (auth → test → subscription)
+Implement route protection for Brain Track.
+
+Rules:
+- If not logged in -> redirect to /auth
+- If logged in but no TestResult -> redirect to /onboarding/test
+- If test done but subscription inactive -> redirect to /subscribe
+- Only allow content routes when all conditions satisfied.
+
+Use Next.js middleware for route guards where possible.
+Provide full code and file paths.
+
+PROMPT 3 — Prisma schema (DBE-only content, 10-year coverage, usage limits)
+Create Prisma schema for Brain Track.
+
+Models required:
+- User (role LEARNER|ADMIN, language en|af)
+- TestResult (responsesJson, traitsJson)
+- Subscription (planName="R79", status active|inactive, startedAt, renewedAt)
+- Subject
+- Topic (subjectId, name, capsCode optional)
+- ExamPaper (subjectId, year, session NOV|JUNE|SUPP, paperCode, source="DBE", dbeUrl, createdAt)
+- Question (examPaperId, topicId, questionNo, questionText, memoText, marks optional)
+- Attempt (userId, questionId, answerText, feedbackJson)
+- Usage (userId, date, tutorCount, markingCount, fullSolutionCount)
+- ActivationCode (optional: code, schoolName, status, usedByUserId)
+- Embedding (questionId, embedding vector) with pgvector
+
+Constraints:
+- ExamPaper.source must be DBE (enforced in app validation too)
+- Indexes on subjectId/year/session/paperCode
+- Ready for pgvector (include migration note)
+
+Output ONLY prisma/schema.prisma.
+
+PROMPT 4 — Auth (simple email OTP)
+Implement simple email OTP login for MVP (no passwords).
+
+Requirements:
+- /auth page UI (email input)
+- API routes:
+  POST /api/auth/request-code
+  POST /api/auth/verify-code
+- Store OTP temporarily (DB table or in-memory with expiry)
+- Create user on first login
+- Session cookie (httpOnly) with secure settings
+- Admin is determined by ADMIN_EMAILS env var
+
+After login:
+- If no test -> /onboarding/test
+- Else if no subscription -> /subscribe
+- Else -> /
+
+Provide full code + file paths.
+
+PROMPT 5 — Mandatory Study Profile test (personality + learning style + study method)
+Build mandatory onboarding test flow.
+
+Constraints:
+- 18 questions, multiple-choice, teen-friendly, non-clinical
+- Measures:
+  - Study habits/self-regulation
+  - Attention span (short bursts vs long sessions)
+  - Practice preference (active recall vs passive review)
+  - Exam stress response
+  - Planning vs procrastination risk
+- Deterministic scoring rules that output:
+  - 3–4 traits (e.g., “Practice-First”, “Planner”, “Short-Burst Focus”, “High Exam Stress”)
+  - Recommended session length
+  - Recommended weekly routine
+  - Suggested “first subjects to fix”
+- Store:
+  - raw answers -> TestResult.responsesJson
+  - computed traits -> TestResult.traitsJson
+
+Pages:
+- /onboarding/test (multi-step with progress)
+- /onboarding/results (clear plan + next steps)
+Support English + modern Afrikaans.
+
+Provide full code + file paths + scoring logic.
+
+PROMPT 6 — Subscription gate (R79/month) + activation (MVP simulation)
+Implement subscription enforcement.
+
+Plan:
+- R79/month (single plan)
+- Subscription must be active to access content routes
+
+MVP payment simulation options:
+A) Admin can toggle a user to active in /admin/users
+B) Activation code entry on /subscribe (simulates D6 activation)
+
+Build:
+- /subscribe page (explain value + enter code or “request activation”)
+- Subscription table updates
+- Admin pages:
+  /admin/codes (create codes)
+  /admin/users (activate/deactivate)
+
+Keep copy calm and parent-safe.
+
+Provide full code + file paths.
+
+PROMPT 7 — DBE content browsing (All subjects, papers, questions)
+Build content browsing pages for Brain Track.
+
+Requirements:
+- /subjects: list all subjects
+- /subject/[id]: list topics + DBE papers (year/session/paperCode), show “Source: DBE” with dbeUrl
+- /topic/[id]: list questions with filters: year, session, paperCode
+- /question/[id]: show questionText, memo toggle, answer box
+
+Data must come from ExamPaper + Question tables.
+Provide full code + file paths.
+
+PROMPT 8 — Admin import (DBE-only) + “10 years NOV_ONLY coverage dashboard”
+Create admin import and coverage tracking.
+
+Admin page: /admin/import
+- Upload JSON and import:
+  - Subject, Topics, ExamPaper, Questions
+- Validate with Zod
+- Reject import if source != "DBE" OR missing dbeUrl
+- JSON format:
+{
+  "subject":"Mathematics",
+  "year":2023,
+  "session":"NOV",
+  "paperCode":"P1",
+  "source":"DBE",
+  "dbeUrl":"https://...",
+  "topics":[{"name":"Algebra","capsCode":"..."}],
+  "questions":[{"questionNo":"2.3","topic":"Algebra","questionText":"...","memoText":"...","marks":6}]
+}
+
+Coverage mode:
+- env COVERAGE_MODE = "NOV_ONLY" by default
+- /admin/coverage shows for each subject: last 10 years × required papers count, how many imported
+
+Provide full code + file paths + Zod schemas.
+
+PROMPT 9 — AI tutor endpoint (memo-bound RAG, EN/AF, usage limits, moderation)
+Implement server-side AI tutor: POST /api/ai/tutor using OpenAI.
+
+Non-negotiable rules:
+- Use ONLY provided context: questionText + memoText + topic tags (+ optional similar Q examples)
+- If insufficient: return “I don’t have enough information in the memo/context to answer that.”
+- Modes:
+  hint_1 (concept only),
+  hint_2 (method steps, no final answer),
+  memo_explained (marking points),
+  full_solution (only if hint already used for this question)
+- Strict JSON output:
+{
+ "language":"en|af",
+ "mode":"hint_1|hint_2|memo_explained|full_solution",
+ "answer":"...",
+ "steps":["..."],
+ "marking_points":["..."],
+ "next_question_suggestion":"..."
+}
+
+Add:
+- Moderation before input and after output
+- Daily usage limits stored in Usage table
+- Language selection based on user profile (en/af) + modern Afrikaans tone
+
+Provide full code + prompt templates.
+
+PROMPT 10 — AI marking endpoint (memo-based) + store attempts
+Implement POST /api/ai/mark.
+
+Input: questionId, learnerAnswer
+Use memoText to produce strict JSON:
+{
+ "language":"en|af",
+ "overall_feedback":"...",
+ "met_points":["..."],
+ "missing_points":["..."],
+ "try_again_prompt":"..."
+}
+
+Store Attempt(feedbackJson) and update Usage counters.
+Moderation before/after.
+Provide full code + file paths.
+
+PROMPT 11 — Embeddings + pgvector retrieval (optional but recommended)
+Add embeddings + pgvector retrieval.
+
+- Use text-embedding-3-small to embed (questionText + memoText)
+- Store in Embedding table
+- Similarity search: top 3 within same subject/topic
+- Admin route /admin/embed to backfill missing embeddings
+- Use retrieved examples optionally in tutor context (clearly labeled)
+
+Provide SQL for pgvector extension, helper functions, API route, admin UI.
+
+PROMPT 12 — Progress dashboard + teen-friendly coaching prompts
+Build /progress dashboard.
+
+Show:
+- Accuracy by subject
+- Weak topics
+- Recent attempts
+- Study streak (days active)
+- “Next 3 actions” generated from TestResult traits + weak topics (rule-based, not hallucinated)
+
+Keep UI minimal and calm.
+Provide full code + file paths.
+
+PROMPT 13 — QA + DBE compliance checks
+Create admin QA tools:
+
+- /admin/papers: list DBE papers with dbeUrl, missing years, missing papers
+- /admin/questions: flag questions missing memoText or topicId
+- Compliance badge: “DBE source verified” only when source="DBE" AND dbeUrl present
+
+Also add a README.md with setup steps, env vars, and import instructions.
+Provide full code + file paths.
+
+Two small rules to keep you safe (and credible)
+
+In the UI, always show: “Source: DBE” + the DBE link for each paper.
+
+In marketing, say: “Built around DBE NSC past exam papers and memos.” (Don’t claim DBE endorsement unless you have it.)
+
+If you want, I can also give you a ready-made “starter import pack” JSON template (empty structure) you can reuse for every subject/year/paper.
+
+just reply prompts 
+
+Understood.
+Below are ONLY COPY-PASTE REPLIT PROMPTS — no explanations.
+
+You are a senior full-stack engineer.
+
+Create a Next.js (App Router) + TypeScript app called “Brain Track” using Tailwind, Prisma, Postgres, and OpenAI.
+
+Rules:
+- Teen-friendly dark UI
+- Mandatory onboarding test before any access
+- DBE NSC past papers only
+- R79/month subscription
+- English + modern Afrikaans
+Start with full app scaffold.
+
+Implement route guards.
+
+Rules:
+- Not logged in → /auth
+- Logged in, no Study Profile test → /onboarding/test
+- Test complete, no subscription → /subscribe
+- Only allow content routes if all conditions met
+
+Use Next.js middleware.
+Provide full code.
+
+Create Prisma schema.
+
+Models:
+User, TestResult, Subscription, Subject, Topic, ExamPaper, Question, Attempt, Usage, ActivationCode, Embedding.
+
+Rules:
+- ExamPaper.source MUST be "DBE"
+- Store dbeUrl
+- Support 10 years (NOV_ONLY mode)
+- Enable pgvector
+
+Output ONLY prisma/schema.prisma.
+
+Implement email OTP authentication.
+
+Pages:
+- /auth
+
+API:
+- request code
+- verify code
+
+Create user on first login.
+Admin emails from env.
+Redirect based on test/subscription status.
+
+Build mandatory Study Profile onboarding test.
+
+18 multiple-choice questions measuring:
+- Study habits
+- Focus span
+- Practice preference
+- Exam stress
+- Planning vs procrastination
+
+Output:
+- Traits
+- Session length
+- Weekly routine
+- Subject risk flags
+
+Store raw answers + computed traits.
+English + Afrikaans.
+
+Create subscription gate.
+
+Plan:
+- R79/month
+
+Pages:
+- /subscribe
+
+MVP payment simulation:
+- Activation codes
+- Admin toggle
+
+Lock all content without active subscription.
+
+Build subject and question browsing.
+
+Pages:
+- /subjects
+- /subject/[id]
+- /topic/[id]
+- /question/[id]
+
+Show:
+- DBE paper year, session, paper code
+- Source: DBE + link
+- Question text
+- Memo toggle
+- Answer input
+
+Create admin DBE import tool.
+
+Page:
+- /admin/import
+
+Accept JSON only if:
+- source = "DBE"
+- dbeUrl present
+
+Import:
+- Subjects
+- Topics
+- ExamPapers
+- Questions + memos
+
+Reject invalid imports.
+
+Create DBE coverage dashboard.
+
+Page:
+- /admin/coverage
+
+Show:
+- Each subject
+- Last 10 years
+- Imported vs missing papers
+
+Default mode: NOV_ONLY.
+
+Implement AI tutor endpoint.
+
+Rules:
+- Use ONLY questionText + memoText
+- No hallucinations
+- If insufficient data → say so
+
+Modes:
+- hint_1
+- hint_2
+- memo_explained
+- full_solution (only after hint)
+
+Return strict JSON.
+English + Afrikaans.
+Add moderation + usage limits.
+
+Implement AI marking endpoint.
+
+Compare learner answer to DBE memo.
+Return:
+- Feedback
+- Met points
+- Missing points
+- Retry prompt
+
+Store attempt.
+Apply moderation + limits.
+
+Add embeddings with pgvector.
+
+Embed questionText + memoText.
+Similarity search within same subject/topic.
+Admin backfill page: /admin/embed.
+
+Build progress dashboard.
+
+Show:
+- Accuracy by subject
+- Weak topics
+- Study streak
+- Next 3 recommended actions
+
+Base recommendations on Study Profile traits.
+No gamification.
+
+Create admin QA tools.
+
+Pages:
+- /admin/papers
+- /admin/questions
+
+Flag:
+- Missing memos
+- Missing DBE links
+- Topic mismatches
+
+Show “DBE source verified” badge only when compliant.
+
+
+If you want, I can also give a DBE JSON import template (empty, reusable).
+
+payfast only integration subscriptiojns
+Implement PayFast SUBSCRIPTIONS ONLY for Brain Track.
+
+Requirements:
+- Use PayFast recurring billing (monthly)
+- Amount: R79.00
+- Currency: ZAR
+- No once-off payments
+- No other gateways
+
+Create:
+- /subscribe page with “Subscribe with PayFast” button
+- Redirect to PayFast subscription URL
+- Store subscription_id, status, start_date in Subscription table
+
+Use environment variables:
+PAYFAST_MERCHANT_ID
+PAYFAST_MERCHANT_KEY
+PAYFAST_PASSPHRASE
+PAYFAST_RETURN_URL
+PAYFAST_CANCEL_URL
+PAYFAST_NOTIFY_URL
+
+Provide full frontend + backend code.
+
+Create PayFast ITN (Instant Transaction Notification) handler.
+
+Endpoint:
+POST /api/payfast/itn
+
+Requirements:
+- Validate PayFast signature
+- Verify source IP
+- Confirm payment data with PayFast
+- Handle subscription events:
+  - ACTIVE
+  - CANCELLED
+  - SUSPENDED
+  - FAILED
+
+Update Subscription table accordingly.
+Reject invalid notifications.
+
+Provide full code.
+
+Update subscription enforcement logic.
+
+Rules:
+- User must have PayFast subscription status = ACTIVE
+- If status != ACTIVE:
+  - Redirect to /subscribe
+  - Show calm message: “Subscription inactive”
+
+Run check on:
+- Middleware
+- Server-side page loads
+
+Provide full code.
+
+Add admin subscription monitoring.
+
+Admin pages:
+- /admin/subscriptions
+- /admin/users
+
+Show:
+- User email
+- PayFast subscription_id
+- Status
+- Start date
+- Last ITN update
+
+Allow:
+- Read-only view (no manual activation)
+
+Provide full code.
+
+Add subscription cancellation handling.
+
+Requirements:
+- If user cancels via PayFast:
+  - ITN updates status to CANCELLED
+  - Access revoked at end of billing period
+- Display subscription status on /progress page
+
+Provide full code.
+
+Secure PayFast integration.
+
+Requirements:
+- Server-side hash generation
+- Never expose merchant key
+- Log ITN events for audit
+- Fail closed (no access if unsure)
+
+Add README section:
+“PayFast Subscription Setup Steps”
+
+Provide full code.

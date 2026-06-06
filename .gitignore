@@ -1,0 +1,20 @@
+node_modules
+dist
+
+# Learner-uploaded audio (PII / biometric). Never commit.
+uploads/audio/lesson-recordings/
+uploads/audio/voice-notes/
+.DS_Store
+server/public
+vite.config.ts.*
+*.tar.gz
+playwright-report
+test-results
+.playwright
+# Added during GitHub import
+.env
+.env.*
+*.key
+*.pem
+*.zip
+*.tar.gz

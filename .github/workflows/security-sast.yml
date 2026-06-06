@@ -1,0 +1,100 @@
+name: SAST Security Scan
+
+on:
+  pull_request:
+    branches: ["**"]
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  security-events: write
+  contents: read
+
+jobs:
+  semgrep:
+    name: Semgrep SAST
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep:1.100.0
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep (JSON — for failure gate)
+        run: >
+          semgrep scan
+          --config p/javascript
+          --config p/typescript
+          --config p/nodejs
+          --config p/owasp-top-ten
+          --json
+          --output semgrep-results.json
+          .
+
+      - name: Verify results file was produced
+        run: |
+          if [ ! -f semgrep-results.json ]; then
+            echo "ERROR: semgrep-results.json was not produced — scan may have failed silently."
+            exit 1
+          fi
+          SIZE=$(wc -c < semgrep-results.json)
+          if [ "$SIZE" -lt 10 ]; then
+            echo "ERROR: semgrep-results.json is empty or malformed."
+            exit 1
+          fi
+
+      - name: Run Semgrep (SARIF — for GitHub Security tab)
+        run: >
+          semgrep scan
+          --config p/javascript
+          --config p/typescript
+          --config p/nodejs
+          --config p/owasp-top-ten
+          --sarif
+          --output semgrep-results.sarif
+          .
+
+      - name: Upload SARIF to GitHub Security tab
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: semgrep-results.sarif
+          category: semgrep
+
+      - name: Upload JSON artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: semgrep-results
+          path: semgrep-results.json
+          retention-days: 30
+
+      - name: Fail on ERROR-severity findings
+        run: |
+          ERRORS=$(python3 -c "
+          import json, sys
+          data = json.load(open('semgrep-results.json'))
+          results = data.get('results', [])
+          errors = [r for r in results if r.get('extra', {}).get('severity', '').upper() == 'ERROR']
+          for r in errors:
+            path = r.get('path', '')
+            line = r.get('start', {}).get('line', '')
+            msg = r.get('extra', {}).get('message', '')
+            check = r.get('check_id', '')
+            print(f'  [ERROR] {check} @ {path}:{line} -- {msg}')
+          print(len(errors))
+          sys.exit(0)
+          ")
+          COUNT=$(echo "$ERRORS" | tail -1)
+          DETAILS=$(echo "$ERRORS" | head -n -1)
+          if [ -n "$DETAILS" ]; then
+            echo "$DETAILS"
+          fi
+          echo "ERROR-severity findings: $COUNT"
+          if [ "$COUNT" -gt "0" ]; then
+            echo "Failing build -- review GitHub Security tab or semgrep-results artifact for full details."
+            exit 1
+          fi
+          echo "No ERROR-severity findings. Scan passed."

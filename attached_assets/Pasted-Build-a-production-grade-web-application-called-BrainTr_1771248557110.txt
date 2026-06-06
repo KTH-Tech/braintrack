@@ -1,0 +1,206 @@
+Build a production-grade web application called BrainTrack with the following strict requirements.
+
+========================
+1) USER & ACCESS MODEL
+========================
+- One account = one learner only (no multi-learner accounts).
+- Human identifier = DOB (YYYY-MM-DD).
+- One verified mobile number per account.
+- Enforce single active device session (new login invalidates previous).
+- Parent is payer and authoriser: nothing unlocks until payment + parent OTP/MFA auth succeeds.
+- After payment + parent auth, generate a secure learner activation link immediately (WhatsApp/SMS).
+
+========================
+2) PUBLIC LANDING SITE
+========================
+Create a public clickable landing site for parents with pages:
+- Home
+- Features
+- Research
+- Pricing & Products
+- Sign Up
+All navigation must be clickable and mobile-friendly.
+
+========================
+3) SIGN UP, CONSENT, PAYMENT, ACTIVATION
+========================
+Flow:
+1) Parent clicks Sign Up and proceeds to hosted checkout payment first.
+2) Before payment completion show mandatory consent checkboxes:
+   - Parent reporting consent
+   - Child data consent (POPIA)
+   - Terms & subscription agreement
+   - No refunds acknowledgement
+   User cannot proceed without all checked.
+3) Store consent records with timestamp + device metadata.
+4) After successful payment:
+   - trigger parent OTP/MFA auth
+   - unlock purchased products (only then)
+   - show activation screen with learner activation link (send via WhatsApp/SMS)
+
+========================
+4) POPIA & DATA GOVERNANCE
+========================
+- Store minimal data only: DOB, phone, school, grade, selected subjects, learning metrics.
+- No learner identity is shared with schools.
+- Schools receive anonymised aggregated reports only (email), no portal login in MVP.
+- Learner personal profile must be permanently deleted after Matric results release (configurable date).
+- Retain anonymised cohort datasets only (irreversible; no re-linking).
+
+========================
+5) PAYMENTS (ZERO PAYMENT DATA STORED)
+========================
+- Integrate hosted checkout (Paystack/Yoco style).
+- NEVER store card/bank data. No PAN/CVV/expiry.
+- Store provider reference tokens only: provider_name, customer_ref, subscription_ref, payment_status, next_billing_date.
+- Subscription bills monthly on signup date.
+- 30-day cancellation notice required.
+- No refunds.
+- Academic cycle auto-ends in November; remaining months dynamically calculated based on join month.
+
+========================
+6) PRODUCT CATALOG (UNLOCK ONLY AFTER PAYMENT + PARENT AUTH)
+========================
+Implement products and access rules:
+A) Smart Tutor Unlock (once-off) = R100
+   - Required entry gate for learning features.
+B) Question Power Pack (once-off) = R250
+   - 50 exam-style questions per subject
+   - Valid for 2026 academic cycle (never expires during the cycle).
+C) Personalised Exam Calendar (once-off downloadable) = R200
+   - Subject-specific
+   - Takes learner availability into account (sports/social/gym)
+   - Downloadable file produced on purchase.
+D) Brain Boost Subscription = R169/month (from signup month until end of November)
+   - Daily adaptive learning
+   - Classroom gamification
+   - Parent dashboard and alerts
+
+Once-off products remain accessible once purchased. Subscription controls ongoing adaptive access.
+
+========================
+7) LEARNER EXPERIENCE ("CLASSROOM") + GAMIFICATION
+========================
+- Learner dashboard is called "Classroom".
+- Teen-friendly language + motivating microcopy.
+- Gamification: XP, streaks, badges, level-ups.
+- Classroom shows:
+  - Today's Power Session (2 subjects/day)
+  - mastery visuals per subject
+  - readiness coverage (exam-pattern based)
+  - mock exam shortcuts
+  - streaks/badges
+
+========================
+8) BASELINE CREATION (SIMPLIFIED)
+========================
+On activation:
+1) Learner selects the subjects they take.
+2) Learner inputs previous scores per selected subject (Grade 11 / last exam).
+3) Run a single adaptive 25-question diagnostic across selected subjects (not 25 per subject).
+4) Run a short fun learning style quiz.
+5) Create baseline mastery map using:
+   - prior score weighting
+   - diagnostic results
+6) Adapt learning based on baseline + learning style.
+
+========================
+9) CAPS-ALIGNED LEARNING ENGINE
+========================
+- Content organised as: Subject -> Topic -> Micro-skill.
+- Micro-skill mastery score 0–100.
+- Mastery >= 80 = mastered.
+- Adaptive daily rotation chooses 2 subjects/day based on:
+  - lowest mastery / biggest gaps
+  - exam pattern weighting (from 10-year DBE patterns)
+  - spaced recall needs
+
+========================
+10) MOCK EXAMS (STRICT: 4 UNIQUE EXAMS PER SUBJECT)
+========================
+For each subject:
+- Build a simulated question pool of ~1,000+ questions.
+- Structure derived from 10 years of DBE papers and memos.
+- Tag each question with: topic, micro-skill, difficulty, mark value, historical frequency weight.
+
+Generate EXACTLY four unique full mock exams per subject:
+- Mock 1: foundational weighted
+- Mock 2: balanced mid-prep
+- Mock 3: late-prep exam difficulty
+- Mock 4: final DBE-style full simulation
+
+Rules:
+- Each mock must mirror DBE topic distribution and mark weighting based on 10-year patterns.
+- Mocks must be unique in composition and not repeat exact sets.
+- No unlimited random generation beyond these four.
+
+========================
+11) EXAM-PATTERN READINESS (NOT PREDICTIVE)
+========================
+Do NOT implement behavioural prediction or pass-probability forecasting.
+Instead implement readiness coverage based ONLY on DBE 10-year patterns:
+
+- Compute a per-subject "Exam Coverage %" representing the portion of historically tested marks the learner is prepared for.
+- Exam Coverage % = sum(weights of topics where micro-skills are mastered) / total historical topic weights.
+- Display readiness bands (e.g., high risk / developing / pass zone / strong zone) based on Exam Coverage %.
+- Show changes over time (baseline vs current) factually.
+
+========================
+12) PARENT EXPERIENCE
+========================
+- In-app weekly parent dashboard showing:
+  - baseline vs current mastery
+  - mock exam results progress
+  - exam coverage readiness per subject
+  - engagement summary (factual activity counts only)
+- Push notifications to parent + learner:
+  - onboarding incomplete nudges (12h learner, 24h learner+parent, 48h parent only; max 3)
+  - milestone/star status reached
+  - at-risk low engagement (factual inactivity thresholds only, no predictions)
+
+========================
+13) SCHOOL REPORTING (EMAIL ONLY) + DONATION
+========================
+- Monthly automated email per school with anonymised aggregates:
+  - baseline vs current mastery per subject
+  - exam coverage readiness distribution
+  - engagement health (aggregate)
+  - donation totals = R35 x active learners for the month
+- Attach proof of donation payment (reference, date, confirmation file).
+- No learner identities ever included.
+
+========================
+14) SECURITY & CONTENT PROTECTION
+========================
+- Secure by design:
+  - token auth with expiry
+  - MFA/OTP for new device, billing changes, exam start, suspicious activity
+  - rate limiting
+  - audit logging for sensitive events
+- Content protection:
+  - no downloadable learning content except the paid calendar download
+  - disable copy/paste/select/print in secure views
+  - screenshot/record detection & lock where supported
+  - signed session tokens for content access
+  - watermarking + abuse detection escalation
+- Profanity filtering on all free-text inputs.
+
+========================
+15) AUTOMATION / HOUSEKEEPING JOBS
+========================
+Scheduled jobs:
+- session cleanup
+- billing reconciliation + lock/unlock rules
+- generate monthly school reports + donation attachment
+- mastery recomputation
+- mock exam availability control (4 mocks)
+- post-matric deletion + anonymisation enforcement
+- security anomaly checks
+- log rotation
+
+Deliver:
+- database schema (PostgreSQL)
+- backend API
+- frontend (parent landing + parent dashboard + learner Classroom)
+- admin utilities for monitoring jobs and report delivery
+- clear environment variables and deployment notes

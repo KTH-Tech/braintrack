@@ -1,0 +1,500 @@
+        plan: "standard",
+        priceRands: 169,
+      });
+
+      res.status(201).json(subscription);
+    } catch (error) {
+      console.error("Error creating Paystack subscription:", error);
+      res.status(500).json({ error: "Failed to activate subscription" });
+    }
+  });
+
+  // Subscribe endpoint (legacy / activation-code flow only)
+  app.post("/api/subscribe", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { plan = "standard" } = req.body;
+      
+      const existing = await storage.getSubscription(userId);
+      if (existing?.status === "active") {
+        return res.json(existing);
+      }
+
+      const subscription = await storage.createSubscription({
+        userId,
+        plan: "standard",
+        priceRands: 169,
+      });
+      
+      res.status(201).json(subscription);
+    } catch (error) {
+      console.error("Error creating subscription:", error);
+      res.status(500).json({ error: "Failed to create subscription" });
+    }
+  });
+
+  // Activation code subscription
+  app.post("/api/subscribe/activation-code", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { code } = req.body;
+
+      if (!code) {
+        return res.status(400).json({ error: "Activation code is required" });
+      }
+
+      const existing = await storage.getSubscription(userId);
+      if (existing?.status === "active") {
+        return res.json(existing);
+      }
+
+      const validCode = await storage.validateActivationCode(code);
+      if (!validCode) {
+        return res.status(400).json({ error: "Invalid or expired activation code" });
+      }
+
+      const subscription = await storage.createSubscriptionWithCode(userId, validCode.id);
+      res.status(201).json(subscription);
+    } catch (error) {
+      console.error("Error with activation code:", error);
+      res.status(500).json({ error: "Failed to activate subscription" });
+    }
+  });
+
+  // Admin toggle subscription (requires admin role)
+  app.post("/api/admin/toggle-subscription", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { status } = req.body;
+      const ipAddress = req.headers["x-forwarded-for"]?.toString().split(",")[0].trim() || req.socket?.remoteAddress;
+      
+      // For MVP security, only allow toggling own subscription
+      const subscription = await storage.adminToggleSubscription(userId, status);
+
+      await storage.insertAuditLog({
+        userId,
+        action: "ADMIN_TOGGLE_SUBSCRIPTION",
+        target: "subscription",
+        metadata: { targetUserId: userId, newStatus: status || (subscription.status) },
+        ipAddress,
+      });
+
+      res.json(subscription);
+    } catch (error) {
+      console.error("Error toggling subscription:", error);
+      res.status(500).json({ error: "Failed to toggle subscription" });
+    }
+  });
+
+  // ============================================
+  // PARTNER ATTRIBUTION LOCKING (T013)
+  // ============================================
+  //
+  // GUARDRAIL: first_touch_source is immutable after signup.
+  // Regular API calls (including updateUser flows) MUST NOT set this field.
+  // The ONLY way to change it is through this admin-only endpoint, which
+  // requires role === "admin" and writes an immutable audit log entry.
+  //
+  app.patch("/api/admin/users/:targetUserId/first-touch-source", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    try {
+      const adminId = req.user.claims.sub;
+      const ipAddress = (req.headers["x-forwarded-for"]?.toString().split(",")[0].trim()) || req.socket?.remoteAddress;
+
+      const { targetUserId } = req.params;
+      const validation = z.object({ source: z.string().min(1).max(200) }).safeParse(req.body);
+      if (!validation.success) {
+        return res.status(400).json({ error: "Invalid input", details: validation.error.issues });
+      }
+
+      const { source } = validation.data;
+
+      await storage.updateFirstTouchSource(targetUserId, source);
+
+      await storage.insertAuditLog({
+        userId: adminId,
+        action: "ADMIN_UPDATE_FIRST_TOUCH_SOURCE",
+        target: "user",
+        metadata: { targetUserId, newSource: source },
+        ipAddress,
+      });
+
+      res.json({ success: true, targetUserId, source });
+    } catch (error) {
+      console.error("Error updating first_touch_source:", error);
+      res.status(500).json({ error: "Failed to update attribution source" });
+    }
+  });
+
+  // ============================================
+  // ACCOUNT LOCKOUT ADMIN ENDPOINT
+  // ============================================
+
+  // Admin: Force-unlock a locked account (with audit log)
+  app.post("/api/admin/users/:targetUserId/force-unlock", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    try {
+      const adminId = req.user.claims.sub;
+      const ipAddress = (req.headers["x-forwarded-for"]?.toString().split(",")[0].trim()) || req.socket?.remoteAddress;
+
+      const { targetUserId } = req.params;
+      await storage.forceUnlockAccount(targetUserId);
+
+      await storage.insertAuditLog({
+        userId: adminId,
+        action: "ADMIN_FORCE_UNLOCK_ACCOUNT",
+        target: "user",
+        metadata: { targetUserId },
+        ipAddress,
+      });
+
+      res.json({ success: true, message: "Account unlocked and login failure counter reset" });
+    } catch (error) {
+      console.error("Error force-unlocking account:", error);
+      res.status(500).json({ error: "Failed to unlock account" });
+    }
+  });
+
+  // Admin: Get account lockout status for a user
+  app.get("/api/admin/users/:targetUserId/lock-status", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    try {
+      const { targetUserId } = req.params;
+      const lockStatus = await storage.isAccountLocked(targetUserId);
+      res.json(lockStatus);
+    } catch (error) {
+      console.error("Error fetching lock status:", error);
+      res.status(500).json({ error: "Failed to fetch lock status" });
+    }
+  });
+
+  // ============================================
+  // POPIA CONSENT RECORDS
+  // ============================================
+
+  const consentRecordSchema = z.object({
+    parentId: z.string().min(1),
+    learnerId: z.string().min(1),
+    consentMethod: z.enum(["whatsapp_link", "in_app", "admin"]),
+  });
+
+  app.post("/api/consent", isAuthenticated, async (req: any, res) => {
+    try {
+      const validation = consentRecordSchema.safeParse(req.body);
+      if (!validation.success) {
+        return res.status(400).json({ error: "Invalid consent data", details: validation.error.issues });
+      }
+      const { parentId, learnerId, consentMethod } = validation.data;
+      const ipAddress = req.headers["x-forwarded-for"]?.toString().split(",")[0].trim() || req.socket?.remoteAddress || undefined;
+      const userAgent = req.headers["user-agent"] || undefined;
+      const record = await storage.createConsentRecord({ parentId, learnerId, consentMethod, ipAddress, userAgent });
+
+      await storage.insertAuditLog({
+        userId: req.user.claims.sub,
+        action: "CONSENT_RECORD_CREATED",
+        target: "consent_records",
+        metadata: { consentRecordId: record.id, parentId, learnerId, consentMethod },
+        ipAddress,
+      });
+
+      res.status(201).json(record);
+    } catch (error) {
+      console.error("Error creating consent record:", error);
+      res.status(500).json({ error: "Failed to create consent record" });
+    }
+  });
+
+  app.post("/api/consent/:id/revoke", isAuthenticated, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: "Invalid consent record ID" });
+      }
+      const revoked = await storage.revokeConsent(id);
+      if (!revoked) {
+        return res.status(404).json({ error: "Consent record not found" });
+      }
+
+      const ipAddress = req.headers["x-forwarded-for"]?.toString().split(",")[0].trim() || req.socket?.remoteAddress;
+      await storage.insertAuditLog({
+        userId: req.user.claims.sub,
+        action: "CONSENT_RECORD_REVOKED",
+        target: "consent_records",
+        metadata: { consentRecordId: id },
+        ipAddress,
+      });
+
+      res.json(revoked);
+    } catch (error) {
+      console.error("Error revoking consent:", error);
+      res.status(500).json({ error: "Failed to revoke consent" });
+    }
+  });
+
+  app.get("/api/consent/:learnerId", isAuthenticated, async (req: any, res) => {
+    try {
+      const { learnerId } = req.params;
+      const record = await storage.getConsentRecord(learnerId);
+      if (!record) {
+        return res.status(404).json({ error: "No active consent record found" });
+      }
+      res.json(record);
+    } catch (error) {
+      console.error("Error fetching consent record:", error);
+      res.status(500).json({ error: "Failed to fetch consent record" });
+    }
+  });
+
+  // Usage tracking
+  app.get("/api/user/usage", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const today = new Date().toISOString().split('T')[0];
+      const usage = await storage.getDailyUsage(userId, today);
+      const subscription = await storage.getSubscription(userId);
+      const plan = subscription?.plan || "standard";
+      const limits = USAGE_LIMITS[plan] || USAGE_LIMITS.standard;
+      
+      res.json({
+        tutorCount: usage?.tutorCount || 0,
+        markingCount: usage?.markingCount || 0,
+        fullSolutionCount: usage?.fullSolutionCount || 0,
+        plan,
+        limits,
+        features: {
+          examReady: limits.examReady,
+          parentReports: limits.parentReports,
+          smartTutor: true,
+          pastPapers: true,
+          progressTracking: true,
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching usage:", error);
+      res.status(500).json({ error: "Failed to fetch usage" });
+    }
+  });
+
+  // Questions endpoints
+  app.get("/api/papers/:id/questions", isAuthenticated, async (req: any, res) => {
+    try {
+      const paperId = parseInt(req.params.id);
+      const questions = await storage.getQuestionsByPaper(paperId);
+      res.json(questions);
+    } catch (error) {
+      console.error("Error fetching questions:", error);
+      res.status(500).json({ error: "Failed to fetch questions" });
+    }
+  });
+
+  app.get("/api/questions/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const question = await storage.getQuestion(id);
+      if (!question) {
+        return res.status(404).json({ error: "Question not found" });
+      }
+      res.json(question);
+    } catch (error) {
+      console.error("Error fetching question:", error);
+      res.status(500).json({ error: "Failed to fetch question" });
+    }
+  });
+
+  // Attempts endpoint
+  app.post("/api/attempts", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const data = attemptSchema.parse(req.body);
+
+      const question = await storage.getQuestion(data.questionId);
+      if (!question) {
+        return res.status(404).json({ error: "Question not found" });
+      }
+
+      const attempt = await storage.createAttempt({
+        userId,
+        questionId: data.questionId,
+        answerText: data.answerText,
+        isCorrect: data.isCorrect,
+        marksAwarded: data.marksAwarded,
+        feedbackJson: data.feedbackJson,
+      });
+
+      const examPaper = await db.select().from(examPapers).where(eq(examPapers.id, question.examPaperId));
+      if (examPaper.length > 0) {
+        await storage.updateUserProgress(userId, examPaper[0].subjectId, data.isCorrect);
+      }
+      await storage.checkAndAwardBadges(userId);
+
+      res.status(201).json(attempt);
+    } catch (error) {
+      console.error("Error creating attempt:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json(formatZodError(error));
+      }
+      res.status(500).json({ error: "Failed to record attempt" });
+    }
+  });
+
+  app.get("/api/user/attempts", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const attempts = await storage.getAttemptsByUser(userId);
+      res.json(attempts);
+    } catch (error) {
+      console.error("Error fetching attempts:", error);
+      res.status(500).json({ error: "Failed to fetch attempts" });
+    }
+  });
+
+  // Topics endpoints (auth required since content is subscription-gated)
+  app.get("/api/subjects/:id/topics", isAuthenticated, async (req: any, res) => {
+    try {
+      const subjectId = parseInt(req.params.id);
+      const topics = await storage.getTopicsBySubject(subjectId);
+      res.json(topics);
+    } catch (error) {
+      console.error("Error fetching topics:", error);
+      res.status(500).json({ error: "Failed to fetch topics" });
+    }
+  });
+
+  // Subjects endpoints
+  app.get("/api/subjects", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const onboarding = await storage.getOnboardingResult(userId);
+      const selectedIds: number[] = onboarding?.selectedSubjects ?? [];
+
+      const allSubjects = await storage.getAllSubjects();
+
+      // Return only the learner's onboarded subjects; fall back to all if
+      // onboarding is not yet complete (selectedIds is empty).
+      const result = selectedIds.length > 0
+        ? allSubjects.filter(s => selectedIds.includes(s.id))
+        : allSubjects;
+
+      res.json(result);
+    } catch (error) {
+      console.error("Error fetching subjects:", error);
+      res.status(500).json({ error: "Failed to fetch subjects" });
+    }
+  });
+
+  app.get("/api/subjects/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const subject = await storage.getSubject(id);
+      if (!subject) {
+        return res.status(404).json({ error: "Subject not found" });
+      }
+      res.json(subject);
+    } catch (error) {
+      console.error("Error fetching subject:", error);
+      res.status(500).json({ error: "Failed to fetch subject" });
+    }
+  });
+
+  app.get("/api/subjects/:id/mastery", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const subjectId = parseInt(req.params.id);
+      const topics = await storage.getTopicsBySubject(subjectId);
+
+      await seedTopicMasteryForUser(userId, subjectId);
+
+      const mastery = await storage.getTopicMasteryBySubject(userId, subjectId);
+      const progress = await storage.getUserProgressBySubject(userId, subjectId);
+      
+      const topicData = topics.map(topic => {
+        const m = mastery.find(tm => tm.topicId === topic.id);
+        return {
+          id: topic.id,
+          name: topic.name,
+          nameAfrikaans: topic.nameAfrikaans,
+          capsCode: topic.capsCode,
+          masteryScore: m?.masteryScore ?? 0,
+          masteryBand: m?.masteryBand ?? "red",
+          questionsAttempted: m?.questionsAttempted ?? 0,
+          questionsCorrect: m?.questionsCorrect ?? 0,
+          totalMarksEarned: m?.totalMarksEarned ?? 0,
+          totalMarksAvailable: m?.totalMarksAvailable ?? 0,
+          consecutiveCorrect: m?.consecutiveCorrect ?? 0,
+          confidenceLevel: m?.confidenceLevel ?? 0,
+          lastAttemptAt: m?.lastAttemptAt ?? null,
+        };
+      });
+      
+      const totalMastery = topicData.length > 0
+        ? Math.round(topicData.reduce((sum, t) => sum + t.masteryScore, 0) / topicData.length)
+        : 0;
+      
+      const overallBand = totalMastery >= 85 ? "star" : totalMastery >= 75 ? "green" : totalMastery >= 60 ? "amber" : "red";
+      
+      res.json({
+        subjectId,
+        totalMastery,
+        overallBand,
+        topics: topicData,
+        progress: {
+          papersCompleted: progress?.papersCompleted ?? 0,
+          questionsAttempted: progress?.questionsAttempted ?? 0,
+          correctAnswers: progress?.correctAnswers ?? 0,
+          accuracy: (progress?.questionsAttempted ?? 0) > 0 
+            ? Math.round(((progress?.correctAnswers ?? 0) / (progress?.questionsAttempted ?? 0)) * 100)
+            : 0,
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching subject mastery:", error);
+      res.status(500).json({ error: "Failed to fetch subject mastery" });
+    }
+  });
+
+  app.get("/api/subjects/:id/papers", async (req, res) => {
+    try {
+      const subjectId = parseInt(req.params.id);
+      const papers = await storage.getExamPapersBySubject(subjectId);
+      res.json(papers);
+    } catch (error) {
+      console.error("Error fetching papers:", error);
+      res.status(500).json({ error: "Failed to fetch papers" });
+    }
+  });
+
+  // All exam papers
+  app.get("/api/exam-papers", async (req, res) => {
+    try {
+      const papers = await storage.getAllExamPapers();
+      res.json(papers);
+    } catch (error) {
+      console.error("Error fetching exam papers:", error);
+      res.status(500).json({ error: "Failed to fetch exam papers" });
+    }
+  });
+
+  // Questions for an exam paper
+  app.get("/api/exam-papers/:id/questions", async (req, res) => {
+    try {
+      const paperId = parseInt(req.params.id);
+      const questions = await storage.getQuestionsByPaper(paperId);
+      res.json(questions);
+    } catch (error) {
+      console.error("Error fetching questions:", error);
+      res.status(500).json({ error: "Failed to fetch questions" });
+    }
+  });
+
+  // Exam Sessions for Exam Ready feature
+  const examSessionSchema = z.object({
+    examPaperId: z.number(),
+    timeAllowedMinutes: z.number().default(180),
+  }).strip();
+
+  app.post("/api/exam-sessions", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const data = examSessionSchema.parse(req.body);
+      const ipAddress = (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() || req.socket.remoteAddress || "unknown";
+
+      // T026: Check scraping velocity — alert if >3 exams started in last hour
+      const examCountInLastHour = await storage.getExamSessionCountInLastHour(userId);
+      if (examCountInLastHour >= EXAM_SCRAPING_HOURLY_THRESHOLD) {

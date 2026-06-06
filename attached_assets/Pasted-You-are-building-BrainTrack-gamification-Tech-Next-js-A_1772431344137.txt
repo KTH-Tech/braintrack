@@ -1,0 +1,831 @@
+You are building BrainTrack™ gamification.
+
+Tech:
+- Next.js (App Router) + TypeScript
+- Postgres
+- Drizzle ORM
+- API routes in /app/api/*
+- Auth assumed available with getUserId() helper returning uuid string.
+
+Implement:
+1) Database schema in Drizzle:
+- activity_events
+- user_streaks
+- badges
+- user_badges
+- leaderboard_seasons
+- leaderboard_entries
+
+2) Server utilities:
+- logEvent(userId, payload)
+- calculateDailyStreaks(date) (nightly job)
+- awardBadgesForUser(userId)
+- computeReadinessScore(userId, subject) (simple baseline formula)
+
+3) API endpoints:
+- POST /api/events (log event)
+- POST /api/gamification/recompute (admin-only, recompute user streaks/badges)
+- GET /api/reports/achievements?userId= (returns latest badge, tiles, next milestones)
+- GET /api/leaderboard/most-improved?season=current&scope=personal|cohort&subject=
+
+4) UI:
+- /learn/admin/reports page:
+  - AchievementsTopStrip (latest unlocked + confetti if celebration_level != none)
+  - 4 tiles (FIRST_80, STREAK_3W_IMPROVE, JUMP_15, MASTERY_* per subject)
+  - NextMilestones widget
+  - Sound effects + toggle
+  - Confetti triggers only for >=70 or new badge; champion for >=85
+
+5) Frontend libraries:
+- canvas-confetti
+No heavy gamification libs.
+
+Create a clean folder structure, strongly typed code, and minimal styling.
+1) Install deps
+npm i drizzle-orm pg canvas-confetti
+npm i -D drizzle-kit
+2) Folder structure
+/db
+  schema.ts
+  index.ts
+/lib
+  auth.ts
+  gamification
+    events.ts
+    scoring.ts
+    streaks.ts
+    badges.ts
+    leaderboard.ts
+/app/api/events/route.ts
+/app/api/gamification/recompute/route.ts
+/app/api/reports/achievements/route.ts
+/app/api/leaderboard/most-improved/route.ts
+/app/learn/admin/reports/page.tsx
+/components/gamification
+  AchievementsTopStrip.tsx
+  AchievementTiles.tsx
+  NextMilestones.tsx
+  Celebration.tsx
+  SoundToggle.tsx
+/public/sfx
+  pop-light.mp3
+  pop-bright.mp3
+  pop-sparkle.mp3
+  streak-ignite.mp3
+  milestone-gong-soft.mp3
+/scripts
+  nightly-gamification.ts
+3) Drizzle schema (db/schema.ts)
+// db/schema.ts
+import {
+  pgTable,
+  bigserial,
+  uuid,
+  text,
+  numeric,
+  jsonb,
+  timestamp,
+  date,
+  integer,
+  boolean,
+  uniqueIndex,
+  index,
+} from "drizzle-orm/pg-core";
+
+export const activityEvents = pgTable(
+  "activity_events",
+  {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    userId: uuid("user_id").notNull(),
+    eventType: text("event_type").notNull(), // lesson_completed, quiz_submitted, etc.
+    subject: text("subject"),
+    topic: text("topic"),
+    score: numeric("score", { precision: 5, scale: 2 }),
+    meta: jsonb("meta").notNull().default({}),
+    occurredAt: timestamp("occurred_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    userTimeIdx: index("idx_events_user_time").on(t.userId, t.occurredAt),
+    typeTimeIdx: index("idx_events_type_time").on(t.eventType, t.occurredAt),
+  })
+);
+
+export const userStreaks = pgTable(
+  "user_streaks",
+  {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    userId: uuid("user_id").notNull(),
+    streakType: text("streak_type").notNull(), // daily_study, weekly_improvement
+    subject: text("subject"),
+    currentCount: integer("current_count").notNull().default(0),
+    bestCount: integer("best_count").notNull().default(0),
+    lastEarnedDate: date("last_earned_date"),
+    startedOn: date("started_on"),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    uniq: uniqueIndex("uniq_user_streak").on(t.userId, t.streakType, t.subject),
+  })
+);
+
+export const badges = pgTable("badges", {
+  code: text("code").primaryKey(), // FIRST_80, JUMP_15, STREAK_3W_IMPROVE, MASTERY_MATH, etc.
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  category: text("category").notNull(), // performance/improvement/consistency/mastery/momentum
+  rarity: text("rarity").notNull(), // common/rare/epic/legendary
+  celebrationLevel: text("celebration_level").notNull().default("light"), // none/light/full
+  iconKey: text("icon_key").notNull(),
+  isActive: boolean("is_active").notNull().default(true),
+});
+
+export const userBadges = pgTable(
+  "user_badges",
+  {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    userId: uuid("user_id").notNull(),
+    badgeCode: text("badge_code")
+      .notNull()
+      .references(() => badges.code),
+    earnedAt: timestamp("earned_at", { withTimezone: true }).notNull().defaultNow(),
+    meta: jsonb("meta").notNull().default({}),
+  },
+  (t) => ({
+    uniq: uniqueIndex("uniq_user_badge").on(t.userId, t.badgeCode),
+    userTimeIdx: index("idx_user_badges_user_time").on(t.userId, t.earnedAt),
+  })
+);
+
+// Leaderboard: seasons + entries (Most Improved)
+export const leaderboardSeasons = pgTable("leaderboard_seasons", {
+  id: bigserial("id", { mode: "number" }).primaryKey(),
+  key: text("key").notNull().unique(), // e.g. 2026-03 or 2026-T1
+  startsOn: date("starts_on").notNull(),
+  endsOn: date("ends_on").notNull(),
+  isActive: boolean("is_active").notNull().default(true),
+});
+
+export const leaderboardEntries = pgTable(
+  "leaderboard_entries",
+  {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    seasonKey: text("season_key").notNull(), // references leaderboardSeasons.key (kept simple)
+    scope: text("scope").notNull(), // personal|cohort
+    cohortKey: text("cohort_key"), // schoolId/classId/province etc (nullable)
+    subject: text("subject"),
+    userId: uuid("user_id").notNull(),
+    metric: text("metric").notNull(), // most_improved|readiness|consistency
+    value: numeric("value", { precision: 10, scale: 2 }).notNull(),
+    computedAt: timestamp("computed_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    lookupIdx: index("idx_leaderboard_lookup").on(t.seasonKey, t.metric, t.scope, t.subject),
+  })
+);
+4) DB init (db/index.ts)
+// db/index.ts
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+
+export const db = drizzle(pool);
+5) Core utilities
+5.1 Event logger (lib/gamification/events.ts)
+// lib/gamification/events.ts
+import { db } from "@/db";
+import { activityEvents } from "@/db/schema";
+
+export type CoreEventType =
+  | "lesson_completed"
+  | "quiz_submitted"
+  | "score_recorded"
+  | "study_session_started"
+  | "study_session_ended"
+  | "topic_mastered"
+  | "report_viewed";
+
+export async function logEvent(input: {
+  userId: string;
+  eventType: CoreEventType;
+  subject?: string | null;
+  topic?: string | null;
+  score?: number | null;
+  meta?: Record<string, unknown>;
+}) {
+  await db.insert(activityEvents).values({
+    userId: input.userId,
+    eventType: input.eventType,
+    subject: input.subject ?? null,
+    topic: input.topic ?? null,
+    score: input.score != null ? String(input.score) : null,
+    meta: input.meta ?? {},
+  });
+}
+5.2 Scoring baseline (lib/gamification/scoring.ts)
+// lib/gamification/scoring.ts
+import { db } from "@/db";
+import { activityEvents } from "@/db/schema";
+import { and, desc, eq, gte, sql } from "drizzle-orm";
+
+/**
+ * Baseline readiness (0-100):
+ * - recent quiz scores (weighted by recency)
+ * - topic_mastered count (coverage proxy)
+ */
+export async function computeReadinessScore(userId: string, subject?: string | null) {
+  const subjectClause = subject ? eq(activityEvents.subject, subject) : undefined;
+
+  // last 10 quiz scores
+  const quizzes = await db
+    .select({
+      score: activityEvents.score,
+      occurredAt: activityEvents.occurredAt,
+    })
+    .from(activityEvents)
+    .where(
+      and(
+        eq(activityEvents.userId, userId),
+        eq(activityEvents.eventType, "quiz_submitted"),
+        subjectClause
+      )
+    )
+    .orderBy(desc(activityEvents.occurredAt))
+    .limit(10);
+
+  // coverage proxy: mastered topics in last 60 days
+  const mastered = await db
+    .select({
+      cnt: sql<number>`count(*)::int`,
+    })
+    .from(activityEvents)
+    .where(
+      and(
+        eq(activityEvents.userId, userId),
+        eq(activityEvents.eventType, "topic_mastered"),
+        subjectClause,
+        gte(activityEvents.occurredAt, sql`timestamptz 'now' - interval '60 days'`)
+      )
+    );
+
+  const coverage = Math.min(20, (mastered[0]?.cnt ?? 0) * 2); // cap 20 points
+
+  // recency-weighted average (simple)
+  let total = 0;
+  let weightSum = 0;
+  for (let i = 0; i < quizzes.length; i++) {
+    const w = Math.max(1, 10 - i); // 10..1
+    const s = quizzes[i].score ? Number(quizzes[i].score) : 0;
+    total += s * w;
+    weightSum += w;
+  }
+  const avg = weightSum ? total / weightSum : 0;
+
+  // readiness = 80% score + 20% coverage proxy
+  const readiness = Math.max(0, Math.min(100, avg * 0.8 + coverage));
+  return Math.round(readiness * 100) / 100;
+}
+5.3 Streaks (lib/gamification/streaks.ts)
+// lib/gamification/streaks.ts
+import { db } from "@/db";
+import { activityEvents, userStreaks } from "@/db/schema";
+import { and, eq, gte, lte, sql } from "drizzle-orm";
+
+/**
+ * Daily study streak:
+ * qualifies if user has >= 1 qualifying event on a day:
+ * lesson_completed | quiz_submitted | study_session_ended | topic_mastered
+ */
+const QUALIFYING_TYPES = ["lesson_completed", "quiz_submitted", "study_session_ended", "topic_mastered"];
+
+export async function calculateDailyStudyStreaks(forDateISO: string) {
+  // forDateISO = YYYY-MM-DD
+  const start = sql`timestamptz ${forDateISO}::date`;
+  const end = sql`timestamptz (${forDateISO}::date + interval '1 day')`;
+
+  // all users who qualified today
+  const rows = await db.execute<{
+    user_id: string;
+  }>(sql`
+    select distinct user_id
+    from activity_events
+    where occurred_at >= ${start} and occurred_at < ${end}
+      and event_type = any(${sql.array(QUALIFYING_TYPES, "text")})
+  `);
+
+  for (const r of rows.rows) {
+    await upsertDailyStreak(r.user_id, forDateISO);
+  }
+}
+
+async function upsertDailyStreak(userId: string, dateISO: string) {
+  const existing = await db
+    .select()
+    .from(userStreaks)
+    .where(and(eq(userStreaks.userId, userId), eq(userStreaks.streakType, "daily_study")))
+    .limit(1);
+
+  const row = existing[0];
+
+  // If already earned today, no-op
+  if (row?.lastEarnedDate === dateISO) return;
+
+  // If earned yesterday => increment, else reset to 1
+  const isConsecutive =
+    row?.lastEarnedDate &&
+    (await db.execute<{ ok: boolean }>(sql`select (${dateISO}::date = (${row.lastEarnedDate}::date + interval '1 day')) as ok`))
+      .rows[0]?.ok;
+
+  const nextCount = isConsecutive ? (row?.currentCount ?? 0) + 1 : 1;
+  const best = Math.max(row?.bestCount ?? 0, nextCount);
+
+  if (!row) {
+    await db.insert(userStreaks).values({
+      userId,
+      streakType: "daily_study",
+      subject: null,
+      currentCount: nextCount,
+      bestCount: best,
+      lastEarnedDate: dateISO,
+      startedOn: dateISO,
+    });
+  } else {
+    await db
+      .update(userStreaks)
+      .set({
+        currentCount: nextCount,
+        bestCount: best,
+        lastEarnedDate: dateISO,
+        updatedAt: new Date(),
+      })
+      .where(eq(userStreaks.id, row.id));
+  }
+}
+5.4 Badges (lib/gamification/badges.ts)
+// lib/gamification/badges.ts
+import { db } from "@/db";
+import { activityEvents, badges, userBadges, userStreaks } from "@/db/schema";
+import { and, desc, eq, isNull } from "drizzle-orm";
+
+export const CORE_BADGES = [
+  {
+    code: "FIRST_80",
+    name: "First 80%",
+    description: "First time you scored 80%+ on a quiz.",
+    category: "performance",
+    rarity: "rare",
+    celebrationLevel: "light",
+    iconKey: "badge_first_80",
+  },
+  {
+    code: "JUMP_15",
+    name: "+15% Jump",
+    description: "Improved by 15% or more compared to your previous attempt.",
+    category: "improvement",
+    rarity: "epic",
+    celebrationLevel: "full",
+    iconKey: "badge_jump_15",
+  },
+  {
+    code: "STREAK_3W_IMPROVE",
+    name: "3-Week Improve Streak",
+    description: "Improved your weekly readiness score for 3 consecutive weeks.",
+    category: "consistency",
+    rarity: "epic",
+    celebrationLevel: "full",
+    iconKey: "badge_streak_3w",
+  },
+  // Example mastery by subject (add more as needed)
+  {
+    code: "MASTERY_MATH",
+    name: "Math Mastery",
+    description: "Unlocked mastery in Mathematics.",
+    category: "mastery",
+    rarity: "legendary",
+    celebrationLevel: "full",
+    iconKey: "badge_mastery_math",
+  },
+] as const;
+
+export async function seedBadges() {
+  for (const b of CORE_BADGES) {
+    await db
+      .insert(badges)
+      .values(b)
+      // drizzle: simplest upsert via onConflictDoNothing not always typed; fallback to try/catch is ok in MVP
+      .onConflictDoNothing();
+  }
+}
+
+export async function awardBadgesForUser(userId: string) {
+  await awardFirst80(userId);
+  await awardJump15(userId);
+  await award3WeekImprove(userId); // requires weekly job or readiness snapshots; MVP uses placeholder logic
+  await awardMasteryMath(userId);
+}
+
+async function alreadyHas(userId: string, badgeCode: string) {
+  const rows = await db
+    .select({ id: userBadges.id })
+    .from(userBadges)
+    .where(and(eq(userBadges.userId, userId), eq(userBadges.badgeCode, badgeCode)))
+    .limit(1);
+  return Boolean(rows[0]);
+}
+
+async function grant(userId: string, badgeCode: string, meta: Record<string, unknown> = {}) {
+  if (await alreadyHas(userId, badgeCode)) return;
+  await db.insert(userBadges).values({ userId, badgeCode, meta });
+}
+
+async function awardFirst80(userId: string) {
+  if (await alreadyHas(userId, "FIRST_80")) return;
+
+  const rows = await db
+    .select({ score: activityEvents.score })
+    .from(activityEvents)
+    .where(and(eq(activityEvents.userId, userId), eq(activityEvents.eventType, "quiz_submitted")))
+    .orderBy(desc(activityEvents.occurredAt))
+    .limit(50);
+
+  if (rows.some((r) => (r.score ? Number(r.score) : 0) >= 80)) {
+    await grant(userId, "FIRST_80", { threshold: 80 });
+  }
+}
+
+async function awardJump15(userId: string) {
+  if (await alreadyHas(userId, "JUMP_15")) return;
+
+  // Find last two quiz scores per (subject, topic) is heavier; MVP: last two overall quizzes
+  const rows = await db
+    .select({ score: activityEvents.score, subject: activityEvents.subject, topic: activityEvents.topic })
+    .from(activityEvents)
+    .where(and(eq(activityEvents.userId, userId), eq(activityEvents.eventType, "quiz_submitted")))
+    .orderBy(desc(activityEvents.occurredAt))
+    .limit(2);
+
+  if (rows.length < 2) return;
+
+  const curr = rows[0].score ? Number(rows[0].score) : 0;
+  const prev = rows[1].score ? Number(rows[1].score) : 0;
+  if (curr - prev >= 15) {
+    await grant(userId, "JUMP_15", { delta: curr - prev, prev, curr });
+  }
+}
+
+async function award3WeekImprove(userId: string) {
+  // MVP version: unlock if daily_study streak >= 21 (proxy for 3-week engagement)
+  if (await alreadyHas(userId, "STREAK_3W_IMPROVE")) return;
+
+  const streak = await db
+    .select()
+    .from(userStreaks)
+    .where(and(eq(userStreaks.userId, userId), eq(userStreaks.streakType, "daily_study"), isNull(userStreaks.subject)))
+    .limit(1);
+
+  if ((streak[0]?.currentCount ?? 0) >= 21) {
+    await grant(userId, "STREAK_3W_IMPROVE", { proxy: "daily_study>=21" });
+  }
+}
+
+async function awardMasteryMath(userId: string) {
+  // MVP: mastery unlocked if >= 10 topic_mastered events in Math
+  if (await alreadyHas(userId, "MASTERY_MATH")) return;
+
+  const rows = await db.execute<{ cnt: number }>(`
+    select count(*)::int as cnt
+    from activity_events
+    where user_id = '${userId}'
+      and event_type = 'topic_mastered'
+      and subject = 'Math'
+  `);
+
+  if ((rows.rows[0]?.cnt ?? 0) >= 10) {
+    await grant(userId, "MASTERY_MATH", { topicsMastered: rows.rows[0]?.cnt });
+  }
+}
+
+Note: the 3-week improvement badge is implemented as a proxy for MVP (daily_study ≥ 21). If you want the true weekly readiness delta, we add a readiness_snapshots table next.
+
+6) API endpoints
+POST /api/events (app/api/events/route.ts)
+import { NextResponse } from "next/server";
+import { logEvent } from "@/lib/gamification/events";
+import { awardBadgesForUser } from "@/lib/gamification/badges";
+import { getUserId } from "@/lib/auth";
+
+export async function POST(req: Request) {
+  const userId = await getUserId(req);
+  if (!userId) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+
+  const body = await req.json();
+
+  await logEvent({
+    userId,
+    eventType: body.eventType,
+    subject: body.subject ?? null,
+    topic: body.topic ?? null,
+    score: body.score ?? null,
+    meta: body.meta ?? {},
+  });
+
+  // immediate badge awarding (Phase 1 feel)
+  await awardBadgesForUser(userId);
+
+  return NextResponse.json({ ok: true });
+}
+GET /api/reports/achievements (app/api/reports/achievements/route.ts)
+import { NextResponse } from "next/server";
+import { db } from "@/db";
+import { badges, userBadges, userStreaks } from "@/db/schema";
+import { and, desc, eq } from "drizzle-orm";
+import { computeReadinessScore } from "@/lib/gamification/scoring";
+
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const userId = searchParams.get("userId");
+  const subject = searchParams.get("subject");
+
+  if (!userId) return NextResponse.json({ error: "missing userId" }, { status: 400 });
+
+  const latest = await db
+    .select({
+      badgeCode: userBadges.badgeCode,
+      earnedAt: userBadges.earnedAt,
+      celebrationLevel: badges.celebrationLevel,
+      name: badges.name,
+      iconKey: badges.iconKey,
+    })
+    .from(userBadges)
+    .innerJoin(badges, eq(userBadges.badgeCode, badges.code))
+    .where(eq(userBadges.userId, userId))
+    .orderBy(desc(userBadges.earnedAt))
+    .limit(1);
+
+  const daily = await db
+    .select()
+    .from(userStreaks)
+    .where(and(eq(userStreaks.userId, userId), eq(userStreaks.streakType, "daily_study")))
+    .limit(1);
+
+  const readiness = await computeReadinessScore(userId, subject);
+
+  // Next milestone suggestions (simple)
+  const next = {
+    readinessToStrong: Math.max(0, 70 - readiness), // define STRONG at 70
+    daysTo7DayStreak: Math.max(0, 7 - (daily[0]?.currentCount ?? 0)),
+    daysTo21DayStreak: Math.max(0, 21 - (daily[0]?.currentCount ?? 0)),
+  };
+
+  return NextResponse.json({
+    latest: latest[0] ?? null,
+    streaks: {
+      dailyStudy: daily[0] ?? { currentCount: 0, bestCount: 0 },
+    },
+    readiness,
+    next,
+  });
+}
+GET /api/leaderboard/most-improved (app/api/leaderboard/most-improved/route.ts)
+
+MVP “Most Improved” uses JUMP_15 meta delta as a proxy (fast + effective). Next iteration uses readiness snapshots.
+
+import { NextResponse } from "next/server";
+import { db } from "@/db";
+import { userBadges } from "@/db/schema";
+import { and, desc, eq } from "drizzle-orm";
+
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const limit = Number(searchParams.get("limit") ?? "10");
+
+  // proxy: top deltas from JUMP_15 awards meta.delta
+  const rows = await db
+    .select({
+      userId: userBadges.userId,
+      meta: userBadges.meta,
+      earnedAt: userBadges.earnedAt,
+    })
+    .from(userBadges)
+    .where(eq(userBadges.badgeCode, "JUMP_15"))
+    .orderBy(desc(userBadges.earnedAt))
+    .limit(200);
+
+  const entries = rows
+    .map((r) => ({
+      userId: r.userId,
+      delta: Number((r.meta as any)?.delta ?? 0),
+      earnedAt: r.earnedAt,
+    }))
+    .sort((a, b) => b.delta - a.delta)
+    .slice(0, limit);
+
+  return NextResponse.json({ metric: "most_improved_proxy", entries });
+}
+7) Nightly job (scripts/nightly-gamification.ts)
+
+Run daily (cron / Replit scheduled task). This updates streaks.
+
+import { calculateDailyStudyStreaks } from "@/lib/gamification/streaks";
+
+// YYYY-MM-DD in server timezone
+function todayISO() {
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+async function main() {
+  const dateISO = todayISO();
+  await calculateDailyStudyStreaks(dateISO);
+  console.log("Nightly gamification complete:", dateISO);
+}
+
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});
+8) /learn/admin/reports UI (confetti + sounds + achievements)
+Celebration component (components/gamification/Celebration.tsx)
+"use client";
+
+import confetti from "canvas-confetti";
+
+export function fireConfetti(level: "none" | "light" | "full") {
+  if (level === "none") return;
+
+  const base = level === "full" ? 220 : 90;
+  confetti({
+    particleCount: base,
+    spread: level === "full" ? 110 : 70,
+    origin: { y: 0.65 },
+  });
+}
+Sound toggle (components/gamification/SoundToggle.tsx)
+"use client";
+
+import { useEffect, useState } from "react";
+
+export function useSoundEnabled() {
+  const [enabled, setEnabled] = useState(true);
+
+  useEffect(() => {
+    const v = localStorage.getItem("bt_sfx");
+    if (v != null) setEnabled(v === "1");
+  }, []);
+
+  const toggle = () => {
+    const next = !enabled;
+    setEnabled(next);
+    localStorage.setItem("bt_sfx", next ? "1" : "0");
+  };
+
+  return { enabled, toggle };
+}
+
+export function playSfx(file: string, enabled: boolean) {
+  if (!enabled) return;
+  const a = new Audio(`/sfx/${file}`);
+  a.volume = 0.6;
+  a.play().catch(() => {});
+}
+Reports page (app/learn/admin/reports/page.tsx)
+"use client";
+
+import { useEffect, useState } from "react";
+import { fireConfetti } from "@/components/gamification/Celebration";
+import { playSfx, useSoundEnabled } from "@/components/gamification/SoundToggle";
+
+type AchRes = {
+  latest: null | {
+    badgeCode: string;
+    earnedAt: string;
+    celebrationLevel: "none" | "light" | "full";
+    name: string;
+    iconKey: string;
+  };
+  streaks: { dailyStudy: { currentCount: number; bestCount: number } };
+  readiness: number;
+  next: { readinessToStrong: number; daysTo7DayStreak: number; daysTo21DayStreak: number };
+};
+
+export default function ReportsPage() {
+  const [data, setData] = useState<AchRes | null>(null);
+  const { enabled, toggle } = useSoundEnabled();
+
+  // Replace with real selection (admin view of learner)
+  const userId = "REPLACE_WITH_SELECTED_LEARNER_UUID";
+
+  useEffect(() => {
+    (async () => {
+      const res = await fetch(`/api/reports/achievements?userId=${userId}`);
+      const json = await res.json();
+      setData(json);
+
+      // celebration trigger
+      if (json?.latest?.celebrationLevel && json.latest.celebrationLevel !== "none") {
+        fireConfetti(json.latest.celebrationLevel);
+
+        if (json.latest.celebrationLevel === "full") {
+          playSfx("pop-sparkle.mp3", enabled);
+        } else {
+          playSfx("pop-bright.mp3", enabled);
+        }
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (!data) return <div className="p-6 text-white">Loading reports…</div>;
+
+  return (
+    <div className="p-6 text-white">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-semibold">Learner Report</h1>
+        <button
+          onClick={toggle}
+          className="px-3 py-2 rounded bg-white/10 hover:bg-white/15"
+        >
+          SFX: {enabled ? "ON" : "OFF"}
+        </button>
+      </div>
+
+      {/* Top strip */}
+      <div className="rounded-xl bg-white/10 p-4 mb-6">
+        <div className="text-sm opacity-80">Latest unlocked</div>
+        <div className="text-lg font-semibold">
+          {data.latest ? data.latest.name : "No badges yet — let’s get the first win."}
+        </div>
+        <div className="text-sm opacity-80 mt-1">
+          Readiness score: <span className="font-semibold">{data.readiness}</span>
+        </div>
+      </div>
+
+      {/* 4 tiles */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <Tile title="🥇 First 80%" desc="First time learner hits 80%+ on a quiz." />
+        <Tile title="🔥 3-week improvement streak" desc="Proxy MVP: 21-day study streak (upgrade to weekly readiness snapshots next)." />
+        <Tile title="📈 +15% jump" desc="Score improved by 15%+ vs previous attempt." />
+        <Tile title="🎓 Subject mastery" desc="Mastery unlocked per subject (MVP: Math = 10 topics mastered)." />
+      </div>
+
+      {/* Next milestones */}
+      <div className="rounded-xl bg-white/10 p-4">
+        <div className="text-lg font-semibold mb-2">Next milestones</div>
+        <ul className="space-y-1 text-sm opacity-90">
+          <li>• {data.next.readinessToStrong <= 0 ? "✅ STRONG readiness reached" : `${data.next.readinessToStrong.toFixed(0)}% away from STRONG readiness`}</li>
+          <li>• {data.next.daysTo7DayStreak <= 0 ? "✅ 7-day streak unlocked" : `${data.next.daysTo7DayStreak} days left for a 7-day streak badge`}</li>
+          <li>• {data.next.daysTo21DayStreak <= 0 ? "✅ 21-day streak unlocked" : `${data.next.daysTo21DayStreak} days left for the 21-day milestone`}</li>
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+function Tile({ title, desc }: { title: string; desc: string }) {
+  return (
+    <div className="rounded-xl bg-white/10 p-4">
+      <div className="font-semibold">{title}</div>
+      <div className="text-sm opacity-80 mt-1">{desc}</div>
+    </div>
+  );
+}
+9) Sound effects (practical guidance)
+
+Put 5 small mp3 files into /public/sfx/ with these names:
+
+pop-light.mp3
+
+pop-bright.mp3
+
+pop-sparkle.mp3
+
+streak-ignite.mp3
+
+milestone-gong-soft.mp3
+
+Rule: keep each file < 250ms and normalized volume. (Premium = short, crisp, not noisy.)
+
+10) What to do next (so it’s not “proxy MVP”)
+
+If you want the real weekly improvement streak + real Most Improved leaderboard, add:
+
+Table: readiness_snapshots (user_id, subject, week_start, readiness)
+Nightly job writes snapshot once/week. Leaderboard reads deltas from snapshots.
+Say “Add readiness_snapshots” and I’ll drop the exact schema + job + leaderboard query.
+
+Quick sanity checklist (go-live)
+
+ Seed badges once (call seedBadges() during startup/admin)
+
+ Start logging events from learning flows
+
+ Run nightly streak job
+
+ Wire /learn/admin/reports to a real learner picker (not hardcoded UUID)
+
+ Ensure confetti + sounds trigger only on new badge or 70+ score events

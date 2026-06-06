@@ -1,0 +1,153 @@
+No — this is **not all**. It is a **strong core regression + UAT pack**, but for BrainTrack you should also add these test groups to make it complete:
+
+## Missing test areas
+
+### Data migration and seeding
+
+* DB push/migrate rollback
+* old data compatibility after schema changes
+* seed scripts create valid demo users, links, questions, products
+
+### Question bank ingestion
+
+* duplicate question detection
+* malformed options JSON
+* missing explanation handling
+* bulk import at scale
+* subject/topic/tag mapping validation
+* archive/unpublish questions
+
+### Dynamic study plan logic
+
+* plan recalculates after missed study days
+* conflicting exam dates
+* multiple weak subjects prioritization
+* no available time entered
+* learner ahead of plan
+* manual override by learner
+
+### Gamification edge cases
+
+* double XP prevention
+* badge unlock only once
+* leaderboard tie handling
+* timezone effect on streaks
+* reward unlock rollback if source action reversed
+
+### School and partner portal deeper cases
+
+* school admin cannot access another school’s data
+* teacher/class scoping
+* inactive school behavior
+* commission recalculation after refund
+* monthly report export
+
+### Notifications and reminders
+
+* study reminder sent
+* duplicate notification prevention
+* quiet hours respected
+* parent alerts for risk status changes
+* in-app vs email notification preference
+
+### Voice and consent compliance
+
+* revoke consent disables my voice
+* delete voice sample fully removes access
+* parent consent audit trail
+* minor account cannot enable restricted audio features alone
+
+### Print/export edge cases
+
+* long notes paginate correctly
+* watermark present on every page
+* logo missing fallback
+* Afrikaans printable version
+* print from mobile browser
+
+### Admin governance
+
+* audit log for admin changes
+* product config publish history
+* who changed price/trial/features
+* rollback to previous config
+
+### Observability and failures
+
+* API failure logging
+* socket failure logging
+* payment webhook retry logging
+* AI provider outage fallback
+* partial outage messaging to user
+
+### Performance and load
+
+* 1,000 concurrent parent realtime listeners
+* large question set fetch latency
+* dashboard with many linked children
+* heavy chart rendering on mobile
+* memory leaks on long sessions
+
+### Accessibility deeper pass
+
+* screen reader flow for charts
+* reduced-motion behavior on all animations
+* color contrast on rainbow accents
+* focus order in modals/dropdowns/tooltips
+
+### Browser/device coverage
+
+* Chrome, Safari, Edge
+* Android Chrome
+* iPhone Safari
+* low-memory mobile devices
+
+### Security hardening
+
+* IDOR on learner/parent/admin APIs
+* brute-force login protection
+* file upload virus/type validation
+* prompt injection handling on AI endpoints
+* sensitive fields omitted from logs
+
+### Business rule tests
+
+* trial expiry and re-subscribe logic
+* multi-child parent billing behavior
+* referral attribution edge cases
+* school commission edge cases
+* linked parent but inactive learner behavior
+
+## What “complete” looks like
+
+For BrainTrack, a near-complete pack should cover:
+
+* functional tests
+* regression tests
+* integration tests
+* API tests
+* permission/security tests
+* performance/load tests
+* accessibility tests
+* cross-browser/mobile tests
+* data migration tests
+* compliance/consent tests
+* UAT scenarios
+
+## Practical answer
+
+What I gave you is about **70–75% of a full test universe**.
+To be launch-ready, you still need the **edge-case, scale, compliance, and non-functional** layers above.
+
+The biggest gaps are:
+
+1. **question bank ingestion**
+2. **dynamic study plan logic**
+3. **gamification edge cases**
+4. **school/partner permissions**
+5. **security + compliance**
+6. **performance/load**
+7. **cross-browser/mobile**
+
+I can turn this into a **full master test matrix** with priorities:
+**P0, P1, P2, P3**, and make it Excel-ready.

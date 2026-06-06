@@ -1,0 +1,425 @@
+  app.post("/api/caps/adaptive-explanation", isAuthenticated, heavyLimiter, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { questionId, learnerAnswer } = req.body;
+      
+      if (!questionId) {
+        return res.status(400).json({ error: "Question ID is required" });
+      }
+
+      const question = await storage.getQuestion(questionId);
+      if (!question) {
+        return res.status(404).json({ error: "Question not found" });
+      }
+
+      // LEGAL COMPLIANCE: Only allow adaptive explanations for SIMULATED content
+      if (question.isSimulated === false) {
+        return res.status(403).json({ 
+          error: "Adaptive explanations are only available for simulated questions.",
+          message: "For official DBE content, please refer to the official memoranda.",
+          officialDbeLink: OFFICIAL_DBE_LINK
+        });
+      }
+
+      const topic = question.topicId ? await storage.getTopic(question.topicId) : null;
+      if (!topic) {
+        return res.status(404).json({ error: "Topic not found for this question" });
+      }
+
+      // Get learner's mastery for this topic
+      const mastery = await storage.getTopicMastery(userId, topic.id);
+      const masteryScore = mastery?.masteryScore || 0;
+      const masteryBand = getMasteryBand(masteryScore);
+
+      // Generate adaptive explanation based on mastery band
+      const adaptiveExplanation = generateAdaptiveExplanation(
+        masteryBand,
+        masteryScore,
+        topic,
+        question.questionText,
+        question.memoText,
+        learnerAnswer || "",
+        (question.cognitiveLevel || "application") as "knowledge" | "application" | "higher_order",
+        "english"
+      );
+
+      res.json(adaptiveExplanation);
+    } catch (error) {
+      console.error("Error generating adaptive explanation:", error);
+      res.status(500).json({ error: "Failed to generate explanation" });
+    }
+  });
+
+  // Get simulated exams for a subject
+  app.get("/api/simulated-exams/:subjectId", isAuthenticated, async (req: any, res) => {
+    try {
+      const subjectId = parseInt(req.params.subjectId);
+      
+      if (isNaN(subjectId)) {
+        return res.status(400).json({ error: "Invalid subject ID" });
+      }
+
+      const exams = await storage.getSimulatedExamsBySubject(subjectId);
+      
+      res.json({
+        exams,
+        disclaimer: SIMULATED_EXAM_DISCLAIMER,
+        officialDbeLink: OFFICIAL_DBE_LINK
+      });
+    } catch (error) {
+      console.error("Error fetching simulated exams:", error);
+      res.status(500).json({ error: "Failed to fetch simulated exams" });
+    }
+  });
+
+  // Get single simulated exam with full content
+  app.get("/api/simulated-exams/exam/:examId", isAuthenticated, async (req: any, res) => {
+    try {
+      const examId = parseInt(req.params.examId);
+      
+      if (isNaN(examId)) {
+        return res.status(400).json({ error: "Invalid exam ID" });
+      }
+
+      const exam = await storage.getSimulatedExam(examId);
+      if (!exam) {
+        return res.status(404).json({ error: "Simulated exam not found" });
+      }
+      
+      res.json({
+        ...exam,
+        disclaimer: SIMULATED_EXAM_DISCLAIMER,
+        officialDbeLink: OFFICIAL_DBE_LINK
+      });
+    } catch (error) {
+      console.error("Error fetching simulated exam:", error);
+      res.status(500).json({ error: "Failed to fetch simulated exam" });
+    }
+  });
+
+  // Get CAPS topic intelligence data
+  app.get("/api/caps/topic-intelligence/:capsCode", async (req, res) => {
+    try {
+      const capsCode = req.params.capsCode;
+      const intelligence = CAPS_TOPIC_INTELLIGENCE[capsCode];
+      
+      if (!intelligence) {
+        return res.status(404).json({ error: "Topic intelligence not found" });
+      }
+
+      res.json({
+        capsCode,
+        ...intelligence,
+        officialDbeLink: OFFICIAL_DBE_LINK
+      });
+    } catch (error) {
+      console.error("Error fetching topic intelligence:", error);
+      res.status(500).json({ error: "Failed to fetch topic intelligence" });
+    }
+  });
+
+  // Get official DBE reference link
+  app.get("/api/caps/dbe-link", (req, res) => {
+    res.json({
+      link: OFFICIAL_DBE_LINK,
+      description: "Official Department of Basic Education NSC Past Examination Papers"
+    });
+  });
+
+  // ============================================
+  // SIMULATED EXAMS API - Original CAPS-Aligned Questions
+  // ============================================
+
+  // Get all available subjects with simulated exams
+  app.get("/api/simulated/subjects", (req, res) => {
+    try {
+      const subjects = getAvailableSubjects();
+      res.json({
+        subjects,
+        disclaimer: SIMULATED_EXAM_DISCLAIMER,
+        note: "All questions are ORIGINAL and SIMULATED. Not copied from DBE.",
+        officialDbeLink: OFFICIAL_DBE_LINK
+      });
+    } catch (error) {
+      console.error("Error fetching simulated subjects:", error);
+      res.status(500).json({ error: "Failed to fetch subjects" });
+    }
+  });
+
+  // Get simulated paper by subject code and paper number
+  app.get("/api/simulated/paper/:subjectCode/:paperNumber", (req, res) => {
+    try {
+      const { subjectCode, paperNumber } = req.params;
+      const paper = getSimulatedPaper(subjectCode.toUpperCase(), parseInt(paperNumber));
+      
+      if (!paper) {
+        return res.status(404).json({ 
+          error: "Simulated paper not found",
+          available: getAvailableSubjects()
+        });
+      }
+
+      // Add student-friendly cognitive level labels to each question
+      const enhancedPaper = {
+        ...paper,
+        sections: paper.sections.map(section => ({
+          ...section,
+          questions: section.questions.map(q => {
+            const cogLevel = q.cognitiveLevel as keyof typeof COGNITIVE_LEVEL_LABELS;
+            const labels = COGNITIVE_LEVEL_LABELS[cogLevel];
+            return {
+              ...q,
+              cognitiveLevelLabel: {
+                simple: labels.simple,
+                simpleAf: labels.simpleAf,
+                description: labels.description,
+                descriptionAf: labels.descriptionAf
+              }
+            };
+          })
+        }))
+      };
+
+      res.json({
+        paper: enhancedPaper,
+        cognitiveLevelGuide: {
+          knowledge: { label: "Remember & Recall", description: "Can you remember the facts?" },
+          application: { label: "Use What You Know", description: "Can you apply your knowledge to solve problems?" },
+          higher_order: { label: "Think & Analyse", description: "Can you analyse, evaluate and create new ideas?" }
+        },
+        disclaimer: SIMULATED_EXAM_DISCLAIMER,
+        legalNote: "All questions are ORIGINAL and SIMULATED. Official DBE content only via external links.",
+        officialDbeLink: OFFICIAL_DBE_LINK
+      });
+    } catch (error) {
+      console.error("Error fetching simulated paper:", error);
+      res.status(500).json({ error: "Failed to fetch simulated paper" });
+    }
+  });
+
+  // Get all questions for a subject
+  app.get("/api/simulated/questions/:subjectCode", (req, res) => {
+    try {
+      const subjectCode = req.params.subjectCode.toUpperCase();
+      const questions = getQuestionsForSubject(subjectCode);
+      
+      if (questions.length === 0) {
+        return res.status(404).json({ 
+          error: "No questions found for this subject",
+          available: getAvailableSubjects()
+        });
+      }
+
+      res.json({
+        subjectCode,
+        questionCount: questions.length,
+        questions,
+        disclaimer: SIMULATED_EXAM_DISCLAIMER
+      });
+    } catch (error) {
+      console.error("Error fetching questions:", error);
+      res.status(500).json({ error: "Failed to fetch questions" });
+    }
+  });
+
+  // Get single question by ID with memo
+  app.get("/api/simulated/question/:questionId", (req, res) => {
+    try {
+      const questionId = req.params.questionId;
+      const question = getQuestionById(questionId);
+      
+      if (!question) {
+        return res.status(404).json({ error: "Question not found" });
+      }
+
+      res.json({
+        question,
+        disclaimer: SIMULATED_EXAM_DISCLAIMER
+      });
+    } catch (error) {
+      console.error("Error fetching question:", error);
+      res.status(500).json({ error: "Failed to fetch question" });
+    }
+  });
+
+  // Submit answer and get feedback (auto-marking)
+  app.post("/api/simulated/submit-answer", isAuthenticated, async (req: any, res) => {
+    try {
+      const { questionId, answer } = req.body;
+      const userId = req.user?.claims?.sub || req.user?.id;
+
+      if (!questionId || !answer) {
+        return res.status(400).json({ error: "Question ID and answer required" });
+      }
+
+      const question = getQuestionById(questionId);
+      if (!question) {
+        return res.status(404).json({ error: "Question not found" });
+      }
+
+      if (userId) {
+        const subjectCode = getSubjectCodeForQuestion(questionId);
+        if (subjectCode) {
+          const [subjectRow] = await db.select().from(subjects).where(eq(subjects.capsCode, subjectCode));
+          if (subjectRow) {
+            await storage.updateUserProgress(userId, subjectRow.id);
+          }
+        }
+        await storage.checkAndAwardBadges(userId);
+      }
+
+      const cogLevel = question.cognitiveLevel as keyof typeof COGNITIVE_LEVEL_LABELS;
+      const cogLabels = COGNITIVE_LEVEL_LABELS[cogLevel];
+      
+      res.json({
+        questionId,
+        yourAnswer: answer,
+        marks: question.marks,
+        memo: {
+          en: question.memoText,
+          af: question.memoTextAf
+        },
+        markingSteps: question.markingSteps,
+        commonErrors: question.commonErrors,
+        topic: question.topic,
+        cognitiveLevel: {
+          code: question.cognitiveLevel,
+          label: cogLabels.simple,
+          labelAf: cogLabels.simpleAf,
+          description: cogLabels.description,
+          descriptionAf: cogLabels.descriptionAf
+        },
+        disclaimer: "Compare your answer with the memo and award yourself marks accordingly."
+      });
+    } catch (error) {
+      console.error("Error submitting answer:", error);
+      res.status(500).json({ error: "Failed to submit answer" });
+    }
+  });
+
+  // Get all simulated papers (overview)
+  app.get("/api/simulated/all-papers", (req, res) => {
+    try {
+      const papers = SIMULATED_PAPERS.map(p => ({
+        subjectCode: p.subjectCode,
+        subjectName: p.subjectName,
+        subjectNameAf: p.subjectNameAf,
+        paperNumber: p.paperNumber,
+        totalMarks: p.totalMarks,
+        duration: p.duration,
+        sectionCount: p.sections.length,
+        questionCount: p.sections.reduce((acc, s) => acc + s.questions.length, 0)
+      }));
+
+      res.json({
+        papers,
+        totalPapers: papers.length,
+        disclaimer: SIMULATED_EXAM_DISCLAIMER,
+        officialDbeLink: OFFICIAL_DBE_LINK
+      });
+    } catch (error) {
+      console.error("Error fetching all papers:", error);
+      res.status(500).json({ error: "Failed to fetch papers" });
+    }
+  });
+
+  app.get("/api/exam-countdown", (req: Request, res: Response) => {
+    const now = new Date();
+    
+    const prelimsStart = new Date('2026-08-01T09:00:00+02:00');
+    const prelimsEnd = new Date('2026-09-30T17:00:00+02:00');
+    const finalsStart = new Date('2026-10-21T09:00:00+02:00');
+    const finalsEnd = new Date('2026-11-27T17:00:00+02:00');
+    
+    const msPerDay = 24 * 60 * 60 * 1000;
+    const msPerHour = 60 * 60 * 1000;
+    
+    const daysToPrelimsMs = prelimsStart.getTime() - now.getTime();
+    const daysToFinalsMs = finalsStart.getTime() - now.getTime();
+    
+    const daysToPrelimsRaw = daysToPrelimsMs / msPerDay;
+    const daysToFinalsRaw = daysToFinalsMs / msPerDay;
+    
+    const getNextExam = () => {
+      if (daysToPrelimsRaw > 0) return 'prelims';
+      if (daysToFinalsRaw > 0) return 'finals';
+      return 'done';
+    };
+    
+    res.json({
+      currentDate: now.toISOString(),
+      nextExam: getNextExam(),
+      preliminaryExams: {
+        startDate: '2026-08-01',
+        endDate: '2026-09-30',
+        daysRemaining: Math.max(0, Math.ceil(daysToPrelimsRaw)),
+        hoursRemaining: Math.max(0, Math.ceil(daysToPrelimsMs / msPerHour)),
+        status: daysToPrelimsRaw > 0 ? 'upcoming' : 'passed',
+        label: 'Prelims / Trials',
+        labelAf: 'Voorlopige Eksamen'
+      },
+      finalExams: {
+        startDate: '2026-10-21',
+        endDate: '2026-11-27',
+        daysRemaining: Math.max(0, Math.ceil(daysToFinalsRaw)),
+        hoursRemaining: Math.max(0, Math.ceil(daysToFinalsMs / msPerHour)),
+        status: daysToFinalsRaw > 0 ? 'upcoming' : 'passed',
+        label: 'NSC Finals (Oct/Nov)',
+        labelAf: 'NSC Finaal (Okt/Nov)'
+      },
+      urgencyMessage: daysToPrelimsRaw > 0 && daysToPrelimsRaw <= 30
+        ? 'Pre-Lims approaching fast - every day counts!'
+        : daysToFinalsRaw <= 60 
+        ? 'Critical study period - every day counts!'
+        : daysToFinalsRaw <= 120
+        ? 'Exam season approaching - build your foundation now!'
+        : 'Build consistent study habits - success starts today!',
+      urgencyMessageAf: daysToPrelimsRaw > 0 && daysToPrelimsRaw <= 30
+        ? 'Voorlopige eksamens nader vinnig - elke dag tel!'
+        : daysToFinalsRaw <= 60
+        ? 'Kritieke studietydperk - elke dag tel!'
+        : daysToFinalsRaw <= 120
+        ? 'Eksamenseisoen nader - bou nou jou fondament!'
+        : 'Bou konsekwente studiegewoontes - sukses begin vandag!',
+      recommendedMinutesPerDay: 45,
+      source: 'Dates based on DBE patterns. Official 2026 timetable at education.gov.za'
+    });
+  });
+
+  // About/Company info endpoint
+  app.get("/api/about", (req: Request, res: Response) => {
+    res.json({
+      company: {
+        name: "KTH TECH",
+        tagline: "Groundbreaking Research-Based Innovation & Tech Enablement Hub",
+        description: "KTH TECH is the founding company behind BrainTrack™, pioneering research-based educational technology that empowers South African learners to achieve academic excellence.",
+        descriptionAf: "KTH TECH is die stigtermaatskappy agter BrainTrack™, wat baanbrekende navorsingsgebaseerde opvoedkundige tegnologie ontwikkel wat Suid-Afrikaanse leerders bemagtig om akademiese uitnemendheid te bereik.",
+        mission: "To democratise quality education through intelligent technology, making personalized tutoring accessible to every South African learner regardless of background.",
+        missionAf: "Om kwaliteit onderwys te demokratiseer deur intelligente tegnologie, en gepersonaliseerde tutorskap toeganklik te maak vir elke Suid-Afrikaanse leerder ongeag agtergrond.",
+        founded: 2024,
+        headquarters: "South Africa"
+      },
+      product: {
+        name: "BrainTrack™",
+        description: "South Africa's first CAPS-intelligent AI tutor system, powered by Rizz",
+        features: [
+          "AI-powered adaptive learning",
+          "Mastery-based progression",
+          "NSC-aligned exam preparation",
+          "Research-backed pedagogy"
+        ]
+      },
+      dataPolicy: {
+        retentionPeriod: "10 months",
+        afterRetention: "Only anonymised scoring data retained for research purposes. All learner-specific personal details are permanently deleted.",
+        afterRetentionAf: "Slegs anonieme puntedata word behou vir navorsingsdoeleindes. Alle leerder-spesifieke persoonlike besonderhede word permanent uitgevee.",
+        compliance: ["POPIA", "CPA"]
+      }
+    });
+  });
+
+  // ============================================
+  // PARTNER SCHOOLS - Referral Tracking System
+  // ============================================
+
+  // Get all partner schools (admin)

@@ -1,0 +1,375 @@
+IMPORTANT:
+You are working on an EXISTING BrainTrack codebase.
+
+DO NOT break, remove, overwrite, regress, or simplify any current functionality.
+DO NOT redesign or replace working flows unless required for visual consistency.
+DO NOT delete existing components, routes, database models, or business logic unless absolutely necessary.
+DO NOT change anything that already works without preserving backward compatibility.
+All enhancements must be layered safely on top of the current application.
+
+FIRST ACTIONS:
+1. Analyse the existing codebase.
+2. Identify all current routes, layouts, components, auth flows, dashboards, quiz flows, reporting modules, and database models.
+3. Preserve all existing behaviour.
+4. Only then enhance visuals and functionality incrementally.
+5. Reuse current components and patterns wherever possible.
+
+PRIMARY OBJECTIVE
+Upgrade the current BrainTrack app so it visually feels like a premium, futuristic, South African, neon-glow product inspired by the supplied reference image.
+
+The app must look bold, cinematic, vibrant, and high-trust.
+It must feel like:
+- futuristic edtech
+- premium mobile-first product
+- high-performance learner platform
+- neon glow, dark cosmic background, vivid gradients
+- emotionally motivating, aspirational, modern, and exciting
+
+CRITICAL VISUAL DIRECTION
+The UI must take strong inspiration from the reference image.
+
+DESIGN STYLE TO MATCH
+- Deep dark background with cosmic or night-sky feel
+- Neon glow gradients in purple, pink, blue, orange, cyan, and gold
+- Strong luminous accents
+- Glassmorphism cards with subtle transparency
+- Soft outer glow around key cards, icons, buttons, and charts
+- Bold gradient headings
+- Premium hero sections
+- Futuristic but clean interface
+- South African relevance and confidence
+- Rich visual hierarchy
+- Animated light effects used sparingly and tastefully
+- High contrast throughout
+
+NON-NEGOTIABLE VISUAL RULES
+- Do not use dull, flat styling
+- Do not use grey font classes or muted grey text
+- Never use text-gray classes
+- Use white, off-white, black, and vibrant brand colors only
+- Buttons must be rectangular or softly rounded rectangles, never pill-only as a default system style
+- Use glow effects and gradient borders selectively
+- Header and footer must exist on every page
+- Learner and Admin headers must include dropdown menus
+- Parent reports must update in real time without page refresh
+- Preserve readability at all times
+- The UI must still feel premium and structured, not chaotic
+
+BRAINTRACK BRAND DIRECTION
+Use this visual language across the app:
+- Primary colors: electric purple, neon pink, vivid blue, cyan, orange, gold
+- Backgrounds: dark indigo, midnight blue, deep purple, space black
+- Card styling: translucent dark panels with glow borders
+- Typography: bold, modern, clean, high contrast
+- Icons: bright, simple, premium
+- Charts: dark-theme charts with luminous lines and bars
+- CTAs: bright gradient buttons with glow states
+- Achievement moments: confetti, glow pulse, subtle motion
+
+LOOK AND FEEL BY SCREEN
+- Landing/login/signup: dramatic hero section inspired by the poster
+- Learner dashboard: premium app-like panels with glowing progress
+- Parent portal: polished insight dashboards with neon data visuals
+- School portal: executive dashboard with premium trust styling
+- Admin: structured futuristic control center
+- Quiz screens: immersive but clean, focused on performance
+- Reports: cinematic but highly readable
+
+TECH STACK
+Frontend: React + TypeScript + Vite
+Backend: Node.js + Express
+Styling: Tailwind CSS
+Database: PostgreSQL with Prisma ORM
+Realtime: Socket.io
+Charts: Recharts
+Animation: Framer Motion
+
+PRESERVE EXISTING FUNCTIONALITY
+Retain and preserve all existing:
+- Authentication and user flows
+- Current dashboards and widgets
+- Existing quiz logic
+- Existing reporting
+- Existing database connections and models
+- Existing admin capabilities
+- Existing responsive behaviour
+- Existing integrations and event flows
+
+Where improvements are made:
+- Extend instead of replace
+- Keep old routes working
+- Avoid destructive schema changes
+- Use safe migrations only
+- Maintain compatibility with current data
+- Avoid regressions across learner, parent, school, and admin experiences
+
+ROLES
+Support and preserve role-based access for:
+- Learner
+- Parent
+- School Admin
+- Platform Admin
+
+Use JWT authentication and protected routes.
+
+PHASED DELIVERY PLAN
+
+PHASE 1: STABILISE AND RESKIN THE EXISTING APP
+Goal:
+Preserve all current functionality and upgrade the visual system to match the reference image.
+
+Requirements:
+- Analyse current app structure
+- Keep all working flows intact
+- Introduce a global design system aligned to the visual direction
+- Create reusable theme tokens for colors, gradients, glows, borders, shadows, and card styles
+- Update layout shells, header, footer, nav, dropdowns, cards, buttons, forms, tables, and modals
+- Reskin existing dashboards with premium neon-dark styling
+- Add background gradients, subtle ambient glow, and improved spacing
+- Upgrade chart styling to match dark premium theme
+- Improve mobile responsiveness without breaking current layouts
+- Keep current features working exactly as before
+
+Deliverables:
+- Shared design system
+- Updated layout and component styling
+- Premium landing/login styling
+- Reskinned learner, parent, school, and admin experiences
+- No broken flows
+
+PHASE 2: LEARNER EXPERIENCE ENHANCEMENTS
+Goal:
+Make the learner experience feel intelligent, motivating, and visually exciting.
+
+Enhancements:
+- Dynamic study plan based on weak areas and recent results
+- Next Best Action widget
+- Readiness score per subject
+- Topic mastery indicators
+- Streak tracker
+- Personal progress charts
+- Recent activity feed
+- Achievement panel
+- Revision mode for quizzes
+- Recommended next quiz by weak topic
+- Study session timer
+- Daily and weekly goals
+
+Visual behaviour:
+- Use glowing subject cards
+- Progress rings and luminous bars
+- Premium animated widgets
+- Keep readability high
+
+Deliverables:
+- Enhanced learner dashboard
+- Smarter study flow
+- Better motivation and clarity
+- All current learner functionality preserved
+
+PHASE 3: PARENT AND REPORTING INTELLIGENCE
+Goal:
+Turn the parent portal into a premium live insight product.
+
+Enhancements:
+- Real-time parent dashboard updates using Socket.io
+- Readiness score by subject
+- Quiz score trends
+- Study time tracking
+- Improvement delta
+- Recent learner activity
+- Strength and weak area summary
+- Weekly summary panel
+- Risk alerts where performance is dropping
+- Parent-friendly explanations and summaries
+- Downloadable PDF reports
+- Monthly learner progress summaries
+
+Visual behaviour:
+- Neon dark charts
+- Summary cards with strong contrast
+- Elegant live update indicators
+- Clear, high-trust report layouts
+
+Deliverables:
+- Upgraded parent portal
+- Real-time reporting
+- Exportable reports
+- Insight-driven parent experience
+
+PHASE 4: SCHOOL AND ADMIN SCALE FEATURES
+Goal:
+Support school onboarding, visibility, operations, and analytics.
+
+Enhancements:
+- School onboarding workflow
+- School onboarding status tracker
+- Endorsement tracking
+- Trial activation flow
+- Contact and communication log
+- School profile setup
+- School dashboard with total learners, readiness, engagement, quiz completion, and trend reporting
+- Value widget showing “R35 per learner back to the school”
+- Exportable school reports
+- Grade/class summaries if data supports it
+- Admin management for schools, learners, parents, question bank, reports, notifications, and analytics
+- CSV upload validation for question bank
+- Search, filters, and bulk actions
+
+Visual behaviour:
+- Executive dashboard feel
+- Premium, clean control center styling
+- Strong dashboard hierarchy
+- Futuristic admin tables and controls
+
+Deliverables:
+- School operations flow
+- Better partner visibility
+- Stronger admin capability
+- Existing admin functionality preserved and enhanced
+
+PHASE 5: GAMIFICATION, ANALYTICS, AND PRODUCT DEPTH
+Goal:
+Make BrainTrack feel sticky, rewarding, and intelligent.
+
+Enhancements:
+- Gamification engine
+- Event tracking for:
+  - lesson_completed
+  - quiz_submitted
+  - score_recorded
+  - study_session_started
+  - study_session_ended
+  - topic_mastered
+  - report_viewed
+- Badge system for:
+  - First 80 percent
+  - 15 percent improvement
+  - 3-day streak
+  - Topic mastery
+  - Consistency milestones
+  - First completed quiz
+  - First full study week
+- Achievement panel
+- Badge popups
+- Next milestone widget
+- Personal bests
+- “You vs You” leaderboard
+- Notifications system:
+  - in-app alerts
+  - parent alerts
+  - learner reminders
+  - admin inactivity alerts
+- Progress engine:
+  - readiness score per subject
+  - improvement delta
+  - streaks
+  - topic mastery
+  - recent momentum
+  - recommended next action
+- Daily aggregation jobs
+- Clean analytics endpoints
+
+Visual behaviour:
+- Reward moments with tasteful glow animations
+- Confetti only when appropriate
+- High-impact but not childish
+- Maintain premium premium premium visual tone
+
+Deliverables:
+- Strong engagement loop
+- Better retention features
+- Better product intelligence
+- Premium performance feedback system
+
+QUIZ ENGINE ENHANCEMENTS
+Enhance without breaking current flows:
+- Keep existing scoring logic intact
+- Continue loading from the database
+- Add timed quiz support if missing
+- Add explanations after submission
+- Add subject/topic performance breakdown
+- Add retry for revision mode
+- Add difficulty-based filtering
+- Add recommended next quiz logic
+
+DATABASE EXTENSIONS
+Preserve current schema and extend safely only where required.
+
+Recommended additional tables if not already present:
+- study_sessions
+- badges
+- user_badges
+- readiness_scores
+- notifications
+- school_onboarding
+- activity_events
+
+Use safe migrations only.
+Do not corrupt or invalidate current data.
+
+PROGRESS ENGINE
+Add or enhance a progress engine that calculates:
+- readiness score per subject
+- improvement delta
+- streaks
+- topic mastery
+- recent momentum
+- recommended next actions
+
+Requirements:
+- recalculate after quiz completion
+- feed learner, parent, school, and admin dashboards
+- support daily aggregation jobs
+- preserve existing scoring outputs if already implemented
+
+REALTIME EVENTS
+Use Socket.io to emit updates on:
+- quiz submission
+- score update
+- readiness recalculation
+- badge awarded
+- parent report update
+- notification created
+
+PAGES TO PRESERVE OR ENHANCE
+- Login
+- Signup
+- Landing page
+- Learner Dashboard
+- Quiz Page
+- Parent Portal
+- School Portal
+- Admin Dashboard
+- Question Bank Manager
+- Reports View
+
+If a page already exists, enhance it safely instead of replacing it.
+
+IMPLEMENTATION STANDARDS
+- Analyse before changing
+- Preserve all working functionality
+- Use modular architecture
+- Use reusable components
+- Keep naming and architecture patterns consistent where reasonable
+- Use safe migrations
+- Avoid regressions
+- Add clear comments where helpful
+- Ensure clean file structure
+- Ensure responsive behaviour
+- Build end to end, not mockups only
+
+FINAL OUTPUT
+Deliver an upgraded BrainTrack application that:
+- keeps all current functionality intact
+- visually matches the premium neon-futuristic style of the reference image
+- adds enhancements in phases 1 through 5
+- improves learner, parent, school, and admin experiences
+- includes safe schema extensions
+- includes seed data where needed
+- includes clear run instructions
+
+Do not give mockups only.
+Do not leave features disconnected.
+Do not replace working flows with placeholders.
+Build enhancements end to end without breaking the existing application.

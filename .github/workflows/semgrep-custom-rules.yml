@@ -1,0 +1,34 @@
+name: Semgrep Custom Rules (Redirect Safety)
+
+on:
+  pull_request:
+    branches: ["**"]
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  semgrep-custom:
+    name: Semgrep — .semgrep/ custom rules
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep:1.100.0
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run custom Semgrep rules on client/, server/, shared/
+        # Scope expanded in Task #820 — the rule's own `paths.include`
+        # narrows down to the production surfaces (client/src, server,
+        # shared) and excludes the mockup sandbox + generated output.
+        run: |
+          semgrep scan \
+            --config .semgrep/ \
+            --error \
+            --strict \
+            --metrics=off \
+            client/ server/ shared/

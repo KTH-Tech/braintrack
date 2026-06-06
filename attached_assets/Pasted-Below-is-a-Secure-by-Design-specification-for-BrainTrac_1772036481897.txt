@@ -1,0 +1,313 @@
+Below is a **Secure-by-Design specification for BrainTrack™** using **Cloudflare as the edge security layer**, scaled for **5,000 learners / 14-day trial**, and aligned to your decisions (trial at signup, payment later, partner attribution, DBE ingestion never displayed verbatim).
+
+---
+
+# 🔐 BrainTrack™ Secure-by-Design Specification (Cloudflare + SaaS)
+
+## 1) Security Objectives
+
+* **Confidentiality:** protect learner identity + learning data.
+* **Integrity:** prevent tampering with mastery, rewards, referrals, subscription state.
+* **Availability:** withstand campaign bursts and common DDoS/bot abuse.
+* **Compliance posture:** POPIA-aligned consent + minimal PII + auditable controls.
+* **PCI avoidance:** never handle raw card data; tokenisation only.
+
+---
+
+# 2) Architecture Trust Boundaries
+
+## Trust zones
+
+1. **Public Internet (Untrusted)**
+2. **Cloudflare Edge (Controlled perimeter)**
+3. **App/API Layer (Authenticated, rate-limited)**
+4. **Data Layer (Postgres + storage)**
+5. **Background Jobs (Ingestion, mastery recompute)**
+6. **Admin Zone (Restricted access)**
+
+**Rule:** Only Cloudflare is exposed publicly. No direct origin access.
+
+---
+
+# 3) Cloudflare Edge Security Baseline
+
+## 3.1 Mandatory Edge Controls
+
+* Cloudflare **WAF Managed Rules (OWASP)** in **Block** mode
+* **DDoS protection** on
+* **Bot protection** on
+* **Rate limiting** on auth + API + exam endpoints
+* **Always use HTTPS**, HSTS enabled
+
+## 3.2 Origin Protection
+
+* Lock down origin so it only accepts Cloudflare traffic:
+
+  * allow Cloudflare IP ranges only, or
+  * authenticated origin pulls / origin certificates
+* Disable direct IP access to origin (no bypass)
+
+---
+
+# 4) Identity & Access (Authentication + RBAC)
+
+## 4.1 Authentication
+
+* Password hashing: **bcrypt** (cost tuned for performance)
+* Sessions:
+
+  * **Short-lived access JWT** (e.g., 10–15 min)
+  * **Refresh token rotation** (stored hashed server-side)
+* Enforce:
+
+  * rate-limited login attempts
+  * progressive backoff
+  * account lockout after repeated failures
+
+## 4.2 Role-Based Access Control (RBAC)
+
+Roles:
+
+* learner
+* parent
+* admin
+
+Rules:
+
+* Learner cannot access billing/consent admin endpoints
+* Parent can manage **only linked child accounts**
+* Admin actions require elevated permission checks and are fully audited
+
+---
+
+# 5) Data Protection & POPIA Controls
+
+## 5.1 Data minimisation
+
+Store only:
+
+* learner profile basics (name, grade, subjects)
+* parent contact (WhatsApp number, email)
+* consent records
+* learning telemetry required for mastery
+
+Avoid:
+
+* unnecessary identifiers
+* sensitive personal info
+
+## 5.2 Encryption
+
+* **TLS in transit**
+* **DB encryption at rest** (volume/managed encryption)
+* secrets stored in secret manager / env vars (never in repo)
+
+## 5.3 Consent & auditability
+
+* Consent record includes:
+
+  * parent identifier
+  * learner identifier
+  * consent timestamp
+  * consent method (WhatsApp link)
+  * IP/device metadata (where possible)
+* Consent is **required before payment activation**
+
+---
+
+# 6) Payment Security (Tokenisation Only)
+
+* Use hosted checkout via Stripe/Paystack/Peach
+* BrainTrack stores:
+
+  * provider customer ID
+  * token/payment method reference
+  * last4, brand, expiry
+* Webhook security:
+
+  * validate provider signature
+  * restrict webhook endpoint via Cloudflare rules (POST only, small payload, optional allowlist)
+
+**Never store PAN/CVV. Never build your own payment form.**
+
+---
+
+# 7) Application Security Controls
+
+## 7.1 Input validation
+
+* Validate all request bodies (server-side schemas)
+* Reject unexpected fields (prevents parameter injection)
+
+## 7.2 Output encoding
+
+* Encode/escape user-controlled content
+* No HTML injection in notifications, names, etc.
+
+## 7.3 Safe database access
+
+* ORM only (Prisma/TypeORM)
+* No string concatenated SQL
+* Parameterised queries only
+
+## 7.4 File handling (ingestion/admin only)
+
+* Accept **PDF only**
+* Validate:
+
+  * MIME type
+  * magic bytes
+  * size limits
+* Store in private storage only
+* Never expose raw files publicly
+
+---
+
+# 8) DBE Ingestion Security & Compliance Guardrail
+
+## Requirement
+
+* Ingest DBE papers/memos (2015–2025) to build the intelligence engine.
+* **Never display DBE papers/memos verbatim** to learners.
+
+## Controls
+
+* DBE corpus stored in:
+
+  * private storage
+  * access restricted to ingestion service account only
+* Public API must not return:
+
+  * raw PDFs
+  * raw extracted text
+  * direct DBE URLs for browsing content
+* Only derived outputs returned:
+
+  * generated matric-style items
+  * topic drills
+  * diagnostics
+
+---
+
+# 9) Abuse Prevention Controls (Business Logic Security)
+
+These protect revenue and data integrity.
+
+## 9.1 Partner attribution integrity
+
+* Attribution is captured from URL params and **locked on signup**
+* Immutable field (`first_touch_source`)
+* Any changes only via admin with audit log
+
+## 9.2 Referral fraud prevention
+
+* Monthly caps (as defined)
+* Detect:
+
+  * same device/IP patterns
+  * burst referrals
+  * low engagement referred accounts
+* Add anomaly flags; admin review tools
+
+## 9.3 Exam Mode anti-abuse
+
+* Trial: limited attempts per subject + cooldown
+* Paid: reasonable daily caps to prevent scraping behaviour
+* Rate limit on exam endpoints at Cloudflare + app
+
+---
+
+# 10) Logging, Monitoring, and Incident Readiness
+
+## 10.1 Audit logs (immutable)
+
+Log:
+
+* admin actions
+* consent changes
+* billing token events
+* role changes
+* account linking/unlinking
+* payout report generation
+
+## 10.2 Security event monitoring
+
+Alert on:
+
+* spike in 401/403
+* login failure bursts
+* WAF blocks surge
+* webhook signature failures
+* unusual exam activity (scraping patterns)
+
+## 10.3 Incident handling (minimum)
+
+* define incident severity levels
+* contain: block at Cloudflare, rotate keys, disable endpoints
+* notify: internal + (where needed) users/parents
+* postmortem: root cause + controls update
+
+---
+
+# 11) Deployment & Configuration Security
+
+* Separate environments:
+
+  * dev / staging / prod
+* Separate keys per environment
+* CI/CD:
+
+  * secrets never in code
+  * dependency scanning
+  * build artifact signing (recommended)
+* Regular patching cadence
+
+---
+
+# 12) Cloudflare Rules (Minimum Viable Policy Set)
+
+## WAF managed rules
+
+* OWASP rules: Block
+
+## Rate limits (edge)
+
+* `/auth/login` strict
+* `/auth/signup` strict
+* `/api/*` moderate (per IP + per token)
+* `/exam/*` strict with cooldown protection
+* `/billing/webhook` POST-only + small payload + signature validation in app
+
+## Bot controls
+
+* Challenge on auth endpoints when risk score is high
+* Managed challenge on suspicious user agents
+
+## Admin protection
+
+* `admin.braintrack.app` behind:
+
+  * Cloudflare Access (recommended) OR
+  * IP allowlist + mandatory MFA in-app
+
+---
+
+# 13) Secure-by-Design Acceptance Criteria (Go/No-Go)
+
+You are “secure-by-design compliant” when:
+
+✅ Origin cannot be reached except through Cloudflare
+✅ WAF Managed Rules enabled in Block mode
+✅ Rate limiting enforced on auth/API/exam endpoints
+✅ JWT + refresh rotation implemented
+✅ Password hashing bcrypt
+✅ DB encrypted at rest + TLS enforced
+✅ Hosted payments only + webhook signature validation
+✅ Consent stored + required before payment activation
+✅ Raw DBE content not exposed via any endpoint/UI
+✅ Audit logs enabled for sensitive actions
+✅ Admin protected via Cloudflare Access or equivalent
+
+---
+
+If you want, I can also produce the **exact Cloudflare policy config** as a checklist (WAF rules, rate limit thresholds, Access policies) using your actual paths (e.g., `/api/v1/...`) so your engineer can implement with zero interpretation.
