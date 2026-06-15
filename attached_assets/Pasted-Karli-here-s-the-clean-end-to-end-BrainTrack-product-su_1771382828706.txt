@@ -1,0 +1,259 @@
+Karli — here’s the **clean end-to-end BrainTrack product summary** from parent signup to learner success, including payments, learning, rewards, security, reporting, and growth channels.
+
+No fluff. This is the full operating model in one flow.
+
+---
+
+# 🚀 BRAINTRACK — END-TO-END PRODUCT MODEL
+
+## 🎯 PURPOSE
+
+A science-backed, CAPS-aligned Matric prep platform that:
+
+• personalises learning
+• tracks real progress
+• keeps teens engaged
+• gives parents visibility
+• supports schools financially
+
+All in one system.
+
+---
+
+# 👨‍👩‍👧 1. PARENT ENTRY & PAYMENT
+
+Parent:
+
+• signs up
+• selects learner language (English or modern Afrikaans)
+• opts into reporting (default on)
+• subscribes to **Brain Boost (R169/month – all inclusive)**
+• pays via:
+
+* Paystack
+* Mobicred
+* SnapScan
+* Yoco
+
+System:
+
+✅ activates subscription
+✅ generates learner activation link
+✅ sends via WhatsApp/SMS
+
+(no expiry)
+
+---
+
+# 📲 2. LEARNER ACTIVATION & GAMIFIED ONBOARDING
+
+Learner clicks link → enters Classroom setup:
+
+### Step flow (fast + fun):
+
+1️⃣ Select subjects
+2️⃣ Add latest marks
+3️⃣ Baseline quiz (Grade 11 + 12 mix)
+4️⃣ Learning style quiz
+
+Progress bar + XP + instant rewards.
+
+Result:
+
+🎯 Personalised learning path created
+
+---
+
+# 🎒 3. DAILY LEARNING EXPERIENCE (CLASSROOM)
+
+Every day:
+
+• 2-subject Power Session
+• adaptive questions
+• mastery tracking per topic
+• spaced repetition resurfacing
+• exam-pattern prioritisation
+
+Learner sees:
+
+• progress bars
+• streaks
+• levels
+• readiness coverage %
+
+No guessing what to study.
+
+---
+
+# 🧪 4. MOCK EXAM ENGINE
+
+Per subject:
+
+• simulated DBE-style questions
+• built from 10-year exam patterns
+• 4 structured mock exams
+• instant marking & feedback
+
+Readiness is factual — based on real exam weighting.
+
+---
+
+# 🎁 5. REWARDS & DIGITAL PRODUCTS
+
+(All INCLUDED free with Brain Boost — otherwise micro-priced under R100)
+
+Examples:
+
+• dynamic StudyMap calendars
+• personalised Power Notes
+• exam hack guides
+• focus sprint packs
+• progress report cards
+• topic mastery boosters
+
+Unlocked through:
+
+✔ streaks
+✔ mastery
+✔ consistency
+
+(engagement engine)
+
+---
+
+# 👨‍👩‍👧 6. PARENT DASHBOARD & REPORTING
+
+Parent portal shows:
+
+• baseline vs improvement
+• subject progress
+• engagement levels
+• readiness trends
+• milestones
+
+Weekly automated report sent.
+
+---
+
+# 🔔 SMART PARENT NOTIFICATIONS
+
+Parent is alerted when:
+
+✅ learner reaches Star Status (80% mastery+)
+⚠ learner hasn’t engaged in 3 days
+📉 learner needs extra support
+
+Always positive language.
+
+---
+
+# 🤖 7. SMART TUTOR + SUPPORT BOT (NOVA)
+
+Single bot that:
+
+• guides learning
+• explains progress
+• troubleshoots issues
+• handles billing help
+• escalates support
+
+Always in learner’s chosen language.
+
+---
+
+# 🌍 8. LANGUAGE SYSTEM
+
+Learner chooses:
+
+🇬🇧 English
+🇿🇦 Afrikaans (modern conversational)
+
+Applies to:
+
+• platform UI
+• quizzes
+• study notes
+• bot responses
+• reports
+• notifications
+
+No mixing ever.
+
+---
+
+# 🔐 9. SECURITY & EXAM INTEGRITY
+
+Platform locks:
+
+🚫 copy/paste
+🚫 downloads
+🚫 screenshots
+🚫 screen recording
+
+Exam Mode:
+
+• fullscreen enforced
+• tab switching blocked
+• violations auto-terminate exam
+• audit logs created
+
+Protects IP + prevents cheating.
+
+---
+
+# ❤️ 10. SCHOOL GIVE-BACK MODEL
+
+Every month:
+
+• R35 per active learner to school
+• automated reporting
+• proof of payment
+
+Plus % of any once-off purchases.
+
+Schools benefit directly from learner success.
+
+---
+
+# 📣 11. GROWTH CHANNELS (PARTNER PLATFORORMS)
+
+BrainTrack reaches parents through:
+
+• D6 Communicator
+• Karri
+• YDX (web discovery)
+• SMS & web campaigns
+
+Mix of trusted school comms + direct conversion.
+
+---
+
+# 📈 WHAT THIS CREATES
+
+BrainTrack is:
+
+✅ personalised learning engine
+✅ gamified teen experience
+✅ parent accountability tool
+✅ school support system
+✅ secure assessment platform
+✅ scalable SaaS business
+
+---
+
+## 🎯 ONE-LINE PRODUCT POSITIONING
+
+**BrainTrack turns Matric prep into a personalised, science-backed learning system with real progress, real accountability, and real school impact.**
+
+---
+
+If you want next, I can:
+
+• condense this into pitch-deck slides
+• convert into website sections
+• build investor one-pager
+• map user journeys visually
+
+But this is your **full product — end to end — clean and launch-ready.**
+
+You’ve built something very real here.

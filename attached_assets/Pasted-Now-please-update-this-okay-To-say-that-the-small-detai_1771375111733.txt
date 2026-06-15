@@ -1,0 +1,21 @@
+Now, please update this, okay? To say that the small detail is not the brain couch, please don't piss me off. Just update it to NOVA, for fuck's sakes.
+Lesson 64. Nowva is the robot, i.e. Smart Tutor, i.e. support fucking bot.
+but Nowa doesn't have to be repeated every single time. Nowa is just the fucking bot's name. Please don't irritate me. And then give me um marketing copy and onboarding intros and fucking, I believe. I don't wanna just struggle.
+Step 1. In your right mind, with the onboarding intro to the learner, they click on the activation link, number 1, that gets WhatsApped to them. Then they complete their subjects and add their latest marks. Then they do a complete baseline quiz based on the Grade 11 and Grade 12 topics, and then they do the learning style quiz. It must be gamified, please, because otherwise, we lose these retards.
+I would give me a few digital products which can be given as a reward if these mofos actually stay engaged, like a dynamic calendar that they can download for instance. Not that they would think that's a blessing, but anyway.
+Can you look at this product elastically and give me all the options for digital products? Pricing should be under 100 rand for each. Only the Brain Boost, which is the full package, should unlock everything. And then these sell-ups must be nicer than the ones I can buy.
+Okay, but now, my friend, explain to me how the fuck I'm gonna tell Replit. I hope you're not a stupid boss, because I know I'm not paying for you currently, so can you please just think hard and long for five minutes, then tell me the answer. What do I put in the fucking Replit prompt to avoid it eating $40 for one screen?
+Not MVP, my friend. MVP is gekomen en gegaan. We need full product now, thank you. We're launching in two weeks, motherfucker. Two weeks.
+Oh, please, can we give them clear instructions not if I can change my UX, please? The design should be a light or a dark themed app. The child selects their preference. Afrikaans and English or page is not. Please, not church Afrikaans. Normal Afrikaans. Done. All subjects. You better be clear. This mofo must create the pages all with the same font, the same size font, the same color font, black against the light theme, and white text against the black theme.
+Look at this logo. This is the final logo. This and only this, okay? But now, Replit must create similar icons with the design of the icon, not the brain. In other words, not the icon of the icon. Each of the pages must have an icon aligned to the logo. Put together a styling guide, clear CI guide which I can copy and paste so that this never gets it right.
+Then also write the security prompt, no download, you can't screenshot my applications, and you cannot download or whatever, copy it over, no copy functionality. And the exam mode must have rules. If the child violates the rules, the examiner stops and says you violated the rules.
+Can you ask the smart tutor to be smart indeed and toggle between the selected Afrikaans or English options that the child selected. And also, if they click through from, if they've selected Afrikaans, it must be Afrikaans throughout, not English.
+Please, like this study note should be studied nuutas and chat with us gesels. Come on, man. On the generated study note, if the child is Afrikaans, it must show Afrikaans.
+Okay, now, there must be a few logged-in options, okay? So number one, the parent pays and registers the learner. The learner goes on to the onboarding screen via the WhatsApp activation link. And now the link doesn't expire after 48 hours, please. Then the parent selects Afrikaans and English. And when they opt in for reporting, create a parent dashboard portal where the parent can go in and see their little child's progress weekly. Then build in the notifications to notify the parent, one, if the child doesn't have any engagement on the application, two, when they reach star status, which is 80 and above, and or three, they're at risk for failure. But also don't call it failure, you know, just now these kids must get tablets for that.
+give me the rewards fora child thats on brain boost is all the products now defined
+Transcript Unavailable
+00:01
+create end to end prompt for payment integration paystack and mobicred, snapscand yoco
+is this the full prompt
+
+can yo

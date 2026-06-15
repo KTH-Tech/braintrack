@@ -1,0 +1,130 @@
+REPLIT MASTER UI PROMPT — BRAINTRACK MX26
+
+Copy this entire prompt into Replit AI:
+
+Build a responsive web app UI for “BrainTrack MX26” using React + Tailwind.
+
+GLOBAL RULES:
+
+Support three themes: dark (true black #000000), light (true white #FFFFFF), and rainbow accent layer
+
+Dark mode background must be pure black, cards #0F0F0F, text white
+
+Light mode background must be pure white, cards #F7F7F7, text black
+
+Rainbow is used ONLY for:
+
+Headings
+
+Highlighted keywords inside sentences
+
+Progress bars
+
+XP and level indicators
+
+Achievement badges
+
+Buttons must be solid colours (no gradients):
+
+Primary = blue
+
+Secondary = purple
+
+Success = green
+
+Warning = orange
+
+Danger = red
+
+Body text must never be coloured or rainbow
+
+TYPOGRAPHY:
+
+Use one font only (Inter or Poppins)
+
+Headings bold, body regular
+
+KEYWORD HIGHLIGHTING:
+
+Implement a component that automatically styles important keywords with a rainbow gradient (e.g. Progress, Mastery, Level Up, Exam Ready, SuperStar, Focus Areas, Achievements)
+
+Gradient text only — no background fill
+
+LANGUAGE TOGGLE:
+
+Global EN | AF toggle in top right
+
+Persist preference in local storage
+
+All UI labels must switch language
+
+THEME SELECTOR:
+
+User can choose Dark, Light, or Auto
+
+Auto switches Light (6am–6pm) and Dark (6pm–6am)
+
+LAYOUTS TO BUILD:
+
+Landing page with rainbow headline and highlighted keywords
+
+Learner dashboard (dark default) with progress bars and level card
+
+Practice screen with clean focus layout
+
+Results dashboard (light default) with charts
+
+Checkout page showing MX26 Monthly Access and MX26 Full Access
+
+COMPONENTS:
+
+Solid colour buttons
+
+Rounded cards
+
+Rainbow progress bar component
+
+KeywordHighlight text component
+
+Language toggle
+
+Theme switcher
+
+NAMING:
+
+Never use the word “season”
+
+Use MX26 everywhere
+
+STYLE GOALS:
+
+Modern
+
+Premium
+
+Teen engaging but professional
+
+No childish visuals
+
+No rainbow overload
+
+ACCESSIBILITY:
+
+High contrast text
+
+Large readable buttons
+
+Mobile-first responsive
+
+Deliver full working UI with sample dummy data.
+
+✅ WHAT THIS PROMPT WILL PRODUCE
+
+Replit will generate:
+
+• Proper dark/light system
+• Rainbow keywords only where intended
+• Clean solid buttons
+• Professional dashboards
+• MX26 naming
+• Language toggle working

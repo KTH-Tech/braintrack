@@ -1,0 +1,278 @@
+ICON-DRIVEN VARK LEARNING SYSTEM + UI
+
+IMPORTANT:
+Use ICON-FIRST design across the entire app.
+Use VARK model (Visual, Auditory, Read/Write, Kinesthetic) to drive BOTH:
+- content delivery
+- UI behaviour
+- CTA priority
+
+Do NOT break existing functionality.
+Enhance by layering VARK + icon logic.
+
+--------------------------------------------------
+
+CORE RULE
+
+ICON FIRST. TEXT SECOND.
+
+Every:
+- button
+- card
+- status
+- action
+- dashboard item
+
+Must use:
+ICON + SHORT LABEL (1–2 words max)
+
+--------------------------------------------------
+
+VARK ICON SYSTEM (GLOBAL – DO NOT CHANGE)
+
+👁 VISUAL  
+🔊 AUDITORY  
+📖 READ/WRITE  
+✏ KINESTHETIC  
+
+These MUST be used consistently across:
+- onboarding
+- dashboard
+- study plan
+- reports
+- admin views
+
+--------------------------------------------------
+
+ONBOARDING (ICON-DRIVEN)
+
+Ask:
+
+“How do you learn best?”
+
+Display as icon cards:
+
+👁 Visual  
+“See diagrams”
+
+🔊 Auditory  
+“Listen & explain”
+
+📖 Read  
+“Read & notes”
+
+✏ Practice  
+“Learn by doing”
+
+User selects:
+- primary (required)
+- secondary (optional)
+
+--------------------------------------------------
+
+DASHBOARD (ICON-FIRST PERSONALISATION)
+
+Add widget:
+
+🎯 Your Style  
+Example:
+✏ Practice
+
+Below it:
+Primary CTA must adapt:
+
+VISUAL 👁
+👁 View Map  
+📊 See Patterns  
+
+AUDITORY 🔊
+🔊 Listen  
+💬 Explain  
+
+READ/WRITE 📖
+📖 Read  
+📝 Notes  
+
+KINESTHETIC ✏
+✏ Start Quiz  
+⚡ Practice  
+
+--------------------------------------------------
+
+CONTENT FLOW (ICON-DRIVEN ORDER)
+
+Same topic, different order:
+
+👁 Visual:
+👁 Diagram → 📊 Summary → ✏ Quiz  
+
+🔊 Auditory:
+🔊 Explain → 💬 Walkthrough → ✏ Quiz  
+
+📖 Read:
+📖 Read → 📝 Notes → ✏ Quiz  
+
+✏ Kinesthetic:
+✏ Quiz → ⚡ Feedback → 📖 Explain  
+
+--------------------------------------------------
+
+BUTTON SYSTEM (STRICT)
+
+All buttons must be:
+
+ICON + SHORT LABEL
+
+Examples:
+
+✏ Practice  
+📖 Learn  
+👁 View  
+🔊 Listen  
+📊 Progress  
+📅 Plan  
+⚡ Improve  
+🎯 Focus  
+
+NO long sentences.
+
+--------------------------------------------------
+
+STUDY PLAN (ICON-DRIVEN)
+
+Daily plan must adapt:
+
+👁 Visual:
+👁 Review → ✏ Test  
+
+🔊 Auditory:
+🔊 Explain → ✏ Apply  
+
+📖 Read:
+📖 Read → 📝 Summarise → ✏ Practice  
+
+✏ Kinesthetic:
+✏ Practice → ⚡ Fix → 🔁 Repeat  
+
+Each task = icon + subject
+
+Example:
+📊 Maths → ✏ Practice  
+🧪 Science → 👁 Review  
+
+--------------------------------------------------
+
+SUBJECT ICONS (CONSISTENT)
+
+📊 Mathematics  
+🧪 Physical Science  
+🌿 Life Science  
+📈 Accounting  
+🌍 Geography  
+💼 Business  
+💬 Afrikaans  
+
+Use same icons everywhere.
+
+--------------------------------------------------
+
+STATUS ICON SYSTEM
+
+✅ Complete  
+⏳ Pending  
+⚠ Action  
+❌ Blocked  
+🔒 Restricted  
+🔥 Streak  
+🏆 Achievement  
+
+Must be color-coded + icon.
+
+--------------------------------------------------
+
+PARENT VIEW (ICON SIMPLIFIED)
+
+Show:
+
+🎯 Learning Style  
+✏ Practice learner  
+
+📊 Progress  
+⚠ Risk  
+📅 Upcoming  
+
+Keep:
+- simple
+- visual
+- no heavy text
+
+--------------------------------------------------
+
+ADMIN / REPORTING
+
+Use icon dashboards:
+
+🏫 Schools  
+👥 Users  
+📊 Analytics  
+⚙ Settings  
+
+Show metrics as:
+
+📊 Active Schools (45)  
+⚠ Needs Action (12)  
+🚀 Onboarding (20)  
+
+--------------------------------------------------
+
+DATA MODEL
+
+users
+- vark_primary
+- vark_secondary
+- vark_confidence
+
+learning_events
+- content_type (👁 🔊 📖 ✏)
+- time_spent
+- performance
+
+--------------------------------------------------
+
+AUTO-ADAPT RULE
+
+System must:
+- track behaviour
+- adjust confidence
+- update style if needed
+
+BUT:
+- always allow manual override
+
+--------------------------------------------------
+
+UI RULES (STRICT)
+
+- NO grey text
+- NO long paragraphs
+- NO icon inconsistency
+- NO clutter
+- NO generic UI
+
+Must feel:
+- premium
+- fast
+- visual
+- intuitive
+
+--------------------------------------------------
+
+FINAL EXPERIENCE
+
+User should feel:
+
+“I don’t need to read — I just act.”
+
+Icons guide everything.
+Learning adapts automatically.
+Experience feels smart and effortless.

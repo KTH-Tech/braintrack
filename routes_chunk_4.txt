@@ -1,0 +1,512 @@
+  app.post("/api/admin/dbe-ingestion/verify", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    const { subject, year } = req.body;
+    try {
+      const { verifyContentIntegrity } = await import("./dbe-ingestion");
+      const results = await verifyContentIntegrity(subject, year ? Number(year) : undefined);
+      const passed = results.filter((r) => r.passed).length;
+      const failed = results.filter((r) => !r.passed).length;
+      return res.json({ total: results.length, passed, failed, results });
+    } catch (err: any) {
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
+  // POST /api/admin/dbe-ingestion/fix-hashes
+  // Re-fetches PDFs for entries with failed verification, recomputes normalised hash,
+  // and updates the stored hash so the entry passes future verification.
+  app.post("/api/admin/dbe-ingestion/fix-hashes", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    const { subject } = req.body;
+    if (!subject) return res.status(400).json({ error: "subject is required" });
+    try {
+      const { dbeIngestionLog } = await import("@shared/schema");
+      const { fetchAndParsePDF, computeContentHash } = await import("./dbe-ingestion");
+      const catalog: any[] = (await import("./data/dbe-papers-catalog.json")).default as any[];
+
+      const conditions: any[] = [
+        eq(dbeIngestionLog.subject, subject),
+        eq(dbeIngestionLog.verificationStatus, "failed"),
+      ];
+
+      const failed = await db
+        .select()
+        .from(dbeIngestionLog)
+        .where(and(...conditions));
+
+      let fixed = 0;
+      const errors: string[] = [];
+
+      for (const log of failed) {
+        const match = catalog.find(
+          (e) =>
+            e.subject === log.subject &&
+            e.year === log.year &&
+            e.paperNumber === log.paperNumber &&
+            e.isMemo === log.isMemo
+        );
+        if (!match) {
+          errors.push(`[${log.subject} ${log.year} P${log.paperNumber}${log.isMemo ? " memo" : ""}] No catalog entry`);
+          continue;
+        }
+        try {
+          const freshText = await fetchAndParsePDF(match.url);
+          const freshHash = computeContentHash(freshText);
+          await db
+            .update(dbeIngestionLog)
+            .set({
+              contentHash: freshHash,
+              verificationStatus: "passed",
+              verifiedAt: new Date(),
+            })
+            .where(eq(dbeIngestionLog.id, log.id));
+          fixed++;
+        } catch (err: any) {
+          errors.push(`[${log.subject} ${log.year} P${log.paperNumber}${log.isMemo ? " memo" : ""}] ${err?.message ?? err}`);
+        }
+        await new Promise((r) => setTimeout(r, 1500));
+      }
+
+      return res.json({ fixed, total: failed.length, errors });
+    } catch (err: any) {
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
+  // POST /api/admin/dbe-ingestion/rebuild-mastery
+  // Rebuilds dbe_topic_coverage + dbe_topic_frequency from existing verbatim questions.
+  // No PDFs downloaded — uses what's already in the DB.
+  app.post("/api/admin/dbe-ingestion/rebuild-mastery", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    const { subject } = req.body;
+    try {
+      const { rebuildMasteryFromExisting } = await import("./dbe-ingestion");
+      const result = await rebuildMasteryFromExisting(subject || undefined);
+      return res.json({
+        success: true,
+        subjectsProcessed: result.subjectsProcessed,
+        coverageRowsCreated: result.coverageRowsCreated,
+        frequencyRowsUpdated: result.frequencyRowsUpdated,
+        errors: result.errors.slice(0, 20),
+      });
+    } catch (err: any) {
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
+  // POST /api/admin/dbe-ingestion/quality-check — AI-powered accuracy + predictive scoring
+  // Processes unscored questions in batches of 15 using GPT-4o-mini
+  app.post("/api/admin/dbe-ingestion/quality-check", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    const { subject } = req.body;
+    if (!subject) return res.status(400).json({ error: "subject is required" });
+
+    try {
+      const { dbeVerbatimQuestions: vqTable } = await import("@shared/schema");
+      const { eq, or, isNull } = await import("drizzle-orm");
+
+      // Fetch unscored or low-confidence questions
+      const unscored = await db
+        .select({
+          id: vqTable.id,
+          questionText: vqTable.questionText,
+          memoText: vqTable.memoText,
+          marks: vqTable.marks,
+          cognitiveLevel: vqTable.cognitiveLevel,
+          year: vqTable.year,
+          paperNumber: vqTable.paperNumber,
+          accuracyFlag: vqTable.accuracyFlag,
+        })
+        .from(vqTable)
+        .where(
+          and(
+            eq(vqTable.subject, subject),
+            or(
+              eq(vqTable.accuracyFlag, "unscored"),
+              isNull(vqTable.accuracyFlag)
+            )
+          )
+        )
+        .limit(500);
+
+      if (unscored.length === 0) {
+        return res.json({ message: "All questions already quality-checked", scored: 0, total: 0 });
+      }
+
+      const BATCH = 15;
+      let scored = 0;
+      let errors = 0;
+
+      for (let i = 0; i < unscored.length; i += BATCH) {
+        const batch = unscored.slice(i, i + BATCH);
+        const payload = batch.map((q, idx) => ({
+          idx,
+          text: q.questionText.slice(0, 600),
+          memo: q.memoText ? q.memoText.slice(0, 300) : null,
+          marks: q.marks,
+          level: q.cognitiveLevel,
+          year: q.year,
+        }));
+
+        const systemPrompt = `You are a South African NSC (Grade 12 matric) exam quality analyst.
+Evaluate each extracted exam question and return a JSON array.
+
+For each question return:
+- idx: the index number provided
+- qualityScore: integer 0-100 (100 = perfectly extracted, readable, coherent; 0 = completely garbled/unreadable)
+- accuracyFlag: "clean" (score≥75) | "partial" (score 45-74) | "garbled" (score<45)
+- predictiveRating: integer 0-100 (how likely this question TYPE/TOPIC appears in future NSC exams, based on 10-year NSC exam patterns)
+
+Scoring guide for qualityScore:
+- 85-100: Clear, complete question with proper structure, coherent text
+- 65-84: Mostly clear, minor issues (e.g. missing spaces, minor symbols)
+- 45-64: Partially readable but has notable extraction artifacts
+- 25-44: Significant garbling — hard to read, major chunks missing
+- 0-24: Completely garbled, mostly symbols or nonsense
+
+Scoring guide for predictiveRating:
+- 80-100: This type of question/topic appears in MOST NSC exams (high yield)
+- 60-79: Appears frequently (every 2-3 years)
+- 40-59: Moderate frequency (every 4-5 years)
+- 20-39: Less common
+- 0-19: Rarely appears
+
+Return ONLY a JSON array, no other text. Example:
+[{"idx":0,"qualityScore":88,"accuracyFlag":"clean","predictiveRating":75}]`;
+
+        try {
+          const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: JSON.stringify(payload) },
+            ],
+            temperature: 0.1,
+            max_tokens: 800,
+            response_format: { type: "json_object" },
+          });
+
+          const raw = response.choices[0]?.message?.content ?? "{}";
+          let results: any[] = [];
+          try {
+            const parsed = JSON.parse(raw);
+            results = Array.isArray(parsed) ? parsed : (parsed.results ?? parsed.data ?? []);
+          } catch {
+            errors++;
+            continue;
+          }
+
+          for (const r of results) {
+            if (typeof r.idx !== "number" || r.idx >= batch.length) continue;
+            const q = batch[r.idx];
+            const qualityScore = Math.max(0, Math.min(100, Number(r.qualityScore) || 0));
+            const accuracyFlag = ["clean", "partial", "garbled"].includes(r.accuracyFlag) ? r.accuracyFlag : "partial";
+            const predictiveRating = Math.max(0, Math.min(100, Number(r.predictiveRating) || 50));
+
+            await db
+              .update(vqTable)
+              .set({ qualityScore, accuracyFlag, predictiveRating })
+              .where(eq(vqTable.id, q.id));
+            scored++;
+          }
+        } catch (batchErr: any) {
+          errors++;
+        }
+
+        // Small delay to avoid rate limits
+        if (i + BATCH < unscored.length) {
+          await new Promise((r) => setTimeout(r, 300));
+        }
+      }
+
+      // === PHASE 2: Auto-improve low-quality questions ===
+      let improved = 0;
+      let deleted = 0;
+      const lowQuality = await db
+        .select({
+          id: vqTable.id,
+          questionText: vqTable.questionText,
+          memoText: vqTable.memoText,
+          marks: vqTable.marks,
+          cognitiveLevel: vqTable.cognitiveLevel,
+          qualityScore: vqTable.qualityScore,
+          accuracyFlag: vqTable.accuracyFlag,
+          year: vqTable.year,
+          paperNumber: vqTable.paperNumber,
+        })
+        .from(vqTable)
+        .where(
+          and(
+            eq(vqTable.subject, subject),
+            or(
+              eq(vqTable.accuracyFlag, "partial"),
+              eq(vqTable.accuracyFlag, "garbled")
+            )
+          )
+        )
+        .limit(50);
+
+      if (lowQuality.length > 0) {
+        const IMPROVE_BATCH = 10;
+        for (let i = 0; i < lowQuality.length; i += IMPROVE_BATCH) {
+          const batch = lowQuality.slice(i, i + IMPROVE_BATCH);
+
+          const garbled = batch.filter(q => q.accuracyFlag === "garbled");
+          if (garbled.length > 0) {
+            for (const q of garbled) {
+              await db.delete(vqTable).where(eq(vqTable.id, q.id));
+              deleted++;
+            }
+          }
+
+          const fixable = batch.filter(q => q.accuracyFlag === "partial");
+          if (fixable.length === 0) continue;
+
+          try {
+            const fixPayload = fixable.map((q, idx) => ({
+              idx,
+              questionText: q.questionText.slice(0, 800),
+              memoText: q.memoText ? q.memoText.slice(0, 400) : null,
+              marks: q.marks,
+              cognitiveLevel: q.cognitiveLevel,
+            }));
+
+            const fixResponse = await openai.chat.completions.create({
+              model: "gpt-4o-mini",
+              messages: [
+                {
+                  role: "system",
+                  content: `You are a South African NSC Grade 12 exam question editor for ${subject}. You receive partially garbled/poorly extracted exam questions. Your job:
+1. Fix OCR artifacts, broken formatting, missing spaces, garbled symbols
+2. Reconstruct the question so it reads like a proper NSC exam question
+3. Fix the memo/answer if provided — ensure it's accurate and complete
+4. Correct the cognitive level if it's wrong
+5. Keep the original meaning — do NOT change what the question asks
+
+Return JSON: { "fixes": [{ "idx": 0, "questionText": "cleaned text", "memoText": "cleaned memo or null", "cognitiveLevel": "knowledge|application|higher_order", "marks": N }] }`,
+                },
+                { role: "user", content: JSON.stringify(fixPayload) },
+              ],
+              temperature: 0.1,
+              max_tokens: 2000,
+              response_format: { type: "json_object" },
+            });
+
+            const fixRaw = fixResponse.choices[0]?.message?.content ?? "{}";
+            const fixParsed = JSON.parse(fixRaw);
+            const fixes = fixParsed.fixes ?? fixParsed.data ?? [];
+
+            for (const fix of fixes) {
+              if (typeof fix.idx !== "number" || fix.idx >= fixable.length) continue;
+              const q = fixable[fix.idx];
+              await db
+                .update(vqTable)
+                .set({
+                  questionText: fix.questionText || q.questionText,
+                  memoText: fix.memoText ?? q.memoText,
+                  cognitiveLevel: fix.cognitiveLevel || q.cognitiveLevel,
+                  marks: fix.marks ?? q.marks,
+                  qualityScore: 90,
+                  accuracyFlag: "clean",
+                })
+                .where(eq(vqTable.id, q.id));
+              improved++;
+            }
+          } catch (fixErr: any) {
+            console.log(`[QUALITY] Fix batch failed for ${subject}: ${fixErr.message}`);
+          }
+
+          if (i + IMPROVE_BATCH < lowQuality.length) {
+            await new Promise((r) => setTimeout(r, 300));
+          }
+        }
+      }
+
+      return res.json({
+        message: `Quality check complete — scored ${scored}, improved ${improved}, removed ${deleted} garbled`,
+        subject,
+        scored,
+        improved,
+        deleted,
+        total: unscored.length,
+        errors,
+      });
+    } catch (err: any) {
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
+  // POST /api/admin/dbe-ingestion/simulate — use AI to generate practice questions from ingested verbatim questions
+  app.post("/api/admin/dbe-ingestion/simulate", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    const { subject } = req.body;
+    if (!subject) return res.status(400).json({ error: "subject is required" });
+
+    try {
+      const { dbeVerbatimQuestions: vqTable } = await import("@shared/schema");
+      const { eq } = await import("drizzle-orm");
+
+      const sourceQuestions = await db
+        .select({
+          id: vqTable.id,
+          questionText: vqTable.questionText,
+          memoText: vqTable.memoText,
+          marks: vqTable.marks,
+          cognitiveLevel: vqTable.cognitiveLevel,
+          topic: vqTable.topic,
+        })
+        .from(vqTable)
+        .where(eq(vqTable.subject, subject))
+        .limit(20);
+
+      if (sourceQuestions.length === 0) {
+        return res.status(400).json({ error: `No ingested questions found for "${subject}". Ingest papers first.` });
+      }
+
+      const sampleQuestions = sourceQuestions.slice(0, 10).map((q, i) => ({
+        idx: i,
+        question: (q.questionText || "").slice(0, 300),
+        memo: (q.memoText || "").slice(0, 200),
+        marks: q.marks,
+        cognitive: q.cognitiveLevel,
+        topic: q.topic,
+      }));
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content: `You are a South African NSC Grade 12 exam question generator for ${subject}. Given sample DBE questions, generate 5 NEW practice questions that follow the same style, cognitive levels, and mark allocation. Return JSON: { "questions": [{ "questionText": "...", "memoText": "...", "marks": N, "cognitiveLevel": "knowledge|application|higher_order", "topic": "..." }] }`,
+          },
+          { role: "user", content: JSON.stringify(sampleQuestions) },
+        ],
+        temperature: 0.7,
+        max_tokens: 2000,
+        response_format: { type: "json_object" },
+      });
+
+      const raw = response.choices[0]?.message?.content ?? "{}";
+      let generated: any[] = [];
+      try {
+        const parsed = JSON.parse(raw);
+        generated = parsed.questions ?? parsed.data ?? [];
+      } catch {
+        return res.status(500).json({ error: "Failed to parse AI response" });
+      }
+
+      let simQualityScore = 0;
+      if (generated.length > 0) {
+        try {
+          const qualityResponse = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+              {
+                role: "system",
+                content: `You are a South African NSC Grade 12 exam quality assessor for ${subject}. Score each AI-generated practice question on these criteria:
+- curriculum_alignment (0-100): Does it match CAPS Grade 12 curriculum?
+- cognitive_accuracy (0-100): Is the cognitive level label correct?
+- memo_quality (0-100): Is the memo answer correct and complete?
+- exam_style (0-100): Does it match real DBE exam paper style?
+- difficulty_appropriate (0-100): Is difficulty appropriate for NSC?
+Return JSON: { "scores": [{ "idx": 0, "curriculum_alignment": N, "cognitive_accuracy": N, "memo_quality": N, "exam_style": N, "difficulty_appropriate": N }] }`,
+              },
+              { role: "user", content: JSON.stringify(generated.map((q: any, i: number) => ({ idx: i, questionText: q.questionText, memoText: q.memoText, marks: q.marks, cognitiveLevel: q.cognitiveLevel, topic: q.topic }))) },
+            ],
+            temperature: 0.1,
+            max_tokens: 1000,
+            response_format: { type: "json_object" },
+          });
+
+          const qRaw = qualityResponse.choices[0]?.message?.content ?? "{}";
+          const qParsed = JSON.parse(qRaw);
+          const scores = qParsed.scores ?? qParsed.data ?? [];
+          if (scores.length > 0) {
+            const avgScores = scores.map((s: any) => {
+              const vals = [s.curriculum_alignment, s.cognitive_accuracy, s.memo_quality, s.exam_style, s.difficulty_appropriate].filter((v: any) => typeof v === "number");
+              return vals.length > 0 ? vals.reduce((a: number, b: number) => a + b, 0) / vals.length : 0;
+            });
+            simQualityScore = Math.round(avgScores.reduce((a: number, b: number) => a + b, 0) / avgScores.length);
+            generated.forEach((q: any, i: number) => {
+              const s = scores.find((sc: any) => sc.idx === i);
+              if (s) q._quality = s;
+            });
+          }
+        } catch (qErr: any) {
+          console.log(`[SIMULATE] Quality scoring failed for ${subject}: ${qErr.message}`);
+        }
+      }
+
+      const result = simulateLastResult.get(subject) ?? { generated: 0, errors: [], finishedAt: "", qualityScore: 0, questions: [] };
+      result.generated += generated.length;
+      result.finishedAt = new Date().toISOString();
+      result.qualityScore = simQualityScore;
+      result.questions = [...(result.questions || []), ...generated];
+      simulateLastResult.set(subject, result);
+
+      return res.json({
+        subject,
+        generated: generated.length,
+        simulationQuality: simQualityScore,
+        questions: generated,
+        message: `Generated ${generated.length} practice questions (quality: ${simQualityScore}%)`,
+      });
+    } catch (err: any) {
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
+  // ── Admin Reports ─────────────────────────────────────────────
+  app.get("/api/admin/reports/stats", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    try {
+      const userCounts = await db.execute(sql`
+        SELECT
+          COUNT(*) AS total,
+          COUNT(*) FILTER (WHERE role = 'learner') AS learners,
+          COUNT(*) FILTER (WHERE role = 'parent') AS parents,
+          COUNT(*) FILTER (WHERE role = 'admin') AS admins
+        FROM users
+      `);
+      const subCounts = await db.execute(sql`
+        SELECT
+          COUNT(*) FILTER (WHERE status = 'active') AS subscribed,
+          COUNT(*) FILTER (WHERE status = 'trial') AS trial
+        FROM subscriptions
+      `);
+      const row = userCounts.rows[0] ?? {};
+      const subRow = subCounts.rows[0] ?? {};
+      res.json({
+        totalUsers: Number(row.total ?? 0),
+        learners: Number(row.learners ?? 0),
+        parents: Number(row.parents ?? 0),
+        admins: Number(row.admins ?? 0),
+        activeToday: 0,
+        activeThisWeek: 0,
+        trialUsers: Number(subRow.trial ?? 0),
+        subscribedUsers: Number(subRow.subscribed ?? 0),
+      });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/admin/reports/parents", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    try {
+      const parentUsers = await db.execute(sql`
+        SELECT u.id, u.email, u.first_name, u.last_name,
+               COALESCE(SUM(up.questions_attempted), 0) AS questions,
+               CASE WHEN COALESCE(SUM(up.questions_attempted), 0) > 0
+                    THEN ROUND(SUM(up.correct_answers)::numeric / SUM(up.questions_attempted) * 100)
+                    ELSE 0 END AS accuracy
+        FROM users u
+        LEFT JOIN user_progress up ON up.user_id = u.id
+        WHERE u.role = 'parent'
+        GROUP BY u.id, u.email, u.first_name, u.last_name, u.created_at
+        ORDER BY u.created_at DESC
+        LIMIT 100
+      `);
+      const reports = parentUsers.rows.map((r: any) => ({
+        parentName: r.first_name && r.last_name ? `${r.first_name} ${r.last_name}` : r.email ?? 'Unknown',
+        childCount: 1,
+        subjectCount: 0,
+        accuracy: Number(r.accuracy ?? 0),
+        questionsAnswered: Number(r.questions ?? 0),
+        isSubscribed: false,
+      }));
+      res.json({ reports });
+    } catch (err: any) {

@@ -1,0 +1,149 @@
+You are a senior full-stack engineer building an EdTech web app: “Business Studies CAPS Exam Engine (Grade 12)”.
+
+GOAL
+Build a production-ready web app that delivers CAPS-aligned Business Studies exam preparation in full “Exam Mode”:
+- Fullscreen required
+- Live countdown timer (180 minutes default)
+- No pause
+- Log integrity events (tab switches, blur, fullscreen exits)
+- Auto-submit on timeout
+- Export results as AutoMark JSON
+
+SCOPE (BUSINESS STUDIES ONLY)
+Use a 10-year exam window (2016–2025) to drive “topic probability weighting” for Business Studies.
+Do NOT claim to predict exact DBE questions. Use trend weighting to prioritise topics and structure.
+
+CORE FEATURES
+1) Exam Mode Player
+- Select from 10 full papers (Paper 1–10), each 150 marks, 3 hours, DBE style:
+  Section A: 40 marks (20 MCQ x 2)
+  Section B: 80 marks (3 case questions: 30 + 25 + 25)
+  Section C: 30 marks (essay choice; 2 options)
+- Fullscreen enforcement (require before Start)
+- Countdown timer starts on Start; cannot pause; auto-submit on expiry
+- Integrity logging:
+  - visibilitychange hidden -> increment tabSwitches
+  - window blur -> increment tabSwitches
+  - fullscreenchange exit -> increment fullscreenExits
+  - store event log timestamps
+- Clear UI with progress indicators and remaining time
+- Submit Now button (manual submit) + auto-submit
+
+2) AutoMark Engine
+- AutoMark MCQ instantly client-side
+- For case studies and essays:
+  - use rubric-based scoring (teacher override field)
+  - allow keyword/phrase matching for partial credit (backend function)
+- After submission, generate JSON payload:
+  {
+    exam_id, exam_name, submitted_at,
+    timing:{duration_seconds, remaining_seconds, started_at},
+    integrity:{tab_switches, fullscreen_exits, events[]},
+    responses:{mcq{}, written{}},
+    automark:{mcq_score, mcq_max, rubric_scores{}, feedback{topic_mastery{}}}
+  }
+- Store attempt results in a database.
+
+3) Topic Probability Weighting (2016–2025)
+Create a config file defining Business Studies topic weights for exam generation and adaptive testing:
+- Legislation (very high)
+- Leadership/Management (very high)
+- Business Environments (very high)
+- Quality Management (very high)
+- Business Strategies (high)
+- HR & SETAs (high)
+- Finance & Insurance (medium rotational)
+- Ethics/CSR/Governance (medium rotational)
+
+Use these weights to:
+- bias question selection
+- bias mock exam generation
+- drive adaptive drills
+
+4) Adaptive Weekly Drill Generator
+Generate weekly drills automatically based on mastery:
+- Mon: 20 MCQ sprint (lowest mastery topics weighted by probability)
+- Wed: 25 mark case burst (lowest mastery pillar)
+- Fri: 40 mark timed mixed
+- Sun: 80 mark mini mock (20 MCQ + 2 cases)
+Mastery thresholds:
+- red < 60%
+- amber 60–75%
+- green 75–85%
+- mastery+ >= 85%
+
+Adaptive rules:
+- If topic_mastery < 60%: increase sampling +40%, easier difficulty
+- If 60–75%: +20% sampling, medium difficulty, add more cases
+- If 75–85%: exam-level difficulty, timed drills
+- If >= 85%: hard questions, reduce sampling -20%
+- If response_time slow: switch delivery to visual-first and shorter prompts
+- If essay structure low: serve essay planning drills
+
+5) Content & Data
+Implement the app with seed data that includes:
+- 3 fully working sample exams in the UI (complete question sets)
+- A generator script that can create all 10 exams from templates
+- Use DBE-style wording and mark allocation
+- Add end-of-exam “References” section ONLY at the end of each paper.
+
+6) References (END ONLY)
+At the end of every exam paper, add:
+- “CAPS-aligned; informed by DBE NSC papers 2016–2025”
+- Official sources list:
+  https://www.education.gov.za/Curriculum/CAPS.aspx
+  https://www.education.gov.za/Examinations/PastExamPapers.aspx
+  https://www.education.gov.za/2024NSCNovemberpastpapers.aspx
+
+Do NOT show references throughout the questions; only at the end.
+
+7) Compliance Disclaimers + T&Cs (in-app page)
+Add a “Legal” page containing:
+- Academic disclaimer (no guarantees)
+- Predictive analysis disclaimer (trend-based; not official DBE; no exact predictions)
+- AutoMark disclaimer (indicative; teacher override; essays may vary)
+- POPIA-aligned privacy summary (South Africa)
+- Full Terms & Conditions:
+  - purpose, no guarantee, independent from DBE
+  - IP ownership
+  - limitation of liability
+  - data privacy and consent
+  - acceptable use
+
+TECH STACK (REPLIT FRIENDLY)
+Use one of:
+Option A: Next.js + TypeScript + Tailwind + SQLite (Prisma)
+Option B: Vite React + TypeScript + Express + SQLite
+
+Must include:
+- Clean component structure
+- Local persistence (SQLite)
+- Seed scripts
+- A simple admin/dev toggle to reset attempts
+- README with run instructions
+
+UI REQUIREMENTS
+- Exam selection dashboard
+- Fullscreen exam runner view
+- Timer pinned at top
+- Submit modal with confirmation
+- Results screen showing:
+  - MCQ score
+  - topic mastery heatmap
+  - integrity log summary
+  - JSON export download button
+
+DELIVERABLES
+- Working app in Replit
+- Sample data (3 exams) live
+- Generator for remaining exams (10 total)
+- JSON export on submission
+- Legal page included
+- References displayed only at end of each exam
+
+CONSTRAINTS
+- No external paid APIs
+- No copyrighted reproduction of full DBE papers; generate original exam-style questions aligned to CAPS topics and DBE structure.
+- Keep content appropriate for Grade 12.
+
+Now build the full app.

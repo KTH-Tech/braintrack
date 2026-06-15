@@ -1,0 +1,291 @@
+import { useState, useEffect } from "react";
+import { Link } from "wouter";
+import { Cookie, X, ChevronDown, ChevronUp, Lock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { useLanguage } from "@/lib/language-context";
+import { useAuth } from "@/hooks/use-auth";
+
+const STORAGE_KEY = "btk_cookie_consent";
+const PREF_KEY = "cookieConsent";
+
+export interface CookiePreferences {
+  essential: true;
+  analytics: boolean;
+  marketing: boolean;
+}
+
+export function getCookiePreferences(): CookiePreferences | null {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (!stored) return null;
+    if (stored === "accepted") return { essential: true, analytics: true, marketing: true };
+    if (stored === "declined") return { essential: true, analytics: false, marketing: false };
+    const parsed = JSON.parse(stored);
+    if (typeof parsed === "object" && parsed !== null && "essential" in parsed) {
+      return { essential: true, analytics: !!parsed.analytics, marketing: !!parsed.marketing };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function savePreferences(prefs: CookiePreferences) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
+}
+
+async function fetchCookieConsentPref(): Promise<CookiePreferences | null> {
+  try {
+    const res = await fetch("/api/user/preferences", { credentials: "include" });
+    if (!res.ok) return null;
+    const serverPrefs = await res.json();
+    if (serverPrefs && typeof serverPrefs === "object" && serverPrefs[PREF_KEY]) {
+      const v = serverPrefs[PREF_KEY];
+      if (v === "accepted") return { essential: true, analytics: true, marketing: true };
+      if (v === "declined") return { essential: true, analytics: false, marketing: false };
+      if (typeof v === "object" && "essential" in v) {
+        return { essential: true, analytics: !!v.analytics, marketing: !!v.marketing };
+      }
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+async function saveCookieConsentPref(prefs: CookiePreferences): Promise<void> {
+  try {
+    await fetch("/api/user/preferences", {
+      method: "PATCH",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ [PREF_KEY]: prefs }),
+    });
+  } catch {
+    // Silently ignore — localStorage is the fallback
+  }
+}
+
+export function CookieConsentBanner() {
+  const { language } = useLanguage();
+  const isAf = language === "af";
+  const { user, isLoading: authLoading } = useAuth();
+  const [visible, setVisible] = useState(false);
+  const [serverChecked, setServerChecked] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [analytics, setAnalytics] = useState(false);
+  const [marketing, setMarketing] = useState(false);
+
+  useEffect(() => {
+    if (authLoading) return;
+
+    const localPrefs = getCookiePreferences();
+
+    if (user) {
+      // Logged-in user: always reconcile with the server
+      fetchCookieConsentPref().then((serverPrefs) => {
+        if (serverPrefs) {
+          // Server is authoritative — sync to localStorage, suppress banner
+          savePreferences(serverPrefs);
+        } else if (localPrefs) {
+          // Guest made a choice before logging in — backfill the server
+          saveCookieConsentPref(localPrefs);
+        } else {
+          // No preference anywhere — show the banner
+          setVisible(true);
+        }
+        setServerChecked(true);
+      });
+    } else {
+      // Unauthenticated: localStorage fast-path only
+      if (!localPrefs) {
+        setVisible(true);
+      }
+      setServerChecked(true);
+    }
+  }, [authLoading, user]);
+
+  function handleAcceptAll() {
+    const prefs: CookiePreferences = { essential: true, analytics: true, marketing: true };
+    savePreferences(prefs);
+    setVisible(false);
+    if (user) saveCookieConsentPref(prefs);
+  }
+
+  function handleDecline() {
+    const prefs: CookiePreferences = { essential: true, analytics: false, marketing: false };
+    savePreferences(prefs);
+    setVisible(false);
+    if (user) saveCookieConsentPref(prefs);
+  }
+
+  function handleSavePreferences() {
+    const prefs: CookiePreferences = { essential: true, analytics, marketing };
+    savePreferences(prefs);
+    setVisible(false);
+    if (user) saveCookieConsentPref(prefs);
+  }
+
+  if (!serverChecked || !visible) return null;
+
+  return (
+    <div
+      className="fixed bottom-0 left-0 right-0 z-50 p-3 sm:p-4"
+      role="dialog"
+      aria-label={isAf ? "Koekietoestemmingskennisgewing" : "Cookie consent notice"}
+      data-testid="cookie-consent-banner"
+    >
+      <div className="max-w-3xl mx-auto rounded-xl border border-border/60 bg-background/95 backdrop-blur-xl shadow-2xl shadow-black/20">
+        <div className="p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="flex items-start gap-3 flex-1 min-w-0">
+            <div className="mt-0.5 shrink-0 w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Cookie className="w-4 h-4 text-primary" />
+            </div>
+            <div className="space-y-1 min-w-0">
+              <p className="text-sm font-medium leading-snug">
+                {isAf ? "Ons gebruik koekies" : "We use cookies"}
+              </p>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                {isAf
+                  ? "BrainTrack gebruik noodsaaklike koekies en opsionele koekies vir analise. Lees ons "
+                  : "BrainTrack uses essential cookies and optional cookies for analytics. Read our "}
+                <Link
+                  href="/cookie-policy"
+                  className="underline underline-offset-2 text-foreground hover:text-primary transition-colors"
+                  data-testid="link-cookie-policy-banner"
+                >
+                  {isAf ? "Koekiebeleid" : "Cookie Policy"}
+                </Link>
+                {isAf ? " vir meer inligting." : " for more details."}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 shrink-0 self-end sm:self-auto">
+            <button
+              onClick={() => setExpanded((e) => !e)}
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 underline underline-offset-2"
+              data-testid="button-cookie-manage"
+              aria-expanded={expanded}
+            >
+              {isAf ? "Voorkeure" : "Manage preferences"}
+              {expanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+            </button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDecline}
+              className="text-xs h-8 px-3"
+              data-testid="button-cookie-decline"
+            >
+              {isAf ? "Weier" : "Decline"}
+            </Button>
+            <Button
+              size="sm"
+              onClick={handleAcceptAll}
+              className="text-xs h-8 px-4"
+              data-testid="button-cookie-accept"
+            >
+              {isAf ? "Aanvaar alles" : "Accept all"}
+            </Button>
+            <button
+              onClick={handleDecline}
+              className="ml-1 text-muted-foreground hover:text-foreground transition-colors"
+              aria-label={isAf ? "Sluit" : "Close"}
+              data-testid="button-cookie-close"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {expanded && (
+          <div
+            className="border-t border-border/60 px-4 py-4 space-y-4"
+            data-testid="cookie-preferences-panel"
+          >
+            <p className="text-xs text-muted-foreground">
+              {isAf
+                ? "Kies watter kategorieë koekies jy wil toelaat. Noodsaaklike koekies is altyd aan."
+                : "Choose which cookie categories you want to allow. Essential cookies are always on."}
+            </p>
+
+            <div className="space-y-3">
+              <div className="flex items-start justify-between gap-4 rounded-lg border border-border/60 bg-muted/30 p-3">
+                <div className="space-y-0.5 flex-1">
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-xs font-semibold">
+                      {isAf ? "Noodsaaklike koekies" : "Essential cookies"}
+                    </p>
+                    <Lock className="w-3 h-3 text-muted-foreground" />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {isAf
+                      ? "Vereis vir aanmelding en kernplatformfunksies. Kan nie gedeaktiveer word nie."
+                      : "Required for login and core platform functions. Cannot be disabled."}
+                  </p>
+                </div>
+                <Switch
+                  checked={true}
+                  disabled
+                  aria-label={isAf ? "Noodsaaklike koekies (altyd aan)" : "Essential cookies (always on)"}
+                  data-testid="toggle-cookie-essential"
+                />
+              </div>
+
+              <div className="flex items-start justify-between gap-4 rounded-lg border border-border/60 p-3">
+                <div className="space-y-0.5 flex-1">
+                  <p className="text-xs font-semibold">
+                    {isAf ? "Analitiese koekies" : "Analytics cookies"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {isAf
+                      ? "Help ons om te verstaan hoe die platform gebruik word sodat ons dit kan verbeter (bv. verwysingskanaaldata)."
+                      : "Help us understand how the platform is used so we can improve it (e.g. referral channel data)."}
+                  </p>
+                </div>
+                <Switch
+                  checked={analytics}
+                  onCheckedChange={setAnalytics}
+                  aria-label={isAf ? "Analitiese koekies" : "Analytics cookies"}
+                  data-testid="toggle-cookie-analytics"
+                />
+              </div>
+
+              <div className="flex items-start justify-between gap-4 rounded-lg border border-border/60 p-3">
+                <div className="space-y-0.5 flex-1">
+                  <p className="text-xs font-semibold">
+                    {isAf ? "Bemarkingskoekies" : "Marketing cookies"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {isAf
+                      ? "Gebruik vir gepersonaliseerde kommunikasie en promosieaanbiedinge. Tans nie in gebruik nie."
+                      : "Used for personalised communications and promotional offers. Not currently in use."}
+                  </p>
+                </div>
+                <Switch
+                  checked={marketing}
+                  onCheckedChange={setMarketing}
+                  aria-label={isAf ? "Bemarkingskoekies" : "Marketing cookies"}
+                  data-testid="toggle-cookie-marketing"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end">
+              <Button
+                size="sm"
+                onClick={handleSavePreferences}
+                className="text-xs h-8 px-4"
+                data-testid="button-cookie-save-preferences"
+              >
+                {isAf ? "Stoor voorkeure" : "Save preferences"}
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

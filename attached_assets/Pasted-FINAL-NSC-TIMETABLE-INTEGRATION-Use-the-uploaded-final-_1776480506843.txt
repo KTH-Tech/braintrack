@@ -1,0 +1,175 @@
+FINAL NSC TIMETABLE INTEGRATION
+
+Use the uploaded final October/November 2026 NSC timetable as the source of truth for exam scheduling. Parse the official timetable and build a dynamic exam-aware content engine so each learner’s app experience is automatically populated based on their selected Grade 12 subjects. The uploaded file is the official “October/November 2026 National Senior Certificate (NSC) Examinations Timetable.” :contentReference[oaicite:0]{index=0} :contentReference[oaicite:1]{index=1}
+
+CORE REQUIREMENT
+The app must dynamically show exam countdowns, study plans, revision priorities, alerts, and relevant content based on:
+- the learner’s chosen NSC subjects
+- the official exam dates in the uploaded timetable
+- the specific paper for each subject where applicable
+
+WHAT TO BUILD
+
+1. SUBJECT-BASED TIMETABLE MAPPING
+Create a timetable ingestion and mapping layer that:
+- stores official NSC exam dates by subject and paper
+- maps timetable entries to internal BrainTrack subject names
+- supports multiple papers per subject
+- supports a learner subject selection profile
+
+Example official entries from the uploaded timetable include:
+- Mathematics P1 on Friday 23/10 at 09:00 and Mathematics P2 on Monday 26/10 at 09:00 :contentReference[oaicite:2]{index=2}
+- Physical Sciences Physics P1 on Friday 30/10 at 09:00 and Chemistry P2 on Monday 02/11 at 09:00 :contentReference[oaicite:3]{index=3}
+- Life Sciences P1 on Friday 13/11 at 09:00 and Life Sciences P2 on Monday 16/11 at 09:00 :contentReference[oaicite:4]{index=4}
+- English HL P1 on 28/10, English HL P2 on 19/11, and English HL P3 on 15/10 :contentReference[oaicite:5]{index=5} :contentReference[oaicite:6]{index=6} :contentReference[oaicite:7]{index=7}
+- Afrikaans HL P3 on 20/10, Afrikaans HL P1 on 11/11, and Afrikaans HL P2 on 20/11 :contentReference[oaicite:8]{index=8} :contentReference[oaicite:9]{index=9} :contentReference[oaicite:10]{index=10}
+- Business Studies P1 on 11/11 and P2 on 18/11 :contentReference[oaicite:11]{index=11} :contentReference[oaicite:12]{index=12}
+- Geography P1 on 29/10 and Geography P2 on 12/11 :contentReference[oaicite:13]{index=13} :contentReference[oaicite:14]{index=14}
+- Accounting P1 on 22/10 and Accounting P2 on 28/10 :contentReference[oaicite:15]{index=15} :contentReference[oaicite:16]{index=16}
+- Economics P1 on 16/10 and Economics P2 on 20/11 :contentReference[oaicite:17]{index=17} :contentReference[oaicite:18]{index=18}
+- History P1 on 20/10 and History P2 on 19/11 :contentReference[oaicite:19]{index=19} :contentReference[oaicite:20]{index=20}
+
+2. LEARNER PROFILE LINKING
+Each learner must have:
+- grade
+- exam year
+- subject selection
+- language level where relevant
+- paper-specific schedule derived automatically from the timetable
+
+If a learner selects:
+- Mathematics
+- Physical Sciences
+- Life Sciences
+- English HL
+- Afrikaans FAL
+- Geography
+then the app must automatically build that learner’s personal exam calendar from the official timetable.
+
+3. DYNAMIC CONTENT POPULATION
+Populate content dynamically based on selected subjects and nearest exam dates.
+
+For each learner, show:
+- next exam
+- days remaining to each exam
+- revision priority by exam proximity
+- subject-specific recommended study sessions
+- paper-specific prep content
+- exam sequence timeline
+- “focus this week” recommendations
+- daily revision tasks based on the closest exams
+
+Rules:
+- subjects with the nearest exam dates move to the top
+- if Paper 1 is approaching, prioritise Paper 1 content
+- after Paper 1 is completed, automatically shift focus to Paper 2 or next relevant paper
+- deprioritise subjects already written
+- show non-exam days as recovery or catch-up planning days where relevant
+
+The official timetable includes non-examination days on 03/11, 04/11, 05/11, and 09/11, which can be used for catch-up or revision planning. :contentReference[oaicite:21]{index=21} :contentReference[oaicite:22]{index=22}
+
+4. EXAM COUNTDOWN ENGINE
+Build a countdown engine that:
+- calculates days until each learner’s next exam
+- shows urgency states:
+  - 14+ days = build mastery
+  - 7–13 days = focused revision
+  - 3–6 days = exam prep mode
+  - 0–2 days = final revision sprint
+- updates automatically every day
+
+5. PERSONALISED DASHBOARD WIDGETS
+Add widgets to the learner dashboard:
+- Next Exam
+- This Week’s Exams
+- Exams This Month
+- Subject Priority Queue
+- Revision Plan by Subject
+- Countdown by Paper
+- Final NSC Exam Calendar
+
+6. SUBJECT-SPECIFIC STUDY PLAN LOGIC
+The study planner must use:
+- official exam date
+- learner performance data
+- weak topics
+- paper type
+- days remaining
+
+Example behaviour:
+- If Mathematics P1 is 5 days away, prioritise algebra, functions, calculus, and timed practice
+- If Geography P2 is 2 days away, prioritise settlements, economic geography, and mapwork-linked revision
+- If Life Sciences P1 is complete and P2 is next, shift to Paper 2 content automatically
+
+7. PARENT PORTAL INTEGRATION
+Parent portal must show:
+- learner’s upcoming exam list
+- countdown to next exam
+- subject readiness before each paper
+- exam risk alerts where weak performance exists close to exam date
+- recommended support actions for the week
+
+8. SCHOOL PORTAL INTEGRATION
+School/admin views must show:
+- subject exam distribution across learners
+- upcoming exam pressure by cohort
+- learners with low readiness and near-term exams
+- cohort readiness by subject and paper
+
+9. DATA MODEL
+Add safe schema support for:
+- exam_timetables
+- exam_sessions
+- learner_subjects
+- learner_exam_schedule
+- exam_countdowns
+- subject_content_mapping
+
+Suggested fields for exam_timetables:
+- id
+- exam_year
+- exam_name
+- subject_name
+- paper
+- exam_date
+- exam_time
+- duration
+- level
+- source_file
+- created_at
+
+Suggested fields for learner_exam_schedule:
+- id
+- user_id
+- subject_name
+- paper
+- exam_date
+- exam_time
+- status
+- days_remaining
+- created_at
+
+10. ADMIN TOOLS
+Provide admin functionality to:
+- upload future NSC timetables
+- map timetable subjects to BrainTrack internal subjects
+- preview learner schedule generation
+- correct naming mismatches
+- refresh learner schedules safely
+
+11. CONTENT POPULATION RULE
+This is critical:
+The app must not show generic study content only.
+It must dynamically populate revision content based on the learner’s chosen NSC subjects and the official exam sequence from the final timetable.
+
+12. IMPLEMENTATION STANDARD
+- Analyse existing functionality first
+- Do not break current student dashboards
+- Layer timetable logic into current study plan and dashboard flows
+- Use safe migrations
+- Preserve existing content logic where already working
+- Extend it with exam-aware intelligence
+
+FINAL BEHAVIOUR
+When a learner logs in, BrainTrack should feel like:
+“I know your subjects, I know your official NSC exam dates, I know which paper is next, and I am now showing you exactly what to study and when.”

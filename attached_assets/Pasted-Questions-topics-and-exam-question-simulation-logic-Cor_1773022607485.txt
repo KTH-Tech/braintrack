@@ -1,0 +1,488 @@
+Questions, topics, and exam question simulation logic
+
+Core logic rule
+
+The platform must generate learner-facing questions, topic flows, and exam-style simulations from the structured DBE/CAPS ingested dataset without breaking current papers logic.
+
+Do not treat questions as random content.
+Questions must be generated and sequenced intentionally using:
+- subject
+- grade
+- year coverage
+- CAPS term alignment
+- topic mapping
+- learner current marks
+- learner goals
+- baseline results
+- recent quiz history
+- readiness level
+- question availability
+- difficulty
+- revision priority
+
+Question source rule
+
+Use the ingested DBE/CAPS paper and memo dataset as the structured source foundation for:
+- question generation
+- question variation
+- topic practice
+- baseline tests
+- daily quizzes
+- mixed quizzes
+- exam mode
+- crunch time
+- revision cards
+
+Do not output verbatim copied paper or memo content in learner-facing generated experiences unless it is already part of the protected existing papers workflow.
+Generated learner-facing questions must be:
+- paraphrased where required
+- transformed where required
+- structurally safe
+- explanation-ready
+- clearly mapped to topic and subject
+
+Question object model
+
+Every usable question must have a structured internal model with fields such as:
+- question ID
+- source subject
+- source year
+- source paper reference
+- topic
+- subtopic where applicable
+- CAPS term
+- question type
+- marks weighting where applicable
+- difficulty level
+- importance level
+- readiness relevance
+- memo linkage
+- answer logic
+- distractors where multiple choice is used
+- worked explanation support
+- simulation eligibility
+- baseline eligibility
+- daily quiz eligibility
+- mixed quiz eligibility
+
+Question type logic
+
+Support multiple question formats where appropriate for subject and grade context, such as:
+- multiple choice
+- short answer
+- structured response
+- calculation-based questions
+- matching
+- concept check
+- true or false where relevant
+- data interpretation
+- exam-style written questions
+
+Do not force one question type across all subjects.
+Question format must fit the subject, topic, and learner stage.
+
+Topic model logic
+
+For each subject, create a structured topic model using the ingested dataset.
+
+Each topic must include:
+- topic name
+- subtopics where applicable
+- CAPS term mapping
+- year frequency coverage
+- importance level
+- question count available
+- baseline eligibility
+- daily quiz eligibility
+- simulation eligibility
+- learner mastery state
+- strongest or weakest status only when enough data exists
+
+Each topic must be connected to all valid mapped questions.
+
+Topic readiness rule
+
+A topic may only be used in learner flows when it has:
+- valid subject mapping
+- valid topic mapping
+- usable question coverage
+- learner-safe rendering logic
+
+If topic mapping is incomplete, do not push that topic into live learner flows.
+
+Topic importance logic
+
+Calculate topic importance using weighted signals such as:
+- frequency across 2015 to 2025 papers
+- appearance in multiple years
+- marks relevance where available
+- recurrence in key exam structures
+- role in foundational learner progression
+
+Use topic importance to drive:
+- baseline selection
+- focus-next guidance
+- daily quiz weighting
+- crunch time weighting
+- simulation composition
+- schedule prioritisation
+
+Topic sequencing logic
+
+Sequence topics for the learner using:
+- CAPS term progression
+- baseline results
+- learner current marks
+- learner goals for prelims and finals
+- weak-topic evidence
+- missed schedule history
+- importance level
+- readiness gap
+
+Do not sequence only from year frequency.
+A frequently appearing topic must still be placed appropriately in the learner’s study flow.
+
+Question generation logic
+
+When generating learner questions, apply this logic:
+
+Step 1:
+Identify subject and active learner context.
+
+Step 2:
+Identify available mapped questions for the relevant topic set.
+
+Step 3:
+Filter by learner stage:
+- onboarding baseline
+- normal practice
+- daily subject quiz
+- mixed quiz
+- exam mode
+- crunch time
+- revision support
+
+Step 4:
+Filter by appropriate difficulty and importance.
+
+Step 5:
+Assemble the question set using a balanced mix of:
+- learner weak areas
+- important topics
+- current CAPS progression
+- suitable question variety
+- safe non-duplicate distribution
+
+Step 6:
+Render learner-facing question content with correct UI mode and scoring logic.
+
+Question difficulty logic
+
+Questions must be classified into difficulty levels such as:
+- easy
+- moderate
+- challenging
+- advanced where relevant
+
+Difficulty must be used intelligently.
+
+Baseline tests:
+- start balanced but diagnostic
+
+Daily quizzes:
+- mostly moderate with a few targeted easy or challenging items
+
+Exam mode:
+- realistic spread
+
+Crunch time:
+- emphasis on high-value, high-relevance, weak-area coverage
+
+Do not overload struggling learners with only difficult questions.
+Do not oversimplify strong learners either.
+
+Baseline question logic
+
+The onboarding baseline must be based on term 1 CAPS topics only.
+
+For each selected subject:
+- build a subject baseline set from term 1 mapped topics
+- include a balanced distribution of diagnostic questions
+- use current marks to guide starting level, not final labelling
+- capture early topic evidence
+
+The baseline must determine:
+- initial readiness starting point
+- first support level
+- first focus-next recommendation
+- first session guidance
+- early topic evidence
+
+The baseline must not immediately declare a weakest topic unless the evidence threshold is met.
+
+Daily subject quiz logic
+
+For each enrolled subject, generate one daily subject quiz.
+
+The daily subject quiz must:
+- be short and repeatable
+- use 5 to 10 questions unless configured otherwise
+- focus on one or more important or weak topics
+- adapt to learner recent performance
+- refresh daily
+- support streaks and habit-building
+
+Selection weighting for daily subject quiz should include:
+- topic importance
+- learner weak areas
+- recent incorrect questions
+- spaced reinforcement
+- CAPS progression
+- available mapped question depth
+
+Daily mixed quiz logic
+
+Generate one daily mixed quiz across the learner’s selected subjects.
+
+The mixed quiz must:
+- include questions from multiple enrolled subjects
+- support revision variety
+- remain short and high-value
+- balance subject distribution intelligently
+
+Use logic such as:
+- include subjects with lower recent activity
+- include subjects with weak performance
+- include at least one high-importance question set
+- avoid overloading the learner with one subject only
+
+Mixed quiz composition should not feel random.
+It must feel like a smart cross-subject revision block.
+
+Topic practice logic
+
+When a learner opens a topic practice flow:
+- load the topic overview
+- show importance level
+- show readiness state
+- show question availability
+- generate a relevant question set for that topic only
+
+Topic practice must support:
+- small focused practice blocks
+- continuation after interruption
+- progress save state
+- post-submission explanation
+- mastery updates
+
+Question repetition rule
+
+Do not over-repeat the same exact question too frequently in learner flows.
+
+Use repetition logic such as:
+- spaced reappearance of weak questions
+- safe variation if similar mapped content exists
+- priority repetition after repeated learner errors
+- avoid showing the identical item too soon unless intentional reinforcement is needed
+
+Question diversity rule
+
+Each generated question set should include a sensible diversity mix where relevant:
+- different topics
+- different subtopics
+- different question types
+- different difficulty levels
+- different cognitive demands
+
+Do not generate flat repetitive sets unless the learner explicitly selects a narrow drill mode.
+
+Exam question simulation logic
+
+Create a realistic exam-style simulation flow for each subject with enough mapped question coverage.
+
+Exam simulation must not be a random practice list.
+It must feel like a structured exam preparation experience.
+
+When the learner starts Exam mode:
+- generate a 35-question subject session
+- use the selected subject only
+- pull from mapped DBE/CAPS question structures from 2015 to 2025
+- balance important topics
+- balance realistic exam-style difficulty
+- balance marks style and pacing where possible
+- include a logical flow from easier entry points to deeper challenge where appropriate
+
+Exam simulation assembly logic
+
+Build the 35-question simulation using weighted logic such as:
+- high-importance topics must be included
+- foundational topics should appear where appropriate
+- moderate and challenging questions should be blended
+- learner weak areas may appear, but the simulation should still feel like a fair exam experience
+- avoid over-indexing only on the learner’s weakest area
+- distribute across valid exam-style topic coverage
+
+The simulation must feel credible, not chaotic.
+
+Exam mode UI logic
+
+Exam mode must render:
+- subject title
+- session progress
+- timed experience
+- question number navigation
+- answer state tracking
+- submission flow
+- no answer reveal during active attempt
+- no hints during locked exam mode unless explicitly configured otherwise
+- no copy and paste from the exam session
+- no learner export or learner download from the session
+- post-submit review only after completion
+
+Exam simulation scoring logic
+
+On submission:
+- score the session
+- update question-level performance
+- update topic-level performance
+- update subject performance
+- update readiness inputs
+- update session history
+- generate a review summary
+- generate study-next guidance
+
+Do not reveal memo text verbatim.
+Use explanation-led feedback and worked guidance.
+
+Crunch Time question simulation logic
+
+Crunch Time must also generate a 35-question subject session, but with different intent from Exam mode.
+
+Crunch Time is for urgent revision pressure before:
+- tests
+- prelims
+- finals
+
+Crunch Time weighting must favour:
+- high-importance topics
+- weak topics with enough evidence
+- repeated learner struggle areas
+- high revision value
+- faster intervention coverage
+
+Crunch Time must feel sharper and more targeted than Exam mode.
+
+Crunch Time session logic
+
+When the learner starts Crunch Time:
+- generate 35 questions for the selected subject
+- prioritise revision-critical topics
+- maintain sensible difficulty balance
+- emphasise high-value recovery opportunities
+- include enough spread to avoid tunnel vision
+
+Post-session output must include:
+- priority review areas
+- focus-next topic
+- key correction patterns
+- suggested next quiz or notes action
+
+Simulation eligibility rule
+
+Only enable Exam mode or Crunch Time for a subject if that subject has:
+- enough mapped question depth
+- enough topic coverage
+- enough safe simulation-ready content
+
+If not enough data exists:
+- disable the mode
+- show clear reason
+- do not render a broken simulation experience
+
+Session composition rule
+
+Every generated session must keep a record of:
+- learner ID
+- subject
+- session type
+- session ID
+- question IDs used
+- topics covered
+- difficulty mix
+- start timestamp
+- completion timestamp
+- result summary
+
+This supports:
+- retry control
+- progress updates
+- analytics
+- review logic
+- safe repetition handling
+
+Progress update rule for questions and simulations
+
+During active sessions:
+- track answers live inside the session state
+- store checkpoints safely
+- do not recalculate the full learner performance model noisily after every click
+
+At completion or valid checkpoint:
+- write question-level results
+- update topic performance
+- update subject performance
+- update learner progress
+- update readiness inputs
+- update streak, XP, and coins where applicable
+- update focus-next
+- update parent, school, and partner summaries where authorised
+
+Weakest topic rule
+
+Do not generate weakest-topic insight until enough topic-based evidence exists.
+
+Weakest topic may only be shown after:
+- baseline evidence is sufficient, or
+- meaningful topic quiz evidence exists, or
+- simulation and quiz history support fair comparison
+
+Until then, use neutral labels such as:
+- Building your topic profile
+- Complete more quizzes to unlock topic insights
+
+Topic feedback logic after simulations
+
+After Exam mode or Crunch Time, show:
+- topics covered
+- strongest performing topic if valid
+- weakest topic only if threshold is met
+- revision priority topics
+- next recommended action
+
+Do not label a topic as weakest from one thin data point.
+
+Frontend generation rule after question readiness
+
+Once a subject is ready and enough mapped data exists, the frontend must generate:
+- topic cards
+- daily subject quiz cards
+- mixed quiz logic
+- practice entry points
+- exam mode entry
+- crunch time entry
+- notes generation entry
+- readiness cards
+- review states
+
+All buttons shown to the learner must be:
+- clickable and functional, or
+- properly disabled with a clear reason
+
+Do not show dead buttons.
+
+Final questions and simulation logic rule
+
+Question generation, topic sequencing, and exam simulation must be structured, learner-aware, CAPS-aligned, non-random, and driven by the mapped DBE/CAPS dataset.
+
+Build realistic learning flows, not content noise.
+Build fair exam preparation, not a roulette wheel with school shoes on.

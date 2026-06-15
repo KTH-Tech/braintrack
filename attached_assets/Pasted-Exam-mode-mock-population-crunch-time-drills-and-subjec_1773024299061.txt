@@ -1,0 +1,172 @@
+Exam mode, mock population, crunch time, drills, and subject population rule
+
+Critical protection rule
+
+Do not break any current working exam logic, practice logic, quiz logic, ingestion rules, dashboard behaviour, subject mapping, or learner flows.
+
+Only add the controls below in a safe, non-breaking way.
+
+Exam mode trigger rule
+
+When the learner clicks Exam Mode, the system must immediately prepare and populate the exam-related experience using approved ingested CAPS / DBE paper data and the learner’s selected subjects.
+
+Exam Mode must not open as an empty shell.
+
+On click, Exam Mode must populate:
+- mock exams
+- crunch time revision
+- focused drills
+
+Mock exams rule
+
+When Exam Mode is clicked, generate and display mock exams for the learner’s selected subjects.
+
+Mock exams must be created using:
+- approved ingested paper data
+- learner subjects
+- learner current level
+- topic importance
+- weak areas where applicable
+- year and paper structures where available
+
+Mock exams must:
+- be subject-specific
+- follow realistic exam-style structure
+- use appropriate question difficulty
+- preserve proper paper flow where possible
+- support timed exam sessions
+- support marking and readiness updates after submission
+
+Crunch time rule
+
+When Exam Mode is clicked, generate a Crunch Time section automatically.
+
+Crunch Time must provide:
+- highest-priority revision areas
+- most relevant topics based on learner weakness and exam importance
+- short high-impact revision sets
+- last-minute readiness support
+- short guided focus blocks by subject
+
+Crunch Time should highlight:
+- urgent topics
+- high-importance topics
+- weak topics needing immediate attention
+- what to revise next before the mock
+
+Drills rule
+
+When Exam Mode is clicked, generate subject drills automatically.
+
+Drills must:
+- be short, targeted, and fast
+- focus on weak and important topics
+- be generated per selected subject
+- support quick practice before or after mock exam attempts
+- update progress, mastery, readiness, streaks, XP, and dashboard metrics
+
+Subject population validation rule
+
+The system must validate whether all learner subjects populated successfully in Exam Mode.
+
+If a selected subject does not populate:
+- highlight it clearly
+- do not hide the issue
+- do not silently fail
+- show the learner and admin an explicit population warning where appropriate
+
+Learner-facing subject warning example
+
+For any missing subject, show a clear status such as:
+- Subject not yet ready
+- Mock exam not available yet
+- Drill content still being prepared
+- Crunch Time content missing for this subject
+
+Admin-facing subject population rule
+
+If a subject does not populate, create a visible flag in admin review or admin alerts showing:
+- subject name
+- learner impact count if available
+- reason if detected
+- missing paper status
+- missing memo status
+- ingestion gap
+- tagging gap
+- readiness issue
+
+Highlight rule
+
+If a subject did not populate in Exam Mode, highlight it clearly using the platform theme.
+Do not use silent or hidden failures.
+
+Use visible status indicators such as:
+- not populated
+- incomplete
+- awaiting ingestion
+- awaiting review
+- missing linked content
+
+Dashboard and exam screen visibility
+
+Exam Mode must display subject population status clearly.
+
+Example sections:
+- Mock exams ready
+- Crunch Time ready
+- Drills ready
+- Subjects awaiting content
+
+Readiness logic
+
+Exam Mode population must only use approved and ready content.
+Do not populate learner exam flows with unreviewed or low-quality ingestion outputs.
+
+If some subjects are ready and others are not:
+- populate what is ready
+- clearly highlight what is missing
+- do not block the whole experience unless nothing valid is available
+
+Quality dependency rule
+
+Mock exams, Crunch Time, and drills must only populate from content that passed the required ingestion quality threshold and approval rules.
+
+If a subject has not met the required ingestion quality threshold:
+- do not use it for Exam Mode
+- highlight it as unavailable or awaiting readiness
+
+Data source rule
+
+Exam Mode content must use:
+- learner selected subjects
+- learner onboarding inputs
+- learner current scores
+- approved ingested CAPS / DBE paper dataset
+- topic relevance
+- weak areas
+- readiness logic
+
+Empty-state prevention rule
+
+Do not allow Exam Mode to open with blank sections.
+At minimum, show:
+- ready content for populated subjects
+- clear warnings for unpopulated subjects
+- next available action for the learner
+
+Progress update rule
+
+All mock exams, Crunch Time sessions, and drills completed through Exam Mode must update:
+- learner progress
+- subject mastery
+- learning score
+- exam readiness
+- estimated exam range
+- rewards
+- streaks
+- school metrics
+- partner metrics
+
+Final rule
+
+When the learner clicks Exam Mode, the platform must populate mock exams, Crunch Time, and drills automatically using approved subject content, and clearly highlight any subject that did not populate.

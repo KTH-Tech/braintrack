@@ -1,0 +1,64 @@
+LANGUAGE OUTPUT RULE — NO EXCEPTIONS
+
+Each learner has preferred_language:
+
+"en" = English
+"af" = Afrikaans (modern conversational Afrikaans)
+ALL dynamically generated content must respect preferred_language, including:
+
+Smart Tutor responses
+Study notes generation
+Baseline feedback
+Progress explanations
+Exam feedback
+Reward content
+Notifications
+If preferred_language = Afrikaans:
+
+Use NATURAL modern Afrikaans, for example:
+
+"Bestudeer nou hierdie onderwerp"
+"Kom ons werk saam daaraan"
+"Jy’s amper daar — hou aan!"
+"Hier is jou persoonlike studienotas"
+NOT formal Afrikaans.
+NOT academic Afrikaans.
+NOT church Afrikaans.
+
+Tone must be:
+• friendly
+• teen-appropriate
+• simple
+• motivational
+
+If preferred_language = English:
+Use simple, encouraging modern English.
+
+📚 STUDY NOTES GENERATION RULE
+When generating personalised study notes, consider child baseline and learning style
+
+IF learner language = Afrikaans:
+→ notes must be fully written in Afrikaans
+
+IF learner language = English:
+→ notes must be fully written in English
+
+NO mixed language.
+NO fallback.
+
+🛑 QUALITY CONTROL
+If any generated content appears in the wrong language:
+
+Log error and regenerate immediately.
+
+Do not show mixed output to learner.
+
+add this into the overall planned tasks
+
+create a set of icos similar to these for brain track make the theme light or dark theme / afrikaans and englis
+
+Great reference images! I can see the style — rainbow neon gradients, glowing nodes, flowing curved lines, rounded square icon shape, with both light (frosted glass) and dark (glowing) variants.
+
+Based on your app's pages, I'll generate icons for: Home, Classroom, Progress, Exams, Notes, Rewards, Calendar, Smart Plan, Nova (bot), and Settings. Each icon will match the rainbow gradient + flowing lines + node dots style from your logo, in a dark theme variant (since those glow effects look best and work across both themes when used on cards/buttons).
+
+Here's the plan:

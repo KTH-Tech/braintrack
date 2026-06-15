@@ -1,0 +1,161 @@
+For each learner × subject × CAPS topic:
+  mastery_score = weighted score of:
+    - accuracy
+    - marks_ratio
+    - time_efficiency
+    - error_type_distribution
+Mastery Bands
+IF mastery_score < 60:
+  mastery_band = RED
+ELSE IF mastery_score >= 60 AND mastery_score <= 75:
+  mastery_band = AMBER
+ELSE:
+  mastery_band = GREEN
+Adaptive Explanation Routing
+IF mastery_band == RED:
+  explanation_style = "step-by-step, definitions, mark allocation, traps"
+
+IF mastery_band == AMBER:
+  explanation_style = "method focus, fewer steps, exam mistakes"
+
+IF mastery_band == GREEN:
+  explanation_style = "concise exam strategy, speed, structure"
+UI-Safe Explanation Delivery
+Return explanation text in all keys:
+  explanation
+  feedback
+  message
+  memo_hint
+(All keys contain identical text)
+Predictive Topic Prioritisation (Backend Only)
+For each CAPS topic:
+  priority_score =
+    (caps_weight * 0.45)
+  + (ten_year_frequency * 0.35)
+  + ((1 - mastery_ratio) * 0.20)
+
+  priority_score *= exam_proximity_factor
+Exam Proximity Multiplier
+IF days_to_exam > 90:
+  factor = 1.00
+ELSE IF days_to_exam >= 60:
+  factor = 1.15
+ELSE IF days_to_exam >= 30:
+  factor = 1.30
+ELSE:
+  factor = 1.50
+Question Selection Logic
+Select next question where:
+  topic_priority is highest
+  AND mastery is lowest
+  AND topic exam frequency is high
+2️⃣ PSEUDO-CODE
+Smart Tutor Flow
+function smartTutor(learner, topic):
+  mastery = calculateMastery(learner, topic)
+  band = assignBand(mastery)
+
+  explanation = generateExplanation(topic, band)
+
+  return explanationPayload(explanation, band)
+Simulated Exam Generation
+for each subject:
+  for exam_number in 1..4:
+    generate question_paper
+    generate memorandum
+    generate caps_topic_coverage_map
+    export PDF
+    export JSON
+CAPS Topic Coverage Map Builder
+for each question in exam:
+  map question to caps_topic
+  accumulate marks per topic
+3️⃣ JSON SCHEMAS
+CAPS Topic Metadata
+{
+  "subject": "Mathematics",
+  "topic": "Differential Calculus",
+  "caps_weight": "High",
+  "papers": ["Paper 1"],
+  "cognitive_levels": ["Application", "Higher-order"],
+  "ten_year_frequency": "Very High",
+  "likelihood_score": 92
+}
+Learner Mastery Record
+{
+  "learner_id": "L123",
+  "subject": "Physical Sciences",
+  "topic": "Mechanics",
+  "mastery_score": 68,
+  "mastery_band": "AMBER",
+  "error_types": {
+    "concept": 0.2,
+    "method": 0.5,
+    "language": 0.3
+  }
+}
+Adaptive Explanation Payload (UI-Safe)
+{
+  "explanation": "Adaptive explanation text",
+  "feedback": "Adaptive explanation text",
+  "message": "Adaptive explanation text",
+  "memo_hint": "Adaptive explanation text",
+  "explanation_level": "AMBER",
+  "marking_logic": ["Method marks awarded here"],
+  "common_traps": ["Sign error"],
+  "next_action": "Attempt next question"
+}
+Simulated Exam JSON
+{
+  "subject": "Mathematics",
+  "paper": "Paper 1",
+  "exam_number": 1,
+  "questions": [
+    {
+      "question_number": "1.1",
+      "caps_topic": "Functions",
+      "marks": 10,
+      "question_text": "Simulated question text"
+    }
+  ],
+  "memorandum": [
+    {
+      "question_number": "1.1",
+      "marking_guideline": [
+        "Award 1 mark for correct substitution",
+        "Award 1 mark for final answer"
+      ],
+      "final_answer": "x = 2",
+      "common_errors": ["Incorrect substitution"]
+    }
+  ],
+  "caps_coverage_map": [
+    {
+      "topic": "Functions",
+      "questions": ["1.1"],
+      "total_marks": 10
+    }
+  ],
+  "official_reference": {
+    "source": "DBE",
+    "url": "https://www.education.gov.za/Curriculum/NationalSeniorCertificate(NSC)Examinations/NSCPastExaminationpapers.aspx"
+  }
+}
+4️⃣ FORMULAS
+Weighted Average Price (Tiered Pricing)
+Weighted_Price =
+  (0.50 × 49)
++ (0.35 × 79)
++ (0.15 × 129)
+= R71.20
+Monthly New Subscribers (D6 Advertising)
+Leads = Ad_Spend ÷ CPL
+New_Subscribers = Leads × Conversion_Rate
+Monthly Revenue
+Revenue = Active_Subscribers × Average_Price
+Late Payment Penalty
+Penalty_Revenue =
+  Active_Subscribers × Late_Payer_Rate × (Average_Price × 0.05)
+Subscriber Accumulation
+Month_N_Active =
+  Month_(N-1)_Active + New_Subscribers

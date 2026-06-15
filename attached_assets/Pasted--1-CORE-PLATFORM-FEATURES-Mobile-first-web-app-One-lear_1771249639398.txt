@@ -1,0 +1,267 @@
+🧠 1️⃣ CORE PLATFORM FEATURES
+
+• Mobile-first web app
+• One learner per account
+• DOB-based identity
+• Single device enforcement
+• Parent-gated access (OTP/MFA)
+• Hosted checkout (no payment data stored)
+• Dynamic subscription billing
+• Academic cycle auto-close (November)
+• Role-based access (learner/parent/admin)
+• School selected via dropdown (unique ID per school)
+• Referral source tracking (partner platforms)
+
+🎒 2️⃣ LEARNER FEATURES — “CLASSROOM”
+Onboarding
+
+• Subject selection
+• Previous marks input
+• 25-question adaptive diagnostic
+• Learning style quiz
+• Baseline mastery map
+
+Daily Learning
+
+• “Today’s Power Session” (2 subjects/day)
+• Adaptive micro-skill rotation
+• Mastery tracking (0–100 scale)
+• Mastery threshold at 80%
+• Visual mastery bars/rings
+• Spaced repetition scheduling
+• Memory boost timeline visual
+• XP & level system
+• Streak counter
+• Achievement badges
+• Readiness coverage meter
+
+Engagement
+
+• Teen-friendly microcopy
+• Progress animations
+• Milestone celebrations
+• Focus mode
+• Exam lockdown mode
+
+👨‍👩‍👧 3️⃣ PARENT FEATURES
+
+• Secure parent dashboard
+• Weekly performance summary
+• Baseline vs current mastery
+• Mock exam progress tracking
+• Exam coverage readiness %
+• Engagement health indicators
+• Milestone alerts
+• Low engagement alerts
+• Onboarding reminders
+• Subscription management
+• Payment history
+• Consent records
+
+🏫 4️⃣ SCHOOL FEATURES (EMAIL REPORTING ONLY)
+
+• Monthly anonymised report
+• Baseline vs improvement summary
+• Exam coverage distribution
+• Engagement summary
+• Active learner count
+• Donation breakdown:
+
+R35 per active learner
+
+15% once-off product share
+• Year-to-date totals
+• Attached payment proof
+• Partner referral tracking
+
+📦 5️⃣ PRODUCT FEATURES
+Smart Tutor Unlock
+
+• Unlocks adaptive learning
+
+Question Power Pack
+
+• 50 exam-style questions per subject
+• DBE-aligned structure
+
+Personalised Exam Calendar
+
+• Subject-specific calendar
+• Learner availability factoring
+• Downloadable PDF
+
+Brain Boost Subscription
+
+• Daily adaptive learning
+• Mock exams access
+• Parent dashboard
+• Alerts
+
+Smart Notes (R99 per subject)
+
+• Learning-style adapted
+• Mastery-gap focused
+• CAPS-aligned
+• Generated after diagnostic completion
+• 24-hour generation rule
+• Downloadable PDF
+
+🧪 6️⃣ MOCK EXAM FEATURES
+
+• ~1,000 simulated questions per subject
+• Derived from 10 years DBE exam patterns
+• Tagged by:
+
+topic
+
+micro-skill
+
+difficulty
+
+mark value
+
+frequency weight
+
+• Exactly 4 unique mock exams per subject:
+
+Foundational
+
+Balanced
+
+Late-prep
+
+Final DBE simulation
+
+• Realistic mark distribution
+• No static past paper hosting
+• Links to official DBE source pages
+
+🔁 7️⃣ LEARNING SCIENCE ENGINE
+
+• CAPS-aligned content hierarchy
+• Micro-skill mastery tracking
+• Spaced repetition intervals
+• Automatic revision resurfacing
+• Adaptive subject prioritisation
+• Exam-pattern-based weighting
+• Baseline recalibration over time
+• Exam coverage readiness %
+• Factual performance likelihood bands
+• No speculative predictions
+
+🔐 8️⃣ SECURITY & COMPLIANCE
+
+• Secure-by-design architecture
+• Token-based authentication
+• MFA on sensitive actions
+• Session expiry enforcement
+• Single-device login rule
+• Exam mode lockdown
+• Disable copy/paste/print
+• Watermarked content rendering
+• Screenshot detection (where supported)
+• Abuse detection
+• Profanity filtering
+• Audit logging
+• No payment data stored
+• POPIA compliance
+• Post-matric data deletion
+• Anonymised dataset retention
+
+💰 9️⃣ DONATION & PARTNER MODEL
+
+• R35 per active learner monthly to school
+• 15% of once-off purchases donated
+• R5 per active learner to partner platform
+• Automated monthly accounting
+• School payment proof attachment
+• Internal partner payout reporting
+
+🤖 🔟 SUPPORT & AUTOMATION
+
+• In-app technical support bot (named as chosen)
+• Escalation to learn@braintrack.co.za
+
+• Auto-generated ticket reference
+• Housekeeping jobs:
+
+session cleanup
+
+billing reconciliation
+
+mastery recalculation
+
+school report generation
+
+donation calculation
+
+post-matric data purge
+
+anomaly detection
+
+🎯 EXPERIENCE DESIGN FEATURES
+
+• Teen-friendly language
+• Parent-friendly clarity
+• School professional tone
+• Progress-first UI
+• Mobile-first layout
+• Minimal cognitive load
+• Visual progress cues
+• Big action buttons
+• Quick task focus
+
+🔥 What You Now Have
+
+This is not just an exam app.
+
+It is:
+
+• adaptive
+• pattern-aligned
+• mastery-driven
+• secure
+• compliant
+• gamified
+• impact-funded
+• parent-integrated
+• school-reporting capable
+
+Fully specified.
+
+If you’d like next, I can:
+
+• turn this into investor pitch bullet deck
+• compress into website copy
+• structure into feature roadmap
+• split into MVP vs Phase 2
+• or prioritise build sequence
+
+You’ve defined a complete, scalable EdTech ecosystem.
+
+bRAIN BOOST IS 169 PER MONTH
+
+Locked and aligned ✅
+
+Brain Boost Subscription = R169 per month
+(from signup month through to end of the academic cycle in November, auto-calculated dynamically)
+
+Here’s the corrected product positioning for your platform config:
+
+🚀 Brain Boost (Core Subscription)
+
+Price: R169/month
+Billing: Monthly on signup date
+Term: Signup month → November (auto-prorated remaining months)
+
+Includes:
+• Daily adaptive Smart Tutor sessions
+• Classroom gamification (XP, streaks, badges)
+• Spaced repetition memory engine + visuals
+• Exam-pattern readiness coverage
+• Access to all 4 simulated mock exams per subject
+• Parent dashboard & alerts
+• Engagement tracking
+
+Access rule:
+Unlocks only after payment + parent OTP/MFA authorisation

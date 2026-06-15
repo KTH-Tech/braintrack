@@ -1,0 +1,85 @@
+Card 1 (Default / Highlighted)
+
+Badge: Best Value
+Plan Name: Matric Season Plan (March–November)
+One-liner: One plan for the full Matric journey (March–November).
+Bullets:
+
+Built for prelims → finals (no stop-start)
+
+Less admin for parents (set-and-go)
+
+Stronger consistency = better results
+
+Primary CTA: Choose Season Plan
+Micro trust line: Trial: no charge today • First charge Day 15 • Secure card setup via Yoco
+
+Card 2 (Secondary)
+
+Badge: Flexible
+Plan Name: Monthly Plan
+One-liner: Flexible month-to-month for parents who want to start now.
+Bullets:
+
+Start small, upgrade anytime
+
+Great for quick activation from D6
+
+Ideal if you want flexibility
+
+CTA: Choose Monthly
+Micro trust line: Trial: no charge today • First charge Day 15 • Cancel with 30 days’ notice
+
+Optional mini toggle (under both cards)
+
+Prefer to skip the trial?
+Pay Today and get 10% off (access activates immediately).
+
+Button: Pay Today & Save 10%
+
+Checkout Plan Cards (MODERN AFRIKAANS)
+Kaart 1 (Default / Uitgelig)
+
+Kenteken: Beste Waarde
+Plan Naam: Matriek Seisoenplan (Maart–November)
+Een-liner: Een plan vir die hele Matriek pad (Maart–November).
+Bullets:
+
+Gebou vir prelims → finals (konsekwent)
+
+Minder admin vir ouers (stel en gaan)
+
+Beter ritme = beter resultate
+
+Primêre CTA: Kies Seisoenplan
+Klein trust line: Proef: geen heffing vandag • Eerste heffing Dag 15 • Veilige Yoco-kaartopstelling
+
+Kaart 2 (Sekondêr)
+
+Kenteken: Buigsaam
+Plan Naam: Maandelikse Plan
+Een-liner: Buigsaam maand-tot-maand vir ouers wat nou wil begin.
+Bullets:
+
+Begin klein, gradeer enige tyd op
+
+Ideaal vir vinnige D6-aktivering
+
+Perfek as jy buigsaamheid wil hê
+
+CTA: Kies Maandeliks
+Klein trust line: Proef: geen heffing vandag • Eerste heffing Dag 15 • Kanselleer met 30 dae kennisgewing
+
+Opsionele skakel (onder albei)
+
+Wil jy die proef oorslaan?
+Betaal Vandag en kry 10% af (toegang is dadelik aktief).
+
+Knoppie: Betaal Vandag & Spaar 10%
+
+Tiny policy strip (put directly under pricing)
+
+EN: Parent-managed activation • First charge Day 15 on trial • No refunds • 30-day cancellation notice
+AF: Ouer aktiveer • Eerste heffing Dag 15 op proef • Geen terugbetalings • 30 dae kennisgewing
+
+If you paste your actual prices (Monthly = ?, Season = ?), I’ll tighten the copy to make the Season plan

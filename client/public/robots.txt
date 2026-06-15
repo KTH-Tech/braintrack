@@ -1,0 +1,53 @@
+User-agent: Googlebot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: *
+Allow: /
+Allow: /about
+Allow: /features
+Allow: /research
+Allow: /subscribe
+Allow: /privacy-policy
+Allow: /terms-of-service
+Allow: /cookie-policy
+Allow: /past-papers
+Allow: /partner-schools
+Allow: /activate
+Allow: /calendar
+
+Disallow: /dashboard
+Disallow: /subjects
+Disallow: /subject/
+Disallow: /tutor
+Disallow: /smart-tutor
+Disallow: /progress
+Disallow: /exam-ready
+Disallow: /settings
+Disallow: /parent-dashboard
+Disallow: /onboarding
+Disallow: /purchase
+Disallow: /parent-purchase
+Disallow: /exam-mode
+Disallow: /exam-session
+Disallow: /daily-challenge
+Disallow: /study-calendar
+Disallow: /bst-exam
+Disallow: /dbe-practice
+Disallow: /flashcards
+Disallow: /rewards
+Disallow: /role-select
+Disallow: /learn/admin/
+Disallow: /sms
+Disallow: /sms-founding
+Disallow: /d6
+Disallow: /d6-app
+Disallow: /d6-schools
+Disallow: /school
+Disallow: /learner
+Disallow: /ref
+Disallow: /outreach
+
+Sitemap: https://braintrack.app/sitemap.xml

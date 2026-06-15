@@ -1,0 +1,55 @@
+rules:
+  - id: no-raw-window-location-href-variable
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      window.location.href assignment detected with a non-literal value.
+
+      Apply one of the approved patterns before assigning:
+        1. Internal path  — call isSafeInternalPath() from
+           client/src/lib/safe-path.ts; only assign if it returns true.
+        2. External URL   — use window.open(url, "_blank", "noopener,noreferrer")
+           instead of window.location.href.
+        3. Locally-generated blob: URL (e.g. URL.createObjectURL) — add an
+           // ACCEPTED RISK comment explaining why isSafeInternalPath() is
+           deliberately skipped.
+
+      If this line has already been reviewed and approved, add a trailing
+      // nosemgrep: no-raw-window-location-href-variable comment.
+
+      See client/src/components/notifications-panel.tsx and nova-bot.tsx for
+      reference implementations of the isSafeInternalPath() pattern.
+    metadata:
+      category: security
+      cwe: "CWE-601: URL Redirection to Untrusted Site ('Open Redirect')"
+      references:
+        - https://owasp.org/www-community/attacks/URL_Redirection_to_Untrusted_Site
+      task: "Task #504 — Extend safe-path validation to all window.location.href usages"
+    paths:
+      include:
+        - "**/client/src/**"
+        - "**/server/**"
+        - "**/shared/**"
+      exclude:
+        # Mockup sandbox is a Vite-isolated design playground that never
+        # ships to production (see threat_model.md "Trust Boundaries").
+        - "**/artifacts/mockup-sandbox/**"
+        # Generated bundles + dependencies — never scan.
+        - "**/node_modules/**"
+        - "**/dist/**"
+        - "**/*.test.ts"
+        - "**/*.test.tsx"
+        - "**/*.spec.ts"
+        - "**/*.spec.tsx"
+    patterns:
+      - pattern: window.location.href = $EXPR;
+      - pattern-not: window.location.href = "..."; # string literals are hardcoded and safe
+      - pattern-not: window.location.href = `$A`; # template with no dynamic parts
+      - pattern-not-inside: |
+          if (isSafeInternalPath($EXPR)) {
+            ...
+          }
+      - pattern-not-inside: |
+          if (isSafeInternalPath($EXPR)) {
+            window.location.href = $EXPR;
+          }

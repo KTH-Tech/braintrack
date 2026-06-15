@@ -1,0 +1,212 @@
+Good — this makes your model **cleaner, more predictable, and more scalable** 💥
+Everything becomes **subscription-first**, which is exactly what you want.
+
+Let’s lock the **final product suite with monthly pricing + strict 30-day cancellation** 👇
+
+---
+
+# 🧠 **BrainTrack Product Suite (Subscription Model)**
+
+## 🎯 Core Rule
+
+> ✅ All products = **monthly subscription**
+> ✅ Cancel anytime (effective end of billing cycle – 30 days)
+> ❌ No once-off purchases
+
+---
+
+# 🔥 1. **ExamTrack (HERO PRODUCT)**
+
+> “The full system. Everything in one place.”
+
+💰 **R169/month**
+🎁 **14-Day Free Trial (ONLY here)**
+
+### Includes:
+
+* Papers
+* Explain
+* Weak Spots
+* Progress
+* Study Plan
+* Notes
+
+🎯 Role:
+
+* Acquisition
+* Core revenue
+* Main experience
+
+---
+
+# 💎 2. **Distinction Builder**
+
+> “From pass → 80%+”
+
+💰 **R69/month**
+
+### Includes:
+
+* Advanced questions
+* Exam strategies
+* Model answers
+* Time mastery
+* Mistake tracking
+
+🎯 Role:
+
+* Premium upgrade
+* High-performing learners
+
+---
+
+# 📘 3. **PaperBank**
+
+> “Just past papers.”
+
+💰 **R49/month**
+
+### Includes:
+
+* Past papers
+* Memorandums
+* Basic exam mode
+
+🎯 Role:
+
+* Low-cost entry
+* Upsell into ExamTrack
+
+---
+
+# 📚 4. **NotePack**
+
+> “Understand the work.”
+
+💰 **R59/month**
+
+### Includes:
+
+* Simplified notes
+* Key concepts
+* Exam summaries
+
+🎯 Role:
+
+* Struggling learners
+* Early-stage entry
+
+---
+
+# 🚨 5. **Last Push**
+
+> “Final exam prep.”
+
+💰 **R69/month**
+
+### Includes:
+
+* High-probability topics
+* Crash revision plans
+* Fast drills
+
+🎯 Role:
+
+* Exam-season urgency
+* Short-term subscriptions
+
+---
+
+# 🤝 6. **ExamTrack Earn (Partner Model)**
+
+### Commission:
+
+* 💥 **R35 per ExamTrack subscriber**
+* 💰 **10% on ALL other subscriptions**
+
+---
+
+# 🧩 FINAL PRODUCT STRUCTURE
+
+```plaintext id="u3x8zd"
+BrainTrack
+
+├── ExamTrack (R169/month)
+│   └── 14-Day Free Trial
+│
+├── Distinction Builder (R69/month)
+│
+├── PaperBank (R49/month)
+│
+├── NotePack (R59/month)
+│
+├── Last Push (R69/month)
+│
+└── ExamTrack Earn (Partners)
+```
+
+---
+
+# 📜 CANCELLATION RULE (IMPORTANT)
+
+## Standard Policy:
+
+> “All subscriptions renew monthly.
+> You may cancel at any time. Access continues until the end of your current billing cycle (30 days).”
+
+---
+
+## Why this works:
+
+✅ Predictable revenue
+✅ Clean billing logic
+✅ Easy to communicate
+✅ No confusion
+
+---
+
+# 🎯 USER FLOW
+
+### Entry Paths:
+
+* Trial → ExamTrack
+* Paid → PaperBank / NotePack / Last Push
+
+---
+
+### Upsell Paths:
+
+* PaperBank → ExamTrack
+* NotePack → ExamTrack
+* Last Push → ExamTrack
+* ExamTrack → Distinction Builder
+
+---
+
+# 🔥 KEY STRATEGY ADVANTAGE
+
+This model gives you:
+
+* Recurring revenue across ALL products
+* Multiple entry points
+* Strong upgrade funnel
+* Seasonal boosts (Last Push spikes)
+
+---
+
+# 💡 FINAL POSITIONING
+
+> “Start anywhere. Stay as long as you need. Upgrade when you’re ready.”
+
+---
+
+# 🚀 If you want next step
+
+I can:
+
+* Build your **subscription logic (Replit backend ready)**
+* Design **paywall screens that convert**
+* Create **upgrade nudges inside the app**
+* Model **monthly revenue projections**
+
+Just say 👍

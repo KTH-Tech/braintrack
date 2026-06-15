@@ -1,0 +1,118 @@
+Build a full-stack web platform called BrainTrack.
+
+Purpose:
+A CAPS-aligned South African learning platform focused on structured practice, mastery tracking, and performance improvement for learners (starting with Grade 12).
+
+CRITICAL RULE:
+All academic content must be CAPS aligned only.
+Do NOT include international curricula, US syllabi, GCSE, IB, or generic topics.
+Structure content strictly around CAPS:
+Subject → Term → Topic → Subtopics → Exam-style questions.
+
+Tech stack:
+React + Tailwind CSS frontend
+Node.js + Express backend
+PostgreSQL database with Prisma ORM
+JWT authentication with secure cookies
+
+Brand & UI rules (mandatory):
+- Inter font globally
+- Body text always black (#000000) and same size
+- H1 headings rainbow gradient
+- Accent words use rainbow color rotation
+- Buttons rainbow gradient with BLACK text
+- Logged-in dashboards dark charcoal background with white cards
+- Clean, modern, teen-focused but parent-trusted tone
+
+User roles:
+- learner
+- parent (optional progress view)
+- management_admin (internal analytics only)
+- admin
+
+Nova smart support agent:
+- Visible only on logged-in pages
+- Handles navigation help, account issues, study planner help, technical support
+- Must NOT tutor academically or answer subject questions
+
+Core learner functionality:
+- CAPS subject selection
+- Topic-based practice
+- Quick practice
+- Topic tests
+- Exam simulation mode
+- Mistake-based revision
+- Instant marking & feedback
+- Progress mastery tracking
+- Study planner
+- XP + level system:
+  Starter → Focused → Strong → Exam Ready → SuperStar
+
+Products (monthly or once-off season access):
+Foundation
+Builder
+Performer
+Achiever
+SuperStar
+
+Access control tied to product level.
+
+---
+
+DONATION SYSTEM (MANDATORY):
+
+Implement built-in school contribution logic:
+
+For each paying learner:
+- Automatically allocate a fixed donation amount per month (configurable by admin, default R40)
+- Donation is linked to the learner’s selected school
+
+Database must track:
+- Learner payment
+- Donation amount
+- School receiving donation
+- Monthly totals per school
+
+Create management dashboards showing:
+- Total donations per school
+- Learners contributing per school
+- Monthly donation history
+- Exportable donation reports (CSV/PDF)
+
+Donation must:
+- Be automatic (not optional checkbox)
+- Included in subscription logic
+- Reflected on payment receipts
+
+---
+
+Future Ready Schools:
+
+Create public page:
+“Future Ready Schools”
+
+Explain:
+- CAPS-aligned learning
+- Evidence-based practice
+- Monthly performance reporting
+- School improvement insights
+- Donation impact
+
+Management only receives:
+- School performance analytics
+- Monthly learner progress reports
+- Donation summaries
+
+Schools do NOT log in.
+
+---
+
+Security & scale:
+- Role-based access
+- Indexed queries for performance
+- Caching for dashboards
+- Rate limiting on auth and writes
+- Batched writes for practice sessions
+
+Deliver:
+A fully runnable MVP structure with clean architecture, seeded CAPS example content, donation tracking logic, and branded UI components.

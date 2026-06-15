@@ -1,0 +1,702 @@
+## BrainTrack test cases
+
+Below is a **practical end-to-end test set** you can use for product, QA, dev, and UAT. I’ve grouped them by module so it is easier to execute and trace. ✨
+
+---
+
+# 1. Authentication, roles, and access
+
+## TC-AUTH-001 — learner sign up
+
+**Precondition:** user is not logged in
+**Steps:** open sign up, choose learner, complete details, submit
+**Expected:** learner account created, onboarding starts, learner lands in learner flow
+
+## TC-AUTH-002 — parent sign up
+
+**Steps:** choose parent, complete details, submit
+**Expected:** parent account created, parent onboarding starts, parent lands in parent flow
+
+## TC-AUTH-003 — invalid login
+
+**Steps:** enter wrong password
+**Expected:** error shown, no login, no broken state
+
+## TC-AUTH-004 — role-based route protection
+
+**Steps:** log in as learner, open admin route
+**Expected:** access denied or redirected
+
+## TC-AUTH-005 — session persistence
+
+**Steps:** log in, refresh browser
+**Expected:** user stays logged in if token valid
+
+## TC-AUTH-006 — logout
+
+**Steps:** log out
+**Expected:** session cleared, redirected to public page
+
+---
+
+# 2. Parent-child linking
+
+## TC-LINK-001 — parent creates link code
+
+**Precondition:** parent logged in
+**Steps:** go to onboarding/settings, generate link code
+**Expected:** code generated and saved
+
+## TC-LINK-002 — learner links using valid code
+
+**Precondition:** valid parent link code exists
+**Steps:** learner enters code during onboarding
+**Expected:** learner linked to parent, both records updated
+
+## TC-LINK-003 — learner enters invalid code
+
+**Steps:** enter expired or wrong code
+**Expected:** validation error shown, no link created
+
+## TC-LINK-004 — parent sees only linked learners
+
+**Steps:** open parent dashboard
+**Expected:** only linked learner cards display
+
+## TC-LINK-005 — link later from settings
+
+**Steps:** skip linking in onboarding, link later in settings
+**Expected:** link succeeds and parent dashboard updates
+
+---
+
+# 3. Onboarding
+
+## TC-ONB-001 — learner onboarding complete
+
+**Steps:** complete profile, selected subjects, language, learning style
+**Expected:** data saved and learner dashboard personalized
+
+## TC-ONB-002 — empty selected subjects
+
+**Steps:** skip subject selection
+**Expected:** system shows empty state or validation based on business rule
+
+## TC-ONB-003 — learning style saved correctly
+
+**Steps:** select visual/auditory/reading/kinesthetic
+**Expected:** selected style stored and used in notes/audio gating
+
+## TC-ONB-004 — parent consent required for minor
+
+**Steps:** complete learner onboarding without consent path
+**Expected:** consent requirement enforced where applicable
+
+---
+
+# 4. Headers, layout, and navigation
+
+## TC-LAYOUT-001 — all pages render header and footer
+
+**Steps:** visit public, learner, parent, admin pages
+**Expected:** each page shows correct header and footer
+
+## TC-LAYOUT-002 — learner dropdown works
+
+**Steps:** click learner header dropdown
+**Expected:** menu opens with profile/settings/sign out
+
+## TC-LAYOUT-003 — admin dropdown works
+
+**Steps:** click admin header dropdown
+**Expected:** menu opens correctly
+
+## TC-LAYOUT-004 — sticky header on scroll
+
+**Steps:** scroll long page
+**Expected:** header stays visible, no overlap issues
+
+## TC-LAYOUT-005 — footer links
+
+**Steps:** click Terms, Privacy, FAQ, Contact
+**Expected:** links work and open correct pages
+
+---
+
+# 5. Button system
+
+## TC-BTN-001 — primary button renders
+
+**Expected:** correct style, click works
+
+## TC-BTN-002 — outline button renders
+
+**Expected:** correct border and text style
+
+## TC-BTN-003 — ghost button renders
+
+**Expected:** hover behavior correct
+
+## TC-BTN-004 — danger button renders
+
+**Expected:** danger styling and action behavior correct
+
+## TC-BTN-005 — rainbowRizz button animation
+
+**Expected:** animation visible, reduced motion respected
+
+## TC-BTN-006 — disabled button
+
+**Steps:** click disabled button
+**Expected:** no action fired
+
+## TC-BTN-007 — loading state
+
+**Expected:** spinner or busy state shown, repeated clicks blocked
+
+## TC-BTN-008 — keyboard focus
+
+**Steps:** tab to button
+**Expected:** visible focus ring
+
+---
+
+# 6. Dashboard and learner UX
+
+## TC-DASH-001 — learner dashboard loads
+
+**Expected:** no console errors, cards render, correct stats
+
+## TC-DASH-002 — Rizz avatar on dashboard
+
+**Expected:** real avatar image shown, hover glow visible
+
+## TC-DASH-003 — selected subjects only
+
+**Precondition:** learner has 3 selected subjects
+**Steps:** open subjects page
+**Expected:** only chosen subjects display
+
+## TC-DASH-004 — language toggle updates subjects instantly
+
+**Steps:** switch EN/AF
+**Expected:** subject names refresh immediately
+
+## TC-DASH-005 — no selected subjects state
+
+**Steps:** open subjects page with no subjects
+**Expected:** empty state shown with settings prompt
+
+---
+
+# 7. Question bank and quiz engine
+
+## TC-QUIZ-001 — upload question CSV
+
+**Precondition:** admin logged in
+**Steps:** upload valid CSV
+**Expected:** questions validated and stored
+
+## TC-QUIZ-002 — reject bad CSV
+
+**Steps:** upload missing required columns
+**Expected:** upload fails with helpful error
+
+## TC-QUIZ-003 — question retrieval by subject/topic
+
+**Steps:** fetch quiz for Maths/Algebra
+**Expected:** only matching questions returned
+
+## TC-QUIZ-004 — MCQ submission
+
+**Steps:** answer MCQ correctly
+**Expected:** correct result, explanation shown
+
+## TC-QUIZ-005 — short answer submission
+
+**Expected:** answer checked according to rules, feedback shown
+
+## TC-QUIZ-006 — adaptive difficulty up
+
+**Precondition:** learner answers 3 correctly
+**Expected:** next questions increase in difficulty
+
+## TC-QUIZ-007 — adaptive difficulty down
+
+**Precondition:** learner answers 2 incorrectly
+**Expected:** easier or scaffolded questions served
+
+## TC-QUIZ-008 — quiz progress persists
+
+**Steps:** answer some questions, refresh
+**Expected:** progress restored if designed to persist
+
+## TC-QUIZ-009 — explanation per question
+
+**Expected:** every answer can show explanation
+
+---
+
+# 8. Simulated exams and past papers
+
+## TC-EXAM-001 — start simulated paper
+
+**Expected:** timer starts, paper loads correctly
+
+## TC-EXAM-002 — submit simulated paper
+
+**Expected:** score saved, analytics updated
+
+## TC-EXAM-003 — clear all resets counts
+
+**Steps:** use clear all
+**Expected:** simulated question count becomes 0
+
+## TC-EXAM-004 — simulated count reflects runtime data
+
+**Steps:** run simulation with known number of ingested questions
+**Expected:** total equals actual ingested count, not static 56
+
+## TC-EXAM-005 — timed exam auto-submit
+
+**Expected:** auto-submit at time end if required
+
+---
+
+# 9. AI tutor and notes
+
+## TC-AI-001 — ask Rizz question
+
+**Steps:** submit learner question
+**Expected:** response is child-friendly, concise, SA-context aware
+
+## TC-AI-002 — notes generation returns 4 variants
+
+**Expected:** visual, auditory, reading/writing, kinesthetic variants all returned
+
+## TC-AI-003 — default notes tab matches learner style
+
+**Precondition:** learner style = visual
+**Expected:** visual notes selected first
+
+## TC-AI-004 — switch note variants
+
+**Steps:** change between style tabs
+**Expected:** content swaps correctly without reload issues
+
+## TC-AI-005 — explain endpoint format
+
+**Expected:** plain-English opening, analogy, step-by-step, checklist ending
+
+## TC-AI-006 — empty prompt handling
+
+**Steps:** generate notes with empty input
+**Expected:** validation prevents or handles cleanly
+
+## TC-AI-007 — AI rate limiting
+
+**Steps:** spam AI requests
+**Expected:** capped gracefully with user-safe message
+
+---
+
+# 10. Audio and voice
+
+## TC-AUDIO-001 — voice list populates
+
+**Steps:** open tutor page after voices load
+**Expected:** ZA voices listed first, fallback works
+
+## TC-AUDIO-002 — auditory learner can use read aloud
+
+**Precondition:** learning style = auditory
+**Expected:** button enabled, ear badge visible
+
+## TC-AUDIO-003 — non-auditory learner gating
+
+**Precondition:** learning style = visual
+**Expected:** read aloud disabled or greyed with tooltip
+
+## TC-AUDIO-004 — selected voice used
+
+**Steps:** choose voice, click read aloud
+**Expected:** playback uses chosen voice
+
+## TC-AUDIO-005 — my voice consent required
+
+**Steps:** try enabling my voice without consent
+**Expected:** blocked until consent captured
+
+## TC-AUDIO-006 — record voice sample
+
+**Steps:** record sample
+**Expected:** saved successfully, playback available
+
+## TC-AUDIO-007 — fallback if speech API unavailable
+
+**Expected:** graceful warning, no crash
+
+---
+
+# 11. Mindmap and visual learning
+
+## TC-MAP-001 — mindmap button visible after notes generation
+
+**Expected:** appears in toolbar after notes exist
+
+## TC-MAP-002 — visual learner access
+
+**Precondition:** style = visual
+**Expected:** button enabled
+
+## TC-MAP-003 — non-visual gating
+
+**Precondition:** style = auditory
+**Expected:** button disabled with tooltip
+
+## TC-MAP-004 — mindmap renders from headings and bullets
+
+**Steps:** open mindmap
+**Expected:** topic center, branches, leaves laid out properly
+
+## TC-MAP-005 — mindmap print
+
+**Steps:** print from modal
+**Expected:** branded, watermarked printable generated
+
+---
+
+# 12. Dynamic study plan
+
+## TC-PLAN-001 — study plan generated from weak areas
+
+**Precondition:** learner weak in Algebra
+**Expected:** Algebra appears earlier in plan
+
+## TC-PLAN-002 — plan updates after progress improvement
+
+**Steps:** improve Algebra score
+**Expected:** plan rebalances dynamically
+
+## TC-PLAN-003 — plan respects available study time
+
+**Steps:** learner sets 30 min/day
+**Expected:** shorter realistic plan generated
+
+## TC-PLAN-004 — plan respects exam dates
+
+**Steps:** set upcoming exam
+**Expected:** urgency and revision plan adjust
+
+## TC-PLAN-005 — no data fallback plan
+
+**Precondition:** new learner, no history
+**Expected:** starter study plan shown
+
+---
+
+# 13. Gamification
+
+## TC-GAME-001 — XP awarded after quiz completion
+
+**Expected:** XP increases correctly
+
+## TC-GAME-002 — streak increases
+
+**Steps:** complete activity on consecutive days
+**Expected:** streak count updates
+
+## TC-GAME-003 — streak breaks correctly
+
+**Steps:** skip required day
+**Expected:** streak resets or pauses per rule
+
+## TC-GAME-004 — badge unlocked
+
+**Precondition:** criteria met
+**Expected:** badge awarded and displayed
+
+## TC-GAME-005 — leaderboard display
+
+**Expected:** leaderboard renders correctly and respects scope
+
+## TC-GAME-006 — reward unlock
+
+**Expected:** eligible reward/theme/feature unlocked when threshold reached
+
+---
+
+# 14. Parent dashboard and realtime
+
+## TC-PARENT-001 — parent dashboard loads linked learner cards
+
+**Expected:** cards show current learner data only
+
+## TC-PARENT-002 — realtime progress update
+
+**Precondition:** parent and learner linked, both online
+**Steps:** learner completes quiz
+**Expected:** parent dashboard updates without refresh
+
+## TC-PARENT-003 — subject progress chart
+
+**Expected:** bars reflect latest data
+
+## TC-PARENT-004 — activity sparkline
+
+**Expected:** sparkline renders with recent activity
+
+## TC-PARENT-005 — status updates
+
+**Expected:** on track / at risk / behind reflects latest performance logic
+
+## TC-PARENT-006 — multiple children
+
+**Precondition:** parent linked to 2 learners
+**Expected:** both visible, correctly separated
+
+---
+
+# 15. School portal / partner portal
+
+## TC-SCHOOL-001 — school admin login
+
+**Expected:** school dashboard accessible only to school role
+
+## TC-SCHOOL-002 — school sees learner cohort metrics
+
+**Expected:** pass trends, subject heatmaps, totals load correctly
+
+## TC-SCHOOL-003 — bulk learner upload
+
+**Steps:** upload batch
+**Expected:** learners created/queued with validation report
+
+## TC-SCHOOL-004 — teacher/class performance view
+
+**Expected:** class-level stats shown correctly
+
+## TC-PARTNER-001 — partner referral link generation
+
+**Expected:** unique link generated
+
+## TC-PARTNER-002 — referral conversion tracking
+
+**Expected:** signup via link attributed correctly
+
+## TC-PARTNER-003 — commission report
+
+**Expected:** monthly commission matches conversions and rules
+
+---
+
+# 16. Admin tools
+
+## TC-ADMIN-001 — admin products page loads
+
+**Expected:** product config visible and editable
+
+## TC-ADMIN-002 — edit Brain Boost config
+
+**Steps:** change price/trial/features, save
+**Expected:** config stored and landing updates
+
+## TC-ADMIN-003 — school add/edit
+
+**Expected:** admin can add school, toggle active, update fields
+
+## TC-ADMIN-004 — monthly report panel
+
+**Expected:** month-by-month data displays from real records
+
+## TC-ADMIN-005 — partner tab loads real data
+
+**Expected:** referrals, conversions, revenue correct
+
+## TC-ADMIN-006 — question bank admin upload
+
+**Expected:** question import and validation work
+
+---
+
+# 17. Payments and subscriptions
+
+## TC-PAY-001 — start free trial
+
+**Expected:** trial begins and expiry calculated correctly
+
+## TC-PAY-002 — successful payment
+
+**Expected:** subscription active, entitlement granted
+
+## TC-PAY-003 — failed payment
+
+**Expected:** user informed, no false activation
+
+## TC-PAY-004 — trial expiry
+
+**Expected:** access changes according to business rule
+
+## TC-PAY-005 — subscription cancellation
+
+**Expected:** cancellation reflected correctly with grace logic if applicable
+
+## TC-PAY-006 — duplicate webhook protection
+
+**Expected:** repeated webhook does not duplicate records
+
+---
+
+# 18. Printing and exports
+
+## TC-PRINT-001 — notes print branding
+
+**Expected:** logo, title, footer, watermark, timestamp visible
+
+## TC-PRINT-002 — mindmap print branding
+
+**Expected:** same branding rules apply
+
+## TC-PRINT-003 — printable calendar branding
+
+**Expected:** copyright and watermark present
+
+## TC-PRINT-004 — print on mobile
+
+**Expected:** layout remains readable or gives supported fallback
+
+---
+
+# 19. Accessibility and responsiveness
+
+## TC-A11Y-001 — keyboard navigation
+
+**Steps:** navigate major flow via keyboard only
+**Expected:** usable without mouse
+
+## TC-A11Y-002 — dropdown accessible
+
+**Expected:** open/close with keyboard, focus trapped if needed
+
+## TC-A11Y-003 — screen reader labels
+
+**Expected:** inputs/buttons/charts have meaningful labels
+
+## TC-RESP-001 — mobile 320px
+
+**Expected:** no broken layouts
+
+## TC-RESP-002 — mobile 390px
+
+**Expected:** headers, charts, buttons usable
+
+## TC-RESP-003 — tablet 768px
+
+**Expected:** layouts adapt properly
+
+---
+
+# 20. Security and data protection
+
+## TC-SEC-001 — admin API unauthorized
+
+**Steps:** call admin API as learner
+**Expected:** 401/403 returned
+
+## TC-SEC-002 — learner cannot access other learner data
+
+**Expected:** access blocked
+
+## TC-SEC-003 — parent cannot see unlinked learner
+
+**Expected:** access blocked
+
+## TC-SEC-004 — input sanitization
+
+**Steps:** submit script tags or malicious payload
+**Expected:** sanitized / rejected
+
+## TC-SEC-005 — file upload validation
+
+**Steps:** upload invalid file type as question bank
+**Expected:** rejected safely
+
+---
+
+# 21. Performance and resilience
+
+## TC-PERF-001 — dashboard load time
+
+**Expected:** page loads within target threshold
+
+## TC-PERF-002 — socket reconnect
+
+**Steps:** disconnect internet briefly
+**Expected:** realtime connection restores gracefully
+
+## TC-PERF-003 — AI timeout handling
+
+**Expected:** user sees graceful fallback, no freeze
+
+## TC-PERF-004 — high-volume question fetch
+
+**Expected:** pagination or response remains performant
+
+---
+
+# 22. Final regression pack
+
+## TC-REG-001 — zero console errors on app load
+
+**Expected:** clean console
+
+## TC-REG-002 — all pages render
+
+**Expected:** every route loads without crash
+
+## TC-REG-003 — all major CTAs clickable
+
+**Expected:** no dead buttons
+
+## TC-REG-004 — core happy paths
+
+**Expected:** learner onboarding → quiz → notes → parent realtime → admin report all work
+
+---
+
+## Suggested priority order for execution
+
+### P0
+
+* Auth and roles
+* Parent-child linking
+* All pages render
+* Button tests
+* Question upload and quiz engine
+* Realtime parent updates
+* Payments
+* Print branding
+
+### P1
+
+* Notes variants
+* Audio and my voice
+* Mindmaps
+* Dynamic study plan
+* Gamification
+
+### P2
+
+* School portal
+* Partner portal
+* Performance tuning
+* Accessibility polish
+
+---
+
+## Best next move
+
+Turn these into a **test matrix** with columns for:
+**ID | module | scenario | precondition | steps | expected | status | owner | priority**
+
+I can format this into a **CSV/UAT sheet with 100+ ready-to-paste rows** for your QA tracker.

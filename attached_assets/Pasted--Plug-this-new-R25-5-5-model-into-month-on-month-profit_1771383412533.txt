@@ -1,0 +1,257 @@
+📊 Plug this new R25 + 5.5% model into month-on-month profit
+📈 Compare against old R20 model
+💰 Show school earnings at scale
+📄 Create checkout wording that drives opt-in
+
+Want me to run the full MoM profit with this updated contribution model next?
+
+NO MAKE THE THEME RAINBOW BUTTONS SOLID COLOR ADD LANGUAGE TOGGLE - DEFINE BRAND KIT BASED ON THIS
+
+Locked. I’ll define the BrainTrack Brand Kit precisely based on this logo, with your corrections applied:
+
+❌ No rainbow buttons
+✅ Solid-colour buttons
+✅ Rainbow as THEME & identity layer
+✅ Language toggle clearly defined
+✅ Clean, modern, teen-forward (not childish, not corporate)
+
+This is dev-ready + design-ready.
+
+🧠 BRAINTRACK — OFFICIAL BRAND KIT (FINAL)
+
+(Authoritative source for Replit, web, app, dashboards)
+
+🌈 1. BRAND ESSENCE
+
+Brand personality
+
+Intelligent
+
+Energetic
+
+Modern
+
+Trustworthy
+
+Future-focused
+
+Target feel
+
+“Smart learning that feels exciting, not overwhelming.”
+
+🎨 2. CORE THEME: RAINBOW INTELLIGENCE
+What “Rainbow” means for BrainTrack
+
+Rainbow is identity + progress, not decoration.
+
+It represents:
+
+Thinking pathways
+
+Growth
+
+Neuro-diversity
+
+Momentum
+
+Achievement
+
+🎯 3. COLOUR SYSTEM (BASED ON LOGO)
+Primary Brand Colours (from logo spectrum)
+
+Use as accents, headings, progress, icons — not body text.
+
+Colour	Usage
+Red	Alerts, urgency, rescue
+Orange	Warnings, effort
+Yellow	Highlights, XP
+Green	Success, mastery
+Cyan	Progress tracking
+Blue	Focus, logic
+Purple	Advanced levels
+Pink	Rewards, achievements
+
+These colours appear as gradients only in brand areas, not UI chrome.
+
+⚫⚪ 4. BASE UI BACKGROUNDS
+
+Only two base backgrounds allowed:
+
+☀️ Light Base
+
+Background: #FFFFFF
+
+Cards: #F6F6F6
+
+Text: #000000
+
+🌙 Dark Base
+
+Background: #121212
+
+Cards: #1E1E1E
+
+Text: #FFFFFF
+
+Rainbow sits on top, never replaces readability.
+
+🔘 5. BUTTON SYSTEM (UPDATED — SOLID ONLY)
+❌ NOT ALLOWED
+
+Rainbow gradient buttons
+
+Multicolour CTAs
+
+✅ ALLOWED BUTTONS
+
+Buttons are solid colour, pulled from the rainbow palette.
+
+Primary Button
+
+Background: Brand Blue
+
+Text: White
+
+Rounded: 12–16px
+
+Shadow: soft
+
+Secondary Button
+
+Background: Brand Purple
+
+Text: White
+
+Success Button
+
+Background: Green
+
+Text: White
+
+Warning / Rescue
+
+Background: Orange / Red
+
+Text: White
+
+Button colour reflects intent, not decoration.
+
+🧠 6. TYPOGRAPHY (SINGLE FONT RULE)
+
+One font across entire system.
+
+Recommended
+
+Inter or Poppins
+
+Rules
+
+Body text: Regular / Medium
+
+Headings: Semi-bold / Bold
+
+Never use decorative fonts
+
+No font mixing
+
+🌈 7. WHERE RAINBOW IS USED (STRICT)
+
+Rainbow appears ONLY in:
+
+✅ Logo
+✅ Headings (gradient text)
+✅ Progress bars
+✅ XP & level indicators
+✅ Achievement badges
+✅ Landing page hero sections
+
+❌ Never in:
+
+Paragraph text
+
+Buttons
+
+Tables
+
+Forms
+
+🌍 8. LANGUAGE TOGGLE (MANDATORY)
+Placement
+
+Top-right corner (global header)
+
+Toggle
+
+EN | AF
+
+Behaviour
+
+Language selection persists across sessions
+
+Applies to:
+
+Content
+
+UI labels
+
+Notifications
+
+Reports
+
+UX Copy
+
+Simple. Neutral. No flags.
+
+🧩 9. ICONOGRAPHY
+
+Style:
+
+Rounded
+
+Line or filled (consistent)
+
+Single colour per icon
+
+Colour pulled from rainbow palette
+
+No emojis inside core UI.
+
+📊 10. DATA & DASHBOARD STYLE
+
+Charts: clean, minimal
+
+Use rainbow colours only for data lines
+
+Grid lines light grey
+
+Labels always black/white
+
+🤖 11. NOVA (SUPPORT AGENT BRANDING)
+
+Nova is:
+
+Friendly
+
+Calm
+
+Professional
+
+Non-academic
+
+Visual:
+
+Neutral colour (blue/purple)
+
+No rainbow overload
+
+Small presence (chat bubble / icon)
+
+🏫 12. FUTURE READY SCHOOLS BRANDING
+
+Mostly light theme
+
+Rainbow only as accent
+
+Corporate-clean
+
+Trust-first

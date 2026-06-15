@@ -1,0 +1,1 @@
+- [DBE ingestion gotchas](dbe-ingestion-gotchas.md) — tsx OOM on big PDFs, deterministic memo-splitter absorption, lenient release gate, year-scoped no-memo exemptions

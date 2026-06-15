@@ -1,0 +1,143 @@
+YOU ARE A SENIOR FULL-STACK ENGINEER. Build a production-ready PWA called “BrainTrack™ – BrainProfile & Print Delivery” as an add-on module for Grade 12 CAPS learners/parents.
+
+NON-NEGOTIABLE BUSINESS RULES
+1) No products priced under R50.
+2) Every paid product grants access for minimum 21 days (21-day program window). No shorter duration products.
+3) HARD BLOCK: A child (new learner account) CANNOT sign up within 21 days before their first exam date.
+   - If today is within 21 days of earliest exam date captured for the learner, block signup and show a “Enrollment Closed (Exam Window Quality Policy)” screen.
+4) BrainProfile is brand new and must be positioned as “career clarity + study planning”, NOT a psychometric test.
+   - Add disclaimers in UI + report: “Career guidance tool; not a psychological/psychometric assessment.”
+5) Add a “Print & Deliver” function that generates print-ready PDFs (A5 cards + A4 posters) and supports fulfilment workflow with statuses and tracking numbers.
+6) Multi-tenant-ready structure (future schools), but MVP is consumer (parents).
+
+TECH STACK (REPLIT FRIENDLY)
+- Next.js (App Router) + TypeScript
+- Tailwind CSS
+- Postgres + Drizzle ORM
+- Auth: NextAuth (credentials + optional Google)
+- PDF generation: @react-pdf/renderer for server-side PDF exports
+- Email: Resend (or SendGrid) for order confirmations
+- File storage: local in dev, pluggable S3-compatible (Cloudflare R2/Supabase) in prod
+- Payments: implement a payment provider abstraction.
+  - MVP supports “Manual Payment / EFT” mode + “Paystack” mode with webhook verification stub.
+  - Store all transactions with statuses and idempotency keys.
+
+CORE MODULES TO BUILD
+A) Onboarding + Exam Window Lock
+- Parent creates account.
+- Parent creates learner profile: name, grade=12, school, province, subjects, and “first exam date” (required).
+- Enforce signup lock:
+  - If (today >= firstExamDate - 21 days) then prevent learner creation/activation.
+  - Allow parent account to exist, but do not activate learner access.
+  - Show alternative upsell path: “Print-Only Packs (no account)” as a separate checkout option (optional toggle).
+
+B) Products (ZAR Pricing; >= R50; 21-day access)
+Create product catalog table with these default SKUs:
+1) BP-CAREER-21 (BrainProfile: Career Clarity Sprint 21 days) – R299
+2) BP-CAREER-21-PRINT (BrainProfile + Laminated Print Pack Delivered) – R499
+3) PRINT-STACK-21-SUBJECT (21-day Laminated Study Stack per subject) – R399
+4) PRINT-STACK-21-3BUNDLE (3-subject bundle) – R999
+All products must set access_end = access_start + 21 days.
+
+C) BrainProfile (Career Clarity Sprint – 21 days)
+- Inputs:
+  - Interests survey (topics/industries)
+  - Values survey (stability, income, helping others, creativity, autonomy)
+  - Subject confidence + latest marks (optional)
+  - Study habits (time, consistency, preferred learning)
+  - In-app performance hooks: if no BrainTrack data exists, use survey-only.
+- Engine:
+  - Scoring model: weighted matching to “Pathways” (e.g., Health, Engineering, Business, IT, Law, Education, Arts, Trades).
+  - Output top 5 pathways with:
+    - “Why this fits”
+    - “Subject alignment” (based on learner subjects and confidence)
+    - “Next steps” checklist
+- Deliverables:
+  - Digital report (web view + PDF export)
+  - Printable/Laminated assets:
+    - A4 “Career Map” (top 5 pathways + next steps)
+    - A4 “Applications Timeline”
+    - A5 “Study Style Playbook” deck (10–21 cards)
+
+D) Print & Deliver Fulfilment
+- Create print orders that include:
+  - order_id, parent_id, learner_id (nullable for print-only), shipping address, courier option, cost breakdown, status
+- Statuses: CREATED -> PAID -> PDF_READY -> PRINTED -> SHIPPED -> DELIVERED (and CANCELLED)
+- Generate PDFs:
+  - A5 Cards PDF (print spreads, with cut marks; include QR code order id on each page corner)
+  - A4 Posters PDF
+- Admin console:
+  - View orders, download PDFs, update status, add tracking number, resend confirmation email.
+
+E) Payments
+- Payment abstraction:
+  - createCheckout(productId, userId) -> returns checkout_url or instructions
+  - handleWebhook(provider, payload) -> validates, marks transaction PAID, activates entitlement
+- Manual/EFT:
+  - Provide payment instructions + upload proof (file)
+  - Admin can approve proof -> marks PAID.
+- Paystack (stub):
+  - Store reference and verify in webhook handler.
+  - Use env vars: PAYSTACK_SECRET_KEY etc.
+
+F) Entitlements / Access Control
+- entitlement table:
+  - user_id/learner_id, product_id, access_start, access_end, status
+- Middleware to protect pages:
+  - If entitlement expired -> show renewal screen.
+  - If inside exam lock -> show “Enrollment Closed” (for new learners only).
+
+PAGES / ROUTES
+Public:
+- / (landing)
+- /pricing
+- /policy/enrolment (explains 21-day exam lock)
+Auth:
+- /auth/signin /auth/signup
+Parent:
+- /app (dashboard)
+- /app/learners/new (blocked if within 21 days)
+- /app/brainprofile (if entitlement)
+- /app/orders (history)
+Checkout:
+- /checkout/[productId]
+- /checkout/success
+Admin:
+- /admin/orders
+- /admin/products
+- /admin/users
+
+DATABASE (DRIZZLE)
+Create these tables:
+- users (NextAuth)
+- parents (profile)
+- learners (profile + first_exam_date + subjects json)
+- products (sku, name, price_cents, duration_days=21)
+- transactions (provider, reference, amount_cents, status, idempotency_key)
+- entitlements (product_id, parent_id, learner_id nullable, access_start, access_end, status)
+- brainprofile_responses (learner_id, answers json)
+- brainprofile_reports (learner_id, report json + pdf_url)
+- orders (print order metadata, address, courier, status, tracking_no)
+- order_items (order_id, product_id, qty)
+- files (proof uploads / pdf assets)
+
+UI REQUIREMENTS
+- Clean, premium, black-forward theme with rainbow accents.
+- Clear CTAs. Corporate-grade layout.
+- Add microcopy that is parent-friendly.
+- Add disclaimers: “Career guidance tool; not a psychological assessment.”
+- Enrollment-closed screen must be polite but firm.
+
+TESTS / QUALITY
+- Unit tests for date lock logic (T-21).
+- Unit tests for entitlement expiry logic.
+- Seed script for products.
+- Basic audit log for admin changes.
+
+DELIVERABLES
+- Working app with local Postgres (or Neon) setup.
+- README with env vars + setup steps.
+- Demo admin credentials in dev mode.
+- A sample BrainProfile report output and generated PDFs.
+
+Now implement everything end-to-end with good defaults, error handling, and a crisp UX.

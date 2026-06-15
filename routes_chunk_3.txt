@@ -1,0 +1,500 @@
+        await storage.insertAuditLog({
+          userId,
+          action: "SUSPECTED_SCRAPING",
+          target: "exam_sessions",
+          metadata: {
+            examCountInLastHour,
+            threshold: EXAM_SCRAPING_HOURLY_THRESHOLD,
+            examPaperId: data.examPaperId,
+          },
+          ipAddress,
+        }).catch(() => {});
+        console.warn(`[SECURITY] SUSPECTED_SCRAPING: user ${userId} started ${examCountInLastHour} exams in the last hour`);
+      }
+
+      // T017: Track per-account exam activity for >50 requests/hour alert
+      recordExamActivity(userId, ipAddress);
+
+      const session = await storage.createExamSession({
+        userId,
+        examPaperId: data.examPaperId,
+        timeAllowedMinutes: data.timeAllowedMinutes,
+        status: "in_progress",
+        timeUsedSeconds: 0,
+        violationCount: 0,
+      });
+
+      // T026: Issue signed exam token — must be included in all answer submissions
+      const examToken = issueExamToken(session.id, userId);
+      await storage.updateExamSession(session.id, { examToken });
+
+      res.json({ ...session, examToken });
+    } catch (error) {
+      console.error("Error creating exam session:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json(formatZodError(error));
+      }
+      res.status(500).json({ error: "Failed to create exam session" });
+    }
+  });
+
+  app.patch("/api/exam-sessions/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const sessionId = parseInt(req.params.id);
+      const { status, timeUsedSeconds, violationType, violationCount, answersJson } = req.body;
+      
+      const session = await storage.getExamSession(sessionId);
+      if (!session || session.userId !== userId) {
+        return res.status(404).json({ error: "Session not found" });
+      }
+      
+      const updated = await storage.updateExamSession(sessionId, {
+        status,
+        timeUsedSeconds,
+        violationType,
+        violationCount,
+        answersJson,
+        ...(status === "completed" || status === "violated" ? { completedAt: new Date() } : {}),
+      });
+      
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating exam session:", error);
+      res.status(500).json({ error: "Failed to update exam session" });
+    }
+  });
+
+  app.post("/api/exam-sessions/:id/submit", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const sessionId = parseInt(req.params.id);
+      const { answersJson, timeUsedSeconds, aiDetectionFlags, flaggedForReview, examToken } = req.body;
+      const ipAddress = (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() || req.socket.remoteAddress || "unknown";
+
+      const session = await storage.getExamSession(sessionId);
+      if (!session || session.userId !== userId) {
+        return res.status(404).json({ error: "Session not found" });
+      }
+
+      // T026: Validate exam token — prevents forged submissions from bots that didn't go through session creation
+      if (session.examToken) {
+        if (!examToken) {
+          await storage.insertAuditLog({
+            userId,
+            action: "EXAM_TOKEN_MISSING",
+            target: `exam_session:${sessionId}`,
+            metadata: { sessionId },
+            ipAddress,
+          }).catch(() => {});
+          return res.status(403).json({ error: "Exam token is required for submission" });
+        }
+        const tokenPayload = verifyExamToken(examToken);
+        if (!tokenPayload || tokenPayload.sessionId !== sessionId || tokenPayload.userId !== userId) {
+          await storage.insertAuditLog({
+            userId,
+            action: "EXAM_TOKEN_INVALID",
+            target: `exam_session:${sessionId}`,
+            metadata: { sessionId, tokenProvided: !!examToken },
+            ipAddress,
+          }).catch(() => {});
+          return res.status(403).json({ error: "Invalid or expired exam token" });
+        }
+
+        // T026: Timing analysis — reject impossibly fast submissions (under 30 seconds)
+        const sessionStartEpoch = tokenPayload.iat; // issued-at time in seconds
+        const nowEpoch = Math.floor(Date.now() / 1000);
+        const elapsedSeconds = nowEpoch - sessionStartEpoch;
+        if (elapsedSeconds < EXAM_MIN_SECONDS) {
+          await storage.insertAuditLog({
+            userId,
+            action: "EXAM_TOO_FAST",
+            target: `exam_session:${sessionId}`,
+            metadata: { elapsedSeconds, minimumSeconds: EXAM_MIN_SECONDS, sessionId },
+            ipAddress,
+          }).catch(() => {});
+          return res.status(400).json({
+            error: "Minimum exam time not met. Please spend at least 30 seconds on the exam before submitting.",
+            elapsedSeconds,
+            minimumSeconds: EXAM_MIN_SECONDS,
+          });
+        }
+      }
+
+      // Log AI detection for monitoring
+      if (aiDetectionFlags && aiDetectionFlags.length > 0) {
+        console.log(`[AI-DETECTION] User ${userId} session ${sessionId}: ${aiDetectionFlags.join(', ')}`);
+      }
+      
+      const updated = await storage.updateExamSession(sessionId, {
+        status: "completed",
+        answersJson,
+        timeUsedSeconds,
+        completedAt: new Date(),
+        aiDetectionFlags: aiDetectionFlags || [],
+        flaggedForReview: flaggedForReview || false,
+      });
+
+      try {
+        const examPaper = await db.select().from(examPapers).where(eq(examPapers.id, session.examPaperId)).limit(1);
+        if (examPaper.length > 0 && answersJson) {
+          const answers = typeof answersJson === "string" ? JSON.parse(answersJson) : answersJson;
+          if (Array.isArray(answers)) {
+            let correctCount = 0;
+            for (const ans of answers) {
+              const isCorrect = ans.correct === true;
+              if (isCorrect) correctCount++;
+              await storage.updateUserProgress(userId, examPaper[0].subjectId, isCorrect);
+            }
+            const pct = answers.length > 0 ? Math.round((correctCount / answers.length) * 100) : 0;
+            if (pct >= 80) {
+              await storage.awardBadge(userId, "high_score");
+            }
+          } else {
+            await storage.updateUserProgress(userId, examPaper[0].subjectId);
+          }
+        }
+        await storage.checkAndAwardBadges(userId);
+      } catch (progressErr) {
+        console.error("[exam-session-submit] Progress tracking error:", progressErr);
+      }
+      
+      res.json(updated);
+    } catch (error) {
+      console.error("Error submitting exam:", error);
+      res.status(500).json({ error: "Failed to submit exam" });
+    }
+  });
+
+  app.get("/api/exam-sessions", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const sessions = await storage.getExamSessionsByUser(userId);
+      res.json(sessions);
+    } catch (error) {
+      console.error("Error fetching exam sessions:", error);
+      res.status(500).json({ error: "Failed to fetch exam sessions" });
+    }
+  });
+
+  // AI Tutor endpoint - CAPS-aware tutoring
+  // LEGAL COMPLIANCE: For DBE content (isSimulated=false), only provide external DBE link
+  // Full tutoring is only available for SIMULATED original content
+  app.post("/api/ai/tutor", tutorLimiter, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const data = tutorRequestSchema.parse(req.body);
+      
+      // Fetch question from database - CRITICAL: memo comes from DB, not user input
+      const question = await storage.getQuestion(data.questionId);
+      if (!question) {
+        return res.status(404).json({ 
+          error: "Question not found. Please select a valid exam question." 
+        });
+      }
+
+      // LEGAL COMPLIANCE: For non-simulated DBE content, only provide external link
+      if (question.isSimulated === false) {
+        return res.status(200).json({
+          language: "en",
+          mode: "dbe_reference",
+          answer: "This is an official DBE question. Please refer to the official memorandum for the complete answer.",
+          steps: [],
+          marking_points: [],
+          officialDbeLink: OFFICIAL_DBE_LINK,
+          dbeReferenceYear: question.dbeReferenceYear,
+          next_question_suggestion: "Try a simulated practice question for full tutoring support."
+        });
+      }
+
+      if (!question.memoText) {
+        return res.status(400).json({ 
+          error: "This question does not have a memo available yet." 
+        });
+      }
+
+      // Check and enforce usage limits based on plan
+      const today = new Date().toISOString().split('T')[0];
+      const currentUsage = await storage.getDailyUsage(userId, today);
+      const subscription = await storage.getSubscription(userId);
+      const plan = subscription?.plan || "standard";
+      const limits = USAGE_LIMITS[plan] || USAGE_LIMITS.standard;
+      
+      const tutorCount = currentUsage?.tutorCount || 0;
+      const fullSolutionCount = currentUsage?.fullSolutionCount || 0;
+
+      if (tutorCount >= limits.tutorDaily) {
+        return res.status(429).json({ 
+          error: "Daily tutor limit reached. Upgrade your plan or come back tomorrow!",
+          limit: limits.tutorDaily,
+          used: tutorCount,
+          plan
+        });
+      }
+
+      if (data.mode === 'full_solution' && fullSolutionCount >= limits.fullSolutionDaily) {
+        return res.status(429).json({ 
+          error: "Daily full solution limit reached. Try using hints first!",
+          limit: limits.fullSolutionDaily,
+          used: fullSolutionCount,
+          plan
+        });
+      }
+
+      // Increment usage
+      await storage.incrementUsage(userId, 'tutor');
+      if (data.mode === 'full_solution') {
+        await storage.incrementUsage(userId, 'full_solution');
+      }
+      
+      const systemPrompt = `You are a helpful tutor for South African Grade 12 learners preparing for NSC exams.
+
+CRITICAL RULES:
+1. You MUST ONLY use information from the provided question text and memo text.
+2. NEVER make up or hallucinate answers, steps, or explanations.
+3. Only explain concepts that are directly related to the question and memo.
+4. Be encouraging but honest.
+5. Use clear, simple language appropriate for teenagers.
+
+MODE: ${data.mode}
+- hint_1: Give only a conceptual hint, no method or answer
+- hint_2: Give step-by-step method, but not the final answer
+- memo_explained: Explain the marking points from the memo
+- full_solution: Give complete worked solution
+
+Respond in JSON format:
+{
+  "language": "en",
+  "mode": "${data.mode}",
+  "answer": "Your response here",
+  "steps": ["Step 1...", "Step 2..."],
+  "marking_points": ["Point 1...", "Point 2..."],
+  "next_question_suggestion": "Suggestion for what to practice next"
+}`;
+
+      const userContent = `Question: ${question.questionText}
+Memo Answer: ${question.memoText}
+
+Learner's Question: ${data.message}`;
+
+      const response = await callOpenAIWithRetry(() =>
+        openai.chat.completions.create({
+          model: "gpt-4o-mini",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userContent },
+          ],
+          response_format: { type: "json_object" },
+          max_completion_tokens: 2048,
+        })
+      );
+
+      const content = response.choices[0]?.message?.content || "{}";
+      const parsed = JSON.parse(content);
+
+      res.json({ ...parsed, _wm: buildWatermark(userId, "tutor") });
+    } catch (error: any) {
+      console.error("Error in tutor:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json(formatZodError(error));
+      }
+      const status = error?.status || error?.response?.status;
+      if (status === 429 || status === 503) {
+        return res.status(503).json(aiOverloadResponse());
+      }
+      res.status(500).json({ 
+        language: "en",
+        mode: "error",
+        answer: "I'm sorry, I encountered an error. Please try again.",
+        steps: [],
+        marking_points: [],
+      });
+    }
+  });
+
+  // Topic explanation tutor - 100% CAPS-aligned
+  app.post("/api/ai/tutor/topic", tutorLimiter, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const data = topicTutorSchema.parse(req.body);
+      
+      // Fetch topic from database - CAPS-aligned content only
+      const topic = await storage.getTopic(data.topicId);
+      if (!topic) {
+        return res.status(404).json({ 
+          error: "Topic not found. Please select a valid CAPS curriculum topic." 
+        });
+      }
+
+      // Get subject for context
+      const subject = await storage.getSubject(topic.subjectId);
+      if (!subject) {
+        return res.status(404).json({ error: "Subject not found." });
+      }
+
+      // Check usage limits
+      const today = new Date().toISOString().split('T')[0];
+      const currentUsage = await storage.getDailyUsage(userId, today);
+      const subscription = await storage.getSubscription(userId);
+      const plan = subscription?.plan || "standard";
+      const limits = USAGE_LIMITS[plan] || USAGE_LIMITS.standard;
+      
+      const tutorCount = currentUsage?.tutorCount || 0;
+      if (tutorCount >= limits.tutorDaily) {
+        return res.status(429).json({ 
+          error: "Daily tutor limit reached. Upgrade your plan or come back tomorrow!",
+          limit: limits.tutorDaily,
+          used: tutorCount,
+          plan
+        });
+      }
+
+      await storage.incrementUsage(userId, 'tutor');
+      
+      const systemPrompt = `You are a helpful tutor for South African Grade 12 learners preparing for NSC exams.
+You are explaining a topic from the CAPS (Curriculum and Assessment Policy Statement) curriculum.
+
+CRITICAL RULES:
+1. Your explanations MUST be 100% aligned with the CAPS curriculum.
+2. Only explain concepts that are part of the Grade 12 CAPS syllabus for this subject.
+3. Use terminology and approaches that match what learners see in their textbooks and exams.
+4. Be encouraging and use clear, simple language appropriate for teenagers.
+5. Include practical examples that relate to South African context where possible.
+
+SUBJECT: ${subject.name}
+TOPIC: ${topic.name}
+CAPS CODE: ${topic.capsCode}
+
+MODE: ${data.mode}
+- explain: Give a clear, comprehensive explanation of the topic
+- examples: Provide worked examples and practice scenarios
+- key_points: Summarise the essential points for exam preparation
+- exam_tips: Give specific tips for answering exam questions on this topic
+
+Respond in JSON format:
+{
+  "language": "en",
+  "mode": "${data.mode}",
+  "topic": "${topic.name}",
+  "capsCode": "${topic.capsCode}",
+  "explanation": "Your main explanation here",
+  "key_concepts": ["Concept 1", "Concept 2", ...],
+  "examples": ["Example 1", "Example 2", ...],
+  "exam_tips": ["Tip 1", "Tip 2", ...],
+  "related_topics": ["Related topic 1", "Related topic 2", ...]
+}`;
+
+      const userContent = `Please ${data.mode} this CAPS topic: ${topic.name}
+
+Learner's question: ${data.message}`;
+
+      const response = await callOpenAIWithRetry(() =>
+        openai.chat.completions.create({
+          model: "gpt-4o-mini",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userContent },
+          ],
+          response_format: { type: "json_object" },
+          max_completion_tokens: 2048,
+        })
+      );
+
+      const content = response.choices[0]?.message?.content || "{}";
+      const parsed = JSON.parse(content);
+
+      res.json({ ...parsed, _wm: buildWatermark(userId, "topic_tutor") });
+    } catch (error: any) {
+      console.error("Error in topic tutor:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json(formatZodError(error));
+      }
+      const status = error?.status || error?.response?.status;
+      if (status === 429 || status === 503) {
+        return res.status(503).json(aiOverloadResponse());
+      }
+      res.status(500).json({ 
+        language: "en",
+        mode: "error",
+        explanation: "I'm sorry, I encountered an error. Please try again.",
+        key_concepts: [],
+        examples: [],
+        exam_tips: [],
+      });
+    }
+  });
+
+  // Free-form tutor - ask any CAPS-related question (RIGID topic enforcement)
+  app.post("/api/ai/tutor/ask", tutorLimiter, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { question, subject, language, learningStyle } = req.body;
+      const isAfrikaans = language === 'afrikaans';
+      
+      if (!question || typeof question !== 'string' || question.trim().length < 5) {
+        return res.status(400).json({ 
+          error: isAfrikaans 
+            ? "Vra asseblief 'n geldige vraag (minstens 5 karakters)." 
+            : "Please ask a valid question (at least 5 characters)." 
+        });
+      }
+      
+      // RIGID: Profanity filter check
+      if (containsProfanity(question)) {
+        return res.status(400).json({ 
+          error: isAfrikaans ? PROFANITY_RESPONSE_AF : PROFANITY_RESPONSE_EN,
+          filtered: true
+        });
+      }
+      
+      // RIGID: Off-topic detection
+      if (isOffTopic(question)) {
+        return res.status(400).json({ 
+          error: isAfrikaans ? OFF_TOPIC_RESPONSE_AF : OFF_TOPIC_RESPONSE_EN,
+          offTopic: true
+        });
+      }
+
+      // Check usage limits
+      const today = new Date().toISOString().split('T')[0];
+      const currentUsage = await storage.getDailyUsage(userId, today);
+      const subscription = await storage.getSubscription(userId);
+      const plan = subscription?.plan || "standard";
+      const limits = USAGE_LIMITS[plan] || USAGE_LIMITS.standard;
+      
+      const tutorCount = currentUsage?.tutorCount || 0;
+      if (tutorCount >= limits.tutorDaily) {
+        return res.status(429).json({ 
+          error: isAfrikaans 
+            ? "Daaglikse tutor-limiet bereik. Kom môre terug of gradeer jou plan op!"
+            : "Daily tutor limit reached. Come back tomorrow or upgrade your plan!",
+          limit: limits.tutorDaily,
+          used: tutorCount,
+          plan
+        });
+      }
+
+      await storage.incrementUsage(userId, 'tutor');
+      
+      const subjectContext = subject ? `The learner is studying ${subject}.` : "";
+      const languageInstruction = isAfrikaans ? "Respond in Afrikaans." : "";
+      
+      // Learning style adaptation instructions
+      const learningStyleInstructions: Record<string, string> = {
+        visual: `LEARNING STYLE: VISUAL LEARNER
+- Use descriptive language that helps them "see" concepts
+- Describe diagrams, charts, graphs, and visual representations
+- Use spatial language: "picture this", "imagine", "visualize"
+- Organize information with clear headers and bullet points
+- Suggest drawing diagrams or mind maps when helpful`,
+        auditory: `LEARNING STYLE: AUDITORY LEARNER
+- Use rhythmic, memorable phrases and mnemonics
+- Explain concepts as if you're having a conversation
+- Suggest reading answers aloud or discussing with others
+- Use sound-based analogies where relevant
+- Structure explanations in a flowing, narrative style`,
+        kinesthetic: `LEARNING STYLE: KINESTHETIC LEARNER
+- Include hands-on activities and practical examples
+- Suggest physical actions: "try this", "practice by doing"
+- Use real-world, tangible examples they can relate to
+- Break concepts into step-by-step actions

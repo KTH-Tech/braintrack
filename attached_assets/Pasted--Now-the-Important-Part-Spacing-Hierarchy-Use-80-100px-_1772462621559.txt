@@ -1,0 +1,179 @@
+🔥 Now the Important Part — Spacing & Hierarchy
+
+Use:
+
+• 80–100px vertical spacing between major sections
+• 24px spacing between heading and body
+• 48px spacing before CTA blocks
+• Max content width: 1140px
+• Text width inside container: 640–700px for readability
+
+This gives you:
+
+• Premium academic feel
+• Clear hierarchy
+• Zero clutter
+• High mobile readability
+• Structured trust positioning
+
+If you want next, I can:
+
+• Give you the exact CSS styling block for Inter + spacing system
+• Or optimise this specifically for high-converting D6 traffic (shorter scroll version)
+• Or build the premium dark-mode version
+
+We’re building this like a serious education platform. Let’s finish it properly.
+
+give fonts please make it consistent
+
+Perfect. We’re locking this down properly now.
+
+You want one consistent, scalable typography system across:
+
+• Landing page
+• Dashboard
+• PWA
+• Printable views
+• Marketing
+
+No mix-and-match chaos.
+
+✅ BRAINTRACK™ OFFICIAL FONT SYSTEM
+Primary Font (Everything Digital)
+Inter
+
+That’s it.
+
+No secondary body font.
+No decorative alternates.
+No inconsistency.
+
+Inter carries authority, clarity, and modern EdTech credibility.
+
+🔧 EXACT WEIGHTS TO LOAD (Performance Optimised)
+
+Only load:
+
+400 — Regular (body)
+
+500 — Medium (labels)
+
+600 — SemiBold (section headers)
+
+700 — Bold (hero + data)
+
+Do NOT load:
+300, 800, 900, italics unless required.
+
+Performance matters in a PWA.
+
+📐 FULL TYPOGRAPHY SCALE (Consistent System)
+H1 (Hero)
+
+40px desktop
+
+30px mobile
+
+Weight: 700
+
+Line-height: 1.15
+
+Letter-spacing: -0.5px
+
+H2 (Section Headings)
+
+28px desktop
+
+22px mobile
+
+Weight: 600
+
+Line-height: 1.25
+
+H3 (Cards / Modules)
+
+20–22px
+
+Weight: 600
+
+Line-height: 1.3
+
+H4 (Substructure / Small Titles)
+
+16–18px
+
+Weight: 600
+
+Body Text
+
+16px
+
+Weight: 400
+
+Line-height: 1.6
+
+Max width: 680px
+
+Small Labels / Meta Text
+
+14px
+
+Weight: 500
+
+Dashboard Data (Critical for Brand Positioning)
+Readiness %
+
+32–36px
+
+Weight: 700
+
+Line-height: 1
+
+Subject Score Numbers
+
+20px
+
+Weight: 600
+
+CTA Buttons
+
+16px
+
+Weight: 600
+
+Letter spacing: 0.5px
+
+Minimum height: 48px
+
+🖨 Printable Notes Version
+
+Still Inter.
+
+Body: 11–12pt
+
+Headings: 14pt SemiBold
+
+Line-height: 1.4
+
+Keeps academic consistency.
+
+🎯 Official Font Stack (Replit-Ready)
+font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+That ensures system fallback consistency.
+
+🧠 Why This Works for BrainTrack™
+
+It communicates:
+
+Structured
+Scientific
+Modern
+Premium
+Trustworthy
+
+Not playful.
+Not childish.
+Not startup-hype.
+
+Exactly aligned with CAPS Grade 12 positioning.

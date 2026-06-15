@@ -1,0 +1,305 @@
+PARENT REPORT VISUAL REQUIREMENTS
+
+Create a premium Parent Report view for BrainTrack.
+This is a separate parent-facing insight/report experience, not the learner dashboard.
+
+PURPOSE
+- help parents quickly understand learner performance
+- make the report feel visual, premium, and easy to scan
+- work well in both app view and export/report layout
+- support both light mode and dark mode
+- keep it insight-focused, not academic admin-heavy
+
+CORE RULES
+- parent report must NOT look like the learner classroom/dashboard
+- parent report must summarize performance, activity, risk, and readiness
+- report should feel polished and presentation-ready
+- use strong visual hierarchy with cards, charts, badges, and summary panels
+- use mobile-first layout but also support larger desktop report layout
+- first visible card must be the Learner Overview hero card
+- use a classroom / learner icon prominently in this first card
+
+PARENT REPORT PAGE TITLE
+- Parent Report
+Optional subtitle:
+- “Track progress. Spot risk. Support improvement.”
+
+PARENT REPORT SECTION ORDER
+
+1. LEARNER OVERVIEW HERO CARD (FIRST AND MOST PROMINENT)
+Title:
+- Learner Overview
+
+Include:
+- learner name
+- grade
+- school name
+- linked parent name
+- current average
+- trend status (Improving / Flat / Dropping)
+- exam readiness status
+- subject count
+- VARK profile summary
+- last active date
+
+Visual style:
+- large square or slightly rounded square hero card
+- classroom / learner icon first
+- premium gradient border or neon glow
+- compact summary chips
+- high emphasis and most visible object on the screen
+
+2. PERFORMANCE SNAPSHOT
+Use 3 to 4 summary cards:
+- Current Average
+- Exam Readiness
+- Weekly Study Sessions
+- Improvement This Month
+
+Visuals:
+- percentage cards
+- ring progress chart for readiness
+- positive / warning / risk status colors
+- subtle gradient accents
+
+3. SUBJECT PERFORMANCE SECTION
+Title:
+- Subject Performance
+
+Show:
+- subject cards or bars for each subject
+- score
+- trend arrow
+- status badge:
+  - Strong
+  - Stable
+  - Needs Support
+  - At Risk
+
+Recommended visuals:
+- horizontal bar chart by subject
+- compact subject cards beneath chart
+- use gradient fill for active/strong performance
+- use amber/red alert accent for weak subjects
+
+4. WEAK SPOTS / SUPPORT NEEDED
+Title:
+- Support Needed
+
+Show:
+- weakest 3 to 5 subjects or topics
+- support priority label
+- short insight sentence
+
+Example:
+- Mathematics — Algebra
+- Physical Sciences — Organic Chemistry
+- Accounting — Cash Flow
+
+Visual style:
+- square insight cards
+- warning icon or target icon
+- compact actionable notes
+
+5. STUDY ACTIVITY SECTION
+Title:
+- Study Activity
+
+Show:
+- days active this week
+- time spent this week
+- sessions completed
+- most active study day
+- inactivity warning if applicable
+
+Recommended visual:
+- 7-day mini activity chart
+- simple weekly bar graph
+- activity streak chip
+- “Last active” tag
+
+6. ALERTS / RISK PANEL
+Title:
+- Alerts
+
+Show:
+- inactivity alerts
+- low score alerts
+- declining trend alerts
+- readiness risk
+
+Visual style:
+- stacked alert cards
+- red/amber badges
+- concise copy
+- should feel important but not overwhelming
+
+7. LEARNING STYLE PANEL
+Title:
+- Learning Style
+
+Show:
+- primary VARK style
+- secondary VARK style
+- simple explanation in parent-friendly language
+
+Example:
+- Primary: Visual
+- Secondary: Kinesthetic
+- “This learner responds best to diagrams, examples, and active practice.”
+
+Recommended visual:
+- compact donut or split badge
+- icon per VARK type
+- simple explanation card
+
+8. MONTHLY SUMMARY PANEL
+Title:
+- This Month at a Glance
+
+Show:
+- monthly average trend
+- total active days
+- biggest improvement
+- biggest risk
+- recommended focus subject
+
+Visual style:
+- monthly summary card
+- left side metrics, right side insight box
+- premium report look
+
+9. RECOMMENDED ACTIONS
+Title:
+- Suggested Support
+
+Show parent-friendly recommendations:
+- Encourage 20 minutes today
+- Focus on Maths this week
+- Review weak areas before the weekend
+- Keep current momentum
+
+These should feel supportive, not punitive.
+
+10. SUBSCRIPTION / ACCESS PANEL
+Title:
+- Subscription
+
+Show:
+- product name
+- plan status
+- trial / active / renewal date
+- linked learner count
+- plan includes parent insights
+
+This section should appear later in the report, not first.
+
+VISUAL COMPONENTS TO USE
+Use a combination of:
+- summary metric cards
+- progress rings
+- horizontal performance bars
+- trend arrows
+- mini line charts
+- weekly bar charts
+- status badges
+- gradient-highlighted insight cards
+- square glow buttons for actions
+
+BUTTON STYLE
+- all action buttons should be square or slightly rounded square
+- rainbow glow border or rainbow glow shadow
+- support both light and dark mode
+- examples:
+  - View Full Insights
+  - Review Alerts
+  - Download Report
+  - Share Report
+  - Manage Plan
+
+THEME REQUIREMENTS
+This report must support both light and dark mode.
+
+LIGHT MODE
+- background: #F7F9FC
+- cards: #FFFFFF
+- primary text: #1A1A1A
+- secondary text: #6B7280
+- borders: #E5E7EB
+- soft colored glows behind hero cards and charts
+- academic icons low-opacity in background
+
+DARK MODE
+- background: #070B17
+- cards: #101828 or #0F172A
+- primary text: #F8FAFC
+- secondary text: #94A3B8
+- borders: #1F2937
+- neon academic glow accents
+- floating academic icons in background
+- richer chart contrast and luminous borders
+
+ACCENT GRADIENT
+Use BrainTrack gradient:
+- #FF6A00
+- #FF00A8
+- #6A00FF
+- #00C2FF
+Optional green accent for positive performance
+
+Use the gradient for:
+- report hero border
+- progress rings
+- important charts
+- selected buttons
+- trend highlights
+
+BACKGROUND DIRECTION
+Add a subtle animated academic background behind the report:
+- floating low-opacity icons
+- classroom icon
+- book
+- calculator
+- beaker
+- pencil
+- graph/chart
+- graduation cap
+- atom
+Keep motion soft and premium.
+
+EXPORT / REPORT MODE
+The parent report should also have a printable/export-ready state.
+Include actions for:
+- Download PDF
+- Share Report
+- Export Summary
+
+In export mode:
+- remove excess animation
+- keep premium report styling
+- preserve cards and charts cleanly
+- use clear report header with logo, learner name, month, generated date
+
+OPTIONAL REPORT HEADER
+- BrainTrack logo
+- Parent Report
+- learner name
+- reporting period
+- generated date
+
+COPY STYLE
+Use short, supportive, premium language.
+Examples:
+- “Your learner is improving steadily.”
+- “Mathematics needs focused support this week.”
+- “Study consistency dropped compared with last week.”
+- “Exam readiness is improving, but still below target.”
+
+ADMIN / DATA MODEL NOTE
+Each school must be linked to one agent or partner.
+In internal reports, include:
+- school name
+- linked agent/partner name
+- partner code
+- commission summary
+This is internal/admin only, not part of the parent report unless explicitly needed.

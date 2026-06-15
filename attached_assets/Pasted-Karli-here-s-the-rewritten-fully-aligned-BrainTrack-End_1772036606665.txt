@@ -1,0 +1,317 @@
+Karli — here’s the **rewritten, fully aligned BrainTrack™ End-to-End Functional Architecture** incorporating **everything from the full chat**:
+
+• trial-first funnel
+• parent consent + payment gating
+• partner attribution
+• referral caps
+• DBE intelligence (not verbatim display)
+• mastery engine
+• Nova tutor
+• cybersecurity + Cloudflare edge
+• learner-first UX & language theme
+
+This is now a **single coherent platform architecture**, not feature pieces.
+
+---
+
+# 🧠 BrainTrack™ — End-to-End Functional Architecture
+
+### (Secure • Scalable • Conversion-Optimised • Intelligence-Driven)
+
+---
+
+## 🎯 1. Acquisition & Attribution Engine (Growth Backbone)
+
+### Entry Channels
+
+* Partner links (D6, WhatsApp, SMS, campaigns, referrals)
+* All links auto-capture:
+
+  * partner/source
+  * campaign
+  * channel
+  * creative
+
+### Attribution Rules
+
+* First-touch locked permanently
+* Referral tracked separately
+* School captured at signup (mandatory)
+
+### Outputs
+
+✔ clean partner reporting
+✔ payout forecasting
+✔ growth ROI metrics
+
+---
+
+## 📝 2. Instant Trial Onboarding (Friction-Free Conversion)
+
+### Learner Signup Unlocks
+
+* 14-day free trial immediately
+* Full learning access
+* Mastery profile creation
+* Rewards wallet creation
+
+### Required at Signup
+
+* learner details
+* grade & subjects
+* **school selection**
+
+No payment required at this stage.
+
+---
+
+## 📲 3. Parent Consent + Payment Activation Layer (Compliance + Revenue)
+
+### Dual Path Flow
+
+**Option A:** Parent present → consent + card captured immediately
+**Option B:** Learner solo → parent WhatsApp consent + payment link sent
+
+### Enforcement
+
+* Trial runs freely
+* Consent required before paid activation
+* Payment tokenised only (no raw card data)
+
+### Benefits
+
+✔ POPIA-aligned
+✔ trust-first
+✔ high conversion
+
+---
+
+## 📚 4. DBE Intelligence Corpus (2015–2025 All Subjects)
+
+### One-Off Secure Ingestion
+
+* All papers + memos scraped & stored verbatim
+* PDFs hashed, versioned, private
+
+### Intelligence Layer
+
+* Text extracted
+* Questions structured
+* Topic frequency mapped
+* Difficulty models built
+* Marking logic learned
+
+### Hard Rule
+
+🚫 No verbatim DBE content shown in UI
+✅ Only generated & structured practice derived from corpus
+
+This creates your **data moat**.
+
+---
+
+## 🧠 5. Mastery Learning Engine (Core Value)
+
+Tracks per learner:
+
+* topic mastery (0–100)
+* learning decay & reinforcement
+* exam readiness score
+* improvement trends
+* time & accuracy patterns
+
+Drives:
+
+✔ daily practice
+✔ adaptive difficulty
+✔ Nova guidance
+✔ exam simulations
+
+---
+
+## 🎮 6. Brain Boost Daily Practice Loop (Retention Engine)
+
+Each day:
+
+1. Weak + high-frequency topics prioritised
+2. Generated matric-style questions served
+3. Immediate feedback + Nova help
+4. Mastery recalculated
+5. Coins + streaks awarded
+
+Creates:
+
+➡ consistency
+➡ faster improvement
+➡ habit formation
+
+---
+
+## 🤖 7. Nova Smart Tutor (Learning Accelerator)
+
+### Logged-out
+
+* demo only on landing
+
+### Logged-in
+
+* step-by-step explanations
+* misconception correction
+* mastery nudges
+* streak protection
+* exam readiness coaching
+
+Nova is triggered by mastery data, not random chat.
+
+---
+
+## 📝 8. Exam Mode Engine (Assessment & Upsell)
+
+### What it delivers
+
+* timed simulations
+* DBE-style generated papers
+* diagnostic breakdowns
+* targeted improvement plans
+
+### Controls
+
+* trial attempt limits
+* cooldowns
+* anti-abuse rate controls
+
+Feeds back into mastery.
+
+---
+
+## 🎁 9. Rewards & Referral Economy (Controlled Growth)
+
+### Rewards
+
+* coins earned via learning & milestones
+* unlocked themes + perks
+* learner-only visibility
+
+### Referral Limits
+
+* **2 rewarded referrals per learner per month**
+* fraud detection & caps enforced
+
+Encourages viral growth without abuse.
+
+---
+
+## 🏫 10. School & Impact Layer
+
+Captured at signup:
+
+* school name locked to learner
+
+Used for:
+
+✔ analytics
+✔ performance impact reporting
+✔ partner insights
+✔ national rollout strategy
+
+(No portals shown to learners.)
+
+---
+
+## 🔐 11. Cybersecurity & Secure-by-Design Platform
+
+### Edge Security
+
+* Cloudflare WAF + bot protection + DDoS mitigation
+
+### App Security
+
+* JWT auth + refresh rotation
+* bcrypt hashing
+* rate limiting
+* RBAC
+* audit logs
+
+### Data Protection
+
+* encrypted DB
+* consent records
+* minimal PII
+* tokenised payments
+
+### Abuse Controls
+
+* referral fraud prevention
+* exam scraping prevention
+* anomaly monitoring
+
+---
+
+## 📊 12. Admin Control Tower
+
+Admin dashboards for:
+
+* user growth
+* attribution & payouts
+* engagement metrics
+* mastery trends
+* ingestion health
+* fraud flags
+* billing events
+* security logs
+
+---
+
+## 📈 13. Scale-Ready Architecture
+
+Supports:
+
+* 5k+ learners immediately
+* burst traffic campaigns
+* async processing
+* horizontal API scaling
+
+Future-proof for:
+
+* more grades
+* more subjects
+* national expansion
+
+---
+
+# 🎯 Final Strategic Positioning
+
+BrainTrack™ is not:
+
+❌ a question bank
+❌ a tutoring app
+❌ a content platform
+
+It **is**:
+
+✅ an intelligence-driven learning engine
+✅ a mastery-based performance system
+✅ a scalable SaaS growth platform
+✅ a secure EdTech infrastructure
+
+---
+
+### 🚀 In short:
+
+You’ve built a **learning fintech-style platform** — where:
+
+Data → Intelligence → Personalisation → Retention → Revenue → Impact
+
+all feed each other.
+
+---
+
+If you’d like next I can:
+
+✔ Turn this into a technical architecture diagram
+✔ Create investor/partner one-pager
+✔ Convert into Replit master build spec
+✔ Map KPIs per module
+✔ Write roadmap phases
+
+Just say.

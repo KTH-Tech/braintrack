@@ -1,0 +1,270 @@
+Weakest topic visibility rule
+
+Do not show a weakest topic for a learner immediately on first load, first onboarding state, or before there is enough real performance data.
+
+The weakest topic must only be generated after the learner has completed enough actual topic-based activity to make the label meaningful.
+
+Minimum data rule for weakest topic
+
+Only generate and display a weakest topic when at least one of the following is true:
+- the learner has completed the first full baseline quiz for that subject
+- the learner has completed the first meaningful set of topic quizzes for that subject
+- the learner has completed enough topic-linked questions to support a reliable comparison across topics
+
+Until then, use softer labels such as:
+- Getting started
+- Building your topic profile
+- Topic insight loading
+- Complete your first quiz to unlock topic insights
+
+Do not guess a weakest topic from incomplete data.
+Do not derive weakest topic only from current marks entered during onboarding.
+Current marks may guide starting difficulty and first-session generation, but not weakest-topic labelling.
+
+Weakest topic generation logic
+
+Once enough topic-based quiz activity exists, calculate weakest topic using weighted performance data such as:
+- topic quiz accuracy
+- question correctness by topic
+- repeated errors by topic
+- time-to-answer difficulty signals where relevant
+- missed questions in baseline and post-baseline quizzes
+- recent topic performance trend
+- confidence or support usage where relevant
+
+Only compare topics that have enough answered questions to be fairly assessed.
+
+If one topic has too little data, do not mark it as weakest yet.
+Instead mark it as:
+- Not enough data yet
+- Still assessing
+
+Strongest and weakest topic update rule
+
+Strongest topic and weakest topic must be recalculated after meaningful learner activity, not after every tiny action.
+Use safe thresholds to prevent unstable flipping of topic labels after one or two questions.
+
+Recommended thresholds:
+- minimum answered questions per topic before topic comparison
+- minimum completed quiz count in the subject
+- rolling recent-performance logic combined with overall topic accuracy
+
+Clickable buttons rule
+
+All visible buttons, cards, CTAs, tabs, menu actions, quick actions, and linked panels in the app must be fully clickable and functional.
+
+Do not render decorative buttons, dead buttons, placeholder actions, or fake CTAs in the live product.
+
+This applies to:
+- learner pages
+- classroom actions
+- quiz cards
+- exam mode
+- crunch time
+- notes generation
+- rewards actions
+- parent dashboard actions
+- school dashboard actions
+- partner dashboard actions
+- admin actions
+- onboarding actions
+- settings actions
+- reports and exports where allowed
+- navigation buttons
+- home and back buttons
+- dropdown items
+
+Button behaviour rule
+
+Every visible action must have one of these valid states only:
+- active and clickable
+- disabled with a clear reason
+- loading with progress feedback
+- hidden if not yet allowed
+
+Do not show an enabled button that does nothing.
+
+Disabled action rule
+
+If an action is not yet available, do not leave it clickable without logic.
+Instead:
+- disable it properly
+- show a clear reason
+- show what the learner needs to do to unlock it
+
+Examples:
+- Complete your first quiz to unlock topic insights
+- This subject is still being prepared
+- Finish onboarding to continue
+- Parent approval required
+
+Progress update architecture rule
+
+Progress must update through one shared central progress engine.
+Do not update progress separately in disconnected parts of the app.
+
+Every learner action that matters must write into the same learner progress model.
+
+Where progress is updated
+
+Progress must be updated in these places:
+- after onboarding baseline completion
+- after subject quiz completion
+- after mixed quiz completion
+- after topic quiz completion
+- after daily brain boost completion
+- after scheduled study session completion
+- after exam mode submission
+- after crunch time submission
+- after revision card completion where trackable
+- after note interaction where designed to count
+- after meaningful topic practice completion
+
+Where progress is stored
+
+Progress must be stored against the single learner profile only.
+
+The learner progress model must update at minimum:
+- learner profile progress record
+- subject progress record
+- topic mastery record
+- quiz history
+- activity history
+- streak record
+- rewards and coin record
+- readiness calculation inputs
+- dashboard summary model
+- parent summary model
+- school aggregate model
+- partner aggregate model where relevant
+
+What must update when progress changes
+
+When a learner completes a scored activity, update:
+- question-level result
+- topic accuracy
+- topic mastery
+- subject performance
+- learner learning score
+- exam readiness
+- estimated exam range inputs
+- streak if applicable
+- XP if applicable
+- coins if applicable
+- focus-next logic
+- schedule adjustment inputs
+- parent dashboard summaries
+- school analytics aggregates
+- partner analytics aggregates where relevant
+
+Question-level progress logic
+
+After each answered question, capture:
+- learner ID
+- subject
+- topic
+- question ID
+- answer selected
+- correct or incorrect result
+- timestamp
+- attempt number
+- hint used or not
+- exam mode or practice mode context
+- session ID
+
+This question-level data should not immediately flip the full dashboard on every click in a noisy way.
+It should feed the active session state first, then roll into the official progress model at the correct checkpoint.
+
+Session checkpoint update rule
+
+Use session checkpoints for major progress updates.
+
+Recommended checkpoint behaviour:
+- update live session progress instantly inside the active quiz or exam
+- update central learner progress formally when the session is submitted, auto-saved at milestone checkpoints, or completed
+- update dashboard summaries after completion or safe checkpoint save
+
+This prevents unstable progress jumps and keeps data cleaner.
+
+Baseline progress logic
+
+After a learner completes the onboarding baseline:
+- create initial subject diagnostic result
+- create initial topic profile for assessed topics
+- set first readiness baseline
+- set first focus-next recommendation
+- enable stronger personalisation
+- do not show weakest topic unless the minimum topic evidence threshold is met
+
+Quiz completion progress logic
+
+After a learner completes a subject quiz or mixed quiz:
+- write quiz result to quiz history
+- update each covered topic’s performance
+- update subject performance
+- update learning score
+- update readiness inputs
+- update streak, XP, and coins where applicable
+- recalculate focus-next
+- check if strongest/weakest topic can now be shown
+
+Exam mode progress logic
+
+During exam mode:
+- track answers live inside the session
+- do not reveal answers during the active session
+- on submit, update formal learner progress
+- update topic and subject performance from scored results
+- update readiness inputs
+- update history and analytics
+- update follow-up review recommendations
+
+Crunch time progress logic
+
+During Crunch Time:
+- track answers live inside the session
+- on submit, update formal learner progress
+- apply stronger weighting to revision-priority and weak-topic reinforcement logic where appropriate
+- update focus-next and recovery guidance
+
+Dashboard progress refresh logic
+
+After a meaningful completed activity, refresh these dashboard elements:
+- learning score
+- exam readiness
+- subject performance
+- recent activity
+- study streak
+- rewards summary
+- focus-next recommendation
+- today’s progress
+- quiz completion states
+
+Only refresh weakest topic if the minimum evidence threshold has been met.
+
+Parent and school propagation logic
+
+After learner progress is formally updated, propagate the summarised results to:
+- parent dashboard
+- school dashboard aggregates
+- partner dashboard aggregates where relevant
+
+Do not propagate raw question-level detail to roles that should only see summarised or authorised information.
+
+Progress status labels
+
+Use clear progress labels such as:
+- Not started
+- In progress
+- Completed
+- Building insight
+- Ready for review
+- More data needed
+
+Avoid misleading labels such as weakest topic too early.
+
+Final progress logic rule
+
+Do not generate weakest-topic insight until the learner has completed enough real quiz or topic activity.
+Make all visible buttons truly functional or properly disabled with a clear reason.
+Update progress through one shared learner progress engine, with live session tracking during activity and formal progress updates at completion or safe checkpoint events.

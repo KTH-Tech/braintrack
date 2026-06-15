@@ -1,0 +1,65 @@
+Admin data and access update
+
+School management data rule
+
+Each school record in the admin portal must include:
+- school name
+- school code if applicable
+- province
+- city
+- physical address
+- primary contact person
+- secondary contact person if available
+- contact email
+- contact mobile number
+- finance or accounts contact if applicable
+- bank account holder name
+- bank name
+- account number
+- branch code
+- account type
+- donation reference details if needed
+- subscription status
+- linked partner if applicable
+
+Sensitive school data rule
+
+Banking and contact details are sensitive operational data.
+Restrict visibility and editing of school bank account details to super admin only, or to the smallest authorised admin group.
+Do not expose banking data to learners, parents, school dashboards, or partner dashboards unless explicitly authorised.
+
+Super admin access and session rule
+
+Do not rely on IP address alone to keep me signed in or to secure super admin access.
+
+Source IP can be used only as an additional control such as allowlisting or risk-checking, not as the sole method of authentication or persistent access.
+
+Create a safer super admin access model for my account:
+- super admin access only through the shield icon in the footer
+- visible only to my authorised super admin account
+- strong role-based backend enforcement
+- trusted device option for my personal device
+- secure long-lived session only on my approved trusted device
+- optional remember-this-device flow
+- reauthentication for highly sensitive actions
+- optional IP allowlist as an extra restriction, not the only control
+- secure logout and session expiry rules
+
+If my device or browser is trusted, keep me signed in securely on that trusted device only, while still enforcing secure session limits and reauthentication for sensitive admin actions.
+
+Admin branding rule
+
+The admin portal must remain private and minimal.
+Show the admin entry only as a shield icon in the footer for my authorised super admin account.
+Do not place admin access in headers, menus, or visible navigation.
+
+UI note
+
+Do not use blue buttons as the primary button style.
+Use the BrainTrack Prismglass palette instead, with pastel rainbow glass styling and no default bright blue primary buttons.
+
+Keyword animation rule
+
+Keep the subtle rainbow animation on selected key words.
+Do not remove that effect.
+Use it sparingly on high-impact headings, hero phrases, and key emphasis text only, so it remains premium and not noisy.

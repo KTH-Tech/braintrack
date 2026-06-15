@@ -1,0 +1,176 @@
+Scale Target (Design Assumptions)
+
+7,000 total users
+
+1,000 active (typical)
+
+Peak concurrency: 100–250 during evenings/weekends/exam week
+
+Heavy endpoints: auth, practice sessions, progress dashboards
+
+STEP A — PERFORMANCE BASELINE PROMPT (Paste first)
+Update BrainTrack architecture to support 7000 registered users and ~1000 active users with peak concurrency up to 250.
+
+Add:
+- request logging with correlation IDs
+- health endpoint (/health) and readiness endpoint (/ready)
+- performance instrumentation (p95 latency, error rates)
+- rate limiting on auth and ticket endpoints
+- input validation on all API routes
+- centralized error handling
+
+Ensure all changes do not affect branding rules or Nova rules.
+
+STEP B — DATABASE HARDENING PROMPT (critical)
+Optimize PostgreSQL + Prisma for scale.
+
+Do:
+1) Add database indexes:
+- User.email unique index
+- Attempt(learnerUserId, submittedAt)
+- Attempt(topicId, submittedAt)
+- AttemptAnswer(attemptId)
+- SupportTicket(userId, status, createdAt)
+- ParentLink(parentUserId), ParentLink(learnerUserId)
+
+2) Add pagination to list endpoints (attempts, tickets, questions)
+3) Ensure queries use select() to fetch only needed fields
+4) Prevent N+1 queries by using Prisma includes carefully
+5) Add database connection pooling configuration suitable for hosting
+
+Add migration + explain in README how indexes improve performance.
+
+STEP C — CACHING PROMPT (fast dashboards)
+Add caching for read-heavy endpoints.
+
+Implement:
+- in-memory cache (LRU) for:
+  - subjects/terms/topics
+  - topic summaries
+  - FAQ content
+- cache TTL 10 minutes
+- invalidate cache when admin updates content
+
+Add server-side computed analytics caching:
+- learner dashboard summary cached for 60 seconds per user
+- progress charts cached for 2 minutes per user
+
+Ensure cached responses respect user roles and language (English/Afrikaans).
+
+STEP D — ASYNC JOBS PROMPT (stop slow requests)
+Introduce a lightweight background job queue for non-critical work.
+
+Use:
+- BullMQ + Redis (or a simple in-process queue if Redis not available)
+
+Move these tasks async:
+- generating weekly progress summaries
+- calculating topic mastery rollups
+- sending notifications (if enabled later)
+- heavy report exports for admin
+
+API should respond quickly and show job status where relevant.
+
+STEP E — SESSION/ATTEMPT WRITE OPTIMIZATION PROMPT
+Optimize practice session writes.
+
+Requirements:
+- Create Attempt record at session start
+- Batch insert AttemptAnswers on submit (single transaction)
+- Save only required fields during session; do not write after every question
+- Store timeSpentSec per question but only persist at submit
+- Ensure idempotent submit endpoint (cannot double-submit same attempt)
+
+Add safeguards for network retries.
+
+STEP F — SECURITY + ABUSE CONTROL PROMPT (important at 7k users)
+Add security hardening:
+
+- Rate limit:
+  - login/signup/password reset
+  - support ticket creation
+  - any endpoint that writes data
+- Add account lockout after repeated failed logins
+- Add CSRF protection for cookie-based auth
+- Sanitize all user input
+- Audit log admin actions
+
+Ensure Nova remains support-only and cannot be used to bypass learning restrictions.
+
+STEP G — FILE/ASSET OPTIMIZATION PROMPT (Replit stability)
+Improve frontend performance:
+
+- Code split routes (lazy loading)
+- Optimize bundle size
+- Use skeleton loaders on dashboard and progress pages
+- Add client-side caching for subjects/topics
+- Ensure charts load async and do not block rendering
+
+Maintain branding:
+- rainbow headings
+- black button text
+- Inter font
+- consistent body text black
+
+STEP H — LOAD TEST PROMPT (prove it can handle peaks)
+Add a simple load test script to simulate 250 concurrent users.
+
+Test flows:
+- login
+- fetch dashboard
+- start practice session
+- submit attempt with 10 answers
+- fetch progress summary
+
+Output:
+- p50/p95 latency
+- error rates
+- slowest endpoints
+Include instructions in README on how to run load tests locally.
+
+STEP I — OBSERVABILITY PROMPT (so you can see issues fast)
+Add observability:
+
+- structured logs (JSON)
+- request duration metrics per route
+- database query timing
+- error tracking hooks (stub integration)
+
+Create an admin “System Status” page:
+- uptime
+- recent errors
+- slow endpoints
+- job queue status
+
+STEP J — DEPLOYMENT STRATEGY PROMPT (Replit + scale reality)
+Prepare BrainTrack for deployment with scaling in mind.
+
+- Use environment variables for DB/Redis secrets
+- Add production build scripts
+- Add graceful shutdown handling
+- Ensure database migrations run safely
+- Document recommended hosting approach for:
+  - web app
+  - API
+  - database
+  - redis/job queue
+
+Mention limits of single-instance hosting and how to scale horizontally later.
+
+What this gives you (in practical terms)
+
+For 7,000 registered / 1,000 active you’ll have:
+
+Fast dashboards (cache + rollups)
+
+Stable practice sessions (batched writes + idempotency)
+
+No DB choking (indexes + pagination + pooling)
+
+Controlled abuse (rate limiting + lockout)
+
+Visibility (metrics + system status)
+
+Headroom for exam-week spikes
+
+One important reality check (executive level)

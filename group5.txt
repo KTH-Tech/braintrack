@@ -1,0 +1,487 @@
+  app.post("/api/user/activity", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const streak = await storage.updateUserStreak(userId);
+      const newBadges = await storage.checkAndAwardBadges(userId);
+      res.json({ streak, newBadges });
+    } catch (error) {
+      console.error("Error logging activity:", error);
+      res.status(500).json({ error: "Failed to log activity" });
+    }
+  });
+
+  // User badges endpoint
+  app.get("/api/user/badges", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const badges = await storage.getUserBadges(userId);
+      res.json(badges);
+    } catch (error) {
+      console.error("Error fetching badges:", error);
+      res.status(500).json({ error: "Failed to fetch badges" });
+    }
+  });
+
+  // Learner referral — get code + this-month stats
+  app.get("/api/user/referral", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { userReferrals } = await import("@shared/schema");
+      const code = "BT-" + createHash("sha256").update(userId).digest("hex").slice(0, 6).toUpperCase();
+      const baseUrl = process.env.APP_URL || `${req.protocol}://${req.get("host")}`;
+      const link = `${baseUrl}/?ref=${code}`;
+      const monthStart = new Date();
+      monthStart.setDate(1); monthStart.setHours(0, 0, 0, 0);
+      const rows = await db.select().from(userReferrals)
+        .where(and(eq(userReferrals.referrerId, userId), sql`created_at >= ${monthStart}`));
+      return res.json({ code, link, thisMonthCount: rows.length, maxPerMonth: 2, referrals: rows });
+    } catch (err: any) {
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Request phone change OTP
+  app.post("/api/user/phone/request-otp", isAuthenticated, async (req: any, res) => {
+    try {
+      const { phoneNumber } = req.body;
+      
+      if (!phoneNumber || !/^\+27[0-9]{9}$/.test(phoneNumber)) {
+        return res.status(400).json({ error: "Invalid South African phone number. Format: +27XXXXXXXXX" });
+      }
+      
+      // Generate 6-digit OTP
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      
+      // Store OTP temporarily (in production, use Redis or database with expiry)
+      // For now, just log it since Twilio isn't set up
+      // OTP would be sent via Twilio - logging removed for security
+      
+      // TODO: Send OTP via Twilio when configured
+      // Twilio integration pending - see replit.md
+      
+      res.json({ 
+        success: true, 
+        message: "OTP sent to your phone (demo mode - check server logs)",
+        // In production, don't send OTP in response
+        demo_otp: process.env.NODE_ENV === "development" ? otp : undefined
+      });
+    } catch (error) {
+      console.error("Error requesting phone OTP:", error);
+      res.status(500).json({ error: "Failed to send OTP" });
+    }
+  });
+
+  // Verify phone change OTP
+  app.post("/api/user/phone/verify-otp", isAuthenticated, async (req: any, res) => {
+    try {
+      const { phoneNumber, otp } = req.body;
+      
+      if (!phoneNumber || !otp) {
+        return res.status(400).json({ error: "Phone number and OTP are required" });
+      }
+      
+      // TODO: Verify OTP from storage when Twilio is configured
+      // For demo, accept any 6-digit code
+      if (otp.length === 6 && /^\d+$/.test(otp)) {
+        res.json({ success: true, message: "Phone number updated successfully" });
+      } else {
+        res.status(400).json({ error: "Invalid OTP format" });
+      }
+    } catch (error) {
+      console.error("Error verifying phone OTP:", error);
+      res.status(500).json({ error: "Failed to verify OTP" });
+    }
+  });
+
+  // Parent weekly report endpoint
+  // MVP: Currently returns demo data. Full implementation will:
+  // 1. Validate parent role via subscription.userRole === 'parent'
+  // 2. Fetch child user via parentUserId linkage
+  // 3. Return actual child's learning stats and progress
+  app.get("/api/parent/child-progress", isAuthenticated, requireRole("parent", "admin"), async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const learnerId = req.query.learnerId as string | undefined;
+
+      // If a specific learnerId is provided, validate parent-child link
+      if (learnerId) {
+        const isLinked = await storage.isParentOfLearner(userId, learnerId);
+        if (!isLinked) {
+          return res.status(403).json({ error: "Forbidden: you are not linked to this learner" });
+        }
+      }
+      
+      // Get subscription to check user role
+      const subscription = await storage.getSubscription(userId);
+      
+      const allSubjects = await storage.getAllSubjects();
+      
+      // Generate weekly report data
+      const now = new Date();
+      const weekStart = new Date(now);
+      weekStart.setDate(now.getDate() - now.getDay());
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekStart.getDate() + 6);
+      
+      // Resolve the learner ID: use linked learner if provided, or look up from subscription
+      let learnerTargetId = learnerId || null;
+      if (!learnerTargetId) {
+        const sub = await storage.getSubscription(userId);
+        if (sub?.learnerUserId) {
+          learnerTargetId = sub.learnerUserId;
+        } else {
+          learnerTargetId = userId;
+        }
+      }
+
+      // Get the LEARNER's stats, not the parent's
+      const stats = await storage.getUserStats(learnerTargetId);
+      const learnerProgress = await storage.getUserProgress(learnerTargetId);
+      const learnerBadges = await storage.getUserBadges(learnerTargetId);
+
+      const BADGE_LABELS: Record<string, string> = {
+        first_quiz: "Completed first quiz",
+        accuracy_70: "Achieved 70%+ accuracy",
+        accuracy_80: "Achieved 80%+ accuracy",
+        accuracy_90: "Achieved 90%+ accuracy",
+        questions_10: "Answered 10 questions",
+        questions_50: "Answered 50 questions",
+        questions_100: "Answered 100 questions",
+        streak_3: "3-day study streak",
+        streak_7: "7-day study streak",
+      };
+
+      const achievements = learnerBadges
+        .map(b => BADGE_LABELS[b.badgeCode] || b.badgeCode)
+        .slice(0, 3);
+
+      const subjectBreakdown = learnerProgress.map(p => {
+        const subj = allSubjects.find(s => s.id === p.subjectId);
+        const acc = p.questionsAttempted > 0
+          ? Math.round((p.correctAnswers / p.questionsAttempted) * 100)
+          : 0;
+        return {
+          subjectName: subj?.name ?? `Subject ${p.subjectId}`,
+          questionsAttempted: p.questionsAttempted,
+          accuracy: acc,
+          improvement: 0,
+        };
+      });
+
+      const areasForImprovement = learnerProgress
+        .filter(p => p.questionsAttempted >= 3 && (p.correctAnswers / p.questionsAttempted) < 0.6)
+        .map(p => allSubjects.find(s => s.id === p.subjectId)?.name)
+        .filter((n): n is string => Boolean(n))
+        .slice(0, 3);
+
+      const weeklyReport = {
+        weekStarting: weekStart.toISOString(),
+        weekEnding: weekEnd.toISOString(),
+        studyDays: Math.min(stats.studyStreak, 7),
+        totalMinutes: stats.questionsAnswered * 2,
+        questionsAnswered: stats.questionsAnswered,
+        accuracy: stats.accuracy,
+        subjectBreakdown: subjectBreakdown.slice(0, 4),
+        achievements,
+        areasForImprovement,
+        streakDays: stats.studyStreak,
+      };
+
+      const learnerOnboarding = await storage.getOnboardingResult(learnerTargetId);
+      const initialMarksMap = new Map<string, number>();
+      if (learnerOnboarding?.rawAnswersJson) {
+        const raw = learnerOnboarding.rawAnswersJson as any;
+        if (Array.isArray(raw.subjectMarks)) {
+          for (const sm of raw.subjectMarks) {
+            if (sm.subjectName && typeof sm.mark === 'number') {
+              initialMarksMap.set(sm.subjectName, sm.mark);
+            }
+          }
+        }
+      }
+
+      const subjectMarks = learnerProgress
+        .map(p => {
+          const subj = allSubjects.find(s => s.id === p.subjectId);
+          const subjectName = subj?.name ?? `Subject ${p.subjectId}`;
+          const acc = p.questionsAttempted > 0
+            ? Math.round((p.correctAnswers / p.questionsAttempted) * 100)
+            : 0;
+          const initialMark = initialMarksMap.get(subjectName) ?? 0;
+          const improvement = acc - initialMark;
+          return { subjectName, currentMark: acc, initialMark, improvement };
+        })
+        .filter(m => m.currentMark > 0 || m.initialMark > 0);
+
+      const childProgress = {
+        learnerName: subscription?.learnerName || "Your Child",
+        currentStreak: stats.studyStreak,
+        overallAccuracy: stats.accuracy,
+        totalQuestionsAnswered: stats.questionsAnswered,
+        totalPapersCompleted: stats.papersCompleted,
+        lastActiveDate: new Date().toISOString(),
+        weeklyReport,
+        subjectMarks,
+      };
+      
+      res.json(childProgress);
+    } catch (error) {
+      console.error("Error fetching child progress:", error);
+      res.status(500).json({ error: "Failed to fetch child progress" });
+    }
+  });
+
+  // Activation endpoints for child learners
+  app.post("/api/activation/verify", async (req: Request, res: Response) => {
+    try {
+      const { code } = req.body;
+      
+      if (!code || code.length < 6) {
+        return res.status(400).json({ valid: false, message: "Invalid code format" });
+      }
+      
+      // For demo/testing purposes - accept test codes
+      if (code === "TEST123456" || code === "DEMO2025") {
+        return res.json({
+          valid: true,
+          learnerName: "Demo Learner",
+          planName: "Brain Boost (R79/month)",
+          expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        });
+      }
+      
+      // Check activation codes table
+      const activationCode = await storage.getActivationCodeByCode(code);
+      
+      if (!activationCode) {
+        return res.json({ valid: false, message: "Invalid activation code" });
+      }
+      
+      if (activationCode.expiresAt && new Date(activationCode.expiresAt) < new Date()) {
+        return res.json({ valid: false, expired: true, message: "This activation link has expired" });
+      }
+      
+      if (activationCode.currentUses >= activationCode.maxUses) {
+        return res.json({ valid: false, message: "This activation code has already been used" });
+      }
+      
+      res.json({
+        valid: true,
+        learnerName: activationCode.schoolName || "Learner",
+        planName: "BrainTrack Subscription",
+        expiresAt: activationCode.expiresAt,
+      });
+    } catch (error) {
+      console.error("Error verifying activation code:", error);
+      res.status(500).json({ valid: false, message: "Failed to verify code" });
+    }
+  });
+
+  app.post("/api/activation/activate", async (req: Request, res: Response) => {
+    try {
+      const { code, acceptedTerms, acceptedPopia } = req.body;
+      
+      if (!code || !acceptedTerms || !acceptedPopia) {
+        return res.status(400).json({ success: false, message: "Missing required fields" });
+      }
+      
+      // For demo/testing purposes
+      if (code === "TEST123456" || code === "DEMO2025") {
+        return res.json({
+          success: true,
+          message: "Account activated successfully! Please log in to continue.",
+        });
+      }
+      
+      // Check and use activation code
+      const activationCode = await storage.getActivationCodeByCode(code);
+      
+      if (!activationCode) {
+        return res.json({ success: false, message: "Invalid activation code" });
+      }
+      
+      if (activationCode.expiresAt && new Date(activationCode.expiresAt) < new Date()) {
+        return res.json({ success: false, message: "This activation link has expired" });
+      }
+      
+      if (activationCode.currentUses >= activationCode.maxUses) {
+        return res.json({ success: false, message: "This activation code has already been used" });
+      }
+      
+      // Increment usage count
+      await storage.useActivationCode(activationCode.id);
+      
+      res.json({
+        success: true,
+        message: "Account activated successfully! Please log in to continue.",
+      });
+    } catch (error) {
+      console.error("Error activating account:", error);
+      res.status(500).json({ success: false, message: "Failed to activate account" });
+    }
+  });
+
+  // Progress endpoint
+  app.get("/api/user/progress", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const [stats, allSubjects, allProgress, onboarding] = await Promise.all([
+        storage.getUserStats(userId),
+        storage.getAllSubjects(),
+        storage.getUserProgress(userId),
+        storage.getOnboardingResult(userId),
+      ]);
+
+      const initialMarksMap = new Map<string, number>();
+      if (onboarding?.rawAnswersJson) {
+        const raw = onboarding.rawAnswersJson as any;
+        if (Array.isArray(raw.subjectMarks)) {
+          for (const sm of raw.subjectMarks) {
+            if (sm.subjectName && typeof sm.mark === 'number') {
+              initialMarksMap.set(sm.subjectName, sm.mark);
+            }
+          }
+        }
+      }
+
+      const progBySubject = new Map(allProgress.map(p => [p.subjectId, p]));
+      const subjectProgress = allSubjects.map(s => {
+        const p = progBySubject.get(s.id);
+        const acc = p && p.questionsAttempted > 0
+          ? Math.round((p.correctAnswers / p.questionsAttempted) * 100)
+          : 0;
+        const initialMark = initialMarksMap.get(s.name) ?? 0;
+        const improvement = acc - initialMark;
+        return {
+          subjectId: s.id,
+          subjectName: s.name,
+          accuracy: acc,
+          initialMark,
+          improvement,
+          questionsAttempted: p?.questionsAttempted ?? 0,
+          papersCompleted: p?.papersCompleted ?? 0,
+        };
+      });
+
+      const weakTopics = subjectProgress
+        .filter(sp => sp.questionsAttempted >= 2 && sp.accuracy < 70)
+        .sort((a, b) => a.accuracy - b.accuracy)
+        .slice(0, 5)
+        .map(sp => ({
+          topicId: sp.subjectId,
+          topicName: sp.subjectName,
+          subjectName: sp.subjectName,
+          accuracy: sp.accuracy,
+        }));
+
+      res.json({
+        overallAccuracy: stats.accuracy,
+        studyStreak: stats.studyStreak,
+        totalQuestionsAttempted: stats.questionsAnswered,
+        totalPapersCompleted: stats.papersCompleted,
+        subjectProgress,
+        weakTopics,
+        recentActivity: [],
+      });
+    } catch (error) {
+      console.error("Error fetching progress:", error);
+      res.status(500).json({ error: "Failed to fetch progress" });
+    }
+  });
+
+  // ============================================
+  // CAPS INTELLIGENCE API ENDPOINTS (Backend-Only)
+  // ============================================
+
+  // Get topic mastery for a subject
+  app.get("/api/mastery/subject/:subjectId", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const subjectId = parseInt(req.params.subjectId);
+      
+      if (isNaN(subjectId)) {
+        return res.status(400).json({ error: "Invalid subject ID" });
+      }
+
+      const mastery = await storage.getTopicMasteryBySubject(userId, subjectId);
+      const topics = await storage.getTopicsBySubject(subjectId);
+      
+      // Calculate priority for each topic
+      const topicsWithPriority = topics.map(topic => {
+        const topicMastery = mastery.find(m => m.topicId === topic.id);
+        const masteryScore = topicMastery?.masteryScore || 0;
+        const priority = calculateTopicPriority(topic, masteryScore);
+        
+        return {
+          ...topic,
+          mastery: topicMastery || null,
+          priority,
+          capsIntelligence: CAPS_TOPIC_INTELLIGENCE[topic.capsCode || ""] || null
+        };
+      });
+
+      // Sort by priority (highest first)
+      topicsWithPriority.sort((a, b) => b.priority.priority - a.priority.priority);
+
+      res.json({
+        subjectId,
+        topics: topicsWithPriority,
+        officialDbeLink: OFFICIAL_DBE_LINK
+      });
+    } catch (error) {
+      console.error("Error fetching topic mastery:", error);
+      res.status(500).json({ error: "Failed to fetch topic mastery" });
+    }
+  });
+
+  // Get weak topics for review (spaced repetition)
+  app.get("/api/mastery/weak-topics", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const limit = parseInt(req.query.limit as string) || 5;
+      
+      const weakTopics = await storage.getWeakTopics(userId, limit);
+      
+      // Enrich with topic details
+      const enrichedTopics = await Promise.all(
+        weakTopics.map(async (mastery) => {
+          const topic = await storage.getTopic(mastery.topicId);
+          return {
+            ...mastery,
+            topic,
+            capsIntelligence: topic ? CAPS_TOPIC_INTELLIGENCE[topic.capsCode || ""] : null
+          };
+        })
+      );
+
+      res.json({
+        weakTopics: enrichedTopics,
+        reviewMessage: enrichedTopics.length > 0 
+          ? "Focus on these topics to improve your mastery." 
+          : "Great work! You're making good progress across all topics."
+      });
+    } catch (error) {
+      console.error("Error fetching weak topics:", error);
+      res.status(500).json({ error: "Failed to fetch weak topics" });
+    }
+  });
+
+  // Get topics due for review (spaced repetition)
+  app.get("/api/mastery/review-due", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const topicsForReview = await storage.getTopicsForReview(userId);
+      
+      res.json({
+        topicsForReview,
+        count: topicsForReview.length
+      });
+    } catch (error) {
+      console.error("Error fetching review topics:", error);
+      res.status(500).json({ error: "Failed to fetch review topics" });
+    }
+  });
+
+  // Get adaptive explanation for a question (CAPS-aware)
+  // LEGAL COMPLIANCE: Only works with SIMULATED content (isSimulated=true)
+  // DBE content is only served via external links

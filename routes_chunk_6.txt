@@ -1,0 +1,700 @@
+      
+      const paper = EXAM_PAPERS.find(p => p.id === paperId);
+      if (!paper) return res.status(404).json({ error: "Paper not found" });
+
+      let totalScore = 0;
+      let totalMarks = 0;
+      const results: any = { sectionA: [], sectionB: [], sectionC: [] };
+      const topicScores: Record<string, { earned: number; available: number }> = {};
+
+      const addTopicScore = (topic: string, earned: number, available: number) => {
+        if (!topicScores[topic]) topicScores[topic] = { earned: 0, available: 0 };
+        topicScores[topic].earned += earned;
+        topicScores[topic].available += available;
+      };
+
+      for (const q of paper.sectionA) {
+        const userAnswer = answers?.sectionA?.[q.id];
+        const correct = userAnswer === q.correctAnswer;
+        const earned = correct ? q.marks : 0;
+        totalScore += earned;
+        totalMarks += q.marks;
+        addTopicScore(q.topic, earned, q.marks);
+        results.sectionA.push({ id: q.id, userAnswer, correctAnswer: q.correctAnswer, correct, earned, marks: q.marks });
+      }
+
+      for (const cs of paper.sectionB) {
+        const csResult: any = { id: cs.id, subQuestions: [] };
+        for (const sq of cs.subQuestions) {
+          const userAnswer = answers?.sectionB?.[sq.id] || "";
+          const rawPaper = paper.sectionB.find(b => b.id === cs.id);
+          const rawSq = rawPaper?.subQuestions.find(s => s.id === sq.id);
+          let earned = 0;
+          const feedback: string[] = [];
+          
+          if (rawSq && userAnswer.trim()) {
+            const lowerAnswer = userAnswer.toLowerCase();
+            let keywordsFound = 0;
+            for (const kw of rawSq.automark.keywords) {
+              if (lowerAnswer.includes(kw.toLowerCase())) {
+                keywordsFound++;
+                feedback.push(`Found: "${kw}"`);
+              }
+            }
+            const ratio = keywordsFound / rawSq.automark.keywords.length;
+            earned = Math.round(sq.marks * Math.min(ratio * 1.3, 1));
+          }
+          
+          totalScore += earned;
+          totalMarks += sq.marks;
+          addTopicScore(sq.topic, earned, sq.marks);
+          csResult.subQuestions.push({ id: sq.id, userAnswer, earned, marks: sq.marks, feedback });
+        }
+        results.sectionB.push(csResult);
+      }
+
+      for (const eq of paper.sectionC) {
+        const userAnswer = answers?.sectionC?.[eq.id] || "";
+        let earned = 0;
+        const feedback: string[] = [];
+        
+        if (userAnswer.trim()) {
+          const lowerAnswer = userAnswer.toLowerCase();
+          let keywordsFound = 0;
+          for (const kw of eq.automark.keywords) {
+            if (lowerAnswer.includes(kw.toLowerCase())) {
+              keywordsFound++;
+              feedback.push(`Found: "${kw}"`);
+            }
+          }
+          let structureScore = 0;
+          for (const sp of eq.automark.structurePoints) {
+            if (lowerAnswer.includes(sp.toLowerCase()) || 
+                (sp === "introduction" && lowerAnswer.length > 100) ||
+                (sp === "conclusion" && lowerAnswer.includes("conclusion")) ||
+                (sp === "body with headings" && lowerAnswer.length > 300) ||
+                (sp === "examples" && (lowerAnswer.includes("example") || lowerAnswer.includes("for instance")))) {
+              structureScore++;
+            }
+          }
+          const keywordRatio = keywordsFound / eq.automark.keywords.length;
+          const structureRatio = structureScore / eq.automark.structurePoints.length;
+          const combined = (keywordRatio * 0.7 + structureRatio * 0.3);
+          earned = Math.round(eq.marks * Math.min(combined * 1.2, 1));
+        }
+        
+        totalScore += earned;
+        totalMarks += eq.marks;
+        addTopicScore(eq.topic, earned, eq.marks);
+        results.sectionC.push({ id: eq.id, userAnswer, earned, marks: eq.marks, feedback });
+      }
+
+      const percentage = totalMarks > 0 ? Math.round((totalScore / totalMarks) * 100) : 0;
+      let masteryBand = "red";
+      if (percentage >= 85) masteryBand = "mastery";
+      else if (percentage >= 75) masteryBand = "green";
+      else if (percentage >= 60) masteryBand = "amber";
+
+      const topicBreakdown = Object.entries(topicScores).map(([topic, scores]) => ({
+        topic,
+        earned: scores.earned,
+        available: scores.available,
+        percentage: scores.available > 0 ? Math.round((scores.earned / scores.available) * 100) : 0,
+        band: scores.available > 0 
+          ? (scores.earned / scores.available) >= 0.85 ? "mastery"
+            : (scores.earned / scores.available) >= 0.75 ? "green"
+            : (scores.earned / scores.available) >= 0.60 ? "amber" : "red"
+          : "red"
+      }));
+
+      const [bstSubject] = await db.select().from(subjects).where(eq(subjects.capsCode, "BUS"));
+      if (bstSubject) {
+        for (const r of results.sectionA) {
+          await storage.updateUserProgress(userId, bstSubject.id, r.correct);
+        }
+        for (const cs of results.sectionB) {
+          for (const sq of cs.subQuestions) {
+            await storage.updateUserProgress(userId, bstSubject.id, sq.earned > 0);
+          }
+        }
+        for (const eq2 of results.sectionC) {
+          await storage.updateUserProgress(userId, bstSubject.id, eq2.earned > 0);
+        }
+      }
+
+      if (percentage >= 80) {
+        await storage.awardBadge(userId, "high_score");
+      }
+      await storage.checkAndAwardBadges(userId);
+
+      const examResult = {
+        paperId,
+        paperName: paper.name,
+        totalScore,
+        totalMarks,
+        percentage,
+        masteryBand,
+        timeUsedSeconds: timeUsedSeconds || 0,
+        integrityLog: integrityLog || [],
+        results,
+        topicBreakdown,
+        thresholds: MASTERY_THRESHOLDS,
+        submittedAt: new Date().toISOString(),
+      };
+
+      res.json(examResult);
+    } catch (error) {
+      console.error("Error submitting BST exam:", error);
+      res.status(500).json({ error: "Failed to submit exam" });
+    }
+  });
+
+  app.get("/api/bst/topic-weights", isAuthenticated, async (req: any, res) => {
+    try {
+      res.json({ weights: BUSINESS_STUDIES_TOPIC_WEIGHTS, thresholds: MASTERY_THRESHOLDS, structure: EXAM_STRUCTURE });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch topic weights" });
+    }
+  });
+
+  // ============================================
+  // DAILY CHALLENGE ENDPOINTS
+  // ============================================
+
+  app.get("/api/daily-challenge", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const saOffset = 2;
+      const now = new Date();
+      const saTime = new Date(now.getTime() + saOffset * 60 * 60 * 1000);
+      const today = saTime.toISOString().split('T')[0];
+
+      const existing = await storage.getDailyChallenge(userId, today);
+      if (existing) {
+        const streak = await storage.getDailyChallengeStreak(userId);
+        const safeChallenge = stripAnswersFromChallenge(existing);
+        return res.json({ challenge: safeChallenge, streak });
+      }
+
+      const profile = await storage.getOnboardingResult(userId);
+      const allSubjects = await storage.getAllSubjects();
+      
+      let selectedSubjects = allSubjects;
+      if (profile?.selectedSubjects && (profile.selectedSubjects as number[]).length > 0) {
+        const selectedIds = profile.selectedSubjects as number[];
+        selectedSubjects = allSubjects.filter(s => selectedIds.includes(s.id));
+      }
+      if (selectedSubjects.length === 0) selectedSubjects = allSubjects;
+
+      const language = profile?.preferredLanguage === 'afrikaans' ? 'af' : 'en';
+
+      const challengeQuestions = generateDailyChallengeQuestions(selectedSubjects, language);
+
+      const challenge = await storage.createDailyChallenge({
+        userId,
+        challengeDate: today,
+        questionsJson: challengeQuestions,
+        totalQuestions: challengeQuestions.length,
+        streak: 0,
+      });
+
+      const streak = await storage.getDailyChallengeStreak(userId);
+      const safeChallenge = stripAnswersFromChallenge(challenge);
+      res.json({ challenge: safeChallenge, streak });
+    } catch (error) {
+      console.error("Error getting daily challenge:", error);
+      res.status(500).json({ error: "Failed to get daily challenge" });
+    }
+  });
+
+  app.post("/api/daily-challenge/:id/submit", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const challengeId = parseInt(req.params.id);
+      const { answers, timeSpentSeconds } = req.body;
+
+      if (!Array.isArray(answers)) {
+        return res.status(400).json({ error: "Answers must be an array" });
+      }
+
+      const saOffset = 2;
+      const now = new Date();
+      const saTime = new Date(now.getTime() + saOffset * 60 * 60 * 1000);
+      const today = saTime.toISOString().split('T')[0];
+      const yesterday = new Date(saTime.getTime() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+      let challenge = await storage.getDailyChallenge(userId, today);
+      if (!challenge || challenge.id !== challengeId) {
+        challenge = await storage.getDailyChallenge(userId, yesterday);
+        if (!challenge || challenge.id !== challengeId) {
+          return res.status(404).json({ error: "Challenge not found" });
+        }
+      }
+
+      if (challenge.completedAt) {
+        return res.status(400).json({ error: "Challenge already completed" });
+      }
+
+      const questions = challenge.questionsJson as any[];
+      
+      if (answers.length !== questions.length) {
+        return res.status(400).json({ error: `Expected ${questions.length} answers, got ${answers.length}` });
+      }
+
+      let score = 0;
+      const answerResults = answers.map((answer: number, index: number) => {
+        const correct = questions[index]?.correctIndex === answer;
+        if (correct) score++;
+        return { selected: answer, correct, correctIndex: questions[index]?.correctIndex };
+      });
+
+      const updated = await storage.completeDailyChallenge(
+        challengeId,
+        answerResults,
+        score,
+        typeof timeSpentSeconds === 'number' ? timeSpentSeconds : 0
+      );
+
+      await storage.updateUserStreak(userId);
+
+      for (let i = 0; i < answerResults.length; i++) {
+        const qSubjectId = questions[i]?.subjectId;
+        if (qSubjectId) {
+          try {
+            await storage.updateUserProgress(userId, qSubjectId, answerResults[i].correct);
+          } catch (_) { /* non-fatal */ }
+        }
+      }
+
+      // Award coins: 5 per correct answer
+      const coinsEarned = score * 5;
+      if (coinsEarned > 0) {
+        try {
+          await storage.awardCoins(
+            userId,
+            coinsEarned,
+            "daily_challenge",
+            `Daily challenge: ${score}/${questions.length} correct answers`,
+            String(challengeId)
+          );
+        } catch (_) { /* non-fatal */ }
+      }
+
+      // Send push notification on challenge completion
+      try {
+        const pushSubs = await storage.getPushSubscriptions(userId);
+        if (pushSubs.length > 0 && process.env.VAPID_PUBLIC_KEY) {
+          const percentage = Math.round((score / questions.length) * 100);
+          const emoji = percentage >= 80 ? "🏆" : percentage >= 60 ? "✅" : "💪";
+          const pushPayload = JSON.stringify({
+            title: `Daily Challenge Complete! ${emoji}`,
+            body: `You scored ${percentage}% — ${score}/${questions.length} correct.${coinsEarned > 0 ? ` +${coinsEarned} coins earned!` : ""}`,
+            url: "/dashboard",
+            tag: "daily-challenge",
+            icon: "/favicon.png",
+          });
+          await Promise.allSettled(
+            pushSubs.map(s =>
+              webpush.sendNotification(
+                { endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } },
+                pushPayload
+              )
+            )
+          );
+        }
+      } catch (pushErr) {
+        console.error("Daily challenge push notification error (non-fatal):", pushErr);
+      }
+
+      const streak = await storage.getDailyChallengeStreak(userId);
+
+      const fullQuestions = questions.map((q: any, i: number) => ({
+        ...q,
+        correctIndex: q.correctIndex,
+        explanation: q.explanation,
+        explanationAf: q.explanationAf,
+      }));
+
+      res.json({ 
+        challenge: { ...updated, questionsJson: fullQuestions }, 
+        score, 
+        total: questions.length, 
+        percentage: Math.round((score / questions.length) * 100),
+        streak
+      });
+    } catch (error) {
+      console.error("Error submitting daily challenge:", error);
+      res.status(500).json({ error: "Failed to submit daily challenge" });
+    }
+  });
+
+  app.get("/api/daily-challenge/history", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const history = await storage.getDailyChallengeHistory(userId, 30);
+      const streak = await storage.getDailyChallengeStreak(userId);
+      res.json({ history, streak });
+    } catch (error) {
+      console.error("Error getting challenge history:", error);
+      res.status(500).json({ error: "Failed to get challenge history" });
+    }
+  });
+
+  // ============================================
+  // COIN WALLET ROUTES
+  // ============================================
+
+  app.get("/api/user/coins", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const wallet = await storage.getUserCoins(userId);
+      res.json({ balance: wallet.balance, totalEarned: wallet.totalEarned, totalSpent: wallet.totalSpent });
+    } catch (error) {
+      console.error("Error getting user coins:", error);
+      res.status(500).json({ error: "Failed to get coin balance" });
+    }
+  });
+
+  app.get("/api/user/coins/transactions", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const transactions = await storage.getCoinTransactions(userId);
+      res.json(transactions);
+    } catch (error) {
+      console.error("Error getting coin transactions:", error);
+      res.status(500).json({ error: "Failed to get transactions" });
+    }
+  });
+
+  // ============================================
+  // THEME UNLOCK ROUTES
+  // ============================================
+
+  const THEME_CATALOG = [
+    { key: "blanc",        name: "Clean Girl",    nameAf: "Skoon Meisie",    coinCost: 0,  isLocked: false },
+    { key: "coastal",      name: "Beach Era",     nameAf: "Strand Era",      coinCost: 0,  isLocked: false },
+    { key: "dopamine",     name: "Dopamine",      nameAf: "Dopamien",        coinCost: 0,  isLocked: false },
+    { key: "vaporwave",    name: "Y2K",           nameAf: "Y2K",             coinCost: 0,  isLocked: false },
+    { key: "obsidian",     name: "After Dark",    nameAf: "Na Donker",       coinCost: 20, isLocked: true  },
+    { key: "dusk",         name: "Dusk",          nameAf: "Skemer",          coinCost: 30, isLocked: true  },
+    { key: "coquette",     name: "Coquette",      nameAf: "Sjarmant",        coinCost: 30, isLocked: true  },
+    { key: "lemonade",    name: "Lemonade",      nameAf: "Lemoensap",       coinCost: 30, isLocked: true  },
+    { key: "bubblegum",  name: "Bubblegum",     nameAf: "Borrelgom",       coinCost: 30, isLocked: true  },
+    { key: "golden-hour",  name: "Golden Hour",   nameAf: "Goue Uur",        coinCost: 50, isLocked: true  },
+    { key: "thunder",      name: "Thunder",       nameAf: "Donderstorm",     coinCost: 50, isLocked: true  },
+    { key: "glitter",    name: "Glitter",       nameAf: "Glinster",        coinCost: 50, isLocked: true  },
+    { key: "velvet",       name: "Sunset",        nameAf: "Sonsondergang",   coinCost: 65, isLocked: true  },
+    { key: "midnight",     name: "Midnight",      nameAf: "Middernag",       coinCost: 75, isLocked: true  },
+    { key: "holographic",  name: "Holographic",   nameAf: "Holografies",     coinCost: 75, isLocked: true  },
+  ];
+
+  app.get("/api/user/themes", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const unlocked = await storage.getUserUnlockedThemes(userId);
+      res.json({ unlocked, catalog: THEME_CATALOG });
+    } catch (error) {
+      console.error("Error getting user themes:", error);
+      res.status(500).json({ error: "Failed to get themes" });
+    }
+  });
+
+  app.post("/api/user/themes/unlock", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { themeName } = z.object({ themeName: z.string() }).parse(req.body);
+
+      const themeConfig = THEME_CATALOG.find((t) => t.key === themeName);
+      if (!themeConfig) return res.status(400).json({ error: "Unknown theme" });
+      if (!themeConfig.isLocked) return res.status(400).json({ error: "Theme is already free" });
+
+      const alreadyUnlocked = await storage.getUserUnlockedThemes(userId);
+      if (alreadyUnlocked.includes(themeName)) {
+        return res.status(400).json({ error: "Theme already unlocked" });
+      }
+
+      const wallet = await storage.getUserCoins(userId);
+      if (wallet.balance < themeConfig.coinCost) {
+        return res.status(400).json({ error: "Insufficient coins", balance: wallet.balance, required: themeConfig.coinCost });
+      }
+
+      await storage.unlockTheme(userId, themeName, themeConfig.coinCost);
+      const updatedWallet = await storage.spendCoins(
+        userId,
+        themeConfig.coinCost,
+        "spend_theme",
+        `Unlocked theme: ${themeConfig.name}`,
+        themeName
+      );
+
+      res.json({ success: true, wallet: { balance: updatedWallet.balance, totalSpent: updatedWallet.totalSpent } });
+    } catch (error: any) {
+      if (error?.name === "ZodError") return res.status(400).json({ error: "Invalid request body" });
+      console.error("Error unlocking theme:", error);
+      res.status(500).json({ error: "Failed to unlock theme" });
+    }
+  });
+
+  // ============================================
+  // HELP ESCALATION ROUTES
+  // ============================================
+
+  const ESCALATION_CATEGORIES_LEARNER = [
+    { key: "stuck-on-topic", label: "I'm stuck on a topic", labelAf: "Ek sukkel met 'n onderwerp" },
+    { key: "marks-dropping", label: "My marks are dropping", labelAf: "My punte daal" },
+    { key: "technical-issue", label: "Technical issue", labelAf: "Tegniese probleem" },
+    { key: "need-motivation", label: "I need motivation", labelAf: "Ek het motivering nodig" },
+    { key: "report-problem", label: "Report a problem", labelAf: "Rapporteer 'n probleem" },
+  ];
+  const ESCALATION_CATEGORIES_PARENT = [
+    { key: "child-not-studying", label: "My child isn't studying", labelAf: "My kind studeer nie" },
+    { key: "child-struggling", label: "My child is struggling", labelAf: "My kind sukkel" },
+    { key: "billing-issue", label: "Billing/subscription issue", labelAf: "Fakturering/intekening-probleem" },
+    { key: "cant-see-progress", label: "I can't see my child's progress", labelAf: "Ek kan nie my kind se vordering sien nie" },
+    { key: "request-callback", label: "Request a callback", labelAf: "Versoek 'n terugbel" },
+  ];
+
+  const ADMIN_WHATSAPP = "+27783451313";
+
+  async function sendWhatsAppNotification(escalation: { userName: string | null; userRole: string; category: string; subject: string | null; message: string }) {
+    try {
+      const text = `🚨 BrainTrack Help Request\n\nFrom: ${escalation.userName ?? "Unknown"} (${escalation.userRole})\nCategory: ${escalation.category}\n${escalation.subject ? `Subject: ${escalation.subject}\n` : ""}Message: ${escalation.message}\n\nReply in admin dashboard.`;
+      const waUrl = `https://wa.me/${ADMIN_WHATSAPP.replace("+", "")}?text=${encodeURIComponent(text)}`;
+      console.log(`[ESCALATION] WhatsApp notification: ${waUrl}`);
+
+      if (process.env.WHATSAPP_WEBHOOK_URL) {
+        await fetch(process.env.WHATSAPP_WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            phone: ADMIN_WHATSAPP,
+            message: text,
+            escalation,
+          }),
+        }).catch(err => console.error("[ESCALATION] Webhook failed:", err.message));
+      }
+    } catch (err) {
+      console.error("[ESCALATION] WhatsApp notification error:", err);
+    }
+  }
+
+  app.get("/api/help/categories", isAuthenticated, (req: any, res) => {
+    const role = req.user?.claims?.metadata?.role ?? "learner";
+    res.json({
+      categories: role === "parent" ? ESCALATION_CATEGORIES_PARENT : ESCALATION_CATEGORIES_LEARNER,
+    });
+  });
+
+  app.post("/api/help/escalate", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const role = req.user?.claims?.metadata?.role ?? "learner";
+      const profile = await storage.getUser(userId);
+      const { category, subject, message } = req.body;
+      if (!category || !message) return res.status(400).json({ error: "category and message are required" });
+
+      const { helpEscalations } = await import("@shared/schema");
+      const [escalation] = await db.insert(helpEscalations).values({
+        userId,
+        userName: profile ? `${profile.firstName ?? ""} ${profile.lastName ?? ""}`.trim() : null,
+        userRole: role,
+        category,
+        subject: subject ?? null,
+        message,
+        status: "open",
+      }).returning();
+
+      await sendWhatsAppNotification({
+        userName: escalation.userName,
+        userRole: role,
+        category,
+        subject,
+        message,
+      });
+
+      res.json({ success: true, escalation });
+    } catch (err: any) {
+      console.error("[ESCALATION] Create error:", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/help/my-tickets", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { helpEscalations } = await import("@shared/schema");
+      const tickets = await db.select().from(helpEscalations)
+        .where(eq(helpEscalations.userId, userId))
+        .orderBy(desc(helpEscalations.createdAt));
+      res.json({ tickets });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/admin/escalations", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    try {
+      const { helpEscalations } = await import("@shared/schema");
+      const statusFilter = req.query.status;
+      const query = statusFilter
+        ? db.select().from(helpEscalations).where(eq(helpEscalations.status, statusFilter as string)).orderBy(desc(helpEscalations.createdAt))
+        : db.select().from(helpEscalations).orderBy(desc(helpEscalations.createdAt));
+      const tickets = await query;
+      res.json({ tickets, total: tickets.length, open: tickets.filter(t => t.status === "open").length });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.patch("/api/admin/escalations/:id", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    try {
+      const id = Number(req.params.id);
+      const adminId = req.user.claims.sub;
+      const { status, adminNote } = req.body;
+      const { helpEscalations } = await import("@shared/schema");
+      const updates: any = {};
+      if (status) updates.status = status;
+      if (adminNote !== undefined) updates.adminNote = adminNote;
+      if (status === "resolved") {
+        updates.resolvedAt = new Date();
+        updates.resolvedBy = adminId;
+      }
+      const [updated] = await db.update(helpEscalations).set(updates).where(eq(helpEscalations.id, id)).returning();
+      if (!updated) return res.status(404).json({ error: "Ticket not found" });
+      res.json({ ticket: updated });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // ============================================
+  // PUSH NOTIFICATION ROUTES
+  // ============================================
+
+  // Setup VAPID once (idempotent)
+  if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+    webpush.setVapidDetails(
+      process.env.VAPID_SUBJECT || "mailto:Brain-support@kthtech.co.za",
+      process.env.VAPID_PUBLIC_KEY,
+      process.env.VAPID_PRIVATE_KEY
+    );
+  }
+
+  // Return the public VAPID key so the frontend can subscribe
+  app.get("/api/push/vapid-public-key", (req, res) => {
+    const key = process.env.VAPID_PUBLIC_KEY;
+    if (!key) return res.status(503).json({ error: "Push notifications not configured" });
+    res.json({ publicKey: key });
+  });
+
+  // Subscribe: save push subscription for this user
+  app.post("/api/push/subscribe", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { endpoint, keys } = req.body;
+      if (!endpoint || !keys?.p256dh || !keys?.auth) {
+        return res.status(400).json({ error: "Invalid subscription object" });
+      }
+      const sub = await storage.savePushSubscription(userId, endpoint, keys.p256dh, keys.auth);
+      res.json({ success: true, id: sub.id });
+    } catch (error) {
+      console.error("Push subscribe error:", error);
+      res.status(500).json({ error: "Failed to save subscription" });
+    }
+  });
+
+  // Unsubscribe: remove push subscription
+  app.post("/api/push/unsubscribe", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { endpoint } = req.body;
+      if (!endpoint) return res.status(400).json({ error: "endpoint required" });
+      await storage.deletePushSubscription(userId, endpoint);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Push unsubscribe error:", error);
+      res.status(500).json({ error: "Failed to remove subscription" });
+    }
+  });
+
+  // Check if this user has an active push subscription
+  app.get("/api/push/status", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const subs = await storage.getPushSubscriptions(userId);
+      res.json({ subscribed: subs.length > 0 });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to get push status" });
+    }
+  });
+
+  // Send a test notification to the current user
+  app.post("/api/push/test", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const subs = await storage.getPushSubscriptions(userId);
+      if (subs.length === 0) return res.status(404).json({ error: "No push subscription found" });
+
+      const payload = JSON.stringify({
+        title: "BrainTrack 🧠",
+        body: "Push notifications are working! You're all set.",
+        url: "/dashboard",
+        tag: "test-notification",
+      });
+
+      const results = await Promise.allSettled(
+        subs.map(s =>
+          webpush.sendNotification({ endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } }, payload)
+        )
+      );
+
+      const sent = results.filter(r => r.status === "fulfilled").length;
+      res.json({ success: true, sent });
+    } catch (error) {
+      console.error("Push test error:", error);
+      res.status(500).json({ error: "Failed to send test notification" });
+    }
+  });
+
+  return httpServer;
+}
+
+function stripAnswersFromChallenge(challenge: any) {
+  if (challenge.completedAt) return challenge;
+  
+  const questions = (challenge.questionsJson as any[]).map((q: any) => ({
+    id: q.id,
+    question: q.question,
+    questionAf: q.questionAf,
+    options: q.options,
+    optionsAf: q.optionsAf,
+    subject: q.subject,
+    subjectAf: q.subjectAf,
+    topic: q.topic,
+    difficulty: q.difficulty,
+  }));
+  
+  return { ...challenge, questionsJson: questions };
+}
+
+function generateDailyChallengeQuestions(subjects: any[], language: string) {
+  const subjectPool = [...subjects];
+  const questions: any[] = [];
+  const totalQuestions = 5;
+
+  for (let i = 0; i < totalQuestions; i++) {
+    const subject = subjectPool[i % subjectPool.length];
+    const isAf = language === 'af';
+    
+    const questionTemplates = getQuestionTemplatesForSubject(subject, isAf);
+    const template = questionTemplates[Math.floor(Math.random() * questionTemplates.length)];
+    
+    questions.push({
+      id: i + 1,
+      question: template.question,
+      questionAf: template.questionAf,
+      options: template.options,
+      optionsAf: template.optionsAf,
+      correctIndex: template.correctIndex,
+      subject: subject.name,
+      subjectAf: subject.nameAfrikaans,

@@ -1,0 +1,250 @@
+You are enhancing an existing education application called BrainTrack.
+
+THIS PROMPT IS AUTHORITATIVE AND MUST BE FOLLOWED EXACTLY.
+
+========================
+CRITICAL NON-NEGOTIABLE CONSTRAINTS
+========================
+- DO NOT change branding, colours, wording, layout, screens, UX flows, or look & feel.
+- DO NOT add, remove, or modify any UI components.
+- DO NOT add new buttons, tabs, pages, toggles, or learner controls.
+- ALL enhancements must be BACKEND, DATA, LOGIC, OR CONTENT ONLY.
+- The existing frontend must continue to function without any changes.
+
+========================
+PURPOSE
+========================
+Upgrade BrainTrack into a fully CAPS-intelligent Smart Tutor and NSC exam-preparation platform for South African Grade 12 learners.
+
+BrainTrack must:
+- Tutor ALL Grade 12 CAPS topics
+- Adapt explanations based on learner ability
+- Use predictive analytics informed by 10 years of NSC exams (2015–2025)
+- Generate simulated NSC-style exams and memoranda
+- Remain 100% legally compliant and DBE-safe
+
+========================
+LEGAL & COMPLIANCE RULES
+========================
+- DO NOT copy DBE examination questions.
+- DO NOT copy DBE memoranda wording.
+- DO NOT paraphrase DBE questions or memos.
+- DO NOT claim DBE endorsement.
+- ALL questions and memoranda must be ORIGINAL and SIMULATED.
+- DBE content may ONLY be referenced via EXTERNAL LINKS.
+
+OFFICIAL DBE REFERENCE (LINK ONLY):
+https://www.education.gov.za/Curriculum/NationalSeniorCertificate(NSC)Examinations/NSCPastExaminationpapers.aspx
+
+========================
+CAPS TOPIC INTELLIGENCE ENGINE
+========================
+Implement a CAPS Topic Engine that stores internally:
+- ALL Grade 12 CAPS subjects
+- ALL CAPS topics and sub-topics per subject
+- CAPS weighting (High / Medium / Low)
+- Paper mapping (Paper 1 / Paper 2 where applicable)
+- Cognitive levels:
+  - Knowledge & Recall
+  - Application
+  - Higher-order reasoning
+
+This intelligence is BACKEND ONLY and must NOT affect the UI.
+
+========================
+LEARNER MASTERY MODEL
+========================
+For each learner × subject × CAPS topic, calculate a mastery_score (0–100) using:
+- Accuracy
+- Marks achieved vs marks available
+- Time efficiency vs expected exam time
+- Error type distribution:
+  - Concept errors
+  - Method/procedure errors
+  - Language/structure errors
+
+Assign mastery bands:
+- RED   < 60   → Teach + Remediate
+- AMBER 60–75 → Guide + Practice
+- GREEN > 75  → Challenge + Exam Strategy
+
+========================
+SMART TUTOR — ADAPTIVE EXPLANATIONS
+========================
+The Smart Tutor must adapt HOW it explains content based on mastery band.
+
+RED:
+- Step-by-step explanations
+- CAPS definitions
+- Explicit mark allocation
+- Worked examples
+- Common learner traps
+
+AMBER:
+- Assume basic understanding
+- Focus on correct method
+- Highlight common exam mistakes
+- Fewer steps shown
+
+GREEN:
+- Minimal explanation
+- Exam technique and speed
+- Mark-winning structure
+- Higher-order prompts
+
+IMPORTANT:
+- The UI must remain unchanged.
+- Adaptive explanations must appear in the SAME explanation area the app already uses.
+
+========================
+UNKNOWN FRONTEND PAYLOAD SAFETY
+========================
+Because the frontend payload structure is unknown, return the adaptive explanation text in ALL of the following keys simultaneously:
+
+- explanation
+- feedback
+- message
+- memo_hint
+
+All four keys must contain the SAME adaptive explanation text.
+
+You may also include additional metadata fields that the UI will safely ignore:
+- explanation_level
+- marking_logic[]
+- common_traps[]
+- next_action
+
+========================
+PREDICTIVE ANALYTICS (10-YEAR MODEL)
+========================
+Incorporate predictive analytics informed by NSC exam patterns from 2015–2025.
+
+For each CAPS topic, store internally:
+- 10-year recurrence frequency band (Very High / High / Medium / Low / Rare)
+- Likelihood score (0–100)
+- Typical paper placement (Paper 1 / Paper 2)
+- Cognitive demand trend
+
+This data is used ONLY for pattern analysis, never for copying content.
+
+========================
+TOPIC PRIORITY FORMULA (BACKEND ONLY)
+========================
+priority =
+  (CAPS_weight * 0.45)
++ (ten_year_frequency * 0.35)
++ ((1 - mastery_ratio) * 0.20)
+
+Multiply priority by exam proximity factor:
+- > 90 days → 1.00
+- 60–90 days → 1.15
+- 30–60 days → 1.30
+- < 30 days → 1.50
+
+This priority influences:
+- Question sequencing
+- Explanation depth
+- Revision focus
+- Simulated exam construction
+
+========================
+SIMULATED EXAM ENGINE (MANDATORY)
+========================
+For EACH Grade 12 CAPS subject:
+
+- Generate 4 simulated examinations
+- Use Paper 1 and Paper 2 where applicable
+- Each exam must include:
+  1. Question Paper (NSC-style structure, ORIGINAL wording)
+  2. Full Memorandum (NSC-style marking logic, ORIGINAL wording)
+  3. CAPS Topic Coverage Map as the FINAL PAGE
+
+Exams must:
+- Match NSC timing and mark weighting
+- Use CAPS command verbs
+- Include application and higher-order questions
+- Be entirely original and simulated
+
+========================
+CAPS TOPIC COVERAGE MAP (FINAL PAGE)
+========================
+At the end of EVERY simulated exam and memo, include a CAPS Topic Coverage Map listing:
+- CAPS topic
+- Question numbers assessing the topic
+- Total marks per topic
+- Cognitive split:
+  - Knowledge & Recall
+  - Application
+  - Higher-order reasoning
+
+========================
+MEMORANDUM RULES
+========================
+Memoranda must:
+- Allocate marks per step
+- Accept alternative correct responses
+- Include examiner-style notes
+- Highlight common learner errors
+- Use GENERIC NSC marking language only
+
+Do NOT copy DBE memo wording.
+
+========================
+OUTPUT FORMATS
+========================
+Generate all simulated exams as:
+- PDF (print-ready)
+- JSON (for BrainTrack ingestion)
+
+JSON must include:
+- subject
+- paper
+- exam_number
+- questions
+- memorandum
+- caps_coverage_map
+- cognitive_split
+- official_dbe_reference_link
+
+========================
+COMPLIANCE DISCLAIMER (AUTO-INCLUDE)
+========================
+Include this in EVERY PDF and JSON output:
+
+"This is a simulated examination developed in alignment with the CAPS curriculum and NSC assessment standards.
+It is not an official DBE examination."
+
+========================
+PHASED EXECUTION (QUALITY CONTROL)
+========================
+Phase 1:
+- Mathematics
+- Physical Sciences
+- Life Sciences
+
+Phase 2:
+- Accounting
+- Business Studies
+- Economics
+
+Phase 3:
+- Geography
+- History
+- Mathematical Literacy
+- Languages (HL & FAL)
+- CAT
+- IT
+- Tourism
+- Religion Studies
+- Agricultural Sciences
+
+Ensure identical structure, difficulty, and logic across all phases.
+
+========================
+FINAL GUARANTEE
+========================
+All enhancements must:
+- Improve intelligence, not interface
+- Preserve BrainTrack’s branding and look & feel 100%
+- Be invisible to the UI
+- Be legally compliant, school-safe, and audit-ready

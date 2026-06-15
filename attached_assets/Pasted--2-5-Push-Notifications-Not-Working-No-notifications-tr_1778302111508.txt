@@ -1,0 +1,150 @@
+ 2.5 Push Notifications Not Working
+•	No notifications triggered or delivered 
+Required Fix:
+•	Fix production config (Firebase/APNs) 
+•	Validate triggers: 
+o	Parent consent 
+o	Payment success 
+o	Trial lifecycle 
+________________________________________
+📊 2.6 Study Plan – Not Functional
+•	Buttons not clickable 
+•	Core feature unusable 
+Required Fix:
+•	Fix click handlers + routing 
+•	Remove overlay blocking interactions 
+•	Ensure: 
+o	Tasks open lessons/quizzes/exams 
+________________________________________
+🧠 3. Core Product Misalignment (High Priority)
+❌ 3.1 AI Quiz Generator (Incorrect Exposure)
+•	Learners generating content 
+•	Errors visible 
+Fix:
+•	Remove from learner UI 
+•	Replace with: 
+o	Pre-seeded quizzes 
+o	CAPS-aligned structure 
+________________________________________
+📘 3.2 Missing Core Learning Content
+Missing:
+•	Notes 
+•	Audio 
+•	Literature (Afrikaans + English) 
+Required per topic:
+•	Notes 
+•	Audio (2–5 min) 
+•	Flashcards 
+•	Quiz 
+•	Exam questions 
+________________________________________
+📅 3.3 Incomplete Content Coverage
+•	DBE papers (2015–2025) not fully loaded 
+Fix:
+•	Load ALL: 
+o	Papers 
+o	Memos 
+o	Marking logic 
+o	Literature 
+________________________________________
+🎯 4. Learning Engine (Must Be Standardised)
+📊 Definitions
+•	Progress: Completion-based 
+•	Mastery: Performance-based 
+•	Weak Areas: <60% 
+________________________________________
+📝 Exam Structure
+Feature	Mini Mock	Exam Mode
+Length	Short	Full paper
+Purpose	Practice	Simulation
+Timing	Flexible	Strict
+________________________________________
+🧠 Missing Critical Layer
+•	Examiner marking guidance 
+•	Memo interpretation 
+👉 Must include:
+•	Mark allocation 
+•	Keywords 
+•	Partial marking logic 
+•	Feedback: why marks were lost 
+________________________________________
+⚙️ 5. Study Plan (Core Differentiator)
+❗ Current Issue:
+•	Generic 
+•	Not timetable-driven 
+✅ Required Behaviour:
+•	Use: 
+o	Prelim timetable (uploaded) 
+o	DBE final timetable 
+Logic:
+•	Prioritise: 
+o	Closest exam 
+o	Weakest topics 
+Output:
+👉 “Your next paper is X in Y days — study this today”
+________________________________________
+🎮 6. Subscription, Trial & Referral System
+💳 Subscription
+•	R169/month 
+•	Parent-paid model 
+________________________________________
+⏱️ Trial
+•	14-day free trial 
+•	Full access 
+•	Auto-convert 
+________________________________________
+🔗 Referral Logic (Corrected)
+•	2 paid conversions → 1 free month 
+•	Not based on signups 
+________________________________________
+🎨 7. UI/UX Direction (STRICT RULE)
+🚫 Do NOT:
+•	Redesign 
+•	Change look & feel 
+✅ Do:
+•	Align UI across all screens 
+Fix:
+•	Broken grid layout 
+•	Inconsistent spacing 
+•	Random neon elements 
+•	Floating links 
+________________________________________
+🧩 Key Fixes
+•	Remove: 
+o	Random neon line 
+o	“Official Sources” from classroom 
+•	Standardise: 
+o	Buttons 
+o	Cards 
+o	Spacing 
+•	Fix: 
+o	Study Plan layout (must be primary) 
+________________________________________
+📩 8. Communication & Branding Issues
+Email Issues:
+•	Coming from Replit instead of BrainTrack 
+Fix:
+•	Brand all emails as BrainTrack 
+•	Personalise: 
+o	“Dear Learner [Name]” 
+o	“Dear Parent [Name]” 
+________________________________________
+Onboarding Flow Issues:
+•	Missing: 
+o	Learner vs Parent entry 
+o	Parent consent flow 
+________________________________________
+👨‍👩‍👧 9. Parent Portal Issue
+•	Not visible in production 
+Fix:
+•	Restore access 
+•	Ensure: 
+o	Progress tracking 
+o	Subscription visibility 
+________________________________________
+🔊 10. Missing Features (Required for Value)
+•	Audio learning (per topic) 
+•	Learner voice recording 
+•	Rizz adaptive tutor 
+•	Avatars + themes (XP-based) 
+•	Holographic mastery celebration 

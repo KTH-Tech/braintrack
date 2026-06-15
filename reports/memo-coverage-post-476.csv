@@ -1,0 +1,10 @@
+subject,year,released_at_stamped,tuples_total,tuples_released,tuples_not_released,questions_total,questions_with_memo,memo_coverage_pct_after,above_98pct_threshold,status
+"Afrikaans Home Language",2020,yes,3,3,0,162,160,98.8,yes,ABOVE_THRESHOLD
+"Engineering Graphics and Design",2022,yes,4,4,0,4,4,100.0,yes,ABOVE_THRESHOLD
+"isiXhosa Second Additional Language",2022,yes,2,2,0,98,97,99.0,yes,ABOVE_THRESHOLD
+"Technical Mathematics",2020,yes,4,4,0,4,4,100.0,yes,ABOVE_THRESHOLD
+"Technical Mathematics",2021,yes,4,4,0,4,4,100.0,yes,ABOVE_THRESHOLD
+"Technical Mathematics",2022,yes,4,4,0,4,4,100.0,yes,ABOVE_THRESHOLD
+"Technical Mathematics",2023,yes,2,2,0,2,2,100.0,yes,ABOVE_THRESHOLD
+"Technical Mathematics",2024,yes,4,4,0,4,4,100.0,yes,ABOVE_THRESHOLD
+"Technical Mathematics",2025,yes,2,2,0,2,2,100.0,yes,ABOVE_THRESHOLD

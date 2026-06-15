@@ -1,0 +1,174 @@
+You are building a content ingestion and transformation pipeline for a Grade 12 Business Studies CAPS Exam Engine.
+
+GOAL:
+Convert uploaded DBE Business Studies PDF papers (2016–2025) into structured, original, AutoMark-ready JSON content WITHOUT reproducing copyrighted text verbatim.
+
+IMPORTANT RULES:
+- Do NOT copy questions word-for-word.
+- Extract concepts, structure, topic mapping, mark allocation.
+- Rewrite questions in original wording while preserving CAPS alignment and assessment intent.
+- Maintain DBE structure: Section A (MCQ), Section B (Case), Section C (Essay).
+- Store references separately (do not embed DBE text inside questions).
+
+---
+
+SYSTEM ARCHITECTURE
+
+1) FILE UPLOAD HANDLER
+- Accept PDF uploads
+- Extract raw text
+- Store original file securely (read-only)
+- Do not expose raw copyrighted content in frontend
+
+2) TEXT PARSER MODULE
+For each uploaded paper:
+- Detect:
+  - Section headings
+  - Question numbers
+  - Mark allocations
+  - Topic cues (legislation, TQM, PESTLE, etc.)
+- Tag content as:
+  {
+    year,
+    paper,
+    section,
+    question_type,
+    topic,
+    marks,
+    raw_text_reference_id
+  }
+
+3) TOPIC CLASSIFICATION ENGINE
+Map extracted questions to CAPS topics:
+- Legislation
+- Leadership & Management
+- Business Environments
+- Quality Management
+- Business Strategies
+- HR & SETAs
+- Finance & Insurance
+- Ethics/CSR/Governance
+
+Use keyword classification + rule-based mapping.
+
+4) QUESTION TRANSFORMATION ENGINE
+
+For each extracted question:
+- Identify the core concept
+- Identify skill tested (define, explain, analyse, evaluate)
+- Generate a new original question that tests same concept
+- Preserve mark weighting
+- Preserve difficulty level
+- Preserve assessment objective
+
+Example transformation:
+
+Input:
+“Explain TWO advantages of TQM.”
+
+Output:
+“Discuss two benefits that implementing Total Quality Management can bring to a business.”
+
+Never replicate original wording.
+
+---
+
+5) AUTORMARK JSON OUTPUT FORMAT
+
+Each transformed question must output:
+
+{
+  "id": "BST_2020_Q2_01",
+  "source_year": 2020,
+  "section": "B",
+  "topic": "Quality Management",
+  "marks": 8,
+  "difficulty": "medium",
+  "question_type": "short_answer",
+  "question": "...rewritten...",
+  "automark": {
+    "type": "keyword_rubric",
+    "keywords": ["customer satisfaction", "reduced waste", "continuous improvement"],
+    "partial_credit": true
+  },
+  "caps_alignment": {
+    "strand": "Quality of performance",
+    "assessment_objective": "Explain"
+  }
+}
+
+---
+
+6) TREND ANALYSIS MODULE (10-Year Logic)
+
+After ingestion:
+- Calculate topic frequency
+- Calculate average marks per topic
+- Calculate years since last heavy appearance
+- Output:
+
+{
+  "topic": "Legislation",
+  "frequency_score": 0.9,
+  "average_marks": 28,
+  "rotation_factor": 0.8,
+  "probability_weight": 0.92
+}
+
+Store this in:
+topic_weights.json
+
+---
+
+7) CONTENT SAFETY LAYER
+
+Ensure:
+- No full DBE passages appear in output
+- Case studies are paraphrased
+- Essay prompts are restructured
+- All content is original wording
+
+---
+
+8) ADMIN DASHBOARD
+
+Create:
+- Upload interface
+- Parsed preview (internal only)
+- Topic distribution heatmap
+- Regenerate rewritten content button
+- Export to:
+  - JSON
+  - SQLite
+  - API endpoint
+
+---
+
+9) LEGAL FOOTER HANDLING
+
+For each generated exam:
+Append ONLY at the end:
+
+“This mock examination is CAPS-aligned and informed by analysis of DBE NSC Business Studies examination papers (2016–2025). Official sources:
+https://www.education.gov.za/Curriculum/CAPS.aspx
+https://www.education.gov.za/Examinations/PastExamPapers.aspx”
+
+Do not embed references inside questions.
+
+---
+
+TECH STACK
+Use:
+- Node.js
+- PDF parsing library (pdf-parse)
+- SQLite database
+- Express backend
+- React frontend
+
+Include:
+- Seed script
+- Database schema
+- Example ingestion of one sample paper
+- README
+
+Now build the full ingestion pipeline.

@@ -1,0 +1,622 @@
+Paste this as your **single end-to-end builder prompt**:
+
+```text
+BrainTrack™ end-to-end platform enhancement prompt
+
+Critical protection rule
+
+Scan the current BrainTrack build first and preserve all existing working functionality and logic.
+
+Do not break, replace, overwrite, regenerate, or redesign the underlying logic of any current working:
+- pages
+- routes
+- components
+- APIs
+- authentication flows
+- database models
+- onboarding flows
+- payment flows
+- dashboards
+- papers functionality
+- reporting logic
+- admin logic
+- school and partner attribution logic
+
+Only build what does not already exist.
+If something already exists and is working, do not rebuild it.
+Enhance it only where applicable by improving UI, UX, layout, styling, clarity, and safe non-breaking extensions.
+
+Where existing functionality is present, extend rather than replace.
+
+Non-negotiable papers rule
+
+Do not remove, weaken, replace, or break the current DBE/CAPS papers role or current papers functionality.
+Preserve the full existing papers capability exactly as it works today.
+
+The current admin papers functionality must remain intact and operational, including all existing working logic related to:
+- uploading papers
+- organising papers by subject and year
+- editing papers
+- deleting papers
+- paper metadata
+- topic tagging
+- question tagging where already supported
+- historical paper access
+- use of papers inside practice and learning flows
+
+The 10-year exam paper dataset must remain a core platform asset and continue to drive study intelligence.
+
+Brand structure rule
+
+BrainTrack is the platform.
+Rizz is the bot inside the platform.
+KTH Tech is the parent company reference only.
+
+Do not use all caps for Rizz.
+Always display it as: Rizz
+
+Use BrainTrack as the main visible product brand across all learner, parent, school, partner, admin, and public pages.
+Use Rizz only in bot-related experiences such as:
+- Ask Rizz
+- Rizz insight
+- Rizz recommendation
+- Chat with Rizz
+- Rizz explains
+- Rizz revision boost
+- Rizz note assist
+
+Remove all random or misplaced KTH logos across the platform.
+Do not place KTH logos randomly in page bodies, dashboards, cards, reports, floating elements, or headers.
+Keep KTH Tech only in controlled locations such as:
+- footer
+- copyright line
+- legal pages
+- formal ownership references
+- powered by line only where explicitly needed
+
+Platform purpose
+
+BrainTrack is an AI-assisted digital classroom and exam intelligence platform for learners, parents, schools, partners, and admins.
+The platform must help learners know:
+- what to study
+- when to study
+- what matters most
+- how they are performing
+- how ready they are for exams
+
+The platform uses 10 years of real DBE/CAPS exam data and learner activity to drive:
+- topic importance
+- study priorities
+- practice recommendations
+- learning estimates
+- exam readiness
+- subject support
+- school and partner analytics
+
+Terminology rule
+
+Do not use the word predict or prediction anywhere in the product.
+Use terms such as:
+- Exam readiness
+- Performance outlook
+- Learning estimate
+- Study insight
+- Importance level
+- Revision priority
+- Estimated exam range
+
+Unified design system
+
+Delete all current themes and theme-switching logic.
+Use one unified BrainTrack design system only.
+
+Visual direction:
+- pastel rainbow glassmorphism interface
+- animated pastel rainbow background across all pages
+- floating translucent glass panels
+- soft blur and light refraction
+- no grey, dull, or dark enterprise theme
+- premium, calm, modern classroom feel
+
+Use these colour families:
+- mint
+- lavender
+- sky blue
+- peach
+- pale yellow
+- soft pink
+
+Typography:
+- headings: Sora
+- body: Inter
+
+Buttons, cards, modals, dashboards, tables, schedule cards, and reports must all follow the same glass design language.
+
+Navigation standard
+
+Every page in the platform must include:
+- back button
+- home button
+- BrainTrack logo
+- dropdown menu or role navigation where appropriate
+- profile icon where applicable
+
+These must exist on:
+- learner pages
+- parent pages
+- school admin pages
+- partner admin pages
+- system admin pages
+- onboarding pages
+- reports and analytics pages
+- settings pages
+- products and public pages
+
+Back button returns to previous path, or the correct role dashboard if no previous path exists.
+Home button always routes to the correct dashboard by role:
+- learner → classroom home
+- parent → parent dashboard
+- school admin → school dashboard
+- partner admin → partner dashboard
+- system admin → admin control panel
+
+Learner header rule
+
+The learner header must be minimal.
+Do not show text navigation in the learner header.
+Use:
+- BrainTrack logo
+- dropdown menu icon
+- back button
+- home button
+- learner profile icon
+
+Learner dropdown menu items:
+- Dashboard
+- Subjects
+- Practice
+- Rewards
+- Products
+- Settings
+- Logout
+
+Remove the Progress tab completely.
+All progress and performance intelligence must live inside the Dashboard.
+
+Public experience
+
+Landing page must have only one call to action:
+- Start free trial
+
+Do not use multiple competing CTAs.
+
+Landing page sections should explain:
+- BrainTrack value
+- how the platform works
+- AI-assisted learning support
+- built using 10 years of real exam data
+- parent and school value
+- final repeat of the same single CTA
+
+Create one strong Products page with glass panels for:
+- BrainTrack core
+- Rizz bot
+- Smart notes
+- Rewards
+- Parent insights
+- School command center
+
+Include one CTA at the bottom:
+- Start free trial
+
+Subscription model
+
+There is only one main subscription product:
+- Brain Boost
+
+Brain Boost pricing:
+- R169 per month
+- 14-day free trial
+- card details required before trial begins when parent activates
+
+Do not create alternative main plans unless specifically configured later.
+
+Onboarding model
+
+Support two onboarding paths.
+
+1. Parent starts signup
+Parent enters:
+- parent name
+- email
+- mobile number
+
+Then adds learner details:
+- learner name
+- grade
+- school
+- subjects
+
+Before learner access is activated, parent must enter card details for Brain Boost.
+After payment details are captured, send the learner an SMS activation link.
+The learner clicks the SMS link and enters the classroom fully activated.
+
+2. Learner starts signup
+Learner enters:
+- name
+- grade
+- school
+- subjects
+- parent mobile number
+
+The learner may enter and use the platform immediately.
+Send a parent approval SMS automatically.
+The learner may use the platform for 3 days.
+If parent approval and card capture are not completed by day 3, pause learning access until the parent approves and payment details are entered.
+Once parent approval and payment are completed, send the learner an SMS activation / unlock link and restore full access.
+
+Parent approval rule
+
+All subscriptions must be authorised and paid for by a parent or guardian.
+Learners cannot independently activate paid subscription access.
+
+Parent approval page must require confirmation:
+“I confirm I am the parent or legal guardian responsible for this learner.”
+
+Then capture card details for Brain Boost.
+
+Partner and DBE link rule
+
+If a user enters through a DBE or partner link:
+- register the partner source automatically
+- store partner ID
+- store school ID if available
+- store referral source
+- store timestamp
+
+This attribution must feed reporting without breaking current logic.
+
+Learner classroom home
+
+The learner home page must behave like a digital classroom, not a marketing page.
+
+Core classroom panels:
+- Daily brain boost mission
+- Continue learning
+- Subject performance
+- Rewards and streak
+- Today’s study schedule
+- Rizz study insight
+
+The classroom must immediately help the learner know what to do next.
+
+Daily brain boost mission
+
+Create a daily study mission for each learner based on:
+- topic importance from 10-year exam data
+- learner performance
+- weak areas
+- recent activity
+- schedule context
+
+Mission structure may include:
+- short practice questions
+- quick revision card
+- one exam-style question
+- short Rizz guidance
+
+Completing the daily mission must update:
+- study streak
+- XP
+- coins
+- learning score
+- dashboard progress
+- school and partner stats where relevant
+
+Dynamic study schedule
+
+Create a dynamic study schedule system for learners.
+Generate a weekly and daily schedule based on:
+- learner availability
+- preferred study time
+- selected subjects
+- current performance
+- topic importance
+- upcoming exams
+- missed sessions
+- mastery gaps
+
+The schedule must auto-adjust when:
+- sessions are missed
+- mastery drops
+- high-importance topics need attention
+- exams approach
+
+The schedule must appear:
+- in the learner classroom
+- in the parent dashboard
+
+Dashboard rule
+
+All progress must be consolidated into the learner Dashboard.
+Do not create a separate progress page.
+
+Learner dashboard must contain:
+- learner welcome
+- learning score
+- exam readiness
+- estimated exam range
+- study streak
+- subject performance
+- recent activity
+- study schedule completion
+- rewards summary
+- Rizz insight
+- focus next recommendation
+
+Unified progress engine
+
+All learner actions must update one unified central performance model.
+No activity may calculate progress separately in isolation.
+
+Activities that must update the central model:
+- practice questions
+- past paper questions
+- revision cards
+- daily brain boost missions
+- topic reviews
+- quizzes
+- generated note interactions
+- scheduled study sessions
+- exam simulation actions
+
+This unified progress model must drive:
+- learner dashboard metrics
+- subject performance
+- learning score
+- exam readiness
+- estimated exam range
+- study streak
+- mastery levels
+- rewards
+- parent dashboard
+- school analytics
+- partner analytics
+
+Stats propagation rule
+
+All learner activity must update end-to-end reporting.
+Whenever a learner completes activity, automatically update:
+- learner metrics
+- subject metrics
+- cohort or class metrics where applicable
+- school metrics
+- partner metrics
+
+School and partner dashboards must use the same unified data model, not separate disconnected calculations.
+
+Exam intelligence model
+
+Use the 10-year DBE/CAPS paper dataset to drive exam intelligence.
+Where relevant, show:
+- appeared in X of the last 10 exams
+- importance level
+- revision priority
+- learner mastery
+
+Use this dataset in:
+- study guidance
+- smart notes
+- daily missions
+- practice prioritisation
+- exam simulation
+- dashboard insights
+
+Practice engine
+
+The practice experience must support:
+- topic drills
+- past exam questions
+- exam-style practice
+- instant feedback
+- worked explanations
+- answer guidance from Rizz
+- prioritisation based on topic importance and learner weakness
+
+Smart notes engine
+
+Learners must be able to:
+- select subject
+- select topic
+- generate smart notes
+
+Notes must adapt to the learning style captured during onboarding.
+Learning styles include:
+- Visual
+- Auditory
+- Reading/Writing
+- Practice-based
+
+Adapt outputs as follows:
+- Visual → diagrams, visual summaries, concept maps
+- Auditory → audio explanations and spoken recap
+- Reading/Writing → structured notes, summaries, key definitions
+- Practice-based → worked examples, drills, practice questions
+
+All notes must include a BrainTrack watermark in the same theme.
+Use a subtle footer or watermark treatment such as:
+- BrainTrack
+- Smarter Learning. Real Results.
+- Powered by Rizz
+- © 2026 KTH Tech
+
+Voice feature
+
+Allow learners to:
+- upload a voice sample
+- record a voice sample
+
+Audio explanations may optionally use the learner’s own voice.
+
+Settings page
+
+The learner settings page must be editable, not read-only.
+
+Include editable sections for:
+- profile
+- learning preferences
+- subjects
+- notifications
+- security
+- account
+- voice upload
+
+Learning preferences may be captured during onboarding but must remain viewable and editable.
+
+Rewards and coin system
+
+Create a reward system with:
+- study streak
+- XP
+- achievements
+- coins
+
+Coins can unlock:
+- revision boosts
+- quick exam drills
+- bonus practice sets
+- streak saver
+- cosmetic profile or classroom customisations
+- premium note pack generation
+- temporary Rizz study boosts
+
+Coins must not unlock core analytics or core readiness insights.
+
+Parent dashboard
+
+Create a parent dashboard that shows clear, easy-to-understand learner visibility.
+
+Parent dashboard must display:
+- learner overview
+- study activity
+- subject performance
+- weekly study schedule
+- exam readiness
+- estimated exam range
+- engagement metrics
+- completed vs missed sessions
+- billing and subscription status
+
+Parents must be able to manage:
+- billing
+- subscription
+- multiple learners if applicable
+
+School admin dashboard
+
+Create a dedicated school admin dashboard for authorised school staff.
+
+School dashboard must include:
+- school overview
+- total learners
+- active learners
+- average learning score
+- average exam readiness
+- most studied subjects
+- subjects needing intervention
+- class performance
+- topic weakness insights
+
+School admin must also have:
+1. School report
+Generate downloadable school reports summarising:
+- learner study activity
+- subject performance trends
+- exam readiness overview
+- topic weaknesses across the school
+
+2. Donation report
+Create a donation report showing:
+- total learners subscribed through the school
+- donation value per learner
+- total donation due or allocated to the school
+- monthly donation history
+
+Partner admin dashboard
+
+Create a dedicated partner admin dashboard for organisations referring learners or schools.
+
+Partner dashboard must include:
+- total schools onboarded
+- total learners referred
+- trials started
+- active subscriptions
+- paid conversions
+- school list
+- school-level performance overview
+- impact metrics across all associated schools
+
+If commission or programme revenue tracking exists or is added safely, keep it role-appropriate and non-breaking.
+
+System admin dashboard
+
+System admin must retain current papers functionality without breaking it.
+
+System admin areas should include:
+- Paper management
+- User management
+- School management
+- Partner management
+- Platform analytics
+
+Paper management must remain primary and intact.
+
+Paper management must continue to support:
+- upload new papers
+- edit paper metadata
+- organise by subject and year
+- tag topics
+- maintain the historical dataset
+- support practice, simulation, and intelligence logic
+
+Rizz bot experience
+
+Rizz is the bot, not the whole platform.
+Use Rizz in bot experiences such as:
+- Ask Rizz
+- Rizz insight
+- Rizz recommendation
+- Chat with Rizz
+- Rizz explains
+- Rizz revision boost
+- Rizz note assist
+
+Use sentence case, not all caps.
+
+Footer
+
+Keep the footer simple and clean.
+
+Footer content:
+- BrainTrack
+- Smarter Learning. Real Results.
+- AI-powered learning support designed to help students prepare for exams.
+- Insights generated by Rizz are intended for study guidance and do not guarantee academic results.
+- © 2026 KTH Tech (Pty) Ltd
+- Learner consent | Privacy policy | Terms
+
+Include a simple learner consent statement:
+By creating an account and using BrainTrack, learners confirm they have permission from a parent or guardian where required.
+
+Final execution rule
+
+Do not break current logic.
+Do not rewrite current working flows.
+Do not remove or weaken the DBE/CAPS papers role.
+Do not rebuild working features unnecessarily.
+Only enhance where applicable and build what is missing.
+Keep BrainTrack as the main platform brand, Rizz as the bot, and remove random KTH logos from the UI.
+All changes must be safe, integrated, non-breaking, and consistent with the unified BrainTrack glass design system.
+```
+
+If you want, I can also compress this into a **shorter high-performance Replit/Cursor version** that is easier for builders to execute.

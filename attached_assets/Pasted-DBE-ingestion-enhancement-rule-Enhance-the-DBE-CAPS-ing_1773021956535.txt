@@ -1,0 +1,247 @@
+DBE ingestion enhancement rule
+
+Enhance the DBE/CAPS ingestion pipeline without breaking any current working papers functionality.
+
+The ingestion model must support every relevant BrainTrack subject across every year from 2015 through 2025.
+
+For each subject, structure the dataset year by year and store both:
+- exam paper
+- memorandum
+
+The ingestion pipeline must preserve clean mapping across:
+- subject
+- year
+- paper type
+- term where applicable
+- topic
+- question number
+- memo reference
+- difficulty where supported
+- CAPS term alignment
+
+The system must validate ingestion completeness and show missing assets clearly.
+If a subject is missing a paper or memorandum for any year from 2015 to 2025, flag it in admin as incomplete.
+
+DBE subject coverage rule
+
+Each supported subject must have a complete ingestion framework for 2015 to 2025.
+
+Apply this structure per subject end to end so the platform can reliably use the ingested data for:
+- onboarding baseline tests
+- first-question rendering
+- daily quizzes
+- mixed quizzes
+- exam mode
+- crunch time mode
+- study guidance
+- readiness scoring
+- school analytics
+
+Paper and memo admin access rule
+
+System admin must be able to manage paper and memo assets per subject and per year.
+
+For each subject and year, the admin papers area must clearly show:
+- paper uploaded status
+- memorandum uploaded status
+- ingestion status
+- topic tagging status
+- question mapping status
+- completeness status
+
+Allow admin paper and memo access per subject per year inside the protected papers management workflow.
+
+Learner-facing content must still follow the no-verbatim-copy and exam integrity rules where applicable.
+Do not expose full memo text verbatim in learner-facing generated support.
+
+Exam mode and crunch time generation rule
+
+When a learner clicks Exam mode or Crunch Time, the system must automatically generate a 35-question subject-specific session.
+
+Each generated 35-question session must be based on:
+- the selected subject
+- ingested DBE/CAPS papers from 2015 to 2025
+- mapped topic relevance
+- learner current marks
+- learner performance history
+- exam importance
+- learner weak areas
+- current readiness level
+
+The question set must feel like a serious exam-prep experience and not a random question grab.
+
+Exam mode rule:
+- generate 35 structured subject questions
+- timed session
+- exam-style sequence
+- no hint display during the active attempt
+- no answer reveal during the session
+- no copy and paste from the exam screen
+- no learner export or learner download from the exam session
+- show guidance only after submission
+
+Crunch Time rule:
+- generate 35 high-priority subject questions
+- focus more heavily on weak areas and high-importance topics
+- optimise for revision pressure before tests, prelims, and finals
+- allow strong post-submission review with explanations and study-next guidance
+
+Subject population rule
+
+When the learner selects a subject in Exam mode or Crunch Time, populate the session end to end using that subject’s ingested DBE/CAPS paper history from 2015 to 2025.
+
+Do not require unnecessary extra clicks before the learner gets the generated 35-question experience.
+
+Onboarding enhancement rule
+
+Onboarding must include a formal baseline capture and learner academic profile setup.
+
+The onboarding experience must capture:
+- selected subjects
+- current marks per subject
+- goal mark for prelims per subject
+- goal mark for finals per subject
+- report frequency preference
+- preferred language
+- parent details
+- study availability
+- learning preferences already defined elsewhere
+
+Baseline test rule
+
+The onboarding baseline assessment must be based on term 1 CAPS topics only.
+
+For each selected subject, the platform must generate a baseline test using:
+- term 1 CAPS topic mapping
+- learner current grade and subject
+- ingested DBE/CAPS paper intelligence
+- a balanced topic spread for early diagnostic use
+
+The baseline is used to establish:
+- initial learner level
+- early topic strengths
+- early topic gaps
+- first-question rendering
+- first study guidance
+- first dashboard state
+
+Current marks and goals rule
+
+The learner must capture current marks and targets during onboarding.
+
+For each selected subject, capture:
+- current mark
+- prelim goal
+- final goal
+
+These values must feed:
+- learner dashboard
+- readiness calculations
+- focus-next guidance
+- schedule generation
+- parent dashboard
+- school analytics where appropriate
+
+Report frequency rule
+
+During onboarding, the learner or parent must select report frequency.
+
+Supported options should include:
+- weekly
+- fortnightly
+- monthly
+
+This preference must control how often learner and parent summaries are generated and sent, while still allowing important in-app alerts when needed.
+
+First-question and first-session rule
+
+After onboarding is completed, and after current marks, goals, and baseline test data are captured, the system must immediately prepare and render the learner’s first meaningful question set based on:
+- selected subjects
+- baseline performance
+- current marks
+- prelim goals
+- final goals
+- term 1 CAPS topic results
+- ingested DBE/CAPS paper intelligence
+
+The learner should not land in an empty state.
+The first session must already be prepared with relevant questions.
+
+Full async task architecture rule
+
+Build full asynchronous task handling into the platform architecture for heavy or scheduled system actions.
+
+Use asynchronous job processing for tasks such as:
+- DBE paper ingestion
+- memo ingestion
+- question mapping
+- topic tagging jobs
+- 35-question generation for exam mode
+- 35-question generation for crunch time
+- report generation
+- scheduled parent reports
+- scheduled learner summaries
+- school reports
+- donation reports
+- notification dispatch
+- SMS dispatch
+- email dispatch
+- alert processing
+- large analytics refresh jobs
+
+Async tasks must be:
+- reliable
+- retriable
+- auditable
+- status-tracked
+- role-safe
+- non-blocking to the main user experience
+
+Provide visible task statuses in admin where appropriate, such as:
+- queued
+- processing
+- completed
+- failed
+- retrying
+
+Admin access control rule
+
+There must be only one overall platform super admin with full admin access.
+
+Only I must have overall admin access across the entire platform.
+
+Create a strict single super-admin role with full permissions across:
+- papers
+- memos
+- ingestion
+- learners
+- parents
+- schools
+- partners
+- reporting
+- platform analytics
+- security controls
+- system settings
+
+No other user role may have full-platform admin rights.
+
+All other admin-type users must be restricted by role:
+- school admin only for school scope
+- partner admin only for partner scope
+- parent only for linked learner scope
+- learner only for learner scope
+
+Super admin security rule
+
+The single super-admin role must be tightly protected with:
+- strong authentication
+- role-based access enforcement
+- no privilege leakage to other roles
+- audit visibility on critical actions
+- secure access handling for protected functions
+
+Final execution rule for this enhancement block
+
+Do not break current logic.
+Do not weaken the current DBE/CAPS papers capability.
+Only extend the ingestion, onboarding, exam generation, async task handling, and single-super-admin controls safely on top of the current working platform.

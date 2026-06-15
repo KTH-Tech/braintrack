@@ -1,0 +1,186 @@
+Build a full-stack Next.js (App Router) + TypeScript + TailwindCSS + PostgreSQL (via Prisma) application for braintrack.app.
+
+This must include:
+
+1) Frontend Landing Page (bilingual EN/AF)
+2) Assessment flow
+3) Backend API
+4) Database schema
+5) Payment-ready structure
+6) Parent linking
+7) R25 donation tracking
+8) Retention event logging
+
+----------------------------------------
+CORE STACK
+----------------------------------------
+- Next.js (App Router)
+- TypeScript
+- TailwindCSS
+- Prisma ORM
+- PostgreSQL
+- API routes inside /app/api
+- Server actions where appropriate
+
+----------------------------------------
+DATABASE MODELS (Prisma Schema Required)
+----------------------------------------
+
+User
+- id (uuid)
+- role ("learner" | "parent" | "admin")
+- name
+- email (optional)
+- phone
+- language ("en" | "af")
+- createdAt
+
+LearnerProfile
+- id
+- userId (relation to User)
+- grade
+- schoolName
+- subjects (JSON array)
+- baselineScore
+- readinessScore
+- improvementPotential
+- parentPhone
+- isPaid (boolean)
+- createdAt
+
+AssessmentResult
+- id
+- learnerId
+- subject
+- topic
+- score
+- difficultyLevel
+- createdAt
+
+Payment
+- id
+- learnerId
+- amount
+- status ("pending" | "paid" | "failed")
+- provider
+- transactionRef
+- createdAt
+
+SchoolDonation
+- id
+- schoolName
+- learnerId
+- amount (fixed 25)
+- month
+- createdAt
+
+EngagementEvent
+- id
+- learnerId
+- eventType ("day3" | "day7" | "day14" | "login" | "assessment_complete")
+- createdAt
+
+----------------------------------------
+FUNCTIONAL FLOW
+----------------------------------------
+
+1) Landing page CTA → “Start Assessment”
+   → creates temporary learner session
+   → stores phone + language
+
+2) Assessment completion:
+   → save AssessmentResults
+   → calculate readinessScore
+   → calculate improvementPotential
+   → store in LearnerProfile
+   → trigger EngagementEvent: assessment_complete
+
+3) Show:
+   - readiness score
+   - weak areas
+   - improvement potential
+   - preview study plan
+
+4) Lock full access unless isPaid = true
+
+5) Payment API endpoint:
+   POST /api/payment/create
+   - create payment record
+   - simulate or prepare provider integration
+
+6) On payment success:
+   - update LearnerProfile.isPaid = true
+   - create SchoolDonation record (R25)
+   - send unlock confirmation
+   - log EngagementEvent: login
+
+7) Parent linking:
+   - when learner enters parent phone
+   - create parent user (if not exists)
+   - link to learner
+
+8) Donation tracking:
+   - Each paid learner generates R25 entry monthly
+   - Aggregate donations by school
+
+----------------------------------------
+API ROUTES REQUIRED
+----------------------------------------
+
+POST /api/assessment/submit
+GET  /api/assessment/:learnerId
+POST /api/payment/create
+POST /api/payment/confirm
+GET  /api/donations/:school
+POST /api/events/log
+
+----------------------------------------
+RETENTION ENGINE
+----------------------------------------
+
+When:
+- Day 3 after payment → log eventType = day3
+- Day 7 → log eventType = day7
+- Day 14 → log eventType = day14
+
+System should expose endpoint:
+GET /api/engagement/:learnerId
+
+----------------------------------------
+ADMIN DASHBOARD (basic)
+----------------------------------------
+
+Route: /admin
+
+Display:
+- total learners
+- paid learners
+- total donation generated
+- donation per school
+- readiness average
+
+----------------------------------------
+SECURITY
+----------------------------------------
+
+- Role-based access
+- Protect admin routes
+- Validate all API input
+- Use server actions for secure DB writes
+
+----------------------------------------
+DELIVERABLE
+----------------------------------------
+
+Provide:
+- Full Prisma schema
+- Next.js structure
+- API route examples
+- Example readiness score calculation function
+- Donation calculation function
+- README with setup steps
+
+This system must support future:
+- Paystack/Yoco integration
+- WhatsApp automation
+- School dashboard expansion

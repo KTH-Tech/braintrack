@@ -1,0 +1,7 @@
+{
+  "capturedAt": "2026-05-09T03:02:49.668Z",
+  "note": "Baseline snapshot for Task #369. Captured shortly after Priority Memo Re-Ingestion workflow start (2 tuples already processed).",
+  "overall": "total_questions,missing_memo\n62579,18002\n",
+  "by2024_2025": "year,total,missing\n2024,6471,1955\n2025,6647,1886\n",
+  "top5Subjects": "subject,total,missing\nLife Sciences,2810,1597\nElectrical Technology,2022,1568\nMechanical Technology,2091,1484\nPhysical Sciences,1815,1163\nAgricultural Sciences,4246,1055\n"
+}
