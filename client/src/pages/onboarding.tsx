@@ -326,7 +326,7 @@ const T = {
     emailSentLabel: "Email sent",
     manualShareLabel: "Manual share — email not configured",
     copyLinkBtn: "Copy link",
-    consentSkipHint: "You can skip this step now and add it later from Settings — but full exam mode and the Smart Tutor beyond the free tier will stay locked until consent is confirmed.",
+    consentSkipHint: "We've sent a consent request to your parent/guardian. You can continue once they confirm — or continue now to explore the free tier.",
     preparingClassroomTitle: "Preparing your classroom…",
     preparingClassroomDesc: "Saving your profile and seeding your subjects.",
     consentRequestReady: "Consent request ready",
@@ -405,7 +405,7 @@ const T = {
     emailSentLabel: "E-pos gestuur",
     manualShareLabel: "Handmatige deel — e-pos nie gekonfigureer nie",
     copyLinkBtn: "Kopieer skakel",
-    consentSkipHint: "Jy kan hierdie stap nou oorslaan en dit later by Instellings byvoeg — maar die volle eksamen-modus en Smart Tutor bo die gratis-vlak bly gesluit totdat toestemming bevestig is.",
+    consentSkipHint: "Ons het 'n toestemming-versoek aan jou ouer/voog gestuur. Jy kan nou voortgaan en die gratis-vlak verken totdat hulle bevestig.",
     preparingClassroomTitle: "Berei jou klaskamer voor…",
     preparingClassroomDesc: "Stoor jou profiel en laai jou vakke.",
     consentRequestReady: "Toestemming-versoek gereed",
@@ -634,9 +634,10 @@ export default function OnboardingPage() {
       return schoolName.trim().length >= 2 && grade !== null;
     }
     if (phase === "parent_consent") {
-      // Parent email is optional — learners can skip the consent step and use
-      // the free tier of Smart Tutor; the gate will prompt them again later.
-      return true;
+      // POPIA compliance — learner must at minimum send a consent request before
+      // continuing. consentLink is set once the mutation succeeds (email sent or
+      // manual-share link generated), so this acts as a soft gate: send → proceed.
+      return consentLink !== null;
     }
     if (!currentQuestion) return false;
     const answer = answers[currentQuestion.id];
@@ -736,15 +737,17 @@ export default function OnboardingPage() {
       <header className="border-b border-border py-4 bg-background/90 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => resetRoleMutation.mutate()}
-              disabled={resetRoleMutation.isPending}
-              className="inline-flex items-center gap-1 text-xs text-white hover:text-white transition-colors ml-2 disabled:opacity-50 min-h-[44px] px-2 rounded"
-              data-testid="button-change-role"
-            >
-              <ArrowLeft className="w-3 h-3" />
-              {T[language].changeRole}
-            </button>
+            {phase === "questions" && (
+              <button
+                onClick={() => resetRoleMutation.mutate()}
+                disabled={resetRoleMutation.isPending}
+                className="inline-flex items-center gap-1 text-xs text-white hover:text-white transition-colors ml-2 disabled:opacity-50 min-h-[44px] px-2 rounded"
+                data-testid="button-change-role"
+              >
+                <ArrowLeft className="w-3 h-3" />
+                {T[language].changeRole}
+              </button>
+            )}
           </div>
           <div className="flex items-center gap-2 bg-muted rounded-full p-1 border border-border">
             <Button
@@ -1282,9 +1285,17 @@ export default function OnboardingPage() {
                   </div>
                 )}
 
-                <p className="text-xs text-white">
-                  {t.consentSkipHint}
-                </p>
+                {consentLink ? (
+                  <p className="text-xs text-green-400/80">
+                    {t.consentSkipHint}
+                  </p>
+                ) : (
+                  <p className="text-xs text-amber-400/80">
+                    {language === "af"
+                      ? "Stuur eers die toestemmings-e-pos om voort te gaan."
+                      : "Please send a consent request to your parent/guardian to continue."}
+                  </p>
+                )}
 
                 <div className="flex justify-between pt-4 gap-4">
                   <Button variant="outline" className="h-14 px-8 text-lg font-semibold border-2 border-border rounded-2xl flex-1 md:flex-none" onClick={handleBack} data-testid="button-back-parent-consent">

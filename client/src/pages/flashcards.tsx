@@ -467,7 +467,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
             <ArrowLeft className="w-4 h-4 mr-2" />
             {isAf ? "Terug" : "Back"}
           </Button>
-          <Button onClick={startSession}>
+          <Button onClick={() => startSession()}>
             <RotateCcw className="w-4 h-4 mr-2" />
             {isAf ? "Weer Begin" : "Start Again"}
           </Button>

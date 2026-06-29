@@ -37,7 +37,7 @@ import {
 } from "@shared/schema";
 import { users } from "@shared/models/auth";
 import { db, pool } from "./db";
-import { eq, desc, and, sql, asc, isNull, type SQL } from "drizzle-orm";
+import { eq, desc, and, sql, asc, isNull, inArray, gte, type SQL } from "drizzle-orm";
 import { GRADE_12_SUBJECTS, CAPS_TOPICS } from "../client/src/lib/constants";
 import { 
   calculateMasteryScore, 
@@ -156,6 +156,8 @@ export interface IStorage {
   awardBadge(userId: string, badgeCode: string): Promise<UserBadge | null>;
   hasBadge(userId: string, badgeCode: string): Promise<boolean>;
   checkAndAwardBadges(userId: string): Promise<UserBadge[]>;
+  hasActivePowerUp(userId: string, itemKey: string): Promise<boolean>;
+  consumePowerUp(userId: string, itemKey: string): Promise<void>;
   
   // Session Management - Prevent profile sharing
   createUserSession(userId: string, sessionToken: string, deviceInfo: { ip?: string; userAgent?: string; fingerprint?: string }): Promise<UserActiveSession>;
@@ -227,6 +229,8 @@ export interface IStorage {
   awardCoins(userId: string, amount: number, type: string, description: string, referenceId?: string): Promise<UserCoins>;
   spendCoins(userId: string, amount: number, type: string, description: string, referenceId?: string): Promise<UserCoins>;
   getCoinTransactions(userId: string): Promise<CoinTransaction[]>;
+  // XP System
+  awardXP(userId: string, amount: number, reason?: string): Promise<{ totalXP: number; currentLevel: string; levelledUp: boolean }>;
 
   // Theme Unlocks
   getUserUnlockedThemes(userId: string): Promise<string[]>;
@@ -1231,8 +1235,14 @@ export class DatabaseStorage implements IStorage {
         // Consecutive day - increment streak
         newStreak = existing.currentStreak + 1;
       } else {
-        // Streak broken - reset to 1
-        newStreak = 1;
+        // Streak broken — check for active streak-freeze before resetting
+        const hasFreeze = await this.hasActivePowerUp(userId, "streak-freeze");
+        if (hasFreeze) {
+          await this.consumePowerUp(userId, "streak-freeze");
+          newStreak = existing.currentStreak; // preserve streak
+        } else {
+          newStreak = 1;
+        }
       }
       
       const [updated] = await db.update(userStreaks)
@@ -2205,11 +2215,53 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getWeakTopics(userId: string, limit: number = 5): Promise<TopicMastery[]> {
+    const [userRow] = await db.select({ selectedSubjects: users.selectedSubjects })
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1);
+    const enrolled: number[] = (userRow?.selectedSubjects as number[] | null) ?? [];
+    const conditions = [eq(topicMastery.userId, userId)];
+    if (enrolled.length > 0) {
+      conditions.push(inArray(topicMastery.subjectId, enrolled));
+    }
     return db.select()
       .from(topicMastery)
-      .where(eq(topicMastery.userId, userId))
+      .where(and(...conditions))
       .orderBy(asc(topicMastery.masteryScore))
       .limit(limit);
+  }
+
+  // XP levels: starter → learner → scholar → achiever → expert → master
+  private static readonly XP_LEVELS: { level: string; minXP: number }[] = [
+    { level: "master",   minXP: 1500 },
+    { level: "expert",   minXP: 1000 },
+    { level: "achiever", minXP:  600 },
+    { level: "scholar",  minXP:  300 },
+    { level: "learner",  minXP:  100 },
+    { level: "starter",  minXP:    0 },
+  ];
+
+  private static resolveLevel(totalXP: number): string {
+    for (const { level, minXP } of DatabaseStorage.XP_LEVELS) {
+      if (totalXP >= minXP) return level;
+    }
+    return "starter";
+  }
+
+  async awardXP(userId: string, amount: number, _reason?: string): Promise<{ totalXP: number; currentLevel: string; levelledUp: boolean }> {
+    const existing = await db.select({ totalXP: userXP.totalXP, currentLevel: userXP.currentLevel })
+      .from(userXP).where(eq(userXP.userId, userId)).limit(1);
+    const prevXP = existing[0]?.totalXP ?? 0;
+    const prevLevel = existing[0]?.currentLevel ?? "starter";
+    const newXP = prevXP + amount;
+    const newLevel = DatabaseStorage.resolveLevel(newXP);
+    await db.insert(userXP)
+      .values({ userId, totalXP: newXP, currentLevel: newLevel, updatedAt: new Date() })
+      .onConflictDoUpdate({
+        target: userXP.userId,
+        set: { totalXP: newXP, currentLevel: newLevel, updatedAt: new Date() },
+      });
+    return { totalXP: newXP, currentLevel: newLevel, levelledUp: newLevel !== prevLevel };
   }
 
   async getTopicsForReview(userId: string): Promise<TopicMastery[]> {
@@ -2416,12 +2468,43 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async getTriggeredRescuePacks(_userId: string): Promise<any[]> {
-    return [];
+  async getTriggeredRescuePacks(userId: string): Promise<any[]> {
+    return db.select()
+      .from(notifications)
+      .where(and(eq(notifications.userId, userId), eq(notifications.type, "rescue_pack")))
+      .orderBy(desc(notifications.createdAt))
+      .limit(10);
   }
 
-  async triggerRescuePack(_userId: string, _type: 'topic' | 'subject', _referenceId: number): Promise<void> {
-    return;
+  async triggerRescuePack(userId: string, type: 'topic' | 'subject', referenceId: number): Promise<void> {
+    // Idempotency: skip if same (user, referenceId) rescue pack created in last 24 h
+    const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const existing = await db.select({ id: notifications.id })
+      .from(notifications)
+      .where(and(
+        eq(notifications.userId, userId),
+        eq(notifications.type, "rescue_pack"),
+        gte(notifications.createdAt, since),
+        sql`(${notifications.data}->>'referenceId')::int = ${referenceId}`,
+      ))
+      .limit(1);
+    if (existing.length > 0) return;
+
+    await db.insert(notifications).values({
+      userId,
+      type: "rescue_pack",
+      titleEn: type === 'topic' ? "Rescue Pack Activated!" : "Subject Rescue Pack!",
+      titleAf: type === 'topic' ? "Reddingspakket Geaktiveer!" : "Vak-reddingspakket!",
+      messageEn: type === 'topic'
+        ? "Your AI Tutor has prepared extra practice for your weak topic. Let's fix it!"
+        : "You've been struggling with this subject. Here are targeted exercises to help.",
+      messageAf: type === 'topic'
+        ? "Jou AI Tutor het ekstra oefening vir jou swak onderwerp voorberei."
+        : "Hier is geteikende oefeninge vir hierdie vak.",
+      channel: "in_app",
+      status: "pending",
+      data: { referenceId, type },
+    });
   }
 
   // ============================================
@@ -2448,16 +2531,18 @@ export class DatabaseStorage implements IStorage {
     // both the read-modify-write lost-update race and the "ledger entry
     // written without balance bump" inconsistency on partial failure.
     await this.getUserCoins(userId); // ensure wallet row exists
+    const hasDoubleCoins = await this.hasActivePowerUp(userId, "double-coins");
+    const effectiveAmount = hasDoubleCoins ? amount * 2 : amount;
     return await db.transaction(async (tx) => {
       const [updated] = await tx.update(userCoins)
         .set({
-          balance: sql`${userCoins.balance} + ${amount}`,
-          totalEarned: sql`${userCoins.totalEarned} + ${amount}`,
+          balance: sql`${userCoins.balance} + ${effectiveAmount}`,
+          totalEarned: sql`${userCoins.totalEarned} + ${effectiveAmount}`,
           updatedAt: new Date(),
         })
         .where(eq(userCoins.userId, userId))
         .returning();
-      await tx.insert(coinTransactions).values({ userId, amount, type, description, referenceId: referenceId ?? null });
+      await tx.insert(coinTransactions).values({ userId, amount: effectiveAmount, type, description, referenceId: referenceId ?? null });
       return updated;
     });
   }
@@ -2507,6 +2592,28 @@ export class DatabaseStorage implements IStorage {
 
   async unlockTheme(userId: string, themeName: string, coinsCost: number): Promise<void> {
     await db.insert(userUnlockedThemes).values({ userId, themeName, coinsCost });
+  }
+
+  async hasActivePowerUp(userId: string, itemKey: string): Promise<boolean> {
+    if (itemKey === "streak-freeze") {
+      const result = await db.execute(
+        sql`SELECT id FROM user_unlocks WHERE user_id = ${userId} AND item_key = ${itemKey} AND consumed_at IS NULL`
+      );
+      return (result.rows?.length ?? 0) > 0;
+    }
+    if (itemKey === "double-coins") {
+      const result = await db.execute(
+        sql`SELECT id FROM user_unlocks WHERE user_id = ${userId} AND item_key = ${itemKey} AND expires_at IS NOT NULL AND expires_at > NOW()`
+      );
+      return (result.rows?.length ?? 0) > 0;
+    }
+    return false;
+  }
+
+  async consumePowerUp(userId: string, itemKey: string): Promise<void> {
+    await db.execute(
+      sql`UPDATE user_unlocks SET consumed_at = NOW() WHERE user_id = ${userId} AND item_key = ${itemKey}`
+    );
   }
 
   async savePushSubscription(userId: string, endpoint: string, p256dh: string, auth: string): Promise<PushSubscription> {
@@ -2572,7 +2679,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async insertConsentLog(payload: InsertConsentLog): Promise<ConsentLog> {
-    const [row] = await db.insert(consentLog).values(payload).returning();
+    const [row] = await db.insert(consentLog).values(payload as any).returning();
     return row;
   }
 

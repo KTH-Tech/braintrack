@@ -57,6 +57,7 @@ import { VARK_STYLES } from "@/lib/vark";
 import { BadgePopup } from "@/components/badge-popup";
 import { NotificationsPanel } from "@/components/notifications-panel";
 import { NextMilestoneWidget } from "@/components/next-milestone-widget";
+import { GoalProgress } from "@/components/goal-progress";
 import { YouVsYouChart } from "@/components/you-vs-you-chart";
 import { PersonalBestsWidget } from "@/components/personal-bests-widget";
 import { useEarliestPrelimDate, FINALS_DATE, CountdownDigits } from "@/components/exam-countdown";
@@ -1227,6 +1228,9 @@ export default function DashboardPage() {
             </div>
           ))}
         </div>
+
+        {/* ── Goal Progress ────────────────────────────────────── */}
+        <GoalProgress isAf={isAf} />
 
         {/* ===== EXAM-AWARE WIDGETS (T114) ===== */}
         {examWidgets && (examWidgets.nextExam || examWidgets.thisWeekExams?.length > 0) && (

@@ -1,4 +1,4 @@
-import { PublicNav } from "@/components/public-nav";
+﻿import { PublicNav } from "@/components/public-nav";
 import { useSEO } from "@/hooks/use-seo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -593,7 +593,7 @@ export default function LandingPage() {
           "Grade 12 Matric exam preparation platform — CAPS-aligned study plans, NSC past papers with memos, AI tutor, and progress tracking for South African learners.",
         "contactPoint": {
           "@type": "ContactPoint",
-          "email": "brain-support@kthtech.co.za",
+          "email": "enterprise@kth-tech.com",
           "contactType": "customer support",
           "availableLanguage": ["English", "Afrikaans"],
         },

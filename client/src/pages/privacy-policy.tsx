@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+﻿import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield, Lock, Eye, FileText, Users, Clock, Globe, ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
@@ -76,7 +76,7 @@ export default function PrivacyPolicyPage() {
               ? "BrainTrack is daartoe verbind om jou privaatheid te beskerm in ooreenstemming met die Wet op die Beskerming van Persoonlike Inligting (POPIA) van Suid-Afrika."
               : "BrainTrack is committed to protecting your privacy in accordance with the Protection of Personal Information Act (POPIA) of South Africa."}
           </p>
-          <p className="text-sm text-white">{isAf ? "Laas opgedateer: 15 Mei 2026" : "Last updated: 15 May 2026"}</p>
+          <p className="text-sm text-white">{isAf ? "Laas opgedateer: 29 Junie 2026" : "Last updated: 29 June 2026"}</p>
         </div>
 
         <Card>
@@ -134,6 +134,8 @@ export default function PrivacyPolicyPage() {
                 <li>{isAf ? "Studieprofiel-antwoorde (leervoorkeure)" : "Study profile responses (learning preferences)"}</li>
                 <li>{isAf ? "Vakkeuses en huidige punte" : "Subject selections and current marks"}</li>
                 <li>{isAf ? "Gebruiksdata en vorderingopsporing" : "Usage data and progress tracking"}</li>
+                <li>{isAf ? "Stemnote-opnames (wanneer die stemnota-funksie gebruik word — gestoor in veilige wolk-berging)" : "Voice note recordings (when the voice note feature is used — stored in secure cloud storage)"}</li>
+                <li>{isAf ? "Stelkennisgewing-intekenbesonderhede (indien push-kennisgewings geaktiveer word)" : "Push notification subscription details (if push notifications are enabled)"}</li>
               </ul>
             </div>
             <div>
@@ -210,7 +212,7 @@ export default function PrivacyPolicyPage() {
               <li>{isAf ? "Betalingsinligting word deur PCI-DSS-nakoming verskaffers (Netcash) verwerk" : "Payment information is processed by PCI-DSS compliant providers (Netcash)"}</li>
               <li>{isAf ? "Gereelde sekuriteitsbeoordelings en -opdaterings word uitgevoer" : "Regular security assessments and updates are performed"}</li>
               <li>{isAf ? "Toegang tot persoonlike inligting is beperk tot gemagtigde personeel alleen" : "Access to personal information is restricted to authorized personnel only"}</li>
-              <li>{isAf ? "Data word op veilige bedieners binne Suid-Afrika gestoor waar moontlik" : "Data is stored on secure servers within South Africa where possible"}</li>
+              <li>{isAf ? "Data word gestoor op veilige wolkbedieners in die EU (Frankfurt) en VSA via Supabase en Render — beide volledig GDPR-nakoming en aanvaarbare derdeland vir POPIA-oordragte" : "Data is stored on secure cloud servers in the EU (Frankfurt) and USA via Supabase and Render — both fully GDPR-compliant and acceptable third countries for POPIA transfers"}</li>
             </ul>
           </CardContent>
         </Card>
@@ -261,7 +263,7 @@ export default function PrivacyPolicyPage() {
               {isAf
                 ? "Om hierdie regte uit te oefen, kontak ons Inligtingsbeampte by: "
                 : "To exercise these rights, contact our Information Officer at: "}
-              <strong>brain-support@kthtech.co.za</strong>
+              <strong>enterprise@kth-tech.com</strong>
             </p>
           </CardContent>
         </Card>
@@ -295,7 +297,7 @@ export default function PrivacyPolicyPage() {
               <li>{isAf ? "Jou kaart- of bankbesonderhede word direk op Netcash se platform ingevoer, nooit op BrainTrack nie" : "Your card or banking details are entered directly on Netcash's platform, never on BrainTrack"}</li>
               <li>{isAf ? "Ons ontvang slegs 'n bevestiging van suksesvolle betaling — geen kaartnommers, CVV-kodes of rekeningnommers nie" : "We only receive a confirmation of successful payment — no card numbers, CVV codes, or account numbers"}</li>
               <li>{isAf ? "Netcash handhaaf bankvlak-sekuriteit en PCI-DSS-enkripsie vir alle transaksies" : "Netcash maintains bank-level security and PCI-DSS encryption for all transactions"}</li>
-              <li>{isAf ? "Vir terugbetalings of betalingsgeskille, kontak ons by brain-support@kthtech.co.za" : "For refunds or payment disputes, contact us at brain-support@kthtech.co.za"}</li>
+              <li>{isAf ? "Vir terugbetalings of betalingsgeskille, kontak ons by enterprise@kth-tech.com" : "For refunds or payment disputes, contact us at enterprise@kth-tech.com"}</li>
             </ul>
           </CardContent>
         </Card>
@@ -314,10 +316,12 @@ export default function PrivacyPolicyPage() {
                 : "We may share your information with trusted third parties only as necessary:"}
             </p>
             <ul className="list-disc list-inside space-y-2 text-sm text-white">
-              <li><strong>{isAf ? "Betalingsverwerkers:" : "Payment Processors:"}</strong> {isAf ? "Netcash vir veilige betalingsverwerking via DebiCheck-mandaat of herhalende kaarttoken (geen kaart- of bankdata met ons gedeel nie)" : "Netcash for secure payment processing via DebiCheck mandate or recurring card token (no card or banking data shared with us)"}</li>
-              <li><strong>{isAf ? "Kommunikasiedienste:" : "Communication Services:"}</strong> {isAf ? "Vir die stuur van aktiveringskakels via WhatsApp/SMS" : "For sending activation links via WhatsApp/SMS"}</li>
-              <li><strong>{isAf ? "KI-Dienste:" : "AI Services:"}</strong> {isAf ? "OpenAI vir Rizz-funksionaliteit (slegs geanonimiseerde navrae)" : "OpenAI for Rizz functionality (anonymized queries only)"}</li>
-              <li><strong>{isAf ? "Gasheerverskaffers:" : "Hosting Providers:"}</strong> {isAf ? "Veilige wolk-infrastruktuurverskaffers" : "Secure cloud infrastructure providers"}</li>
+              <li><strong>{isAf ? "Betalingsverwerking:" : "Payment Processing:"}</strong> {isAf ? "Netcash (Suid-Afrika) — vir DebiCheck-mandaat of herhalende kaarttoken. Geen kaart- of bankdata word met BrainTrack gedeel nie." : "Netcash (South Africa) — for DebiCheck mandate or recurring card token. No card or banking data is shared with BrainTrack."}</li>
+              <li><strong>{isAf ? "KI-Tutor:" : "AI Tutor:"}</strong> {isAf ? "OpenAI (VSA) — jou KI-Tutor-boodskappe word na OpenAI gestuur vir verwerking. Geen identifiseerbare persoonlike inligting word saam met boodskappe gestuur nie." : "OpenAI (USA) — your AI Tutor messages are sent to OpenAI for processing. No identifiable personal information is sent alongside messages."}</li>
+              <li><strong>{isAf ? "Databasis en Berging:" : "Database & Storage:"}</strong> {isAf ? "Supabase (VSA / EU) — jou leerdata, vorderingrekords en stemnote-opnames word op Supabase se veilige infrastruktuur gestoor." : "Supabase (USA / EU) — your learning data, progress records, and voice note recordings are stored on Supabase's secure infrastructure."}</li>
+              <li><strong>{isAf ? "Bediener-hosting:" : "Server Hosting:"}</strong> {isAf ? "Render (Frankfurt, EU) — die BrainTrack-toepassing loop op Render se wolkbedieners in die EU." : "Render (Frankfurt, EU) — the BrainTrack application runs on Render's cloud servers in the EU."}</li>
+              <li><strong>{isAf ? "E-poskommunikasie:" : "Email Communication:"}</strong> {isAf ? "Resend — vir die stuur van stelselkennisgewings en ouervorderingsverslae." : "Resend — for sending system notifications and parent progress reports."}</li>
+              <li><strong>{isAf ? "SMS / WhatsApp:" : "SMS / WhatsApp:"}</strong> {isAf ? "Twilio — vir die stuur van aktiveringskakels en SMS-kennisgewings." : "Twilio — for sending activation links and SMS notifications."}</li>
             </ul>
             <p className="text-sm text-white mt-4">
               {isAf
@@ -339,7 +343,7 @@ export default function PrivacyPolicyPage() {
             </p>
             <div className="bg-white/5 p-4 rounded-lg space-y-2">
               <p><strong>{isAf ? "Inligtingsbeampte:" : "Information Officer:"}</strong> KTH Tech</p>
-              <p><strong>{isAf ? "E-pos:" : "Email:"}</strong> brain-support@kthtech.co.za</p>
+              <p><strong>{isAf ? "E-pos:" : "Email:"}</strong> enterprise@kth-tech.com</p>
               <p><strong>{isAf ? "Adres:" : "Address:"}</strong> {isAf ? "Suid-Afrika" : "South Africa"}</p>
             </div>
           </CardContent>

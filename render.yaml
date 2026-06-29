@@ -1,0 +1,115 @@
+# Render.com infrastructure definition — BrainTrack
+# Docs: https://render.com/docs/blueprint-spec
+#
+# Required environment variables (set in Render dashboard, not here):
+#   DATABASE_URL           — Supabase pooled connection string (port 6543)
+#   SESSION_SECRET         — cryptographically random string (32+ chars)
+#   CRON_SECRET            — secret shared between cron jobs and the API
+#   OPENAI_API_KEY         — OpenAI API key
+#   RESEND_API_KEY         — Resend email API key (or SENDGRID_API_KEY)
+#   SUPABASE_URL           — https://<project>.supabase.co
+#   SUPABASE_SERVICE_ROLE_KEY — Supabase service-role key (never expose to client)
+#   VAPID_PUBLIC_KEY       — Web Push VAPID public key
+#   VAPID_PRIVATE_KEY      — Web Push VAPID private key
+#   VAPID_SUBJECT          — mailto:enterprise@kth-tech.com
+#   ADMIN_EMAILS           — comma-separated admin email allowlist
+#   APP_URL                — https://app.braintrack.co.za (no trailing slash)
+#   NODE_ENV               — production
+
+services:
+  # ── Main Web Service ────────────────────────────────────────────────────────
+  - type: web
+    name: braintrack-api
+    runtime: node
+    region: frankfurt  # closest to South Africa; change to 'ohio' if latency differs
+    plan: standard     # upgrade to 'pro' at 63+ schools
+    buildCommand: npm install && npm run build
+    startCommand: node dist/index.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "5000"
+    autoDeploy: true
+    scaling:
+      minInstances: 1
+      maxInstances: 3
+      targetMemoryPercent: 80
+      targetCPUPercent: 70
+
+  # ── Cron: Streak Reminders — runs daily at 17:00 SAST (15:00 UTC) ──────────
+  - type: cron
+    name: braintrack-streak-reminders
+    runtime: node
+    region: frankfurt
+    schedule: "0 15 * * *"
+    buildCommand: echo "skip build"
+    startCommand: >
+      curl -sf -X POST
+      -H "Authorization: Bearer $CRON_SECRET"
+      -H "Content-Type: application/json"
+      "${APP_URL}/api/push/send-streak-reminders"
+      | node -e "process.stdin.resume(); process.stdin.on('data', d => console.log(d.toString()));"
+    envVars:
+      - key: APP_URL
+        sync: false
+      - key: CRON_SECRET
+        sync: false
+
+  # ── Cron: Daily Focus Push — runs daily at 06:00 SAST (04:00 UTC) ─────────
+  - type: cron
+    name: braintrack-daily-focus
+    runtime: node
+    region: frankfurt
+    schedule: "0 4 * * *"
+    buildCommand: echo "skip build"
+    startCommand: >
+      curl -sf -X POST
+      -H "Authorization: Bearer $CRON_SECRET"
+      -H "Content-Type: application/json"
+      "${APP_URL}/api/push/send-daily-focus"
+      | node -e "process.stdin.resume(); process.stdin.on('data', d => console.log(d.toString()));"
+    envVars:
+      - key: APP_URL
+        sync: false
+      - key: CRON_SECRET
+        sync: false
+
+  # ── Cron: Trial Expiry Reminders — runs daily at 08:00 SAST (06:00 UTC) ───
+  - type: cron
+    name: braintrack-trial-reminders
+    runtime: node
+    region: frankfurt
+    schedule: "0 6 * * *"
+    buildCommand: echo "skip build"
+    startCommand: >
+      curl -sf -X POST
+      -H "Authorization: Bearer $CRON_SECRET"
+      -H "Content-Type: application/json"
+      "${APP_URL}/api/push/send-trial-reminders"
+      | node -e "process.stdin.resume(); process.stdin.on('data', d => console.log(d.toString()));"
+    envVars:
+      - key: APP_URL
+        sync: false
+      - key: CRON_SECRET
+        sync: false
+
+  # ── Cron: SMS Retries — runs every hour ────────────────────────────────────
+  - type: cron
+    name: braintrack-sms-retries
+    runtime: node
+    region: frankfurt
+    schedule: "0 * * * *"
+    buildCommand: echo "skip build"
+    startCommand: >
+      curl -sf -X POST
+      -H "Authorization: Bearer $CRON_SECRET"
+      -H "Content-Type: application/json"
+      "${APP_URL}/api/push/send-sms-retries"
+      | node -e "process.stdin.resume(); process.stdin.on('data', d => console.log(d.toString()));"
+    envVars:
+      - key: APP_URL
+        sync: false
+      - key: CRON_SECRET
+        sync: false

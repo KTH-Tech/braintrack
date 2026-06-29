@@ -808,7 +808,7 @@ function MissingMemosPanel() {
             </div>
           </div>
           <Button variant="outline" size="sm" className="gap-1.5 border-amber-400/40 text-amber-400 hover:bg-amber-400/10" onClick={() => {
-            setShow((v) => {
+            setShow((v: boolean) => {
               const next = !v;
               try {
                 const saved = JSON.parse(localStorage.getItem("braintrack:dbe-portal:ui") ?? "{}");

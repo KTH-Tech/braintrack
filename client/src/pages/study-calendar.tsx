@@ -205,7 +205,7 @@ export default function StudyCalendarPage() {
   const { data: profile } = useQuery<any>({ queryKey: ["/api/user/onboarding"] });
   const { data: subjects, isLoading: subjectsLoading } = useQuery<any[]>({ queryKey: ["/api/subjects"] });
   const { data: stats } = useQuery<any>({ queryKey: ["/api/user/stats"] });
-  const { data: progressRaw } = useQuery<any>({ queryKey: ["/api/user/progress"] });
+  const { data: progressRaw } = useQuery<any>({ queryKey: ["/api/user/progress"], refetchOnWindowFocus: true });
   const { data: examScheduleData } = useQuery<any>({
     queryKey: ["/api/timetable/schedule"],
     staleTime: 120000,
@@ -215,6 +215,16 @@ export default function StudyCalendarPage() {
     staleTime: 60000,
   });
   const progressData: any[] = progressRaw?.subjectProgress || [];
+
+  /* Weak topics — used to surface specific drill targets in each slot */
+  const { data: weakTopicsRaw } = useQuery<any[]>({
+    queryKey: ["/api/mastery/weak-topics", { limit: 20 }],
+    staleTime: 60_000,
+    refetchOnWindowFocus: true,
+  });
+  const weakTopicsBySubjectId = new Map<number, any>(
+    (weakTopicsRaw || []).map((t: any) => [t.subjectId, t])
+  );
 
   /* Shared readiness score — same formula as dashboard hero & progress page */
   const overallReadiness = calcReadiness({
@@ -307,51 +317,78 @@ export default function StudyCalendarPage() {
     monday.setDate(now.getDate() + mondayOffset);
     monday.setHours(0, 0, 0, 0);
 
-    /* Per-subject weight (higher = more slots this week) */
     const progressById = new Map<number, any>(
       progressData.map((p: any) => [p.subjectId, p]),
     );
+
+    // Track next exam date AND paper number per subject name
     const nextExamBySubject = new Map<string, number>();
+    const nextExamPaperBySubject = new Map<string, number>();
     for (const e of examSchedule as any[]) {
       const name = e.subjectName || "";
       const d = calcDays(new Date(e.date));
       if (!nextExamBySubject.has(name) || d < (nextExamBySubject.get(name) ?? 9999)) {
         nextExamBySubject.set(name, d);
+        nextExamPaperBySubject.set(name, e.paperNumber ?? 1);
       }
     }
     const varkPriority: string[] = VARK_SUBJECT_PRIORITY[varkPrimary || ""] || [];
+    const readinessById: Record<number, number> = readinessData?.readiness ?? {};
 
+    // ── Adaptive weighting ────────────────────────────────────────────
+    // accuracyWeight:  weaker subject → more slots
+    // examWeight:      closer exam → more slots
+    // varkWeight:      learning-style match → small boost
+    // floorBoost:      readiness < 40% + exam < 30d → critical override (3×)
+    //                  readiness < 55% + exam < 14d → urgency boost (2×)
     const weighted = mySubjects.map((s: any) => {
       const prog = progressById.get(s.id);
       const accuracy = typeof prog?.accuracy === "number" ? prog.accuracy : 60;
-      const accuracyWeight = Math.max(0.6, (100 - accuracy) / 50);       // weaker → ~1.4, stronger → ~0.6
+      const accuracyWeight = Math.max(0.6, (100 - accuracy) / 50);
       const daysToExam = nextExamBySubject.get(s.name) ?? 120;
       const examWeight = daysToExam <= 7 ? 1.9
                        : daysToExam <= 21 ? 1.4
                        : daysToExam <= 60 ? 1.1 : 0.9;
       const varkMatch = varkPriority.some(p => s.name?.includes(p) || p.includes(s.name));
       const varkWeight = varkMatch ? 1.15 : 1.0;
-      return { subject: s, weight: accuracyWeight * examWeight * varkWeight };
+      // Readiness floor gate — critical subjects dominate the plan
+      const readiness = typeof readinessById[s.id] === "number" ? readinessById[s.id] : accuracy;
+      const floorBoost = readiness < 40 && daysToExam < 30 ? 3.0
+                       : readiness < 55 && daysToExam < 14 ? 2.0
+                       : 1.0;
+      const weakTopic = weakTopicsBySubjectId.get(s.id) ?? null;
+      return { subject: s, weight: accuracyWeight * examWeight * varkWeight * floorBoost, weakTopic, readiness, accuracy };
     });
 
-    /* Build a weighted pool, repeating each subject in proportion to its weight.
-       Total pool size keeps the round-robin from feeling repetitive. */
+    // Build a weighted pool
     const totalWeight = weighted.reduce((sum, w) => sum + w.weight, 0) || 1;
     const poolSize = Math.max(mySubjects.length * 3, 14);
     const pool: any[] = [];
+    const weightedMap = new Map(weighted.map(w => [w.subject.id, w]));
     for (const { subject, weight } of weighted) {
       const reps = Math.max(1, Math.round((weight / totalWeight) * poolSize));
       for (let i = 0; i < reps; i++) pool.push(subject);
     }
-    /* Light shuffle so the same subject doesn't appear back-to-back too often */
+    // Light shuffle — prevents back-to-back repeats
     for (let i = pool.length - 1; i > 0; i--) {
       const j = (i * 9301 + 49297) % (i + 1);
       [pool[i], pool[j]] = [pool[j], pool[i]];
     }
 
+    // Urgency power slot — a 3rd block added on weekdays when any enrolled exam is ≤ 7 days away
+    const POWER_SLOT = { label: "Power Hour", labelAf: "Kraguur", icon: Rocket, hours: "05:30–06:30" };
+    const hasCriticalExamThisWeek = (examSchedule as any[]).some(e => {
+      const d = calcDays(new Date(e.date));
+      return d <= 7 && d > 0 && mySubjects.some((s: any) => s.name === e.subjectName);
+    });
+
     const plan: Array<{
       day: string; dayAf: string; short: string; shortAf: string;
-      slots: Array<{ subject: any; slot: any; neon: typeof NEON[string]; reason?: string; reasonAf?: string }>;
+      slots: Array<{
+        subject: any; slot: any; neon: typeof NEON[string];
+        reason?: string; reasonAf?: string;
+        weakTopic?: any; paperFocus?: string; readiness?: number;
+      }>;
       date: Date; dateStr: string;
     }> = [];
     let poolIdx = 0;
@@ -368,49 +405,63 @@ export default function StudyCalendarPage() {
       const isSaturday = d === 5;
       const isNscRest = NSC_NON_EXAM_DATES.includes(dateStr);
 
-      const daySlots: Array<{ subject: any; slot: any; neon: typeof NEON[string]; reason?: string; reasonAf?: string }> = [];
+      const daySlots: Array<{
+        subject: any; slot: any; neon: typeof NEON[string];
+        reason?: string; reasonAf?: string;
+        weakTopic?: any; paperFocus?: string; readiness?: number;
+      }> = [];
 
       if (!isSunday && !isNscRest) {
         const dayExams = examSchedule.filter((e: any) => e.date === dateStr);
-        const slotsToday = isSaturday ? slots.slice(0, 1) : slots;
+        // Expand to 3 slots on sprint weekdays
+        const baseSlots = isSaturday ? slots.slice(0, 1)
+          : hasCriticalExamThisWeek ? [POWER_SLOT, ...slots]
+          : slots;
 
-        for (let si = 0; si < slotsToday.length; si++) {
-          const slot = slotsToday[si];
-          /* If there's an exam today, first slot = revision for that exam subject */
+        for (let si = 0; si < baseSlots.length; si++) {
+          const slot = baseSlots[si];
+          // If there's an exam today, first slot = revision for that exam subject
           if (dayExams.length > 0 && si === 0) {
             const examName = dayExams[0].subjectName;
             const subj = mySubjects.find((s: any) => s.name === examName) || mySubjects[0];
             const neon = subjectNeon(subj.name, 0);
+            const wt = weightedMap.get(subj.id);
             daySlots.push({
               subject: subj, slot, neon,
-              reason: "Exam today — revision",
-              reasonAf: "Eksamen vandag — hersiening",
+              reason: "Exam today — final revision",
+              reasonAf: "Eksamen vandag — finale hersiening",
+              weakTopic: wt?.weakTopic ?? null,
+              readiness: wt?.readiness,
             });
             continue;
           }
-          // Pick the next pool subject, but skip if it matches the previous
-          // slot on THIS day so a single day never stacks the same subject.
+          // Pick next pool subject; avoid same subject back-to-back on same day
           let candidate = pool[poolIdx % pool.length] || mySubjects[0];
           const prevSubjId = daySlots.length > 0 ? daySlots[daySlots.length - 1].subject?.id : null;
           if (prevSubjId != null && candidate?.id === prevSubjId && mySubjects.length > 1) {
-            // Look ahead in the pool for the first different subject.
             for (let k = 1; k <= pool.length; k++) {
               const c = pool[(poolIdx + k) % pool.length];
-              if (c?.id !== prevSubjId) {
-                candidate = c;
-                poolIdx += k; // consume the scanned entries so we don't loop back
-                break;
-              }
+              if (c?.id !== prevSubjId) { candidate = c; poolIdx += k; break; }
             }
           }
           const subj = candidate;
           const neon = subjectNeon(subj.name, poolIdx);
-          const prog = progressById.get(subj.id);
-          const accuracy = typeof prog?.accuracy === "number" ? prog.accuracy : 60;
+          const wt = weightedMap.get(subj.id);
+          const accuracy = wt?.accuracy ?? 60;
           const days = nextExamBySubject.get(subj.name) ?? 120;
-          const reason = days <= 14 ? `Exam in ${days}d` : accuracy < 55 ? "Boost weak topic" : "Regular practice";
-          const reasonAf = days <= 14 ? `Eksamen oor ${days}d` : accuracy < 55 ? "Versterk swak onderwerp" : "Gereelde oefening";
-          daySlots.push({ subject: subj, slot, neon, reason, reasonAf });
+          const paperNum = nextExamPaperBySubject.get(subj.name);
+          const paperFocus = paperNum ? `P${paperNum}` : undefined;
+          const weakTopic: any = wt?.weakTopic ?? null;
+          // Smart reason: paper focus → exam countdown → weak topic drill → regular
+          const reason = days <= 7  ? `${paperFocus ? paperFocus + " · " : ""}Final sprint — ${days}d`
+                       : days <= 21 ? `${paperFocus ? paperFocus + " · " : ""}Exam in ${days}d`
+                       : accuracy < 55 ? (weakTopic ? `Drill: ${weakTopic.name?.substring(0, 22)}` : "Boost weak area")
+                       : "Build mastery";
+          const reasonAf = days <= 7  ? `${paperFocus ? paperFocus + " · " : ""}Finale sprint — ${days}d`
+                         : days <= 21 ? `${paperFocus ? paperFocus + " · " : ""}Eksamen oor ${days}d`
+                         : accuracy < 55 ? (weakTopic ? `Oefen: ${weakTopic.name?.substring(0, 22)}` : "Versterk swak area")
+                         : "Bou vaardigheid";
+          daySlots.push({ subject: subj, slot, neon, reason, reasonAf, weakTopic, paperFocus, readiness: wt?.readiness });
           poolIdx++;
         }
       }
@@ -1342,7 +1393,7 @@ export default function StudyCalendarPage() {
                             return (
                               <div
                                 key={si}
-                                className="rounded-2xl overflow-hidden"
+                                className="rounded-2xl overflow-hidden relative"
                                 style={{
                                   background: `${entry.neon.hex}10`,
                                   border: `1px solid ${entry.neon.hex}40`,
@@ -1351,18 +1402,40 @@ export default function StudyCalendarPage() {
                                 }}
                                 data-testid={`slot-mobile-${mobileDay}-${si}`}
                               >
+                                {/* Readiness band strip — left edge */}
+                                {(() => {
+                                  const r = entry.readiness;
+                                  const bandColor = r == null ? "#28c9d6" : r < 40 ? "#e6519c" : r < 65 ? "#ffd83a" : "#28c9d6";
+                                  return <div aria-hidden style={{ position:"absolute", left:0, top:0, bottom:0, width:3, background:bandColor, boxShadow:`0 0 6px ${bandColor}88`, borderRadius:"3px 0 0 3px" }} />;
+                                })()}
+
                                 {/* Header */}
-                                <div className="flex items-center gap-3 p-3">
+                                <div className="flex items-center gap-3 p-3 pl-4">
                                   <div style={{ width:42,height:42,borderRadius:12,flexShrink:0,background:`${entry.neon.hex}22`,border:`1px solid ${entry.neon.hex}55`,display:"flex",alignItems:"center",justifyContent:"center" }}>
                                     <SlotIcon className="w-4 h-4" style={{ color:entry.neon.hex }} />
                                   </div>
                                   <div className="flex-1 min-w-0">
                                     <p className="font-bold truncate" style={{ color:entry.neon.text, fontSize:"14px" }}>
                                       {getSubjectIcon(entry.subject.name)} {isAf && entry.subject.nameAfrikaans ? entry.subject.nameAfrikaans : entry.subject.name}
+                                      {(entry as any).paperFocus && (
+                                        <span className="ml-1.5 text-[10px] font-black px-1.5 py-[1px] rounded-md" style={{ background:`${entry.neon.hex}28`, color:entry.neon.hex, border:`1px solid ${entry.neon.hex}55` }}>
+                                          {(entry as any).paperFocus}
+                                        </span>
+                                      )}
                                     </p>
                                     <p style={{ color:"#ffffff", fontSize:"11px" }}>
                                       {isAf ? entry.slot.labelAf : entry.slot.label}&nbsp;·&nbsp;{entry.slot.hours}
                                     </p>
+                                    {/* Weak topic drill target */}
+                                    {(entry as any).weakTopic && (
+                                      <p
+                                        className="truncate mt-0.5"
+                                        style={{ fontSize:"10px", color:"#ffd83a", opacity:0.85 }}
+                                        data-testid={`slot-weak-topic-${mobileDay}-${si}`}
+                                      >
+                                        ⚑ {isAf ? "Fokus" : "Focus"}: {(entry as any).weakTopic.name}
+                                      </p>
+                                    )}
                                   </div>
                                   {entry.reason && (
                                     <span
@@ -1382,12 +1455,12 @@ export default function StudyCalendarPage() {
                                   )}
                                 </div>
 
-                                {/* Action row */}
+                                {/* Action row — Practice deeplinks to weak topic when available */}
                                 <div
                                   className="grid grid-cols-3 gap-px"
                                   style={{ background: `${entry.neon.hex}25`, borderTop: `1px solid ${entry.neon.hex}30` }}
                                 >
-                                  <Link href={`/subject/${subjId}`}>
+                                  <Link href={(entry as any).weakTopic ? `/subject/${subjId}?topicId=${(entry as any).weakTopic.topicId ?? (entry as any).weakTopic.id}#boost-quiz-section` : `/subject/${subjId}`}>
                                     <button
                                       className="w-full bg-black/80 hover:bg-black transition-all py-2.5 px-2 text-[10px] font-bold uppercase tracking-[0.12em] flex items-center justify-center gap-1.5"
                                       style={{ color: entry.neon.hex }}

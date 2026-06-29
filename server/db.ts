@@ -34,6 +34,8 @@ export const pool = new Pool({
   connectionTimeoutMillis: 5000,
   maxUses: 7500,            // Retire a client after 7 500 uses (avoids stale TCP)
   allowExitOnIdle: false,
+  // Enforce TLS for Supabase connections — rejectUnauthorized prevents MITM
+  ...(process.env.DATABASE_URL?.includes('.supabase.') ? { ssl: { rejectUnauthorized: true } } : {}),
 });
 
 // Prevent unhandled pool errors from crashing the server.

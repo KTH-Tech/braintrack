@@ -234,9 +234,10 @@ export default function PastPapersPage() {
     select: (data: any[]) => data.map((s) => ({ code: s.code as string })),
   });
   const enrolledCodes = new Set<string>(enrolledSubjectsRaw?.map((s) => s.code) ?? []);
-  const visibleSubjects = enrolledCodes.size > 0
-    ? SUBJECTS.filter((s) => enrolledCodes.has(s.code))
-    : SUBJECTS;
+  // Only show subjects the learner is enrolled in — never fall back to all subjects
+  // (that would show 15 unrelated subjects and waste the learner's time).
+  const visibleSubjects = SUBJECTS.filter((s) => enrolledCodes.has(s.code));
+  const hasNoEnrollment = enrolledSubjectsRaw !== undefined && enrolledCodes.size === 0;
 
   // Match an ingested subject row by fuzzy name (uploaded subjects use full names like "Mathematics")
   const findIngestedFor = (subjectName: string): IngestedSubject | undefined => {
@@ -330,7 +331,20 @@ export default function PastPapersPage() {
                     <CardDescription>10 {text.years}</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-1 max-h-[500px] overflow-y-auto">
-                    {visibleSubjects.map((subject) => (
+                    {hasNoEnrollment ? (
+                      <div className="py-6 text-center space-y-3">
+                        <p className="text-sm text-muted-foreground">
+                          {language === "af"
+                            ? "Voltooi jou vakkeuse om jou vraestelle te sien."
+                            : "Complete your subject selection to see your past papers."}
+                        </p>
+                        <Link href="/onboarding">
+                          <Button size="sm" variant="outline" className="text-xs">
+                            {language === "af" ? "Kies vakke" : "Select subjects"}
+                          </Button>
+                        </Link>
+                      </div>
+                    ) : visibleSubjects.map((subject) => (
                       <Button
                         key={subject.code}
                         variant={selectedSubject === subject.code ? "default" : "ghost"}

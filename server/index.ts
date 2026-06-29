@@ -130,7 +130,7 @@ app.use(helmet({
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "https:", "blob:"],
-      connectSrc: ["'self'", "ws:", "wss:", "https://api.openai.com", "https://paynow.netcash.co.za", "https://sandbox.netcash.co.za"],
+      connectSrc: ["'self'", ...(isProd ? [] : ["ws:"]), "wss:", "https://api.openai.com", "https://paynow.netcash.co.za", "https://sandbox.netcash.co.za"],
       mediaSrc: ["'self'", "blob:"],
       objectSrc: ["'none'"],
       frameSrc: ["'none'"],

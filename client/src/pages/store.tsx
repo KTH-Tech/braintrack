@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+
+type MysteryReward = { type: "coins" | "theme"; amount?: number; themeKey?: string; label: string; labelAf: string };
 import {
   AlertDialog,
   AlertDialogAction,
@@ -194,20 +196,29 @@ export default function StorePage() {
     return null;
   }
 
+  const [mysteryReward, setMysteryReward] = useState<MysteryReward | null>(null);
+
   const { data: storeData, isLoading } = useQuery<{
     items: StoreItem[];
     userUnlocks: string[];
     coinBalance: number;
     subscriptionTier: string | null;
+    activePowerUps: Record<string, { active: boolean; expiresAt?: string }>;
   }>({ queryKey: ["/api/store/items"] });
 
   const unlockMutation = useMutation({
     mutationFn: async ({ itemKey, method }: { itemKey: string; method: string }) =>
       apiRequest("POST", "/api/store/unlock", { itemKey, method }),
-    onSuccess: (_, vars) => {
+    onSuccess: (data: any, vars) => {
       queryClient.invalidateQueries({ queryKey: ["/api/store/items"] });
       queryClient.invalidateQueries({ queryKey: ["/api/user/coins"] });
       queryClient.invalidateQueries({ queryKey: ["/api/user/themes"] });
+      setUnlocking(null);
+      setConfirmItem(null);
+      if (vars.itemKey === "mystery-box" && data?.reward) {
+        setMysteryReward(data.reward as MysteryReward);
+        return;
+      }
       const item = storeData?.items.find((i) => i.key === vars.itemKey);
       toast({
         title: t.purchaseConfirmed,
@@ -215,8 +226,6 @@ export default function StorePage() {
           ? (isAf ? `${item.nameAf} is in jou versameling.` : `${item.name} is in your collection.`)
           : t.itemUnlocked,
       });
-      setUnlocking(null);
-      setConfirmItem(null);
     },
     onError: (err: any) => {
       const msg = err?.message || "";
@@ -235,6 +244,13 @@ export default function StorePage() {
   const userUnlocks = useMemo(() => new Set(storeData?.userUnlocks ?? []), [storeData?.userUnlocks]);
   const balance = storeData?.coinBalance ?? 0;
   const subTier = storeData?.subscriptionTier;
+  const activePowerUps = storeData?.activePowerUps ?? {};
+
+  // Double-coins: compute hours remaining for display
+  const doubleCoinsExpiresAt = activePowerUps["double-coins"]?.expiresAt;
+  const doubleCoinsHoursLeft = doubleCoinsExpiresAt
+    ? Math.max(0, Math.ceil((new Date(doubleCoinsExpiresAt).getTime() - Date.now()) / 3_600_000))
+    : 0;
 
   const tabCounts = useMemo(() => {
     const c: Record<TabKey, number> = { all: 0, power_up: 0, theme: 0, cosmetic: 0, title: 0 };
@@ -265,7 +281,7 @@ export default function StorePage() {
   };
 
   const requestUnlock = (item: StoreItem) => {
-    if (isOwned(item)) return;
+    if (item.key !== "mystery-box" && isOwned(item)) return;
     if (!canAfford(item)) {
       toast({
         title: t.notEnoughCoins,
@@ -440,22 +456,29 @@ export default function StorePage() {
           <EmptyState t={t} />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {applyOwnershipAndSort(visibleItems).map((item) => (
-              <ItemCard
-                key={item.key}
-                item={item}
-                isAf={isAf}
-                t={t}
-                owned={isOwned(item)}
-                isActive={isActiveTheme(item)}
-                affordable={canAfford(item)}
-                requiresSub={requiresSubscription(item)}
-                isUnlocking={unlocking === item.key}
-                onApply={applyTheme}
-                onUnlock={requestUnlock}
-                onSubscribe={() => navigate("/subscribe")}
-              />
-            ))}
+            {applyOwnershipAndSort(visibleItems).map((item) => {
+              const ownedEffectOverride =
+                item.key === "double-coins" && isOwned(item) && doubleCoinsHoursLeft > 0
+                  ? { en: `2x active — ${doubleCoinsHoursLeft}h left`, af: `2x aktief — ${doubleCoinsHoursLeft}u oor` }
+                  : undefined;
+              return (
+                <ItemCard
+                  key={item.key}
+                  item={item}
+                  isAf={isAf}
+                  t={t}
+                  owned={isOwned(item)}
+                  isActive={isActiveTheme(item)}
+                  affordable={canAfford(item)}
+                  requiresSub={requiresSubscription(item)}
+                  isUnlocking={unlocking === item.key}
+                  onApply={applyTheme}
+                  onUnlock={requestUnlock}
+                  onSubscribe={() => navigate("/subscribe")}
+                  ownedEffectOverride={ownedEffectOverride}
+                />
+              );
+            })}
           </div>
         )}
 
@@ -491,6 +514,30 @@ export default function StorePage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Mystery Box Reward Reveal */}
+      <AlertDialog open={!!mysteryReward} onOpenChange={(o) => !o && setMysteryReward(null)}>
+        <AlertDialogContent data-testid="mystery-reward-dialog">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-fuchsia-400" />
+              {isAf ? "Raaiselkas Beloning!" : "Mystery Box Reward!"}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-center text-base pt-2">
+              {mysteryReward && (
+                <span className="font-bold text-white text-lg">
+                  {isAf ? mysteryReward.labelAf : mysteryReward.label}
+                </span>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setMysteryReward(null)} data-testid="mystery-reward-close">
+              {isAf ? "Dankie!" : "Nice!"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
@@ -508,7 +555,7 @@ function EmptyState({ t }: { t: typeof T["en"] | typeof T["af"] }) {
 
 function ItemCard({
   item, isAf, t, owned, isActive, affordable, requiresSub, isUnlocking,
-  onApply, onUnlock, onSubscribe,
+  onApply, onUnlock, onSubscribe, ownedEffectOverride,
 }: {
   item: StoreItem;
   isAf: boolean;
@@ -521,6 +568,7 @@ function ItemCard({
   onApply: (i: StoreItem) => void;
   onUnlock: (i: StoreItem) => void;
   onSubscribe: () => void;
+  ownedEffectOverride?: { en: string; af: string };
 }) {
   const Icon = KEY_ICONS[item.key] ?? ITEM_ICONS[item.type] ?? Sparkles;
   const palette = item.palette;
@@ -576,7 +624,7 @@ function ItemCard({
         </div>
 
         {owned && (() => {
-          const effect = OWNED_EFFECT[item.key] ?? TYPE_OWNED_EFFECT[item.type];
+          const effect = ownedEffectOverride ?? OWNED_EFFECT[item.key] ?? TYPE_OWNED_EFFECT[item.type];
           if (!effect) return null;
           return (
             <p className="text-[10px] text-primary/80 font-semibold flex items-center gap-1" data-testid={`owned-effect-${item.key}`}>

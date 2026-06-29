@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+﻿import { useState, useEffect, useRef, useCallback } from "react";
 import { X, Send, User, ArrowRight, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/language-context";
@@ -233,8 +233,8 @@ const TS_LABELS = {
   signInCta: { en: "Sign in", af: "Meld aan" },
   escalating: { en: "Sending your details to our support team…", af: "Stuur jou besonderhede na ons ondersteuningspan…" },
   escalateFailed: {
-    en: "I couldn't reach our support inbox. Please email brain-support@kthtech.co.za directly and we'll respond within 24 hours.",
-    af: "Ek kon nie ons ondersteuningsboks bereik nie. Stuur asseblief direk e-pos na brain-support@kthtech.co.za en ons reageer binne 24 uur.",
+    en: "I couldn't reach our support inbox. Please email enterprise@kth-tech.com directly and we'll respond within 24 hours.",
+    af: "Ek kon nie ons ondersteuningsboks bereik nie. Stuur asseblief direk e-pos na enterprise@kth-tech.com en ons reageer binne 24 uur.",
   },
 };
 
@@ -322,8 +322,8 @@ const knowledge: KnowledgeEntry[] = [
   },
   {
     keywords: ["cancel", "kanselleer", "billing", "fakturering", "payment", "betaling", "refund", "terugbetaling"],
-    en: "There's nothing to cancel — BrainTrack is free for everyone right now. If you have a billing question for later, email brain-support@kthtech.co.za.",
-    af: "Daar is niks om te kanselleer nie — BrainTrack is op die oomblik gratis vir almal. As jy later 'n faktureringsvraag het, e-pos brain-support@kthtech.co.za.",
+    en: "There's nothing to cancel — BrainTrack is free for everyone right now. If you have a billing question for later, email enterprise@kth-tech.com.",
+    af: "Daar is niks om te kanselleer nie — BrainTrack is op die oomblik gratis vir almal. As jy later 'n faktureringsvraag het, e-pos enterprise@kth-tech.com.",
   },
 ];
 

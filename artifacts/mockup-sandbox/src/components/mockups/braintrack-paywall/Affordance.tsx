@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { Check, CheckCircle2, CreditCard, Building2, Landmark, Globe, ChevronRight, AlertCircle, ArrowDown, Sparkles, Info } from "lucide-react";
 
 export function Affordance() {
@@ -228,7 +228,7 @@ export function Affordance() {
             </button>
 
             <p className="text-center text-slate-500 text-sm mt-6 max-w-lg mx-auto">
-              30-day cancellation notice required. To cancel, email <a href="mailto:brain-support@kthtech.co.za" className="text-cyan-400 hover:underline">brain-support@kthtech.co.za</a> at least 30 days before your next billing date.
+              30-day cancellation notice required. To cancel, email <a href="mailto:enterprise@kth-tech.com" className="text-cyan-400 hover:underline">enterprise@kth-tech.com</a> at least 30 days before your next billing date.
             </p>
           </div>
         </section>

@@ -367,7 +367,7 @@ export default function PrelimTimetablePage() {
                 {isAf ? "Terug" : "Back"}
               </Button>
             </Link>
-            <BrainTrackLogo size="sm" />
+            <BrainTrackLogo className="h-7 w-auto" />
           </div>
           <Button
             size="sm" variant="ghost"

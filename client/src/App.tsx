@@ -156,6 +156,7 @@ const ParentPurchasePage = lazy(() => import("@/pages/parent-purchase"));
 const FlashcardsPage = lazy(() => import("@/pages/flashcards"));
 const RevisionPage = lazy(() => import("@/pages/revision"));
 const CookiePolicyPage = lazy(() => import("@/pages/cookie-policy"));
+const RefundPolicyPage = lazy(() => import("@/pages/refund-policy"));
 const StorePage = lazy(() => import("@/pages/store"));
 const JourneyPage = lazy(() => import("@/pages/journey"));
 const SchoolOnboardingPage = lazy(() => import("@/pages/school-onboarding"));
@@ -751,6 +752,7 @@ function Router() {
         <Route path="/privacy-policy" component={PrivacyPolicyPage} />
         <Route path="/terms-of-service" component={TermsOfServicePage} />
         <Route path="/cookie-policy" component={CookiePolicyPage} />
+        <Route path="/refund-policy" component={RefundPolicyPage} />
         <Route path="/activate" component={ActivatePage} />
         <Route path="/calendar" component={PrintableCalendarPage} />
         <Route path="/past-papers" component={PastPapersPage} />

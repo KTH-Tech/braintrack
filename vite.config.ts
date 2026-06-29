@@ -47,11 +47,73 @@ function swCacheVersionPlugin() {
   };
 }
 
+// Dev-only plugin: mocks /api/auth/user + onboarding + subscription so the
+// learner portal is accessible locally without a real Replit session.
+// Only active when NODE_ENV=development AND REPL_ID is not set (i.e. not on Replit).
+function devAuthMockPlugin() {
+  const isLocal = process.env.NODE_ENV !== "production" && !process.env.REPL_ID;
+  if (!isLocal) return null;
+
+  const MOCK_USER = {
+    id: "dev-preview-001",
+    email: "dev@braintrack.local",
+    firstName: "Dev",
+    lastName: "Preview",
+    profileImageUrl: null,
+    role: "admin",
+    schoolId: null,
+    theme: "dark",
+    preferredLanguage: "en",
+    isLocked: false,
+    lockReason: null,
+    lockedAt: null,
+    lockedUntil: null,
+    failedLoginAttempts: 0,
+    lastLoginAt: new Date().toISOString(),
+    selectedSubjects: ["mathematics", "physical-sciences", "life-sciences", "english-home-language"],
+    preferencesJson: null,
+    phone: null,
+    firstTouchSource: "local-dev",
+    roleConfirmed: true,
+    varkPrimary: "visual",
+    varkSecondary: "reading",
+    varkConfidence: null,
+    parentEmail: null,
+    parentConsentGranted: true,
+    parentConsentRequestedAt: null,
+    parentConsentGrantedAt: null,
+    schoolName: "BrainTrack Dev School",
+    grade: 12,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  return {
+    name: "dev-auth-mock",
+    configureServer(server: any) {
+      server.middlewares.use((req: any, res: any, next: any) => {
+        const json = (data: unknown) => {
+          res.setHeader("Content-Type", "application/json");
+          res.end(JSON.stringify(data));
+        };
+
+        if (req.url === "/api/auth/user") return json(MOCK_USER);
+        if (req.url === "/api/user/onboarding-status") return json(true);
+        if (req.url === "/api/user/subscription-status") {
+          return json({ active: true, status: "active", trialEndsAt: null });
+        }
+        next();
+      });
+    },
+  };
+}
+
 export default defineConfig({
   plugins: [
     react(),
     runtimeErrorOverlay(),
     swCacheVersionPlugin(),
+    devAuthMockPlugin(),
     ...(process.env.NODE_ENV !== "production" &&
     process.env.REPL_ID !== undefined
       ? [

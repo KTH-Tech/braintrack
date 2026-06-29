@@ -12,7 +12,11 @@ import jwt from "jsonwebtoken";
 import { createHash, randomBytes } from "crypto";
 import { storage } from "../../storage";
 
-const _sessionBase = process.env.SESSION_SECRET || "dev-session-secret";
+const _sessionBase = process.env.SESSION_SECRET ?? (() => {
+  if (process.env.NODE_ENV === "production") throw new Error("SESSION_SECRET must be set in production");
+  console.warn("[auth] SESSION_SECRET not set — using insecure dev fallback. Set SESSION_SECRET env var.");
+  return "dev-session-secret";
+})();
 const JWT_SECRET_BASE = createHash("sha256").update(_sessionBase + ":jwt").digest("hex");
 const JWT_EXPIRES_IN = "15m";
 const REFRESH_TOKEN_EXPIRES_DAYS = 7;

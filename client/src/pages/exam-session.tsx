@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useExamSessionProtection } from "@/hooks/use-exam-session-protection";
 import { ExamQuestionText } from "@/components/exam/exam-question-text";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation, useSearch } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -60,6 +60,7 @@ export default function ExamSessionPage() {
   const { toast } = useToast();
   const { user, logout } = useAuth();
   const { language } = useLanguage();
+  const queryClient = useQueryClient();
   const isAf = language === "af";
   useExamSessionProtection();
 
@@ -254,6 +255,11 @@ export default function ExamSessionPage() {
       setExamResult({ score: data.score, total: data.total, percentage: data.percentage, details: data.details });
       setExamState("results");
       if (timerRef.current) clearInterval(timerRef.current);
+      // Refresh calendar + mastery so study plan reflects latest performance
+      queryClient.invalidateQueries({ queryKey: ["/api/mastery/weak-topics"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user/progress"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/learner/readiness"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/learner/today-directive"] });
     },
     onError: () => {
       toast({

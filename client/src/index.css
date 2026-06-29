@@ -239,35 +239,83 @@ h1.no-rainbow *, .no-rainbow * {
 }
 
 .prismglass-panel {
-  -webkit-backdrop-filter: blur(20px) saturate(2.0);
-  backdrop-filter: blur(20px) saturate(2.0);
+  -webkit-backdrop-filter: blur(20px) saturate(2.2);
+  backdrop-filter: blur(20px) saturate(2.2);
   background: linear-gradient(
     135deg,
-    rgba(236,72,153,0.22) 0%,
-    rgba(6,182,212,0.20) 25%,
-    rgba(59,130,246,0.18) 50%,
-    rgba(34,197,94,0.16) 75%,
-    rgba(249,115,22,0.18) 100%
+    rgba(68,102,255,0.18) 0%,
+    rgba(0,187,255,0.15) 20%,
+    rgba(0,255,85,0.12) 40%,
+    rgba(255,238,0,0.12) 60%,
+    rgba(204,0,255,0.15) 80%,
+    rgba(153,0,255,0.18) 100%
   );
   background-size: 300% 300%;
   animation: prismglass-shift 8s ease infinite;
-  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
   box-shadow:
-    0 8px 40px rgba(6,182,212,0.25),
-    0 4px 20px rgba(236,72,153,0.18),
+    0 8px 40px rgba(0,187,255,0.22),
+    0 4px 20px rgba(204,0,255,0.16),
     0 2px 0 rgba(255,255,255,0.10) inset;
   border-radius: 1rem;
 }
 
 .shadcn-card {
+  background: rgba(255, 255, 255, 0.04);
+  -webkit-backdrop-filter: blur(14px) saturate(1.6);
+  backdrop-filter: blur(14px) saturate(1.6);
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
   box-shadow:
-    0 0 18px rgba(40, 201, 214, 0.12),
-    0 6px 20px rgba(0, 0, 0, 0.55);
+    0 0 20px rgba(40, 201, 214, 0.08),
+    0 8px 32px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 .shadcn-card:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(40, 201, 214, 0.22) !important;
   box-shadow:
-    0 0 24px rgba(40, 201, 214, 0.25),
-    0 10px 28px rgba(0, 0, 0, 0.65);
+    0 0 30px rgba(40, 201, 214, 0.20),
+    0 12px 40px rgba(0, 0, 0, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 0.10);
+}
+
+/* ── Glass utilities ───────────────────────────────────────── */
+.glass {
+  -webkit-backdrop-filter: blur(16px) saturate(1.8);
+  backdrop-filter: blur(16px) saturate(1.8);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.60),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.glass-neon {
+  -webkit-backdrop-filter: blur(16px) saturate(1.8);
+  backdrop-filter: blur(16px) saturate(1.8);
+  background: rgba(40, 201, 214, 0.05);
+  border: 1px solid rgba(40, 201, 214, 0.22);
+  box-shadow:
+    0 0 22px rgba(40, 201, 214, 0.14),
+    0 4px 24px rgba(0, 0, 0, 0.60),
+    inset 0 1px 0 rgba(40, 201, 214, 0.08);
+}
+
+.glass-rainbow {
+  -webkit-backdrop-filter: blur(18px) saturate(2.0);
+  backdrop-filter: blur(18px) saturate(2.0);
+  background: linear-gradient(
+    135deg,
+    rgba(68,102,255,0.08) 0%,
+    rgba(0,255,85,0.06) 33%,
+    rgba(255,238,0,0.06) 66%,
+    rgba(204,0,255,0.08) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 0 30px rgba(68,102,255,0.10),
+    0 8px 32px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09);
 }
 
 @keyframes border-rotate {
@@ -1570,15 +1618,15 @@ html.light .nav-mobile-panel {
   @apply bg-clip-text text-transparent;
   background-image: linear-gradient(
     90deg,
-    #ff6a1f 0%,
-    #ff8a1f 12%,
-    #ffb020 24%,
-    #ffd83a 36%,
-    #28c9d6 50%,
-    #4f8cd9 66%,
-    #8e7cdc 78%,
-    #b066d6 88%,
-    #e6519c 100%
+    #4466ff 0%,
+    #00bbff 14%,
+    #00ff55 28%,
+    #aaff00 40%,
+    #ffee00 52%,
+    #ff8800 64%,
+    #ff2266 76%,
+    #cc00ff 88%,
+    #9900ff 100%
   ) !important;
   background-size: 100% 100% !important;
   /* animation disabled — only .anicon-* may animate */
@@ -1594,15 +1642,15 @@ html.light .nav-mobile-panel {
   @apply bg-clip-text text-transparent;
   background-image: linear-gradient(
     90deg,
-    #ff6a1f 0%,
-    #ff8a1f 12%,
-    #ffb020 24%,
-    #ffd83a 36%,
-    #28c9d6 50%,
-    #4f8cd9 66%,
-    #8e7cdc 78%,
-    #b066d6 88%,
-    #e6519c 100%
+    #4466ff 0%,
+    #00bbff 14%,
+    #00ff55 28%,
+    #aaff00 40%,
+    #ffee00 52%,
+    #ff8800 64%,
+    #ff2266 76%,
+    #cc00ff 88%,
+    #9900ff 100%
   );
 }
 

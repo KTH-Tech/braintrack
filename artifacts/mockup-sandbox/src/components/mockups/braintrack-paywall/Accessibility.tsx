@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { Check, CheckCircle, Circle, Globe, AlertCircle } from "lucide-react";
 
 export function Accessibility() {
@@ -229,8 +229,8 @@ export function Accessibility() {
           <footer className="mt-8 text-[#BBBBBB] text-[17px] leading-relaxed border-t-2 border-[#333333] pt-6">
             <p>
               {isEn 
-                ? "30-day cancellation notice required. To cancel, email brain-support@kthtech.co.za at least 30 days before your next billing date." 
-                : "30-dae kansellasiekennisgewing vereis. Om te kanselleer, e-pos brain-support@kthtech.co.za ten minste 30 dae voor jou volgende faktureringsdatum."}
+                ? "30-day cancellation notice required. To cancel, email enterprise@kth-tech.com at least 30 days before your next billing date." 
+                : "30-dae kansellasiekennisgewing vereis. Om te kanselleer, e-pos enterprise@kth-tech.com ten minste 30 dae voor jou volgende faktureringsdatum."}
             </p>
           </footer>
         </section>

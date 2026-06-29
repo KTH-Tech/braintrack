@@ -101,9 +101,12 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
       setQuizState("results");
       globalQueryClient.invalidateQueries({ queryKey: ["/api/user/coins"] });
       globalQueryClient.invalidateQueries({ queryKey: ["/api/user/stats"] });
+      globalQueryClient.invalidateQueries({ queryKey: ["/api/mastery/weak-topics"] });
+      globalQueryClient.invalidateQueries({ queryKey: ["/api/user/progress"] });
       const invalidateProgress = () => {
         globalQueryClient.invalidateQueries({ queryKey: ["/api/learner/goals"] });
         globalQueryClient.invalidateQueries({ queryKey: ["/api/learner/readiness"] });
+        globalQueryClient.invalidateQueries({ queryKey: ["/api/learner/today-directive"] });
       };
       if (sessionIdRef.current !== null) {
         apiRequest("PATCH", `/api/study-sessions/${sessionIdRef.current}/end`, {

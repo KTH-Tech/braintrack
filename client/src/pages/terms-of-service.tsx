@@ -1,4 +1,4 @@
-import { FileText, Shield, Users, Scale, BookOpen, Lock, RefreshCw, Globe, CreditCard, Undo2, ArrowLeft, Sparkles } from "lucide-react";
+﻿import { FileText, Shield, Users, Scale, BookOpen, Lock, RefreshCw, Globe, CreditCard, Undo2, ArrowLeft, Sparkles } from "lucide-react";
 import { FooterPageHomeButton } from "@/components/footer-page-nav";
 import { Link } from "wouter";
 import { useLanguage } from "@/lib/language-context";
@@ -135,11 +135,49 @@ export default function TermsOfServicePage() {
           "No refunds are issued for partial months",
           "Access continues until the end of the paid period after cancellation"
         ],
-        footer: "Manage your subscription in Settings → Subscription. For billing queries only, email brain-support@kthtech.co.za."
+        footer: "Manage your subscription in Settings → Subscription. For billing queries only, email enterprise@kth-tech.com."
+      },
+      {
+        icon: Sparkles,
+        title: "13. AI Tutor (Rizz) Usage",
+        content: [
+          "BrainTrack™ includes an AI-powered tutoring assistant called Rizz, powered by OpenAI technology.",
+          "When you use the AI Tutor, your message content is transmitted to OpenAI's API for processing. We do not send your name, contact details or payment information to OpenAI.",
+          "AI Tutor responses are generated automatically and may be inaccurate. They do not constitute professional advice of any kind.",
+          "The AI Tutor is not a substitute for qualified medical, psychological or educational professionals. If you are in distress, contact SADAG at 0800 456 789 or a trusted adult."
+        ]
+      },
+      {
+        icon: CreditCard,
+        title: "14. Virtual Currency & Store",
+        content: [
+          "BrainTrack™ includes a virtual coin system. Coins are earned through learning activity and awarded for streaks, badges and correct answers.",
+          "Coins have no monetary value, cannot be exchanged for cash or real-world goods, are non-transferable between accounts, and are not refundable under any circumstances.",
+          "Virtual store items (themes, power-ups, cosmetics) purchased with coins are non-refundable. All coin awards and store purchases are final.",
+          "Power-ups have usage limitations: Streak Freeze protects one missed day and is consumed on use; Double Coins applies for 24 hours from purchase; Mystery Box delivers a random reward immediately upon purchase."
+        ]
+      },
+      {
+        icon: Users,
+        title: "15. School & Institutional Accounts",
+        content: [
+          "Partner schools and educational institutions may access a school dashboard to monitor aggregated (non-personal) learner progress metrics.",
+          "School administrators may not access individual learner messages, AI Tutor conversations, or voice notes.",
+          "Schools that enrol learners under a group agreement remain responsible for obtaining parental consent for learners under 18."
+        ]
+      },
+      {
+        icon: Scale,
+        title: "16. Governing Law",
+        content: [
+          "These Terms are governed by the laws of the Republic of South Africa.",
+          "Any disputes arising from the use of BrainTrack™ shall be subject to the exclusive jurisdiction of the South African courts.",
+          "BrainTrack™ is a product of KTH Tech (Pty) Ltd, a company registered in South Africa."
+        ]
       },
       {
         icon: RefreshCw,
-        title: "12. Platform Updates",
+        title: "17. Platform Updates",
         content: [
           "BrainTrack™ may update features, content and policies to maintain quality and curriculum alignment."
         ]
@@ -253,11 +291,49 @@ export default function TermsOfServicePage() {
           "Geen terugbetalings word vir gedeeltelike maande uitgereik nie",
           "Toegang duur voort tot die einde van die betaalde tydperk na kansellasie"
         ],
-        footer: "Bestuur jou intekening in Instellings → Intekening. Slegs vir faktureringsnavrae, e-pos brain-support@kthtech.co.za."
+        footer: "Bestuur jou intekening in Instellings → Intekening. Slegs vir faktureringsnavrae, e-pos enterprise@kth-tech.com."
+      },
+      {
+        icon: Sparkles,
+        title: "13. KI-Tutor (Rizz) Gebruik",
+        content: [
+          "BrainTrack™ sluit 'n KI-aangedrewe tutorbystandige genaamd Rizz in, aangedryf deur OpenAI-tegnologie.",
+          "Wanneer jy die KI-Tutor gebruik, word jou boodskapinhoud na OpenAI se API gestuur vir verwerking. Ons stuur nie jou naam, kontakbesonderhede of betalingsinligting na OpenAI nie.",
+          "KI-Tutor-antwoorde word outomaties gegenereer en kan onakkuraat wees. Hulle stel geen professionele advies van enige aard voor nie.",
+          "Die KI-Tutor is nie 'n plaasvervanger vir gekwalifiseerde mediese, sielkundige of opvoedkundige professionele persone nie. As jy in nood is, kontak SADAG by 0800 456 789 of 'n vertroude volwassene."
+        ]
+      },
+      {
+        icon: CreditCard,
+        title: "14. Virtuele Geldeenheid en Winkel",
+        content: [
+          "BrainTrack™ sluit 'n virtuele muntstelsel in. Munte word verdien deur leeraktiwiteit en toegeken vir reekse, kentekens en korrekte antwoorde.",
+          "Munte het geen monetêre waarde nie, kan nie vir kontant of regte-wêreld-goedere ingeruil word nie, is nie oordraagbaar tussen rekeninge nie en is onder geen omstandighede terugbetaalbaar nie.",
+          "Virtuele winkelitems (temas, hupstote, kosmetika) wat met munte gekoop word, is nie terugbetaalbaar nie. Alle munttoekenninge en winkelaankope is finaal.",
+          "Hupstote het gebruiksbeperkings: Reeks Vries beskerm een gemiste dag en word met gebruik verbruik; 2x Munte geld vir 24 uur vanaf aankoop; Raaiselkas lewer onmiddellik 'n ewekansige beloning na aankoop."
+        ]
+      },
+      {
+        icon: Users,
+        title: "15. Skool- en Institusionele Rekeninge",
+        content: [
+          "Vennootskole en opvoedkundige instellings kan toegang kry tot 'n skoolinstrumentbord om geaggregeerde (nie-persoonlike) leerder-vordering-statistieke te monitor.",
+          "Skooladministrateurs kan nie toegang kry tot individuele leerder-boodskappe, KI-Tutor-gesprekke of stemnote nie.",
+          "Skole wat leerders onder 'n groepsooreenkoms inskryf, bly verantwoordelik vir die verkryging van ouertoestemming vir leerders onder 18."
+        ]
+      },
+      {
+        icon: Scale,
+        title: "16. Beherende Reg",
+        content: [
+          "Hierdie Voorwaardes word beheer deur die wette van die Republiek van Suid-Afrika.",
+          "Enige geskille wat spruit uit die gebruik van BrainTrack™ sal onderhewig wees aan die eksklusiewe jurisdiksie van die Suid-Afrikaanse howe.",
+          "BrainTrack™ is 'n produk van KTH Tech (Edms) Bpk, 'n maatskappy geregistreer in Suid-Afrika."
+        ]
       },
       {
         icon: RefreshCw,
-        title: "12. Platformwysigings",
+        title: "17. Platformwysigings",
         content: [
           "BrainTrack™ kan funksies, inhoud en beleide opdateer om kwaliteit en kurrikulum-belyning te handhaaf."
         ]
@@ -340,7 +416,7 @@ export default function TermsOfServicePage() {
               : "Everything you need to know before using BrainTrack™ — straight up, no small print games."}
           </p>
           <p className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "#ffd83a" }}>
-            {isAf ? "Laas opgedateer: 15 Mei 2026" : "Last updated: 15 May 2026"}
+            {isAf ? "Laas opgedateer: 29 Junie 2026" : "Last updated: 29 June 2026"}
           </p>
         </div>
 

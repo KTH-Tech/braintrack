@@ -1,4 +1,4 @@
-# BrainTrack — Environment Variable Reference
+﻿# BrainTrack — Environment Variable Reference
 
 > Last updated: May 2026 (Task #481)
 
@@ -60,7 +60,7 @@ Generated once via `web-push` and stored as shared env vars. Both keys must be s
 |----------|------|--------|-------------|-------------------|
 | `VAPID_PUBLIC_KEY` | 📋 Env Var (shared) | ✅ Set | VAPID public key (sent to browser) | Push subscription fails silently; `/api/push/vapid-public-key` returns 503 |
 | `VAPID_PRIVATE_KEY` | 📋 Env Var (shared) | ✅ Set | VAPID private key (signs push messages) | Push delivery fails; streak/trial/daily-focus reminders do nothing |
-| `VAPID_SUBJECT` | 📋 Env Var (shared) | ⚠️ Missing (optional) | `mailto:` or HTTPS URL for push contact | Defaults to `mailto:brain-support@kthtech.co.za`; not required |
+| `VAPID_SUBJECT` | 📋 Env Var (shared) | ⚠️ Missing (optional) | `mailto:` or HTTPS URL for push contact | Defaults to `mailto:enterprise@kth-tech.com`; not required |
 
 To regenerate VAPID keys (e.g. after key rotation), run:
 ```bash

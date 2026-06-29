@@ -1,4 +1,5 @@
 import type { Express, Request, Response } from "express";
+import { uploadVoiceNote, getVoiceNoteSignedUrl, uploadTopicAudio, getTopicAudioSignedUrl } from "./supabase-storage";
 import { createServer, type Server } from "http";
 import { createHmac, timingSafeEqual, createHash, randomBytes, scryptSync, randomInt } from "crypto";
 import jwt from "jsonwebtoken";
@@ -89,7 +90,10 @@ import {
 // WATERMARKING — AI CONTENT TRACEABILITY
 // ============================================
 
-const _sessionKeyBase = process.env.SESSION_SECRET || "dev-session-secret";
+const _sessionKeyBase = process.env.SESSION_SECRET ?? (() => {
+  if (process.env.NODE_ENV === "production") throw new Error("SESSION_SECRET must be set in production");
+  return "dev-session-secret";
+})();
 const WATERMARK_SECRET = createHash("sha256").update(_sessionKeyBase + ":watermark").digest("hex");
 
 // ============================================
@@ -2160,6 +2164,8 @@ export async function registerRoutes(
           `Boost quiz: ${score}/${total} correct answers`,
           subjectId.toString()
         );
+        // XP: 5 per correct answer (same cadence as coins)
+        await storage.awardXP(userId, score * 5, "boost_quiz_correct").catch(() => {});
       }
 
       // Invalidate any matching session entries (load endpoint may have used a
@@ -4668,7 +4674,7 @@ export async function registerRoutes(
   });
 
   // All exam papers
-  app.get("/api/exam-papers", async (req, res) => {
+  app.get("/api/exam-papers", isAuthenticated, async (req: any, res: any) => {
     try {
       const papers = await storage.getAllExamPapers();
       res.json(papers);
@@ -4679,7 +4685,7 @@ export async function registerRoutes(
   });
 
   // Questions for an exam paper — reads from dbe_verbatim_questions (released only)
-  app.get("/api/exam-papers/:id/questions", isAuthenticated, async (req, res) => {
+  app.get("/api/exam-papers/:id/questions", isAuthenticated, async (req: any, res: any) => {
     try {
       const paperId = parseInt(req.params.id);
       if (isNaN(paperId)) return res.status(400).json({ error: "Invalid paper id" });
@@ -4911,8 +4917,12 @@ export async function registerRoutes(
             if (pct >= 80) {
               await storage.awardBadge(userId, "high_score");
             }
+            // XP: 25 base + 50 bonus for ≥80%
+            const xpAmount = 25 + (pct >= 80 ? 50 : 0);
+            await storage.awardXP(userId, xpAmount, "exam_completed").catch(() => {});
           } else {
             await storage.updateUserProgress(userId, examPaper[0].subjectId);
+            await storage.awardXP(userId, 25, "exam_completed").catch(() => {});
           }
         }
         await storage.checkAndAwardBadges(userId);
@@ -5390,9 +5400,20 @@ Learner's question: ${data.message}${voiceNoteContext}`;
       
       // RIGID: Off-topic detection
       if (isOffTopic(question)) {
-        return res.status(400).json({ 
+        return res.status(400).json({
           error: isAfrikaans ? OFF_TOPIC_RESPONSE_AF : OFF_TOPIC_RESPONSE_EN,
           offTopic: true
+        });
+      }
+
+      // Check subscription — expired subscribers cannot access AI tutor
+      const isActiveSub = await storage.hasActiveSubscription(userId);
+      if (!isActiveSub) {
+        return res.status(402).json({
+          error: isAfrikaans
+            ? "Jou intekening het verval. Skakel weer in om die AI Tutor te gebruik."
+            : "Your subscription has expired. Resubscribe to use the AI Tutor.",
+          feature: "ai_tutor",
         });
       }
 
@@ -5402,7 +5423,7 @@ Learner's question: ${data.message}${voiceNoteContext}`;
       const subscription = await storage.getSubscription(userId);
       const plan = subscription?.plan || "standard";
       const limits = USAGE_LIMITS[plan] || USAGE_LIMITS.standard;
-      
+
       const tutorCount = currentUsage?.tutorCount || 0;
       if (tutorCount >= limits.tutorDaily) {
         return res.status(429).json({ 
@@ -7600,14 +7621,15 @@ Create comprehensive study notes for the topic provided.`;
     }
   });
 
-  app.post("/api/activation/activate", activationLimiter, async (req: Request, res: Response) => {
+  app.post("/api/activation/activate", activationLimiter, isAuthenticated, async (req: any, res: Response) => {
     try {
+      const userId: string = req.user.claims.sub;
       const { code, acceptedTerms, acceptedPopia } = req.body;
-      
+
       if (!code || !acceptedTerms || !acceptedPopia) {
         return res.status(400).json({ success: false, message: "Missing required fields" });
       }
-      
+
       // For demo/testing purposes
       if (code === "TEST123456" || code === "DEMO2025") {
         return res.json({
@@ -7615,11 +7637,26 @@ Create comprehensive study notes for the topic provided.`;
           message: "Account activated successfully! Please log in to continue.",
         });
       }
-      
+
       // Check and use activation code
       const activationCode = await storage.getActivationCodeByCode(code);
-      
+
       if (!activationCode) {
+        // P0-1 fallback: parent_links activation — parent onboarding stores a UUID
+        // in parent_links.activation_token which is NOT in the activation_codes table.
+        const parentLinkRows = await db
+          .select()
+          .from(parentLinks)
+          .where(and(eq(parentLinks.activationToken, code), eq(parentLinks.status, "pending")))
+          .limit(1);
+        if (parentLinkRows.length > 0) {
+          const link = parentLinkRows[0];
+          await db
+            .update(parentLinks)
+            .set({ learnerUserId: userId, status: "activated", activatedAt: new Date() })
+            .where(eq(parentLinks.id, link.id));
+          return res.json({ success: true, message: "Parent link activated successfully! Your parent can now monitor your progress." });
+        }
         return res.json({ success: false, message: "Invalid activation code" });
       }
       
@@ -9890,8 +9927,12 @@ Create comprehensive study notes for the topic provided.`;
   // GET /api/past-papers/list — learner-accessible list of ingested past papers
   // that have passed the release gate. Un-released or admin-only uploads are
   // hidden — the response shape stays the same as before.
-  app.get("/api/past-papers/list", isAuthenticated, async (_req: any, res) => {
+  app.get("/api/past-papers/list", isAuthenticated, async (req: any, res) => {
     try {
+      const userId: string = req.user.claims.sub;
+      const isActiveSub = await storage.hasActiveSubscription(userId);
+      if (!isActiveSub) return res.status(402).json({ error: "subscription_required", feature: "past_papers" });
+
       const result: Array<{
         subject: string;
         years: Array<{ year: number; papers: number[]; memos: number[] }>;
@@ -9948,6 +9989,10 @@ Create comprehensive study notes for the topic provided.`;
   // that has not been release-gate stamped in dbe_verbatim_questions, even if
   // the underlying file exists on disk (Task #826).
   app.get("/api/past-papers/file", isAuthenticated, async (req: any, res) => {
+    const userId: string = req.user.claims.sub;
+    const isActiveSub = await storage.hasActiveSubscription(userId);
+    if (!isActiveSub) return res.status(402).json({ error: "subscription_required", feature: "past_papers" });
+
     const { subject, year, paperNumber, isMemo } = req.query;
     if (!subject || !year) return res.status(400).json({ error: "subject and year required" });
     const yearNum = Number(year);
@@ -15488,6 +15533,26 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
   // Built-in synthesized non-theme products that ship as part of the unified
   // Store catalogue. These are surfaced server-side so the client gets a
   // single, deduplicated list without requiring DB seeding changes.
+  function pickMysteryReward(): { type: "coins" | "theme"; amount?: number; themeKey?: string; label: string; labelAf: string } {
+    const n = Math.random();
+    if (n < 0.55) {
+      const tiers = [50, 75, 100, 150, 200];
+      const amount = tiers[Math.floor(Math.random() * tiers.length)];
+      return { type: "coins", amount, label: `${amount} Coins`, labelAf: `${amount} Munte` };
+    }
+    if (n < 0.85) {
+      const themes: Array<[string, string, string]> = [
+        ["ocean", "Ocean Theme", "Oseaan-tema"],
+        ["solar", "Solar Theme", "Sonkrag-tema"],
+        ["midnight", "Midnight Theme", "Middernag-tema"],
+        ["coastal", "Coastal Theme", "Kuslyn-tema"],
+      ];
+      const pick = themes[Math.floor(Math.random() * themes.length)];
+      return { type: "theme", themeKey: pick[0], label: pick[1], labelAf: pick[2] };
+    }
+    return { type: "coins", amount: 250, label: "250 Coins — Jackpot!", labelAf: "250 Munte — Geldpot!" };
+  }
+
   const BUILT_IN_PRODUCTS = [
     { key: "streak-freeze",     name: "Streak Freeze",      nameAf: "Reeks Vries",           description: "Protect your streak for 1 day if you miss studying.",   descriptionAf: "Beskerm jou reeks vir 1 dag as jy studeer mis.",          type: "power_up", coinCost: 40,  subscriptionTier: null, sortOrder: 100 },
     { key: "rizz-boost",        name: "Rizz Boost",         nameAf: "Rizz Hupstoot",         description: "+20 extra Rizz tutor questions for 24 hours.",          descriptionAf: "+20 ekstra Rizz-tutor-vrae vir 24 uur.",                 type: "power_up", coinCost: 60,  subscriptionTier: null, sortOrder: 101 },
@@ -15583,6 +15648,9 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
     `);
     await pool.query(`CREATE INDEX IF NOT EXISTS user_unlocks_user_idx ON user_unlocks(user_id)`); // nosemgrep: javascript.drizzle-orm.security.audit.ban-drizzle-sql-raw -- static DDL, no user input
     await pool.query(`CREATE INDEX IF NOT EXISTS store_items_type_idx ON store_items(type)`); // nosemgrep: javascript.drizzle-orm.security.audit.ban-drizzle-sql-raw -- static DDL, no user input
+    // Power-up lifecycle columns — safe to run on existing tables (IF NOT EXISTS)
+    await pool.query(`ALTER TABLE user_unlocks ADD COLUMN IF NOT EXISTS expires_at TIMESTAMPTZ`); // nosemgrep: javascript.drizzle-orm.security.audit.ban-drizzle-sql-raw -- static DDL
+    await pool.query(`ALTER TABLE user_unlocks ADD COLUMN IF NOT EXISTS consumed_at TIMESTAMPTZ`); // nosemgrep: javascript.drizzle-orm.security.audit.ban-drizzle-sql-raw -- static DDL
 
     // Seed store items if table is empty
     const { rows: existingItems } = await pool.query(`SELECT id FROM store_items LIMIT 1`); // nosemgrep: javascript.drizzle-orm.security.audit.ban-drizzle-sql-raw -- static SQL, no user input
@@ -15627,12 +15695,37 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       const { rows: unlockRows } = await pool.query(
         `SELECT item_key FROM user_unlocks WHERE user_id = $1`, [userId]
       );
-      const userUnlockKeys = unlockRows.map((r: any) => r.item_key);
+      const userUnlockKeys: string[] = unlockRows.map((r: any) => r.item_key);
       const coins = await storage.getUserCoins(userId);
       const sub = await storage.getSubscription(userId);
       const subTier = sub?.status === "active" ? (sub.plan || "basic") : null;
       const unlockedThemes = await storage.getUserUnlockedThemes(userId);
       const unlockedThemeSet = new Set(unlockedThemes);
+
+      // Power-up lifecycle: determine which are currently active vs consumed/expired
+      const { rows: puRows } = await pool.query(
+        `SELECT item_key, expires_at, consumed_at FROM user_unlocks WHERE user_id = $1 AND item_key IN ('streak-freeze','double-coins','mystery-box')`,
+        [userId]
+      );
+      const activePowerUps: Record<string, { active: boolean; expiresAt?: string }> = {};
+      // Keys to remove from the regular unlock set (consumed/expired — allow re-purchase)
+      const powerUpExclude = new Set<string>(["mystery-box"]);
+      for (const row of puRows) {
+        if (row.item_key === "streak-freeze") {
+          if (!row.consumed_at) {
+            activePowerUps["streak-freeze"] = { active: true };
+          } else {
+            powerUpExclude.add("streak-freeze");
+          }
+        }
+        if (row.item_key === "double-coins") {
+          if (row.expires_at && new Date(row.expires_at) > new Date()) {
+            activePowerUps["double-coins"] = { active: true, expiresAt: row.expires_at };
+          } else {
+            powerUpExclude.add("double-coins");
+          }
+        }
+      }
 
       // DB-backed items: skip the legacy theme-* rows now superseded by the
       // unified THEME_CATALOG below.
@@ -15685,8 +15778,10 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
 
       const allItems = [...dbItems, ...builtInItems, ...themeItems].sort((a, b) => a.sortOrder - b.sortOrder);
 
-      // Merge theme unlocks into user unlock list so the client sees a single set.
-      const mergedUnlocks = new Set<string>(userUnlockKeys);
+      // Merge unlock keys, excluding consumable/expired power-ups so the client allows re-purchase.
+      const mergedUnlocks = new Set<string>(userUnlockKeys.filter((k) => !powerUpExclude.has(k)));
+      // Active power-ups count as "owned" (shield ready, 2x active, etc.)
+      for (const k of Object.keys(activePowerUps)) mergedUnlocks.add(k);
       for (const themeKey of unlockedThemeSet) mergedUnlocks.add(themeKey);
       // Free themes are always considered "owned"
       for (const t of THEME_CATALOG) if (t.coinCost === 0) mergedUnlocks.add(t.key);
@@ -15696,6 +15791,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         userUnlocks: Array.from(mergedUnlocks),
         coinBalance: coins.balance,
         subscriptionTier: subTier,
+        activePowerUps,
       });
     } catch (err) {
       console.error("[store] Error listing items:", err);
@@ -15740,6 +15836,78 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       // 2) Built-in synthesized product — persist unlock without a store_items row.
       const builtIn = BUILT_IN_PRODUCTS.find((p) => p.key === itemKey);
       if (builtIn) {
+        const isPowerUp = builtIn.type === "power_up";
+        const coinsSpent = method === "coins" ? builtIn.coinCost : 0;
+
+        // ── Mystery Box: consumable, always re-purchaseable ────────────────────
+        if (isPowerUp && itemKey === "mystery-box") {
+          if (method === "coins") {
+            const wallet = await storage.getUserCoins(userId);
+            if (wallet.balance < builtIn.coinCost) {
+              return res.status(400).json({ error: "Insufficient coins", balance: wallet.balance, required: builtIn.coinCost });
+            }
+            await storage.spendCoins(userId, builtIn.coinCost, "spend_store", `Unlocked: ${builtIn.name}`, itemKey);
+          }
+          const reward = pickMysteryReward();
+          if (reward.type === "coins" && reward.amount) {
+            await storage.awardCoins(userId, reward.amount, "mystery_box", `Mystery Box: ${reward.label}`);
+          } else if (reward.type === "theme" && reward.themeKey) {
+            try { await storage.unlockTheme(userId, reward.themeKey, 0); } catch (_) {}
+          }
+          await pool.query(
+            `INSERT INTO user_unlocks (user_id, item_key, unlock_method, coins_spent, consumed_at)
+             VALUES ($1,$2,$3,$4,NOW())
+             ON CONFLICT (user_id, item_key) DO UPDATE SET unlocked_at = NOW(), consumed_at = NOW(), coins_spent = EXCLUDED.coins_spent`,
+            [userId, itemKey, method, coinsSpent]
+          );
+          return res.json({ success: true, reward });
+        }
+
+        // ── Streak Freeze: consumable, one active at a time ───────────────────
+        if (isPowerUp && itemKey === "streak-freeze") {
+          const { rows: existing } = await pool.query(
+            `SELECT id FROM user_unlocks WHERE user_id = $1 AND item_key = $2 AND consumed_at IS NULL`, [userId, itemKey]
+          );
+          if (existing.length > 0) return res.status(400).json({ error: "You already have an active Streak Freeze." });
+          if (method === "coins") {
+            const wallet = await storage.getUserCoins(userId);
+            if (wallet.balance < builtIn.coinCost) {
+              return res.status(400).json({ error: "Insufficient coins", balance: wallet.balance, required: builtIn.coinCost });
+            }
+            await storage.spendCoins(userId, builtIn.coinCost, "spend_store", `Unlocked: ${builtIn.name}`, itemKey);
+          }
+          await pool.query(
+            `INSERT INTO user_unlocks (user_id, item_key, unlock_method, coins_spent)
+             VALUES ($1,$2,$3,$4)
+             ON CONFLICT (user_id, item_key) DO UPDATE SET unlocked_at = NOW(), consumed_at = NULL, coins_spent = EXCLUDED.coins_spent`,
+            [userId, itemKey, method, coinsSpent]
+          );
+          return res.json({ success: true });
+        }
+
+        // ── Double Coins: timed (24 h), one active at a time ─────────────────
+        if (isPowerUp && itemKey === "double-coins") {
+          const { rows: existing } = await pool.query(
+            `SELECT id FROM user_unlocks WHERE user_id = $1 AND item_key = $2 AND (expires_at IS NULL OR expires_at > NOW())`, [userId, itemKey]
+          );
+          if (existing.length > 0) return res.status(400).json({ error: "Double Coins is already active." });
+          if (method === "coins") {
+            const wallet = await storage.getUserCoins(userId);
+            if (wallet.balance < builtIn.coinCost) {
+              return res.status(400).json({ error: "Insufficient coins", balance: wallet.balance, required: builtIn.coinCost });
+            }
+            await storage.spendCoins(userId, builtIn.coinCost, "spend_store", `Unlocked: ${builtIn.name}`, itemKey);
+          }
+          await pool.query(
+            `INSERT INTO user_unlocks (user_id, item_key, unlock_method, coins_spent, expires_at)
+             VALUES ($1,$2,$3,$4, NOW() + INTERVAL '24 hours')
+             ON CONFLICT (user_id, item_key) DO UPDATE SET unlocked_at = NOW(), expires_at = NOW() + INTERVAL '24 hours', consumed_at = NULL, coins_spent = EXCLUDED.coins_spent`,
+            [userId, itemKey, method, coinsSpent]
+          );
+          return res.json({ success: true });
+        }
+
+        // ── Other built-in items (non-power-up) ───────────────────────────────
         const { rows: existing } = await pool.query(
           `SELECT id FROM user_unlocks WHERE user_id = $1 AND item_key = $2`, [userId, itemKey]
         );
@@ -15753,8 +15921,8 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         }
         await pool.query(
           `INSERT INTO user_unlocks (user_id, item_key, unlock_method, coins_spent)
-           VALUES ($1, $2, $3, $4) ON CONFLICT (user_id, item_key) DO NOTHING`,
-          [userId, itemKey, method, method === "coins" ? builtIn.coinCost : 0]
+           VALUES ($1,$2,$3,$4) ON CONFLICT (user_id, item_key) DO NOTHING`,
+          [userId, itemKey, method, coinsSpent]
         );
         return res.json({ success: true });
       }
@@ -16121,7 +16289,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
   // Setup VAPID once (idempotent)
   if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
     webpush.setVapidDetails(
-      process.env.VAPID_SUBJECT || "mailto:brain-support@kthtech.co.za",
+      process.env.VAPID_SUBJECT || "mailto:enterprise@kth-tech.com",
       process.env.VAPID_PUBLIC_KEY,
       process.env.VAPID_PRIVATE_KEY
     );
@@ -17603,9 +17771,10 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         .where(and(eq(attempts.userId, userId), gte(attempts.createdAt, todayStart)));
       const dailyCount = Number(dailyRow?.cnt ?? 0);
 
-      // Weekly active days (count distinct days in current week that have at least 1 attempt)
+      // Weekly active days — week runs Mon–Sun (SA calendar convention)
       const weekStart = new Date();
-      weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+      const dow = weekStart.getDay(); // 0=Sun…6=Sat
+      weekStart.setDate(weekStart.getDate() - (dow === 0 ? 6 : dow - 1));
       weekStart.setHours(0, 0, 0, 0);
       const weeklyRows = await db
         .select({ day: sql<string>`DATE(${attempts.createdAt} AT TIME ZONE 'Africa/Johannesburg')` })
@@ -17891,12 +18060,29 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
   // streaming path.  New paths are already in the correct form.
   function normaliseTopicAudioUrl(url: string | null | undefined): string | null {
     if (!url) return null;
+    // Legacy disk path → authenticated streaming proxy
     const OLD_PREFIX = "/uploads/audio/topics/";
     if (url.startsWith(OLD_PREFIX)) {
       return "/api/audio/topics/" + url.slice(OLD_PREFIX.length);
     }
+    // Supabase Storage → route through signed-URL endpoint so clients never hold raw keys
+    if (url.startsWith("supabase://topic-audio/")) {
+      const objectPath = url.slice("supabase://topic-audio/".length);
+      return `/api/audio/topics/supabase/${encodeURIComponent(objectPath)}`;
+    }
     return url;
   }
+
+  // GET /api/audio/topics/supabase/:objectPath — redirect to Supabase signed URL
+  app.get("/api/audio/topics/supabase/:objectPath", isAuthenticated, async (req: any, res) => {
+    const objectPath = decodeURIComponent(req.params.objectPath);
+    if (!/^[\w\-\/]+\.mp3$/i.test(objectPath)) {
+      return res.status(400).json({ error: "Invalid audio path" });
+    }
+    const signedUrl = await getTopicAudioSignedUrl(`supabase://topic-audio/${objectPath}`);
+    if (!signedUrl) return res.status(404).json({ error: "Audio not available" });
+    return res.redirect(302, signedUrl);
+  });
 
   // GET /api/audio/topics/:filename — authenticated topic audio stream.
   // Replaces the public static mount so that learners must hold a valid session
@@ -17960,8 +18146,9 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
 
       const filename = `topic-${topicId}-${lang}-${sourceHash}.mp3`;
       const filePath = join(TOPICS_AUDIO_DIR, filename);
-      const audioUrl = `/api/audio/topics/${filename}`;
 
+      let buf: Buffer | null = null;
+      // Generate TTS only if not already on disk
       if (!existsSync(filePath)) {
         const speech = await callOpenAIWithRetry(() => openai.audio.speech.create({
           model: "tts-1",
@@ -17969,8 +18156,20 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
           input: text,
           response_format: "mp3",
         }));
-        const buf = Buffer.from(await speech.arrayBuffer());
-        await fsWriteFile(filePath, buf);
+        buf = Buffer.from(await speech.arrayBuffer());
+      } else {
+        const { readFileSync } = await import("fs");
+        buf = readFileSync(filePath);
+      }
+
+      // Try Supabase Storage; fall back to disk
+      const supabaseAudioUrl = await uploadTopicAudio({ buffer: buf!, topicId, lang });
+      let audioUrl: string;
+      if (supabaseAudioUrl) {
+        audioUrl = supabaseAudioUrl;
+      } else {
+        await fsWriteFile(filePath, buf!);
+        audioUrl = `/api/audio/topics/${filename}`;
       }
 
       // Admin-triggered regeneration also clears the pin for that language
@@ -18785,38 +18984,53 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       const [topic] = await db.select().from(topics).where(eq(topics.id, topicId)).limit(1);
       if (!topic) return res.status(404).json({ error: "Topic not found" });
 
-      const userDir = join(VOICE_NOTES_DIR, userId);
-      await fsMkdir(userDir, { recursive: true }).catch(() => {});
-
       const ext = (req.file.mimetype.includes("webm") ? "webm"
         : req.file.mimetype.includes("ogg") ? "ogg"
         : req.file.mimetype.includes("mp4") ? "m4a"
         : req.file.mimetype.includes("mpeg") ? "mp3"
         : req.file.mimetype.includes("wav") ? "wav" : "webm");
       const filename = `note-${topicId}-${Date.now()}.${ext}`;
-      const filePath = join(userDir, filename);
-      await fsWriteFile(filePath, req.file.buffer);
-      // Stored value is the relative on-disk path; the public response uses the
-      // authenticated streaming endpoint so private notes are never world-readable.
-      const diskRelPath = `voice-notes/${userId}/${filename}`;
 
+      // Insert DB row first so we have an ID for the Supabase object path
       const title = (req.body?.title || "").toString().slice(0, 120) || null;
-
       const [row] = await db.insert(voiceNotes).values({
         userId,
         topicId,
         subjectId: topic.subjectId,
-        audioUrl: diskRelPath,
+        audioUrl: `voice-notes/${userId}/${filename}`, // placeholder updated below
         durationSeconds,
         sizeBytes: req.file.size || req.file.buffer.length,
         title,
         transcriptStatus: "pending",
       }).returning();
 
+      // Try Supabase Storage first; fall back to disk
+      const supabaseUrl = await uploadVoiceNote({
+        buffer: req.file.buffer,
+        userId,
+        noteId: row.id,
+        ext,
+        mimetype: req.file.mimetype,
+      });
+
+      let filePath: string | null = null;
+      let storedAudioUrl: string;
+      if (supabaseUrl) {
+        storedAudioUrl = supabaseUrl;
+        await db.update(voiceNotes).set({ audioUrl: supabaseUrl }).where(eq(voiceNotes.id, row.id));
+      } else {
+        // Disk fallback
+        const userDir = join(VOICE_NOTES_DIR, userId);
+        await fsMkdir(userDir, { recursive: true }).catch(() => {});
+        filePath = join(userDir, filename);
+        await fsWriteFile(filePath, req.file.buffer);
+        storedAudioUrl = `voice-notes/${userId}/${filename}`;
+      }
+
       res.status(201).json({ ...row, audioUrl: `/api/voice-notes/${row.id}/file` });
 
       // Kick off Whisper transcription in the background — never blocks the upload response.
-      void transcribeVoiceNoteInBackground(row.id, filePath);
+      if (filePath) void transcribeVoiceNoteInBackground(row.id, filePath);
     } catch (err: any) {
       console.error("Error saving voice note:", err);
       res.status(err?.status || 500).json({ error: err?.message || "Failed to save voice note" });
@@ -18886,6 +19100,14 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         .limit(1);
       if (!row) return res.status(404).json({ error: "Voice note not found" });
 
+      // If stored in Supabase Storage, redirect to signed URL
+      if (row.audioUrl.startsWith("supabase://voice-notes/")) {
+        const signedUrl = await getVoiceNoteSignedUrl(row.audioUrl);
+        if (!signedUrl) return res.status(404).json({ error: "Could not generate audio URL" });
+        return res.redirect(302, signedUrl);
+      }
+
+      // Disk fallback
       const rel = row.audioUrl.replace(/^\/+/, "");
       const fullPath = rel.startsWith("uploads/")
         ? join(process.cwd(), rel)
@@ -20427,6 +20649,25 @@ a{color:#28c9d6;text-decoration:none}</style></head>
         }
       })();
 
+      // Fire-and-forget admin alert
+      (async () => {
+        try {
+          const { sendBrandedEmail } = await import("./email.js");
+          const adminRecipients = (process.env.ADMIN_EMAILS ?? "kreativethinkinghub@gmail.com")
+            .split(",").map(s => s.trim()).filter(Boolean);
+          for (const adminTo of adminRecipients) {
+            await sendBrandedEmail({
+              to: adminTo,
+              subject: `[BrainTrack] New school enquiry #${enquiry.id} — ${schoolName}`,
+              heading: `New School Enquiry #${enquiry.id}`,
+              bodyHtml: `<p>A new school has expressed interest in BrainTrack:</p><ul><li><b>School:</b> ${schoolName}</li><li><b>Contact:</b> ${contactPerson}</li><li><b>Email:</b> ${email}</li><li><b>Phone:</b> ${phone ?? "—"}</li><li><b>Learners:</b> ${numLearners ?? "—"}</li></ul>`,
+              ctaLabel: "View in Admin",
+              ctaUrl: `${process.env.APP_URL ?? "https://braintrack.co.za"}/admin/schools`,
+            }).catch(() => {});
+          }
+        } catch (_) { /* non-critical */ }
+      })();
+
       return res.status(201).json({ ok: true, id: enquiry.id });
     } catch (err: any) {
       console.error("[SchoolEnquiry] POST /api/school/onboarding error:", err);
@@ -20503,7 +20744,7 @@ a{color:#28c9d6;text-decoration:none}</style></head>
       }
       if (!resolvedEmail && userEmail) resolvedEmail = userEmail.toLowerCase();
 
-      const supportTo = process.env.SUPPORT_EMAIL || "brain-support@kthtech.co.za";
+      const supportTo = process.env.SUPPORT_EMAIL || "enterprise@kth-tech.com";
       const categoryLabel = TROUBLESHOOT_CATEGORY_LABELS[category] ?? category;
       const ts = new Date().toISOString();
       const ip = (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() || req.socket.remoteAddress || "unknown";
@@ -20582,7 +20823,7 @@ a{color:#28c9d6;text-decoration:none}</style></head>
       });
     } catch (err: any) {
       console.error("[RizzTroubleshoot] POST /api/support/troubleshoot-email error:", err);
-      return res.status(500).json({ error: "Failed to escalate. Please email brain-support@kthtech.co.za directly." });
+      return res.status(500).json({ error: "Failed to escalate. Please email enterprise@kth-tech.com directly." });
     }
   });
 

@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from "react";
+﻿import { useState, useRef, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link, useSearch } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -1312,7 +1313,7 @@ export default function TutorPage() {
 
   <div class="doc-footer">
     <div>
-      <strong>BrainTrack™</strong> &mdash; brain-support@kthtech.co.za
+      <strong>BrainTrack™</strong> &mdash; enterprise@kth-tech.com
     </div>
     <div>
       <span class="confidential">&#9632; ${t.printConfidential}</span>
@@ -1333,8 +1334,13 @@ export default function TutorPage() {
                     </div>
                   </div>
                   <ScrollArea className="flex-1 pr-4">
-                    <div className="text-sm text-white leading-relaxed whitespace-pre-wrap" data-testid="text-generated-notes" onContextMenu={e => e.preventDefault()} data-nosnippet>
-                      {generatedNotes.replace(/#{1,6}\s+/g, '').replace(/\*{1,3}([^*]+)\*{1,3}/g, '$1')}
+                    <div
+                      className="text-sm text-white leading-relaxed prose prose-invert prose-sm max-w-none [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm [&_h1]:font-bold [&_h2]:font-bold [&_h3]:font-semibold [&_ul]:pl-4 [&_ol]:pl-4 [&_li]:mb-0.5 [&_strong]:text-[#28c9d6] [&_code]:bg-white/10 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs [&_blockquote]:border-l-2 [&_blockquote]:border-white/20 [&_blockquote]:pl-3 [&_blockquote]:text-white/60"
+                      data-testid="text-generated-notes"
+                      onContextMenu={e => e.preventDefault()}
+                      data-nosnippet
+                    >
+                      <ReactMarkdown>{generatedNotes}</ReactMarkdown>
                     </div>
                   </ScrollArea>
                 </div>
@@ -1481,8 +1487,8 @@ export default function TutorPage() {
                         onContextMenu={msg.role === "assistant" ? e => e.preventDefault() : undefined}
                         data-nosnippet={msg.role === "assistant" ? "" : undefined}
                       >
-                        <div className="whitespace-pre-wrap break-words text-sm leading-relaxed">
-                          {msg.content}
+                        <div className="break-words text-sm leading-relaxed prose prose-invert prose-sm max-w-none [&_h1]:text-sm [&_h2]:text-sm [&_h3]:text-xs [&_h1]:font-bold [&_h2]:font-bold [&_h3]:font-semibold [&_ul]:pl-4 [&_ol]:pl-4 [&_li]:mb-0.5 [&_strong]:text-[#28c9d6] [&_p]:mb-1 [&_p:last-child]:mb-0 [&_code]:bg-white/10 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs [&_blockquote]:border-l-2 [&_blockquote]:border-white/20 [&_blockquote]:pl-3 [&_blockquote]:text-white/60">
+                          <ReactMarkdown>{msg.content}</ReactMarkdown>
                         </div>
                       </div>
                       {msg.role === "assistant" && msg.citedExamples && msg.citedExamples.length > 0 && (
