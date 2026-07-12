@@ -20,12 +20,14 @@ Configure the following rate limits under **Security > WAF > Rate limiting rules
 | Auth Protection | `/api/login`, `/api/signup` | ANY | 5 req / 1 min | Block |
 | General API | `/api/*` | ANY | 60 req / 1 min | Rate Limit |
 | Exam Protection | `/api/exam/*` | ANY | 10 req / 5 min | Block |
-| Yoco Webhook | `/api/yoco/webhook` | POST | 5 req / 1 min | Block |
+| Netcash Webhook | `/api/netcash/webhook` | POST | 5 req / 1 min | Block |
+| PayFast ITN | `/api/payfast/itn` | POST | 5 req / 1 min | Block |
 | AI Content Protection | `/api/tutor/*`, `/api/notes/*` | ANY | 20 req / 1 min | Block |
 
-**Note for Yoco Webhook**:
+**Note for payment webhooks (Netcash, PayFast)**:
 - Restrict to **POST** method only.
 - Set "Maximum Payload Size" to **100 KB** (matching server limit).
+- Yoco was removed — `/api/yoco/webhook` now returns HTTP 410 and needs no rule.
 
 ## 4. Bot Management
 - **Security Level**: Set to "Medium" or "High".

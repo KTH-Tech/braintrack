@@ -97,7 +97,13 @@ app.get("/healthz", (_req, res) => {
   res.status(200).type("text/plain").send("ok");
 });
 
-// Trust proxy for proper rate limiting behind load balancers
+// Trust exactly one proxy hop. In the Cloudflare → Render chain, Cloudflare
+// writes the real client IP into CF-Connecting-IP and X-Forwarded-For, and
+// Render's load balancer appends one entry — so hop count 1 yields the correct
+// client IP for req.ip. NOTE: this is only spoof-resistant if the origin is
+// locked to Cloudflare's IP ranges (CLOUDFLARE.md §6); otherwise an attacker
+// hitting the Render origin directly can forge these headers. Security-critical
+// rate limiters use clientIp() (prefers CF-Connecting-IP) in routes.ts.
 app.set("trust proxy", 1);
 
 // Disable X-Powered-By header (security)
@@ -216,9 +222,12 @@ app.use(
   }),
 );
 
-app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok", uptime: Math.floor(process.uptime()) });
-});
+// NOTE: /api/health is intentionally NOT registered here. It is a *readiness*
+// probe that pings the database (see registerRoutes in routes.ts) so Render's
+// healthCheckPath detects DB outages and holds the instance out of rotation.
+// A DB-blind handler here would shadow it (Express matches first-registered)
+// and always return 200 even with a dead database. Liveness — a DB-free
+// "is the process up" check for cold-start probes — is served by /healthz above.
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
@@ -300,7 +309,10 @@ app.use((req, res, next) => {
     {
       port,
       host: "0.0.0.0",
-      reusePort: true,
+      // SO_REUSEPORT is only supported on Linux/BSD (used on Render for
+      // zero-downtime rolling restarts). Windows throws ENOTSUP, which would
+      // block local dev — so enable it everywhere except Windows.
+      reusePort: process.platform !== "win32",
     },
     () => {
       log(`serving on port ${port}`);

@@ -141,6 +141,8 @@ const AdminBillingPage = lazy(() => import("@/pages/admin-billing"));
 const AdminContentStudioPage = lazy(() => import("@/pages/admin-content-studio"));
 const AdminTopicAudioPage = lazy(() => import("@/pages/admin-topic-audio"));
 const AdminPartnerBrandingPage = lazy(() => import("@/pages/admin-partner-branding"));
+const AdminSchoolQRPage = lazy(() => import("@/pages/admin-school-qr"));
+const JoinPage = lazy(() => import("@/pages/join"));
 const AdminEmailsPage = lazy(() => import("@/pages/admin-emails"));
 const AdminSignInPage = lazy(() => import("@/pages/admin-signin"));
 const AdminContentEditorPage = lazy(() => import("@/pages/admin-content-editor"));
@@ -860,6 +862,12 @@ function Router() {
           </RequireAdminRoute>
         </Route>
 
+        <Route path="/learn/admin/school-qr">
+          <RequireAdminRoute>
+            <AdminSchoolQRPage />
+          </RequireAdminRoute>
+        </Route>
+
         <Route path="/learn/admin/emails">
           <RequireAdminRoute>
             <AdminEmailsPage />
@@ -941,6 +949,7 @@ function Router() {
         </Route>
 
         <Route path="/partner-schools" component={PartnerSchoolsPage} />
+        <Route path="/join/:code" component={JoinPage} />
 
         <Route path="/school-onboarding" component={SchoolOnboardingPage} />
 

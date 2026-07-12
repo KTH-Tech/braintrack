@@ -1795,7 +1795,7 @@ export class DatabaseStorage implements IStorage {
       focusDuration: 45,
       challenges: ["time_management", "exam_anxiety"],
       goals: ["pass_matric", "university_entry"],
-      preferredLanguage: "english",
+      preferredLanguage: "en",
     };
 
     for (const userId of [TEST_LEARNER_ID, TEST_PARENT_ID, TEST_ADMIN_ID]) {

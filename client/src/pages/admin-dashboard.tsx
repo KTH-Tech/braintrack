@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import {
   Activity, AlertTriangle, BarChart3, CheckCircle2, Database, Eye, FileEdit, FileText, Flag,
   GraduationCap, Gift, Headphones, Layers, Loader2, LogOut, Mail, Package,
-  ShieldAlert, Store, Users, Zap, Handshake, School, ChevronDown, ChevronUp,
+  ShieldAlert, Store, Users, Zap, Handshake, School, ChevronDown, ChevronUp, QrCode,
 } from "lucide-react";
 
 type NeonHex =
@@ -1033,6 +1033,13 @@ export default function AdminDashboardPage() {
       desc: "Manage channels, pipelines, and contacts.",
       descAf: "Bestuur kanale, pyplyne en kontakte.",
       Icon: Store, testId: "quick-schools",
+    },
+    {
+      href: "/learn/admin/school-qr", color: "#28c9d6",
+      title: "School QR Codes", titleAf: "Skool QR-kodes",
+      desc: "Download or print unique QR codes for each partner school.",
+      descAf: "Laai af of druk unieke QR-kodes vir elke vennootskool.",
+      Icon: QrCode, testId: "quick-school-qr",
     },
     {
       href: "/learn/admin/reports?tab=referrals", color: "#e6519c",

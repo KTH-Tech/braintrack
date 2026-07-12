@@ -865,6 +865,19 @@ function escapeHtml(unsafe: string): string {
     .replace(/'/g, "&#039;");
 }
 
+// Resolves the true client IP behind the Cloudflare → Render proxy chain.
+// Prefers `CF-Connecting-IP`, which Cloudflare always sets to the real client
+// and which cannot be spoofed once the origin is locked to Cloudflare's IP
+// ranges (see CLOUDFLARE.md §6 — Authenticated Origin Pulls / IP allowlist).
+// Falls back to the left-most X-Forwarded-For entry, then the socket address.
+function clientIp(req: Request): string {
+  const cf = req.headers["cf-connecting-ip"];
+  if (typeof cf === "string" && cf.length > 0) return cf.trim();
+  return (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim()
+    || req.socket?.remoteAddress
+    || "unknown";
+}
+
 // Rate limiting scaled for 50,000 users
 // With autoscaling, each instance handles a fraction of traffic
 const apiLimiter = rateLimit({
@@ -931,10 +944,7 @@ const referralAttributeIpLimiter = rateLimit({
   message: { error: "Too many referral attempts from this network, please try again later" },
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) =>
-    (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim()
-      || req.socket?.remoteAddress
-      || "unknown",
+  keyGenerator: (req) => clientIp(req),
 });
 const referralAttributeUserLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
@@ -946,9 +956,7 @@ const referralAttributeUserLimiter = rateLimit({
     const userId = (req as any)?.user?.claims?.sub;
     if (userId) return `u:${userId}`;
     // Fallback (shouldn't happen — limiter runs after isAuthenticated)
-    return (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim()
-      || req.socket?.remoteAddress
-      || "unknown";
+    return clientIp(req);
   },
 });
 
@@ -1060,7 +1068,13 @@ const onboardingSchema = z.object({
   focusDuration: z.number(),
   challenges: z.array(z.string()),
   goals: z.array(z.string()),
-  preferredLanguage: z.string().default("english"),
+  // Normalise to the short form the DB CHECK constraint requires
+  // (onboarding_results_preferred_language_short_form: 'en' | 'af'). Accepts
+  // 'en'/'af' or long forms 'english'/'afrikaans' (any case) from the client.
+  preferredLanguage: z
+    .string()
+    .default("en")
+    .transform((v) => (v.toLowerCase().startsWith("af") ? "af" : "en")),
   rawAnswersJson: z.any().optional(),
   traitsJson: z.any().optional(),
   recommendationsJson: z.any().optional(),
@@ -1501,9 +1515,17 @@ export async function registerRoutes(
     }
   });
 
-  await storage.seedSubjects();
-  await storage.seedExamPapers();
-  await storage.seedMockExams();
+  // Idempotent top-up seeds. Wrapped so a transient DB hiccup during a Render
+  // deploy degrades gracefully (server still boots; /api/health reports 503 so
+  // the load balancer holds the instance out of rotation) instead of throwing
+  // an unhandledRejection that FATAL-crashes the process into a boot-loop.
+  try {
+    await storage.seedSubjects();
+    await storage.seedExamPapers();
+    await storage.seedMockExams();
+  } catch (e: any) {
+    console.error("[Startup] core seeds failed (non-fatal, will retry next boot):", e?.message ?? e);
+  }
   try {
     await storage.seedNscTimetable();
   } catch (e: any) {
@@ -2462,7 +2484,8 @@ export async function registerRoutes(
         if (typeof data.schoolId === "number") userPatch.schoolId = data.schoolId;
         if (typeof data.grade === "number") userPatch.grade = data.grade;
         if (data.preferredLanguage) {
-          userPatch.preferredLanguage = data.preferredLanguage === "afrikaans" ? "af" : "en";
+          // Already normalised to 'en' | 'af' by onboardingSchema above.
+          userPatch.preferredLanguage = data.preferredLanguage;
         }
         if (Object.keys(userPatch).length > 0) {
           await db.update(users).set(userPatch as any).where(eq(users.id, userId));
@@ -8544,6 +8567,147 @@ Create comprehensive study notes for the topic provided.`;
     } catch (error) {
       console.error("Error fetching partner school:", error);
       res.status(500).json({ error: "Failed to fetch partner school" });
+    }
+  });
+
+  // ─── School QR Join — Step 1: create account + send OTP ──────────────────
+  // Called when a learner fills in the /join/:code form for the first time.
+  // Creates the user row, links the school, and sends an SMS OTP to verify.
+  app.post("/api/join/:code", publicPostLimiter, async (req: any, res: Response) => {
+    try {
+      const schoolCode = String(req.params.code).toUpperCase();
+      const school = await storage.getPartnerSchoolByCode(schoolCode);
+      if (!school || !school.isActive) {
+        return res.status(404).json({ error: "school_not_found", message: "Invalid or inactive school QR code." });
+      }
+
+      const parsed = z.object({
+        firstName: z.string().trim().min(1).max(80),
+        lastName:  z.string().trim().min(1).max(80),
+        phone:     z.string().trim().min(9).max(15),
+        grade:     z.number().int().min(8).max(12),
+        language:  z.enum(["en", "af"]).default("en"),
+        parentEmail: z.string().email().optional().or(z.literal("")),
+      }).safeParse(req.body);
+      if (!parsed.success) return res.status(400).json(formatZodError(parsed.error));
+
+      const { firstName, lastName, phone, grade, language, parentEmail } = parsed.data;
+      const phoneE164 = toE164(phone);
+      if (!phoneE164) return res.status(400).json({ error: "invalid_phone", message: "Please enter a valid South African mobile number." });
+
+      // Block if phone already registered.
+      const [existing] = await db.select({ id: users.id }).from(users).where(eq(users.phone, phoneE164)).limit(1);
+      if (existing) {
+        return res.status(409).json({ error: "phone_taken", message: "This phone number is already registered. Please sign in instead." });
+      }
+
+      // Create the user — unverified until OTP confirmed.
+      const { v4: uuidv4 } = await import("uuid");
+      const userId = uuidv4();
+      await db.insert(users).values({
+        id: userId,
+        firstName,
+        lastName,
+        phone: phoneE164,
+        grade,
+        schoolId: school.id,
+        schoolName: school.schoolName,
+        role: "learner",
+        preferredLanguage: language,
+        firstTouchSource: `join:${schoolCode}`,
+        parentEmail: parentEmail || null,
+        parentConsentGranted: false,
+        roleConfirmed: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      // Send OTP via existing Twilio infrastructure.
+      if (isTwilioConfigured()) {
+        const salt = randomBytes(16).toString("hex");
+        const code = String(randomInt(0, 1_000_000)).padStart(6, "0");
+        const codeHash = scryptSync(code, salt, 32).toString("hex");
+        const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+        await db.insert(phoneOtpCodes).values({ userId, phoneE164, codeHash, codeSalt: salt, expiresAt });
+        const smsBody = language === "af"
+          ? `Welkom by BrainTrack! Jou verifikasiekode is ${code}. Dit verval oor 10 minute.`
+          : `Welcome to BrainTrack! Your verification code is ${code}. It expires in 10 minutes.`;
+        if (process.env.NODE_ENV !== "production") console.log(`[DEV] Join OTP for ${phoneE164}: ${code}`);
+        const smsResult = await sendSms(phoneE164, smsBody);
+        if (!smsResult.ok) {
+          console.error("Twilio join OTP failed:", smsResult.error);
+          return res.status(503).json({ error: "sms_failed", message: "Could not send verification SMS. Please try again." });
+        }
+      } else if (process.env.NODE_ENV !== "production") {
+        // Dev fallback: auto-verify without SMS.
+        console.log(`[DEV] Twilio not configured — auto-approve join for userId ${userId}`);
+      }
+
+      return res.json({ userId, schoolName: school.schoolName, otpSent: isTwilioConfigured() });
+    } catch (err) {
+      console.error("Error in POST /api/join/:code:", err);
+      return res.status(500).json({ error: "server_error", message: "Sign-up failed. Please try again." });
+    }
+  });
+
+  // ─── School QR Join — Step 2: verify OTP + establish session ─────────────
+  app.post("/api/join/:code/verify", publicPostLimiter, async (req: any, res: Response) => {
+    try {
+      const parsed = z.object({
+        userId: z.string().uuid(),
+        phone:  z.string().trim(),
+        otp:    z.string().length(6).regex(/^\d{6}$/),
+      }).safeParse(req.body);
+      if (!parsed.success) return res.status(400).json(formatZodError(parsed.error));
+
+      const { userId, phone, otp } = parsed.data;
+      const phoneE164 = toE164(phone);
+      if (!phoneE164) return res.status(400).json({ error: "invalid_phone" });
+
+      if (isTwilioConfigured()) {
+        // Reuse the existing OTP verify logic.
+        const [row] = await db.select().from(phoneOtpCodes)
+          .where(and(
+            eq(phoneOtpCodes.userId, userId),
+            eq(phoneOtpCodes.phoneE164, phoneE164),
+            isNull(phoneOtpCodes.consumedAt),
+            gte(phoneOtpCodes.expiresAt, new Date()),
+          ))
+          .orderBy(desc(phoneOtpCodes.createdAt))
+          .limit(1);
+
+        if (!row) return res.status(400).json({ error: "otp_expired", message: "Code expired or not found. Request a new one." });
+
+        if ((row.attempts ?? 0) >= 5) {
+          return res.status(429).json({ error: "too_many_attempts", message: "Too many incorrect attempts. Request a new code." });
+        }
+
+        const hash = scryptSync(otp, row.codeSalt!, 32).toString("hex");
+        const valid = timingSafeEqual(Buffer.from(hash), Buffer.from(row.codeHash!));
+        if (!valid) {
+          await db.update(phoneOtpCodes).set({ attempts: (row.attempts ?? 0) + 1 }).where(eq(phoneOtpCodes.id, row.id));
+          return res.status(400).json({ error: "otp_invalid", message: "Incorrect code. Please check your SMS and try again." });
+        }
+
+        await db.update(phoneOtpCodes).set({ consumedAt: new Date() }).where(eq(phoneOtpCodes.id, row.id));
+      }
+      // Dev: no Twilio — accept any 6-digit code.
+
+      const [userRow] = await db.select({ id: users.id }).from(users).where(eq(users.id, userId)).limit(1);
+      if (!userRow) return res.status(404).json({ error: "user_not_found" });
+
+      const expiresAt = Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60;
+      const syntheticUser: any = { claims: { sub: userId, exp: expiresAt }, expires_at: expiresAt, _joinAuth: true };
+      req.login(syntheticUser, (err: any) => {
+        if (err) {
+          console.error("req.login failed after join OTP verify:", err);
+          return res.status(500).json({ error: "login_failed" });
+        }
+        return res.json({ success: true, redirect: "/onboarding?from=join" });
+      });
+    } catch (err) {
+      console.error("Error in POST /api/join/:code/verify:", err);
+      return res.status(500).json({ error: "server_error" });
     }
   });
 
