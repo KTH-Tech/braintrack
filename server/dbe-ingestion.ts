@@ -6,6 +6,7 @@ import { createHash } from "crypto";
 import { writeFile, unlink } from "fs/promises";
 import { tmpdir } from "os";
 import { join } from "path";
+import { pathToFileURL } from "url";
 import OpenAI from "openai";
 import { CAPS_TOPICS } from "../client/src/lib/constants";
 
@@ -228,7 +229,7 @@ export async function fetchAndParsePDF(url: string, retries = 2): Promise<string
 
       await writeFile(tmpPath, buffer);
 
-      const parser = new PDFParse({ url: `file://${tmpPath}` });
+      const parser = new PDFParse({ url: pathToFileURL(tmpPath).href });
       const result = await parser.getText();
       let text = (result as any).text as string ?? "";
 
