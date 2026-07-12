@@ -66,11 +66,11 @@ test.describe("TC-EXAM — Exam Mode & Timed Sessions", () => {
     expect(crashed, "Past papers page must not crash").toBe(false);
   });
 
-  test("TC-EXAM-008 — /api/exam-papers public endpoint returns an array", async ({ request }) => {
+  test("TC-EXAM-008 — /api/exam-papers catalog requires authentication", async ({ request }) => {
+    // Product decision: the paper catalog is login-gated (question/memo content
+    // at /api/exam-papers/:id/questions is separately gated too).
     const res = await request.get(`${BASE}/api/exam-papers`);
-    expect(res.status()).toBe(200);
-    const body = await res.json();
-    expect(Array.isArray(body), "Exam papers must return an array").toBe(true);
+    expect(res.status(), "Exam-papers catalog must require auth").toBe(401);
   });
 });
 

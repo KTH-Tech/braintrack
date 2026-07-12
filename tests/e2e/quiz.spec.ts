@@ -3,11 +3,10 @@ import { test, expect } from "@playwright/test";
 const BASE = process.env.BASE_URL || "http://localhost:5000";
 
 test.describe("TC-QUIZ — Question Bank & Quiz Engine", () => {
-  test("TC-QUIZ-001 — /api/exam-papers public endpoint returns an array of papers", async ({ request }) => {
+  test("TC-QUIZ-001 — /api/exam-papers catalog requires authentication", async ({ request }) => {
+    // Product decision: the paper catalog is login-gated.
     const res = await request.get(`${BASE}/api/exam-papers`);
-    expect(res.status(), "Exam papers endpoint must return 200").toBe(200);
-    const body = await res.json();
-    expect(Array.isArray(body), "Exam papers must be an array").toBe(true);
+    expect(res.status(), "Exam-papers catalog must require auth").toBe(401);
   });
 
   test("TC-QUIZ-002 — /api/exam-papers/:id/questions requires auth or valid ID", async ({ request }) => {
