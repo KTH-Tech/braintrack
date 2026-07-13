@@ -906,8 +906,8 @@ export async function extractAndStoreVerbatimQuestions(
       paperNumber,
       language,
       questionNumber: q.questionNumber,
-      questionText: q.questionText,
-      memoText: q.memoText,
+      questionText: sanitizeText(q.questionText) ?? "",
+      memoText: sanitizeText(q.memoText),
       marks: q.marks,
       cognitiveLevel: q.cognitiveLevel,
       contentHash,
@@ -1101,26 +1101,51 @@ export async function logIngestionStart(
   return row.id;
 }
 
+// Postgres `text` columns reject NUL bytes ( ) and choke on lone UTF-16
+// surrogates — both of which garbled/CID-font PDF extractions routinely contain.
+// Strip them (plus non-printable control chars, keeping \t \r \n) and cap length
+// so a bad extraction can never break a DB write or abort the batch.
+export function sanitizeText(input: string | null | undefined, maxLen = 100_000): string | null {
+  if (input == null) return null;
+  let s = String(input)
+    .replace(/\u0000/g, "")
+    .replace(/[\u0001-\u0008\u000B\u000C\u000E-\u001F]/g, "")
+    .replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])/g, "")
+    .replace(/(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g, "");
+  return s.length > maxLen ? s.slice(0, maxLen) : s;
+}
+
 export async function logIngestionComplete(
   id: number,
   contentHash?: string,
   questionCount?: number
 ): Promise<void> {
-  await db
-    .update(dbeIngestionLog)
-    .set({
-      status: "completed",
-      ...(contentHash ? { contentHash } : {}),
-      ...(questionCount !== undefined ? { questionCount } : {}),
-    })
-    .where(eq(dbeIngestionLog.id, id));
+  try {
+    await db
+      .update(dbeIngestionLog)
+      .set({
+        status: "completed",
+        ...(contentHash ? { contentHash } : {}),
+        ...(questionCount !== undefined ? { questionCount } : {}),
+      })
+      .where(eq(dbeIngestionLog.id, id));
+  } catch (e: any) {
+    // A bookkeeping write must never abort the batch.
+    console.warn(`[ingest] logIngestionComplete swallow for id ${id}: ${e?.message ?? e}`);
+  }
 }
 
 async function logIngestionFailure(id: number, errorMessage: string): Promise<void> {
-  await db
-    .update(dbeIngestionLog)
-    .set({ status: "failed", errorMessage })
-    .where(eq(dbeIngestionLog.id, id));
+  try {
+    await db
+      .update(dbeIngestionLog)
+      .set({ status: "failed", errorMessage: sanitizeText(errorMessage, 2000) })
+      .where(eq(dbeIngestionLog.id, id));
+  } catch (e: any) {
+    // The error-logging write itself must never throw and abort the batch
+    // (this is exactly what a NUL byte in errorMessage used to do).
+    console.warn(`[ingest] logIngestionFailure swallow for id ${id}: ${e?.message ?? e}`);
+  }
 }
 
 // ============================================================
