@@ -502,7 +502,7 @@ export default function RewardsPage() {
                           className="w-11 h-11 rounded-full bg-black flex items-center justify-center relative"
                           style={{ border: "1px solid rgba(255,255,255,0.1)" }}
                         >
-                          <Icon className="w-5 h-5 text-white/30" />
+                          <Icon className="w-5 h-5 text-white" />
                           <Lock className="w-3 h-3 text-white absolute -bottom-0.5 -right-0.5" />
                         </div>
                         <span className="text-xs font-bold text-white leading-tight">{isAf ? info.nameAf : info.name}</span>
@@ -531,7 +531,7 @@ export default function RewardsPage() {
                     </div>
                     <div>
                       <p className="font-bold text-sm text-white mb-1">{t.upgradeToRefer}</p>
-                      <p className="text-xs text-white/70 max-w-xs mx-auto">{t.upgradeToReferDesc}</p>
+                      <p className="text-xs text-white max-w-xs mx-auto">{t.upgradeToReferDesc}</p>
                     </div>
                     <button
                       onClick={() => setLocation("/subscribe")}
@@ -546,13 +546,13 @@ export default function RewardsPage() {
                 ) : (
                   /* ── Active subscriber — show code + link + progress ── */
                   <>
-                    <p className="text-sm text-white/70">
+                    <p className="text-sm text-white">
                       {t.referDesc}
                     </p>
 
                     {/* Prominent referral code */}
                     <div>
-                      <p className="text-[11px] uppercase tracking-[0.2em] text-white/70 font-bold mb-2">
+                      <p className="text-[11px] uppercase tracking-[0.2em] text-white font-bold mb-2">
                         {t.yourCode}
                       </p>
                       <div
@@ -582,11 +582,11 @@ export default function RewardsPage() {
 
                     {/* Share link row */}
                     <div>
-                      <p className="text-[11px] uppercase tracking-[0.2em] text-white/70 font-bold mb-2">
+                      <p className="text-[11px] uppercase tracking-[0.2em] text-white font-bold mb-2">
                         {t.shareLink}
                       </p>
                       <div className="flex items-center gap-2 p-3 rounded-xl bg-black/60" style={{ border: "1px solid rgba(40,201,214,0.25)" }}>
-                        <code className="flex-1 text-xs text-white/70 truncate font-mono" data-testid="referral-link">
+                        <code className="flex-1 text-xs text-white truncate font-mono" data-testid="referral-link">
                           {referralCode?.link ?? referral?.link ?? "—"}
                         </code>
                         <button
@@ -615,14 +615,14 @@ export default function RewardsPage() {
 
                     <div className="flex items-center justify-between gap-3 flex-wrap">
                       <div className="flex-1 min-w-[160px]">
-                        <p className="text-[11px] uppercase tracking-[0.2em] text-white/70 font-bold mb-1.5">
+                        <p className="text-[11px] uppercase tracking-[0.2em] text-white font-bold mb-1.5">
                           {t.progressToReward}
                         </p>
                         <p className="text-sm text-white" data-testid="referral-progress-text">
                           <span className="font-black text-lg" style={{ color: "#28c9d6" }}>
                             {referral?.towardNextReward ?? 0}
                           </span>
-                          <span className="text-white/70"> / {referral?.threshold ?? 2} </span>
+                          <span className="text-white"> / {referral?.threshold ?? 2} </span>
                           {t.paidReferrals}
                         </p>
                         <div className="h-2 rounded-full bg-white/10 mt-2 overflow-hidden">
@@ -637,27 +637,27 @@ export default function RewardsPage() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-[11px] uppercase tracking-[0.2em] text-white/70 font-bold mb-1">
+                        <p className="text-[11px] uppercase tracking-[0.2em] text-white font-bold mb-1">
                           {t.earnedLabel}
                         </p>
                         <p className="text-2xl font-black tabular-nums" style={{ color: "#28c9d6" }} data-testid="referral-months-earned">
                           {referral?.monthsEarned ?? 0}
                         </p>
-                        <p className="text-[10px] text-white/70 leading-tight">
+                        <p className="text-[10px] text-white leading-tight">
                           {t.freeMonths}
                         </p>
                       </div>
                     </div>
 
                     {(referral?.pendingReferrals ?? 0) > 0 && (
-                      <p className="text-xs text-white/70">
+                      <p className="text-xs text-white">
                         {(() => {
                           const n = referral!.pendingReferrals;
                           return `${n} ${n === 1 ? t.friendSingular : t.friendPlural} ${t.signedUpWaiting}`;
                         })()}
                       </p>
                     )}
-                    <p className="text-[10px] text-white/70">
+                    <p className="text-[10px] text-white">
                       {t.paidSubNote}
                     </p>
                   </>
@@ -671,14 +671,14 @@ export default function RewardsPage() {
                 {t.leaderboardHeading}
               </CosmicCardTitle>
               <div className="p-5 pt-3 space-y-3">
-                <p className="text-sm text-white/70">{t.leaderboardSubtitle}</p>
+                <p className="text-sm text-white">{t.leaderboardSubtitle}</p>
                 {(!leaderboard || leaderboard.top.length === 0) ? (
-                  <p className="text-sm text-white/60 italic py-4 text-center" data-testid="leaderboard-empty">
+                  <p className="text-sm text-white italic py-4 text-center" data-testid="leaderboard-empty">
                     {t.leaderboardEmpty}
                   </p>
                 ) : (
                   <>
-                    <div className="grid grid-cols-[auto_1fr_auto] gap-x-3 text-[10px] uppercase tracking-[0.18em] text-white/50 font-bold px-3 pb-1">
+                    <div className="grid grid-cols-[auto_1fr_auto] gap-x-3 text-[10px] uppercase tracking-[0.18em] text-white font-bold px-3 pb-1">
                       <span>{t.leaderboardRank}</span>
                       <span>{t.leaderboardLearner}</span>
                       <span className="text-right">{t.leaderboardPaid}</span>
@@ -728,7 +728,7 @@ export default function RewardsPage() {
                         style={{ background: "rgba(40,201,214,0.10)", border: "1.5px solid rgba(40,201,214,0.5)" }}
                         data-testid="leaderboard-you-row"
                       >
-                        <span className="text-xs text-white/70">
+                        <span className="text-xs text-white">
                           {t.leaderboardYourRank}:{" "}
                           <span className="font-black text-white">
                             {leaderboard.me.rank ? `#${leaderboard.me.rank}` : "—"}
@@ -738,12 +738,12 @@ export default function RewardsPage() {
                           <span className="font-bold tabular-nums" style={{ color: "#28c9d6" }}>
                             {leaderboard.me.conversions}
                           </span>{" "}
-                          <span className="text-white/60">{t.paidReferrals}</span>
+                          <span className="text-white">{t.paidReferrals}</span>
                         </span>
                       </div>
                     )}
                     {leaderboard.me && leaderboard.me.rank === null && (
-                      <p className="text-xs text-white/60 italic mt-2 text-center">
+                      <p className="text-xs text-white italic mt-2 text-center">
                         {t.leaderboardUnranked}
                       </p>
                     )}

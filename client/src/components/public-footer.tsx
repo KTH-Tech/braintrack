@@ -6,8 +6,6 @@ import {
 } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
 import { useAuth } from "@/hooks/use-auth";
-import { BrainTrackLogo } from "@/components/braintrack-logo";
-
 const SUPPORT_EMAIL = "learn@kth-tech.com";
 
 const TRUST_BADGES = [
@@ -82,10 +80,6 @@ const COLS = {
   ],
 };
 
-const TRUST_PILLS = {
-  en: ["R169/month", "14 days free", "Cancel anytime"],
-  af: ["R169/maand", "14 dae gratis", "Kanselleer enige tyd"],
-};
 const POPIA_NOTICE = {
   en: "BrainTrack is POPIA-compliant. Learner data is protected under the Protection of Personal Information Act (Act 4 of 2013).",
   af: "BrainTrack voldoen aan POPIA. Leerderdata word beskerm ingevolge die Wet op Beskerming van Persoonlike Inligting (Wet 4 van 2013).",
@@ -108,7 +102,6 @@ export function PublicFooter() {
   const cols = COLS[language];
   const t = COPY[language];
   const tagline = TAGLINE[language];
-  const pills = TRUST_PILLS[language];
 
   return (
     <footer
@@ -135,27 +128,14 @@ export function PublicFooter() {
         {/* ── Row 1: Logo + Trust badges ─────────────────────────────── */}
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between mb-10">
 
-          {/* Brand */}
-          <div className="flex flex-col gap-3 max-w-xs">
+          {/* Brand — wordmark only (icon logo lives in the header) */}
+          <div className="flex flex-col gap-2 max-w-xs">
             <Link href="/" data-testid="footer-logo">
-              <BrainTrackLogo className="h-8 w-8" wordmark wordmarkClassName="text-base" />
+              <span className="gradient-text font-bold tracking-tight leading-none text-lg">
+                BrainTrack
+              </span>
             </Link>
             <p className="text-sm text-white font-semibold leading-snug">{tagline.main}</p>
-            <p className="text-[11px] text-[#28c9d6] leading-snug">{tagline.sub}</p>
-            <div className="flex flex-wrap gap-1.5 mt-1">
-              {pills.map((pill, i) => {
-                const c = ["#28c9d6","#ffd83a","#b066d6"][i % 3];
-                return (
-                  <span
-                    key={i}
-                    className="inline-block text-[9px] font-black uppercase tracking-[0.18em] px-2.5 py-0.5 rounded-full bg-black"
-                    style={{ color: c, border: `1px solid ${c}44` }}
-                  >
-                    {pill}
-                  </span>
-                );
-              })}
-            </div>
           </div>
 
           {/* Trust badges */}
@@ -194,9 +174,8 @@ export function PublicFooter() {
                         href={link.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="group flex items-center gap-2 text-sm text-white hover:text-[#28c9d6] transition-colors duration-150"
+                        className="group inline-flex items-center gap-1.5 text-sm text-white hover:text-[#28c9d6] transition-colors duration-150"
                       >
-                        <link.Icon className="w-3.5 h-3.5 shrink-0 text-[#28c9d6] group-hover:text-white transition-colors" />
                         {link.label}
                         <ExternalLink className="w-2.5 h-2.5 shrink-0 text-[#28c9d6] group-hover:text-white transition-colors" />
                       </a>
@@ -204,9 +183,8 @@ export function PublicFooter() {
                       <Link
                         href={link.href}
                         data-testid={`footer-link-${link.href.replace(/\//g, "-").replace(/^-/, "")}`}
-                        className="group flex items-center gap-2 text-sm text-white hover:text-[#28c9d6] transition-colors duration-150"
+                        className="group inline-flex items-center text-sm text-white hover:text-[#28c9d6] transition-colors duration-150"
                       >
-                        <link.Icon className="w-3.5 h-3.5 shrink-0 text-[#28c9d6] group-hover:text-white transition-colors" />
                         {link.label}
                       </Link>
                     )}
@@ -218,9 +196,8 @@ export function PublicFooter() {
                     <a
                       href="/api/login"
                       data-testid="footer-link-admin-login"
-                      className="group flex items-center gap-2 text-sm text-white hover:text-[#28c9d6] transition-colors duration-150"
+                      className="group inline-flex items-center text-sm text-white hover:text-[#28c9d6] transition-colors duration-150"
                     >
-                      <Lock className="w-3.5 h-3.5 shrink-0 text-[#28c9d6] group-hover:text-white transition-colors" />
                       {isAf ? "Admin Aanmelding" : "Admin Login"}
                     </a>
                   </li>
@@ -231,9 +208,8 @@ export function PublicFooter() {
                     <Link
                       href="/learn/admin/dbe-portal"
                       data-testid="footer-link-dbe-portal"
-                      className="group flex items-center gap-2 text-sm text-white hover:text-[#28c9d6] transition-colors"
+                      className="group inline-flex items-center text-sm text-white hover:text-[#28c9d6] transition-colors"
                     >
-                      <FileText className="w-3.5 h-3.5 shrink-0 text-[#28c9d6] group-hover:text-white" />
                       {isAf ? "DBE Portaal" : "DBE Portal"}
                     </Link>
                   </li>
@@ -244,9 +220,8 @@ export function PublicFooter() {
                     <Link
                       href="/parent"
                       data-testid="footer-link-parent"
-                      className="group flex items-center gap-2 text-sm text-white hover:text-[#28c9d6] transition-colors"
+                      className="group inline-flex items-center text-sm text-white hover:text-[#28c9d6] transition-colors"
                     >
-                      <Brain className="w-3.5 h-3.5 shrink-0 text-[#28c9d6] group-hover:text-white" />
                       {isAf ? "Ouer Dashboard" : "Parent Dashboard"}
                     </Link>
                   </li>
@@ -256,14 +231,8 @@ export function PublicFooter() {
           ))}
         </div>
 
-        {/* ── POPIA notice ───────────────────────────────────────────── */}
-        <div
-          className="flex items-start gap-3 rounded-xl px-4 py-3 mb-8"
-          style={{ background: "rgba(40,201,214,0.04)", border: "1px solid rgba(40,201,214,0.15)" }}
-        >
-          <Shield className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "#28c9d6" }} />
-          <p className="text-[11px] text-white leading-relaxed">{POPIA_NOTICE[language]}</p>
-        </div>
+        {/* ── POPIA notice (single line, no box — badge above carries the mark) ── */}
+        <p className="text-[11px] text-white leading-relaxed mb-8">{POPIA_NOTICE[language]}</p>
 
         {/* ── Bottom bar ─────────────────────────────────────────────── */}
         <div

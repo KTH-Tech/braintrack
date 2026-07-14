@@ -269,7 +269,7 @@ export default function SubscribePage() {
           <h1 className="text-3xl font-black text-foreground mb-3" data-testid="subscribe-heading">
             {isAf ? "Brain Boost: 14-dae Gratis Proef" : "Brain Boost: 14-day Free Trial"}
           </h1>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-white text-lg">
             {isAf
               ? "Kry volle toegang tot alle kenmerke. R169/maand daarna. Kanselleer enige tyd."
               : "Get full access to all features. R169/month thereafter. Cancel anytime."}
@@ -285,11 +285,11 @@ export default function SubscribePage() {
 
         <div className="space-y-6 mb-10">
           <div className="space-y-2">
-            <label className="text-sm font-bold text-muted-foreground ml-1">
+            <label className="text-sm font-bold text-white ml-1">
               {isAf ? "Ouer se selfoonnommer" : "Parent's cell phone number"}
             </label>
             <div className="relative">
-              <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground/60" />
+              <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white" />
               <Input
                 type="tel"
                 placeholder="082 123 4567"
@@ -301,11 +301,11 @@ export default function SubscribePage() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-bold text-muted-foreground ml-1">
+            <label className="text-sm font-bold text-white ml-1">
               {isAf ? "Leerder se selfoonnommer" : "Learner's cell phone number"}
             </label>
             <div className="relative">
-              <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground/60" />
+              <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white" />
               <Input
                 type="tel"
                 placeholder="071 234 5678"
@@ -325,7 +325,7 @@ export default function SubscribePage() {
           {isAf ? "Begin Gratis Proef" : "Start Free Trial"}
         </Button>
 
-        <p className="text-center text-muted-foreground/60 text-xs mt-6 px-4 leading-relaxed">
+        <p className="text-center text-white text-xs mt-6 px-4 leading-relaxed">
           {isAf
             ? "Deur voort te gaan, stem jy in tot ons Diensvoorwaardes en Privaatheidsbeleid. Ons sal vir jou 'n herinnering stuur voor jou proeftydperk verval."
             : "By continuing, you agree to our Terms of Service and Privacy Policy. We'll send you a reminder before your trial expires."}
@@ -333,7 +333,7 @@ export default function SubscribePage() {
 
         <button
           onClick={() => navigate(homeHref)}
-          className="w-full mt-8 flex items-center justify-center gap-2 text-muted-foreground hover:text-foreground transition-colors text-sm font-medium"
+          className="w-full mt-8 flex items-center justify-center gap-2 text-white hover:text-foreground transition-colors text-sm font-medium"
         >
           <ArrowLeft className="w-4 h-4" />
           {isAf ? "Terug na tuisblad" : "Back to home"}
@@ -445,7 +445,7 @@ function PaymentPickerScreen({
             <CreditCard className="w-7 h-7 text-primary" />
           </div>
           <h1 className="text-2xl font-black text-foreground mb-3">{t.headline}</h1>
-          <p className="text-muted-foreground">{t.subheadline}</p>
+          <p className="text-white">{t.subheadline}</p>
         </div>
 
         {/* Cancelled banner */}
@@ -500,9 +500,9 @@ function PaymentPickerScreen({
                     {t.debicheckBadge}
                   </span>
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">{t.debicheckDesc}</p>
+                <p className="text-sm text-white leading-relaxed">{t.debicheckDesc}</p>
               </div>
-              <ChevronRight className="w-5 h-5 text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0 mt-0.5" />
+              <ChevronRight className="w-5 h-5 text-white group-hover:text-primary transition-colors shrink-0 mt-0.5" />
             </div>
           </button>
 
@@ -522,20 +522,20 @@ function PaymentPickerScreen({
               </div>
               <div className="flex-1 min-w-0">
                 <span className="font-bold text-foreground block mb-1">{t.card}</span>
-                <p className="text-sm text-muted-foreground leading-relaxed">{t.cardDesc}</p>
+                <p className="text-sm text-white leading-relaxed">{t.cardDesc}</p>
               </div>
-              <ChevronRight className="w-5 h-5 text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0 mt-0.5" />
+              <ChevronRight className="w-5 h-5 text-white group-hover:text-primary transition-colors shrink-0 mt-0.5" />
             </div>
           </button>
         </div>
 
-        <p className="text-center text-muted-foreground/50 text-xs px-4 leading-relaxed mb-8">
+        <p className="text-center text-white text-xs px-4 leading-relaxed mb-8">
           {t.secure}
         </p>
 
         <button
           onClick={() => (window.location.href = homeHref)} // nosemgrep: no-raw-window-location-href-variable
-          className="w-full flex items-center justify-center gap-2 text-muted-foreground hover:text-foreground transition-colors text-sm font-medium"
+          className="w-full flex items-center justify-center gap-2 text-white hover:text-foreground transition-colors text-sm font-medium"
         >
           <ArrowLeft className="w-4 h-4" />
           {t.back}
@@ -707,7 +707,7 @@ function SuccessScreen({
         <h1 className="text-3xl font-black text-foreground mb-4">
           {isAf ? "Welkom by Brain Boost!" : "Welcome to Brain Boost!"}
         </h1>
-        <p className="text-muted-foreground text-lg mb-6">
+        <p className="text-white text-lg mb-6">
           {isAf
             ? "Jou 14-dae gratis proeftydperk is nou aktief."
             : "Your 14-day free trial is now active."}
@@ -739,9 +739,9 @@ function SuccessScreen({
             {deliveryStatus === "delivered" || deliveryStatus === "opened" ? (
               <CheckCircle2 className="w-4 h-4 text-green-400 shrink-0" />
             ) : (
-              <Loader2 className="w-4 h-4 text-muted-foreground shrink-0 animate-spin" />
+              <Loader2 className="w-4 h-4 text-white shrink-0 animate-spin" />
             )}
-            <p className={`text-xs ${deliveryStatus === "delivered" || deliveryStatus === "opened" ? "text-green-300" : "text-muted-foreground"}`}>
+            <p className={`text-xs ${deliveryStatus === "delivered" || deliveryStatus === "opened" ? "text-green-300" : "text-white"}`}>
               {deliveryStatus === "delivered"
                 ? (isAf ? `Skakel afgelewer aan ${smsResult.to}` : `Link delivered to ${smsResult.to}`)
                 : deliveryStatus === "opened"
@@ -770,11 +770,11 @@ function SuccessScreen({
         {/* Corrected cell input (shown on demand) */}
         {showCellInput && (
           <div className="mb-4 text-left">
-            <label className="text-xs font-bold text-muted-foreground ml-1 mb-1 block">
+            <label className="text-xs font-bold text-white ml-1 mb-1 block">
               {isAf ? "Leerder se selfoonnommer" : "Learner's cell number"}
             </label>
             <div className="relative">
-              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60" />
+              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white" />
               <Input
                 type="tel"
                 placeholder="071 234 5678"
@@ -806,7 +806,7 @@ function SuccessScreen({
               </Button>
               <button
                 onClick={() => setShowCellInput((v) => !v)}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2"
+                className="text-sm text-white hover:text-foreground transition-colors underline underline-offset-2"
               >
                 {isAf ? "Nommer reg te stel" : "Correct the number"}
               </button>
@@ -819,7 +819,7 @@ function SuccessScreen({
                 setResendMsg(null);
               }}
               disabled={resendLoading || cooldownSecs > 0}
-              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="flex items-center gap-1.5 text-sm text-white hover:text-foreground transition-colors"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               {cooldownSecs > 0
@@ -890,7 +890,7 @@ function PaymentSuccessScreen({
         <h1 className="text-3xl font-black text-foreground mb-3" data-testid="payment-success-heading">
           {isAf ? "Betaling suksesvol" : "Payment successful"}
         </h1>
-        <p className="text-muted-foreground text-lg mb-8">
+        <p className="text-white text-lg mb-8">
           {isAf
             ? "Brain Boost is nou aktief op jou rekening."
             : "Brain Boost is now active on your account."}
@@ -914,7 +914,7 @@ function PaymentSuccessScreen({
               </p>
             </div>
           </div>
-          <p className="text-sm text-muted-foreground leading-relaxed">
+          <p className="text-sm text-white leading-relaxed">
             {methodDesc}
           </p>
         </div>
@@ -922,7 +922,7 @@ function PaymentSuccessScreen({
         <div className="bg-white/5 border border-white/10 rounded-xl px-5 py-3 mb-8 flex items-center gap-3 text-left">
           <Sparkles className="w-4 h-4 text-primary shrink-0" />
           <div>
-            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide">
+            <p className="text-xs font-bold text-white uppercase tracking-wide">
               {isAf ? "Maandeliks gehef" : "Billed monthly"}
             </p>
             <p className="text-sm text-foreground font-semibold">
@@ -955,7 +955,7 @@ function NotConfiguredScreen({ isAf, homeHref }: { isAf: boolean, homeHref: stri
         <h1 className="text-2xl font-black text-foreground mb-4">
           {isAf ? "Betalings nie opgestel nie" : "Payments not configured"}
         </h1>
-        <p className="text-muted-foreground mb-10">
+        <p className="text-white mb-10">
           {isAf
             ? "Ons kan nie tans nuwe proeftydperke verwerk nie. Probeer asseblief later weer."
             : "We cannot process new trials at this time. Please try again later."}

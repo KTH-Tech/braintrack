@@ -1151,13 +1151,13 @@ export default function DashboardPage() {
                     {isAf ? sc.labelAf : sc.label}
                   </span>
                   {trialDaysLeft !== null && (
-                    <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                    <span className="text-[11px] text-white flex items-center gap-1">
                       <Clock className="w-3 h-3" style={{ color: "#ffd83a" }} />
                       {trialDaysLeft} {trialDaysLeft === 1 ? t.dayLeft : t.daysLeft}
                     </span>
                   )}
                   {dateVal && (
-                    <span className="text-[11px] text-muted-foreground">
+                    <span className="text-[11px] text-white">
                       {dateLabel}: <span className="font-semibold" style={{ color: sc.hex }}>{dateVal}</span>
                     </span>
                   )}
@@ -1365,7 +1365,7 @@ export default function DashboardPage() {
                     </div>
                   ) : (
                     <div className="flex flex-col items-center justify-center py-4 text-center">
-                      <Coffee className="w-8 h-8 text-white/30 mb-2" />
+                      <Coffee className="w-8 h-8 text-white mb-2" />
                       <p className="text-xs font-semibold text-white">{t.noExamsThisWeek}</p>
                     </div>
                   )}
@@ -1689,7 +1689,7 @@ export default function DashboardPage() {
                   <Target className="w-5 h-5" style={{ color: "#ff8a1f", filter: "drop-shadow(0 0 6px rgba(255,138,31,0.8))" }} />
                   {t.focusAreasHeading}
                 </h2>
-                <p className="text-xs text-white/70 mt-1">{t.focusAreasSubtitle}</p>
+                <p className="text-xs text-white mt-1">{t.focusAreasSubtitle}</p>
               </div>
             </div>
             {focusAreasData.focusAreas.length === 0 ? (
@@ -1700,7 +1700,7 @@ export default function DashboardPage() {
                 >
                   <Sparkles className="w-7 h-7" style={{ color: "#ff8a1f", filter: "drop-shadow(0 0 5px #ff8a1f)" }} />
                 </div>
-                <p className="text-sm text-white/80" data-testid="text-focus-areas-empty">{t.focusAreasEmpty}</p>
+                <p className="text-sm text-white" data-testid="text-focus-areas-empty">{t.focusAreasEmpty}</p>
               </div>
             ) : (
             <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -1731,10 +1731,10 @@ export default function DashboardPage() {
                           {fa.masteryScore}%
                         </span>
                       </div>
-                      <p className="text-[10px] uppercase tracking-wider text-white/60 truncate">{subjectName}</p>
+                      <p className="text-[10px] uppercase tracking-wider text-white truncate">{subjectName}</p>
                       <p className="text-sm font-bold text-white mt-0.5 line-clamp-2">{topicName}</p>
                       <div className="flex items-center justify-end mt-2">
-                        <ChevronRight className="w-4 h-4 text-white/70 group-hover:text-white transition-colors" />
+                        <ChevronRight className="w-4 h-4 text-white group-hover:text-white transition-colors" />
                       </div>
                     </div>
                   </Link>
