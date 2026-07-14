@@ -336,7 +336,7 @@ export default function CookiePolicyPage() {
               {isAf
                 ? "Om jou toestemming te herroep of jou regte uit te oefen, kontak ons by "
                 : "To withdraw consent or exercise your rights, contact us at "}
-              <strong className="text-white">enterprise@kth-tech.com</strong>
+              <strong className="text-white">learn@kth-tech.com</strong>
               {isAf
                 ? ", of verwyder plaaslike stoor in jou blaaier se privaatheidsinstellings."
                 : ", or clear local storage in your browser's privacy settings."}
@@ -393,7 +393,7 @@ export default function CookiePolicyPage() {
             </p>
             <div className="bg-white/5 p-4 rounded-lg space-y-2 text-sm">
               <p><strong>{isAf ? "Inligtingsbeampte:" : "Information Officer:"}</strong> KTH Tech</p>
-              <p><strong>{isAf ? "E-pos:" : "Email:"}</strong> enterprise@kth-tech.com</p>
+              <p><strong>{isAf ? "E-pos:" : "Email:"}</strong> learn@kth-tech.com</p>
               <p>
                 <strong>{isAf ? "Privaatheidsbeleid:" : "Privacy Policy:"}</strong>{" "}
                 <Link href="/privacy-policy" className="underline underline-offset-2 hover:text-white transition-colors">

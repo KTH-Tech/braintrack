@@ -16453,7 +16453,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
   // Setup VAPID once (idempotent)
   if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
     webpush.setVapidDetails(
-      process.env.VAPID_SUBJECT || "mailto:enterprise@kth-tech.com",
+      process.env.VAPID_SUBJECT || "mailto:learn@kth-tech.com",
       process.env.VAPID_PUBLIC_KEY,
       process.env.VAPID_PRIVATE_KEY
     );
@@ -20908,7 +20908,7 @@ a{color:#28c9d6;text-decoration:none}</style></head>
       }
       if (!resolvedEmail && userEmail) resolvedEmail = userEmail.toLowerCase();
 
-      const supportTo = process.env.SUPPORT_EMAIL || "enterprise@kth-tech.com";
+      const supportTo = process.env.SUPPORT_EMAIL || "learn@kth-tech.com";
       const categoryLabel = TROUBLESHOOT_CATEGORY_LABELS[category] ?? category;
       const ts = new Date().toISOString();
       const ip = (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() || req.socket.remoteAddress || "unknown";
@@ -20987,7 +20987,7 @@ a{color:#28c9d6;text-decoration:none}</style></head>
       });
     } catch (err: any) {
       console.error("[RizzTroubleshoot] POST /api/support/troubleshoot-email error:", err);
-      return res.status(500).json({ error: "Failed to escalate. Please email enterprise@kth-tech.com directly." });
+      return res.status(500).json({ error: "Failed to escalate. Please email learn@kth-tech.com directly." });
     }
   });
 

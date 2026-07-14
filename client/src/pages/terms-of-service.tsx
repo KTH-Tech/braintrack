@@ -135,7 +135,7 @@ export default function TermsOfServicePage() {
           "No refunds are issued for partial months",
           "Access continues until the end of the paid period after cancellation"
         ],
-        footer: "Manage your subscription in Settings → Subscription. For billing queries only, email enterprise@kth-tech.com."
+        footer: "Manage your subscription in Settings → Subscription. For billing queries only, email learn@kth-tech.com."
       },
       {
         icon: Sparkles,
@@ -291,7 +291,7 @@ export default function TermsOfServicePage() {
           "Geen terugbetalings word vir gedeeltelike maande uitgereik nie",
           "Toegang duur voort tot die einde van die betaalde tydperk na kansellasie"
         ],
-        footer: "Bestuur jou intekening in Instellings → Intekening. Slegs vir faktureringsnavrae, e-pos enterprise@kth-tech.com."
+        footer: "Bestuur jou intekening in Instellings → Intekening. Slegs vir faktureringsnavrae, e-pos learn@kth-tech.com."
       },
       {
         icon: Sparkles,

@@ -63,7 +63,7 @@ ENABLE_OCR_FALLBACK=1        # needed for DBE ingestion yield — see docs/INGES
 ```
 VAPID_PUBLIC_KEY=<generated>
 VAPID_PRIVATE_KEY=<generated>
-VAPID_SUBJECT=mailto:enterprise@kth-tech.com
+VAPID_SUBJECT=mailto:learn@kth-tech.com
 ```
 **Comms — Email (launch-critical: signup/verify/receipts):**
 ```

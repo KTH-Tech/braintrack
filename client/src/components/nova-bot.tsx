@@ -233,8 +233,8 @@ const TS_LABELS = {
   signInCta: { en: "Sign in", af: "Meld aan" },
   escalating: { en: "Sending your details to our support team…", af: "Stuur jou besonderhede na ons ondersteuningspan…" },
   escalateFailed: {
-    en: "I couldn't reach our support inbox. Please email enterprise@kth-tech.com directly and we'll respond within 24 hours.",
-    af: "Ek kon nie ons ondersteuningsboks bereik nie. Stuur asseblief direk e-pos na enterprise@kth-tech.com en ons reageer binne 24 uur.",
+    en: "I couldn't reach our support inbox. Please email learn@kth-tech.com directly and we'll respond within 24 hours.",
+    af: "Ek kon nie ons ondersteuningsboks bereik nie. Stuur asseblief direk e-pos na learn@kth-tech.com en ons reageer binne 24 uur.",
   },
 };
 
@@ -252,8 +252,8 @@ const knowledge: KnowledgeEntry[] = [
   },
   {
     keywords: ["price", "cost", "much", "prys", "kos", "pay", "betaal", "afford", "bekostig", "money", "geld", "r169", "169", "subscription", "plan", "free", "gratis"],
-    en: "Great news — BrainTrack is completely free right now! Every signed-in learner and parent gets full access, including study plans, instant marking, progress tracking, and Rizz (AI tutor). A paid Brain Boost plan is coming later.",
-    af: "Goeie nuus — BrainTrack is op die oomblik heeltemal gratis! Elke ingetekende leerder en ouer kry volle toegang, insluitend studieplanne, onmiddellike nasien, vorderingsopsporing, en Rizz (KI-tutor). 'n Betaalde Brain Boost-plan kom later.",
+    en: "Brain Boost is R169/month with a 14-day free trial — full access to study plans, instant marking, progress tracking, and Rizz (AI tutor). No charge during the trial, and you can cancel anytime with no fees. Billing questions? Email learn@kth-tech.com.",
+    af: "Brain Boost kos R169/maand met 'n 14-dae gratis proeftydperk — volle toegang tot studieplanne, onmiddellike nasien, vorderingsopsporing, en Rizz (KI-tutor). Geen heffing tydens die proeftydperk nie, en jy kan enige tyd kanselleer sonder fooie. Faktureringsvrae? E-pos learn@kth-tech.com.",
   },
   {
     keywords: ["subject", "vak", "vakke", "maths", "wiskunde", "science", "wetenskap", "english", "accounting", "rekening", "geography", "geografie", "business", "besigheid", "life", "lewens", "cover", "dek"],
@@ -322,8 +322,8 @@ const knowledge: KnowledgeEntry[] = [
   },
   {
     keywords: ["cancel", "kanselleer", "billing", "fakturering", "payment", "betaling", "refund", "terugbetaling"],
-    en: "There's nothing to cancel — BrainTrack is free for everyone right now. If you have a billing question for later, email enterprise@kth-tech.com.",
-    af: "Daar is niks om te kanselleer nie — BrainTrack is op die oomblik gratis vir almal. As jy later 'n faktureringsvraag het, e-pos enterprise@kth-tech.com.",
+    en: "There's nothing to cancel — BrainTrack is free for everyone right now. If you have a billing question for later, email learn@kth-tech.com.",
+    af: "Daar is niks om te kanselleer nie — BrainTrack is op die oomblik gratis vir almal. As jy later 'n faktureringsvraag het, e-pos learn@kth-tech.com.",
   },
 ];
 

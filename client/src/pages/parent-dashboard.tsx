@@ -2510,7 +2510,7 @@ const PARENT_FAQ = {
     { q: "Can I see which subjects my child is struggling with?", a: "Yes — the subject breakdown highlights weak areas in red. Use this for focused conversations with your child or their teachers." },
     { q: "How does the 14-day free trial work?", a: "Full access for 14 days. No charge until day 15. Cancel anytime before then at no cost." },
     { q: "Is the content aligned with the NSC curriculum?", a: "Yes — all questions, topics, and study plans come from the CAPS curriculum and 10 years of real NSC exam papers." },
-    { q: "How do I contact support?", a: "Email enterprise@kth-tech.com or use the help button in the app. We respond within 24 hours." },
+    { q: "How do I contact support?", a: "Email learn@kth-tech.com or use the help button in the app. We respond within 24 hours." },
   ],
   af: [
     { q: "Hoe sien ek my kind se vordering?", a: "Jou dashboard wys weeklikse verslae met studiedae, minute gestudeer, vakke geoefen en bemeesteringsvlakke." },
@@ -2518,7 +2518,7 @@ const PARENT_FAQ = {
     { q: "Kan ek sien met watter vakke my kind sukkel?", a: "Ja — die vakuiteensetting lig swak areas in rooi uit vir gefokusde gesprekke." },
     { q: "Hoe werk die 14-dae gratis proeftydperk?", a: "Volle toegang vir 14 dae. Geen heffing voor dag 15 nie. Kanselleer enige tyd teen geen koste." },
     { q: "Is die inhoud in lyn met die NSC-kurrikulum?", a: "Ja — alle vrae en studieplanne kom uit die KABV-kurrikulum en 10 jaar se werklike NSC-eksamenvraestelle." },
-    { q: "Hoe kontak ek ondersteuning?", a: "Stuur 'n e-pos aan enterprise@kth-tech.com of gebruik die hulpknoppie in die app." },
+    { q: "Hoe kontak ek ondersteuning?", a: "Stuur 'n e-pos aan learn@kth-tech.com of gebruik die hulpknoppie in die app." },
   ],
 };
 

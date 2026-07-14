@@ -36,17 +36,17 @@ export default function ParentPurchasePage() {
         </div>
 
         <p className="text-[10px] font-black uppercase tracking-[0.22em] text-primary mb-2">
-          {isAf ? "Geen aankoop nodig nie" : "No Purchase Required"}
+          {isAf ? "Brain Boost" : "Brain Boost"}
         </p>
 
         <h1 className="text-2xl sm:text-3xl font-black text-foreground mb-3">
-          {isAf ? "BrainTrack is op die oomblik gratis" : "BrainTrack is free right now"}
+          {isAf ? "R169/maand · 14 dae gratis" : "R169/month · 14 days free"}
         </h1>
 
         <p className="text-sm text-white mb-2">
           {isAf
-            ? "Ons werk steeds aan ons betaalde Brain Boost-plan. Vir nou kry elke leerder en ouer volle toegang sonder kostes en sonder 'n proeflopie."
-            : "We're still building our paid Brain Boost plan. For now every learner and parent gets full access — no payment, no trial."}
+            ? "Brain Boost gee jou kind volle toegang — studieplanne, regte NSC-vraestelle en memo's, onmiddellike nasien, en Rizz (KI-tutor). Geen heffing tydens die proeftydperk nie; fakturering word veilig deur Paystack verwerk en jy kan enige tyd kanselleer."
+            : "Brain Boost gives your child full access — study plans, real NSC papers and memos, instant marking, and Rizz (AI tutor). No charge during the trial; billing is processed securely by Paystack and you can cancel anytime."}
         </p>
 
         <p className="text-sm text-white mb-8">

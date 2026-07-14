@@ -1313,7 +1313,7 @@ export default function TutorPage() {
 
   <div class="doc-footer">
     <div>
-      <strong>BrainTrack™</strong> &mdash; enterprise@kth-tech.com
+      <strong>BrainTrack™</strong> &mdash; learn@kth-tech.com
     </div>
     <div>
       <span class="confidential">&#9632; ${t.printConfidential}</span>

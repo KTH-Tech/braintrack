@@ -593,7 +593,7 @@ export default function LandingPage() {
           "Grade 12 Matric exam preparation platform — CAPS-aligned study plans, NSC past papers with memos, AI tutor, and progress tracking for South African learners.",
         "contactPoint": {
           "@type": "ContactPoint",
-          "email": "enterprise@kth-tech.com",
+          "email": "learn@kth-tech.com",
           "contactType": "customer support",
           "availableLanguage": ["English", "Afrikaans"],
         },

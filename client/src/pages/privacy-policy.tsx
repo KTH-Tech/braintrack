@@ -121,8 +121,8 @@ export default function PrivacyPolicyPage() {
                 </p>
                 <p className="text-sm text-white mt-1">
                   {isAf
-                    ? "Alle betalings word veilig deur Netcash verwerk, 'n PCI-DSS-nakoming betalingsverskaffer. Jou kaart- of bankbesonderhede word direk op Netcash se veilige platform ingevoer en word nooit na BrainTrack oorgedra of deur BrainTrack gestoor nie."
-                    : "All payments are processed securely through Netcash, a PCI-DSS compliant payment provider. Your card or banking details are entered directly on Netcash's secure platform and are never transmitted to or stored by BrainTrack."}
+                    ? "Alle betalings word veilig deur Paystack verwerk, 'n PCI-DSS-nakoming betalingsverskaffer. Jou kaart- of bankbesonderhede word direk op Paystack se veilige platform ingevoer en word nooit na BrainTrack oorgedra of deur BrainTrack gestoor nie."
+                    : "All payments are processed securely through Paystack, a PCI-DSS compliant payment provider. Your card or banking details are entered directly on Paystack's secure platform and are never transmitted to or stored by BrainTrack."}
                 </p>
               </div>
             </div>
@@ -263,7 +263,7 @@ export default function PrivacyPolicyPage() {
               {isAf
                 ? "Om hierdie regte uit te oefen, kontak ons Inligtingsbeampte by: "
                 : "To exercise these rights, contact our Information Officer at: "}
-              <strong>enterprise@kth-tech.com</strong>
+              <strong>learn@kth-tech.com</strong>
             </p>
           </CardContent>
         </Card>
@@ -297,7 +297,7 @@ export default function PrivacyPolicyPage() {
               <li>{isAf ? "Jou kaart- of bankbesonderhede word direk op Netcash se platform ingevoer, nooit op BrainTrack nie" : "Your card or banking details are entered directly on Netcash's platform, never on BrainTrack"}</li>
               <li>{isAf ? "Ons ontvang slegs 'n bevestiging van suksesvolle betaling — geen kaartnommers, CVV-kodes of rekeningnommers nie" : "We only receive a confirmation of successful payment — no card numbers, CVV codes, or account numbers"}</li>
               <li>{isAf ? "Netcash handhaaf bankvlak-sekuriteit en PCI-DSS-enkripsie vir alle transaksies" : "Netcash maintains bank-level security and PCI-DSS encryption for all transactions"}</li>
-              <li>{isAf ? "Vir terugbetalings of betalingsgeskille, kontak ons by enterprise@kth-tech.com" : "For refunds or payment disputes, contact us at enterprise@kth-tech.com"}</li>
+              <li>{isAf ? "Vir terugbetalings of betalingsgeskille, kontak ons by learn@kth-tech.com" : "For refunds or payment disputes, contact us at learn@kth-tech.com"}</li>
             </ul>
           </CardContent>
         </Card>
@@ -343,7 +343,7 @@ export default function PrivacyPolicyPage() {
             </p>
             <div className="bg-white/5 p-4 rounded-lg space-y-2">
               <p><strong>{isAf ? "Inligtingsbeampte:" : "Information Officer:"}</strong> KTH Tech</p>
-              <p><strong>{isAf ? "E-pos:" : "Email:"}</strong> enterprise@kth-tech.com</p>
+              <p><strong>{isAf ? "E-pos:" : "Email:"}</strong> learn@kth-tech.com</p>
               <p><strong>{isAf ? "Adres:" : "Address:"}</strong> {isAf ? "Suid-Afrika" : "South Africa"}</p>
             </div>
           </CardContent>

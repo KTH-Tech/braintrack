@@ -45,7 +45,7 @@ export function PublicNav() {
         <div className="flex items-center justify-between h-14 gap-2">
           <div className="hidden md:flex items-center gap-1">
             <Link href="/" className="mr-4 shrink-0" data-testid="link-brand">
-              <BrainTrackLogo className="h-8 w-8" wordmark wordmarkClassName="text-base sm:text-lg" />
+              <BrainTrackLogo className="h-8 w-8" />
             </Link>
 
             <div className="flex items-center h-14 gap-0.5">
@@ -119,7 +119,7 @@ export function PublicNav() {
 
           <div className="md:hidden flex items-center justify-between w-full h-14">
             <Link href="/" className="shrink-0" data-testid="link-mobile-brand">
-              <BrainTrackLogo className="h-7 w-7" wordmark wordmarkClassName="text-sm" />
+              <BrainTrackLogo className="h-7 w-7" />
             </Link>
             <div className="flex items-center gap-1.5">
               <button

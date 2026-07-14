@@ -8,7 +8,7 @@ import { useLanguage } from "@/lib/language-context";
 import { useAuth } from "@/hooks/use-auth";
 import { BrainTrackLogo } from "@/components/braintrack-logo";
 
-const SUPPORT_EMAIL = "enterprise@kth-tech.com";
+const SUPPORT_EMAIL = "learn@kth-tech.com";
 
 const TRUST_BADGES = [
   { label: "POPIA Compliant", color: "#28c9d6", Icon: Shield },
@@ -18,7 +18,10 @@ const TRUST_BADGES = [
 ];
 
 const DBE_PAPERS_URL = "https://www.education.gov.za/Curriculum/NationalSeniorCertificate(NSC)Examinations/NSCPastExaminationpapers.aspx";
-const DBE_TIMETABLE_URL = "https://www.education.gov.za/Curriculum/NationalSeniorCertificate(NSC)Examinations/NSCExaminationsTimetable.aspx";
+// NOTE: the deep NSCExaminationsTimetable.aspx URL returns HTTP 403 (DBE blocks
+// direct deep-links); the NSC Examinations parent page works and links to the
+// current timetable from there.
+const DBE_TIMETABLE_URL = "https://www.education.gov.za/Curriculum/NationalSeniorCertificate(NSC)Examinations.aspx";
 
 const COLS = {
   en: [
@@ -137,8 +140,8 @@ export function PublicFooter() {
             <Link href="/" data-testid="footer-logo">
               <BrainTrackLogo className="h-8 w-8" wordmark wordmarkClassName="text-base" />
             </Link>
-            <p className="text-sm text-white/80 font-semibold leading-snug">{tagline.main}</p>
-            <p className="text-[11px] text-white/40 leading-snug">{tagline.sub}</p>
+            <p className="text-sm text-white font-semibold leading-snug">{tagline.main}</p>
+            <p className="text-[11px] text-[#28c9d6] leading-snug">{tagline.sub}</p>
             <div className="flex flex-wrap gap-1.5 mt-1">
               {pills.map((pill, i) => {
                 const c = ["#28c9d6","#ffd83a","#b066d6"][i % 3];
@@ -191,19 +194,19 @@ export function PublicFooter() {
                         href={link.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="group flex items-center gap-2 text-sm text-white/55 hover:text-white/90 transition-colors duration-150"
+                        className="group flex items-center gap-2 text-sm text-white hover:text-[#28c9d6] transition-colors duration-150"
                       >
-                        <link.Icon className="w-3.5 h-3.5 shrink-0 text-white/20 group-hover:text-white/50 transition-colors" />
+                        <link.Icon className="w-3.5 h-3.5 shrink-0 text-[#28c9d6] group-hover:text-white transition-colors" />
                         {link.label}
-                        <ExternalLink className="w-2.5 h-2.5 shrink-0 text-white/15 group-hover:text-white/40 transition-colors" />
+                        <ExternalLink className="w-2.5 h-2.5 shrink-0 text-[#28c9d6] group-hover:text-white transition-colors" />
                       </a>
                     ) : (
                       <Link
                         href={link.href}
                         data-testid={`footer-link-${link.href.replace(/\//g, "-").replace(/^-/, "")}`}
-                        className="group flex items-center gap-2 text-sm text-white/55 hover:text-white/90 transition-colors duration-150"
+                        className="group flex items-center gap-2 text-sm text-white hover:text-[#28c9d6] transition-colors duration-150"
                       >
-                        <link.Icon className="w-3.5 h-3.5 shrink-0 text-white/20 group-hover:text-white/50 transition-colors" />
+                        <link.Icon className="w-3.5 h-3.5 shrink-0 text-[#28c9d6] group-hover:text-white transition-colors" />
                         {link.label}
                       </Link>
                     )}
@@ -215,9 +218,9 @@ export function PublicFooter() {
                     <a
                       href="/api/login"
                       data-testid="footer-link-admin-login"
-                      className="group flex items-center gap-2 text-sm text-white/55 hover:text-white/90 transition-colors duration-150"
+                      className="group flex items-center gap-2 text-sm text-white hover:text-[#28c9d6] transition-colors duration-150"
                     >
-                      <Lock className="w-3.5 h-3.5 shrink-0 text-white/20 group-hover:text-white/50 transition-colors" />
+                      <Lock className="w-3.5 h-3.5 shrink-0 text-[#28c9d6] group-hover:text-white transition-colors" />
                       {isAf ? "Admin Aanmelding" : "Admin Login"}
                     </a>
                   </li>
@@ -228,9 +231,9 @@ export function PublicFooter() {
                     <Link
                       href="/learn/admin/dbe-portal"
                       data-testid="footer-link-dbe-portal"
-                      className="group flex items-center gap-2 text-sm text-white/55 hover:text-white/90 transition-colors"
+                      className="group flex items-center gap-2 text-sm text-white hover:text-[#28c9d6] transition-colors"
                     >
-                      <FileText className="w-3.5 h-3.5 shrink-0 text-white/20 group-hover:text-white/50" />
+                      <FileText className="w-3.5 h-3.5 shrink-0 text-[#28c9d6] group-hover:text-white" />
                       {isAf ? "DBE Portaal" : "DBE Portal"}
                     </Link>
                   </li>
@@ -241,9 +244,9 @@ export function PublicFooter() {
                     <Link
                       href="/parent"
                       data-testid="footer-link-parent"
-                      className="group flex items-center gap-2 text-sm text-white/55 hover:text-white/90 transition-colors"
+                      className="group flex items-center gap-2 text-sm text-white hover:text-[#28c9d6] transition-colors"
                     >
-                      <Brain className="w-3.5 h-3.5 shrink-0 text-white/20 group-hover:text-white/50" />
+                      <Brain className="w-3.5 h-3.5 shrink-0 text-[#28c9d6] group-hover:text-white" />
                       {isAf ? "Ouer Dashboard" : "Parent Dashboard"}
                     </Link>
                   </li>
@@ -259,7 +262,7 @@ export function PublicFooter() {
           style={{ background: "rgba(40,201,214,0.04)", border: "1px solid rgba(40,201,214,0.15)" }}
         >
           <Shield className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "#28c9d6" }} />
-          <p className="text-[11px] text-white/45 leading-relaxed">{POPIA_NOTICE[language]}</p>
+          <p className="text-[11px] text-white leading-relaxed">{POPIA_NOTICE[language]}</p>
         </div>
 
         {/* ── Bottom bar ─────────────────────────────────────────────── */}
@@ -267,13 +270,13 @@ export function PublicFooter() {
           className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-5"
           style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}
         >
-          <p className="text-[11px] text-white/30">{t.copyright}</p>
+          <p className="text-[11px] text-white">{t.copyright}</p>
 
           <div className="flex items-center flex-wrap gap-x-5 gap-y-1.5">
             <a
               href={`mailto:${SUPPORT_EMAIL}`}
               data-testid="footer-email-support"
-              className="inline-flex items-center gap-1.5 text-[11px] text-white/45 hover:text-white/80 transition-colors"
+              className="inline-flex items-center gap-1.5 text-[11px] text-white hover:text-[#28c9d6] transition-colors"
             >
               <Mail className="w-3.5 h-3.5" />
               {t.support}
@@ -283,18 +286,18 @@ export function PublicFooter() {
             {isAuthenticated && user?.role !== "learner" && (
               <a
                 href="/api/cancel-subscription"
-                className="text-[11px] text-white/35 hover:text-white/65 transition-colors"
+                className="text-[11px] text-white hover:text-[#28c9d6] transition-colors"
                 data-testid="footer-link-cancel"
               >
                 {isAf ? "Kanselleer" : "Cancel subscription"}
               </a>
             )}
 
-            {/* Admin sign-in: intentionally low-contrast per design (public-nav.tsx:90) */}
+            {/* Admin sign-in: de-emphasised by size (10px), not by grey/opacity */}
             <a
               href="/api/login"
               data-testid="footer-link-admin-signin"
-              className="inline-flex items-center gap-1 text-[10px] text-white/18 hover:text-white/40 transition-colors"
+              className="inline-flex items-center gap-1 text-[10px] text-white hover:text-[#28c9d6] transition-colors"
               aria-label={isAf ? "Admin-aanmelding" : "Admin sign-in"}
             >
               <ExternalLink className="w-3 h-3" />

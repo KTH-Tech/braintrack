@@ -32,7 +32,7 @@ export default function RefundPolicyPage() {
         title: "1. Subscription Billing",
         content: [
           "BrainTrack™ subscriptions are billed monthly at R169 per month from the date of activation.",
-          "Billing is processed securely through Netcash via DebiCheck mandate or recurring card token. BrainTrack does not store any banking or card information.",
+          "Billing is processed securely through Paystack using a tokenized recurring card. BrainTrack does not store any banking or card information — your card details are held by Paystack.",
           "Your subscription grants access to one learner account for the billing period."
         ],
       },
@@ -40,12 +40,12 @@ export default function RefundPolicyPage() {
         icon: Undo2,
         title: "2. Cancellation",
         content: [
-          "You may cancel your subscription at any time directly in the app under Settings → Subscription.",
+          "You may cancel your subscription at any time directly in the app under Settings → Subscription. Cancellation is processed through our payment provider, Paystack, and stops all future charges immediately.",
           "Cancellation takes effect at the end of the current paid billing cycle — you retain full access until that date.",
           "There are no long-term contracts or cancellation fees."
         ],
         bullets: [
-          "Cancel via: Settings → Subscription → Cancel Subscription",
+          "Cancel via: Settings → Subscription → Cancel Subscription (processed by Paystack)",
           "Access continues until end of the paid period",
           "No fee to cancel",
         ],
@@ -56,7 +56,7 @@ export default function RefundPolicyPage() {
         content: [
           "BrainTrack™ does not issue refunds for partial months or unused days within a billing period.",
           "Once a billing period begins, the subscription fee for that period is non-refundable.",
-          "If you believe a charge was made in error, contact us within 7 days at enterprise@kth-tech.com and we will investigate promptly."
+          "If you believe a charge was made in error, contact us within 7 days at learn@kth-tech.com and we will investigate promptly."
         ],
         bullets: [
           "No refunds for partial months",
@@ -97,7 +97,7 @@ export default function RefundPolicyPage() {
         content: [
           "For billing queries, disputed charges, or refund requests, contact us at:",
         ],
-        contact: "enterprise@kth-tech.com",
+        contact: "learn@kth-tech.com",
         footer: "Please include your account email address and the date of the charge in your message. We aim to respond within 2 business days.",
       },
     ],
@@ -107,7 +107,7 @@ export default function RefundPolicyPage() {
         title: "1. Intekeningfakturering",
         content: [
           "BrainTrack™-intekenings word maandeliks gefaktureer teen R169 per maand vanaf die aktiveringsdatum.",
-          "Fakturering word veilig deur Netcash verwerk via DebiCheck-mandaat of herhalende kaarttoken. BrainTrack stoor geen bank- of kaartinligting nie.",
+          "Fakturering word veilig deur Paystack verwerk met 'n getokeniseerde herhalende kaart. BrainTrack stoor geen bank- of kaartinligting nie — jou kaartbesonderhede word deur Paystack gehou.",
           "Jou intekening bied toegang tot een leerderrekening vir die faktureringstydperk."
         ],
       },
@@ -115,7 +115,7 @@ export default function RefundPolicyPage() {
         icon: Undo2,
         title: "2. Kansellasie",
         content: [
-          "Jy kan jou intekening te eniger tyd kanselleer direk in die app onder Instellings → Intekening.",
+          "Jy kan jou intekening te eniger tyd kanselleer direk in die app onder Instellings → Intekening. Kansellasie word deur ons betalingsverskaffer, Paystack, verwerk en stop alle toekomstige heffings onmiddellik.",
           "Kansellasie tree in werking aan die einde van die huidige betaalde faktureringssiklus — jy behou volle toegang tot daardie datum.",
           "Daar is geen langtermynkontrakte of kansellasiegelde nie."
         ],
@@ -131,7 +131,7 @@ export default function RefundPolicyPage() {
         content: [
           "BrainTrack™ reik nie terugbetalings uit vir gedeeltelike maande of ongebruikte dae binne 'n faktureringssiklus nie.",
           "Sodra 'n faktureringssiklus begin, is die intekeningsfooi vir daardie tydperk nie-terugbetaalbaar.",
-          "As jy glo dat 'n heffing per abuis gemaak is, kontak ons binne 7 dae by enterprise@kth-tech.com en ons sal onmiddellik ondersoek instel."
+          "As jy glo dat 'n heffing per abuis gemaak is, kontak ons binne 7 dae by learn@kth-tech.com en ons sal onmiddellik ondersoek instel."
         ],
         bullets: [
           "Geen terugbetalings vir gedeeltelike maande nie",
@@ -172,7 +172,7 @@ export default function RefundPolicyPage() {
         content: [
           "Vir faktureringsnavrae, betwiste heffings of terugbetalingsversoeke, kontak ons by:",
         ],
-        contact: "enterprise@kth-tech.com",
+        contact: "learn@kth-tech.com",
         footer: "Sluit asseblief jou rekeningse e-posadres en die datum van die heffing in jou boodskap in. Ons beoog om binne 2 werksdae te reageer.",
       },
     ],
@@ -320,7 +320,7 @@ export default function RefundPolicyPage() {
                     </div>
                   )}
                   {(section as any).footer && (
-                    <p className="text-sm mt-2" style={{ color: "rgba(255,255,255,0.6)" }}>
+                    <p className="text-sm mt-2 text-white">
                       {(section as any).footer}
                     </p>
                   )}
@@ -332,7 +332,7 @@ export default function RefundPolicyPage() {
 
         <div className="text-center pt-4">
           <Link href="/terms-of-service">
-            <button className="text-xs text-white/50 hover:text-white/80 transition-colors underline underline-offset-2">
+            <button className="text-xs text-white hover:text-[#28c9d6] transition-colors underline underline-offset-2">
               {isAf ? "Volledige Diensbepalings bekyk" : "View full Terms of Service"}
             </button>
           </Link>
