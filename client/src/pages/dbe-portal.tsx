@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { GraffitiSplats } from "@/components/graffiti-splats";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -1297,6 +1298,12 @@ export default function DBEPortal() {
     <div className="dark min-h-screen bg-black text-white">
       {/* Navigation bar */}
       <nav className="sticky top-0 z-50 bg-black/95 backdrop-blur-md border-b border-cyan-500/20">
+        {/* brand rainbow hairline */}
+        <div
+          aria-hidden
+          className="absolute top-0 left-0 right-0 h-[2px]"
+          style={{ background: "linear-gradient(90deg,#006BFF,#00E5FF,#22FF66,#FFE600,#FF8A00,#FF2BD6,#8A2BFF)" }}
+        />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-12">
           <div className="flex items-center gap-4">
             <a href="/learn/admin/dbe-portal" className="flex items-center gap-2">
@@ -1352,7 +1359,7 @@ export default function DBEPortal() {
                 AI-powered features are disabled — <span className="font-semibold">Build Questions</span>, <span className="font-semibold">Crunch Time</span>, <span className="font-semibold">Generate AI</span>, and <span className="font-semibold">Seed Notes</span> will not work until the key is set.
               </p>
               <p className="text-xs text-amber-200/50 mt-1">
-                To fix: open <span className="font-mono bg-amber-500/15 px-1 rounded">Secrets</span> in the Replit sidebar and add the secret <span className="font-mono bg-amber-500/15 px-1 rounded">AI_INTEGRATIONS_OPENAI_API_KEY</span> with a valid OpenAI API key, then restart the app.
+                To fix: set the <span className="font-mono bg-amber-500/15 px-1 rounded">OPENAI_API_KEY</span> environment variable on the server (e.g. in the Render dashboard) with a valid OpenAI API key, then restart the app.
               </p>
             </div>
             <button
@@ -1366,6 +1373,38 @@ export default function DBEPortal() {
           </div>
         </div>
       )}
+
+      {/* Graffiti header band — the brand hero for the content studio */}
+      <div className="relative overflow-hidden border-b border-white/10">
+        <GraffitiSplats variant="corner" opacity={0.18} />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-black tracking-tight">
+              <span
+                style={{
+                  background: "linear-gradient(90deg,#006BFF,#00E5FF,#22FF66,#FFE600,#FF8A00,#FF2BD6,#8A2BFF)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                }}
+              >
+                DBE Content Studio
+              </span>
+            </h1>
+            <p className="text-sm text-white mt-1">
+              Ingest · verify · publish — the question bank behind every learner.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-wider">
+            <span className="px-2.5 py-1 rounded-lg border border-[#22FF66]/40 text-[#22FF66]">
+              {formatNumber(totalQuestions, language)} questions
+            </span>
+            <span className="px-2.5 py-1 rounded-lg border border-[#00E5FF]/40 text-[#00E5FF]">
+              {formatNumber(totalDone, language)}/{formatNumber(totalPapers, language)} papers
+            </span>
+          </div>
+        </div>
+      </div>
 
       <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-5">
         {/* Header */}
