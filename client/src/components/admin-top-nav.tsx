@@ -49,6 +49,7 @@ type NavItem = {
   descEn: string;
   descAf: string;
   Icon: any;
+  color: string;
 };
 
 type NavGroup = {
@@ -70,6 +71,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "User, parent, learner & school analytics",
         descAf: "Gebruiker-, ouer-, leerder- en skoolontleding",
         Icon: BarChart3,
+        color: "#00E5FF",
       },
       {
         key: "billing",
@@ -79,6 +81,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "Trials, recurring failures, lapsed subscribers",
         descAf: "Proewe, mislukkings en vervalde intekeninge",
         Icon: CreditCard,
+        color: "#22FF66",
       },
     ],
   },
@@ -94,6 +97,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "Plans, products and availability",
         descAf: "Planne, produkte en beskikbaarheid",
         Icon: Package,
+        color: "#FF8A00",
       },
       {
         key: "content-editor",
@@ -103,6 +107,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "Edit topic notes, flashcards, literature",
         descAf: "Wysig notas, flitskaarte en literatuur",
         Icon: FileEdit,
+        color: "#FFE600",
       },
       {
         key: "content-studio",
@@ -112,6 +117,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "DBE pipeline: papers, memos and ingestion",
         descAf: "DBE-pyplyn: vraestelle, memo's en ingestie",
         Icon: Database,
+        color: "#006BFF",
       },
       {
         key: "topic-audio",
@@ -121,6 +127,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "Preview, regenerate and replace MP3s",
         descAf: "Voorskou, hergenereer en vervang MP3's",
         Icon: Headphones,
+        color: "#8A2BFF",
       },
     ],
   },
@@ -136,6 +143,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "Preview and test-send transactional emails",
         descAf: "Voorskou en toets-stuur e-posse",
         Icon: Mail,
+        color: "#FF2BD6",
       },
       {
         key: "partner-branding",
@@ -145,15 +153,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "Partner name, logo and report schedule",
         descAf: "Vennootnaam, logo en verslagskedule",
         Icon: Handshake,
-      },
-      {
-        key: "schools",
-        href: "/partner-schools",
-        labelEn: "Partner Schools",
-        labelAf: "Vennootskole",
-        descEn: "Channels, pipelines and contacts",
-        descAf: "Kanale, pyplyne en kontakte",
-        Icon: Store,
+        color: "#00E5FF",
       },
     ],
   },
@@ -169,6 +169,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "Open the learner-facing classroom view",
         descAf: "Maak die leerder-klaskamer oop",
         Icon: GraduationCap,
+        color: "#FFE600",
       },
       {
         key: "parent",
@@ -178,6 +179,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "Jump to the parent dashboard",
         descAf: "Gaan na die ouerpaneel",
         Icon: Users,
+        color: "#FF8A00",
       },
     ],
   },
@@ -185,6 +187,36 @@ const NAV_GROUPS: NavGroup[] = [
 
 interface AdminTopNavProps {
   current?: AdminNavKey;
+}
+
+function AdminDrips() {
+  const drips = [
+    { color: "#8A2BFF", x: 20,  w: 6,  h: 12 },
+    { color: "#FF2BD6", x: 120, w: 5,  h: 8  },
+    { color: "#00E5FF", x: 280, w: 7,  h: 16 },
+    { color: "#22FF66", x: 480, w: 5,  h: 10 },
+    { color: "#FFE600", x: 640, w: 6,  h: 14 },
+    { color: "#FF8A00", x: 800, w: 5,  h: 9  },
+    { color: "#8A2BFF", x: 940, w: 6,  h: 13 },
+  ];
+  return (
+    <div
+      aria-hidden
+      style={{ position: "absolute", bottom: 0, transform: "translateY(100%)", left: 0, right: 0, height: 20, pointerEvents: "none", overflow: "visible", zIndex: 39 }}
+    >
+      <svg viewBox="0 0 1000 20" preserveAspectRatio="none" style={{ width: "100%", height: 20, overflow: "visible", display: "block" }}>
+        {drips.map((d, i) => {
+          const cx = d.x + d.w / 2;
+          return (
+            <g key={i}>
+              <rect x={d.x} y={0} width={d.w} height={d.h} fill={d.color} rx={d.w / 2} />
+              <circle cx={cx} cy={d.h} r={d.w / 2 + 2} fill={d.color} />
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
 }
 
 export function AdminTopNav({ current }: AdminTopNavProps) {
@@ -195,40 +227,54 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
 
   return (
     <header
-      className="sticky top-0 z-40 bg-black/85 backdrop-blur-xl"
-      style={{ borderBottom: "1px solid rgba(138,43,255,0.28)" }}
+      className="sticky top-0 z-40"
+      style={{
+        background: "#000",
+        borderBottom: "3px solid transparent",
+        borderImage: "linear-gradient(90deg,#8A2BFF,#FF2BD6,#006BFF,#00E5FF,#22FF66,#FFE600,#FF8A00) 1",
+        boxShadow: "0 0 28px rgba(138,43,255,0.25), 0 4px 20px rgba(0,0,0,0.8)",
+      }}
       data-testid="admin-top-nav"
     >
+      <AdminDrips />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3">
-        <Link href="/learn/admin" className="flex items-center gap-2 min-w-0" data-testid="admin-nav-brand">
+        <Link href="/learn/admin" className="flex items-center gap-2.5 min-w-0" data-testid="admin-nav-brand">
           <div
-            className="w-9 h-9 rounded-xl bg-black flex items-center justify-center shrink-0"
-            style={{ border: "1.5px solid #8A2BFF", boxShadow: "0 0 14px rgba(138,43,255,0.45)" }}
+            className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+            style={{
+              background: "rgba(138,43,255,0.15)",
+              border: "2px solid #8A2BFF",
+              boxShadow: "0 0 18px rgba(138,43,255,0.5)",
+            }}
           >
-            <ShieldAlert className="w-4 h-4" style={{ color: "#8A2BFF" }} />
+            <ShieldAlert className="w-4.5 h-4.5" style={{ color: "#8A2BFF" }} />
           </div>
           <div className="min-w-0 hidden sm:block">
-            <p
-              className="text-[10px] font-black uppercase tracking-[0.22em]"
-              style={{ color: "#8A2BFF" }}
-            >
+            <p className="text-[9px] font-black uppercase tracking-[0.3em]" style={{ color: "#8A2BFF" }}>
               BrainTrack
             </p>
-            <p className="text-sm font-bold text-white truncate">
-              {isAf ? "Admin" : "Admin"}
+            <p className="text-[15px] font-black text-white leading-none tracking-tight">
+              Admin
             </p>
           </div>
         </Link>
 
-        <nav className="flex items-center gap-1 ml-2">
+        <nav className="flex items-center gap-1.5 ml-2">
           <Link
             href="/learn/admin"
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-black uppercase tracking-[0.18em] transition ${
-              dashboardActive
-                ? "bg-white text-black"
-                : "text-white hover:bg-white/10"
-            }`}
             data-testid="admin-nav-dashboard"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all hover:scale-105"
+            style={dashboardActive ? {
+              background: "#8A2BFF",
+              color: "#fff",
+              border: "2px solid #8A2BFF",
+              boxShadow: "0 0 16px rgba(138,43,255,0.55)",
+            } : {
+              background: "rgba(138,43,255,0.1)",
+              color: "#8A2BFF",
+              border: "1.5px solid rgba(138,43,255,0.4)",
+            }}
           >
             <LayoutDashboard className="w-3.5 h-3.5" />
             {isAf ? "Paneel" : "Dashboard"}
@@ -236,51 +282,64 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
 
           <Link
             href="/learn/admin/emails"
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-black uppercase tracking-[0.18em] transition ${
-              current === "emails"
-                ? "bg-white text-black"
-                : "text-white hover:bg-white/10"
-            }`}
             data-testid="admin-nav-emails-top"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all hover:scale-105"
+            style={current === "emails" ? {
+              background: "#FF2BD6",
+              color: "#fff",
+              border: "2px solid #FF2BD6",
+              boxShadow: "0 0 16px rgba(255,43,214,0.55)",
+            } : {
+              background: "rgba(255,43,214,0.1)",
+              color: "#FF2BD6",
+              border: "1.5px solid rgba(255,43,214,0.4)",
+            }}
           >
             <Mail className="w-3.5 h-3.5" />
-            {isAf ? "E-pos Sjablone" : "Email Templates"}
+            {isAf ? "E-pos" : "Emails"}
           </Link>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
                 type="button"
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-black uppercase tracking-[0.18em] transition ${
-                  current && current !== "dashboard"
-                    ? "bg-white text-black"
-                    : "text-white border border-white/20 hover:bg-white/10"
-                }`}
                 data-testid="admin-nav-menu-trigger"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all hover:scale-105"
+                style={{
+                  background: "rgba(0,229,255,0.1)",
+                  color: "#00E5FF",
+                  border: "1.5px solid rgba(0,229,255,0.4)",
+                }}
               >
-                {isAf ? "Spyskaart" : "Admin Menu"}
+                {isAf ? "Spyskaart" : "All Tools"}
                 <ChevronDown className="w-3.5 h-3.5" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="start"
-              sideOffset={8}
-              className="w-80 max-h-[80vh] overflow-y-auto bg-black/95 border border-white/15 backdrop-blur-xl"
+              sideOffset={10}
+              className="w-80 max-h-[80vh] overflow-y-auto"
+              style={{
+                background: "#050508",
+                border: "2px solid rgba(138,43,255,0.4)",
+                boxShadow: "0 0 40px rgba(138,43,255,0.2), 0 20px 60px rgba(0,0,0,0.8)",
+              }}
               data-testid="admin-nav-menu-content"
             >
               {NAV_GROUPS.map((group, gi) => (
                 <div key={group.labelEn}>
-                  {gi > 0 && <DropdownMenuSeparator className="bg-white/10" />}
-                  <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-[0.22em] text-white/60">
+                  {gi > 0 && <DropdownMenuSeparator style={{ background: "rgba(255,255,255,0.06)" }} />}
+                  <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-[0.3em]" style={{ color: "rgba(255,255,255,0.4)" }}>
                     {isAf ? group.labelAf : group.labelEn}
                   </DropdownMenuLabel>
-                  {group.items.map(({ key, href, labelEn, labelAf, descEn, descAf, Icon }) => {
+                  {group.items.map(({ key, href, labelEn, labelAf, descEn, descAf, Icon, color }) => {
                     const active = current === key;
                     return (
                       <DropdownMenuItem
                         key={key}
                         asChild
-                        className={`focus:bg-white/10 ${active ? "bg-white/10" : ""}`}
+                        className="focus:bg-white/5"
+                        style={active ? { background: `${color}15` } : {}}
                       >
                         <Link
                           href={href}
@@ -288,19 +347,20 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
                           data-testid={`admin-nav-${key}`}
                         >
                           <div
-                            className="w-8 h-8 rounded-lg bg-black flex items-center justify-center shrink-0"
+                            className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
                             style={{
-                              border: "1px solid rgba(138,43,255,0.4)",
-                              boxShadow: "0 0 10px rgba(138,43,255,0.18)",
+                              background: `${color}15`,
+                              border: `1.5px solid ${color}`,
+                              boxShadow: `0 0 10px ${color}33`,
                             }}
                           >
-                            <Icon className="w-4 h-4 text-white" />
+                            <Icon className="w-4 h-4" style={{ color }} />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p className="text-xs font-bold text-white leading-tight">
+                            <p className="text-xs font-black text-white leading-tight">
                               {isAf ? labelAf : labelEn}
                             </p>
-                            <p className="text-[11px] text-white/60 leading-snug mt-0.5">
+                            <p className="text-[11px] leading-snug mt-0.5" style={{ color: "rgba(255,255,255,0.5)" }}>
                               {isAf ? descAf : descEn}
                             </p>
                           </div>
@@ -317,16 +377,16 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
         <div className="ml-auto flex items-center gap-2">
           <button
             onClick={toggleLanguage}
-            className="text-[10px] font-black uppercase tracking-[0.22em] px-3 py-1.5 rounded-full bg-black text-white hover:text-white"
-            style={{ border: "1px solid rgba(255,255,255,0.18)" }}
+            className="text-[10px] font-black uppercase tracking-[0.25em] px-3 py-1.5 rounded-xl transition-all hover:scale-105"
+            style={{ background: "rgba(255,255,255,0.05)", border: "1.5px solid rgba(255,255,255,0.15)", color: "#fff" }}
             data-testid="admin-nav-lang"
           >
             {isAf ? "EN" : "AF"}
           </button>
           <Link
             href="/"
-            className="hidden sm:inline-flex items-center justify-center w-8 h-8 rounded-full bg-black text-white"
-            style={{ border: "1px solid rgba(255,255,255,0.18)" }}
+            className="hidden sm:inline-flex items-center justify-center w-9 h-9 rounded-xl transition-all hover:scale-105"
+            style={{ background: "rgba(0,229,255,0.08)", border: "1.5px solid rgba(0,229,255,0.35)", color: "#00E5FF" }}
             data-testid="admin-nav-home"
             title={isAf ? "Tuis" : "Home"}
           >
@@ -334,11 +394,12 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
           </Link>
           <a
             href="/api/auth/logout"
-            className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.22em] px-3 py-1.5 rounded-full bg-black"
+            className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-xl transition-all hover:scale-105"
             style={{
-              border: "1px solid rgba(255,43,214,0.5)",
+              background: "rgba(255,43,214,0.1)",
+              border: "1.5px solid #FF2BD6",
               color: "#FF2BD6",
-              boxShadow: "0 0 10px rgba(255,43,214,0.25)",
+              boxShadow: "0 0 12px rgba(255,43,214,0.2)",
             }}
             data-testid="admin-nav-logout"
           >

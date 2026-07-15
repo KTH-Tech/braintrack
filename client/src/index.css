@@ -238,85 +238,52 @@ h1.no-rainbow *, .no-rainbow * {
   100% { background-position: 0% 50%; }
 }
 
-.prismglass-panel {
-  -webkit-backdrop-filter: blur(20px) saturate(2.2);
-  backdrop-filter: blur(20px) saturate(2.2);
-  background: linear-gradient(
-    135deg,
-    rgba(68,102,255,0.18) 0%,
-    rgba(0,187,255,0.15) 20%,
-    rgba(0,255,85,0.12) 40%,
-    rgba(255,238,0,0.12) 60%,
-    rgba(204,0,255,0.15) 80%,
-    rgba(153,0,255,0.18) 100%
-  );
-  background-size: 300% 300%;
-  animation: prismglass-shift 8s ease infinite;
-  border: 1.5px solid rgba(255, 255, 255, 0.15);
-  box-shadow:
-    0 8px 40px rgba(0,187,255,0.22),
-    0 4px 20px rgba(204,0,255,0.16),
-    0 2px 0 rgba(255,255,255,0.10) inset;
-  border-radius: 1rem;
-}
-
-.shadcn-card {
-  background: rgba(255, 255, 255, 0.04);
-  -webkit-backdrop-filter: blur(14px) saturate(1.6);
-  backdrop-filter: blur(14px) saturate(1.6);
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  box-shadow:
-    0 0 20px rgba(0,229,255, 0.08),
-    0 8px 32px rgba(0, 0, 0, 0.65),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-}
-.shadcn-card:hover {
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(0,229,255, 0.22) !important;
-  box-shadow:
-    0 0 30px rgba(0,229,255, 0.20),
-    0 12px 40px rgba(0, 0, 0, 0.75),
-    inset 0 1px 0 rgba(255, 255, 255, 0.10);
-}
-
-/* ── Glass utilities ───────────────────────────────────────── */
-.glass {
-  -webkit-backdrop-filter: blur(16px) saturate(1.8);
-  backdrop-filter: blur(16px) saturate(1.8);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  box-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.60),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-.glass-neon {
-  -webkit-backdrop-filter: blur(16px) saturate(1.8);
-  backdrop-filter: blur(16px) saturate(1.8);
-  background: rgba(0,229,255, 0.05);
-  border: 1px solid rgba(0,229,255, 0.22);
-  box-shadow:
-    0 0 22px rgba(0,229,255, 0.14),
-    0 4px 24px rgba(0, 0, 0, 0.60),
-    inset 0 1px 0 rgba(0,229,255, 0.08);
-}
-
+/* ═════════════════════════════════════════════════════════════
+   UNIFIED BRAND CARD SYSTEM — matches the brand board's dashboard
+   mockups exactly: flat near-black panel, rounded corners, a clean
+   thin neon border + soft glow. Graffiti lives in the page BACKGROUND
+   (GraffitiSplats), not stamped onto individual cards.
+   ═════════════════════════════════════════════════════════════ */
+.prismglass-panel,
+.shadcn-card,
+.glass,
+.glass-neon,
 .glass-rainbow {
-  -webkit-backdrop-filter: blur(18px) saturate(2.0);
-  backdrop-filter: blur(18px) saturate(2.0);
-  background: linear-gradient(
-    135deg,
-    rgba(68,102,255,0.08) 0%,
-    rgba(0,255,85,0.06) 33%,
-    rgba(255,238,0,0.06) 66%,
-    rgba(204,0,255,0.08) 100%
-  );
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  --tile-neon: 0, 229, 255;
+  position: relative;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: #0a0b12;
+  border: 1.5px solid rgb(var(--tile-neon));
+  border-radius: 16px;
   box-shadow:
-    0 0 30px rgba(68,102,255,0.10),
-    0 8px 32px rgba(0, 0, 0, 0.65),
-    inset 0 1px 0 rgba(255, 255, 255, 0.09);
+    0 0 18px rgba(var(--tile-neon), 0.30),
+    0 8px 24px rgba(0, 0, 0, 0.55);
+  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+  overflow: hidden;
 }
+.prismglass-panel:hover,
+.shadcn-card:hover,
+.glass:hover,
+.glass-neon:hover,
+.glass-rainbow:hover {
+  border-color: rgb(var(--tile-neon)) !important;
+  box-shadow:
+    0 0 28px rgba(var(--tile-neon), 0.5),
+    0 12px 30px rgba(0, 0, 0, 0.65);
+  transform: translateY(-2px);
+}
+/* Colour cycling so adjacent panels get different neon hues. */
+.prismglass-panel:nth-child(7n+1), .shadcn-card:nth-child(7n+1), .glass:nth-child(7n+1) { --tile-neon: 0, 107, 255; }
+.prismglass-panel:nth-child(7n+2), .shadcn-card:nth-child(7n+2), .glass:nth-child(7n+2) { --tile-neon: 0, 229, 255; }
+.prismglass-panel:nth-child(7n+3), .shadcn-card:nth-child(7n+3), .glass:nth-child(7n+3) { --tile-neon: 34, 255, 102; }
+.prismglass-panel:nth-child(7n+4), .shadcn-card:nth-child(7n+4), .glass:nth-child(7n+4) { --tile-neon: 255, 230, 0; }
+.prismglass-panel:nth-child(7n+5), .shadcn-card:nth-child(7n+5), .glass:nth-child(7n+5) { --tile-neon: 255, 138, 0; }
+.prismglass-panel:nth-child(7n+6), .shadcn-card:nth-child(7n+6), .glass:nth-child(7n+6) { --tile-neon: 255, 43, 214; }
+.prismglass-panel:nth-child(7n+7), .shadcn-card:nth-child(7n+7), .glass:nth-child(7n+7) { --tile-neon: 138, 43, 255; }
+/* Named neon colours for explicit assignment. */
+.glass-neon   { --tile-neon: 0, 229, 255 !important; }
+.glass-rainbow { --tile-neon: 138, 43, 255 !important; }
 
 @keyframes border-rotate {
   0% { --border-angle: 0deg; }
@@ -603,17 +570,52 @@ html.light .rainbow-card-green,
 html.light .rainbow-card-amber,
 html.light .rainbow-card-orange,
 html.light .rainbow-card-red {
+  /* Light cards: near-white surface, but keep each card's neon identity as a
+     soft coloured edge + gentle glow — matches the light brand board. */
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.70) 100%),
-    rgba(255,255,255,0.92) !important;
+    linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,0.94) 100%) !important;
   color: hsl(var(--foreground));
+  border: 1.5px solid rgba(var(--tile-neon), 0.55) !important;
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.9),
-    0 6px 22px rgba(20,30,60,0.10),
-    0 0 18px rgba(168,85,247,0.06) !important;
-  border-color: rgba(20,30,60,0.08) !important;
+    0 8px 24px rgba(20,30,60,0.08),
+    0 0 16px rgba(var(--tile-neon), 0.22) !important;
+}
+html.light .neon-tile:hover {
+  border-color: rgba(var(--tile-neon), 0.9) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.9),
+    0 12px 30px rgba(20,30,60,0.12),
+    0 0 24px rgba(var(--tile-neon), 0.35) !important;
+  transform: translateY(-2px);
 }
 html.light .neon-tile::before { opacity: 0.35; }
+
+/* Light-mode card surfaces: white base with coloured border + gentle glow. */
+html.light .prismglass-panel,
+html.light .shadcn-card,
+html.light .glass,
+html.light .glass-neon,
+html.light .glass-rainbow {
+  background: linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,0.94) 100%) !important;
+  color: hsl(var(--foreground));
+  border: 1.5px solid rgba(var(--tile-neon), 0.55) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.9),
+    0 8px 24px rgba(20,30,60,0.08),
+    0 0 16px rgba(var(--tile-neon), 0.22) !important;
+}
+html.light .prismglass-panel:hover,
+html.light .shadcn-card:hover,
+html.light .glass:hover,
+html.light .glass-neon:hover,
+html.light .glass-rainbow:hover {
+  border-color: rgba(var(--tile-neon), 0.9) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.9),
+    0 12px 30px rgba(20,30,60,0.12),
+    0 0 24px rgba(var(--tile-neon), 0.35) !important;
+}
 
 /* Headings stay rainbow in both themes — no override needed */
 html.light .text-foreground { color: hsl(var(--foreground)); }
@@ -802,101 +804,99 @@ html.light .text-muted-foreground { color: hsl(var(--muted-foreground)); }
   background: var(--rainbow-gradient);
 }
 
-/* ---- Public Nav ---- */
+/* ═══════════════════════════════════════════════════════════════
+   GEN Z GRAFFITI VIBES — Global Nav/Button/Tag system
+   ═══════════════════════════════════════════════════════════════ */
 
+/* Paint drip animation for nav-embedded drip SVGs */
+@keyframes drip-fall {
+  0%   { transform: scaleY(0); transform-origin: top; opacity: 0; }
+  60%  { transform: scaleY(1.1); opacity: 1; }
+  100% { transform: scaleY(1); opacity: 1; }
+}
+
+/* ---- Public Nav (fallback if inline styles stripped) ---- */
 .nav-glass {
-  background: rgba(0, 0, 0, 0.72);
-  backdrop-filter: blur(24px) saturate(1.6);
-  -webkit-backdrop-filter: blur(24px) saturate(1.6);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.04), 0 4px 24px rgba(0,0,0,0.4);
+  background: #000;
+  border-bottom: 3px solid;
+  border-image: linear-gradient(90deg,#006BFF,#00E5FF,#22FF66,#FFE600,#FF8A00,#FF2BD6,#8A2BFF) 1;
+  box-shadow: 0 0 32px rgba(0,229,255,0.18), 0 4px 24px rgba(0,0,0,0.8);
 }
 
-/* Light-mode header */
 html.light .nav-glass {
-  background: rgba(255, 255, 255, 0.82);
-  border-bottom: 1px solid rgba(20, 30, 60, 0.08);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.6), 0 4px 18px rgba(20,30,60,0.06);
-}
-html.light .nav-link:hover { background: rgba(20,30,60,0.05); }
-html.light .nav-link-active { background: rgba(20,30,60,0.06); }
-html.light .nav-mobile-panel {
-  background: rgba(255,255,255,0.97);
+  background: #fff;
+  border-bottom: 3px solid;
+  border-image: linear-gradient(90deg,#006BFF,#00E5FF,#22FF66,#FFE600,#FF8A00,#FF2BD6,#8A2BFF) 1;
+  box-shadow: 0 4px 18px rgba(20,30,60,0.08);
 }
 
-.nav-logo-ring {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 3px;
-  border-radius: 10px;
-  background: hsl(var(--muted) / 0.5);
-  transition: background 0.3s ease;
-}
-
-.nav-logo-ring:hover {
-  background: hsl(var(--primary) / 0.08);
-}
-
+/* Nav sticker chips */
 .nav-link {
   position: relative;
-  letter-spacing: 0.04em;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 12px;
+  border: 2px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  padding: 6px 14px;
+  color: #fff;
+  transition: all 0.15s ease;
 }
+.nav-link:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.05); transform: scale(1.04); }
+.nav-link-active { background: #006BFF !important; border-color: #006BFF !important; color: #fff !important; box-shadow: 0 0 16px rgba(0,107,255,0.5); }
+.nav-active-indicator { display: none; } /* replaced by sticker fill */
 
-.nav-link:hover {
-  background: hsl(var(--muted) / 0.5);
+/* Mobile panel */
+.nav-mobile-panel {
+  background: #050508;
+  border-top: 2px solid rgba(255,43,214,0.35);
+  animation: nav-panel-open 0.2s ease-out;
 }
+html.light .nav-mobile-panel { background: #f9f9ff; border-top: 2px solid rgba(0,107,255,0.25); }
 
-.nav-link-active {
-  background: hsl(var(--primary) / 0.08);
-}
-
-.nav-active-indicator {
-  position: absolute;
-  bottom: -1px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 16px;
-  height: 2px;
-  border-radius: 2px;
-  background: hsl(var(--primary));
-  animation: nav-indicator-in 0.3s ease-out;
-}
-
-@keyframes nav-indicator-in {
-  from { width: 0; opacity: 0; }
-  to { width: 16px; opacity: 1; }
-}
-
-/* Primary CTA — modern flat single-colour (brand Electric Blue).
-   Replaces the old rainbow-gradient CTA; no gradients, no uppercase shout. */
+/* ---- CTA buttons — Gen Z yellow sticker by default ---- */
 .nav-cta-btn,
 [data-testid="button-hero-cta"],
 .btn-rainbow {
+  background: #FFE600 !important;
   background-image: none !important;
-  background-color: #006BFF !important;
-  color: #ffffff !important;
-  border: 0 !important;
-  border-radius: 0.75rem !important;
-  font-weight: 700 !important;
-  text-transform: none !important;
-  letter-spacing: normal !important;
+  color: #000 !important;
+  border: 2px solid #FFE600 !important;
+  border-radius: 12px !important;
+  font-weight: 900 !important;
+  font-size: 12px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
   text-shadow: none;
-  box-shadow: none !important;
-  transition: background-color 0.15s ease, transform 0.15s ease;
+  box-shadow: 0 0 18px rgba(255,230,0,0.45) !important;
+  transition: all 0.15s ease !important;
 }
-.nav-cta-btn:hover,
-[data-testid="button-hero-cta"]:hover,
-.btn-rainbow:hover {
-  background-color: #0057D6 !important;
-  transform: translateY(-1px);
+.nav-cta-btn:hover, [data-testid="button-hero-cta"]:hover, .btn-rainbow:hover {
+  background: #E6CF00 !important;
+  transform: scale(1.05) !important;
 }
-.nav-cta-btn:active,
-[data-testid="button-hero-cta"]:active,
-.btn-rainbow:active {
-  transform: translateY(0);
+.nav-cta-btn:active, [data-testid="button-hero-cta"]:active, .btn-rainbow:active {
+  transform: scale(0.97) !important;
 }
+
+/* ---- Graffiti tag chip — reusable sticker style ---- */
+.graffiti-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 10px;
+  font-weight: 900;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border: 2px solid currentColor;
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+.graffiti-tag:hover { transform: scale(1.06); filter: brightness(1.1); }
 
 @keyframes nav-mobile-slide-in {
   from { opacity: 0; transform: translateY(-4px); }
@@ -905,8 +905,6 @@ html.light .nav-mobile-panel {
 
 .nav-mobile-panel {
   background: hsl(var(--background) / 0.97);
-  backdrop-filter: blur(24px) saturate(1.5);
-  -webkit-backdrop-filter: blur(24px) saturate(1.5);
   animation: nav-panel-open 0.25s ease-out;
 }
 
@@ -1711,31 +1709,54 @@ html.light .nav-mobile-panel {
 /* Neon-bordered cosmic tile — pure black + cyan neon border */
 .neon-tile {
   position: relative;
-  background: #000;
-  border: 1.5px solid rgba(0,229,255, 0.32);
-  border-radius: 1rem;
+  /* Per-card neon hue — overridden by the nth-child cycle below. Defaults cyan. */
+  --tile-neon: 0, 229, 255;
+  background: #0a0b12;
+  border: 1.5px solid rgb(var(--tile-neon));
+  border-radius: 16px;
   box-shadow:
-    0 0 18px rgba(0,229,255, 0.12),
-    0 6px 20px rgba(0, 0, 0, 0.55);
-  transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+    0 0 18px rgba(var(--tile-neon), 0.30),
+    0 8px 24px rgba(0, 0, 0, 0.55);
+  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
   overflow: hidden;
 }
 /* Rainbow ring + ribbon disabled — panels carry their own color via rainbow-card-* tints */
 .neon-tile::before,
 .neon-tile::after { display: none !important; }
 .neon-tile:hover {
-  border-color: rgba(0,229,255, 0.55);
+  border-color: rgb(var(--tile-neon));
   box-shadow:
-    0 0 24px rgba(0,229,255, 0.25),
-    0 10px 28px rgba(0, 0, 0, 0.65);
-  transform: translateY(-1px);
+    0 0 28px rgba(var(--tile-neon), 0.5),
+    0 12px 30px rgba(0, 0, 0, 0.65);
+  transform: translateY(-2px);
 }
+/* Multicolour identity: cards in a grid cycle through the brand neons like the
+   brand board, instead of every card being the same cyan. */
+.neon-tile:nth-child(7n+1) { --tile-neon: 0, 107, 255; }    /* electric blue */
+.neon-tile:nth-child(7n+2) { --tile-neon: 0, 229, 255; }    /* cyan */
+.neon-tile:nth-child(7n+3) { --tile-neon: 34, 255, 102; }   /* green */
+.neon-tile:nth-child(7n+4) { --tile-neon: 255, 230, 0; }    /* yellow */
+.neon-tile:nth-child(7n+5) { --tile-neon: 255, 138, 0; }    /* orange */
+.neon-tile:nth-child(7n+6) { --tile-neon: 255, 43, 214; }   /* pink */
+.neon-tile:nth-child(7n+7) { --tile-neon: 138, 43, 255; }   /* purple */
+/* When a grid wraps each tile in <a>/<div>, cycle on those wrappers too. */
+.grid > a:nth-child(7n+1) .neon-tile, .grid > div:nth-child(7n+1) .neon-tile { --tile-neon: 0, 107, 255; }
+.grid > a:nth-child(7n+2) .neon-tile, .grid > div:nth-child(7n+2) .neon-tile { --tile-neon: 0, 229, 255; }
+.grid > a:nth-child(7n+3) .neon-tile, .grid > div:nth-child(7n+3) .neon-tile { --tile-neon: 34, 255, 102; }
+.grid > a:nth-child(7n+4) .neon-tile, .grid > div:nth-child(7n+4) .neon-tile { --tile-neon: 255, 230, 0; }
+.grid > a:nth-child(7n+5) .neon-tile, .grid > div:nth-child(7n+5) .neon-tile { --tile-neon: 255, 138, 0; }
+.grid > a:nth-child(7n+6) .neon-tile, .grid > div:nth-child(7n+6) .neon-tile { --tile-neon: 255, 43, 214; }
+.grid > a:nth-child(7n+7) .neon-tile, .grid > div:nth-child(7n+7) .neon-tile { --tile-neon: 138, 43, 255; }
 .neon-tile:hover::before { opacity: 0.85; }
-.neon-tile-pink   { border-color: rgba(236,72,153,0.45); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 0 18px rgba(236,72,153,0.18), 0 6px 24px rgba(0,0,0,0.45); }
-.neon-tile-cyan   { border-color: rgba(6,182,212,0.45);  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 0 18px rgba(6,182,212,0.18),  0 6px 24px rgba(0,0,0,0.45); }
-.neon-tile-blue   { border-color: rgba(59,130,246,0.45); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 0 18px rgba(59,130,246,0.18), 0 6px 24px rgba(0,0,0,0.45); }
-.neon-tile-green  { border-color: rgba(34,197,94,0.45);  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 0 18px rgba(34,197,94,0.18),  0 6px 24px rgba(0,0,0,0.45); }
-.neon-tile-orange { border-color: rgba(249,115,22,0.45); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 0 18px rgba(249,115,22,0.18), 0 6px 24px rgba(0,0,0,0.45); }
+/* Explicit fixed-colour tiles now drive the same --tile-neon variable so their
+   border + glow match the brightened default. !important beats the nth-child cycle. */
+.neon-tile-pink   { --tile-neon: 255, 43, 214 !important; }
+.neon-tile-cyan   { --tile-neon: 0, 229, 255 !important; }
+.neon-tile-blue   { --tile-neon: 0, 107, 255 !important; }
+.neon-tile-green  { --tile-neon: 34, 255, 102 !important; }
+.neon-tile-orange { --tile-neon: 255, 138, 0 !important; }
+.neon-tile-yellow { --tile-neon: 255, 230, 0 !important; }
+.neon-tile-purple { --tile-neon: 138, 43, 255 !important; }
 
 /* Glow-only neon button (replaces solid prismglass-btn fills) */
 .neon-btn {
@@ -1744,8 +1765,6 @@ html.light .nav-mobile-panel {
   color: #06b6d4;
   box-shadow: 0 0 0 0 currentColor, var(--glow-cyan);
   text-shadow: 0 0 6px currentColor;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   transition: box-shadow 0.2s ease, transform 0.15s ease, background 0.2s ease;
 }
 .neon-btn:hover {
@@ -1918,8 +1937,6 @@ html.light .rainbow-wash-full {
   background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(59,130,246,0.08) 25%, rgba(6,182,212,0.09) 50%, rgba(236,72,153,0.08) 75%, rgba(255,255,255,0.06) 100%);
   border: 1.5px solid rgba(6,182,212,0.28);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), 0 4px 20px rgba(6,182,212,0.14);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 .rainbow-card:hover {
@@ -1938,8 +1955,6 @@ html.light .rainbow-wash-full {
 .rainbow-card-orange,
 .rainbow-card-red {
   border: 1px solid rgba(255,255,255,0.10) !important;
-  backdrop-filter: blur(20px) saturate(1.3);
-  -webkit-backdrop-filter: blur(20px) saturate(1.3);
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
@@ -2003,27 +2018,23 @@ html.light .rainbow-wash-full {
 .grid > a > *, .grid > div > .neon-tile { width: 100%; }
 
 .prismglass-btn {
-  /* Glow-only cosmic-neon: dark base + cyan neon outline + outer glow */
-  background: rgba(10, 14, 22, 0.6);
-  border: 1.5px solid rgba(6, 182, 212, 0.65);
-  color: #e0f7ff;
-  box-shadow:
-    0 0 14px rgba(6, 182, 212, 0.45),
-    0 0 30px rgba(236, 72, 153, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  text-shadow: 0 0 8px rgba(6, 182, 212, 0.6);
-  backdrop-filter: blur(12px) saturate(1.4);
-  -webkit-backdrop-filter: blur(12px) saturate(1.4);
-  transition: box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  /* Gen Z sticker — bold blue fill, fat border, neon glow */
+  background: #006BFF;
+  border: 2px solid #006BFF;
+  color: #fff;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  box-shadow: 0 0 18px rgba(0,107,255,0.45);
+  text-shadow: none;
+  transition: all 0.15s ease;
 }
 
 .prismglass-btn:hover {
-  background: rgba(20, 28, 44, 0.7);
-  border-color: rgba(6, 182, 212, 0.95);
-  box-shadow:
-    0 0 22px rgba(6, 182, 212, 0.7),
-    0 0 44px rgba(236, 72, 153, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  background: #0057D6;
+  border-color: #0057D6;
+  box-shadow: 0 0 28px rgba(0,107,255,0.65);
+  transform: scale(1.04);
   filter: none;
 }
 
@@ -2046,8 +2057,6 @@ html.light .rainbow-wash-full {
   );
   background-size: 200% 200%;
   /* animation disabled — only .anicon-* may animate */
-  backdrop-filter: blur(12px) saturate(1.4);
-  -webkit-backdrop-filter: blur(12px) saturate(1.4);
 }
 
 @keyframes prismshift-btn {
@@ -2066,8 +2075,6 @@ html.light .rainbow-wash-full {
   );
   background-size: 300% 300%;
   /* animation disabled — only .anicon-* may animate */
-  backdrop-filter: blur(12px) saturate(1.5);
-  -webkit-backdrop-filter: blur(12px) saturate(1.5);
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 0.75rem;
   padding: 0.5rem 1rem;
@@ -2292,47 +2299,18 @@ html.light .rainbow-wash-full {
 }
 
 .rizz-chat-panel {
-  /* Extend .prismglass-panel — override with a darker, more readable base */
+  /* Flat brand panel — no glass, no blur. */
   border-radius: 1.25rem !important;
-  background: linear-gradient(
-    160deg,
-    rgba(6,182,212,0.22) 0%,
-    rgba(236,72,153,0.14) 20%,
-    rgba(6,182,212,0.14) 45%,
-    rgba(34,197,94,0.10) 65%,
-    rgba(234,179,8,0.12) 82%,
-    rgba(6,182,212,0.22) 100%
-  ) !important;
-  backdrop-filter: blur(28px) saturate(2.4) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(2.4) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.13) !important;
-  box-shadow:
-    0 0 0 1px rgba(6,182,212,0.15),
-    0 8px 48px rgba(6,182,212,0.32),
-    0 4px 24px rgba(236,72,153,0.18),
-    0 2px 0 rgba(255,255,255,0.08) inset !important;
+  background: #050608 !important;
+  border: 2px solid #00E5FF !important;
+  box-shadow: 0 0 30px rgba(0,229,255,0.35), 0 8px 30px rgba(0,0,0,0.6) !important;
   position: relative;
   overflow: hidden;
 }
 
-.rizz-chat-panel::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 1.25rem;
-  background: rgba(8, 5, 20, 0.72);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.rizz-chat-panel > * {
-  position: relative;
-  z-index: 1;
-}
-
 .rizz-chat-header {
-  background: rgba(255, 255, 255, 0.04);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: #000;
+  border-bottom: 2px solid rgba(0,229,255,0.4);
   border-radius: 1.25rem 1.25rem 0 0;
 }
 
@@ -2385,20 +2363,15 @@ html.light .rainbow-wash-full {
 }
 
 .rizz-bubble-bot {
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  color: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(8px);
+  background: #0a0b12;
+  border: 1.5px solid rgba(0,229,255,0.5);
+  color: #fff;
 }
 
 .rizz-bubble-user {
-  background: linear-gradient(
-    135deg,
-    rgba(6,182,212,0.45) 0%,
-    rgba(236,72,153,0.35) 100%
-  );
-  border: 1px solid rgba(6,182,212,0.45);
-  box-shadow: 0 2px 12px rgba(6,182,212,0.25);
+  background: #006BFF;
+  border: 1.5px solid #00E5FF;
+  box-shadow: 0 2px 12px rgba(0,229,255,0.3);
 }
 
 .rizz-user-avatar {
@@ -2413,54 +2386,51 @@ html.light .rainbow-wash-full {
 
 .rizz-chip {
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   padding: 5px 12px;
   border-radius: 9999px;
-  border: 1px solid rgba(6,182,212,0.35);
-  background: rgba(6,182,212,0.12);
-  color: rgba(255,255,255,0.82);
+  border: 1.5px solid #00E5FF;
+  background: #0a0b12;
+  color: #fff;
   cursor: pointer;
   transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-  backdrop-filter: blur(8px);
 }
 .rizz-chip:hover {
-  background: rgba(6,182,212,0.25);
-  border-color: rgba(6,182,212,0.6);
-  box-shadow: 0 0 12px rgba(6,182,212,0.3), 0 0 4px rgba(236,72,153,0.2);
+  background: rgba(0,229,255,0.18);
+  box-shadow: 0 0 12px rgba(0,229,255,0.4);
   color: white;
 }
 
 .rizz-input-border-top {
-  border-top: 1px solid rgba(255,255,255,0.07);
-  background: rgba(0,0,0,0.15);
+  border-top: 2px solid rgba(0,229,255,0.4);
+  background: #000;
 }
 
 .rizz-input {
   flex: 1;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.10);
+  background: #0a0b12;
+  border: 1.5px solid rgba(0,229,255,0.35);
   border-radius: 0.75rem;
   padding: 8px 14px;
   font-size: 13px;
-  color: rgba(255,255,255,0.92);
+  color: #fff;
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  backdrop-filter: blur(8px);
 }
 .rizz-input::placeholder {
-  color: rgba(255,255,255,0.30);
+  color: rgba(255,255,255,0.45);
 }
 .rizz-input:focus {
-  border-color: rgba(6,182,212,0.55);
-  box-shadow: 0 0 0 3px rgba(6,182,212,0.12), 0 0 12px rgba(6,182,212,0.15);
+  border-color: #00E5FF;
+  box-shadow: 0 0 0 3px rgba(0,229,255,0.15), 0 0 12px rgba(0,229,255,0.25);
 }
 
 .rizz-send-btn {
   width: 38px;
   height: 38px;
   border-radius: 0.75rem;
-  border: 1px solid rgba(6,182,212,0.4);
-  background: linear-gradient(135deg, rgba(6,182,212,0.55), rgba(236,72,153,0.45));
+  border: none;
+  background: #006BFF;
   color: white;
   display: flex;
   align-items: center;
@@ -2468,11 +2438,11 @@ html.light .rainbow-wash-full {
   cursor: pointer;
   flex-shrink: 0;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 12px rgba(6,182,212,0.3);
+  box-shadow: 0 2px 12px rgba(0,229,255,0.4);
 }
 .rizz-send-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, rgba(6,182,212,0.75), rgba(236,72,153,0.65));
-  box-shadow: 0 4px 18px rgba(6,182,212,0.45);
+  background: #0057D6;
+  box-shadow: 0 4px 18px rgba(0,229,255,0.6);
   transform: translateY(-1px);
 }
 .rizz-send-btn:active:not(:disabled) {
@@ -3095,12 +3065,15 @@ html.light .rainbow-wash-full {
   display: block;
   animation: bt-splat-in 0.55s cubic-bezier(0.18, 1.4, 0.4, 1) both;
   will-change: transform, opacity;
+  /* Soft bloom so splats read as sprayed paint, not flat shapes. */
+  filter: drop-shadow(0 0 10px currentColor);
 }
 @keyframes bt-splat-in {
-  0%   { opacity: 0; scale: 0.2; }
-  60%  { opacity: 1; scale: 1.18; }
-  80%  { scale: 0.94; }
-  100% { opacity: 1; scale: 1; }
+  0%   { opacity: 0; scale: 0.05; rotate: -15deg; }
+  45%  { opacity: 1; scale: 1.28; rotate: 3deg; }
+  65%  { scale: 0.91; rotate: -2deg; }
+  80%  { scale: 1.06; }
+  100% { opacity: 1; scale: 1; rotate: 0deg; }
 }
 @media (prefers-reduced-motion: reduce) {
   .bt-splat { animation: none; }

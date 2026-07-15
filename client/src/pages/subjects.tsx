@@ -53,6 +53,7 @@ import { SUBJECT_CATEGORIES } from "@/lib/constants";
 import { useLanguage } from "@/lib/language-context";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { GraffitiSplats } from "@/components/graffiti-splats";
 
 function getSubjectLucide(name: string): LucideIcon {
   const n = (name || "").toLowerCase();
@@ -94,15 +95,13 @@ function getSubjectLucide(name: string): LucideIcon {
 }
 
 const RAINBOW = [
-  "#FF8A00",
-  "#FF8A00",
-  "#FFE600",
-  "#FFE600",
-  "#00E5FF",
   "#006BFF",
-  "#8A2BFF",
-  "#8A2BFF",
+  "#00E5FF",
+  "#22FF66",
+  "#FFE600",
+  "#FF8A00",
   "#FF2BD6",
+  "#8A2BFF",
 ];
 
 type SortMode = "alpha" | "weak" | "practiced";
@@ -357,9 +356,10 @@ export default function SubjectsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-background text-white relative overflow-hidden">
+      <GraffitiSplats variant="corner" opacity={0.35} />
       {/* Header — pure black, no wordmark */}
-      <header className="sticky top-0 z-50 bg-black/95 backdrop-blur-lg border-b border-white/10">
+      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-lg border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 gap-4">
             <nav className="flex items-center gap-1">
@@ -442,7 +442,7 @@ export default function SubjectsPage() {
         {/* Cosmic hero */}
         <section className="relative space-y-5 mb-10">
           <div
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black"
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-background"
             style={{
               border: "1px solid #00E5FF",
               boxShadow: "0 0 12px rgba(0,229,255,0.45)",
@@ -527,7 +527,7 @@ export default function SubjectsPage() {
         {/* Empty state — no subjects selected */}
         {noSubjectsSelected && !showBrowseAll && (
           <div
-            className="relative rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-black mb-8 overflow-hidden border border-white/10"
+            className="relative rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-background mb-8 overflow-hidden border border-white/10"
           >
             <div
               aria-hidden
@@ -579,7 +579,7 @@ export default function SubjectsPage() {
         {/* Browse & Add panel */}
         {showBrowseAll && (
           <div
-            className="relative rounded-2xl bg-black overflow-hidden mb-10"
+            className="relative rounded-2xl bg-background overflow-hidden mb-10"
             style={{
               border: "1px solid rgba(0,229,255,0.35)",
               boxShadow: "0 0 40px rgba(0,229,255,0.08)",
@@ -624,7 +624,7 @@ export default function SubjectsPage() {
                   value={browseSearch}
                   onChange={(e) => setBrowseSearch(e.target.value)}
                   data-testid="input-browse-search"
-                  className="pl-11 h-12 bg-black border-white/15 text-white placeholder:text-white/60 rounded-xl focus-visible:border-[#00E5FF] focus-visible:ring-[#00E5FF]/30"
+                  className="pl-11 h-12 bg-background border-white/15 text-white placeholder:text-white/60 rounded-xl focus-visible:border-[#00E5FF] focus-visible:ring-[#00E5FF]/30"
                 />
               </div>
 
@@ -657,7 +657,7 @@ export default function SubjectsPage() {
                         data-testid={`browse-subject-${subject.id}`}
                         onClick={() => addSubjectMutation.mutate(subject.id)}
                         disabled={isAdding}
-                        className="flex items-center gap-3 p-3 rounded-xl bg-black text-left transition-all hover:bg-white/5 disabled:opacity-60"
+                        className="flex items-center gap-3 p-3 rounded-xl bg-background text-left transition-all hover:bg-white/5 disabled:opacity-60"
                         style={{
                           border: `1px solid ${hex}33`,
                         }}
@@ -725,13 +725,13 @@ export default function SubjectsPage() {
                   placeholder={t.searchPlaceholder}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-11 h-12 bg-black border-white/15 text-white placeholder:text-white rounded-xl focus-visible:border-[#00E5FF] focus-visible:ring-[#00E5FF]/30"
+                  className="pl-11 h-12 bg-background border-white/15 text-white placeholder:text-white rounded-xl focus-visible:border-[#00E5FF] focus-visible:ring-[#00E5FF]/30"
                   data-testid="input-search"
                 />
               </div>
 
               <div
-                className="flex items-center gap-1 rounded-xl bg-black p-1"
+                className="flex items-center gap-1 rounded-xl bg-background p-1"
                 style={{ border: "1px solid rgba(255,255,255,0.12)" }}
                 data-testid="sort-group"
               >
@@ -838,7 +838,7 @@ export default function SubjectsPage() {
               </div>
             ) : subjectsToShow.length > 0 ? (
               <div
-                className="relative text-center py-16 rounded-2xl bg-black overflow-hidden"
+                className="relative text-center py-16 rounded-2xl bg-background overflow-hidden"
                 style={{
                   border: "1px solid rgba(255,255,255,0.1)",
                 }}
@@ -902,7 +902,7 @@ export default function SubjectsPage() {
           </div>
         ) : (
           <div
-            className="relative text-center py-16 rounded-2xl bg-black overflow-hidden"
+            className="relative text-center py-16 rounded-2xl bg-background overflow-hidden"
             style={{
               border: "1px solid rgba(255,255,255,0.1)",
             }}
@@ -978,7 +978,7 @@ function CategoryPill({
       type="button"
       onClick={onClick}
       data-testid={testId}
-      className="px-3.5 py-2 rounded-full text-xs font-black uppercase tracking-[0.18em] bg-black transition-colors flex items-center gap-2"
+      className="px-3.5 py-2 rounded-full text-xs font-black uppercase tracking-[0.18em] bg-background transition-colors flex items-center gap-2"
       style={{
         border: `1px solid ${active ? hex : "rgba(255,255,255,0.15)"}`,
         color: active ? hex : "rgba(255,255,255,0.65)",
@@ -1045,7 +1045,7 @@ function SubjectNeonCard({
   return (
     <div
       data-testid={testId}
-      className="group relative rounded-2xl bg-black overflow-hidden cursor-pointer transition-transform hover:-translate-y-0.5"
+      className="group relative rounded-2xl bg-background overflow-hidden cursor-pointer transition-transform hover:-translate-y-0.5"
       style={{
         border: `1px solid ${hex}55`,
         boxShadow: `0 0 0 1px transparent, 0 12px 40px -20px ${hex}`,
@@ -1073,7 +1073,7 @@ function SubjectNeonCard({
         {/* Top row */}
         <div className="flex items-start gap-4">
           <div
-            className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-black"
+            className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-background"
             style={{
               border: `1px solid ${hex}`,
               boxShadow: `0 0 14px ${hex}55, inset 0 0 10px ${hex}22`,
@@ -1112,7 +1112,11 @@ function SubjectNeonCard({
             <span style={{ color: strengthHex, textShadow: `0 0 6px ${strengthHex}66` }}>
               {strengthLabel}
             </span>
-            <span className="text-white tabular-nums" data-testid={`${testId}-accuracy`}>
+            <span
+              className="font-black tabular-nums"
+              style={{ color: strengthHex, textShadow: `0 0 8px ${strengthHex}88` }}
+              data-testid={`${testId}-accuracy`}
+            >
               {hasProgress ? `${pct}%` : "—"}
             </span>
           </div>

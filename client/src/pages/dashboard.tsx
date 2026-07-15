@@ -55,6 +55,7 @@ import { calcReadiness } from "@/lib/readiness";
 import { useVark } from "@/hooks/use-vark";
 import { VARK_STYLES } from "@/lib/vark";
 import { BadgePopup } from "@/components/badge-popup";
+import { GraffitiSplats } from "@/components/graffiti-splats";
 import { NotificationsPanel } from "@/components/notifications-panel";
 import { NextMilestoneWidget } from "@/components/next-milestone-widget";
 import { GoalProgress } from "@/components/goal-progress";
@@ -604,41 +605,45 @@ export default function DashboardPage() {
   const navLinks = NAV_LINKS(t);
 
   return (
-    <div className="min-h-screen relative">
-      {/* Cosmic wordmark wash behind the entire dashboard */}
-      <div
-        aria-hidden
-        className="pointer-events-none fixed inset-0 z-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 55% 45% at 12% 8%,  rgba(255,138,0,0.10) 0%, transparent 60%)," +
-            "radial-gradient(ellipse 55% 45% at 88% 6%,  rgba(255,43,214,0.10) 0%, transparent 60%)," +
-            "radial-gradient(ellipse 70% 55% at 50% 100%, rgba(0,229,255,0.10) 0%, transparent 65%)," +
-            "#000",
-        }}
-      />
+    <div className="min-h-screen relative bg-background">
+      {/* Graffiti splats behind the entire dashboard */}
+      <GraffitiSplats variant="hero" opacity={0.35} />
       <div className="relative z-10">
       <BadgePopup badgeCode={popupBadge} isAf={isAf} onDismiss={dismissPopup} />
-      <header className="sticky top-0 z-50 bg-black/95 backdrop-blur-md" style={{ borderBottom: "1px solid rgba(0,229,255,0.28)" }}>
+      <header
+        className="sticky top-0 z-50"
+        style={{
+          background: "#000",
+          borderBottom: "3px solid transparent",
+          borderImage: "linear-gradient(90deg,#006BFF,#00E5FF,#22FF66,#FFE600,#FF8A00,#FF2BD6,#8A2BFF) 1",
+          boxShadow: "0 0 28px rgba(0,229,255,0.18), 0 4px 20px rgba(0,0,0,0.8)",
+        }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 gap-4">
-            <div className="flex items-center gap-3">
-              <nav className="hidden md:flex items-center gap-1">
-                {navLinks.map(({ href, icon: Icon, label }) => {
+            <div className="flex items-center gap-2">
+              <nav className="hidden md:flex items-center gap-1.5">
+                {navLinks.map(({ href, icon: Icon, label }, idx) => {
                   const active = location === href;
+                  const NEONS = ["#006BFF","#00E5FF","#22FF66","#FFE600","#FF8A00","#FF2BD6","#8A2BFF"];
+                  const col = NEONS[idx % NEONS.length];
                   return (
                     <Link key={href} href={href}>
                       <button
                         title={label}
                         aria-label={label}
                         data-testid={`nav-icon-${href.replace(/\//g, "")}`}
-                        className="flex items-center justify-center w-9 h-9 rounded-lg transition-all"
+                        className="flex items-center justify-center w-9 h-9 rounded-xl transition-all hover:scale-110"
                         style={active ? {
-                          background: "#000",
-                          border: "1px solid #00E5FF",
-                          color: "#00E5FF",
-                          boxShadow: "0 0 12px rgba(0,229,255,0.5), inset 0 0 8px rgba(0,229,255,0.2)",
-                        } : { color:"#ffffff" }}
+                          background: col,
+                          border: `2px solid ${col}`,
+                          color: idx === 3 || idx === 4 ? "#000" : "#fff",
+                          boxShadow: `0 0 14px ${col}88`,
+                        } : {
+                          background: `${col}15`,
+                          border: `1.5px solid ${col}55`,
+                          color: col,
+                        }}
                       >
                         <Icon className="w-4 h-4" />
                       </button>
@@ -652,23 +657,24 @@ export default function DashboardPage() {
               <NotificationsPanel isAf={isAf} />
               <button
                 onClick={toggleLanguage}
-                className="text-[10px] font-black uppercase tracking-[0.2em] text-white hover:text-white px-2 py-1 rounded-full bg-black"
-                style={{ border: "1px solid rgba(255,255,255,0.2)" }}
+                className="text-[10px] font-black uppercase tracking-[0.2em] px-2.5 py-1.5 rounded-xl transition-all hover:scale-105"
+                style={{ background: "rgba(255,255,255,0.05)", border: "1.5px solid rgba(255,255,255,0.15)", color: "#fff" }}
                 data-testid="button-language-toggle"
               >
                 {language === "en" ? "EN" : "AF"}
               </button>
               <button
                 onClick={() => logout()}
-                className="text-white hover:text-white transition-colors p-1.5 rounded-lg"
+                className="flex items-center justify-center w-9 h-9 rounded-xl transition-all hover:scale-105"
+                style={{ background: "rgba(255,43,214,0.1)", border: "1.5px solid #FF2BD6", color: "#FF2BD6" }}
                 data-testid="button-logout"
                 title={t.signOutLabel}
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-3.5 h-3.5" />
               </button>
               <button
-                className="md:hidden flex items-center justify-center w-8 h-8 rounded-lg text-white hover:text-white"
-                style={{ border: "1px solid rgba(255,255,255,0.2)" }}
+                className="md:hidden flex items-center justify-center w-9 h-9 rounded-xl transition-all hover:scale-105"
+                style={{ background: "rgba(0,229,255,0.1)", border: "1.5px solid #00E5FF", color: "#00E5FF" }}
                 onClick={() => setMobileOpen(v => !v)}
               >
                 {mobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
@@ -678,17 +684,32 @@ export default function DashboardPage() {
         </div>
 
         {mobileOpen && (
-          <div className="md:hidden bg-black px-4 py-3 space-y-1" style={{ borderTop: "1px solid rgba(0,229,255,0.2)" }}>
-            {navLinks.map(({ href, icon: Icon, label }) => {
+          <div
+            className="md:hidden px-4 py-3 grid grid-cols-4 gap-2"
+            style={{ background: "#050508", borderTop: "2px solid rgba(0,229,255,0.2)" }}
+          >
+            {navLinks.map(({ href, icon: Icon, label }, idx) => {
               const active = location === href;
+              const NEONS = ["#006BFF","#00E5FF","#22FF66","#FFE600","#FF8A00","#FF2BD6","#8A2BFF"];
+              const col = NEONS[idx % NEONS.length];
               return (
                 <Link key={href} href={href}>
                   <button
                     onClick={() => setMobileOpen(false)}
-                    className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm font-semibold transition-all"
-                    style={active ? { color: "#00E5FF", border: "1px solid #00E5FF", boxShadow: "0 0 10px rgba(0,229,255,0.3)" } : { color:"#ffffff" }}
+                    className="flex flex-col items-center gap-1 w-full py-2 px-1 rounded-xl text-[10px] font-black uppercase tracking-wide transition-all"
+                    style={active ? {
+                      background: col,
+                      color: idx === 3 || idx === 4 ? "#000" : "#fff",
+                      border: `2px solid ${col}`,
+                      boxShadow: `0 0 12px ${col}66`,
+                    } : {
+                      background: `${col}10`,
+                      color: col,
+                      border: `1.5px solid ${col}40`,
+                    }}
                   >
-                    <Icon className="w-4 h-4" /> {label}
+                    <Icon className="w-4 h-4" />
+                    <span className="leading-none">{label.slice(0, 6)}</span>
                   </button>
                 </Link>
               );

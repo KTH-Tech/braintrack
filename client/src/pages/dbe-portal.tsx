@@ -1376,7 +1376,7 @@ export default function DBEPortal() {
 
       {/* Graffiti header band — the brand hero for the content studio */}
       <div className="relative overflow-hidden border-b border-white/10">
-        <GraffitiSplats variant="corner" opacity={0.18} />
+        <GraffitiSplats variant="corner" opacity={0.42} />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
           <div>
             <h1 className="text-2xl md:text-3xl font-black tracking-tight">

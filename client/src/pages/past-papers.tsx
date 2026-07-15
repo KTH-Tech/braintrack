@@ -7,7 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { 
+import { GraffitiSplats } from "@/components/graffiti-splats";
+import {
   ExternalLink, 
   FileText, 
   ChevronLeft, 
@@ -253,7 +254,8 @@ export default function PastPapersPage() {
     `/api/past-papers/file?subject=${encodeURIComponent(subject)}&year=${year}&paperNumber=${paperNumber}&isMemo=${isMemo}`;
 
   return (
-    <div className="min-h-screen overflow-x-hidden">
+    <div className="min-h-screen overflow-x-hidden relative bg-background">
+      <GraffitiSplats variant="corner" opacity={0.3} />
       <div className="p-4 border-b bg-card sticky top-0 z-10">
         <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
@@ -315,7 +317,7 @@ export default function PastPapersPage() {
           </TabsList>
 
           <TabsContent value="official" className="space-y-6">
-            <div className="p-4 rounded-lg border border-primary/35 bg-white/[0.08] backdrop-blur-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] flex items-start gap-3">
+            <div className="p-4 rounded-lg border border-primary/35 bg-background flex items-start gap-3">
               <Sparkles className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm text-primary-foreground/90">{text.disclaimer}</p>
@@ -562,7 +564,7 @@ export default function PastPapersPage() {
               </p>
             </div>
 
-            <div className="p-4 rounded-lg border border-green-500/35 bg-white/[0.08] backdrop-blur-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] flex items-start gap-3 mb-6">
+            <div className="p-4 rounded-lg border border-green-500/35 bg-background flex items-start gap-3 mb-6">
               <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-medium text-white">
@@ -678,7 +680,7 @@ export default function PastPapersPage() {
             </div>
 
             <div className="grid md:grid-cols-2 gap-6">
-              <Card className="border-green-500/35 bg-white/[0.08]">
+              <Card className="border-green-500/35 bg-background">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-white">
                     <Brain className="w-6 h-6" />
@@ -692,7 +694,7 @@ export default function PastPapersPage() {
                       ? "Navorsing toon dat leerders wat hulself toets 50% meer onthou as diegene wat net herlees."
                       : "Research shows students who test themselves retain 50% more than those who just re-read."}
                   </p>
-                  <div className="p-3 rounded-lg border border-green-500/30 bg-white/[0.07] backdrop-blur-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.10)]">
+                  <div className="p-3 rounded-lg border border-green-500/30 bg-background">
                     <div className="flex items-center gap-2 mb-2">
                       <TrendingUp className="w-4 h-4 text-white" />
                       <span className="font-semibold text-white">
@@ -708,7 +710,7 @@ export default function PastPapersPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-blue-500/35 bg-white/[0.08]">
+              <Card className="border-blue-500/35 bg-background">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-white">
                     <Repeat className="w-6 h-6" />
@@ -722,7 +724,7 @@ export default function PastPapersPage() {
                       ? "Ons vergeet 70% binne 24 uur tensy ons dit op strategiese tye hersien."
                       : "We forget 70% within 24 hours unless we review at strategic intervals."}
                   </p>
-                  <div className="p-3 rounded-lg border border-blue-500/30 bg-white/[0.07] backdrop-blur-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.10)]">
+                  <div className="p-3 rounded-lg border border-blue-500/30 bg-background">
                     <div className="flex items-center gap-2 mb-2">
                       <Clock className="w-4 h-4 text-white" />
                       <span className="font-semibold text-white">
@@ -738,7 +740,7 @@ export default function PastPapersPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-cyan-500/35 bg-white/[0.08]">
+              <Card className="border-cyan-500/35 bg-background">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-white">
                     <Target className="w-6 h-6" />
@@ -752,7 +754,7 @@ export default function PastPapersPage() {
                       ? "Om inligting aktief te herroep is 2-3x meer effektief as passiewe lees."
                       : "Actively retrieving information is 2-3x more effective than passive reading."}
                   </p>
-                  <div className="p-3 rounded-lg border border-cyan-500/30 bg-white/[0.07] backdrop-blur-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.10)]">
+                  <div className="p-3 rounded-lg border border-cyan-500/30 bg-background">
                     <div className="flex items-center gap-2 mb-2">
                       <Brain className="w-4 h-4 text-white" />
                       <span className="font-semibold text-white">
@@ -768,7 +770,7 @@ export default function PastPapersPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-amber-500/35 bg-white/[0.08]">
+              <Card className="border-amber-500/35 bg-background">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-white">
                     <Sparkles className="w-6 h-6" />
@@ -782,7 +784,7 @@ export default function PastPapersPage() {
                       ? "Leerders presteer beter wanneer inhoud by hul voorkeurstyl aangepas word."
                       : "Learners perform better when content is adapted to their preferred learning style."}
                   </p>
-                  <div className="p-3 rounded-lg border border-amber-500/30 bg-white/[0.07] backdrop-blur-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.10)]">
+                  <div className="p-3 rounded-lg border border-amber-500/30 bg-background">
                     <div className="flex items-center gap-2 mb-2">
                       <BookOpen className="w-4 h-4 text-white" />
                       <span className="font-semibold text-white">
@@ -799,7 +801,7 @@ export default function PastPapersPage() {
               </Card>
             </div>
 
-            <Card className="mt-6 border-primary/35 bg-white/[0.08]">
+            <Card className="mt-6 border-primary/35 bg-background">
               <CardContent className="py-6">
                 <div className="text-center">
                   <h3 className="text-base sm:text-lg font-semibold mb-2">

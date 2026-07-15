@@ -1,9 +1,6 @@
 import { Link } from "wouter";
 import { useLanguage } from "@/lib/language-context";
 
-// Minimal footer — one row of essentials, nothing more.
-// Anything else lives in the header nav or a dedicated page.
-
 const SUPPORT_EMAIL = "learn@kth-tech.com";
 
 const COPY = {
@@ -12,9 +9,14 @@ const COPY = {
     copyright: "© 2026 BrainTrack™ · KTH Projects (Pty) Ltd",
     popia: "POPIA-compliant · Built in SA 🇿🇦",
     legal: [
-      { href: "/privacy-policy", label: "Privacy" },
-      { href: "/terms-of-service", label: "Terms" },
-      { href: "/refund-policy", label: "Refunds" },
+      { href: "/privacy-policy",    label: "Privacy",  color: "#006BFF" },
+      { href: "/terms-of-service",  label: "Terms",    color: "#22FF66" },
+      { href: "/refund-policy",     label: "Refunds",  color: "#FF8A00" },
+    ],
+    nav: [
+      { href: "/research",  label: "Research",  color: "#00E5FF" },
+      { href: "/features",  label: "Features",  color: "#8A2BFF" },
+      { href: "/subscribe", label: "Pricing",   color: "#FF2BD6" },
     ],
   },
   af: {
@@ -22,12 +24,53 @@ const COPY = {
     copyright: "© 2026 BrainTrack™ · KTH Projects (Pty) Ltd",
     popia: "POPIA-nakoming · Trots SA 🇿🇦",
     legal: [
-      { href: "/privacy-policy", label: "Privaatheid" },
-      { href: "/terms-of-service", label: "Bepalings" },
-      { href: "/refund-policy", label: "Terugbetalings" },
+      { href: "/privacy-policy",    label: "Privaatheid",  color: "#006BFF" },
+      { href: "/terms-of-service",  label: "Bepalings",    color: "#22FF66" },
+      { href: "/refund-policy",     label: "Terugbetalings", color: "#FF8A00" },
+    ],
+    nav: [
+      { href: "/research",  label: "Navorsing", color: "#00E5FF" },
+      { href: "/features",  label: "Kenmerke",  color: "#8A2BFF" },
+      { href: "/subscribe", label: "Pryse",     color: "#FF2BD6" },
     ],
   },
 } as const;
+
+function FooterDrips() {
+  const drips = [
+    { color: "#8A2BFF", x: 30,   w: 10, h: 38 },
+    { color: "#FF2BD6", x: 110,  w: 7,  h: 24 },
+    { color: "#006BFF", x: 210,  w: 8,  h: 42 },
+    { color: "#00E5FF", x: 330,  w: 6,  h: 20 },
+    { color: "#22FF66", x: 440,  w: 11, h: 50 },
+    { color: "#FFE600", x: 570,  w: 7,  h: 30 },
+    { color: "#FF8A00", x: 680,  w: 9,  h: 44 },
+    { color: "#FF2BD6", x: 790,  w: 6,  h: 22 },
+    { color: "#8A2BFF", x: 880,  w: 8,  h: 36 },
+    { color: "#006BFF", x: 960,  w: 5,  h: 16 },
+    { color: "#22FF66", x: 150,  w: 4,  h: 14 },
+    { color: "#FFE600", x: 500,  w: 5,  h: 18 },
+    { color: "#00E5FF", x: 750,  w: 4,  h: 12 },
+  ];
+  return (
+    <div
+      aria-hidden
+      style={{ position: "absolute", top: 0, transform: "translateY(-100%)", left: 0, right: 0, height: 52, pointerEvents: "none", overflow: "visible" }}
+    >
+      <svg viewBox="0 0 1000 52" preserveAspectRatio="none" style={{ width: "100%", height: 52, overflow: "visible", display: "block" }}>
+        {drips.map((d, i) => {
+          const cx = d.x + d.w / 2;
+          return (
+            <g key={i}>
+              <rect x={d.x} y={52 - d.h} width={d.w} height={d.h} fill={d.color} rx={d.w / 2} />
+              <circle cx={cx} cy={52 - d.h} r={d.w / 2 + 2} fill={d.color} />
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
 
 export function PublicFooter() {
   const { language } = useLanguage();
@@ -35,56 +78,106 @@ export function PublicFooter() {
 
   return (
     <footer
-      className="relative border-t border-border bg-background text-foreground"
+      className="relative"
       data-testid="footer-public"
       aria-label="Site footer"
+      style={{
+        background: "#000",
+        borderTop: "3px solid transparent",
+        borderImage: "linear-gradient(90deg,#8A2BFF,#FF2BD6,#FF8A00,#FFE600,#22FF66,#00E5FF,#006BFF) 1",
+      }}
     >
-      {/* thin rainbow rule — the only decoration */}
-      <div
-        aria-hidden
-        className="absolute top-0 left-0 right-0 h-[1px]"
-        style={{ background: "linear-gradient(90deg,#006BFF,#00E5FF,#22FF66,#FFE600,#FF8A00,#FF2BD6,#8A2BFF)" }}
-      />
+      <FooterDrips />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-[12px]">
-        {/* Left: wordmark + one-line tagline */}
-        <div className="flex items-center gap-3 flex-wrap">
-          <Link
-            href="/"
-            data-testid="footer-logo"
-            className="gradient-text font-bold tracking-tight leading-none text-base"
-          >
-            BrainTrack
-          </Link>
-          <span className="text-white/95">{t.tagline}</span>
-        </div>
+      {/* Rainbow tag rule — thicker, glowing */}
+      <div aria-hidden style={{
+        position: "absolute", top: 0, left: 0, right: 0, height: 3,
+        background: "linear-gradient(90deg,#006BFF,#00E5FF,#22FF66,#FFE600,#FF8A00,#FF2BD6,#8A2BFF)",
+        boxShadow: "0 0 20px rgba(0,229,255,0.5), 0 0 40px rgba(255,43,214,0.3)",
+      }} />
 
-        {/* Right: legal links + support email */}
-        <div className="flex items-center gap-4 flex-wrap text-white">
-          {t.legal.map((l) => (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-2">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 pb-8">
+
+          {/* Brand column */}
+          <div>
             <Link
-              key={l.href}
-              href={l.href}
-              data-testid={`footer-link-${l.href.replace(/^\//, "")}`}
-              className="hover:text-[#00E5FF] transition-colors"
+              href="/"
+              data-testid="footer-logo"
+              className="inline-block font-black text-2xl tracking-tight leading-none mb-2 rainbow-text"
+              style={{ textDecoration: "none" }}
             >
-              {l.label}
+              BrainTrack
             </Link>
-          ))}
-          <a
-            href={`mailto:${SUPPORT_EMAIL}`}
-            data-testid="footer-email-support"
-            className="hover:text-[#00E5FF] transition-colors"
-          >
-            {SUPPORT_EMAIL}
-          </a>
-        </div>
-      </div>
+            <p className="text-white text-sm font-semibold mt-1">{t.tagline}</p>
+            <a
+              href={`mailto:${SUPPORT_EMAIL}`}
+              data-testid="footer-email-support"
+              className="inline-block mt-3 text-[12px] font-bold transition-all hover:scale-105"
+              style={{ color: "#00E5FF" }}
+            >
+              {SUPPORT_EMAIL}
+            </a>
+          </div>
 
-      {/* Micro-line: copyright + POPIA. Two facts, one line. */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 text-[10.5px] text-white">
-        <span>{t.copyright}</span>
-        <span>{t.popia}</span>
+          {/* Nav links as sticker chips */}
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-white mb-3">
+              Navigate
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {t.nav.map((l) => (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  className="inline-flex items-center px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wide transition-all hover:scale-105 hover:brightness-110"
+                  style={{
+                    background: `${l.color}18`,
+                    color: l.color,
+                    border: `1.5px solid ${l.color}`,
+                    boxShadow: `0 0 10px ${l.color}33`,
+                  }}
+                >
+                  {l.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Legal chips */}
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-white mb-3">
+              Legal
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {t.legal.map((l) => (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  data-testid={`footer-link-${l.href.replace(/^\//, "")}`}
+                  className="inline-flex items-center px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wide transition-all hover:scale-105 hover:brightness-110"
+                  style={{
+                    background: `${l.color}18`,
+                    color: l.color,
+                    border: `1.5px solid ${l.color}`,
+                    boxShadow: `0 0 10px ${l.color}33`,
+                  }}
+                >
+                  {l.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom bar */}
+        <div
+          style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
+          className="pt-4 pb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
+        >
+          <span className="text-[11px] font-bold text-white">{t.copyright}</span>
+          <span className="text-[11px] font-bold text-white">{t.popia}</span>
+        </div>
       </div>
     </footer>
   );

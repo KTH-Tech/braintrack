@@ -5,6 +5,7 @@ import { formatDate } from "@/lib/formatters";
 import { useLocation } from "wouter";
 import { Flame, Star, Zap, Target, Trophy, GraduationCap, Award, BookOpen, Coins, Lock, Loader2, Globe, Home, LogOut, ShoppingBag, ArrowRight, Users, Copy, Check, Share2, Sparkles, Medal } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { GraffitiSplats } from "@/components/graffiti-splats";
 import { useState } from "react";
 
 const BADGE_INFO: Record<string, {
@@ -263,8 +264,9 @@ export default function RewardsPage() {
   const isLoading = coinsLoading || badgesLoading;
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <header className="sticky top-0 z-10 py-3 bg-black/90 backdrop-blur-md" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+    <div className="min-h-screen bg-background text-white relative overflow-hidden">
+      <GraffitiSplats variant="hero" opacity={0.4} />
+      <header className="sticky top-0 z-10 py-3 bg-background/90 backdrop-blur-md" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
         <div className="max-w-4xl mx-auto px-4 flex items-center justify-between flex-wrap gap-2">
           <span
             className="text-sm font-black tracking-wide text-transparent bg-clip-text"
@@ -276,7 +278,7 @@ export default function RewardsPage() {
             <ThemeToggle />
             <button
               onClick={toggleLanguage}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-black text-white hover:text-white transition-colors"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-background text-white hover:text-white transition-colors"
               style={{ border: "1px solid rgba(255,255,255,0.1)" }}
               data-testid="button-language-toggle"
             >
@@ -286,7 +288,7 @@ export default function RewardsPage() {
             <button
               onClick={() => setLocation("/dashboard")}
               title={t.homeTitle}
-              className="h-8 w-8 flex items-center justify-center rounded-lg bg-black text-white hover:text-white transition-colors"
+              className="h-8 w-8 flex items-center justify-center rounded-lg bg-background text-white hover:text-white transition-colors"
               style={{ border: "1px solid rgba(255,255,255,0.1)" }}
               data-testid="button-home"
             >
@@ -295,7 +297,7 @@ export default function RewardsPage() {
             <button
               onClick={() => logout()}
               aria-label={t.signOutTitle}
-              className="h-8 w-8 flex items-center justify-center rounded-lg bg-black text-white hover:text-white transition-colors"
+              className="h-8 w-8 flex items-center justify-center rounded-lg bg-background text-white hover:text-white transition-colors"
               style={{ border: "1px solid rgba(255,255,255,0.1)" }}
               data-testid="button-logout"
             >
@@ -308,7 +310,7 @@ export default function RewardsPage() {
       <main className="max-w-4xl mx-auto px-4 py-8 space-y-6">
         {/* Cosmic hero */}
         <div
-          className="relative rounded-2xl bg-black overflow-hidden p-6 sm:p-8"
+          className="relative rounded-2xl bg-background overflow-hidden p-6 sm:p-8"
           style={{
             border: "1.5px solid #FFE600",
             boxShadow: "0 0 0 1px rgba(255,230,0,0.22), 0 0 28px rgba(255,230,0,0.22), inset 0 0 22px rgba(0,0,0,0.55)",
@@ -324,7 +326,7 @@ export default function RewardsPage() {
           <div aria-hidden className="absolute -bottom-20 -left-16 w-64 h-64 rounded-full blur-3xl opacity-30 pointer-events-none" style={{ background: "radial-gradient(circle, #FF2BD6, transparent 70%)" }} />
           <div className="relative flex items-center gap-4">
             <div
-              className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center shrink-0"
+              className="w-14 h-14 rounded-2xl bg-background flex items-center justify-center shrink-0"
               style={{ border: "1.5px solid #FFE600", boxShadow: "0 0 18px rgba(255,230,0,0.5), inset 0 0 12px rgba(255,230,0,0.25)" }}
             >
               <Trophy className="w-7 h-7" style={{ color: "#FFE600", filter: "drop-shadow(0 0 6px #FFE600)" }} />
@@ -355,8 +357,8 @@ export default function RewardsPage() {
                 <div className="p-5 pt-3">
                   <div className="flex items-end gap-4 mb-4">
                     <span
-                      className="text-5xl font-black tabular-nums text-transparent bg-clip-text"
-                      style={{ backgroundImage: "linear-gradient(135deg,#FFE600,#FF8A00)" }}
+                      className="text-5xl tabular-nums"
+                      style={{ color: "#FFE600", textShadow: "0 0 20px rgba(255,230,0,0.6)", fontWeight: 900 }}
                       data-testid="coin-balance"
                     >
                       {coins?.balance ?? 0}
@@ -412,7 +414,7 @@ export default function RewardsPage() {
                       return (
                         <div
                           key={m}
-                          className="flex flex-col items-center flex-1 rounded-xl py-2 bg-black transition-all"
+                          className="flex flex-col items-center flex-1 rounded-xl py-2 bg-background transition-all"
                           style={{
                             border: hit ? "1.5px solid #FF8A00" : "1px solid rgba(255,255,255,0.1)",
                             boxShadow: hit ? "0 0 12px rgba(255,138,0,0.4), inset 0 0 8px rgba(255,138,0,0.15)" : undefined,
@@ -455,7 +457,7 @@ export default function RewardsPage() {
                       return (
                         <div
                           key={badge.id}
-                          className="relative flex flex-col items-center gap-2 p-3 rounded-xl bg-black text-center transition-all duration-300 hover:-translate-y-0.5"
+                          className="relative flex flex-col items-center gap-2 p-3 rounded-xl bg-background text-center transition-all duration-300 hover:-translate-y-0.5"
                           style={{
                             border: "1.5px solid #FFE600",
                             boxShadow: "0 0 0 1px rgba(255,230,0,0.18), 0 0 16px rgba(255,230,0,0.2), inset 0 0 10px rgba(0,0,0,0.5)",
@@ -463,7 +465,7 @@ export default function RewardsPage() {
                           data-testid={`earned-badge-${badge.badgeCode}`}
                         >
                           <div
-                            className="w-11 h-11 rounded-full bg-black flex items-center justify-center"
+                            className="w-11 h-11 rounded-full bg-background flex items-center justify-center"
                             style={{ border: "1.5px solid #FFE600", boxShadow: "0 0 12px rgba(255,230,0,0.4), inset 0 0 8px rgba(255,230,0,0.2)" }}
                           >
                             <Icon className="w-5 h-5" style={{ color: "#FFE600", filter: "drop-shadow(0 0 4px #FFE600)" }} />
@@ -494,12 +496,12 @@ export default function RewardsPage() {
                     return (
                       <div
                         key={code}
-                        className="flex flex-col items-center gap-2 p-3 rounded-xl bg-black text-center"
+                        className="flex flex-col items-center gap-2 p-3 rounded-xl bg-background text-center"
                         style={{ border: "1px dashed rgba(255,255,255,0.14)" }}
                         data-testid={`locked-badge-${code}`}
                       >
                         <div
-                          className="w-11 h-11 rounded-full bg-black flex items-center justify-center relative"
+                          className="w-11 h-11 rounded-full bg-background flex items-center justify-center relative"
                           style={{ border: "1px solid rgba(255,255,255,0.1)" }}
                         >
                           <Icon className="w-5 h-5 text-white" />
@@ -524,7 +526,7 @@ export default function RewardsPage() {
                   /* ── No active subscription — show upgrade CTA ── */
                   <div className="flex flex-col items-center gap-4 py-4 text-center">
                     <div
-                      className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center"
+                      className="w-14 h-14 rounded-2xl bg-background flex items-center justify-center"
                       style={{ border: "1.5px solid rgba(0,229,255,0.4)", boxShadow: "0 0 18px rgba(0,229,255,0.2)" }}
                     >
                       <Sparkles className="w-7 h-7" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 6px #00E5FF)" }} />
@@ -556,7 +558,7 @@ export default function RewardsPage() {
                         {t.yourCode}
                       </p>
                       <div
-                        className="flex items-center gap-3 p-3 rounded-xl bg-black/60"
+                        className="flex items-center gap-3 p-3 rounded-xl bg-background/60"
                         style={{ border: "1.5px solid rgba(0,229,255,0.5)", boxShadow: "0 0 14px rgba(0,229,255,0.15)" }}
                       >
                         <code
@@ -570,7 +572,7 @@ export default function RewardsPage() {
                           onClick={handleCopyCode}
                           disabled={!(referralCode?.code ?? referral?.code)}
                           title={t.copyLinkTitle}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold bg-black text-[#00E5FF] hover:bg-[#00E5FF]/10 transition-colors disabled:opacity-50"
+                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold bg-background text-[#00E5FF] hover:bg-[#00E5FF]/10 transition-colors disabled:opacity-50"
                           style={{ border: "1px solid #00E5FF" }}
                           data-testid="button-copy-referral"
                         >
@@ -585,7 +587,7 @@ export default function RewardsPage() {
                       <p className="text-[11px] uppercase tracking-[0.2em] text-white font-bold mb-2">
                         {t.shareLink}
                       </p>
-                      <div className="flex items-center gap-2 p-3 rounded-xl bg-black/60" style={{ border: "1px solid rgba(0,229,255,0.25)" }}>
+                      <div className="flex items-center gap-2 p-3 rounded-xl bg-background/60" style={{ border: "1px solid rgba(0,229,255,0.25)" }}>
                         <code className="flex-1 text-xs text-white truncate font-mono" data-testid="referral-link">
                           {referralCode?.link ?? referral?.link ?? "—"}
                         </code>
@@ -593,7 +595,7 @@ export default function RewardsPage() {
                           onClick={handleCopyLink}
                           disabled={!(referralCode?.link ?? referral?.link)}
                           title={t.copyLinkTitle}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-black text-[#00E5FF] hover:bg-[#00E5FF]/10 transition-colors disabled:opacity-50 shrink-0"
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-background text-[#00E5FF] hover:bg-[#00E5FF]/10 transition-colors disabled:opacity-50 shrink-0"
                           style={{ border: "1px solid rgba(0,229,255,0.5)" }}
                           data-testid="button-copy-referral-link"
                         >
@@ -795,7 +797,7 @@ function CosmicCard({
 }) {
   return (
     <div
-      className={`relative rounded-2xl bg-black overflow-hidden ${className}`}
+      className={`relative rounded-2xl bg-background overflow-hidden ${className}`}
       style={{
         border: `1.5px solid ${hex}`,
         boxShadow: `0 0 0 1px ${halo}0.22), 0 0 22px ${halo}0.22), inset 0 0 18px rgba(0,0,0,0.55)`,
@@ -831,12 +833,15 @@ function CosmicCardTitle({
       style={{ borderBottom: `1px solid ${halo}0.25)` }}
     >
       <Icon className="w-4 h-4" style={{ color: hex, filter: `drop-shadow(0 0 4px ${halo}0.6))` }} />
-      <h3 className="font-bold text-sm flex-1 flex items-center gap-2 text-white">
+      <h3
+        className="text-sm font-black tracking-widest uppercase flex-1 flex items-center gap-2"
+        style={{ color: hex }}
+      >
         {children}
       </h3>
       {typeof count === "number" && (
         <span
-          className="text-[11px] font-black px-2 py-0.5 rounded-full bg-black"
+          className="text-[11px] font-black px-2 py-0.5 rounded-full bg-background"
           style={{ color: hex, border: `1px solid ${hex}`, boxShadow: `0 0 10px ${halo}0.3)` }}
         >
           {count}

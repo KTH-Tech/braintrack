@@ -41,6 +41,7 @@ import {
 import type { Subject, OnboardingResult, TutorMessage, Topic, TutorFeedback } from "@shared/schema";
 import { BrainTrackLogo } from "@/components/braintrack-logo";
 import { TopicMindmap } from "@/components/topic-mindmap";
+import { GraffitiSplats } from "@/components/graffiti-splats";
 import brandLogo from "@assets/Logo_01_1779989960628.jpeg";
 
 const TUTOR_AVATARS: Record<string, { icon: any; color: string; bgFrom: string; bgTo: string }> = {
@@ -594,17 +595,18 @@ export default function TutorPage() {
     : subjects;
 
   return (
-    <div className="min-h-screen flex flex-col bg-black text-white overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-background text-foreground overflow-x-hidden relative">
+      <GraffitiSplats variant="corner" opacity={0.35} />
       <header
-        className="sticky top-0 z-50 backdrop-blur-xl bg-black/90"
-        style={{ borderBottom: "1px solid rgba(138,43,255,0.35)" }}
+        className="sticky top-0 z-50 bg-background/95 relative"
+        style={{ borderBottom: "2px solid rgba(0,229,255,0.5)" }}
       >
         <div className="max-w-4xl mx-auto px-2 min-[375px]:px-4">
           <div className="flex items-center justify-between h-14 gap-2 min-[375px]:gap-4">
             <div className="flex items-center gap-2 min-[375px]:gap-3 min-w-0">
               <Link href="/dashboard">
                 <button
-                  className="inline-flex items-center gap-1.5 px-2 min-[375px]:px-3 py-1.5 rounded-xl bg-black text-xs font-bold shrink-0"
+                  className="inline-flex items-center gap-1.5 px-2 min-[375px]:px-3 py-1.5 rounded-xl bg-background text-xs font-bold shrink-0"
                   style={{ color: "#00E5FF", border: "1.5px solid #00E5FF", boxShadow: "0 0 12px rgba(0,229,255,0.4)" }}
                   data-testid="link-back"
                 >
@@ -619,7 +621,7 @@ export default function TutorPage() {
             <div className="flex items-center gap-1 min-[375px]:gap-2 shrink-0">
               <button
                 onClick={toggleLanguage}
-                className="inline-flex items-center gap-1 min-[375px]:gap-1.5 px-2 min-[375px]:px-3 py-1.5 rounded-full bg-black text-[11px] font-black"
+                className="inline-flex items-center gap-1 min-[375px]:gap-1.5 px-2 min-[375px]:px-3 py-1.5 rounded-full bg-background text-[11px] font-black"
                 style={{ color: "#8A2BFF", border: "1px solid rgba(138,43,255,0.55)", boxShadow: "0 0 10px rgba(138,43,255,0.35)" }}
                 data-testid="button-language-toggle"
                 aria-label={language === "en" ? "EN" : "AF"}
@@ -629,7 +631,7 @@ export default function TutorPage() {
               </button>
               <button
                 onClick={() => logout()}
-                className="inline-flex items-center gap-1 min-[375px]:gap-1.5 px-2 min-[375px]:px-3 py-1.5 rounded-xl bg-black text-xs font-bold"
+                className="inline-flex items-center gap-1 min-[375px]:gap-1.5 px-2 min-[375px]:px-3 py-1.5 rounded-xl bg-background text-xs font-bold"
                 style={{ color: "#FF2BD6", border: "1.5px solid rgba(255,43,214,0.55)", boxShadow: "0 0 10px rgba(255,43,214,0.35)" }}
                 data-testid="button-logout"
                 aria-label={t.signOut}
@@ -643,7 +645,7 @@ export default function TutorPage() {
       </header>
 
       <div className="max-w-4xl mx-auto w-full px-4 pt-4 flex flex-col sm:flex-row sm:items-center gap-3">
-        <div className="flex flex-wrap gap-1.5 p-1 rounded-xl bg-black w-full sm:w-auto" style={{ border: "1px solid rgba(138,43,255,0.4)", boxShadow: "inset 0 0 12px rgba(0,0,0,0.6)" }}>
+        <div className="flex flex-wrap gap-1.5 p-1 rounded-xl bg-background w-full sm:w-auto" style={{ border: "1px solid rgba(138,43,255,0.4)", boxShadow: "inset 0 0 12px rgba(0,0,0,0.6)" }}>
           <button
             onClick={() => setMode("chat")}
             className="inline-flex flex-1 sm:flex-none items-center justify-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-black transition-none"
@@ -674,7 +676,7 @@ export default function TutorPage() {
 
         <div className="flex items-center gap-1.5 flex-wrap sm:ml-auto">
           <div
-            className="flex flex-wrap items-center gap-1 p-1 rounded-lg bg-black"
+            className="flex flex-wrap items-center gap-1 p-1 rounded-lg bg-background"
             style={{ border: "1px solid rgba(0,229,255,0.4)" }}
             title={t.voiceLabel}
           >
@@ -701,7 +703,7 @@ export default function TutorPage() {
             </button>
           </div>
           <div
-            className="flex flex-wrap items-center gap-0.5 p-1 rounded-lg bg-black"
+            className="flex flex-wrap items-center gap-0.5 p-1 rounded-lg bg-background"
             style={{ border: "1px solid rgba(255,230,0,0.4)" }}
             title={t.speechSpeedLabel}
           >
@@ -726,7 +728,7 @@ export default function TutorPage() {
         {mode === "notes" ? (
           <div className="flex-1 flex flex-col">
             <div
-              className="mb-4 rounded-2xl bg-black p-4"
+              className="mb-4 rounded-2xl bg-background p-4"
               style={{ border: "1.5px solid #00E5FF", boxShadow: "0 0 0 1px rgba(0,229,255,0.25), 0 0 28px rgba(0,229,255,0.25), inset 0 0 20px rgba(0,0,0,0.6)" }}
             >
               <div>
@@ -743,7 +745,7 @@ export default function TutorPage() {
                     {t.generateStudyNotesHeading}
                   </h2>
                   {profile?.learningStyle === "visual" && (
-                    <div className="flex items-center gap-1 p-1 rounded-lg bg-black" style={{ border: "1px solid rgba(138,43,255,0.4)" }}>
+                    <div className="flex items-center gap-1 p-1 rounded-lg bg-background" style={{ border: "1px solid rgba(138,43,255,0.4)" }}>
                       <button
                         onClick={() => setNotesView("notes")}
                         className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-bold transition-none"
@@ -773,7 +775,7 @@ export default function TutorPage() {
                     <div className="mb-3">
                       <Select value={selectedSubject} onValueChange={setSelectedSubject}>
                         <SelectTrigger
-                          className="bg-black"
+                          className="bg-background"
                           style={{ border: "1px solid rgba(138,43,255,0.5)", color: "#fff" }}
                           data-testid="select-subject-mindmap"
                         >
@@ -826,11 +828,11 @@ export default function TutorPage() {
                   const timeLabel = studyTime ? (isAf ? studyTimeLabel[studyTime]?.af : studyTimeLabel[studyTime]?.en) : null;
                   return (
                     <div
-                      className="flex items-start gap-3 p-3 rounded-xl mb-4 bg-black"
+                      className="flex items-start gap-3 p-3 rounded-xl mb-4 bg-background"
                       style={{ border: "1px solid rgba(138,43,255,0.5)", boxShadow: "0 0 16px rgba(138,43,255,0.25), inset 0 0 10px rgba(0,0,0,0.5)" }}
                     >
                       <div
-                        className="w-9 h-9 rounded-lg bg-black flex items-center justify-center flex-shrink-0 mt-0.5"
+                        className="w-9 h-9 rounded-lg bg-background flex items-center justify-center flex-shrink-0 mt-0.5"
                         style={{ border: "1px solid #8A2BFF", boxShadow: "0 0 10px rgba(138,43,255,0.5)" }}
                       >
                         <StyleIcon className="w-5 h-5" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 3px #8A2BFF)" }} />
@@ -853,7 +855,7 @@ export default function TutorPage() {
                 <div className="space-y-3">
                   <Select value={selectedSubject} onValueChange={setSelectedSubject}>
                     <SelectTrigger
-                      className="bg-black"
+                      className="bg-background"
                       style={{ border: "1px solid rgba(0,229,255,0.5)", color: "#fff" }}
                       data-testid="select-subject-notes"
                     >
@@ -882,7 +884,7 @@ export default function TutorPage() {
                             <button
                               key={topic.id}
                               onClick={() => setNotesTopic(isAf ? topic.nameAfrikaans : topic.name)}
-                              className="text-xs font-bold px-2.5 py-1.5 rounded-full bg-black transition-none"
+                              className="text-xs font-bold px-2.5 py-1.5 rounded-full bg-background transition-none"
                               style={isSelected
                                 ? { color: hex, border: `1.5px solid ${hex}`, boxShadow: `0 0 14px ${hex}80, inset 0 0 8px ${hex}33` }
                                 : { color: hex, border: `1px solid ${hex}`, boxShadow: `0 0 6px ${hex}40` }}
@@ -903,14 +905,14 @@ export default function TutorPage() {
                     value={notesTopic}
                     onChange={(e) => setNotesTopic(e.target.value)}
                     placeholder={t.topicNotesPlaceholder}
-                    className="min-h-[80px] bg-black"
+                    className="min-h-[80px] bg-background"
                     style={{ border: "1.5px solid rgba(0,229,255,0.5)", boxShadow: "0 0 14px rgba(0,229,255,0.2), inset 0 0 10px rgba(0,0,0,0.5)", color: "#fff" }}
                     data-testid="input-notes-topic"
                   />
                   <button 
                     onClick={handleGenerateNotes} 
                     disabled={notesMutation.isPending || !notesTopic.trim()}
-                    className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-black py-2.5 font-black text-sm transition-none disabled:opacity-40"
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-background py-2.5 font-black text-sm transition-none disabled:opacity-40"
                     style={{ color: "#FF2BD6", border: "1.5px solid #FF2BD6", boxShadow: "0 0 18px rgba(255,43,214,0.55), inset 0 0 10px rgba(255,43,214,0.15)" }}
                     data-testid="button-generate-notes"
                   >
@@ -964,7 +966,7 @@ export default function TutorPage() {
 
             {generatedNotes && (
               <div
-                className="flex-1 overflow-hidden rounded-2xl bg-black"
+                className="flex-1 overflow-hidden rounded-2xl bg-background"
                 style={{ border: "1.5px solid #FF2BD6", boxShadow: "0 0 0 1px rgba(255,43,214,0.25), 0 0 28px rgba(255,43,214,0.28), inset 0 0 20px rgba(0,0,0,0.6)" }}
               >
                 <div className="p-4 h-full flex flex-col">
@@ -1335,7 +1337,7 @@ export default function TutorPage() {
                   </div>
                   <ScrollArea className="flex-1 pr-4">
                     <div
-                      className="text-sm text-white leading-relaxed prose prose-invert prose-sm max-w-none [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm [&_h1]:font-bold [&_h2]:font-bold [&_h3]:font-semibold [&_ul]:pl-4 [&_ol]:pl-4 [&_li]:mb-0.5 [&_strong]:text-[#00E5FF] [&_code]:bg-white/10 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs [&_blockquote]:border-l-2 [&_blockquote]:border-white/20 [&_blockquote]:pl-3 [&_blockquote]:text-white"
+                      className="text-sm text-foreground leading-relaxed prose prose-invert prose-sm max-w-none [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm [&_h1]:font-bold [&_h2]:font-bold [&_h3]:font-semibold [&_ul]:pl-4 [&_ol]:pl-4 [&_li]:mb-0.5 [&_strong]:text-[#00E5FF] [&_code]:bg-white/10 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs [&_blockquote]:border-l-2 [&_blockquote]:border-white/20 [&_blockquote]:pl-3 [&_blockquote]:text-foreground"
                       data-testid="text-generated-notes"
                       onContextMenu={e => e.preventDefault()}
                       data-nosnippet
@@ -1365,7 +1367,7 @@ export default function TutorPage() {
               const TutorIcon = tutorAvatar.icon;
               return (
                 <div
-                  className="relative w-20 h-20 rounded-2xl bg-black flex items-center justify-center mb-6"
+                  className="relative w-20 h-20 rounded-2xl bg-background flex items-center justify-center mb-6"
                   style={{
                     border: "1.5px solid #8A2BFF",
                     boxShadow: "0 0 0 1px rgba(138,43,255,0.3), 0 0 28px rgba(138,43,255,0.55), inset 0 0 18px rgba(0,0,0,0.6)",
@@ -1376,7 +1378,7 @@ export default function TutorPage() {
               );
             })()}
             <span
-              className="relative inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.28em] px-4 py-1.5 rounded-full bg-black mb-4"
+              className="relative inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.28em] px-4 py-1.5 rounded-full bg-background mb-4"
               style={{ color: "#00E5FF", border: "1px solid rgba(0,229,255,0.55)", boxShadow: "0 0 14px rgba(0,229,255,0.35)" }}
             >
               <Sparkles className="w-3.5 h-3.5" style={{ filter: "drop-shadow(0 0 4px #00E5FF)" }} />
@@ -1394,7 +1396,7 @@ export default function TutorPage() {
             >
               {t.askMeAnything}
             </h1>
-            <p className="relative text-sm sm:text-base text-white max-w-md mb-8">
+            <p className="relative text-sm sm:text-base text-foreground max-w-md mb-8">
               {t.introParagraph}
             </p>
 
@@ -1416,7 +1418,7 @@ export default function TutorPage() {
                             const topicName = isAf ? topic.nameAfrikaans : topic.name;
                             setInputValue(isAf ? `Verduidelik ${topicName} vir ${subjectName}` : `Explain ${topicName} for ${subjectName}`);
                           }}
-                          className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-black transition-none"
+                          className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-background transition-none"
                           style={{ color: hex, border: `1px solid ${hex}`, boxShadow: `0 0 10px ${hex}55` }}
                           data-testid={`topic-chip-chat-${topic.id}`}
                         >
@@ -1441,7 +1443,7 @@ export default function TutorPage() {
                         <button
                           key={i}
                           onClick={() => setInputValue(q)}
-                          className="text-left flex items-start gap-2 p-3 rounded-xl bg-black text-sm font-medium transition-none"
+                          className="text-left flex items-start gap-2 p-3 rounded-xl bg-background text-sm font-medium transition-none"
                           style={{ color: "#fff", border: `1px solid ${hex}`, boxShadow: `0 0 14px ${hex}40, inset 0 0 10px rgba(0,0,0,0.5)` }}
                           data-testid={`suggested-question-${i}`}
                         >
@@ -1470,7 +1472,7 @@ export default function TutorPage() {
                   >
                     {msg.role === "assistant" && (
                       <div
-                        className="w-8 h-8 rounded-lg bg-black flex items-center justify-center flex-shrink-0"
+                        className="w-8 h-8 rounded-lg bg-background flex items-center justify-center flex-shrink-0"
                         style={{ border: "1.5px solid #8A2BFF", boxShadow: "0 0 10px rgba(138,43,255,0.5)" }}
                       >
                         <TutorIcon className="w-4 h-4" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 3px #8A2BFF)" }} />
@@ -1478,7 +1480,7 @@ export default function TutorPage() {
                     )}
                     <div className="flex flex-col gap-1 min-w-0 max-w-[calc(100%-44px)] sm:max-w-[80%]">
                       <div
-                        className="rounded-2xl px-4 py-3 bg-black"
+                        className="rounded-2xl px-4 py-3 bg-background"
                         style={msg.role === "user"
                           ? { border: "1.5px solid #00E5FF", boxShadow: "0 0 18px rgba(0,229,255,0.35), inset 0 0 10px rgba(0,0,0,0.6)", color: "#e0fbff" }
                           : { border: "1.5px solid rgba(138,43,255,0.6)", boxShadow: "0 0 18px rgba(138,43,255,0.3), inset 0 0 10px rgba(0,0,0,0.6)" }
@@ -1487,13 +1489,13 @@ export default function TutorPage() {
                         onContextMenu={msg.role === "assistant" ? e => e.preventDefault() : undefined}
                         data-nosnippet={msg.role === "assistant" ? "" : undefined}
                       >
-                        <div className="break-words text-sm leading-relaxed prose prose-invert prose-sm max-w-none [&_h1]:text-sm [&_h2]:text-sm [&_h3]:text-xs [&_h1]:font-bold [&_h2]:font-bold [&_h3]:font-semibold [&_ul]:pl-4 [&_ol]:pl-4 [&_li]:mb-0.5 [&_strong]:text-[#00E5FF] [&_p]:mb-1 [&_p:last-child]:mb-0 [&_code]:bg-white/10 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs [&_blockquote]:border-l-2 [&_blockquote]:border-white/20 [&_blockquote]:pl-3 [&_blockquote]:text-white">
+                        <div className="break-words text-sm leading-relaxed prose prose-invert prose-sm max-w-none [&_h1]:text-sm [&_h2]:text-sm [&_h3]:text-xs [&_h1]:font-bold [&_h2]:font-bold [&_h3]:font-semibold [&_ul]:pl-4 [&_ol]:pl-4 [&_li]:mb-0.5 [&_strong]:text-[#00E5FF] [&_p]:mb-1 [&_p:last-child]:mb-0 [&_code]:bg-white/10 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs [&_blockquote]:border-l-2 [&_blockquote]:border-white/20 [&_blockquote]:pl-3 [&_blockquote]:text-foreground">
                           <ReactMarkdown>{msg.content}</ReactMarkdown>
                         </div>
                       </div>
                       {msg.role === "assistant" && msg.citedExamples && msg.citedExamples.length > 0 && (
                         <div
-                          className="mt-2 rounded-xl bg-black px-3 py-2.5"
+                          className="mt-2 rounded-xl bg-background px-3 py-2.5"
                           style={{
                             border: "1px solid rgba(255,230,0,0.45)",
                             boxShadow: "0 0 10px rgba(255,230,0,0.18), inset 0 0 8px rgba(0,0,0,0.5)",
@@ -1553,7 +1555,7 @@ export default function TutorPage() {
                           {msg.diagrams.map((diagram, di) => (
                             <div
                               key={di}
-                              className="rounded-xl overflow-hidden bg-black"
+                              className="rounded-xl overflow-hidden bg-background"
                               style={{ border: "1px solid rgba(0,229,255,0.45)", boxShadow: "0 0 12px rgba(0,229,255,0.18), inset 0 0 8px rgba(0,0,0,0.5)" }}
                               data-testid={`diagram-${i}-${di}`}
                             >
@@ -1591,7 +1593,7 @@ export default function TutorPage() {
                             className={`flex items-center gap-1 text-xs px-2 py-1 rounded-lg transition-colors ${
                               speakingMessageIndex === i 
                                 ? "bg-primary/20 text-primary" 
-                                : "text-white hover:text-primary hover:bg-primary/10"
+                                : "text-foreground hover:text-primary hover:bg-primary/10"
                             }`}
                             data-testid={`button-speak-${i}`}
                           >
@@ -1612,7 +1614,7 @@ export default function TutorPage() {
                             <div className="flex items-center gap-1 ml-auto">
                               <button
                                 onClick={() => handleFeedback(i, 1)}
-                                className="p-1.5 rounded-lg text-white hover:text-emerald-500 hover:bg-emerald-500/10 transition-colors"
+                                className="p-1.5 rounded-lg text-foreground hover:text-emerald-500 hover:bg-emerald-500/10 transition-colors"
                                 title={t.helpfulLabel}
                                 data-testid={`button-feedback-up-${i}`}
                               >
@@ -1620,7 +1622,7 @@ export default function TutorPage() {
                               </button>
                               <button
                                 onClick={() => handleFeedback(i, -1)}
-                                className="p-1.5 rounded-lg text-white hover:text-red-500 hover:bg-red-500/10 transition-colors"
+                                className="p-1.5 rounded-lg text-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors"
                                 title={t.notHelpfulLabel}
                                 data-testid={`button-feedback-down-${i}`}
                               >
@@ -1631,7 +1633,7 @@ export default function TutorPage() {
 
                           {pendingFeedback[i] && (
                             <div className="mt-3 pt-3 border-t border-white/10 flex flex-col gap-2 w-full">
-                              <div className="text-xs font-medium text-white">
+                              <div className="text-xs font-medium text-foreground">
                                 {pendingFeedback[i] === 1 
                                   ? t.helpfulLabel
                                   : t.notHelpfulLabel}
@@ -1640,7 +1642,7 @@ export default function TutorPage() {
                                 placeholder={t.feedbackPlaceholder}
                                 value={feedbackText[i] || ""}
                                 onChange={(e) => setFeedbackText(prev => ({ ...prev, [i]: e.target.value }))}
-                                className="resize-none text-xs h-16 bg-black"
+                                className="resize-none text-xs h-16 bg-background"
                 style={{ border: "1px solid rgba(138,43,255,0.3)", color: "#fff" }}
                                 data-testid={`textarea-feedback-suggestion-${i}`}
                               />
@@ -1656,7 +1658,7 @@ export default function TutorPage() {
                                 </Button>
                                 <button
                                   onClick={() => submitFeedback(i, true)}
-                                  className="text-xs text-white hover:bg-white/5 px-1 rounded transition-colors"
+                                  className="text-xs text-foreground hover:bg-white/5 px-1 rounded transition-colors"
                                   disabled={feedbackMutation.isPending}
                                   data-testid={`button-feedback-skip-${i}`}
                                 >
@@ -1667,7 +1669,7 @@ export default function TutorPage() {
                           )}
                           
                           {feedbackSubmitted[i] && (
-                            <span className="ml-auto text-[10px] font-semibold text-white bg-black border border-white/15 px-2 py-0.5 rounded-full">
+                            <span className="ml-auto text-[10px] font-semibold text-foreground bg-background border border-white/15 px-2 py-0.5 rounded-full">
                               {t.feedbackSent}
                             </span>
                           )}
@@ -1676,7 +1678,7 @@ export default function TutorPage() {
                     </div>
                     {msg.role === "user" && (
                       <div
-                        className="w-8 h-8 rounded-lg bg-black flex items-center justify-center flex-shrink-0"
+                        className="w-8 h-8 rounded-lg bg-background flex items-center justify-center flex-shrink-0"
                         style={{ border: "1.5px solid #00E5FF", boxShadow: "0 0 10px rgba(0,229,255,0.5)" }}
                       >
                         <User className="w-4 h-4" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 3px #00E5FF)" }} />
@@ -1693,7 +1695,7 @@ export default function TutorPage() {
                     const TutorIcon = tutorAvatar.icon;
                     return (
                       <div
-                        className="w-8 h-8 rounded-lg bg-black flex items-center justify-center"
+                        className="w-8 h-8 rounded-lg bg-background flex items-center justify-center"
                         style={{ border: "1.5px solid #8A2BFF", boxShadow: "0 0 10px rgba(138,43,255,0.5)" }}
                       >
                         <TutorIcon className="w-4 h-4" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 3px #8A2BFF)" }} />
@@ -1701,7 +1703,7 @@ export default function TutorPage() {
                     );
                   })()}
                   <div
-                    className="rounded-2xl px-4 py-3 bg-black"
+                    className="rounded-2xl px-4 py-3 bg-background"
                     style={{ border: "1.5px solid rgba(138,43,255,0.6)", boxShadow: "0 0 18px rgba(138,43,255,0.3)" }}
                   >
                     <div className="flex items-center gap-2 text-sm" style={{ color: "#8A2BFF" }}>
@@ -1720,7 +1722,7 @@ export default function TutorPage() {
             <BookOpen className="w-4 h-4 shrink-0" style={{ color: "#FFE600" }} />
             <Select value={selectedSubject} onValueChange={setSelectedSubject}>
               <SelectTrigger
-                className="w-full sm:w-48 h-8 text-xs bg-black"
+                className="w-full sm:w-48 h-8 text-xs bg-background"
                 style={{ border: "1px solid rgba(255,230,0,0.4)", color: "#FFE600" }}
                 data-testid="select-subject"
               >
@@ -1748,7 +1750,7 @@ export default function TutorPage() {
                       const topicName = isAf ? topic.nameAfrikaans : topic.name;
                       setInputValue(isAf ? `Verduidelik ${topicName} vir ${subjectName}` : `Explain ${topicName} for ${subjectName}`);
                     }}
-                    className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-black whitespace-nowrap transition-none flex-shrink-0"
+                    className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-background whitespace-nowrap transition-none flex-shrink-0"
                     style={{ color: hex, border: `1px solid ${hex}`, boxShadow: `0 0 8px ${hex}55` }}
                     data-testid={`topic-quick-${topic.id}`}
                   >
@@ -1765,7 +1767,7 @@ export default function TutorPage() {
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder={t.chatPlaceholder}
-              className="min-h-[60px] max-h-32 resize-none bg-black flex-1"
+              className="min-h-[60px] max-h-32 resize-none bg-background flex-1"
               style={{
                 border: "1.5px solid rgba(0,229,255,0.5)",
                 boxShadow: "0 0 14px rgba(0,229,255,0.2), inset 0 0 10px rgba(0,0,0,0.5)",
@@ -1777,7 +1779,7 @@ export default function TutorPage() {
             <button
               onClick={handleSend}
               disabled={!inputValue.trim() || askMutation.isPending}
-              className="shrink-0 w-12 sm:w-auto sm:px-6 rounded-xl bg-black font-black transition-none disabled:opacity-40 flex items-center justify-center"
+              className="shrink-0 w-12 sm:w-auto sm:px-6 rounded-xl bg-background font-black transition-none disabled:opacity-40 flex items-center justify-center"
               style={{ color: "#00E5FF", border: "1.5px solid #00E5FF", boxShadow: "0 0 16px rgba(0,229,255,0.5)" }}
               data-testid="button-send"
             >

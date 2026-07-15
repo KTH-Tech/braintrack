@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
+import { GraffitiSplats } from "@/components/graffiti-splats";
 import {
   ArrowLeft,
   BookOpen,
@@ -112,12 +113,12 @@ function getBandHex(band: string): string {
 }
 
 function getBandColor(_band: string) {
-  return "text-white";
+  return "text-foreground";
 }
 
 function getBandBg(band: string) {
   const hex = getBandHex(band);
-  return `bg-black border`;
+  return `bg-background border`;
 }
 
 type CosmicColor = "cyan" | "emerald" | "amber" | "red" | "yellow" | "blue" | "purple" | "pink" | "orange";
@@ -137,7 +138,7 @@ function CosmicCard({ children, color = "cyan", className = "" }: { children: Re
   const hex = COSMIC_HEX[color];
   return (
     <div
-      className={`relative rounded-2xl bg-black overflow-hidden ${className}`}
+      className={`relative rounded-2xl bg-background overflow-hidden ${className}`}
       style={{ border: `1.5px solid ${hex}`, boxShadow: `0 0 18px ${hex}55, inset 0 0 14px rgba(0,0,0,0.55)` }}
     >
       <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 pointer-events-none" style={{ borderColor: hex }} />
@@ -153,7 +154,7 @@ function NeonBadge({ children, color = "cyan" }: { children: React.ReactNode; co
   const hex = COSMIC_HEX[color];
   return (
     <span
-      className="inline-flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-full bg-black uppercase tracking-[0.18em]"
+      className="inline-flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-full bg-background uppercase tracking-[0.18em]"
       style={{ color: hex, border: `1px solid ${hex}`, boxShadow: `0 0 10px ${hex}55` }}
     >
       {children}
@@ -178,7 +179,7 @@ function TopicMediaPanel({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="w-full inline-flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-black text-[11px] font-black uppercase tracking-[0.18em] transition-all hover:scale-[1.005]"
+        className="w-full inline-flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-background text-[11px] font-black uppercase tracking-[0.18em] transition-all hover:scale-[1.005]"
         style={{
           color: accentHex,
           border: `1.5px solid ${accentHex}55`,
@@ -213,12 +214,12 @@ function TopicMediaPanel({
 function NeonStat({ hex, icon: Icon, value, label }: { hex: string; icon: any; value: React.ReactNode; label: string }) {
   return (
     <div
-      className="relative rounded-2xl bg-black p-4 text-center overflow-hidden"
+      className="relative rounded-2xl bg-background p-4 text-center overflow-hidden"
       style={{ border: `1px solid ${hex}66`, boxShadow: `0 0 16px ${hex}33, inset 0 0 12px ${hex}15` }}
     >
       <Icon className="w-5 h-5 mx-auto mb-1" style={{ color: hex, filter: `drop-shadow(0 0 4px ${hex})` }} />
-      <p className="text-2xl font-bold text-white tabular-nums" style={{ textShadow: `0 0 10px ${hex}aa` }}>{value}</p>
-      <p className="text-[10px] text-white mt-0.5 uppercase tracking-[0.14em]">{label}</p>
+      <p className="text-2xl font-bold text-foreground tabular-nums" style={{ textShadow: `0 0 10px ${hex}aa` }}>{value}</p>
+      <p className="text-[10px] text-foreground mt-0.5 uppercase tracking-[0.14em]">{label}</p>
     </div>
   );
 }
@@ -361,20 +362,20 @@ function TopicContentDrawer({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl bg-black border-cyan-400/40 text-white" data-testid={`topic-content-dialog-${topicId}`}>
+      <DialogContent className="max-w-2xl bg-background border-cyan-400/40 text-foreground" data-testid={`topic-content-dialog-${topicId}`}>
         <DialogHeader>
-          <DialogTitle className="text-white flex items-center gap-2">
+          <DialogTitle className="text-foreground flex items-center gap-2">
             <BookOpen className="w-5 h-5" style={{ color: "#00E5FF" }} />
             {topicName}
           </DialogTitle>
-          <DialogDescription className="text-white text-xs">
+          <DialogDescription className="text-foreground text-xs">
             {isAf
               ? "CAPS-belynde notas en oefenkaarte vir hierdie onderwerp."
               : "CAPS-aligned notes and practice cards for this topic."}
           </DialogDescription>
         </DialogHeader>
         <Tabs defaultValue="notes" className="mt-2">
-          <TabsList className="grid grid-cols-2 bg-black border border-white/10">
+          <TabsList className="grid grid-cols-2 bg-background border border-white/10">
             <TabsTrigger value="notes" data-testid="tab-topic-notes">
               <FileText className="w-4 h-4 mr-1.5" />{isAf ? "Notas" : "Notes"}
             </TabsTrigger>
@@ -388,7 +389,7 @@ function TopicContentDrawer({
             {notesLoading ? (
               <div className="space-y-2"><Skeleton className="h-4" /><Skeleton className="h-4 w-2/3" /></div>
             ) : !notes || !notes.available ? (
-              <p className="text-sm text-white py-4 text-center">
+              <p className="text-sm text-foreground py-4 text-center">
                 {isAf ? "Notas vir hierdie onderwerp word nog voorberei." : "Notes for this topic are still being prepared."}
               </p>
             ) : (
@@ -401,7 +402,7 @@ function TopicContentDrawer({
                   language={lang}
                   isAf={isAf}
                 />
-                <p className="text-sm text-white leading-relaxed" data-testid="topic-notes-summary">{notes.summary}</p>
+                <p className="text-sm text-foreground leading-relaxed" data-testid="topic-notes-summary">{notes.summary}</p>
                 {notes.keyConcepts.length > 0 && (
                   <div>
                     <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-300 mb-2">
@@ -409,7 +410,7 @@ function TopicContentDrawer({
                     </p>
                     <ul className="space-y-1.5">
                       {notes.keyConcepts.map((c, i) => (
-                        <li key={i} className="text-xs text-white flex gap-2" data-testid={`topic-concept-${i}`}>
+                        <li key={i} className="text-xs text-foreground flex gap-2" data-testid={`topic-concept-${i}`}>
                           <span className="text-cyan-400">▸</span><span>{c}</span>
                         </li>
                       ))}
@@ -433,14 +434,14 @@ function TopicContentDrawer({
                               {isAf ? "Stappe" : "Steps"}
                             </p>
                             {ex.steps.map((step, si) => (
-                              <p key={si} className="text-xs text-white/80 flex gap-1.5">
+                              <p key={si} className="text-xs text-foreground flex gap-1.5">
                                 <span className="text-purple-400 shrink-0">{si + 1}.</span>
                                 <span>{step}</span>
                               </p>
                             ))}
                           </div>
                         )}
-                        <p className="text-xs text-white flex gap-1.5">
+                        <p className="text-xs text-foreground flex gap-1.5">
                           <span className="font-bold text-cyan-300 shrink-0">{isAf ? "Ant:" : "Ans:"}</span>
                           <span>{ex.solution}</span>
                         </p>
@@ -483,7 +484,7 @@ function TopicContentDrawer({
                           </pre>
                           {diagram.caption && (
                             <div className="px-3 pb-2.5 pt-1 border-t border-white/10">
-                              <p className="text-[11px] text-white/70 leading-relaxed">
+                              <p className="text-[11px] text-foreground leading-relaxed">
                                 <span className="text-cyan-400 mr-1">→</span>
                                 {diagram.caption}
                               </p>
@@ -502,7 +503,7 @@ function TopicContentDrawer({
             {deckLoading ? (
               <Skeleton className="h-40" />
             ) : cards.length === 0 ? (
-              <p className="text-sm text-white py-6 text-center">
+              <p className="text-sm text-foreground py-6 text-center">
                 {isAf ? "Geen kaarte nog beskikbaar nie." : "No cards available yet."}
               </p>
             ) : (
@@ -510,16 +511,16 @@ function TopicContentDrawer({
                 <button
                   type="button"
                   onClick={() => setFlipped(f => !f)}
-                  className="w-full min-h-[180px] rounded-2xl bg-black border border-cyan-400/40 p-5 text-left transition-all hover:border-cyan-400/80"
+                  className="w-full min-h-[180px] rounded-2xl bg-background border border-cyan-400/40 p-5 text-left transition-all hover:border-cyan-400/80"
                   style={{ boxShadow: "inset 0 0 18px #00E5FF22" }}
                   data-testid="topic-flashcard-face"
                 >
                   <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-300 mb-2">
                     {flipped ? (isAf ? "Antwoord" : "Answer") : (isAf ? "Vraag" : "Question")}
-                    <span className="ml-2 text-white">{cardIdx + 1} / {cards.length}</span>
+                    <span className="ml-2 text-foreground">{cardIdx + 1} / {cards.length}</span>
                   </p>
-                  <p className="text-sm text-white whitespace-pre-line">{flipped ? currentCard?.back : currentCard?.front}</p>
-                  <p className="text-[10px] text-white mt-3">
+                  <p className="text-sm text-foreground whitespace-pre-line">{flipped ? currentCard?.back : currentCard?.front}</p>
+                  <p className="text-[10px] text-foreground mt-3">
                     {isAf ? "Klik om te draai" : "Click to flip"}
                   </p>
                 </button>
@@ -559,7 +560,7 @@ function TopicContentDrawer({
                 </div>
                 <Link href={deepLinkHref}>
                   <button
-                    className="w-full py-2.5 rounded-xl bg-black text-xs font-black uppercase tracking-[0.18em] transition-all hover:scale-[1.02]"
+                    className="w-full py-2.5 rounded-xl bg-background text-xs font-black uppercase tracking-[0.18em] transition-all hover:scale-[1.02]"
                     style={{ color: "#00E5FF", border: "1.5px solid #00E5FF", boxShadow: "0 0 14px #00E5FF55" }}
                     data-testid="button-open-flashcards-page"
                   >
@@ -615,13 +616,13 @@ function LiteratureWorkDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl bg-black border-cyan-400/40 text-white" data-testid={`literature-dialog-${workId}`}>
+      <DialogContent className="max-w-2xl bg-background border-cyan-400/40 text-foreground" data-testid={`literature-dialog-${workId}`}>
         <DialogHeader>
-          <DialogTitle className="text-white flex items-center gap-2">
+          <DialogTitle className="text-foreground flex items-center gap-2">
             <BookMarked className="w-5 h-5" style={{ color: "#00E5FF" }} />
             {workTitle}
           </DialogTitle>
-          <DialogDescription className="text-white text-xs">
+          <DialogDescription className="text-foreground text-xs">
             {data?.work.author && <span>{data.work.author} · </span>}
             {isAf ? "Voorgeskrewe werk · CAPS notas" : "Prescribed work · CAPS notes"}
           </DialogDescription>
@@ -629,12 +630,12 @@ function LiteratureWorkDialog({
         {isLoading ? (
           <div className="space-y-2"><Skeleton className="h-4" /><Skeleton className="h-4 w-2/3" /><Skeleton className="h-32" /></div>
         ) : !data ? (
-          <p className="text-sm text-white py-4 text-center">
+          <p className="text-sm text-foreground py-4 text-center">
             {isAf ? "Notas onbeskikbaar." : "Notes unavailable."}
           </p>
         ) : (
           <Tabs defaultValue="overview" className="mt-2">
-            <TabsList className="grid grid-cols-4 bg-black border border-white/10">
+            <TabsList className="grid grid-cols-4 bg-background border border-white/10">
               <TabsTrigger value="overview" data-testid="tab-lit-overview">{isAf ? "Oorsig" : "Overview"}</TabsTrigger>
               <TabsTrigger value="characters" data-testid="tab-lit-characters">{isAf ? "Karakters" : "Characters"}</TabsTrigger>
               <TabsTrigger value="devices" data-testid="tab-lit-devices">{isAf ? "Tegnieke" : "Devices"}</TabsTrigger>
@@ -642,7 +643,7 @@ function LiteratureWorkDialog({
             </TabsList>
 
             <TabsContent value="overview" className="mt-4 max-h-[55vh] overflow-y-auto space-y-4">
-              <p className="text-sm text-white leading-relaxed" data-testid="lit-summary">{data.summary}</p>
+              <p className="text-sm text-foreground leading-relaxed" data-testid="lit-summary">{data.summary}</p>
               {data.themes.length > 0 && (
                 <div>
                   <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-300 mb-2">
@@ -650,7 +651,7 @@ function LiteratureWorkDialog({
                   </p>
                   <ul className="space-y-1.5">
                     {data.themes.map((t, i) => (
-                      <li key={i} className="text-xs text-white flex gap-2"><span className="text-cyan-400">▸</span><span>{t}</span></li>
+                      <li key={i} className="text-xs text-foreground flex gap-2"><span className="text-cyan-400">▸</span><span>{t}</span></li>
                     ))}
                   </ul>
                 </div>
@@ -659,35 +660,35 @@ function LiteratureWorkDialog({
 
             <TabsContent value="characters" className="mt-4 max-h-[55vh] overflow-y-auto space-y-3">
               {data.characters.length === 0 ? (
-                <p className="text-sm text-white py-4 text-center">{isAf ? "Karakters word nog voorberei." : "Characters being prepared."}</p>
+                <p className="text-sm text-foreground py-4 text-center">{isAf ? "Karakters word nog voorberei." : "Characters being prepared."}</p>
               ) : data.characters.map((c, i) => (
                 <div key={i} className="rounded-xl bg-white/5 border border-white/10 p-3" data-testid={`lit-character-${i}`}>
                   <p className="text-sm font-bold text-cyan-300">{c.name}</p>
-                  <p className="text-xs text-white mt-1">{c.description}</p>
+                  <p className="text-xs text-foreground mt-1">{c.description}</p>
                 </div>
               ))}
             </TabsContent>
 
             <TabsContent value="devices" className="mt-4 max-h-[55vh] overflow-y-auto space-y-3">
               {data.literaryDevices.length === 0 ? (
-                <p className="text-sm text-white py-4 text-center">{isAf ? "Tegnieke word nog voorberei." : "Literary devices being prepared."}</p>
+                <p className="text-sm text-foreground py-4 text-center">{isAf ? "Tegnieke word nog voorberei." : "Literary devices being prepared."}</p>
               ) : data.literaryDevices.map((d, i) => (
                 <div key={i} className="rounded-xl bg-white/5 border border-white/10 p-3" data-testid={`lit-device-${i}`}>
                   <p className="text-sm font-bold text-cyan-300">{d.name}</p>
-                  <p className="text-xs text-white mt-1">{d.explanation}</p>
+                  <p className="text-xs text-foreground mt-1">{d.explanation}</p>
                 </div>
               ))}
             </TabsContent>
 
             <TabsContent value="essays" className="mt-4 max-h-[55vh] overflow-y-auto space-y-4">
               {data.essayFrameworks.length === 0 ? (
-                <p className="text-sm text-white py-4 text-center">{isAf ? "Opsteleraamwerke kom binnekort." : "Essay frameworks coming soon."}</p>
+                <p className="text-sm text-foreground py-4 text-center">{isAf ? "Opsteleraamwerke kom binnekort." : "Essay frameworks coming soon."}</p>
               ) : data.essayFrameworks.map((e, i) => (
                 <div key={i} className="rounded-xl bg-white/5 border border-white/10 p-3" data-testid={`lit-essay-${i}`}>
-                  <p className="text-sm font-bold text-white">"{e.prompt}"</p>
+                  <p className="text-sm font-bold text-foreground">"{e.prompt}"</p>
                   <ul className="mt-2 space-y-1">
                     {e.outline.map((step, j) => (
-                      <li key={j} className="text-xs text-white flex gap-2"><span className="text-cyan-400">{j + 1}.</span><span>{step}</span></li>
+                      <li key={j} className="text-xs text-foreground flex gap-2"><span className="text-cyan-400">{j + 1}.</span><span>{step}</span></li>
                     ))}
                   </ul>
                 </div>
@@ -823,15 +824,15 @@ function TopicQuizDrawer({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-xl bg-black border-[#00E5FF]/40 text-white overflow-y-auto max-h-[90vh]"
+        className="max-w-xl bg-background border-[#00E5FF]/40 text-foreground overflow-y-auto max-h-[90vh]"
         data-testid="topic-quiz-drawer"
       >
         <DialogHeader>
-          <DialogTitle className="text-white flex items-center gap-2">
+          <DialogTitle className="text-foreground flex items-center gap-2">
             <Zap className="w-5 h-5" style={{ color: "#00E5FF" }} />
             {isAf ? "Kwis" : "Quiz"}: {topicName}
           </DialogTitle>
-          <DialogDescription className="text-white text-xs">
+          <DialogDescription className="text-foreground text-xs">
             {isAf
               ? `KABV-vrae gefokus op ${topicName} vir ${subjectName}.`
               : `CAPS questions focused on ${topicName} for ${subjectName}.`}
@@ -1052,8 +1053,9 @@ export default function SubjectDetailPage() {
   }, [id]);
 
   return (
-    <div className="min-h-screen bg-black">
-      <header className="border-b border-white/10 sticky top-0 z-50 backdrop-blur-xl bg-black/95">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      <GraffitiSplats variant="corner" opacity={0.3} />
+      <header className="sticky top-0 z-50 bg-background/95 relative" style={{ borderBottom: "2px solid rgba(0,229,255,0.5)" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 gap-4 flex-wrap">
             <div className="flex items-center gap-3">
@@ -1061,23 +1063,23 @@ export default function SubjectDetailPage() {
             </div>
             <nav className="flex items-center gap-1 flex-wrap">
               <Link href="/dashboard">
-                <Button variant="ghost" size="sm" className="text-white" data-testid="link-home">
+                <Button variant="ghost" size="sm" className="text-foreground" data-testid="link-home">
                   {isAf ? "Dashboard" : "Dashboard"}
                 </Button>
               </Link>
               <Link href="/exam-mode">
-                <Button variant="ghost" size="sm" className="text-white" data-testid="link-crunch-time">{isAf ? "Eksamentyd" : "Crunch Time"}</Button>
+                <Button variant="ghost" size="sm" className="text-foreground" data-testid="link-crunch-time">{isAf ? "Eksamentyd" : "Crunch Time"}</Button>
               </Link>
               <Link href="/flashcards">
-                <Button variant="ghost" size="sm" className="text-white" data-testid="link-flashcards">
+                <Button variant="ghost" size="sm" className="text-foreground" data-testid="link-flashcards">
                   {isAf ? "Flitskaarte" : "Flashcards"}
                 </Button>
               </Link>
-              <button onClick={toggleLanguage} className="flex items-center gap-1 px-2 py-1.5 rounded-md text-white hover:text-white transition-colors" data-testid="button-language-toggle">
+              <button onClick={toggleLanguage} className="flex items-center gap-1 px-2 py-1.5 rounded-md text-foreground hover:text-foreground transition-colors" data-testid="button-language-toggle">
                 <Globe className="h-4 w-4" />
                 <span className="text-xs font-semibold">{language === "en" ? "EN" : "AF"}</span>
               </button>
-              <Button variant="ghost" size="sm" onClick={() => logout()} data-testid="button-logout" className="text-white">
+              <Button variant="ghost" size="sm" onClick={() => logout()} data-testid="button-logout" className="text-foreground">
                 <LogOut className="w-4 h-4 mr-1" />
                 {isAf ? "Uitteken" : "Sign Out"}
               </Button>
@@ -1089,14 +1091,14 @@ export default function SubjectDetailPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 overflow-x-hidden">
         <div className="space-y-6">
           <Link href="/subjects">
-            <Button variant="ghost" size="sm" data-testid="button-back" className="text-white hover:text-white -ml-2">
+            <Button variant="ghost" size="sm" data-testid="button-back" className="text-foreground hover:text-foreground -ml-2">
               <ArrowLeft className="w-4 h-4 mr-1" />
               {isAf ? "Alle Vakke" : "All Subjects"}
             </Button>
           </Link>
 
           {loading ? (
-            <div className="rounded-3xl border border-white/10 bg-black p-6 sm:p-8">
+            <div className="rounded-3xl border border-white/10 bg-background p-6 sm:p-8">
               <div className="flex items-center gap-5">
                 <Skeleton className="w-20 h-20 rounded-2xl" />
                 <div className="flex-1 space-y-3">
@@ -1111,7 +1113,7 @@ export default function SubjectDetailPage() {
             const masteryHex = mastery ? getBandHex(mastery.overallBand) : hex;
             return (
               <div
-                className="relative overflow-hidden rounded-3xl border bg-black p-6 sm:p-8"
+                className="relative overflow-hidden rounded-3xl border bg-background p-6 sm:p-8"
                 style={{
                   borderColor: `${hex}44`,
                   boxShadow: `0 0 40px ${hex}22, inset 0 0 60px ${hex}08`,
@@ -1131,7 +1133,7 @@ export default function SubjectDetailPage() {
 
                 <div className="relative flex items-start gap-4 sm:gap-6 flex-wrap sm:flex-nowrap">
                   <div
-                    className="shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center bg-black"
+                    className="shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center bg-background"
                     style={{
                       border: `1.5px solid ${hex}`,
                       boxShadow: `0 0 24px ${hex}66, inset 0 0 20px ${hex}22`,
@@ -1146,24 +1148,24 @@ export default function SubjectDetailPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1.5">
                       <span
-                        className="text-[10px] font-bold uppercase tracking-[0.18em] px-2 py-0.5 rounded-full bg-black"
+                        className="text-[10px] font-bold uppercase tracking-[0.18em] px-2 py-0.5 rounded-full bg-background"
                         style={{ color: hex, border: `1px solid ${hex}55` }}
                       >
                         {subject.code}
                       </span>
-                      <span className="text-[11px] text-white uppercase tracking-[0.14em]">
+                      <span className="text-[11px] text-foreground uppercase tracking-[0.14em]">
                         {isAf ? "Graad 12 NSS" : "Grade 12 NSC"}
                       </span>
                     </div>
                     <h1
-                      className="text-3xl sm:text-4xl font-black leading-tight text-white truncate"
+                      className="text-3xl sm:text-4xl font-black leading-tight text-foreground truncate"
                       data-testid="text-subject-name"
                       style={{ textShadow: `0 0 24px ${hex}55` }}
                     >
                       {isAf ? subject.nameAfrikaans || subject.name : subject.name}
                     </h1>
                     {subject.nameAfrikaans && subject.nameAfrikaans !== subject.name && (
-                      <p className="text-sm text-white mt-1" data-testid="text-subject-code">
+                      <p className="text-sm text-foreground mt-1" data-testid="text-subject-code">
                         {isAf ? subject.name : subject.nameAfrikaans}
                       </p>
                     )}
@@ -1171,7 +1173,7 @@ export default function SubjectDetailPage() {
 
                   {mastery && (
                     <div
-                      className="shrink-0 flex flex-col items-center justify-center gap-0.5 px-5 py-3 rounded-2xl bg-black"
+                      className="shrink-0 flex flex-col items-center justify-center gap-0.5 px-5 py-3 rounded-2xl bg-background"
                       style={{
                         border: `1.5px solid ${masteryHex}`,
                         boxShadow: `0 0 20px ${masteryHex}66`,
@@ -1181,7 +1183,7 @@ export default function SubjectDetailPage() {
                       <div className="flex items-center gap-1.5">
                         {getBandIcon(mastery.overallBand)}
                         <span
-                          className="font-black text-2xl text-white tabular-nums leading-none"
+                          className="font-black text-2xl text-foreground tabular-nums leading-none"
                           style={{ textShadow: `0 0 10px ${masteryHex}aa` }}
                         >
                           {mastery.totalMastery}%
@@ -1199,8 +1201,8 @@ export default function SubjectDetailPage() {
               </div>
             );
           })() : (
-            <div className="rounded-3xl border border-white/10 bg-black p-8 text-center">
-              <h1 className="text-2xl sm:text-3xl font-semibold text-white">
+            <div className="rounded-3xl border border-white/10 bg-background p-8 text-center">
+              <h1 className="text-2xl sm:text-3xl font-semibold text-foreground">
                 {isAf ? "Vak Nie Gevind" : "Subject Not Found"}
               </h1>
             </div>
@@ -1220,17 +1222,17 @@ export default function SubjectDetailPage() {
             <div className="grid gap-3 sm:grid-cols-2" data-testid="exam-shortcuts">
               <Link href={miniMockHref}>
                 <button
-                  className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-black text-left transition-all hover:scale-[1.01]"
+                  className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-background text-left transition-all hover:scale-[1.01]"
                   style={{ border: "1.5px solid #FFE600", boxShadow: "0 0 14px #FFE60044, inset 0 0 12px #FFE60012" }}
                   data-testid="button-mini-mock-shortcut"
                 >
                   <div className="flex items-center gap-3">
                     <Zap className="w-5 h-5" style={{ color: "#FFE600", filter: "drop-shadow(0 0 4px #FFE600)" }} />
                     <div>
-                      <p className="font-black text-sm text-white uppercase tracking-[0.14em]">
+                      <p className="font-black text-sm text-foreground uppercase tracking-[0.14em]">
                         {isAf ? "Mini Mock" : "Mini Mock"}
                       </p>
-                      <p className="text-[11px] text-white" data-testid="text-mini-mock-shortcut-subtitle">
+                      <p className="text-[11px] text-foreground" data-testid="text-mini-mock-shortcut-subtitle">
                         {weakestTopicLabel
                           ? (isAf
                             ? `Fokus op swakste onderwerp: ${weakestTopicLabel}`
@@ -1244,17 +1246,17 @@ export default function SubjectDetailPage() {
               </Link>
               <Link href={`/exam/full?subject=${encodeURIComponent(subject.name)}`}>
                 <button
-                  className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-black text-left transition-all hover:scale-[1.01]"
+                  className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-background text-left transition-all hover:scale-[1.01]"
                   style={{ border: "1.5px solid #8A2BFF", boxShadow: "0 0 14px #8A2BFF44, inset 0 0 12px #8A2BFF12" }}
                   data-testid="button-full-exam-shortcut"
                 >
                   <div className="flex items-center gap-3">
                     <GraduationCap className="w-5 h-5" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 4px #8A2BFF)" }} />
                     <div>
-                      <p className="font-black text-sm text-white uppercase tracking-[0.14em]">
+                      <p className="font-black text-sm text-foreground uppercase tracking-[0.14em]">
                         {isAf ? "Volle Eksamen" : "Full Exam"}
                       </p>
-                      <p className="text-[11px] text-white">
+                      <p className="text-[11px] text-foreground">
                         {isAf ? "Volledige DBE vraestel — getyd" : "Full DBE paper — timed"}
                       </p>
                     </div>
@@ -1326,7 +1328,7 @@ export default function SubjectDetailPage() {
                           name: label,
                           capsCode: topic.capsCode,
                         })}
-                        className="shrink-0 flex flex-col items-start gap-0.5 px-3 py-2 rounded-xl bg-black transition-all hover:scale-[1.02] active:scale-[0.98] text-left relative"
+                        className="shrink-0 flex flex-col items-start gap-0.5 px-3 py-2 rounded-xl bg-background transition-all hover:scale-[1.02] active:scale-[0.98] text-left relative"
                         style={{ border: `1.5px solid ${bandHex}88`, boxShadow: `0 0 10px ${bandHex}33` }}
                         data-testid={`chip-ready-topic-${topic.id}`}
                       >
@@ -1339,7 +1341,7 @@ export default function SubjectDetailPage() {
                             {isAf ? "Prioriteit" : "Priority"}
                           </span>
                         )}
-                        <span className="text-xs font-semibold text-white leading-tight max-w-[10rem] truncate">{label}</span>
+                        <span className="text-xs font-semibold text-foreground leading-tight max-w-[10rem] truncate">{label}</span>
                         <span className="text-[10px] font-medium" style={{ color: bandHex }}>{sublabel} · {getBandLabel(topic.masteryBand, isAf)}</span>
                         {resumeLabel && (
                           <span
@@ -1373,35 +1375,35 @@ export default function SubjectDetailPage() {
                 <div className="flex items-center justify-between gap-4 flex-wrap mb-3">
                   <div className="flex items-center gap-2">
                     <Target className="w-5 h-5" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
-                    <h3 className="font-bold text-base text-white">{isAf ? "Huidige vs Teiken Telling" : "Current vs Target Score"}</h3>
+                    <h3 className="font-bold text-base text-foreground">{isAf ? "Huidige vs Teiken Telling" : "Current vs Target Score"}</h3>
                   </div>
                   <NeonBadge color={scoreDiff >= 0 ? "emerald" : "pink"}>
                     {scoreDiff >= 0 ? '+' : ''}{scoreDiff}%
                   </NeonBadge>
                 </div>
                 <div className="grid grid-cols-3 gap-4">
-                  <div className="text-center p-3 rounded-xl bg-black" style={{ border: `1px solid ${getBandHex(mastery.overallBand)}55`, boxShadow: `inset 0 0 10px ${getBandHex(mastery.overallBand)}20` }}>
-                    <p className="text-3xl font-black text-white tabular-nums" style={{ textShadow: `0 0 10px ${getBandHex(mastery.overallBand)}aa` }}>{currentScore}%</p>
-                    <p className="text-[10px] text-white uppercase tracking-[0.14em] mt-1">{isAf ? "Huidige" : "Current"}</p>
+                  <div className="text-center p-3 rounded-xl bg-background" style={{ border: `1px solid ${getBandHex(mastery.overallBand)}55`, boxShadow: `inset 0 0 10px ${getBandHex(mastery.overallBand)}20` }}>
+                    <p className="text-3xl font-black text-foreground tabular-nums" style={{ textShadow: `0 0 10px ${getBandHex(mastery.overallBand)}aa` }}>{currentScore}%</p>
+                    <p className="text-[10px] text-foreground uppercase tracking-[0.14em] mt-1">{isAf ? "Huidige" : "Current"}</p>
                   </div>
                   <div className="flex items-center justify-center">
                     <div className="flex flex-col items-center gap-1">
                       <ChevronRight className="w-8 h-8" style={{ color: scoreDiff >= 0 ? "#4ADE80" : "#FF2BD6", filter: `drop-shadow(0 0 6px ${scoreDiff >= 0 ? "#4ADE80" : "#FF2BD6"})` }} />
-                      <p className="text-[10px] text-white">{scoreDiff >= 0 ? (isAf ? 'Op Koers' : 'On Track') : (isAf ? 'Moet Verbeter' : 'Needs Work')}</p>
+                      <p className="text-[10px] text-foreground">{scoreDiff >= 0 ? (isAf ? 'Op Koers' : 'On Track') : (isAf ? 'Moet Verbeter' : 'Needs Work')}</p>
                     </div>
                   </div>
-                  <div className="text-center p-3 rounded-xl bg-black" style={{ border: "1px solid #00E5FF55", boxShadow: "inset 0 0 10px #00E5FF20" }}>
-                    <p className="text-3xl font-black text-white tabular-nums" style={{ textShadow: "0 0 10px #00E5FFaa" }}>{targetScore}%</p>
-                    <p className="text-[10px] text-white uppercase tracking-[0.14em] mt-1">{isAf ? "Teiken" : "Target"}</p>
+                  <div className="text-center p-3 rounded-xl bg-background" style={{ border: "1px solid #00E5FF55", boxShadow: "inset 0 0 10px #00E5FF20" }}>
+                    <p className="text-3xl font-black text-foreground tabular-nums" style={{ textShadow: "0 0 10px #00E5FFaa" }}>{targetScore}%</p>
+                    <p className="text-[10px] text-foreground uppercase tracking-[0.14em] mt-1">{isAf ? "Teiken" : "Target"}</p>
                   </div>
                 </div>
-                <div className="h-2 rounded-full bg-black overflow-hidden mt-3" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
+                <div className="h-2 rounded-full bg-background overflow-hidden mt-3" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
                   <div className="h-full rounded-full" style={{ width: `${Math.min(100, Math.max(0, currentScore))}%`, background: "linear-gradient(90deg,#FF8A00,#FF8A00,#FFE600,#00E5FF,#006BFF,#8A2BFF,#FF2BD6)", boxShadow: "0 0 10px rgba(0,229,255,0.6)" }} />
                 </div>
                 <div className="flex justify-between mt-1">
-                  <span className="text-[10px] text-white">0%</span>
+                  <span className="text-[10px] text-foreground">0%</span>
                   <span className="text-[10px] font-semibold" style={{ color: "#00E5FF" }}>{isAf ? 'Teiken' : 'Target'}: {targetScore}%</span>
-                  <span className="text-[10px] text-white">100%</span>
+                  <span className="text-[10px] text-foreground">100%</span>
                 </div>
               </CosmicCard>
             </>
@@ -1422,7 +1424,7 @@ export default function SubjectDetailPage() {
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
-                  className="flex-1 min-w-[72px] flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-black uppercase tracking-[0.12em] transition-all border-0 shadow-none data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-white/45 hover:text-white/80 data-[state=active]:shadow-none"
+                  className="flex-1 min-w-[72px] flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-black uppercase tracking-[0.12em] transition-all border-0 shadow-none data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=inactive]:bg-transparent data-[state=inactive]:text-foreground hover:text-foreground data-[state=active]:shadow-none"
                 >
                   <tab.Icon className="w-3.5 h-3.5" />
                   {isAf ? tab.af : tab.en}
@@ -1438,7 +1440,7 @@ export default function SubjectDetailPage() {
                   {isBST && (
                     <Link href="/bst-exam">
                       <button
-                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-black text-xs font-bold transition-all hover:scale-[1.02]"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-background text-xs font-bold transition-all hover:scale-[1.02]"
                         style={{ border: "1.5px solid #FF8A00", boxShadow: "0 0 10px #FF8A0044", color: "#FF8A00" }}
                         data-testid="button-crunch-time"
                       >
@@ -1448,7 +1450,7 @@ export default function SubjectDetailPage() {
                   )}
                   <Link href="/exam-mode">
                     <button
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-black text-xs font-bold transition-all hover:scale-[1.02]"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-background text-xs font-bold transition-all hover:scale-[1.02]"
                       style={{ border: "1.5px solid #FF8A00", boxShadow: "0 0 10px #FF8A0044", color: "#FF8A00" }}
                       data-testid="button-exam-mode"
                     >
@@ -1458,7 +1460,7 @@ export default function SubjectDetailPage() {
                   </Link>
                   <Link href={`/tutor?subject=${id}`}>
                     <button
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-black text-xs font-bold transition-all hover:scale-[1.02]"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-background text-xs font-bold transition-all hover:scale-[1.02]"
                       style={{ border: "1.5px solid #8A2BFF", boxShadow: "0 0 10px #8A2BFF44", color: "#8A2BFF" }}
                       data-testid="button-smart-tutor"
                     >
@@ -1477,17 +1479,17 @@ export default function SubjectDetailPage() {
                     <CosmicCard color="yellow" className="p-5 space-y-3" data-testid="recommended-quiz-card">
                       <div className="flex items-center gap-2">
                         <Zap className="w-5 h-5" style={{ color: "#FFE600", filter: "drop-shadow(0 0 4px #FFE600)" }} />
-                        <span className="font-black text-sm text-white uppercase tracking-[0.14em]">
+                        <span className="font-black text-sm text-foreground uppercase tracking-[0.14em]">
                           {isAf ? "Aanbevole Vasvraag" : "Recommended Quiz"}
                         </span>
                       </div>
-                      <p className="text-xs text-white leading-snug">
+                      <p className="text-xs text-foreground leading-snug">
                         {isAf
                           ? `Fokus op jou swakste onderwerp: ${weakestTopic.nameAfrikaans || weakestTopic.name} (${weakestTopic.masteryScore}%)`
                           : `Focus on your weakest topic: ${weakestTopic.name} (${weakestTopic.masteryScore}%)`}
                       </p>
                       <button
-                        className="w-full py-2 rounded-xl bg-black text-xs font-black uppercase tracking-[0.18em] transition-all hover:scale-[1.02]"
+                        className="w-full py-2 rounded-xl bg-background text-xs font-black uppercase tracking-[0.18em] transition-all hover:scale-[1.02]"
                         style={{ color: "#FFE600", border: "1.5px solid #FFE600", boxShadow: "0 0 14px #FFE60055" }}
                         onClick={() => {
                           setRecommendedTopicFocus(weakestTopic.name);
@@ -1503,11 +1505,11 @@ export default function SubjectDetailPage() {
                     <CosmicCard color="purple" className="p-5 space-y-3" data-testid="revision-mode-card">
                       <div className="flex items-center gap-2">
                         <BookOpen className="w-5 h-5" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 4px #8A2BFF)" }} />
-                        <span className="font-black text-sm text-white uppercase tracking-[0.14em]">
+                        <span className="font-black text-sm text-foreground uppercase tracking-[0.14em]">
                           {isAf ? "Hersien Verkeerde Antwoorde" : "Revise Wrong Answers"}
                         </span>
                       </div>
-                      <p className="text-xs text-white leading-snug">
+                      <p className="text-xs text-foreground leading-snug">
                         {wrongCountEst > 0
                           ? (isAf
                             ? `Jy het ±${wrongCountEst} verkeerde antwoorde. Hersien dit om jou bemeestering te verbeter.`
@@ -1516,7 +1518,7 @@ export default function SubjectDetailPage() {
                       </p>
                       <Link href={`/revision/${subject.id}`}>
                         <button
-                          className="w-full py-2 rounded-xl bg-black text-xs font-black uppercase tracking-[0.18em] transition-all hover:scale-[1.02]"
+                          className="w-full py-2 rounded-xl bg-background text-xs font-black uppercase tracking-[0.18em] transition-all hover:scale-[1.02]"
                           style={{ color: "#8A2BFF", border: "1.5px solid #8A2BFF", boxShadow: "0 0 14px #8A2BFF55" }}
                           data-testid="button-revision-mode"
                         >
@@ -1549,7 +1551,7 @@ export default function SubjectDetailPage() {
               <CosmicCard color="cyan" className="p-5">
                 <div className="flex items-center gap-2 mb-4">
                   <Target className="w-5 h-5" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
-                  <h3 className="font-bold text-base text-white">{isAf ? "Onderwerp Bemeestering" : "Topic Mastery"}</h3>
+                  <h3 className="font-bold text-base text-foreground">{isAf ? "Onderwerp Bemeestering" : "Topic Mastery"}</h3>
                   {mastery && mastery.topics.length > 0 && <NeonBadge color="cyan">{mastery.topics.length}</NeonBadge>}
                 </div>
                 {masteryLoading ? (
@@ -1563,7 +1565,7 @@ export default function SubjectDetailPage() {
                       return (
                         <div
                           key={topic.id}
-                          className="p-4 rounded-xl bg-black transition-all duration-200 hover:-translate-y-px"
+                          className="p-4 rounded-xl bg-background transition-all duration-200 hover:-translate-y-px"
                           style={{ border: `1px solid ${tHex}55`, boxShadow: `inset 0 0 12px ${tHex}15` }}
                           data-testid={`topic-mastery-${topic.id}`}
                         >
@@ -1571,11 +1573,11 @@ export default function SubjectDetailPage() {
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 flex-wrap">
                                 {getBandIcon(topic.masteryBand)}
-                                <p className="font-semibold text-white truncate">
+                                <p className="font-semibold text-foreground truncate">
                                   {isAf ? (topic.nameAfrikaans || topic.name) : topic.name}
                                 </p>
                                 {topic.capsCode && (
-                                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-black" style={{ color: tHex, border: `1px solid ${tHex}55` }}>{topic.capsCode}</span>
+                                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-background" style={{ color: tHex, border: `1px solid ${tHex}55` }}>{topic.capsCode}</span>
                                 )}
                                 {topic.hasNotes && (
                                   <span
@@ -1587,7 +1589,7 @@ export default function SubjectDetailPage() {
                                   </span>
                                 )}
                               </div>
-                              <p className="text-[11px] text-white mt-1">
+                              <p className="text-[11px] text-foreground mt-1">
                                 {isAf
                                   ? `${topic.questionsAttempted} vrae · ${topic.questionsCorrect} korrek`
                                   : `${topic.questionsAttempted} attempted · ${topic.questionsCorrect} correct`
@@ -1600,21 +1602,21 @@ export default function SubjectDetailPage() {
                               </p>
                             </div>
                             <div className="flex items-center gap-2">
-                              <span className="font-black text-lg text-white tabular-nums" style={{ textShadow: `0 0 8px ${tHex}aa` }}>
+                              <span className="font-black text-lg text-foreground tabular-nums" style={{ textShadow: `0 0 8px ${tHex}aa` }}>
                                 {topic.masteryScore}%
                               </span>
-                              <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-black uppercase tracking-[0.14em]" style={{ color: tHex, border: `1px solid ${tHex}` }}>
+                              <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-background uppercase tracking-[0.14em]" style={{ color: tHex, border: `1px solid ${tHex}` }}>
                                 {getBandLabel(topic.masteryBand, isAf)}
                               </span>
                             </div>
                           </div>
-                          <div className="h-1.5 rounded-full bg-black overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
+                          <div className="h-1.5 rounded-full bg-background overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
                             <div className="h-full rounded-full transition-all duration-700" style={{ width: `${topic.masteryScore}%`, background: tHex, boxShadow: `0 0 8px ${tHex}aa` }} />
                           </div>
                           {topic.confidenceLevel > 0 && (
                             <div className="flex items-center gap-1 mt-2">
                               <Zap className="w-3 h-3" style={{ color: "#00E5FF" }} />
-                              <span className="text-[10px] text-white">
+                              <span className="text-[10px] text-foreground">
                                 {isAf ? "Vertroue" : "Confidence"}: {topic.confidenceLevel}%
                               </span>
                             </div>
@@ -1644,7 +1646,7 @@ export default function SubjectDetailPage() {
                                   capsCode: topic.capsCode,
                                 })}
                                 disabled={!hasContent}
-                                className={`mt-3 w-full inline-flex flex-col items-center justify-center gap-0.5 py-2 rounded-xl bg-black text-[11px] font-black uppercase tracking-[0.18em] transition-all ${hasContent ? "hover:scale-[1.01] cursor-pointer" : "opacity-40 cursor-not-allowed"}`}
+                                className={`mt-3 w-full inline-flex flex-col items-center justify-center gap-0.5 py-2 rounded-xl bg-background text-[11px] font-black uppercase tracking-[0.18em] transition-all ${hasContent ? "hover:scale-[1.01] cursor-pointer" : "opacity-40 cursor-not-allowed"}`}
                                 style={{ color: tHex, border: `1.5px solid ${tHex}55`, boxShadow: hasContent ? `0 0 10px ${tHex}33` : "none" }}
                                 data-testid={`button-topic-content-${topic.id}`}
                               >
@@ -1675,7 +1677,7 @@ export default function SubjectDetailPage() {
                                     subjectName: isAf ? (subject.nameAfrikaans || subject.name) : subject.name,
                                   });
                                 }}
-                                className="mt-2 w-full inline-flex flex-col items-center justify-center gap-0.5 py-2 rounded-xl bg-black text-[11px] font-black uppercase tracking-[0.18em] transition-all hover:scale-[1.01] cursor-pointer"
+                                className="mt-2 w-full inline-flex flex-col items-center justify-center gap-0.5 py-2 rounded-xl bg-background text-[11px] font-black uppercase tracking-[0.18em] transition-all hover:scale-[1.01] cursor-pointer"
                                 style={{ color: tHex, border: `1.5px solid ${tHex}55`, boxShadow: `0 0 10px ${tHex}33` }}
                                 data-testid={`button-quiz-topic-${topic.id}`}
                               >
@@ -1693,8 +1695,8 @@ export default function SubjectDetailPage() {
                       );
                     })}
 
-                    <div className="mt-4 p-4 rounded-xl bg-black" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
-                      <p className="text-[10px] font-bold mb-2 uppercase tracking-[0.18em] text-white">{isAf ? "Bemeestering Bande" : "Mastery Bands"}</p>
+                    <div className="mt-4 p-4 rounded-xl bg-background" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
+                      <p className="text-[10px] font-bold mb-2 uppercase tracking-[0.18em] text-foreground">{isAf ? "Bemeestering Bande" : "Mastery Bands"}</p>
                       <div className="flex items-center gap-4 flex-wrap">
                         {[
                           { hex: "#FF2BD6", label: isAf ? "Inhaal" : "Catch Up", range: "0-59%" },
@@ -1704,14 +1706,14 @@ export default function SubjectDetailPage() {
                         ].map(b => (
                           <div key={b.label} className="flex items-center gap-1.5">
                             <span className="w-2 h-2 rounded-full" style={{ background: b.hex, boxShadow: `0 0 6px ${b.hex}` }} />
-                            <span className="text-[10px] text-white">{b.label} <span className="text-white">{b.range}</span></span>
+                            <span className="text-[10px] text-foreground">{b.label} <span className="text-foreground">{b.range}</span></span>
                           </div>
                         ))}
                       </div>
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center py-8 text-white">
+                  <div className="text-center py-8 text-foreground">
                     <Brain className="w-12 h-12 mx-auto mb-3 opacity-50" />
                     <p className="font-medium">{isAf ? "Nog geen bemeestering data nie" : "No mastery data yet"}</p>
                     <p className="text-sm mt-1">{isAf ? "Begin 'n Eksamentyd-eksamen om jou vordering te sien" : "Start a Crunch Time exam to see your progress"}</p>
@@ -1725,7 +1727,7 @@ export default function SubjectDetailPage() {
               <CosmicCard color="blue" className="p-5">
                 <div className="flex items-center gap-2 mb-4">
                   <Calendar className="w-5 h-5" style={{ color: "#006BFF", filter: "drop-shadow(0 0 4px #006BFF)" }} />
-                  <h3 className="font-bold text-base text-white">{isAf ? "Persoonlike Studieplan" : "Personalized Study Plan"}</h3>
+                  <h3 className="font-bold text-base text-foreground">{isAf ? "Persoonlike Studieplan" : "Personalized Study Plan"}</h3>
                   <NeonBadge color="blue">{isAf ? "7 Dae" : "7 Day"}</NeonBadge>
                 </div>
                 {masteryLoading && personalizedPlan.length === 0 ? (
@@ -1741,22 +1743,22 @@ export default function SubjectDetailPage() {
                       return (
                         <div
                           key={idx}
-                          className="flex items-center justify-between gap-3 p-3 rounded-xl bg-black transition-all duration-200 hover:-translate-y-px"
+                          className="flex items-center justify-between gap-3 p-3 rounded-xl bg-background transition-all duration-200 hover:-translate-y-px"
                           style={{ border: `1px solid ${pHex}55`, boxShadow: `inset 0 0 10px ${pHex}15` }}
                           data-testid={`plan-item-${idx}`}
                         >
                           <div className="flex items-center gap-3 flex-1 min-w-0">
-                            <div className="w-10 h-10 rounded-lg flex items-center justify-center text-[10px] font-black shrink-0 bg-black uppercase tracking-[0.14em]"
+                            <div className="w-10 h-10 rounded-lg flex items-center justify-center text-[10px] font-black shrink-0 bg-background uppercase tracking-[0.14em]"
                               style={{ border: `1.5px solid ${pHex}`, color: pHex, boxShadow: `0 0 10px ${pHex}55` }}>
                               {item.day}
                             </div>
                             <div className="min-w-0">
-                              <p className="text-sm font-semibold text-white truncate">{item.task}</p>
-                              <p className="text-[11px] text-white truncate">{item.focus}</p>
+                              <p className="text-sm font-semibold text-foreground truncate">{item.task}</p>
+                              <p className="text-[11px] text-foreground truncate">{item.focus}</p>
                             </div>
                           </div>
                           <div className="flex items-center gap-2 shrink-0">
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-black inline-flex items-center gap-1" style={{ color: "#00E5FF", border: "1px solid #00E5FF55" }}>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-background inline-flex items-center gap-1" style={{ color: "#00E5FF", border: "1px solid #00E5FF55" }}>
                               <Clock className="w-3 h-3" /> {item.duration}min
                             </span>
                             {item.priority === "high" && <NeonBadge color="pink">{isAf ? "Prioriteit" : "Priority"}</NeonBadge>}
@@ -1764,7 +1766,7 @@ export default function SubjectDetailPage() {
                         </div>
                       );
                     })}
-                    <p className="text-[10px] text-white mt-3 px-1">
+                    <p className="text-[10px] text-foreground mt-3 px-1">
                       {isAf
                         ? "Hierdie plan is gepersonaliseer op grond van jou bemeesteringsdata. Fokus eers op rooi en amber onderwerpe."
                         : "This plan is personalized based on your mastery data. Focus on red and amber topics first."
@@ -1772,7 +1774,7 @@ export default function SubjectDetailPage() {
                     </p>
                   </div>
                 ) : (
-                  <div className="text-center py-6 text-white">
+                  <div className="text-center py-6 text-foreground">
                     <Calendar className="w-10 h-10 mx-auto mb-2 opacity-50" />
                     <p className="text-sm">{isAf ? "Studieplan sal genereer word sodra jy begin oefen" : "Study plan will generate once you start practicing"}</p>
                   </div>
@@ -1783,7 +1785,7 @@ export default function SubjectDetailPage() {
                 <CosmicCard color="yellow" className="p-5">
                   <div className="flex items-center gap-2 mb-4">
                     <Award className="w-5 h-5" style={{ color: "#FFE600", filter: "drop-shadow(0 0 4px #FFE600)" }} />
-                    <h3 className="font-bold text-base text-white">{isAf ? "Prestasies" : "Achievements"}</h3>
+                    <h3 className="font-bold text-base text-foreground">{isAf ? "Prestasies" : "Achievements"}</h3>
                     <NeonBadge color="yellow">{badges.length}</NeonBadge>
                   </div>
                   <div className="space-y-2">
@@ -1794,12 +1796,12 @@ export default function SubjectDetailPage() {
                       return (
                         <div
                           key={badge.id}
-                          className="flex items-center gap-2 px-3 py-2 rounded-xl bg-black"
+                          className="flex items-center gap-2 px-3 py-2 rounded-xl bg-background"
                           style={{ border: "1px solid #FFE60044", boxShadow: "inset 0 0 8px #FFE60015" }}
                           data-testid={`badge-${badge.badgeCode}`}
                         >
                           <IconComp className="w-4 h-4" style={{ color: "#FFE600", filter: "drop-shadow(0 0 3px #FFE600)" }} />
-                          <span className="text-sm font-semibold text-white">
+                          <span className="text-sm font-semibold text-foreground">
                             {isAf ? info.nameAfrikaans : info.name}
                           </span>
                         </div>
@@ -1818,7 +1820,7 @@ export default function SubjectDetailPage() {
                 return (
                   <CosmicCard color="cyan" className="p-5" data-testid="card-literature-selection">
                     <div className="flex items-center justify-between gap-3 flex-wrap mb-2">
-                      <h3 className="flex items-center gap-2 font-bold text-base text-white">
+                      <h3 className="flex items-center gap-2 font-bold text-base text-foreground">
                         <BookMarked className="w-5 h-5" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
                         {isAf ? "Jou Voorgeskryfde Werke" : "Your Prescribed Works"}
                       </h3>
@@ -1826,7 +1828,7 @@ export default function SubjectDetailPage() {
                         onClick={() => saveLitMutation.mutate(litSelections)}
                         disabled={saveLitMutation.isPending}
                         data-testid="button-save-literature"
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-black text-xs font-black uppercase tracking-[0.14em] transition-all hover:scale-[1.02] disabled:opacity-60"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-background text-xs font-black uppercase tracking-[0.14em] transition-all hover:scale-[1.02] disabled:opacity-60"
                         style={{ color: "#00E5FF", border: "1.5px solid #00E5FF", boxShadow: "0 0 12px #00E5FF55" }}
                       >
                         {litSaved ? (
@@ -1838,7 +1840,7 @@ export default function SubjectDetailPage() {
                         )}
                       </button>
                     </div>
-                    <p className="text-xs text-white mt-1 mb-4">
+                    <p className="text-xs text-foreground mt-1 mb-4">
                       {isAf
                         ? "Kies die werke wat jou skool vir elke kategorie gebruik. Dit help Rizz om jou beter voor te berei."
                         : "Select the works your school uses for each category. This helps Rizz prepare you more accurately."}
@@ -1860,21 +1862,21 @@ export default function SubjectDetailPage() {
                               return (
                                 <div
                                   key={w.id}
-                                  className="flex items-start justify-between gap-2 rounded-xl bg-black p-3"
+                                  className="flex items-start justify-between gap-2 rounded-xl bg-background p-3"
                                   style={{ border: "1px solid #00E5FF33" }}
                                   data-testid={`lit-work-card-${w.id}`}
                                 >
                                   <div className="min-w-0 flex-1">
-                                    <p className="text-sm font-semibold text-white truncate">{w.title}</p>
+                                    <p className="text-sm font-semibold text-foreground truncate">{w.title}</p>
                                     {w.author !== "Various" && w.author !== "Verskeie digters" && w.author !== "Verskeie outeurs" && (
-                                      <p className="text-[11px] text-white truncate">— {w.author}</p>
+                                      <p className="text-[11px] text-foreground truncate">— {w.author}</p>
                                     )}
                                   </div>
                                   {dbWork ? (
                                     <button
                                       type="button"
                                       onClick={() => setLitWorkDialog({ id: dbWork.id, title: dbWork.title })}
-                                      className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-black text-[10px] font-black uppercase tracking-[0.14em] transition-all hover:scale-[1.02]"
+                                      className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-background text-[10px] font-black uppercase tracking-[0.14em] transition-all hover:scale-[1.02]"
                                       style={{ color: "#00E5FF", border: "1.5px solid #00E5FF", boxShadow: "0 0 10px #00E5FF55" }}
                                       data-testid={`button-notes-${w.id}`}
                                     >
@@ -1882,7 +1884,7 @@ export default function SubjectDetailPage() {
                                       {isAf ? "Notas" : "Notes"}
                                     </button>
                                   ) : (
-                                    <span className="shrink-0 text-[10px] text-white italic">
+                                    <span className="shrink-0 text-[10px] text-foreground italic">
                                       {isAf ? "Word voorberei" : "Preparing"}
                                     </span>
                                   )}
@@ -1901,7 +1903,7 @@ export default function SubjectDetailPage() {
                           const selectedWork = cat.works.find(w => w.id === selectedId);
                           return (
                             <div key={cat.type} className="space-y-2" data-testid={`lit-category-${cat.type}`}>
-                              <p className="text-sm font-semibold text-white uppercase tracking-wide">
+                              <p className="text-sm font-semibold text-foreground uppercase tracking-wide">
                                 {isAf ? cat.labelAf : cat.label}
                               </p>
                               <Select
@@ -1916,7 +1918,7 @@ export default function SubjectDetailPage() {
                                     <SelectItem key={work.id} value={work.id} data-testid={`option-lit-${work.id}`}>
                                       <span className="font-medium">{work.title}</span>
                                       {work.author !== "Various" && work.author !== "Verskeie digters" && work.author !== "Verskeie outeurs" && (
-                                        <span className="text-white ml-1 text-xs">— {work.author}</span>
+                                        <span className="text-foreground ml-1 text-xs">— {work.author}</span>
                                       )}
                                     </SelectItem>
                                   ))}
@@ -1924,7 +1926,7 @@ export default function SubjectDetailPage() {
                               </Select>
                               {selectedWork && (
                                 <div className="flex items-center justify-between gap-2 pl-1">
-                                  <p className="text-xs text-white" data-testid={`text-lit-selected-${cat.type}`}>
+                                  <p className="text-xs text-foreground" data-testid={`text-lit-selected-${cat.type}`}>
                                     <span className="font-medium">{isAf ? "Gekies" : "Selected"}:</span> {selectedWork.title}
                                     {selectedWork.author !== "Various" && selectedWork.author !== "Verskeie digters" && selectedWork.author !== "Verskeie outeurs" && ` — ${selectedWork.author}`}
                                   </p>
@@ -1935,7 +1937,7 @@ export default function SubjectDetailPage() {
                                       <button
                                         type="button"
                                         onClick={() => setLitWorkDialog({ id: dbWork.id, title: dbWork.title })}
-                                        className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-black text-[10px] font-black uppercase tracking-[0.14em] transition-all hover:scale-[1.02]"
+                                        className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-background text-[10px] font-black uppercase tracking-[0.14em] transition-all hover:scale-[1.02]"
                                         style={{ color: "#00E5FF", border: "1.5px solid #00E5FF", boxShadow: "0 0 10px #00E5FF55" }}
                                         data-testid={`button-view-lit-${cat.type}`}
                                       >
@@ -1951,8 +1953,8 @@ export default function SubjectDetailPage() {
                         })}
                       </div>
                       {hasAnySelection && (
-                        <div className="mt-4 p-3 rounded-xl bg-black" style={{ border: "1px solid #00E5FF55", boxShadow: "inset 0 0 8px #00E5FF15" }}>
-                          <p className="text-xs text-white flex items-center gap-2">
+                        <div className="mt-4 p-3 rounded-xl bg-background" style={{ border: "1px solid #00E5FF55", boxShadow: "inset 0 0 8px #00E5FF15" }}>
+                          <p className="text-xs text-foreground flex items-center gap-2">
                             <BookMarked className="w-4 h-4 shrink-0" style={{ color: "#00E5FF" }} />
                             {isAf
                               ? "Rizz sal jou vrae, opsommings en ontledings rig rondom hierdie werke."
@@ -1968,7 +1970,7 @@ export default function SubjectDetailPage() {
               <CosmicCard color="blue" className="p-5">
                 <div className="flex items-center gap-2 mb-4">
                   <ExternalLink className="w-5 h-5" style={{ color: "#006BFF", filter: "drop-shadow(0 0 4px #006BFF)" }} />
-                  <h3 className="font-bold text-base text-white">{isAf ? "Amptelike Bronne" : "Official Sources"}</h3>
+                  <h3 className="font-bold text-base text-foreground">{isAf ? "Amptelike Bronne" : "Official Sources"}</h3>
                 </div>
                 <div className="space-y-2">
                   {[
@@ -1981,7 +1983,7 @@ export default function SubjectDetailPage() {
                       href={lnk.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 p-2.5 rounded-xl bg-black text-sm font-semibold text-white hover:text-white transition-all hover:-translate-y-px"
+                      className="flex items-center gap-2 p-2.5 rounded-xl bg-background text-sm font-semibold text-foreground hover:text-foreground transition-all hover:-translate-y-px"
                       style={{ border: "1px solid #006BFF55", boxShadow: "inset 0 0 8px #006BFF15" }}
                       data-testid={lnk.tid}
                     >
@@ -1989,8 +1991,8 @@ export default function SubjectDetailPage() {
                       <span>{lnk.label}</span>
                     </a>
                   ))}
-                  <div className="mt-3 p-3 rounded-xl bg-black" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
-                    <p className="text-[11px] text-white leading-relaxed">
+                  <div className="mt-3 p-3 rounded-xl bg-background" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
+                    <p className="text-[11px] text-foreground leading-relaxed">
                       {isAf
                         ? "Hierdie vakpaneel is KABV-belyn en gebaseer op ontleding van NSC-eksamenpatrone (10-jaar venster). Alle vrae is oorspronklik en gesimuleer."
                         : "This subject dashboard is CAPS-aligned and informed by analysis of NSC examination patterns (10-year window). All questions are original and simulated."

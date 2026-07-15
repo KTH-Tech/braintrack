@@ -96,7 +96,7 @@ function buildHtmlWrapper(opts: {
   const pillar2 = language === "af" ? "&#128274; Jou data. Jou privaatheid." : "&#128274; Your data. Your privacy.";
   const pillar3 = language === "af" ? "&#10084;&#65039; Meer as punte. Ons bou toekoms." : "&#10084;&#65039; More than grades. We build futures.";
 
-  const RAINBOW = "linear-gradient(90deg,#e53935 0%,#e67e22 17%,#f1c40f 34%,#27ae60 50%,#2980b9 67%,#8e44ad 83%,#e91e63 100%)";
+  const RAINBOW = "linear-gradient(90deg,#006BFF 0%,#00E5FF 17%,#22FF66 34%,#FFE600 50%,#FF8A00 67%,#FF2BD6 83%,#8A2BFF 100%)";
 
   const ctaBlock = ctaLabel && ctaUrl
     ? `
@@ -105,8 +105,8 @@ function buildHtmlWrapper(opts: {
           <td align="center">
             <!--[if mso]>
             <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"
-              href="${ctaUrl}" style="height:52px;v-text-anchor:middle;width:240px;" arcsize="20%"
-              stroke="f" fillcolor="#7c3aed">
+              href="${ctaUrl}" style="height:52px;v-text-anchor:middle;width:240px;" arcsize="8%"
+              stroke="t" strokecolor="#00E5FF" fillcolor="#006BFF">
               <w:anchorlock/>
               <center style="color:#ffffff;font-family:Arial,sans-serif;font-size:16px;font-weight:bold;">
                 ${ctaLabel}
@@ -116,7 +116,7 @@ function buildHtmlWrapper(opts: {
             <!--[if !mso]><!-->
             <a href="${ctaUrl}"
                target="_blank"
-               style="display:inline-block;background:linear-gradient(135deg,#7c3aed,#2980b9,#27ae60);color:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:700;text-decoration:none;padding:16px 40px;border-radius:50px;letter-spacing:0.5px;box-shadow:0 4px 20px rgba(124,58,237,0.35);mso-hide:all;">
+               style="display:inline-block;background:#006BFF;color:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:700;text-decoration:none;padding:16px 40px;border-radius:12px;border:2px solid #00E5FF;letter-spacing:0.5px;box-shadow:0 4px 20px rgba(0,229,255,0.35);mso-hide:all;">
               ${ctaLabel}
             </a>
             <!--<![endif]-->
@@ -133,18 +133,18 @@ function buildHtmlWrapper(opts: {
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>${heading}</title>
 </head>
-<body style="margin:0;padding:0;background-color:#eef0f8;font-family:Arial,Helvetica,sans-serif;">
+<body style="margin:0;padding:0;background-color:#000000;font-family:Arial,Helvetica,sans-serif;">
 
   <!-- Outer wrapper -->
   <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
-         style="background-color:#eef0f8;padding:28px 0 48px;">
+         style="background-color:#000000;padding:28px 0 48px;">
     <tr>
       <td align="center">
 
         <!-- Card -->
         <table width="600" cellpadding="0" cellspacing="0" role="presentation"
                style="max-width:600px;width:100%;border-radius:20px;overflow:hidden;
-                      background-color:#ffffff;box-shadow:0 8px 48px rgba(124,58,237,0.12);">
+                      background-color:#0a0b12;box-shadow:0 0 40px rgba(0,229,255,0.25);">
 
           <!-- Rainbow top bar -->
           <tr>
@@ -153,13 +153,13 @@ function buildHtmlWrapper(opts: {
 
           <!-- Header / logo area -->
           <tr>
-            <td align="center" style="padding:28px 40px 20px;background:#0b0b12;">
+            <td align="center" style="padding:28px 40px 20px;background:#000000;">
               <!-- Branded BrainTrack logo (inlined base64 so it renders in every mail client) -->
               <img src="${BRAND_LOGO_DATA_URI}" width="260" alt="BrainTrack" style="display:block;border:0;outline:none;text-decoration:none;width:260px;max-width:80%;height:auto;margin:0 auto;" />
               <!-- Tagline -->
               <div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:600;
-                          color:#cfcfe6;margin-top:12px;letter-spacing:0.3px;">
-                Powered by <strong style="color:#a78bfa;">KTH Tech</strong>
+                          color:#ffffff;margin-top:12px;letter-spacing:0.3px;">
+                Powered by <strong style="color:#00E5FF;">KTH Tech</strong>
               </div>
             </td>
           </tr>
@@ -173,17 +173,17 @@ function buildHtmlWrapper(opts: {
 
           <!-- Content -->
           <tr>
-            <td style="padding:32px 40px 12px;background:#ffffff;">
+            <td style="padding:32px 40px 12px;background:#0a0b12;">
 
               <!-- Heading -->
               <h1 style="margin:0 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:22px;
-                         font-weight:800;color:#1a1a2e;line-height:1.35;">
+                         font-weight:800;color:#ffffff;line-height:1.35;">
                 ${heading}
               </h1>
 
               <!-- Body copy -->
               <div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.75;
-                          color:#444444;">
+                          color:#ffffff;">
                 ${bodyHtml}
               </div>
 
@@ -195,16 +195,16 @@ function buildHtmlWrapper(opts: {
           <!-- Three-pillar strip -->
           <tr>
             <td style="padding:0 40px;">
-              <div style="height:1px;background:linear-gradient(90deg,transparent,#e0e0f0,transparent);"></div>
+              <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(0,229,255,0.4),transparent);"></div>
             </td>
           </tr>
           <tr>
-            <td style="background:#f6f4ff;padding:16px 20px;">
+            <td style="background:#0a0b12;padding:16px 20px;">
               <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
                 <tr>
-                  <td align="center" style="padding:4px 6px;font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#666;width:33%;">${pillar1}</td>
-                  <td align="center" style="padding:4px 6px;font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#666;width:33%;border-left:1px solid #e0ddf8;border-right:1px solid #e0ddf8;">${pillar2}</td>
-                  <td align="center" style="padding:4px 6px;font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#666;width:33%;">${pillar3}</td>
+                  <td align="center" style="padding:4px 6px;font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#ffffff;width:33%;">${pillar1}</td>
+                  <td align="center" style="padding:4px 6px;font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#ffffff;width:33%;border-left:1px solid rgba(0,229,255,0.3);border-right:1px solid rgba(0,229,255,0.3);">${pillar2}</td>
+                  <td align="center" style="padding:4px 6px;font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#ffffff;width:33%;">${pillar3}</td>
                 </tr>
               </table>
             </td>
@@ -212,34 +212,34 @@ function buildHtmlWrapper(opts: {
 
           <!-- Footer -->
           <tr>
-            <td style="padding:24px 40px 28px;background:#ffffff;">
-              <div style="height:1px;background:linear-gradient(90deg,transparent,#e8e8f8,transparent);margin-bottom:18px;"></div>
+            <td style="padding:24px 40px 28px;background:#0a0b12;">
+              <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(0,229,255,0.4),transparent);margin-bottom:18px;"></div>
               <p style="margin:0 0 6px;font-family:Arial,Helvetica,sans-serif;font-size:12px;
-                        color:#888888;text-align:center;">
+                        color:#ffffff;text-align:center;">
                 ${footerLine1}
               </p>
               <p style="margin:0 0 14px;font-family:Arial,Helvetica,sans-serif;font-size:12px;
-                        color:#888888;text-align:center;">
+                        color:#ffffff;text-align:center;">
                 ${footerLine2}
               </p>
               <p style="margin:0 0 10px;font-family:Arial,Helvetica,sans-serif;font-size:12px;
-                        font-weight:600;color:#666666;text-align:center;letter-spacing:0.4px;">
-                <a href="https://braintrack.co.za" style="color:#7c3aed;text-decoration:none;">braintrack.co.za</a>
+                        font-weight:600;color:#ffffff;text-align:center;letter-spacing:0.4px;">
+                <a href="https://braintrack.co.za" style="color:#006BFF;text-decoration:none;">braintrack.co.za</a>
                 &nbsp;·&nbsp;
-                <a href="mailto:learn@kth-tech.com" style="color:#7c3aed;text-decoration:none;">learn@kth-tech.com</a>
+                <a href="mailto:learn@kth-tech.com" style="color:#006BFF;text-decoration:none;">learn@kth-tech.com</a>
               </p>
               <p style="margin:0 0 10px;font-family:Arial,Helvetica,sans-serif;font-size:11px;
-                        color:#aaaaaa;text-align:center;letter-spacing:0.2px;">
-                <a href="https://braintrack.co.za" style="color:#888;text-decoration:none;">Website</a>
+                        color:#ffffff;text-align:center;letter-spacing:0.2px;">
+                <a href="https://braintrack.co.za" style="color:#00E5FF;text-decoration:none;">Website</a>
                 &nbsp;&nbsp;|&nbsp;&nbsp;
-                <a href="https://app.braintrack.co.za/dashboard" style="color:#888;text-decoration:none;">Dashboard</a>
+                <a href="https://app.braintrack.co.za/dashboard" style="color:#00E5FF;text-decoration:none;">Dashboard</a>
                 &nbsp;&nbsp;|&nbsp;&nbsp;
-                <a href="https://app.braintrack.co.za/subscribe" style="color:#888;text-decoration:none;">Subscribe</a>
+                <a href="https://app.braintrack.co.za/subscribe" style="color:#00E5FF;text-decoration:none;">Subscribe</a>
                 &nbsp;&nbsp;|&nbsp;&nbsp;
-                <a href="mailto:learn@kth-tech.com" style="color:#888;text-decoration:none;">Contact Us</a>
+                <a href="mailto:learn@kth-tech.com" style="color:#00E5FF;text-decoration:none;">Contact Us</a>
               </p>
               <p style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:11px;
-                        color:#aaaaaa;text-align:center;letter-spacing:0.3px;">
+                        color:#ffffff;text-align:center;letter-spacing:0.3px;">
                 <a href="https://www.facebook.com/braintrackapp" style="color:#2980b9;text-decoration:none;">Facebook</a>
                 &nbsp;&nbsp;·&nbsp;&nbsp;
                 <a href="https://www.instagram.com/braintrackapp" style="color:#e91e63;text-decoration:none;">Instagram</a>
@@ -250,8 +250,8 @@ function buildHtmlWrapper(opts: {
               </p>
               <!-- KTH Tech sign-off -->
               <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:11px;
-                        color:#cccccc;text-align:center;letter-spacing:0.5px;">
-                &copy; ${new Date().getFullYear()} BrainTrack &middot; Powered by <strong style="color:#7c3aed;">KTH Tech</strong>
+                        color:#ffffff;text-align:center;letter-spacing:0.5px;">
+                &copy; ${new Date().getFullYear()} BrainTrack &middot; Powered by <strong style="color:#006BFF;">KTH Tech</strong>
               </p>
             </td>
           </tr>
@@ -304,8 +304,8 @@ function buildWelcomePayload(opts: {
       subject: `Welkom by BrainTrack, ${name}! Jou 14-dae proeftydperk het begin.`,
       heading: `Welkom aan boord, ${name}! 🎉`,
       bodyHtml: `
-        <p>Jou BrainTrack <strong style="color:#7c3aed;">Brain Boost</strong>-proeftydperk is nou aktief.</p>
-        <p>Jy het <strong style="color:#0891b2;">14 dae gratis toegang</strong> tot al jou vakke, slimme tuteur, vorige vraestelle en meer — heeltemal sonder koste totdat jou proeftydperk op <strong>${trialDateStr}</strong> verloop.</p>
+        <p>Jou BrainTrack <strong style="color:#006BFF;">Brain Boost</strong>-proeftydperk is nou aktief.</p>
+        <p>Jy het <strong style="color:#00E5FF;">14 dae gratis toegang</strong> tot al jou vakke, slimme tuteur, vorige vraestelle en meer — heeltemal sonder koste totdat jou proeftydperk op <strong>${trialDateStr}</strong> verloop.</p>
         <p>Begin studeer en kry 'n voorsprong op jou NSC-eksamen:</p>
       `,
       ctaLabel: "Gaan na my dashboard",
@@ -317,8 +317,8 @@ function buildWelcomePayload(opts: {
     subject: `Welcome to BrainTrack, ${name}! Your 14-day trial has started.`,
     heading: `Welcome aboard, ${name}! 🎉`,
     bodyHtml: `
-      <p>Your BrainTrack <strong style="color:#7c3aed;">Brain Boost</strong> trial is now active.</p>
-      <p>You have <strong style="color:#0891b2;">14 days of free access</strong> to all your subjects, Smart Tutor, past papers and more — completely free until your trial ends on <strong>${trialDateStr}</strong>.</p>
+      <p>Your BrainTrack <strong style="color:#006BFF;">Brain Boost</strong> trial is now active.</p>
+      <p>You have <strong style="color:#00E5FF;">14 days of free access</strong> to all your subjects, Smart Tutor, past papers and more — completely free until your trial ends on <strong>${trialDateStr}</strong>.</p>
       <p>Start studying and get ahead on your NSC exams:</p>
     `,
     ctaLabel: "Go to my Dashboard",
@@ -342,13 +342,13 @@ function buildConsentRequestPayload(opts: {
       ctaUrl: consentUrl,
       bodyHtml: `
         <p>Hallo,</p>
-        <p><strong style="color:#7c3aed;">${learnerName}</strong> het by BrainTrack aangemeld — 'n leerstudieplatform vir Graad 12 NSC-eksamen — en het jou toestemming as ouer/voog nodig om volle toegang te aktiveer.</p>
+        <p><strong style="color:#006BFF;">${learnerName}</strong> het by BrainTrack aangemeld — 'n leerstudieplatform vir Graad 12 NSC-eksamen — en het jou toestemming as ouer/voog nodig om volle toegang te aktiveer.</p>
         <p>Klik die knoppie hieronder om toestemming te bevestig:</p>
-        <p style="font-size:13px;color:#888888;word-break:break-all;">
+        <p style="font-size:13px;color:#ffffff;word-break:break-all;">
           Of plak hierdie skakel in jou blaaier:<br/>
-          <a href="${consentUrl}" style="color:#7c3aed;">${consentUrl}</a>
+          <a href="${consentUrl}" style="color:#006BFF;">${consentUrl}</a>
         </p>
-        <p style="font-size:13px;color:#888888;">Hierdie skakel verval oor <strong>7 dae</strong>.</p>
+        <p style="font-size:13px;color:#ffffff;">Hierdie skakel verval oor <strong>7 dae</strong>.</p>
       `,
     };
   }
@@ -358,13 +358,13 @@ function buildConsentRequestPayload(opts: {
     heading: `${learnerName} needs your consent`,
     bodyHtml: `
       <p>Hi there,</p>
-      <p><strong style="color:#7c3aed;">${learnerName}</strong> has signed up for BrainTrack — a Grade 12 NSC exam preparation platform — and needs your consent as their parent/guardian to activate full access.</p>
+      <p><strong style="color:#006BFF;">${learnerName}</strong> has signed up for BrainTrack — a Grade 12 NSC exam preparation platform — and needs your consent as their parent/guardian to activate full access.</p>
       <p>Click the button below to confirm your consent:</p>
-      <p style="font-size:13px;color:#888888;word-break:break-all;">
+      <p style="font-size:13px;color:#ffffff;word-break:break-all;">
         Or paste this link into your browser:<br/>
-        <a href="${consentUrl}" style="color:#7c3aed;">${consentUrl}</a>
+        <a href="${consentUrl}" style="color:#006BFF;">${consentUrl}</a>
       </p>
-      <p style="font-size:13px;color:#888888;">This link expires in <strong>7 days</strong>.</p>
+      <p style="font-size:13px;color:#ffffff;">This link expires in <strong>7 days</strong>.</p>
     `,
     ctaLabel: "Confirm Consent",
     ctaUrl: consentUrl,
@@ -385,7 +385,7 @@ function buildConsentConfirmedPayload(opts: {
       heading: `Jou ouer het bevestig, ${name}!`,
       bodyHtml: `
         <p>Baie goed — jou ouer/voog het jou BrainTrack-toestemming bevestig.</p>
-        <p>Jou rekening is nou <strong style="color:#059669;">volledig geaktiveer</strong>. Jy het volle toegang tot al jou vakke, slimme tuteur, vorige vraestelle en meer.</p>
+        <p>Jou rekening is nou <strong style="color:#22FF66;">volledig geaktiveer</strong>. Jy het volle toegang tot al jou vakke, slimme tuteur, vorige vraestelle en meer.</p>
         <p>Gaan aan en begin studeer:</p>
       `,
       ctaLabel: "Gaan na my dashboard",
@@ -398,7 +398,7 @@ function buildConsentConfirmedPayload(opts: {
     heading: `Your parent has confirmed, ${name}!`,
     bodyHtml: `
       <p>Great news — your parent/guardian has confirmed your BrainTrack consent.</p>
-      <p>Your account is now <strong style="color:#059669;">fully activated</strong>. You have full access to all your subjects, Smart Tutor, past papers and more.</p>
+      <p>Your account is now <strong style="color:#22FF66;">fully activated</strong>. You have full access to all your subjects, Smart Tutor, past papers and more.</p>
       <p>Head over and keep studying:</p>
     `,
     ctaLabel: "Go to my Dashboard",
@@ -458,7 +458,7 @@ function buildTrialExpiryPayload(opts: {
         <p>Hallo ${name},</p>
         <p>Dit is jou laaste dag. Jou Brain Boost-proeftydperk verloop <strong>vandag</strong> op <strong>${trialDateStr}</strong>.</p>
         <p>Nadat dit verloop, sal jy toegang tot jou slimme tuteur, vorige vraestelle en vorderingsopsporing verloor.</p>
-        <p><strong style="color:#d97706;">Inskryf nou om ononderbroke toegang te behou en jou NSC-voorbereiding te voltooi.</strong></p>
+        <p><strong style="color:#FF8A00;">Inskryf nou om ononderbroke toegang te behou en jou NSC-voorbereiding te voltooi.</strong></p>
       `,
       ctaLabel: "Inskryf nou — R169/maand",
       ctaUrl: subscribeUrl,
@@ -472,7 +472,7 @@ function buildTrialExpiryPayload(opts: {
       <p>Hi ${name},</p>
       <p>This is your last day. Your Brain Boost trial expires <strong>today</strong> on <strong>${trialDateStr}</strong>.</p>
       <p>After it expires, you'll lose access to your Smart Tutor, past papers and progress tracking.</p>
-      <p><strong style="color:#d97706;">Subscribe now to keep uninterrupted access and complete your NSC preparation.</strong></p>
+      <p><strong style="color:#FF8A00;">Subscribe now to keep uninterrupted access and complete your NSC preparation.</strong></p>
     `,
     ctaLabel: "Subscribe Now — R169/month",
     ctaUrl: subscribeUrl,
@@ -629,7 +629,7 @@ function buildPaymentFailedPayload(opts: {
       heading: "Ons kon nie jou betaling verwerk nie",
       bodyHtml: `
         <p>Hallo ${name},</p>
-        <p>Ons het probeer om jou maandelikse <strong style="color:#7c3aed;">Brain Boost</strong>-intekening te hernieu, maar die betaling het misluk.</p>
+        <p>Ons het probeer om jou maandelikse <strong style="color:#006BFF;">Brain Boost</strong>-intekening te hernieu, maar die betaling het misluk.</p>
         <p>Jou toegang bly aktief tot <strong>${dateStr}</strong>. Werk asseblief jou betaalmetode by voor daardie datum om onderbreking te vermy.</p>
       `,
       ctaLabel: "Werk betaalmetode by",
@@ -642,7 +642,7 @@ function buildPaymentFailedPayload(opts: {
     heading: "We couldn't process your payment",
     bodyHtml: `
       <p>Hi ${name},</p>
-      <p>We tried to renew your monthly <strong style="color:#7c3aed;">Brain Boost</strong> subscription but the payment failed.</p>
+      <p>We tried to renew your monthly <strong style="color:#006BFF;">Brain Boost</strong> subscription but the payment failed.</p>
       <p>Your access stays active until <strong>${dateStr}</strong>. Please update your payment method before then to avoid interruption.</p>
     `,
     ctaLabel: "Update payment method",
@@ -666,7 +666,7 @@ function buildSubscriptionCancelledPayload(opts: {
       heading: "Jou intekening is gekanselleer",
       bodyHtml: `
         <p>Hallo ${name},</p>
-        <p>Ons het jou kansellasie-versoek ontvang. Jou <strong style="color:#7c3aed;">Brain Boost</strong>-toegang bly aktief tot <strong>${dateStr}</strong>.</p>
+        <p>Ons het jou kansellasie-versoek ontvang. Jou <strong style="color:#006BFF;">Brain Boost</strong>-toegang bly aktief tot <strong>${dateStr}</strong>.</p>
         <p>Geen verdere bedrae sal van jou rekening getrek word nie. Ons hoop om jou weer te sien — jy kan enige tyd weer aansluit.</p>
       `,
       ctaLabel: "Heraktiveer intekening",
@@ -679,7 +679,7 @@ function buildSubscriptionCancelledPayload(opts: {
     heading: "Your subscription is cancelled",
     bodyHtml: `
       <p>Hi ${name},</p>
-      <p>We've received your cancellation request. Your <strong style="color:#7c3aed;">Brain Boost</strong> access remains active until <strong>${dateStr}</strong>.</p>
+      <p>We've received your cancellation request. Your <strong style="color:#006BFF;">Brain Boost</strong> access remains active until <strong>${dateStr}</strong>.</p>
       <p>No further amounts will be charged. We hope to see you again — you can reactivate any time.</p>
     `,
     ctaLabel: "Reactivate subscription",
@@ -702,7 +702,7 @@ function buildStreakMilestonePayload(opts: {
       heading: `${streakDays}-dae studie-streep ontsluit!`,
       bodyHtml: `
         <p>Hallo ${name},</p>
-        <p>Jy het pas <strong style="color:#d97706;">${streakDays} dae</strong> aaneenlopende studie behaal. Dis presies hoe top-presteerders dit doen.</p>
+        <p>Jy het pas <strong style="color:#FF8A00;">${streakDays} dae</strong> aaneenlopende studie behaal. Dis presies hoe top-presteerders dit doen.</p>
         <p>Jou volgehoue inspanning vertaal direk na beter eksamenuitslae. Hou aan — die NSC wag op jou.</p>
       `,
       ctaLabel: "Hou die streep aan die gang",
@@ -715,7 +715,7 @@ function buildStreakMilestonePayload(opts: {
     heading: `${streakDays}-day study streak unlocked!`,
     bodyHtml: `
       <p>Hi ${name},</p>
-      <p>You've just hit <strong style="color:#d97706;">${streakDays} days</strong> of consecutive study. That's exactly how top performers do it.</p>
+      <p>You've just hit <strong style="color:#FF8A00;">${streakDays} days</strong> of consecutive study. That's exactly how top performers do it.</p>
       <p>Your consistent effort translates directly to better exam results. Keep it up — the NSC is waiting for you.</p>
     `,
     ctaLabel: "Keep the streak going",
@@ -747,10 +747,10 @@ function buildWeeklyProgressPayload(opts: {
         <p>Hallo ${name},</p>
         <p>Hier's jou studiebewegings van die afgelope 7 dae:</p>
         <ul style="padding-left:20px;margin:0 0 16px;line-height:1.8;">
-          <li><strong style="color:#7c3aed;">${questionsAnswered}</strong> vrae beantwoord</li>
-          <li><strong style="color:#7c3aed;">${topicsCovered}</strong> onderwerpe behandel</li>
-          <li><strong style="color:#7c3aed;">${timeStr}</strong> studietyd</li>
-          <li>Top vak: <strong style="color:#0891b2;">${subjectEsc}</strong></li>
+          <li><strong style="color:#006BFF;">${questionsAnswered}</strong> vrae beantwoord</li>
+          <li><strong style="color:#006BFF;">${topicsCovered}</strong> onderwerpe behandel</li>
+          <li><strong style="color:#006BFF;">${timeStr}</strong> studietyd</li>
+          <li>Top vak: <strong style="color:#00E5FF;">${subjectEsc}</strong></li>
         </ul>
         <p>Lekker werk! Klik hieronder om die volle opsomming en jou volgende fokusareas te sien.</p>
       `,
@@ -766,10 +766,10 @@ function buildWeeklyProgressPayload(opts: {
       <p>Hi ${name},</p>
       <p>Here's what your last 7 days of study looked like:</p>
       <ul style="padding-left:20px;margin:0 0 16px;line-height:1.8;">
-        <li><strong style="color:#7c3aed;">${questionsAnswered}</strong> questions answered</li>
-        <li><strong style="color:#7c3aed;">${topicsCovered}</strong> topics covered</li>
-        <li><strong style="color:#7c3aed;">${timeStr}</strong> study time</li>
-        <li>Top subject: <strong style="color:#0891b2;">${subjectEsc}</strong></li>
+        <li><strong style="color:#006BFF;">${questionsAnswered}</strong> questions answered</li>
+        <li><strong style="color:#006BFF;">${topicsCovered}</strong> topics covered</li>
+        <li><strong style="color:#006BFF;">${timeStr}</strong> study time</li>
+        <li>Top subject: <strong style="color:#00E5FF;">${subjectEsc}</strong></li>
       </ul>
       <p>Nice work! Tap below to see the full breakdown and your next focus areas.</p>
     `,
@@ -795,8 +795,8 @@ function buildExamCountdownPayload(opts: {
       heading: `Nog ${daysToExam} dae, ${name}`,
       bodyHtml: `
         <p>Hallo ${name},</p>
-        <p>Jou NSC-eksamen is <strong style="color:#dc2626;">${daysToExam} dae</strong> weg. Elke studiesessie van nou af tel.</p>
-        <p>Jou volgende vak op die rooster is <strong style="color:#0891b2;">${subjectEsc}</strong>. Doen 'n vinnige mini-mok om gereedheid te toets.</p>
+        <p>Jou NSC-eksamen is <strong style="color:#FF2BD6;">${daysToExam} dae</strong> weg. Elke studiesessie van nou af tel.</p>
+        <p>Jou volgende vak op die rooster is <strong style="color:#00E5FF;">${subjectEsc}</strong>. Doen 'n vinnige mini-mok om gereedheid te toets.</p>
       `,
       ctaLabel: "Begin Eksamen-Gereed",
       ctaUrl: examReadyUrl,
@@ -808,8 +808,8 @@ function buildExamCountdownPayload(opts: {
     heading: `${daysToExam} days to go, ${name}`,
     bodyHtml: `
       <p>Hi ${name},</p>
-      <p>Your NSC exam is just <strong style="color:#dc2626;">${daysToExam} days</strong> away. Every study session from here on counts.</p>
-      <p>Your next subject on the schedule is <strong style="color:#0891b2;">${subjectEsc}</strong>. Run a quick mini-mock to test your readiness.</p>
+      <p>Your NSC exam is just <strong style="color:#FF2BD6;">${daysToExam} days</strong> away. Every study session from here on counts.</p>
+      <p>Your next subject on the schedule is <strong style="color:#00E5FF;">${subjectEsc}</strong>. Run a quick mini-mock to test your readiness.</p>
     `,
     ctaLabel: "Open Exam Ready",
     ctaUrl: examReadyUrl,
@@ -832,7 +832,7 @@ function buildInactivityNudgePayload(opts: {
       bodyHtml: `
         <p>Hallo ${name},</p>
         <p>Ons het jou laas <strong>${daysAway} dae</strong> gelede gesien. Geen druk nie — die lewe gebeur.</p>
-        <p>Wanneer jy gereed is, wag jou daaglikse uitdaging en die slim tuteur vir jou. Net <strong style="color:#7c3aed;">10 minute</strong> per dag is genoeg om weer in die patroon te kom.</p>
+        <p>Wanneer jy gereed is, wag jou daaglikse uitdaging en die slim tuteur vir jou. Net <strong style="color:#006BFF;">10 minute</strong> per dag is genoeg om weer in die patroon te kom.</p>
       `,
       ctaLabel: "Spring weer in",
       ctaUrl: dashboardUrl,
@@ -845,7 +845,7 @@ function buildInactivityNudgePayload(opts: {
     bodyHtml: `
       <p>Hi ${name},</p>
       <p>We last saw you <strong>${daysAway} days</strong> ago. No pressure — life happens.</p>
-      <p>Whenever you're ready, your daily challenge and the Smart Tutor are waiting. Just <strong style="color:#7c3aed;">10 minutes</strong> a day is enough to get back into rhythm.</p>
+      <p>Whenever you're ready, your daily challenge and the Smart Tutor are waiting. Just <strong style="color:#006BFF;">10 minutes</strong> a day is enough to get back into rhythm.</p>
     `,
     ctaLabel: "Jump back in",
     ctaUrl: dashboardUrl,
@@ -1032,22 +1032,22 @@ function buildSubscriptionConfirmedPayload(opts: {
   const receiptBlock = hasReceiptFields
     ? language === "af"
       ? `
-        <table cellpadding="0" cellspacing="0" role="presentation" width="100%" style="margin:18px 0;border:1px solid #ece9fb;border-radius:12px;background:#f9f7ff;">
-          <tr><td style="padding:14px 18px;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#333;">
-            <div style="font-weight:700;color:#1a1a2e;margin-bottom:8px;">Betalingsbesonderhede</div>
-            <div style="margin:2px 0;"><span style="color:#777;">Plan:</span> <strong>${planLabel}</strong></div>
-            ${amountStr ? `<div style="margin:2px 0;"><span style="color:#777;">Bedrag gehef:</span> <strong>${amountStr}</strong></div>` : ""}
-            ${renewalStr ? `<div style="margin:2px 0;"><span style="color:#777;">Volgende hernuwing:</span> <strong>${renewalStr}</strong></div>` : ""}
+        <table cellpadding="0" cellspacing="0" role="presentation" width="100%" style="margin:18px 0;border:1.5px solid rgba(0,229,255,0.4);border-radius:12px;background:#050608;">
+          <tr><td style="padding:14px 18px;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#ffffff;">
+            <div style="font-weight:700;color:#ffffff;margin-bottom:8px;">Betalingsbesonderhede</div>
+            <div style="margin:2px 0;"><span style="color:#00E5FF;">Plan:</span> <strong>${planLabel}</strong></div>
+            ${amountStr ? `<div style="margin:2px 0;"><span style="color:#00E5FF;">Bedrag gehef:</span> <strong>${amountStr}</strong></div>` : ""}
+            ${renewalStr ? `<div style="margin:2px 0;"><span style="color:#00E5FF;">Volgende hernuwing:</span> <strong>${renewalStr}</strong></div>` : ""}
           </td></tr>
         </table>
       `
       : `
-        <table cellpadding="0" cellspacing="0" role="presentation" width="100%" style="margin:18px 0;border:1px solid #ece9fb;border-radius:12px;background:#f9f7ff;">
-          <tr><td style="padding:14px 18px;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#333;">
-            <div style="font-weight:700;color:#1a1a2e;margin-bottom:8px;">Payment details</div>
-            <div style="margin:2px 0;"><span style="color:#777;">Plan:</span> <strong>${planLabel}</strong></div>
-            ${amountStr ? `<div style="margin:2px 0;"><span style="color:#777;">Amount charged:</span> <strong>${amountStr}</strong></div>` : ""}
-            ${renewalStr ? `<div style="margin:2px 0;"><span style="color:#777;">Next renewal:</span> <strong>${renewalStr}</strong></div>` : ""}
+        <table cellpadding="0" cellspacing="0" role="presentation" width="100%" style="margin:18px 0;border:1.5px solid rgba(0,229,255,0.4);border-radius:12px;background:#050608;">
+          <tr><td style="padding:14px 18px;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#ffffff;">
+            <div style="font-weight:700;color:#ffffff;margin-bottom:8px;">Payment details</div>
+            <div style="margin:2px 0;"><span style="color:#00E5FF;">Plan:</span> <strong>${planLabel}</strong></div>
+            ${amountStr ? `<div style="margin:2px 0;"><span style="color:#00E5FF;">Amount charged:</span> <strong>${amountStr}</strong></div>` : ""}
+            ${renewalStr ? `<div style="margin:2px 0;"><span style="color:#00E5FF;">Next renewal:</span> <strong>${renewalStr}</strong></div>` : ""}
           </td></tr>
         </table>
       `
@@ -1063,14 +1063,14 @@ function buildSubscriptionConfirmedPayload(opts: {
     const bodyHtml = isRenewal
       ? `
         <p>Hallo ${name},</p>
-        <p>Goeie nuus — jou <strong style="color:#7c3aed;">${planLabel}</strong>-intekening is suksesvol hernieu vir nog 'n maand.</p>
+        <p>Goeie nuus — jou <strong style="color:#006BFF;">${planLabel}</strong>-intekening is suksesvol hernieu vir nog 'n maand.</p>
         ${receiptBlock}
         <p>Jou volle toegang tot die Slim Tuteur, vorige vraestelle en vorderingsopsporing gaan sonder onderbreking voort.</p>
         <p>Baie sterkte met jou NSC-voorbereiding! 💪</p>
       `
       : `
         <p>Hallo ${name},</p>
-        <p>Jou betaling was suksesvol en jou <strong style="color:#7c3aed;">${planLabel}</strong>-intekening is nou <strong style="color:#059669;">aktief</strong>.</p>
+        <p>Jou betaling was suksesvol en jou <strong style="color:#006BFF;">${planLabel}</strong>-intekening is nou <strong style="color:#22FF66;">aktief</strong>.</p>
         ${receiptBlock}
         <p>Jy het volle toegang tot die Slim Tuteur, vorige vraestelle, vorderingsopsporing en meer.</p>
         <p>Gaan aan — jou NSC-eksamen wag nie! 🎯</p>
@@ -1086,14 +1086,14 @@ function buildSubscriptionConfirmedPayload(opts: {
   const bodyHtml = isRenewal
     ? `
       <p>Hi ${name},</p>
-      <p>Great news — your <strong style="color:#7c3aed;">${planLabel}</strong> subscription has been successfully renewed for another month.</p>
+      <p>Great news — your <strong style="color:#006BFF;">${planLabel}</strong> subscription has been successfully renewed for another month.</p>
       ${receiptBlock}
       <p>Your full access to Smart Tutor, past papers and progress tracking continues without interruption.</p>
       <p>Keep up the great work on your NSC preparation! 💪</p>
     `
     : `
       <p>Hi ${name},</p>
-      <p>Your payment was successful and your <strong style="color:#7c3aed;">${planLabel}</strong> subscription is now <strong style="color:#059669;">active</strong>.</p>
+      <p>Your payment was successful and your <strong style="color:#006BFF;">${planLabel}</strong> subscription is now <strong style="color:#22FF66;">active</strong>.</p>
       ${receiptBlock}
       <p>You have full access to Smart Tutor, past papers, progress tracking and more.</p>
       <p>Get going — your NSC exams won't wait! 🎯</p>
@@ -1146,12 +1146,12 @@ function buildSchoolEnquiryConfirmationPayload(opts: {
     heading: `Thanks for reaching out, ${contactPerson}!`,
     bodyHtml: `
       <p>Hi ${contactPerson},</p>
-      <p>We've received the BrainTrack school registration enquiry for <strong style="color:#7c3aed;">${schoolName}</strong>. Your reference number is <strong>${refCode}</strong> — please keep it handy in case you need to follow up with us.</p>
+      <p>We've received the BrainTrack school registration enquiry for <strong style="color:#006BFF;">${schoolName}</strong>. Your reference number is <strong>${refCode}</strong> — please keep it handy in case you need to follow up with us.</p>
       <p><strong>What happens next?</strong></p>
       <ul style="padding-left:20px;margin:0 0 16px;">
         <li style="margin-bottom:8px;">A member of our schools team will review your application and get in touch within <strong>2–3 business days</strong>.</li>
         <li style="margin-bottom:8px;">We'll send details on pricing, learner access, and how to onboard your Grade 12 cohort.</li>
-        <li>If you have any urgent questions in the meantime, email us at <a href="mailto:learn@kth-tech.com" style="color:#7c3aed;text-decoration:none;">learn@kth-tech.com</a> and quote your reference number.</li>
+        <li>If you have any urgent questions in the meantime, email us at <a href="mailto:learn@kth-tech.com" style="color:#006BFF;text-decoration:none;">learn@kth-tech.com</a> and quote your reference number.</li>
       </ul>
       <p>We're excited about the possibility of supporting your learners as they prepare for their NSC exams. 🎓</p>
     `,

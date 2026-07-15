@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { GraffitiSplats } from "@/components/graffiti-splats";
 import {
   Sparkles,
   ArrowLeft,
@@ -437,8 +438,9 @@ function PaymentPickerScreen({
   const anyLoading = loadingMethod !== null;
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-16">
-      <div className="prismglass-panel max-w-lg w-full px-6 py-10 sm:px-10 sm:py-12">
+    <div className="min-h-screen flex items-center justify-center px-4 py-16 relative overflow-hidden">
+      <GraffitiSplats variant="hero" opacity={0.45} />
+      <div className="prismglass-panel max-w-lg w-full px-6 py-10 sm:px-10 sm:py-12 relative z-10">
 
         <div className="text-center mb-8">
           <div className="w-14 h-14 mx-auto rounded-2xl flex items-center justify-center bg-primary/10 border border-primary/30 mb-5">

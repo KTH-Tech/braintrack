@@ -116,7 +116,7 @@ if (process.env.NODE_ENV !== "production" && (!process.env.REPL_ID || process.en
     res.status(200).type("html").send(`<!doctype html><html><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><title>BrainTrack — Dev Sign-in</title>
 <style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#000;font-family:system-ui,sans-serif}
-.card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);border-radius:20px;padding:36px;text-align:center;backdrop-filter:blur(16px)}
+.card{background:#0a0b12;border:2px solid #00E5FF;border-radius:20px;padding:36px;text-align:center;box-shadow:0 0 30px rgba(0,229,255,.35)}
 h1{color:#fff;font-size:22px;margin:0 0 6px}p{color:#00E5FF;font-size:13px;margin:0 0 22px}
 a{display:block;margin:10px 0;padding:13px 40px;border-radius:12px;font-weight:700;text-decoration:none;color:#000}
 .l{background:#00E5FF}.p{background:#22FF66}.a{background:#FF2BD6;color:#fff}</style></head><body>

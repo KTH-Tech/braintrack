@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { BrainTrackLogo } from "@/components/braintrack-logo";
 import { getSubjectIcon, STATUS_ICONS } from "@/lib/vark";
+import { GraffitiSplats } from "@/components/graffiti-splats";
 
 interface SubjectProgress {
   subjectId: number;
@@ -65,8 +66,9 @@ export default function ProgressPage() {
   });
 
   return (
-    <div className="min-h-screen">
-      <header className="border-b border-white/10 sticky top-0 z-50 backdrop-blur-lg bg-black/80">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      <GraffitiSplats variant="band" opacity={0.35} />
+      <header className="border-b-2 sticky top-0 z-50 bg-background/95 relative" style={{ borderColor: "rgba(0,229,255,0.5)" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 gap-4">
             <div className="flex items-center gap-3">
@@ -74,13 +76,13 @@ export default function ProgressPage() {
             </div>
             <nav className="flex items-center gap-2">
               <Link href="/dashboard">
-                <Button variant="ghost" size="sm" data-testid="link-home" className="flex items-center gap-2 text-white hover:text-white hover:bg-white/10">
+                <Button variant="ghost" size="sm" data-testid="link-home" className="flex items-center gap-2 text-foreground hover:text-foreground hover:bg-foreground/10">
                   <BookOpen className="w-4 h-4" />
                   <span className="hidden md:inline">{isAf ? "Tuis" : "Home"}</span>
                 </Button>
               </Link>
               <Link href="/subjects">
-                <Button variant="ghost" size="sm" data-testid="link-subjects" className="flex items-center gap-2 text-white hover:text-white hover:bg-white/10">
+                <Button variant="ghost" size="sm" data-testid="link-subjects" className="flex items-center gap-2 text-foreground hover:text-foreground hover:bg-foreground/10">
                   <Languages className="w-4 h-4" />
                   <span className="hidden md:inline">{isAf ? "Vakke" : "Subjects"}</span>
                 </Button>
@@ -97,7 +99,7 @@ export default function ProgressPage() {
                 variant="ghost"
                 size="sm"
                 onClick={() => toggleLanguage()}
-                className="text-white font-semibold hover:text-white hover:bg-white/10 rounded-2xl"
+                className="text-foreground font-semibold hover:text-foreground hover:bg-foreground/10 rounded-2xl"
                 data-testid="button-language-toggle"
               >
                 {isAf ? "AF" : "EN"}
@@ -108,7 +110,7 @@ export default function ProgressPage() {
                 onClick={() => logout()}
                 data-testid="button-logout"
                 aria-label={isAf ? "Uitteken" : "Sign Out"}
-                className="text-white font-semibold hover:text-white hover:bg-white/10"
+                className="text-foreground font-semibold hover:text-foreground hover:bg-foreground/10"
               >
                 <LogOut className="w-4 h-4 sm:mr-2" />
                 <span className="hidden sm:inline">{isAf ? "Uitteken" : "Sign Out"}</span>
@@ -148,7 +150,7 @@ export default function ProgressPage() {
 
             return (
               <div
-                className="relative overflow-hidden rounded-3xl bg-black p-6 sm:p-8 md:p-10"
+                className="relative overflow-hidden rounded-3xl bg-background p-6 sm:p-8 md:p-10"
                 style={{
                   border: "1.5px solid #00E5FF",
                   boxShadow: "0 0 0 1px rgba(0,229,255,0.28), 0 0 32px rgba(0,229,255,0.35), inset 0 0 28px rgba(0,0,0,0.6)",
@@ -192,7 +194,7 @@ export default function ProgressPage() {
                   <div className="flex-1 space-y-4 min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <div
-                        className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-black"
+                        className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-background"
                         style={{ border: "1px solid rgba(0,229,255,0.55)", boxShadow: "0 0 12px rgba(0,229,255,0.4)" }}
                       >
                         <span className="w-1.5 h-1.5 rounded-full progress-hero-pulse" style={{ background: "#00E5FF", boxShadow: "0 0 6px #00E5FF" }} />
@@ -201,7 +203,7 @@ export default function ProgressPage() {
                         </span>
                       </div>
                       <div
-                        className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
+                        className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-background"
                         style={{ border: `1px solid ${rankHex}`, boxShadow: `0 0 12px ${rankHex}66` }}
                       >
                         <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: rankHex }}>
@@ -209,7 +211,7 @@ export default function ProgressPage() {
                         </span>
                       </div>
                       <div
-                        className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
+                        className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-background"
                         style={{ border: "1px solid rgba(255,138,0,0.55)", boxShadow: "0 0 10px rgba(255,138,0,0.4)" }}
                       >
                         <Flame className="w-3 h-3" style={{ color: "#FF8A00", filter: "drop-shadow(0 0 4px #FF8A00)" }} />
@@ -232,7 +234,7 @@ export default function ProgressPage() {
                     >
                       {isAf ? "Jou Vordering" : "Your Progress"}
                     </h1>
-                    <p className="text-white font-medium text-base sm:text-lg max-w-xl">
+                    <p className="text-foreground font-medium text-base sm:text-lg max-w-xl">
                       {isAf
                         ? "'n Lewendige missiekonsole vir jou matriekreis — elke vraestel, elke streep, elke oorwinning."
                         : "A live mission console for your matric journey — every paper, every streak, every win."}
@@ -241,7 +243,7 @@ export default function ProgressPage() {
                     {/* Rainbow readiness meter */}
                     <div className="pt-2">
                       <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground">
                           {isAf ? "Missie Gereedheid" : "Mission Readiness"}
                         </span>
                         <span data-testid="mission-readiness-value" className="text-[11px] font-bold" style={{ color: readinessHex, textShadow: `0 0 8px ${readinessHex}66` }}>
@@ -273,10 +275,10 @@ export default function ProgressPage() {
                       ].map(({ k, v, hex }) => (
                         <div
                           key={k}
-                          className="rounded-xl bg-black px-3 py-2"
+                          className="rounded-xl bg-background px-3 py-2"
                           style={{ border: `1px solid ${hex}55`, boxShadow: `0 0 10px ${hex}33` }}
                         >
-                          <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-white">{k}</div>
+                          <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-foreground">{k}</div>
                           <div className="text-lg font-black" style={{ color: hex, textShadow: `0 0 8px ${hex}55` }}>{v}</div>
                         </div>
                       ))}
@@ -285,7 +287,7 @@ export default function ProgressPage() {
                     <div className="pt-1">
                       <Link href="/dashboard">
                         <button
-                          className="px-4 py-2 rounded-xl bg-black font-bold text-xs uppercase tracking-widest"
+                          className="px-4 py-2 rounded-xl bg-background font-bold text-xs uppercase tracking-widest"
                           style={{ color: "#00E5FF", border: "1.5px solid #00E5FF", boxShadow: "0 0 14px rgba(0,229,255,0.4)" }}
                           data-testid="button-back"
                         >
@@ -427,7 +429,7 @@ export default function ProgressPage() {
                   return heroStats.map(({ label, value, unit, icon: Icon, hex, testid }) => (
                     <div
                       key={label}
-                      className="relative rounded-2xl bg-black p-5 overflow-hidden transition-all hover:-translate-y-0.5"
+                      className="relative rounded-2xl bg-background p-5 overflow-hidden transition-all hover:-translate-y-0.5"
                       style={{ border: `1.5px solid ${hex}`, boxShadow: `0 0 0 1px ${hex}33, 0 0 22px ${hex}44, inset 0 0 18px rgba(0,0,0,0.6)` }}
                     >
                       <span aria-hidden className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: hex }} />
@@ -436,7 +438,7 @@ export default function ProgressPage() {
                       <span aria-hidden className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: hex }} />
                       <div className="flex items-center gap-4">
                         <div
-                          className="w-12 h-12 rounded-xl bg-black flex items-center justify-center shrink-0"
+                          className="w-12 h-12 rounded-xl bg-background flex items-center justify-center shrink-0"
                           style={{ border: `1.5px solid ${hex}`, boxShadow: `0 0 14px ${hex}66, inset 0 0 8px ${hex}55` }}
                         >
                           <Icon className="w-6 h-6" style={{ color: hex, filter: `drop-shadow(0 0 5px ${hex})` }} />
@@ -444,7 +446,7 @@ export default function ProgressPage() {
                         <div>
                           <p className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: `${hex}cc` }}>{label}</p>
                           <p className="text-2xl font-bold" style={{ color: hex, textShadow: `0 0 10px ${hex}55` }} data-testid={testid}>
-                            {value}{unit && <span className="text-sm font-semibold text-white ml-1">{unit}</span>}
+                            {value}{unit && <span className="text-sm font-semibold text-foreground ml-1">{unit}</span>}
                           </p>
                         </div>
                       </div>
@@ -457,7 +459,7 @@ export default function ProgressPage() {
               <div className="grid gap-6 lg:grid-cols-2">
                 {/* Subject Progress */}
                 <div
-                  className="relative rounded-2xl bg-black overflow-hidden"
+                  className="relative rounded-2xl bg-background overflow-hidden"
                   style={{ border: "1.5px solid #006BFF", boxShadow: "0 0 0 1px rgba(0,107,255,0.28), 0 0 26px rgba(0,107,255,0.3), inset 0 0 22px rgba(0,0,0,0.55)" }}
                 >
                   <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#006BFF" }} />
@@ -466,7 +468,7 @@ export default function ProgressPage() {
                   <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#006BFF" }} />
                   <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(0,107,255,0.35)" }}>
                     <TrendingUp className="w-5 h-5" style={{ color: "#006BFF", filter: "drop-shadow(0 0 6px rgba(0,107,255,0.85))" }} />
-                    <h2 className="text-lg font-bold text-white">{isAf ? "Vakvordering" : "Subject Progress"}</h2>
+                    <h2 className="text-lg font-bold text-foreground">{isAf ? "Vakvordering" : "Subject Progress"}</h2>
                   </div>
                   <div className="p-5 space-y-3">
                     {stats.subjectProgress.length > 0 ? (
@@ -477,14 +479,14 @@ export default function ProgressPage() {
                         return (
                           <Link key={subject.subjectId} href={`/subject/${subject.subjectId}`}>
                             <div
-                              className="p-4 rounded-2xl bg-black cursor-pointer transition-all hover:-translate-y-0.5"
+                              className="p-4 rounded-2xl bg-background cursor-pointer transition-all hover:-translate-y-0.5"
                               style={{ border: `1px solid ${hex}55`, boxShadow: `0 0 12px ${hex}33` }}
                               onMouseEnter={(e) => { e.currentTarget.style.borderColor = hex; e.currentTarget.style.boxShadow = `0 0 22px ${hex}88`; }}
                               onMouseLeave={(e) => { e.currentTarget.style.borderColor = `${hex}55`; e.currentTarget.style.boxShadow = `0 0 12px ${hex}33`; }}
                               data-testid={`progress-subject-${subject.subjectId}`}
                             >
                               <div className="flex items-center justify-between mb-2.5">
-                                <span className="font-bold text-white flex items-center gap-2 text-sm">
+                                <span className="font-bold text-foreground flex items-center gap-2 text-sm">
                                   <span className="text-lg">{getSubjectIcon(subject.subjectName)}</span>
                                   {subject.subjectName}
                                 </span>
@@ -498,7 +500,7 @@ export default function ProgressPage() {
                                   style={{ width: `${subject.accuracy}%`, background: barColor, boxShadow: `0 0 10px ${barColor}` }}
                                 />
                               </div>
-                              <div className="flex items-center justify-between mt-2.5 text-[11px] font-semibold text-white uppercase tracking-widest">
+                              <div className="flex items-center justify-between mt-2.5 text-[11px] font-semibold text-foreground uppercase tracking-widest">
                                 <span>{subject.questionsAttempted} {isAf ? "vrae" : "Qs"}</span>
                                 <span>{subject.papersCompleted} {isAf ? "vraestelle" : "papers"}</span>
                               </div>
@@ -507,14 +509,14 @@ export default function ProgressPage() {
                         );
                       })
                     ) : (
-                      <div className="text-center py-10 rounded-2xl bg-black border border-white/10 p-6">
+                      <div className="text-center py-10 rounded-2xl bg-background border border-white/10 p-6">
                         <div
-                          className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-black flex items-center justify-center border border-white/10"
+                          className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-background flex items-center justify-center border border-white/10"
                         >
-                          <BookOpen className="w-7 h-7 text-white/50" />
+                          <BookOpen className="w-7 h-7 text-foreground/50" />
                         </div>
-                        <p className="font-bold text-white">{isAf ? "Nog geen vorderingsdata nie" : "No progress data yet"}</p>
-                        <p className="text-sm text-white/70 mt-1">{isAf ? "Begin vrae beantwoord om jou vordering na te spoor" : "Start answering questions to track your progress"}</p>
+                        <p className="font-bold text-foreground">{isAf ? "Nog geen vorderingsdata nie" : "No progress data yet"}</p>
+                        <p className="text-sm text-foreground/70 mt-1">{isAf ? "Begin vrae beantwoord om jou vordering na te spoor" : "Start answering questions to track your progress"}</p>
                       </div>
                     )}
                   </div>
@@ -522,7 +524,7 @@ export default function ProgressPage() {
 
                 {/* Areas to Improve */}
                 <div
-                  className="relative rounded-2xl bg-black overflow-hidden"
+                  className="relative rounded-2xl bg-background overflow-hidden"
                   style={{ border: "1.5px solid #FF2BD6", boxShadow: "0 0 0 1px rgba(255,43,214,0.28), 0 0 26px rgba(255,43,214,0.3), inset 0 0 22px rgba(0,0,0,0.55)" }}
                 >
                   <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FF2BD6" }} />
@@ -531,7 +533,7 @@ export default function ProgressPage() {
                   <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#FF2BD6" }} />
                   <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(255,43,214,0.35)" }}>
                     <TrendingDown className="w-5 h-5" style={{ color: "#FF2BD6", filter: "drop-shadow(0 0 6px rgba(255,43,214,0.85))" }} />
-                    <h2 className="text-lg font-bold text-white">{isAf ? "Areas om te Verbeter" : "Areas to Improve"}</h2>
+                    <h2 className="text-lg font-bold text-foreground">{isAf ? "Areas om te Verbeter" : "Areas to Improve"}</h2>
                   </div>
                   <div className="p-5 space-y-3">
                     {stats.weakTopics.length > 0 ? (
@@ -540,13 +542,13 @@ export default function ProgressPage() {
                         return (
                           <div
                             key={topic.topicId}
-                            className="flex items-center justify-between p-4 rounded-2xl bg-black"
+                            className="flex items-center justify-between p-4 rounded-2xl bg-background"
                             style={{ border: `1px solid ${hex}55`, boxShadow: `0 0 12px ${hex}33` }}
                             data-testid={`weak-topic-${topic.topicId}`}
                           >
                             <div className="min-w-0 flex-1">
-                              <p className="font-bold text-white text-sm truncate">{topic.topicName}</p>
-                              <p className="text-xs text-white flex items-center gap-1 mt-0.5">
+                              <p className="font-bold text-foreground text-sm truncate">{topic.topicName}</p>
+                              <p className="text-xs text-foreground flex items-center gap-1 mt-0.5">
                                 <span>{getSubjectIcon(topic.subjectName)}</span>
                                 {topic.subjectName}
                               </p>
@@ -558,14 +560,14 @@ export default function ProgressPage() {
                         );
                       })
                     ) : (
-                      <div className="text-center py-10 rounded-2xl bg-black border border-white/10 p-6">
+                      <div className="text-center py-10 rounded-2xl bg-background border border-white/10 p-6">
                         <div
-                          className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-black flex items-center justify-center border border-white/10"
+                          className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-background flex items-center justify-center border border-white/10"
                         >
-                          <Target className="w-7 h-7 text-white/50" />
+                          <Target className="w-7 h-7 text-foreground/50" />
                         </div>
-                        <p className="font-bold text-white">{isAf ? "Nog geen swak areas nie" : "No weak areas yet"}</p>
-                        <p className="text-sm text-white/70 mt-1">{isAf ? "Hou aan oefen om persoonlike insigte te kry" : "Keep practicing to get personalized insights"}</p>
+                        <p className="font-bold text-foreground">{isAf ? "Nog geen swak areas nie" : "No weak areas yet"}</p>
+                        <p className="text-sm text-foreground/70 mt-1">{isAf ? "Hou aan oefen om persoonlike insigte te kry" : "Keep practicing to get personalized insights"}</p>
                       </div>
                     )}
                   </div>
@@ -574,7 +576,7 @@ export default function ProgressPage() {
 
               {/* Recent Activity */}
               <div
-                className="relative rounded-2xl bg-black overflow-hidden"
+                className="relative rounded-2xl bg-background overflow-hidden"
                 style={{ border: "1.5px solid #FFE600", boxShadow: "0 0 0 1px rgba(255,230,0,0.28), 0 0 26px rgba(255,230,0,0.28), inset 0 0 22px rgba(0,0,0,0.55)" }}
               >
                 <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FFE600" }} />
@@ -583,7 +585,7 @@ export default function ProgressPage() {
                 <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#FFE600" }} />
                 <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(255,230,0,0.35)" }}>
                   <Calendar className="w-5 h-5" style={{ color: "#FFE600", filter: "drop-shadow(0 0 6px rgba(255,230,0,0.85))" }} />
-                  <h2 className="text-lg font-bold text-white">{isAf ? "Onlangse Aktiwiteit" : "Recent Activity"}</h2>
+                  <h2 className="text-lg font-bold text-foreground">{isAf ? "Onlangse Aktiwiteit" : "Recent Activity"}</h2>
                 </div>
                 <div className="p-6">
                   {stats.recentActivity.length > 0 ? (
@@ -597,14 +599,14 @@ export default function ProgressPage() {
                         return (
                           <div
                             key={day.date}
-                            className="p-3 rounded-2xl bg-black text-center transition-all hover:-translate-y-0.5"
+                            className="p-3 rounded-2xl bg-background text-center transition-all hover:-translate-y-0.5"
                             style={{
                               border: `1px solid ${hex}${day.questionsAnswered > 0 ? "88" : "33"}`,
                               boxShadow: day.questionsAnswered > 0 ? `0 0 ${10 + intensity * 14}px ${hex}${Math.round(40 + intensity * 60).toString(16)}` : "none",
                             }}
                             data-testid={`activity-${index}`}
                           >
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-white mb-1">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-foreground mb-1">
                               {formatDate(day.date, language, { weekday: 'short' })}
                             </p>
                             <p className="text-2xl font-bold" style={{ color: hex, textShadow: day.questionsAnswered > 0 ? `0 0 8px ${hex}88` : "none" }}>
@@ -618,26 +620,26 @@ export default function ProgressPage() {
                       })}
                     </div>
                   ) : (
-                    <div className="text-center py-10 rounded-2xl bg-black border border-white/10 p-6">
+                    <div className="text-center py-10 rounded-2xl bg-background border border-white/10 p-6">
                       <div
-                        className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-black flex items-center justify-center border border-white/10"
+                        className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-background flex items-center justify-center border border-white/10"
                       >
-                        <Calendar className="w-7 h-7 text-white/50" />
+                        <Calendar className="w-7 h-7 text-foreground/50" />
                       </div>
-                      <p className="font-bold text-white">{isAf ? "Geen onlangse aktiwiteit nie" : "No recent activity"}</p>
-                      <p className="text-sm text-white/70 mt-1">{isAf ? "Begin studeer om jou aktiwiteit hier te sien" : "Start studying to see your activity here"}</p>
+                      <p className="font-bold text-foreground">{isAf ? "Geen onlangse aktiwiteit nie" : "No recent activity"}</p>
+                      <p className="text-sm text-foreground/70 mt-1">{isAf ? "Begin studeer om jou aktiwiteit hier te sien" : "Start studying to see your activity here"}</p>
                     </div>
                   )}
                 </div>
               </div>
             </>
           ) : (
-            <div className="rounded-2xl bg-black border border-white/10 p-12 text-center">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-black flex items-center justify-center border border-white/10">
-                <Target className="w-8 h-8 text-white/50" />
+            <div className="rounded-2xl bg-background border border-white/10 p-12 text-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-background flex items-center justify-center border border-white/10">
+                <Target className="w-8 h-8 text-foreground/50" />
               </div>
-              <p className="text-lg font-bold text-white">{isAf ? "Geen vorderingsdata beskikbaar nie" : "No progress data available"}</p>
-              <p className="text-sm text-white/70 mt-1">{isAf ? "Begin vrae beantwoord om jou vordering na te spoor" : "Start answering questions to track your progress"}</p>
+              <p className="text-lg font-bold text-foreground">{isAf ? "Geen vorderingsdata beskikbaar nie" : "No progress data available"}</p>
+              <p className="text-sm text-foreground/70 mt-1">{isAf ? "Begin vrae beantwoord om jou vordering na te spoor" : "Start answering questions to track your progress"}</p>
             </div>
           )}
         </div>
