@@ -37,16 +37,16 @@ export default function DBEPortalLogin() {
     <div
       className="min-h-screen flex items-center justify-center p-6 bg-black"
       style={{
-        backgroundImage: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(40,201,214,0.12) 0%, transparent 70%)",
+        backgroundImage: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0,229,255,0.12) 0%, transparent 70%)",
       }}
     >
       <div
         className="w-full max-w-sm rounded-2xl p-8 space-y-7 relative overflow-hidden"
         style={{
           background: "rgba(0,0,0,0.85)",
-          border: "1.5px solid rgba(40,201,214,0.35)",
+          border: "1.5px solid rgba(0,229,255,0.35)",
           boxShadow:
-            "0 0 40px rgba(40,201,214,0.18), 0 0 80px rgba(0,0,0,0.8), inset 0 0 30px rgba(0,0,0,0.6)",
+            "0 0 40px rgba(0,229,255,0.18), 0 0 80px rgba(0,0,0,0.8), inset 0 0 30px rgba(0,0,0,0.6)",
           backdropFilter: "blur(20px)",
         }}
       >
@@ -54,7 +54,7 @@ export default function DBEPortalLogin() {
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              "linear-gradient(135deg, rgba(40,201,214,0.06) 0%, transparent 50%, rgba(176,102,214,0.05) 100%)",
+              "linear-gradient(135deg, rgba(0,229,255,0.06) 0%, transparent 50%, rgba(138,43,255,0.05) 100%)",
           }}
         />
 
@@ -67,9 +67,9 @@ export default function DBEPortalLogin() {
             <div
               className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.22em] px-3 py-1 rounded-full mb-3"
               style={{
-                color: "#28c9d6",
-                border: "1px solid rgba(40,201,214,0.4)",
-                background: "rgba(40,201,214,0.08)",
+                color: "#00E5FF",
+                border: "1px solid rgba(0,229,255,0.4)",
+                background: "rgba(0,229,255,0.08)",
               }}
             >
               <Database className="w-3 h-3" />
@@ -77,7 +77,7 @@ export default function DBEPortalLogin() {
             </div>
             <h1
               className="text-xl font-black text-white"
-              style={{ textShadow: "0 0 20px rgba(40,201,214,0.3)" }}
+              style={{ textShadow: "0 0 20px rgba(0,229,255,0.3)" }}
             >
               Content Console
             </h1>
@@ -102,7 +102,7 @@ export default function DBEPortalLogin() {
               <a
                 href="/dashboard"
                 className="inline-block mt-1 text-xs font-bold underline"
-                style={{ color: "#28c9d6" }}
+                style={{ color: "#00E5FF" }}
               >
                 Back to dashboard
               </a>
@@ -114,8 +114,8 @@ export default function DBEPortalLogin() {
                 className="flex items-center justify-center gap-2 w-full rounded-xl py-3 text-sm font-black uppercase tracking-[0.1em] transition-all"
                 style={{
                   color: "#0a0a0a",
-                  background: "linear-gradient(135deg, #28c9d6 0%, #1aa8b4 100%)",
-                  boxShadow: "0 0 20px rgba(40,201,214,0.45), 0 4px 16px rgba(0,0,0,0.4)",
+                  background: "linear-gradient(135deg, #00E5FF 0%, #1aa8b4 100%)",
+                  boxShadow: "0 0 20px rgba(0,229,255,0.45), 0 4px 16px rgba(0,0,0,0.4)",
                 }}
                 data-testid="btn-sign-in"
               >

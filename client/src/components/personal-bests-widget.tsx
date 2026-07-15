@@ -1,14 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { Award, Trophy, TrendingUp } from "lucide-react";
 
-const NEON = "#ffd83a";
-const NEON_GLOW = "rgba(255,216,58,0.35)";
+const NEON = "#FFE600";
+const NEON_GLOW = "rgba(255,230,0,0.35)";
 
 /* Canonical band colours (rainbow-anchored) */
 function scoreNeon(score: number) {
-  if (score >= 80) return "#28c9d6"; // cyan
-  if (score >= 60) return "#ffd83a"; // gold
-  return "#e6519c";                  // pink (for "needs work")
+  if (score >= 80) return "#00E5FF"; // cyan
+  if (score >= 60) return "#FFE600"; // gold
+  return "#FF2BD6";                  // pink (for "needs work")
 }
 
 interface PersonalBest {

@@ -159,12 +159,12 @@ export function VoiceNoteRecorder({ topicId, isAf }: VoiceNoteRecorderProps) {
   return (
     <div
       className="rounded-2xl bg-black p-4"
-      style={{ border: "1.5px solid #8e7cdc", boxShadow: "0 0 16px #8e7cdc55, inset 0 0 10px rgba(142,124,220,0.10)" }}
+      style={{ border: "1.5px solid #8A2BFF", boxShadow: "0 0 16px #8A2BFF55, inset 0 0 10px rgba(138,43,255,0.10)" }}
       data-testid={`voice-recorder-${topicId}`}
     >
       <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
         <div className="flex items-center gap-2">
-          <Mic className="w-5 h-5" style={{ color: "#8e7cdc", filter: "drop-shadow(0 0 4px #8e7cdc)" }} />
+          <Mic className="w-5 h-5" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 4px #8A2BFF)" }} />
           <span className="font-bold text-sm text-white uppercase tracking-[0.14em]">
             {isAf ? "My Klanknotas" : "My Voice Notes"}
           </span>
@@ -175,7 +175,7 @@ export function VoiceNoteRecorder({ topicId, isAf }: VoiceNoteRecorderProps) {
             <button
               onClick={stop}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black text-xs font-black uppercase tracking-[0.14em] transition-all hover:scale-[1.02]"
-              style={{ color: "#e6519c", border: "1.5px solid #e6519c", boxShadow: "0 0 12px #e6519c55" }}
+              style={{ color: "#FF2BD6", border: "1.5px solid #FF2BD6", boxShadow: "0 0 12px #FF2BD655" }}
               data-testid={`button-stop-recording-${topicId}`}
             >
               <Square className="w-3.5 h-3.5" />
@@ -186,7 +186,7 @@ export function VoiceNoteRecorder({ topicId, isAf }: VoiceNoteRecorderProps) {
               onClick={start}
               disabled={uploadMutation.isPending}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black text-xs font-black uppercase tracking-[0.14em] transition-all hover:scale-[1.02] disabled:opacity-60"
-              style={{ color: "#8e7cdc", border: "1.5px solid #8e7cdc", boxShadow: "0 0 12px #8e7cdc55" }}
+              style={{ color: "#8A2BFF", border: "1.5px solid #8A2BFF", boxShadow: "0 0 12px #8A2BFF55" }}
               data-testid={`button-start-recording-${topicId}`}
             >
               {uploadMutation.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Mic className="w-3.5 h-3.5" />}
@@ -207,7 +207,7 @@ export function VoiceNoteRecorder({ topicId, isAf }: VoiceNoteRecorderProps) {
           <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
             <div
               className="h-full transition-all duration-1000 linear"
-              style={{ width: `${(elapsed / MAX_DURATION) * 100}%`, background: "#e6519c", boxShadow: "0 0 6px #e6519c" }}
+              style={{ width: `${(elapsed / MAX_DURATION) * 100}%`, background: "#FF2BD6", boxShadow: "0 0 6px #FF2BD6" }}
             />
           </div>
           <p className="text-[10px] text-white mt-1 tabular-nums">
@@ -232,18 +232,18 @@ export function VoiceNoteRecorder({ topicId, isAf }: VoiceNoteRecorderProps) {
             <li
               key={note.id}
               className="p-2 rounded-lg bg-black"
-              style={{ border: "1px solid #8e7cdc44" }}
+              style={{ border: "1px solid #8A2BFF44" }}
               data-testid={`voice-note-${note.id}`}
             >
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => togglePlay(note)}
                   className="w-8 h-8 rounded-full bg-black flex items-center justify-center transition-all hover:scale-105"
-                  style={{ border: "1px solid #8e7cdc", boxShadow: "0 0 8px #8e7cdc55" }}
+                  style={{ border: "1px solid #8A2BFF", boxShadow: "0 0 8px #8A2BFF55" }}
                   aria-label={playingId === note.id ? "Pause" : "Play"}
                   data-testid={`button-play-note-${note.id}`}
                 >
-                  {playingId === note.id ? <Pause className="w-3.5 h-3.5" style={{ color: "#8e7cdc" }} /> : <Play className="w-3.5 h-3.5 ml-0.5" style={{ color: "#8e7cdc" }} />}
+                  {playingId === note.id ? <Pause className="w-3.5 h-3.5" style={{ color: "#8A2BFF" }} /> : <Play className="w-3.5 h-3.5 ml-0.5" style={{ color: "#8A2BFF" }} />}
                 </button>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs text-white truncate">
@@ -270,10 +270,10 @@ export function VoiceNoteRecorder({ topicId, isAf }: VoiceNoteRecorderProps) {
               {note.transcriptStatus === "ready" && note.transcript && (
                 <p
                   className="mt-2 text-[11px] leading-relaxed text-white whitespace-pre-wrap rounded-md p-2 bg-black/40"
-                  style={{ border: "1px dashed #8e7cdc33" }}
+                  style={{ border: "1px dashed #8A2BFF33" }}
                   data-testid={`voice-note-transcript-${note.id}`}
                 >
-                  <span className="font-bold uppercase tracking-[0.14em] text-[9px] text-[#8e7cdc] block mb-1">
+                  <span className="font-bold uppercase tracking-[0.14em] text-[9px] text-[#8A2BFF] block mb-1">
                     {isAf ? "Transkripsie" : "Transcript"}
                   </span>
                   {note.transcript}

@@ -45,8 +45,8 @@ export default function ParentPurchasePage() {
 
         <p className="text-sm text-white mb-2">
           {isAf
-            ? "Brain Boost gee jou kind volle toegang — studieplanne, regte NSC-vraestelle en memo's, onmiddellike nasien, en Rizz (KI-tutor). Geen heffing tydens die proeftydperk nie; fakturering word veilig deur Paystack verwerk en jy kan enige tyd kanselleer."
-            : "Brain Boost gives your child full access — study plans, real NSC papers and memos, instant marking, and Rizz (AI tutor). No charge during the trial; billing is processed securely by Paystack and you can cancel anytime."}
+            ? "Brain Boost gee jou kind volle toegang — studieplanne, regte NSC-vraestelle en memo's, onmiddellike nasien, en Rizz (KI-tutor). Geen heffing tydens die proeftydperk nie, en jy kanselleer enige tyd direk in die app."
+            : "Brain Boost gives your child full access — study plans, real NSC papers and memos, instant marking, and Rizz (AI tutor). No charge during the trial, and you cancel anytime directly in the app."}
         </p>
 
         <p className="text-sm text-white mb-8">

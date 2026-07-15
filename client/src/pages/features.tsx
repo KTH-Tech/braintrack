@@ -182,11 +182,11 @@ const t = {
 // glows, icon hue and section header pill. Stops the page reading as a
 // fruit-salad of nine simultaneous rainbow tiles.
 const ACCENT = {
-  core:    { hex: "#28c9d6", halo: "rgba(40,201,214,0.28)" },  // cyan — Brain Boost (included)
-  price:   { hex: "#ffd83a", halo: "rgba(255,216,58,0.28)" },  // yellow — price highlight only
-  power:   { hex: "#8e7cdc", halo: "rgba(142,124,220,0.28)" }, // violet — optional add-ons
-  rescue:  { hex: "#e6519c", halo: "rgba(230,81,156,0.28)" },  // pink — emergency packs
-  proof:   { hex: "#4f8cd9", halo: "rgba(79,140,217,0.28)" },  // blue — proof / strategy
+  core:    { hex: "#00E5FF", halo: "rgba(0,229,255,0.28)" },  // cyan — Brain Boost (included)
+  price:   { hex: "#FFE600", halo: "rgba(255,230,0,0.28)" },  // yellow — price highlight only
+  power:   { hex: "#8A2BFF", halo: "rgba(138,43,255,0.28)" }, // violet — optional add-ons
+  rescue:  { hex: "#FF2BD6", halo: "rgba(255,43,214,0.28)" },  // pink — emergency packs
+  proof:   { hex: "#006BFF", halo: "rgba(0,107,255,0.28)" },  // blue — proof / strategy
 } as const;
 type Accent = { hex: string; halo: string };
 // Back-compat: the bento + lists used to map RAINBOW[i] per tile. Kept as a
@@ -385,9 +385,9 @@ export default function FeaturesPage() {
         className="pointer-events-none fixed inset-0 z-0"
         style={{
           background:
-            "radial-gradient(ellipse 55% 45% at 12% 8%,  rgba(255,106,31,0.10) 0%, transparent 60%)," +
-            "radial-gradient(ellipse 55% 45% at 88% 6%,  rgba(230,81,156,0.10) 0%, transparent 60%)," +
-            "radial-gradient(ellipse 70% 55% at 50% 100%, rgba(40,201,214,0.10) 0%, transparent 65%)," +
+            "radial-gradient(ellipse 55% 45% at 12% 8%,  rgba(255,138,0,0.10) 0%, transparent 60%)," +
+            "radial-gradient(ellipse 55% 45% at 88% 6%,  rgba(255,43,214,0.10) 0%, transparent 60%)," +
+            "radial-gradient(ellipse 70% 55% at 50% 100%, rgba(0,229,255,0.10) 0%, transparent 65%)," +
             "#000",
         }}
       />
@@ -400,10 +400,10 @@ export default function FeaturesPage() {
               <div className="flex flex-wrap items-center gap-3 mb-6">
                 <div
                   className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-black"
-                  style={{ border: "1px solid #28c9d6", boxShadow: "0 0 12px rgba(40,201,214,0.35)" }}
+                  style={{ border: "1px solid #00E5FF", boxShadow: "0 0 12px rgba(0,229,255,0.35)" }}
                 >
-                  <Sparkles className="w-3.5 h-3.5" style={{ color: "#28c9d6" }} />
-                  <span className="text-[10px] font-black uppercase tracking-[0.22em]" style={{ color: "#28c9d6" }}>
+                  <Sparkles className="w-3.5 h-3.5" style={{ color: "#00E5FF" }} />
+                  <span className="text-[10px] font-black uppercase tracking-[0.22em]" style={{ color: "#00E5FF" }}>
                     {c.heroPill}
                   </span>
                 </div>
@@ -425,8 +425,8 @@ export default function FeaturesPage() {
                 className="h-[2px] my-7 max-w-xl"
                 style={{
                   background:
-                    "linear-gradient(90deg, transparent, #28c9d6 35%, #28c9d6 65%, transparent)",
-                  boxShadow: "0 0 14px rgba(40,201,214,0.45)",
+                    "linear-gradient(90deg, transparent, #00E5FF 35%, #00E5FF 65%, transparent)",
+                  boxShadow: "0 0 14px rgba(0,229,255,0.45)",
                 }}
               />
 
@@ -437,9 +437,9 @@ export default function FeaturesPage() {
               {/* Inline count chips */}
               <div className="flex flex-wrap gap-2.5 mt-7">
                 {[
-                  { label: c.heroChip1, hex: "#28c9d6" },
-                  { label: c.heroChip2, hex: "#ffd83a" },
-                  { label: c.heroChip3, hex: "#e6519c" },
+                  { label: c.heroChip1, hex: "#00E5FF" },
+                  { label: c.heroChip2, hex: "#FFE600" },
+                  { label: c.heroChip3, hex: "#FF2BD6" },
                 ].map(({ label, hex }) => (
                   <div
                     key={label}
@@ -461,7 +461,7 @@ export default function FeaturesPage() {
                 eyebrow={isAf ? "Kerninhoud" : "What's Included"}
                 pill="Brain Boost"
                 pillIcon={Sparkles}
-                pillHex="#28c9d6"
+                pillHex="#00E5FF"
                 title={<span>{c.sectionCore}</span>}
                 subtitle={c.coreDesc}
               />
@@ -470,10 +470,10 @@ export default function FeaturesPage() {
               <div className="mt-5 mb-7 flex flex-wrap items-center gap-3">
                 <div
                   className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black"
-                  style={{ border: "1px solid #ffd83a88" }}
+                  style={{ border: "1px solid #FFE60088" }}
                 >
-                  <Sparkles className="w-3.5 h-3.5" style={{ color: "#ffd83a" }} />
-                  <span className="text-sm font-black" style={{ color: "#ffd83a" }} data-testid="text-core-price">
+                  <Sparkles className="w-3.5 h-3.5" style={{ color: "#FFE600" }} />
+                  <span className="text-sm font-black" style={{ color: "#FFE600" }} data-testid="text-core-price">
                     {c.corePriceLabel}
                   </span>
                 </div>
@@ -505,12 +505,12 @@ export default function FeaturesPage() {
                 eyebrow={isAf ? "Opsioneel" : "Optional"}
                 pill={c.powerUpPill}
                 pillIcon={Zap}
-                pillHex="#8e7cdc"
+                pillHex="#8A2BFF"
                 title={
                   language === "en" ? (
-                    <>Optional <span style={{ color: "#8e7cdc" }}>Power-Ups</span></>
+                    <>Optional <span style={{ color: "#8A2BFF" }}>Power-Ups</span></>
                   ) : (
-                    <>Opsionele <span style={{ color: "#8e7cdc" }}>Krag-Opgradings</span></>
+                    <>Opsionele <span style={{ color: "#8A2BFF" }}>Krag-Opgradings</span></>
                   )
                 }
                 subtitle={c.powerUpDesc}
@@ -588,7 +588,7 @@ export default function FeaturesPage() {
                 eyebrow={isAf ? "Nood" : "Emergency"}
                 pill={c.rescuePill}
                 pillIcon={AlertTriangle}
-                pillHex="#e6519c"
+                pillHex="#FF2BD6"
                 title={<span>{c.sectionRescue}</span>}
                 subtitle={c.rescueDesc}
               />
@@ -598,8 +598,8 @@ export default function FeaturesPage() {
               <div
                 className="mt-8 rounded-2xl bg-black p-4 sm:p-5"
                 style={{
-                  border: "1px solid rgba(230,81,156,0.55)",
-                  boxShadow: "0 0 22px rgba(230,81,156,0.18)",
+                  border: "1px solid rgba(255,43,214,0.55)",
+                  boxShadow: "0 0 22px rgba(255,43,214,0.18)",
                 }}
               >
                 <div>
@@ -659,12 +659,12 @@ export default function FeaturesPage() {
                 eyebrow={isAf ? "Strategie" : "Strategy"}
                 pill={isAf ? "Strategie" : "Strategy"}
                 pillIcon={Target}
-                pillHex="#4f8cd9"
+                pillHex="#006BFF"
                 title={
                   language === "en" ? (
-                    <>Why <span style={{ color: "#4f8cd9" }}>BrainTrack</span> Works</>
+                    <>Why <span style={{ color: "#006BFF" }}>BrainTrack</span> Works</>
                   ) : (
-                    <>Hoekom <span style={{ color: "#4f8cd9" }}>BrainTrack</span> Werk</>
+                    <>Hoekom <span style={{ color: "#006BFF" }}>BrainTrack</span> Werk</>
                   )
                 }
                 subtitle={c.diffSubtitle}
@@ -673,10 +673,10 @@ export default function FeaturesPage() {
               {/* Big stat cards */}
               <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
                 {[
-                  { label: c.stat1L, value: c.stat1V, hex: "#28c9d6" },
-                  { label: c.stat2L, value: c.stat2V, hex: "#ffd83a" },
-                  { label: c.stat3L, value: c.stat3V, hex: "#b066d6" },
-                  { label: c.stat4L, value: c.stat4V, hex: "#e6519c" },
+                  { label: c.stat1L, value: c.stat1V, hex: "#00E5FF" },
+                  { label: c.stat2L, value: c.stat2V, hex: "#FFE600" },
+                  { label: c.stat3L, value: c.stat3V, hex: "#8A2BFF" },
+                  { label: c.stat4L, value: c.stat4V, hex: "#FF2BD6" },
                 ].map(({ label, value, hex }) => (
                   <div
                     key={label}

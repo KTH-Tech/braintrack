@@ -126,10 +126,10 @@ interface VerbatimQuestion {
 // ─── Shared helpers ───────────────────────────────────────────────────────────
 
 function memoCovColorFor(pct: number | null | undefined): string {
-  if (pct === null || pct === undefined) return "#28c9d6";
+  if (pct === null || pct === undefined) return "#00E5FF";
   if (pct < 60) return "#ef4444";
   if (pct < 90) return "#f59e0b";
-  return "#28c9d6";
+  return "#00E5FF";
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -138,14 +138,14 @@ function StatCard({ label, value, sub, icon: Icon, onClick, valueColor }: {
   label: string; value: string | number; sub?: string; icon?: any; onClick?: () => void; valueColor?: string;
 }) {
   const { language } = useLanguage();
-  const resolvedColor = valueColor ?? "#28c9d6";
+  const resolvedColor = valueColor ?? "#00E5FF";
   return (
     <div
       onClick={onClick}
       className={`rounded-xl bg-black p-3 ${onClick ? "cursor-pointer" : ""}`}
       style={{
-        border: "1.5px solid rgba(40,201,214,0.45)",
-        boxShadow: "0 0 12px rgba(40,201,214,0.18), inset 0 0 14px rgba(0,0,0,0.6)",
+        border: "1.5px solid rgba(0,229,255,0.45)",
+        boxShadow: "0 0 12px rgba(0,229,255,0.18), inset 0 0 14px rgba(0,0,0,0.6)",
       }}
       data-testid={`stat-${label.toLowerCase().replace(/\s/g, "-")}`}
     >
@@ -158,7 +158,7 @@ function StatCard({ label, value, sub, icon: Icon, onClick, valueColor }: {
           {sub && <div className="text-[10px] text-white mt-1 truncate">{sub}</div>}
         </div>
         {Icon && (
-          <Icon className="w-5 h-5 shrink-0" style={{ color: "#28c9d6", filter: "drop-shadow(0 0 4px rgba(40,201,214,0.7))" }} />
+          <Icon className="w-5 h-5 shrink-0" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px rgba(0,229,255,0.7))" }} />
         )}
       </div>
     </div>
@@ -268,8 +268,8 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
   const pct = row.catalogPapers > 0 ? Math.min(100, Math.round((cappedPapers / row.catalogPapers) * 100)) : 0;
   const aiBlocked = openaiReady === false;
 
-  const borderColor = isPipelineRunning ? "rgba(255,216,58,0.6)" : hasQuestions ? "rgba(40,201,214,0.4)" : hasPapers ? "rgba(255,138,31,0.4)" : row.papersFailed > 0 ? "rgba(239,68,68,0.4)" : "rgba(255,255,255,0.12)";
-  const glowColor = isPipelineRunning ? "rgba(255,216,58,0.15)" : hasQuestions ? "rgba(40,201,214,0.1)" : "transparent";
+  const borderColor = isPipelineRunning ? "rgba(255,230,0,0.6)" : hasQuestions ? "rgba(0,229,255,0.4)" : hasPapers ? "rgba(255,138,0,0.4)" : row.papersFailed > 0 ? "rgba(239,68,68,0.4)" : "rgba(255,255,255,0.12)";
+  const glowColor = isPipelineRunning ? "rgba(255,230,0,0.15)" : hasQuestions ? "rgba(0,229,255,0.1)" : "transparent";
 
   const neonBtn = "h-7 text-[11px] gap-1 inline-flex items-center justify-center rounded-lg bg-black px-2.5 font-black uppercase tracking-[0.08em] transition-all hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100";
   const ghostBtn = "h-7 text-[11px] gap-1 inline-flex items-center justify-center rounded-lg bg-black px-2.5 font-bold uppercase tracking-[0.06em] transition-all hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100";
@@ -291,19 +291,19 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="font-black text-sm truncate text-white">{row.subject}</span>
             {isPipelineRunning && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.1em] rounded-md bg-black px-2 py-0.5" style={{ color: "#ffd83a", border: "1px solid rgba(255,216,58,0.7)" }}>
+              <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.1em] rounded-md bg-black px-2 py-0.5" style={{ color: "#FFE600", border: "1px solid rgba(255,230,0,0.7)" }}>
                 <Loader2 className="w-3 h-3 animate-spin" />
                 {row.pipelinePhase === "rebuilding_mastery" ? "Mastery" : row.pipelinePhase === "filling_missing" ? "Filling" : "Ingesting"}
               </span>
             )}
             {!isPipelineRunning && hasQuestions && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.1em] rounded-md bg-black px-2 py-0.5" style={{ color: "#28c9d6", border: "1px solid rgba(40,201,214,0.5)" }}>
+              <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.1em] rounded-md bg-black px-2 py-0.5" style={{ color: "#00E5FF", border: "1px solid rgba(0,229,255,0.5)" }}>
                 <Sparkles className="w-3 h-3" /> {formatNumber(row.questionsExtracted, language)}Q
               </span>
             )}
             {!isPipelineRunning && hasQuestions && row.memoCoverage !== undefined && (
               <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.1em] rounded-md bg-black px-2 py-0.5"
-                style={{ color: (row.memoCoverage ?? 0) === 100 ? "#28c9d6" : (row.memoCoverage ?? 0) >= 50 ? "#ffd83a" : "#f87171", border: `1px solid ${(row.memoCoverage ?? 0) === 100 ? "rgba(40,201,214,0.5)" : (row.memoCoverage ?? 0) >= 50 ? "rgba(255,216,58,0.5)" : "rgba(248,113,113,0.5)"}` }}
+                style={{ color: (row.memoCoverage ?? 0) === 100 ? "#00E5FF" : (row.memoCoverage ?? 0) >= 50 ? "#FFE600" : "#f87171", border: `1px solid ${(row.memoCoverage ?? 0) === 100 ? "rgba(0,229,255,0.5)" : (row.memoCoverage ?? 0) >= 50 ? "rgba(255,230,0,0.5)" : "rgba(248,113,113,0.5)"}` }}
                 title={`Memo: ${row.memoCoverage}% · Marks: ${row.marksCoverage ?? 0}% · Level: ${row.levelCoverage ?? 0}% · Topic: ${row.topicCoverage ?? 0}%`}>
                 {(row.memoCoverage ?? 0) === 100 ? <CheckCircle2 className="w-3 h-3" /> : <AlertTriangle className="w-3 h-3" />}
                 Memo {row.memoCoverage}%
@@ -313,7 +313,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
               <span className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.1em] rounded-md bg-black px-2 py-0.5" style={{ color: "#f87171", border: "1px solid rgba(248,113,113,0.5)" }}>Failed</span>
             )}
             {row.simulatedCount > 0 && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.1em] rounded-md bg-black px-2 py-0.5" style={{ color: "#b066d6", border: "1px solid rgba(176,102,214,0.5)" }}>
+              <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.1em] rounded-md bg-black px-2 py-0.5" style={{ color: "#8A2BFF", border: "1px solid rgba(138,43,255,0.5)" }}>
                 <Zap className="w-3 h-3" />{row.simulatedCount}
                 {row.simulationQuality > 0 && <span className="opacity-60">·{row.simulationQuality}%</span>}
               </span>
@@ -322,21 +322,21 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <div className="w-20 h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.1)" }}>
-            <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: ingestionComplete ? "#28c9d6" : "#ffd83a", boxShadow: `0 0 6px ${ingestionComplete ? "rgba(40,201,214,0.5)" : "rgba(255,216,58,0.5)"}` }} />
+            <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: ingestionComplete ? "#00E5FF" : "#FFE600", boxShadow: `0 0 6px ${ingestionComplete ? "rgba(0,229,255,0.5)" : "rgba(255,230,0,0.5)"}` }} />
           </div>
-          <span className="text-xs w-14 text-right font-black tabular-nums" style={{ color: ingestionComplete ? "#28c9d6" : "#ffd83a" }}>{pct}%</span>
+          <span className="text-xs w-14 text-right font-black tabular-nums" style={{ color: ingestionComplete ? "#00E5FF" : "#FFE600" }}>{pct}%</span>
         </div>
       </div>
 
       {open && (
-        <div className="p-3 space-y-4 bg-black" style={{ borderTop: "1px solid rgba(40,201,214,0.2)" }}>
+        <div className="p-3 space-y-4 bg-black" style={{ borderTop: "1px solid rgba(0,229,255,0.2)" }}>
           {/* Action buttons */}
           <div className="space-y-2">
-            <div className="text-[10px] font-black uppercase tracking-[0.18em]" style={{ color: "#28c9d6" }}>Actions</div>
+            <div className="text-[10px] font-black uppercase tracking-[0.18em]" style={{ color: "#00E5FF" }}>Actions</div>
             <div className="flex flex-wrap gap-2">
               <button
                 className={neonBtn}
-                style={{ color: "#28c9d6", border: "1.5px solid rgba(40,201,214,0.6)", boxShadow: "0 0 8px rgba(40,201,214,0.3)" }}
+                style={{ color: "#00E5FF", border: "1.5px solid rgba(0,229,255,0.6)", boxShadow: "0 0 8px rgba(0,229,255,0.3)" }}
                 disabled={isPipelineRunning || isIngesting}
                 onClick={(e) => { e.stopPropagation(); onIngest(row.subject); }}
                 title="Download PDFs from DBE and extract questions for all years (2015–2024)"
@@ -347,8 +347,8 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
                 <button
                   className={neonBtn}
                   style={aiBlocked
-                    ? { color: "rgba(176,102,214,0.4)", border: "1px solid rgba(176,102,214,0.25)", cursor: "not-allowed" }
-                    : { color: "#b066d6", border: "1.5px solid rgba(176,102,214,0.7)", boxShadow: "0 0 8px rgba(176,102,214,0.3)" }}
+                    ? { color: "rgba(138,43,255,0.4)", border: "1px solid rgba(138,43,255,0.25)", cursor: "not-allowed" }
+                    : { color: "#8A2BFF", border: "1.5px solid rgba(138,43,255,0.7)", boxShadow: "0 0 8px rgba(138,43,255,0.3)" }}
                   disabled={isPipelineRunning || isSimulating || aiBlocked}
                   onClick={(e) => { e.stopPropagation(); if (!aiBlocked) onSimulate(row.subject); }}
                   title={aiBlocked ? "Requires OpenAI API key — configure AI_INTEGRATIONS_OPENAI_API_KEY to enable" : "Use OpenAI to generate 50 practice questions from ingested content (batched, mastery-aware)"}
@@ -385,7 +385,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
               )}
               <button
                 className={neonBtn}
-                style={{ color: "#ffd83a", border: "1.5px solid rgba(255,216,58,0.6)", boxShadow: "0 0 8px rgba(255,216,58,0.25)" }}
+                style={{ color: "#FFE600", border: "1.5px solid rgba(255,230,0,0.6)", boxShadow: "0 0 8px rgba(255,230,0,0.25)" }}
                 disabled={isPipelineRunning || isForceReingesting}
                 onClick={(e) => { e.stopPropagation(); if (confirm(`Force re-download ALL papers, memos & supporting docs for "${row.subject}"? This replaces any existing data.`)) { onForceReingest(row.subject); } }}
                 title="Force re-download and re-parse ALL papers, memos and supporting docs — even already-completed ones"
@@ -417,7 +417,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
               {hasQuestions && (
                 <button
                   className={ghostBtn}
-                  style={{ color: "#4f8cd9", border: "1px solid rgba(79,140,217,0.5)" }}
+                  style={{ color: "#006BFF", border: "1px solid rgba(0,107,255,0.5)" }}
                   disabled={isPipelineRunning || qaMutation.isPending}
                   onClick={(e) => { e.stopPropagation(); qaMutation.mutate({ subject: row.subject, type: "verbatim" }); }}
                   title="Run a quality check on a sample of ingested questions — scores memo accuracy, CAPS alignment, and structure">
@@ -429,7 +429,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
 
           {/* Year-by-year detail */}
           <div className="space-y-2">
-            <div className="text-[10px] font-black uppercase tracking-[0.18em]" style={{ color: "#28c9d6" }}>Papers by Year</div>
+            <div className="text-[10px] font-black uppercase tracking-[0.18em]" style={{ color: "#00E5FF" }}>Papers by Year</div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {[2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024].map((yr) => {
                 const yrData = row.yearProgress?.[yr];
@@ -445,28 +445,28 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
                 const hasLocalPaper = (localYr?.papers?.length ?? 0) > 0;
                 const hasLocalMemo = (localYr?.memos?.length ?? 0) > 0;
                 if (!hasAnyCatalog && !hasPaper && !hasMemo && !hasLocalPaper && !hasLocalMemo) return null;
-                const yrBorderColor = hasPaper && hasMemo ? "rgba(40,201,214,0.4)" : hasFailed ? "rgba(248,113,113,0.4)" : hasPaper ? "rgba(255,138,31,0.4)" : "rgba(255,255,255,0.1)";
+                const yrBorderColor = hasPaper && hasMemo ? "rgba(0,229,255,0.4)" : hasFailed ? "rgba(248,113,113,0.4)" : hasPaper ? "rgba(255,138,0,0.4)" : "rgba(255,255,255,0.1)";
                 return (
                   <div key={yr} className="rounded-xl bg-black p-2.5 space-y-2" style={{ border: `1px solid ${yrBorderColor}` }} data-testid={`year-card-${row.subject}-${yr}`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-black text-white">{yr}</span>
-                        {hasPaper && hasMemo && <CheckCircle2 className="w-3 h-3" style={{ color: "#28c9d6" }} />}
+                        {hasPaper && hasMemo && <CheckCircle2 className="w-3 h-3" style={{ color: "#00E5FF" }} />}
                         {hasFailed && !hasPaper && <XCircle className="w-3 h-3 text-red-400" />}
-                        {yrQuestions > 0 && <span className="text-[10px] font-bold" style={{ color: "#28c9d6" }}>{yrQuestions}Q</span>}
+                        {yrQuestions > 0 && <span className="text-[10px] font-bold" style={{ color: "#00E5FF" }}>{yrQuestions}Q</span>}
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] font-black" style={{ color: hasPaper ? "#28c9d6" : "rgba(255,255,255,0.3)" }}>P{hasPaper ? "✓" : "–"}</span>
+                        <span className="text-[10px] font-black" style={{ color: hasPaper ? "#00E5FF" : "rgba(255,255,255,0.3)" }}>P{hasPaper ? "✓" : "–"}</span>
                         <span className="text-[10px] font-black" style={{ color: hasMemo ? "#4ade80" : "rgba(255,255,255,0.3)" }}>M{hasMemo ? "✓" : "–"}</span>
                       </div>
                     </div>
                     <div className="w-full h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)" }}>
-                      <div className="h-full rounded-full transition-all" style={{ width: `${Math.max(yrPct, 0)}%`, background: yrPct === 100 ? "#28c9d6" : yrPct > 0 ? "#ffd83a" : "transparent" }} />
+                      <div className="h-full rounded-full transition-all" style={{ width: `${Math.max(yrPct, 0)}%`, background: yrPct === 100 ? "#00E5FF" : yrPct > 0 ? "#FFE600" : "transparent" }} />
                     </div>
                     {yrUrls && (
                       <div className="flex flex-wrap gap-1">
                         {yrUrls.papers?.map((p, i) => (
-                          <a key={`paper-${i}`} href={p.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-[10px] font-bold transition-all hover:scale-[1.03]" style={{ color: "#4f8cd9", border: "1px solid rgba(79,140,217,0.5)", background: "rgba(79,140,217,0.08)" }} title={p.linkText}>
+                          <a key={`paper-${i}`} href={p.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-[10px] font-bold transition-all hover:scale-[1.03]" style={{ color: "#006BFF", border: "1px solid rgba(0,107,255,0.5)", background: "rgba(0,107,255,0.08)" }} title={p.linkText}>
                             <ExternalLink className="w-2.5 h-2.5" /> DBE P{p.paperNumber}
                           </a>
                         ))}
@@ -481,7 +481,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
                       {(!hasPaper || !hasMemo) ? (
                         <button
                           className="h-6 text-[10px] gap-0.5 px-1.5 flex-1 inline-flex items-center justify-center rounded-md font-bold disabled:opacity-40"
-                          style={{ color: "#28c9d6", border: "1px solid rgba(40,201,214,0.5)" }}
+                          style={{ color: "#00E5FF", border: "1px solid rgba(0,229,255,0.5)" }}
                           disabled={isPipelineRunning || isIngesting}
                           onClick={(e) => { e.stopPropagation(); onIngest(row.subject, yr); }}
                           title={`Download and ingest DBE paper + memo for ${row.subject} ${yr}`}
@@ -491,7 +491,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
                       ) : (
                         <button
                           className="h-6 text-[10px] gap-0.5 px-1.5 flex-1 inline-flex items-center justify-center rounded-md font-bold disabled:opacity-40"
-                          style={{ color: "#ffd83a", border: "1px solid rgba(255,216,58,0.4)" }}
+                          style={{ color: "#FFE600", border: "1px solid rgba(255,230,0,0.4)" }}
                           disabled={isPipelineRunning || isForceReingesting}
                           onClick={(e) => { e.stopPropagation(); onForceReingest(row.subject, yr); }}
                           title={`Force re-download and re-parse paper + memo for ${row.subject} ${yr}`}
@@ -511,24 +511,24 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
           {/* Quality info */}
           {row.verifiedChecks && (
             <div className="grid grid-cols-2 gap-2">
-              <div className="rounded-xl bg-black p-2.5 text-[11px]" style={{ border: qualityPassed ? "1px solid rgba(40,201,214,0.4)" : "1px solid rgba(255,255,255,0.1)" }}>
+              <div className="rounded-xl bg-black p-2.5 text-[11px]" style={{ border: qualityPassed ? "1px solid rgba(0,229,255,0.4)" : "1px solid rgba(255,255,255,0.1)" }}>
                 <div className="flex items-center gap-1.5 mb-1">
-                  <ShieldCheck className="w-3.5 h-3.5" style={{ color: qualityPassed ? "#28c9d6" : "rgba(255,255,255,0.4)" }} />
-                  <span className="font-black uppercase tracking-[0.1em] text-[10px]" style={{ color: qualityPassed ? "#28c9d6" : "rgba(255,255,255,0.5)" }}>Verbatim</span>
+                  <ShieldCheck className="w-3.5 h-3.5" style={{ color: qualityPassed ? "#00E5FF" : "rgba(255,255,255,0.4)" }} />
+                  <span className="font-black uppercase tracking-[0.1em] text-[10px]" style={{ color: qualityPassed ? "#00E5FF" : "rgba(255,255,255,0.5)" }}>Verbatim</span>
                 </div>
                 <div className="flex items-baseline gap-1.5">
                   <span className="text-white font-bold">{row.questionsExtracted} Qs</span>
-                  <span className="font-black" style={{ color: qualityPassed ? "#28c9d6" : "#ffd83a" }}>{row.avgQualityScore ?? 0}%</span>
+                  <span className="font-black" style={{ color: qualityPassed ? "#00E5FF" : "#FFE600" }}>{row.avgQualityScore ?? 0}%</span>
                 </div>
               </div>
-              <div className="rounded-xl bg-black p-2.5 text-[11px]" style={{ border: row.simulationQuality >= 80 ? "1px solid rgba(176,102,214,0.4)" : "1px solid rgba(255,255,255,0.1)" }}>
+              <div className="rounded-xl bg-black p-2.5 text-[11px]" style={{ border: row.simulationQuality >= 80 ? "1px solid rgba(138,43,255,0.4)" : "1px solid rgba(255,255,255,0.1)" }}>
                 <div className="flex items-center gap-1.5 mb-1">
-                  <Zap className="w-3.5 h-3.5" style={{ color: row.simulatedCount > 0 ? "#b066d6" : "rgba(255,255,255,0.4)" }} />
-                  <span className="font-black uppercase tracking-[0.1em] text-[10px]" style={{ color: row.simulatedCount > 0 ? "#b066d6" : "rgba(255,255,255,0.5)" }}>AI Simulated</span>
+                  <Zap className="w-3.5 h-3.5" style={{ color: row.simulatedCount > 0 ? "#8A2BFF" : "rgba(255,255,255,0.4)" }} />
+                  <span className="font-black uppercase tracking-[0.1em] text-[10px]" style={{ color: row.simulatedCount > 0 ? "#8A2BFF" : "rgba(255,255,255,0.5)" }}>AI Simulated</span>
                 </div>
                 <div className="flex items-baseline gap-1.5">
                   <span className="text-white font-bold">{row.simulatedCount} Qs</span>
-                  <span className="font-black" style={{ color: "#b066d6" }}>{row.simulationQuality > 0 ? `${row.simulationQuality}%` : "–"}</span>
+                  <span className="font-black" style={{ color: "#8A2BFF" }}>{row.simulationQuality > 0 ? `${row.simulationQuality}%` : "–"}</span>
                 </div>
               </div>
             </div>
@@ -623,7 +623,7 @@ function OverviewSubjectGrid({ subjects, status, statusLoading, seedSubject, gen
               className="h-7 px-2.5 rounded-md text-xs font-bold uppercase tracking-[0.06em] transition-none"
               style={
                 sortKey === opt.value
-                  ? { color: "#28c9d6", border: "1.5px solid #28c9d6", background: "rgba(40,201,214,0.1)", boxShadow: "0 0 8px rgba(40,201,214,0.3)" }
+                  ? { color: "#00E5FF", border: "1.5px solid #00E5FF", background: "rgba(0,229,255,0.1)", boxShadow: "0 0 8px rgba(0,229,255,0.3)" }
                   : { color: "rgba(255,255,255,0.5)", border: "1px solid rgba(255,255,255,0.18)", background: "black" }
               }
             >
@@ -638,17 +638,17 @@ function OverviewSubjectGrid({ subjects, status, statusLoading, seedSubject, gen
         const isRunning = s.isRunning || s.pipelinePhase === "ingesting" || s.pipelinePhase === "rebuilding_mastery" || s.pipelinePhase === "filling_missing";
         const ready = total > 0 && !isRunning;
         const hasNothing = total === 0 && !isRunning;
-        const accent = ready ? "#28c9d6" : isRunning ? "#ffd83a" : "rgba(255,255,255,0.25)";
+        const accent = ready ? "#00E5FF" : isRunning ? "#FFE600" : "rgba(255,255,255,0.25)";
         const cardStyle: React.CSSProperties = ready
-          ? { border: "1.5px solid #28c9d6", boxShadow: "0 0 14px rgba(40,201,214,0.28), inset 0 0 18px rgba(0,0,0,0.6)" }
+          ? { border: "1.5px solid #00E5FF", boxShadow: "0 0 14px rgba(0,229,255,0.28), inset 0 0 18px rgba(0,0,0,0.6)" }
           : isRunning
-          ? { border: "1.5px solid #ffd83a", boxShadow: "0 0 14px rgba(255,216,58,0.32), inset 0 0 18px rgba(0,0,0,0.6)" }
+          ? { border: "1.5px solid #FFE600", boxShadow: "0 0 14px rgba(255,230,0,0.32), inset 0 0 18px rgba(0,0,0,0.6)" }
           : { border: "1px solid rgba(255,255,255,0.15)", boxShadow: "inset 0 0 18px rgba(0,0,0,0.6)" };
         const ghostBtn = "h-7 text-xs gap-1 inline-flex items-center justify-center rounded-md bg-black px-2.5 font-bold uppercase tracking-[0.06em] text-white hover:text-white transition-none disabled:opacity-40";
         const ghostStyle: React.CSSProperties = { border: "1px solid rgba(255,255,255,0.18)" };
         const neonBtn = "h-7 text-xs gap-1 inline-flex items-center justify-center rounded-md bg-black px-2.5 font-black uppercase tracking-[0.08em] transition-none disabled:opacity-40";
-        const cyanBtnStyle: React.CSSProperties = { color: "#28c9d6", border: "1.5px solid #28c9d6", boxShadow: "0 0 10px rgba(40,201,214,0.4), inset 0 0 6px rgba(40,201,214,0.15)" };
-        const purpleBtnStyle: React.CSSProperties = { color: "#b066d6", border: "1.5px solid rgba(176,102,214,0.7)", boxShadow: "0 0 8px rgba(176,102,214,0.35)" };
+        const cyanBtnStyle: React.CSSProperties = { color: "#00E5FF", border: "1.5px solid #00E5FF", boxShadow: "0 0 10px rgba(0,229,255,0.4), inset 0 0 6px rgba(0,229,255,0.15)" };
+        const purpleBtnStyle: React.CSSProperties = { color: "#8A2BFF", border: "1.5px solid rgba(138,43,255,0.7)", boxShadow: "0 0 8px rgba(138,43,255,0.35)" };
 
         const memoCovPct = memoCovBySubject[s.subject];
         const hasMemoCov = memoCovPct !== undefined;
@@ -664,9 +664,9 @@ function OverviewSubjectGrid({ subjects, status, statusLoading, seedSubject, gen
                 <div className="text-[11px] text-white mt-0.5">
                   {total > 0 ? (
                     <>
-                      <span style={{ color: "#28c9d6" }}>{formatNumber(s.questionsExtracted, language)}</span> <span className="text-white">verbatim</span>
+                      <span style={{ color: "#00E5FF" }}>{formatNumber(s.questionsExtracted, language)}</span> <span className="text-white">verbatim</span>
                       <span className="text-white"> · </span>
-                      <span style={{ color: "#b066d6" }}>{formatNumber(s.simulatedCount, language)}</span> <span className="text-white">AI</span>
+                      <span style={{ color: "#8A2BFF" }}>{formatNumber(s.simulatedCount, language)}</span> <span className="text-white">AI</span>
                     </>
                   ) : (
                     <span className="text-white">No questions yet</span>
@@ -681,11 +681,11 @@ function OverviewSubjectGrid({ subjects, status, statusLoading, seedSubject, gen
                 ) : null}
               </div>
               {isRunning ? (
-                <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.1em] rounded-md bg-black px-2 py-0.5 whitespace-nowrap" style={{ color: "#ffd83a", border: "1px solid #ffd83a" }}>
+                <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.1em] rounded-md bg-black px-2 py-0.5 whitespace-nowrap" style={{ color: "#FFE600", border: "1px solid #FFE600" }}>
                   <Loader2 className="w-3 h-3 animate-spin" /> {s.pipelinePhase ?? "Running"}
                 </span>
               ) : ready ? (
-                <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.1em] rounded-md bg-black px-2 py-0.5 whitespace-nowrap" style={{ color: "#28c9d6", border: "1px solid #28c9d6" }}>
+                <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.1em] rounded-md bg-black px-2 py-0.5 whitespace-nowrap" style={{ color: "#00E5FF", border: "1px solid #00E5FF" }}>
                   <CheckCircle2 className="w-3 h-3" /> Live
                 </span>
               ) : hasNothing ? (
@@ -710,8 +710,8 @@ function OverviewSubjectGrid({ subjects, status, statusLoading, seedSubject, gen
             )}
             {ready && s.memoCoverage !== undefined && !hasMemoCov && (
               <div className="flex items-center gap-1.5 text-[11px]">
-                {s.memoCoverage === 100 ? <CheckCircle2 className="w-3 h-3" style={{ color: "#28c9d6" }} /> : <AlertTriangle className="w-3 h-3" style={{ color: "#ffd83a" }} />}
-                <span className="text-white">Memo: <span className="font-black" style={{ color: s.memoCoverage === 100 ? "#28c9d6" : "#ffd83a" }}>{s.memoCoverage}%</span></span>
+                {s.memoCoverage === 100 ? <CheckCircle2 className="w-3 h-3" style={{ color: "#00E5FF" }} /> : <AlertTriangle className="w-3 h-3" style={{ color: "#FFE600" }} />}
+                <span className="text-white">Memo: <span className="font-black" style={{ color: s.memoCoverage === 100 ? "#00E5FF" : "#FFE600" }}>{s.memoCoverage}%</span></span>
               </div>
             )}
             <div className="flex flex-wrap gap-1.5 pt-1">
@@ -721,7 +721,7 @@ function OverviewSubjectGrid({ subjects, status, statusLoading, seedSubject, gen
               </button>
               <button
                 className={neonBtn}
-                style={openaiReady === false ? { color: "rgba(176,102,214,0.35)", border: "1px solid rgba(176,102,214,0.2)", cursor: "not-allowed" } : purpleBtnStyle}
+                style={openaiReady === false ? { color: "rgba(138,43,255,0.35)", border: "1px solid rgba(138,43,255,0.2)", cursor: "not-allowed" } : purpleBtnStyle}
                 disabled={isRunning || generateAi.isPending || openaiReady === false}
                 onClick={() => { if (openaiReady !== false) generateAi.mutate(s.subject); }}
                 title={openaiReady === false ? "Requires OpenAI API key — configure AI_INTEGRATIONS_OPENAI_API_KEY" : "Generate AI practice questions for this subject"}
@@ -802,7 +802,7 @@ function MissingMemosPanel() {
             <div>
               <CardTitle className="text-base font-heading flex items-center gap-2">
                 Missing Memos
-                {data && <Badge variant="outline" className="text-[11px] font-bold" style={{ color: "#ffd83a", borderColor: "rgba(255,216,58,0.5)" }}>{data.groupCount} groups</Badge>}
+                {data && <Badge variant="outline" className="text-[11px] font-bold" style={{ color: "#FFE600", borderColor: "rgba(255,230,0,0.5)" }}>{data.groupCount} groups</Badge>}
               </CardTitle>
               <p className="text-xs text-white mt-0.5">Ingested questions without memo text — use Re-ingest to retry specific papers.</p>
             </div>
@@ -825,7 +825,7 @@ function MissingMemosPanel() {
       {show && (
         <CardContent className="pt-0 space-y-3">
           <div className="flex items-center justify-between gap-3 flex-wrap">
-            {data && <p className="text-xs text-white"><span className="font-bold" style={{ color: "#ffd83a" }}>{data.totalMemoLessQuestions}</span> questions missing memo text</p>}
+            {data && <p className="text-xs text-white"><span className="font-bold" style={{ color: "#FFE600" }}>{data.totalMemoLessQuestions}</span> questions missing memo text</p>}
             <div className="relative w-64 ml-auto">
               <Search className="w-4 h-4 absolute left-2.5 top-2.5 text-white" />
               <Input placeholder="Filter by subject…" value={filter} onChange={(e) => {
@@ -847,7 +847,7 @@ function MissingMemosPanel() {
             <div className="overflow-x-auto rounded-lg border border-amber-400/20">
               <table className="w-full text-xs" data-testid="table-missing-memos">
                 <thead>
-                  <tr className="border-b border-amber-400/20" style={{ background: "rgba(255,216,58,0.06)" }}>
+                  <tr className="border-b border-amber-400/20" style={{ background: "rgba(255,230,0,0.06)" }}>
                     <th className="text-left px-3 py-2"><button onClick={() => toggleSort("subject")} className="font-semibold text-white hover:text-amber-300">Subject</button></th>
                     <th className="text-center px-3 py-2"><button onClick={() => toggleSort("year")} className="font-semibold text-white hover:text-amber-300">Year</button></th>
                     <th className="text-center px-3 py-2 font-semibold text-white">Paper</th>
@@ -868,9 +868,9 @@ function MissingMemosPanel() {
                         <td className="px-3 py-2 text-center text-white">{r.year}</td>
                         <td className="px-3 py-2 text-center text-white">P{r.paperNumber}</td>
                         <td className="px-3 py-2 text-center text-white uppercase">{r.language || "—"}</td>
-                        <td className="px-3 py-2 text-center font-black" style={{ color: "#ffd83a" }}>{r.missing}</td>
+                        <td className="px-3 py-2 text-center font-black" style={{ color: "#FFE600" }}>{r.missing}</td>
                         <td className="px-3 py-2 text-center">
-                          <span className="font-bold" style={{ color: r.memoCoveragePct >= 98 ? "#28c9d6" : r.memoCoveragePct >= 50 ? "#ffd83a" : "#f87171" }}>{r.memoCoveragePct}%</span>
+                          <span className="font-bold" style={{ color: r.memoCoveragePct >= 98 ? "#00E5FF" : r.memoCoveragePct >= 50 ? "#FFE600" : "#f87171" }}>{r.memoCoveragePct}%</span>
                         </td>
                         <td className="px-3 py-2 text-center">
                           <Button size="sm" variant="outline" className="h-6 text-[10px] gap-1 border-cyan-400/40 text-cyan-300" disabled={isRe} onClick={() => reingest.mutate({ subject: r.subject, year: r.year })}>
@@ -1393,9 +1393,9 @@ export default function DBEPortal() {
 
         {/* Pipeline running banner */}
         {anyRunning && (
-          <div className="flex items-center gap-2 text-sm rounded-xl bg-black p-3" style={{ border: "1.5px solid #28c9d6", boxShadow: "0 0 14px rgba(40,201,214,0.32)" }}>
-            <Loader2 className="w-4 h-4 animate-spin shrink-0" style={{ color: "#28c9d6" }} />
-            <span className="font-black uppercase tracking-[0.1em] text-[12px]" style={{ color: "#28c9d6" }}>Pipeline running — auto-refreshing</span>
+          <div className="flex items-center gap-2 text-sm rounded-xl bg-black p-3" style={{ border: "1.5px solid #00E5FF", boxShadow: "0 0 14px rgba(0,229,255,0.32)" }}>
+            <Loader2 className="w-4 h-4 animate-spin shrink-0" style={{ color: "#00E5FF" }} />
+            <span className="font-black uppercase tracking-[0.1em] text-[12px]" style={{ color: "#00E5FF" }}>Pipeline running — auto-refreshing</span>
           </div>
         )}
 
@@ -1413,10 +1413,10 @@ export default function DBEPortal() {
         </div>
 
         {/* Primary actions row */}
-        <div className="rounded-xl bg-black p-4 space-y-0" style={{ border: "1.5px solid rgba(40,201,214,0.35)", boxShadow: "0 0 14px rgba(40,201,214,0.15)" }}>
+        <div className="rounded-xl bg-black p-4 space-y-0" style={{ border: "1.5px solid rgba(0,229,255,0.35)", boxShadow: "0 0 14px rgba(0,229,255,0.15)" }}>
           {/* Row: Ingestion */}
           <div className="flex items-center gap-3 flex-wrap pb-3">
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] w-20 shrink-0" style={{ color: "rgba(40,201,214,0.6)" }}>Ingestion</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] w-20 shrink-0" style={{ color: "rgba(0,229,255,0.6)" }}>Ingestion</span>
             <Button size="sm" className="gap-2 bg-cyan-500 hover:bg-cyan-600 text-black font-black" onClick={() => seedAll.mutate()} disabled={seedAll.isPending}
               title="Download and parse all DBE PDFs for all subjects across 2015–2025"
               data-testid="btn-seed-all">
@@ -1426,7 +1426,7 @@ export default function DBEPortal() {
 
           {/* Row: AI & Questions */}
           <div className="flex items-center gap-3 flex-wrap py-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] w-20 shrink-0" style={{ color: openaiReady ? "rgba(176,102,214,0.7)" : "rgba(255,255,255,0.25)" }}>
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] w-20 shrink-0" style={{ color: openaiReady ? "rgba(138,43,255,0.7)" : "rgba(255,255,255,0.25)" }}>
               AI & Qs
               {!openaiReady && <span className="block normal-case tracking-normal font-bold text-[9px] mt-0.5" style={{ color: "#f87171" }}>No key</span>}
             </span>
@@ -1438,9 +1438,9 @@ export default function DBEPortal() {
               {!openaiReady && <span className="ml-1 text-[9px] px-1 py-0.5 rounded font-black" style={{ background: "rgba(239,68,68,0.15)", color: "#f87171", border: "1px solid rgba(239,68,68,0.3)" }}>Requires key</span>}
             </Button>
             {/* Crunch Time controls */}
-            <div className="inline-flex items-center gap-1.5 rounded-lg bg-black px-2.5 py-1.5" style={{ border: `1.5px solid ${openaiReady ? "#28c9d6" : "rgba(255,255,255,0.2)"}` }}>
-              <span className="text-[10px] uppercase tracking-[0.12em] font-black" style={{ color: openaiReady ? "#28c9d6" : "rgba(255,255,255,0.3)" }}>Papers</span>
-              <input type="number" min={1} max={20} value={papersPerSubject} onChange={(e) => setPapersPerSubject(Math.max(1, Math.min(20, Number(e.target.value) || 1)))} disabled={simulateAllMutation.isPending || crunchStatus?.running || anyRunning || !openaiReady} className="h-6 w-12 rounded bg-black px-1 text-center text-xs font-black text-white focus:outline-none disabled:opacity-40" style={{ border: "1px solid rgba(40,201,214,0.5)" }} data-testid="input-papers-per-subject" />
+            <div className="inline-flex items-center gap-1.5 rounded-lg bg-black px-2.5 py-1.5" style={{ border: `1.5px solid ${openaiReady ? "#00E5FF" : "rgba(255,255,255,0.2)"}` }}>
+              <span className="text-[10px] uppercase tracking-[0.12em] font-black" style={{ color: openaiReady ? "#00E5FF" : "rgba(255,255,255,0.3)" }}>Papers</span>
+              <input type="number" min={1} max={20} value={papersPerSubject} onChange={(e) => setPapersPerSubject(Math.max(1, Math.min(20, Number(e.target.value) || 1)))} disabled={simulateAllMutation.isPending || crunchStatus?.running || anyRunning || !openaiReady} className="h-6 w-12 rounded bg-black px-1 text-center text-xs font-black text-white focus:outline-none disabled:opacity-40" style={{ border: "1px solid rgba(0,229,255,0.5)" }} data-testid="input-papers-per-subject" />
               <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-white">/subj</span>
             </div>
             <Button size="sm" onClick={() => simulateAllMutation.mutate(papersPerSubject)} disabled={simulateAllMutation.isPending || crunchStatus?.running || anyRunning || !openaiReady} className="gap-2 bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-black disabled:opacity-40"
@@ -1531,7 +1531,7 @@ export default function DBEPortal() {
 
         {/* Main tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-4 p-1.5 rounded-2xl h-auto flex-wrap bg-black border border-cyan-500/30 shadow-[0_0_14px_rgba(40,201,214,0.18)]">
+          <TabsList className="mb-4 p-1.5 rounded-2xl h-auto flex-wrap bg-black border border-cyan-500/30 shadow-[0_0_14px_rgba(0,229,255,0.18)]">
             {[
               { value: "overview", label: "Overview" },
               { value: "advanced", label: `Advanced (${filtered.length})` },
@@ -1541,7 +1541,7 @@ export default function DBEPortal() {
               { value: "sync", label: "Sync & Ops" },
             ].map((tab) => (
               <TabsTrigger key={tab.value} value={tab.value} data-testid={`tab-${tab.value}`}
-                className="rounded-xl text-xs px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-cyan-300 data-[state=active]:border data-[state=active]:border-cyan-400 data-[state=active]:shadow-[0_0_14px_rgba(40,201,214,0.45)] data-[state=active]:font-black text-white/60 hover:text-white transition-colors">
+                className="rounded-xl text-xs px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-cyan-300 data-[state=active]:border data-[state=active]:border-cyan-400 data-[state=active]:shadow-[0_0_14px_rgba(0,229,255,0.45)] data-[state=active]:font-black text-white/60 hover:text-white transition-colors">
                 {tab.label}
               </TabsTrigger>
             ))}
@@ -1589,10 +1589,10 @@ export default function DBEPortal() {
           {/* Sync & Ops tab */}
           <TabsContent value="sync" className="space-y-4">
             {/* Sync to Production panel */}
-            <div className="rounded-xl bg-black p-4" style={{ border: "1.5px solid rgba(40,201,214,0.45)", boxShadow: "0 0 14px rgba(40,201,214,0.2)" }} data-testid="sync-production-panel">
+            <div className="rounded-xl bg-black p-4" style={{ border: "1.5px solid rgba(0,229,255,0.45)", boxShadow: "0 0 14px rgba(0,229,255,0.2)" }} data-testid="sync-production-panel">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <CloudUpload className="w-5 h-5 shrink-0" style={{ color: "#28c9d6" }} />
+                  <CloudUpload className="w-5 h-5 shrink-0" style={{ color: "#00E5FF" }} />
                   <div>
                     <p className="text-sm font-black uppercase tracking-[0.1em] text-white">Sync to Production</p>
                     <p className="text-xs text-white/50">Rebuild mastery scores + topic coverage — marks data as production-ready.</p>

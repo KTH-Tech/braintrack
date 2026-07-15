@@ -208,26 +208,26 @@ const PAT_DATES: PATDate[] = [
 ];
 
 const SUBJECT_NEON: Record<string, string> = {
-  "Mathematics": "#4f8cd9",
-  "Mathematical Literacy": "#28c9d6",
-  "Physical Sciences": "#28c9d6",
-  "Life Sciences": "#8e7cdc",
-  "Accounting": "#e6519c",
-  "Business Studies": "#28c9d6",
-  "Economics": "#ffb020",
-  "Geography": "#28c9d6",
-  "History": "#ff8a1f",
-  "English Home Language": "#ffd83a",
-  "English First Additional Language": "#ffd83a",
-  "Afrikaans Home Language": "#ff6a1f",
-  "Afrikaans First Additional Language": "#ff6a1f",
-  "Computer Applications Technology": "#28c9d6",
-  "Information Technology": "#4f8cd9",
-  "Tourism": "#ff6a1f",
-  "Consumer Studies": "#b066d6",
-  "Hospitality Studies": "#b066d6",
-  "Life Orientation": "#8e7cdc",
-  "IsiZulu First Additional Language": "#28c9d6",
+  "Mathematics": "#006BFF",
+  "Mathematical Literacy": "#00E5FF",
+  "Physical Sciences": "#00E5FF",
+  "Life Sciences": "#8A2BFF",
+  "Accounting": "#FF2BD6",
+  "Business Studies": "#00E5FF",
+  "Economics": "#FFE600",
+  "Geography": "#00E5FF",
+  "History": "#FF8A00",
+  "English Home Language": "#FFE600",
+  "English First Additional Language": "#FFE600",
+  "Afrikaans Home Language": "#FF8A00",
+  "Afrikaans First Additional Language": "#FF8A00",
+  "Computer Applications Technology": "#00E5FF",
+  "Information Technology": "#006BFF",
+  "Tourism": "#FF8A00",
+  "Consumer Studies": "#8A2BFF",
+  "Hospitality Studies": "#8A2BFF",
+  "Life Orientation": "#8A2BFF",
+  "IsiZulu First Additional Language": "#00E5FF",
 };
 
 const DAY_NAMES_EN = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -271,7 +271,7 @@ function subjectNeon(name: string): string {
       return SUBJECT_NEON[key];
     }
   }
-  return "#28c9d6";
+  return "#00E5FF";
 }
 
 function isMySubject(name: string, myNames: string[]): boolean {
@@ -291,12 +291,12 @@ function CountdownBadge({ days, isAf }: { days: number; isAf: boolean }) {
   }
   if (days === 0) {
     return (
-      <span style={{ fontSize: 9, fontWeight: 900, color: "#ff6a1f", background: "rgba(255,106,31,0.18)", borderRadius: 4, padding: "1px 6px", textShadow: "0 0 8px rgba(255,106,31,0.8)" }}>
+      <span style={{ fontSize: 9, fontWeight: 900, color: "#FF8A00", background: "rgba(255,138,0,0.18)", borderRadius: 4, padding: "1px 6px", textShadow: "0 0 8px rgba(255,138,0,0.8)" }}>
         {isAf ? "VANDAG" : "TODAY"}
       </span>
     );
   }
-  const color = days <= 7 ? "#e6519c" : days <= 21 ? "#ff8a1f" : days <= 60 ? "#ffd83a" : "#28c9d6";
+  const color = days <= 7 ? "#FF2BD6" : days <= 21 ? "#FF8A00" : days <= 60 ? "#FFE600" : "#00E5FF";
   return (
     <span style={{ fontSize: 9, fontWeight: 800, color, background: `${color}18`, borderRadius: 4, padding: "1px 5px" }}>
       {days}d
@@ -351,9 +351,9 @@ export default function PrelimTimetablePage() {
     <div className="min-h-screen" style={{ background: "#000" }}>
       {/* Space background */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(40,201,214,0.18) 0%, transparent 70%)" }} />
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 55% 45% at 85% 85%, rgba(176,102,214,0.12) 0%, transparent 60%)" }} />
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 40% 30% at 15% 90%, rgba(230,81,156,0.08) 0%, transparent 60%)" }} />
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0,229,255,0.18) 0%, transparent 70%)" }} />
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 55% 45% at 85% 85%, rgba(138,43,255,0.12) 0%, transparent 60%)" }} />
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 40% 30% at 15% 90%, rgba(255,43,214,0.08) 0%, transparent 60%)" }} />
       </div>
 
       <main className="max-w-5xl mx-auto px-4 py-6 space-y-6">
@@ -372,7 +372,7 @@ export default function PrelimTimetablePage() {
           <Button
             size="sm" variant="ghost"
             className="text-[11px] font-black uppercase tracking-widest hover:bg-white/10"
-            style={{ color: "#28c9d6" }}
+            style={{ color: "#00E5FF" }}
             onClick={toggleLanguage}
           >
             {isAf ? "EN" : "AF"}
@@ -382,15 +382,15 @@ export default function PrelimTimetablePage() {
         {/* Header */}
         <div className="text-center space-y-2 pt-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em]"
-            style={{ border: "1px solid rgba(40,201,214,0.5)", color: "#28c9d6" }}>
+            style={{ border: "1px solid rgba(0,229,255,0.5)", color: "#00E5FF" }}>
             <GraduationCap className="w-3.5 h-3.5" />
             {isAf ? "VOOREKSAMENSKEDULE" : "PRELIMINARY EXAM TIMETABLE"}
           </div>
           <h1 className="text-3xl sm:text-4xl font-black text-white leading-tight">
             {isAf ? (
-              <>Graad 12 <span style={{ background: "linear-gradient(90deg,#28c9d6,#8e7cdc,#e6519c)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>Vooreksamen 2026</span></>
+              <>Graad 12 <span style={{ background: "linear-gradient(90deg,#00E5FF,#8A2BFF,#FF2BD6)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>Vooreksamen 2026</span></>
             ) : (
-              <>Grade 12 <span style={{ background: "linear-gradient(90deg,#28c9d6,#8e7cdc,#e6519c)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>Prelims 2026</span></>
+              <>Grade 12 <span style={{ background: "linear-gradient(90deg,#00E5FF,#8A2BFF,#FF2BD6)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>Prelims 2026</span></>
             )}
           </h1>
           <p className="text-sm" style={{ color: "rgba(255,255,255,0.55)" }}>
@@ -411,13 +411,13 @@ export default function PrelimTimetablePage() {
                   onClick={() => setActiveWeek(i)}
                   className="relative px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all"
                   style={active
-                    ? { background: "rgba(40,201,214,0.18)", border: "1px solid rgba(40,201,214,0.6)", color: "#28c9d6", boxShadow: "0 0 12px rgba(40,201,214,0.25)" }
+                    ? { background: "rgba(0,229,255,0.18)", border: "1px solid rgba(0,229,255,0.6)", color: "#00E5FF", boxShadow: "0 0 12px rgba(0,229,255,0.25)" }
                     : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.55)" }
                   }
                 >
                   {w.label}
                   {isCurrent && (
-                    <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full" style={{ background: "#28c9d6", boxShadow: "0 0 6px #28c9d6" }} />
+                    <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full" style={{ background: "#00E5FF", boxShadow: "0 0 6px #00E5FF" }} />
                   )}
                 </button>
               );
@@ -430,7 +430,7 @@ export default function PrelimTimetablePage() {
               onClick={() => setMySubjectsOnly((v) => !v)}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all"
               style={mySubjectsOnly
-                ? { background: "rgba(230,81,156,0.18)", border: "1px solid rgba(230,81,156,0.6)", color: "#e6519c", boxShadow: "0 0 10px rgba(230,81,156,0.2)" }
+                ? { background: "rgba(255,43,214,0.18)", border: "1px solid rgba(255,43,214,0.6)", color: "#FF2BD6", boxShadow: "0 0 10px rgba(255,43,214,0.2)" }
                 : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.55)" }
               }
             >
@@ -442,7 +442,7 @@ export default function PrelimTimetablePage() {
 
         {/* Week range label */}
         <div className="flex items-center gap-2 text-sm font-bold" style={{ color: "rgba(255,255,255,0.6)" }}>
-          <CalendarDays className="w-4 h-4" style={{ color: "#28c9d6" }} />
+          <CalendarDays className="w-4 h-4" style={{ color: "#00E5FF" }} />
           {isAf ? currentWeek.rangeAf : currentWeek.range}
         </div>
 
@@ -461,16 +461,16 @@ export default function PrelimTimetablePage() {
                 style={{
                   borderRadius: 16,
                   border: isToday
-                    ? "1.5px solid rgba(255,106,31,0.7)"
+                    ? "1.5px solid rgba(255,138,0,0.7)"
                     : isPast
                       ? "1px solid rgba(255,255,255,0.07)"
                       : "1px solid rgba(255,255,255,0.12)",
                   background: isToday
-                    ? "rgba(255,106,31,0.06)"
+                    ? "rgba(255,138,0,0.06)"
                     : isPast
                       ? "rgba(0,0,0,0.4)"
                       : "rgba(0,0,0,0.55)",
-                  boxShadow: isToday ? "0 0 20px rgba(255,106,31,0.15)" : undefined,
+                  boxShadow: isToday ? "0 0 20px rgba(255,138,0,0.15)" : undefined,
                   opacity: isPast ? 0.55 : 1,
                 }}
               >
@@ -480,18 +480,18 @@ export default function PrelimTimetablePage() {
                     <div
                       style={{
                         width: 44, height: 44, borderRadius: 10, flexShrink: 0,
-                        background: isToday ? "rgba(255,106,31,0.22)" : "rgba(255,255,255,0.06)",
-                        border: isToday ? "1px solid rgba(255,106,31,0.55)" : "1px solid rgba(255,255,255,0.10)",
+                        background: isToday ? "rgba(255,138,0,0.22)" : "rgba(255,255,255,0.06)",
+                        border: isToday ? "1px solid rgba(255,138,0,0.55)" : "1px solid rgba(255,255,255,0.10)",
                         display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
                       }}
                     >
-                      <span style={{ fontSize: 9, fontWeight: 800, color: isToday ? "#ff6a1f" : "rgba(255,255,255,0.45)", lineHeight: 1, textTransform: "uppercase", letterSpacing: "0.06em" }}>{dayName}</span>
-                      <span style={{ fontSize: 17, fontWeight: 900, color: isToday ? "#ff6a1f" : "rgba(255,255,255,0.85)", lineHeight: 1.1 }}>{num}</span>
-                      <span style={{ fontSize: 9, fontWeight: 700, color: isToday ? "#ff6a1f" : "rgba(255,255,255,0.4)", lineHeight: 1 }}>{month}</span>
+                      <span style={{ fontSize: 9, fontWeight: 800, color: isToday ? "#FF8A00" : "rgba(255,255,255,0.45)", lineHeight: 1, textTransform: "uppercase", letterSpacing: "0.06em" }}>{dayName}</span>
+                      <span style={{ fontSize: 17, fontWeight: 900, color: isToday ? "#FF8A00" : "rgba(255,255,255,0.85)", lineHeight: 1.1 }}>{num}</span>
+                      <span style={{ fontSize: 9, fontWeight: 700, color: isToday ? "#FF8A00" : "rgba(255,255,255,0.4)", lineHeight: 1 }}>{month}</span>
                     </div>
                     <div>
                       {isToday && (
-                        <span className="text-[10px] font-black uppercase tracking-widest mr-2" style={{ color: "#ff6a1f" }}>
+                        <span className="text-[10px] font-black uppercase tracking-widest mr-2" style={{ color: "#FF8A00" }}>
                           {isAf ? "VANDAG" : "TODAY"}
                         </span>
                       )}
@@ -558,14 +558,14 @@ export default function PrelimTimetablePage() {
         <div
           style={{
             borderRadius: 16,
-            border: "1px solid rgba(255,216,58,0.35)",
-            background: "rgba(255,216,58,0.04)",
-            boxShadow: "0 0 18px rgba(255,216,58,0.08)",
+            border: "1px solid rgba(255,230,0,0.35)",
+            background: "rgba(255,230,0,0.04)",
+            boxShadow: "0 0 18px rgba(255,230,0,0.08)",
           }}
         >
-          <div className="flex items-center gap-2 px-4 py-3" style={{ borderBottom: "1px solid rgba(255,216,58,0.15)" }}>
-            <AlertCircle className="w-4 h-4" style={{ color: "#ffd83a" }} />
-            <span className="text-sm font-black uppercase tracking-wider" style={{ color: "#ffd83a" }}>
+          <div className="flex items-center gap-2 px-4 py-3" style={{ borderBottom: "1px solid rgba(255,230,0,0.15)" }}>
+            <AlertCircle className="w-4 h-4" style={{ color: "#FFE600" }} />
+            <span className="text-sm font-black uppercase tracking-wider" style={{ color: "#FFE600" }}>
               {isAf ? "Spesiale Datums & PAT" : "Special Dates & PAT"}
             </span>
           </div>
@@ -586,7 +586,7 @@ export default function PrelimTimetablePage() {
                       </span>
                     )}
                   </span>
-                  <span className="text-[10px] font-bold shrink-0" style={{ color: "rgba(255,216,58,0.7)" }}>
+                  <span className="text-[10px] font-bold shrink-0" style={{ color: "rgba(255,230,0,0.7)" }}>
                     {p.time}
                   </span>
                   <CountdownBadge days={daysLeft} isAf={isAf} />
@@ -605,8 +605,8 @@ export default function PrelimTimetablePage() {
 
         {/* Correction note */}
         <div className="flex items-start gap-2 px-4 py-3 rounded-xl text-xs"
-          style={{ background: "rgba(255,138,31,0.07)", border: "1px solid rgba(255,138,31,0.3)", color: "rgba(255,255,255,0.65)" }}>
-          <Zap className="w-3.5 h-3.5 shrink-0 mt-0.5" style={{ color: "#ff8a1f" }} />
+          style={{ background: "rgba(255,138,0,0.07)", border: "1px solid rgba(255,138,0,0.3)", color: "rgba(255,255,255,0.65)" }}>
+          <Zap className="w-3.5 h-3.5 shrink-0 mt-0.5" style={{ color: "#FF8A00" }} />
           <span>
             {isAf
               ? "Korreksies: Engels HT V1 (2hr) en Engels EAT V1 (2hr) op 25 Aug 2026 is amptelike korreksies in die SACAI-rooster."
@@ -690,9 +690,9 @@ function SessionColumn({
                     <span
                       className="text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded"
                       style={{
-                        background: slot.badge === "PRACTICAL" ? "rgba(142,124,220,0.2)" : "rgba(40,201,214,0.15)",
-                        color: slot.badge === "PRACTICAL" ? "#8e7cdc" : "#28c9d6",
-                        border: `1px solid ${slot.badge === "PRACTICAL" ? "rgba(142,124,220,0.4)" : "rgba(40,201,214,0.3)"}`,
+                        background: slot.badge === "PRACTICAL" ? "rgba(138,43,255,0.2)" : "rgba(0,229,255,0.15)",
+                        color: slot.badge === "PRACTICAL" ? "#8A2BFF" : "#00E5FF",
+                        border: `1px solid ${slot.badge === "PRACTICAL" ? "rgba(138,43,255,0.4)" : "rgba(0,229,255,0.3)"}`,
                       }}
                     >
                       {slot.badge}
@@ -700,7 +700,7 @@ function SessionColumn({
                   )}
                   {slot.isCorrection && (
                     <span className="text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded"
-                      style={{ background: "rgba(255,138,31,0.18)", color: "#ff8a1f", border: "1px solid rgba(255,138,31,0.4)" }}>
+                      style={{ background: "rgba(255,138,0,0.18)", color: "#FF8A00", border: "1px solid rgba(255,138,0,0.4)" }}>
                       {isAf ? "KORR" : "CORR"}
                     </span>
                   )}

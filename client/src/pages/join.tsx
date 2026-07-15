@@ -8,7 +8,7 @@ import { BrainTrackLogo } from "@/components/braintrack-logo";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, School, CheckCircle2, Phone, User, Hash, Globe, ChevronRight, RotateCcw } from "lucide-react";
 
-const NEON = "#28c9d6";
+const NEON = "#00E5FF";
 const hexRgba = (h: string, a: number) => {
   const r = parseInt(h.slice(1,3),16), g = parseInt(h.slice(3,5),16), b = parseInt(h.slice(5,7),16);
   return `rgba(${r},${g},${b},${a})`;

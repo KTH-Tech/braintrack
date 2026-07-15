@@ -813,8 +813,8 @@ export default function OnboardingPage() {
           </div>
 
           {phase === "questions" && currentQuestion && (
-            <Card className="border bg-black shadow-[0_0_30px_rgba(40,201,214,0.25)] rounded-3xl overflow-hidden" data-testid="card-onboarding">
-              <div aria-hidden className="h-[3px]" style={{ background: "linear-gradient(90deg, #ff6a1f, #ff8a1f, #ffb020, #ffd83a, #28c9d6, #4f8cd9, #8e7cdc, #b066d6, #e6519c)" }} />
+            <Card className="border bg-black shadow-[0_0_30px_rgba(0,229,255,0.25)] rounded-3xl overflow-hidden" data-testid="card-onboarding">
+              <div aria-hidden className="h-[3px]" style={{ background: "linear-gradient(90deg, #FF8A00, #FF8A00, #FFE600, #FFE600, #00E5FF, #006BFF, #8A2BFF, #8A2BFF, #FF2BD6)" }} />
               <CardHeader className="pb-2 pt-8 px-8">
                 <CardTitle className="text-sm font-semibold text-white uppercase tracking-widest flex items-center justify-between">
                   <span>
@@ -835,7 +835,7 @@ export default function OnboardingPage() {
                       <div
                         key={option.value}
                         className={`flex items-center space-x-3 p-5 rounded-2xl border transition-all duration-200 cursor-pointer backdrop-blur-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.10)] ${
-                          answers[currentQuestion.id] === option.value ? "border-[#28c9d6] bg-[#28c9d6]/10 shadow-[0_0_18px_rgba(40,201,214,0.4)]" : "border-white/15 bg-black hover:border-[#28c9d6]/60 hover:bg-white/[0.03]"
+                          answers[currentQuestion.id] === option.value ? "border-[#00E5FF] bg-[#00E5FF]/10 shadow-[0_0_18px_rgba(0,229,255,0.4)]" : "border-white/15 bg-black hover:border-[#00E5FF]/60 hover:bg-white/[0.03]"
                         }`}
                         onClick={() => handleSingleSelect(option.value)}
                         data-testid={`option-${option.value}`}
@@ -861,7 +861,7 @@ export default function OnboardingPage() {
                         <div
                           key={option.value}
                           className={`flex items-center space-x-3 p-5 rounded-2xl border transition-all duration-200 cursor-pointer backdrop-blur-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.10)] ${
-                            isChecked ? "border-[#28c9d6] bg-[#28c9d6]/10 shadow-[0_0_18px_rgba(40,201,214,0.4)]" : "border-white/15 bg-black hover:border-[#28c9d6]/60 hover:bg-white/[0.03]"
+                            isChecked ? "border-[#00E5FF] bg-[#00E5FF]/10 shadow-[0_0_18px_rgba(0,229,255,0.4)]" : "border-white/15 bg-black hover:border-[#00E5FF]/60 hover:bg-white/[0.03]"
                           }`}
                           onClick={() => handleMultiSelect(option.value, !isChecked)}
                           data-testid={`option-${option.value}`}
@@ -938,8 +938,8 @@ export default function OnboardingPage() {
           )}
 
           {phase === "vark" && (
-            <Card className="border bg-black shadow-[0_0_30px_rgba(40,201,214,0.25)] rounded-3xl overflow-hidden" data-testid="card-vark">
-              <div aria-hidden className="h-[3px]" style={{ background: "linear-gradient(90deg, #ff6a1f, #ff8a1f, #ffb020, #ffd83a, #28c9d6, #4f8cd9, #8e7cdc, #b066d6, #e6519c)" }} />
+            <Card className="border bg-black shadow-[0_0_30px_rgba(0,229,255,0.25)] rounded-3xl overflow-hidden" data-testid="card-vark">
+              <div aria-hidden className="h-[3px]" style={{ background: "linear-gradient(90deg, #FF8A00, #FF8A00, #FFE600, #FFE600, #00E5FF, #006BFF, #8A2BFF, #8A2BFF, #FF2BD6)" }} />
               <CardHeader className="pb-2 pt-8 px-8">
                 <CardTitle className="text-sm font-semibold text-white uppercase tracking-widest">
                   {t.primaryStyleLabel}
@@ -965,8 +965,8 @@ export default function OnboardingPage() {
                         data-testid={`vark-primary-${key}`}
                         className={`relative p-5 rounded-2xl border-2 text-left transition-all duration-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.10)] ${
                           isPrimary
-                            ? "border-[#28c9d6] bg-[#28c9d6]/10 shadow-[0_0_22px_rgba(40,201,214,0.5)]"
-                            : "border-white/15 bg-black hover:border-[#28c9d6]/60 hover:bg-white/[0.03]"
+                            ? "border-[#00E5FF] bg-[#00E5FF]/10 shadow-[0_0_22px_rgba(0,229,255,0.5)]"
+                            : "border-white/15 bg-black hover:border-[#00E5FF]/60 hover:bg-white/[0.03]"
                         }`}
                       >
                         {isPrimary && (
@@ -1000,8 +1000,8 @@ export default function OnboardingPage() {
                               data-testid={`vark-secondary-${key}`}
                               className={`p-3 rounded-xl border text-center transition-all duration-200 ${
                                 isSelected
-                                  ? "border-[#28c9d6] bg-[#28c9d6]/10"
-                                  : "border-white/15 bg-black hover:border-[#28c9d6]/60"
+                                  ? "border-[#00E5FF] bg-[#00E5FF]/10"
+                                  : "border-white/15 bg-black hover:border-[#00E5FF]/60"
                               }`}
                             >
                               <span className="text-2xl block">{style.icon}</span>
@@ -1038,8 +1038,8 @@ export default function OnboardingPage() {
           )}
 
           {phase === "subjects" && (
-            <Card className="border bg-black shadow-[0_0_30px_rgba(40,201,214,0.25)] rounded-3xl overflow-hidden" data-testid="card-subjects">
-              <div aria-hidden className="h-[3px]" style={{ background: "linear-gradient(90deg, #ff6a1f, #ff8a1f, #ffb020, #ffd83a, #28c9d6, #4f8cd9, #8e7cdc, #b066d6, #e6519c)" }} />
+            <Card className="border bg-black shadow-[0_0_30px_rgba(0,229,255,0.25)] rounded-3xl overflow-hidden" data-testid="card-subjects">
+              <div aria-hidden className="h-[3px]" style={{ background: "linear-gradient(90deg, #FF8A00, #FF8A00, #FFE600, #FFE600, #00E5FF, #006BFF, #8A2BFF, #8A2BFF, #FF2BD6)" }} />
               <CardHeader className="pb-2 pt-8 px-8">
                 <CardTitle className="text-2xl font-semibold text-white">
                   {t.selectSubjectsHeading}
@@ -1070,7 +1070,7 @@ export default function OnboardingPage() {
                     return (
                       <div
                         key={subject.code}
-                        className={`p-4 rounded-2xl border transition-all duration-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-sm ${isSelected ? "border-[#28c9d6] bg-[#28c9d6]/10 shadow-[0_0_18px_rgba(40,201,214,0.4)]" : "border-white/15 bg-black hover:border-[#28c9d6]/60 hover:bg-white/[0.03]"}`}
+                        className={`p-4 rounded-2xl border transition-all duration-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-sm ${isSelected ? "border-[#00E5FF] bg-[#00E5FF]/10 shadow-[0_0_18px_rgba(0,229,255,0.4)]" : "border-white/15 bg-black hover:border-[#00E5FF]/60 hover:bg-white/[0.03]"}`}
                       >
                         <div className="flex items-center gap-4">
                           <Checkbox
@@ -1134,8 +1134,8 @@ export default function OnboardingPage() {
           )}
 
           {phase === "school" && (
-            <Card className="border bg-black shadow-[0_0_30px_rgba(40,201,214,0.25)] rounded-3xl overflow-hidden" data-testid="card-school">
-              <div aria-hidden className="h-[3px]" style={{ background: "linear-gradient(90deg, #ff6a1f, #ff8a1f, #ffb020, #ffd83a, #28c9d6, #4f8cd9, #8e7cdc, #b066d6, #e6519c)" }} />
+            <Card className="border bg-black shadow-[0_0_30px_rgba(0,229,255,0.25)] rounded-3xl overflow-hidden" data-testid="card-school">
+              <div aria-hidden className="h-[3px]" style={{ background: "linear-gradient(90deg, #FF8A00, #FF8A00, #FFE600, #FFE600, #00E5FF, #006BFF, #8A2BFF, #8A2BFF, #FF2BD6)" }} />
               <CardHeader className="pb-2 pt-8 px-8">
                 <CardTitle className="text-2xl font-semibold text-white">
                   {t.schoolGradeHeading}
@@ -1232,8 +1232,8 @@ export default function OnboardingPage() {
           )}
 
           {phase === "parent_consent" && (
-            <Card className="border bg-black shadow-[0_0_30px_rgba(40,201,214,0.25)] rounded-3xl overflow-hidden" data-testid="card-parent-consent">
-              <div aria-hidden className="h-[3px]" style={{ background: "linear-gradient(90deg, #ff6a1f, #ff8a1f, #ffb020, #ffd83a, #28c9d6, #4f8cd9, #8e7cdc, #b066d6, #e6519c)" }} />
+            <Card className="border bg-black shadow-[0_0_30px_rgba(0,229,255,0.25)] rounded-3xl overflow-hidden" data-testid="card-parent-consent">
+              <div aria-hidden className="h-[3px]" style={{ background: "linear-gradient(90deg, #FF8A00, #FF8A00, #FFE600, #FFE600, #00E5FF, #006BFF, #8A2BFF, #8A2BFF, #FF2BD6)" }} />
               <CardHeader className="pb-2 pt-8 px-8">
                 <CardTitle className="text-2xl font-semibold text-white">
                   {t.parentConsentHeading}

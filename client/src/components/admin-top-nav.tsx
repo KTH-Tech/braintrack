@@ -196,21 +196,21 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
   return (
     <header
       className="sticky top-0 z-40 bg-black/85 backdrop-blur-xl"
-      style={{ borderBottom: "1px solid rgba(142,124,220,0.28)" }}
+      style={{ borderBottom: "1px solid rgba(138,43,255,0.28)" }}
       data-testid="admin-top-nav"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3">
         <Link href="/learn/admin" className="flex items-center gap-2 min-w-0" data-testid="admin-nav-brand">
           <div
             className="w-9 h-9 rounded-xl bg-black flex items-center justify-center shrink-0"
-            style={{ border: "1.5px solid #b066d6", boxShadow: "0 0 14px rgba(176,102,214,0.45)" }}
+            style={{ border: "1.5px solid #8A2BFF", boxShadow: "0 0 14px rgba(138,43,255,0.45)" }}
           >
-            <ShieldAlert className="w-4 h-4" style={{ color: "#b066d6" }} />
+            <ShieldAlert className="w-4 h-4" style={{ color: "#8A2BFF" }} />
           </div>
           <div className="min-w-0 hidden sm:block">
             <p
               className="text-[10px] font-black uppercase tracking-[0.22em]"
-              style={{ color: "#b066d6" }}
+              style={{ color: "#8A2BFF" }}
             >
               BrainTrack
             </p>
@@ -290,8 +290,8 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
                           <div
                             className="w-8 h-8 rounded-lg bg-black flex items-center justify-center shrink-0"
                             style={{
-                              border: "1px solid rgba(176,102,214,0.4)",
-                              boxShadow: "0 0 10px rgba(176,102,214,0.18)",
+                              border: "1px solid rgba(138,43,255,0.4)",
+                              boxShadow: "0 0 10px rgba(138,43,255,0.18)",
                             }}
                           >
                             <Icon className="w-4 h-4 text-white" />
@@ -336,9 +336,9 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
             href="/api/auth/logout"
             className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.22em] px-3 py-1.5 rounded-full bg-black"
             style={{
-              border: "1px solid rgba(230,81,156,0.5)",
-              color: "#e6519c",
-              boxShadow: "0 0 10px rgba(230,81,156,0.25)",
+              border: "1px solid rgba(255,43,214,0.5)",
+              color: "#FF2BD6",
+              boxShadow: "0 0 10px rgba(255,43,214,0.25)",
             }}
             data-testid="admin-nav-logout"
           >

@@ -11,19 +11,19 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 
-type NeonHex = "#ff6a1f" | "#ff8a1f" | "#ffb020" | "#ffd83a" | "#28c9d6" | "#4f8cd9" | "#8e7cdc" | "#b066d6" | "#e6519c";
+type NeonHex = "#FF8A00" | "#FF8A00" | "#FFE600" | "#FFE600" | "#00E5FF" | "#006BFF" | "#8A2BFF" | "#8A2BFF" | "#FF2BD6";
 
 function haloFor(color: NeonHex, alpha = 0.28) {
   const map: Record<NeonHex, string> = {
-    "#ff6a1f": `rgba(255,106,31,${alpha})`,
-    "#ff8a1f": `rgba(255,138,31,${alpha})`,
-    "#ffb020": `rgba(255,176,32,${alpha})`,
-    "#ffd83a": `rgba(255,216,58,${alpha})`,
-    "#28c9d6": `rgba(40,201,214,${alpha})`,
-    "#4f8cd9": `rgba(79,140,217,${alpha})`,
-    "#8e7cdc": `rgba(142,124,220,${alpha})`,
-    "#b066d6": `rgba(176,102,214,${alpha})`,
-    "#e6519c": `rgba(230,81,156,${alpha})`,
+    "#FF8A00": `rgba(255,138,0,${alpha})`,
+    "#FF8A00": `rgba(255,138,0,${alpha})`,
+    "#FFE600": `rgba(255,230,0,${alpha})`,
+    "#FFE600": `rgba(255,230,0,${alpha})`,
+    "#00E5FF": `rgba(0,229,255,${alpha})`,
+    "#006BFF": `rgba(0,107,255,${alpha})`,
+    "#8A2BFF": `rgba(138,43,255,${alpha})`,
+    "#8A2BFF": `rgba(138,43,255,${alpha})`,
+    "#FF2BD6": `rgba(255,43,214,${alpha})`,
   };
   return map[color];
 }
@@ -296,21 +296,21 @@ const t = {
 };
 
 const scienceCards = [
-  { icon: Brain,         color: "#4f8cd9" as NeonHex, titleKey: "c1Title" as const, descKey: "c1Desc" as const, detailKey: "c1Detail" as const, sourceKey: "c1Source" as const, statKey: null,                  statLabelKey: null,                        barValue: 40, barLabel: "engagement" },
-  { icon: Target,        color: "#28c9d6" as NeonHex, titleKey: "c2Title" as const, descKey: "c2Desc" as const, detailKey: "c2Detail" as const, sourceKey: "c2Source" as const, statKey: "c2Stat" as const, statLabelKey: "c2StatLabel" as const, barValue: 80, barLabel: "recall" },
-  { icon: Zap,           color: "#ffd83a" as NeonHex, titleKey: "c3Title" as const, descKey: "c3Desc" as const, detailKey: "c3Detail" as const, sourceKey: "c3Source" as const, statKey: "c3Stat" as const, statLabelKey: "c3StatLabel" as const, barValue: 75, barLabel: "retention" },
-  { icon: BookOpen,      color: "#8e7cdc" as NeonHex, titleKey: "c4Title" as const, descKey: "c4Desc" as const, detailKey: "c4Detail" as const, sourceKey: "c4Source" as const, statKey: "c4Stat" as const, statLabelKey: "c4StatLabel" as const, barValue: 40, barLabel: "effectiveness" },
-  { icon: MessageSquare, color: "#e6519c" as NeonHex, titleKey: "c5Title" as const, descKey: "c5Desc" as const, detailKey: "c5Detail" as const, sourceKey: "c5Source" as const, statKey: null,                  statLabelKey: null,                        barValue: 73, barLabel: "effect size" },
-  { icon: Shield,        color: "#b066d6" as NeonHex, titleKey: "c6Title" as const, descKey: "c6Desc" as const, detailKey: "c6Detail" as const, sourceKey: "c6Source" as const, statKey: null,                  statLabelKey: null,                        barValue: 58, barLabel: "improvement" },
+  { icon: Brain,         color: "#006BFF" as NeonHex, titleKey: "c1Title" as const, descKey: "c1Desc" as const, detailKey: "c1Detail" as const, sourceKey: "c1Source" as const, statKey: null,                  statLabelKey: null,                        barValue: 40, barLabel: "engagement" },
+  { icon: Target,        color: "#00E5FF" as NeonHex, titleKey: "c2Title" as const, descKey: "c2Desc" as const, detailKey: "c2Detail" as const, sourceKey: "c2Source" as const, statKey: "c2Stat" as const, statLabelKey: "c2StatLabel" as const, barValue: 80, barLabel: "recall" },
+  { icon: Zap,           color: "#FFE600" as NeonHex, titleKey: "c3Title" as const, descKey: "c3Desc" as const, detailKey: "c3Detail" as const, sourceKey: "c3Source" as const, statKey: "c3Stat" as const, statLabelKey: "c3StatLabel" as const, barValue: 75, barLabel: "retention" },
+  { icon: BookOpen,      color: "#8A2BFF" as NeonHex, titleKey: "c4Title" as const, descKey: "c4Desc" as const, detailKey: "c4Detail" as const, sourceKey: "c4Source" as const, statKey: "c4Stat" as const, statLabelKey: "c4StatLabel" as const, barValue: 40, barLabel: "effectiveness" },
+  { icon: MessageSquare, color: "#FF2BD6" as NeonHex, titleKey: "c5Title" as const, descKey: "c5Desc" as const, detailKey: "c5Detail" as const, sourceKey: "c5Source" as const, statKey: null,                  statLabelKey: null,                        barValue: 73, barLabel: "effect size" },
+  { icon: Shield,        color: "#8A2BFF" as NeonHex, titleKey: "c6Title" as const, descKey: "c6Desc" as const, detailKey: "c6Detail" as const, sourceKey: "c6Source" as const, statKey: null,                  statLabelKey: null,                        barValue: 58, barLabel: "improvement" },
 ] as const;
 
 const caseStudyItems = [
-  { key: "1", icon: TrendingUp, color: "#ff6a1f" as NeonHex },
-  { key: "2", icon: Clock,      color: "#ffb020" as NeonHex },
-  { key: "3", icon: Target,     color: "#28c9d6" as NeonHex },
-  { key: "4", icon: Flame,      color: "#ff8a1f" as NeonHex },
-  { key: "5", icon: Repeat,     color: "#8e7cdc" as NeonHex },
-  { key: "6", icon: Users,      color: "#4f8cd9" as NeonHex },
+  { key: "1", icon: TrendingUp, color: "#FF8A00" as NeonHex },
+  { key: "2", icon: Clock,      color: "#FFE600" as NeonHex },
+  { key: "3", icon: Target,     color: "#00E5FF" as NeonHex },
+  { key: "4", icon: Flame,      color: "#FF8A00" as NeonHex },
+  { key: "5", icon: Repeat,     color: "#8A2BFF" as NeonHex },
+  { key: "6", icon: Users,      color: "#006BFF" as NeonHex },
 ] as const;
 
 function AnimatedBar({ value, delay, color, parentInView }: { value: number; delay: number; color: NeonHex; parentInView?: boolean }) {
@@ -587,8 +587,8 @@ function RainbowCta({ children, href, testId }: { children: React.ReactNode; hre
       <button
         className="relative px-8 py-3 rounded-2xl font-black text-black text-sm sm:text-base uppercase tracking-[0.12em] inline-flex items-center gap-2"
         style={{
-          background: "linear-gradient(90deg, #ff6a1f, #ff8a1f, #ffb020, #ffd83a, #28c9d6, #4f8cd9, #8e7cdc, #b066d6, #e6519c)",
-          boxShadow: "0 0 24px rgba(255,176,32,0.35), 0 0 36px rgba(176,102,214,0.25)",
+          background: "linear-gradient(90deg, #FF8A00, #FF8A00, #FFE600, #FFE600, #00E5FF, #006BFF, #8A2BFF, #8A2BFF, #FF2BD6)",
+          boxShadow: "0 0 24px rgba(255,230,0,0.35), 0 0 36px rgba(138,43,255,0.25)",
         }}
       >
         {children}
@@ -602,7 +602,7 @@ function GhostCta({ children, href, testId }: { children: React.ReactNode; href:
     <Link href={href} data-testid={testId}>
       <button
         className="px-8 py-3 rounded-2xl font-black text-white text-sm sm:text-base uppercase tracking-[0.12em] bg-black inline-flex items-center gap-2"
-        style={{ border: "1.5px solid #28c9d6", boxShadow: "0 0 20px rgba(40,201,214,0.25)" }}
+        style={{ border: "1.5px solid #00E5FF", boxShadow: "0 0 20px rgba(0,229,255,0.25)" }}
       >
         {children}
       </button>
@@ -640,19 +640,19 @@ export default function ResearchPage() {
   const bottomCtaAnim = useInView();
 
   const statsGrid: { value: string; label: string; icon: any; color: NeonHex }[] = [
-    { value: "80%", label: language === "af" ? "Langtermyn Herroeping" : "Long-term Recall", icon: BarChart3, color: "#28c9d6" },
-    { value: "3×", label: language === "af" ? "Beter Retensie" : "Better Retention", icon: TrendingUp, color: "#8e7cdc" },
-    { value: "0.73", label: language === "af" ? "Terugvoer Effekgrootte" : "Feedback Effect Size", icon: Zap, color: "#ffd83a" },
-    { value: "10yr", label: language === "af" ? "NSC-vraestelle" : "NSC Papers", icon: BookOpen, color: "#e6519c" },
+    { value: "80%", label: language === "af" ? "Langtermyn Herroeping" : "Long-term Recall", icon: BarChart3, color: "#00E5FF" },
+    { value: "3×", label: language === "af" ? "Beter Retensie" : "Better Retention", icon: TrendingUp, color: "#8A2BFF" },
+    { value: "0.73", label: language === "af" ? "Terugvoer Effekgrootte" : "Feedback Effect Size", icon: Zap, color: "#FFE600" },
+    { value: "10yr", label: language === "af" ? "NSC-vraestelle" : "NSC Papers", icon: BookOpen, color: "#FF2BD6" },
   ];
 
   return (
     <div
       className="min-h-screen relative"
       style={{
-        background: `radial-gradient(ellipse 80% 60% at 10% -5%, rgba(40,201,214,0.10) 0%, transparent 55%),
-                     radial-gradient(ellipse 80% 60% at 90% 0%, rgba(176,102,214,0.10) 0%, transparent 55%),
-                     radial-gradient(ellipse 100% 80% at 50% 110%, rgba(142,124,220,0.10) 0%, transparent 60%),
+        background: `radial-gradient(ellipse 80% 60% at 10% -5%, rgba(0,229,255,0.10) 0%, transparent 55%),
+                     radial-gradient(ellipse 80% 60% at 90% 0%, rgba(138,43,255,0.10) 0%, transparent 55%),
+                     radial-gradient(ellipse 100% 80% at 50% 110%, rgba(138,43,255,0.10) 0%, transparent 60%),
                      linear-gradient(180deg, ${RESEARCH_SURFACE_2} 0%, ${RESEARCH_SURFACE} 50%, #070810 100%)`,
       }}
     >
@@ -664,19 +664,19 @@ export default function ResearchPage() {
         <div
           className="research-orb research-orb--cyan"
           style={{
-            background: "radial-gradient(circle, rgba(40,201,214,0.28), transparent 70%)",
+            background: "radial-gradient(circle, rgba(0,229,255,0.28), transparent 70%)",
           }}
         />
         <div
           className="research-orb research-orb--magenta"
           style={{
-            background: "radial-gradient(circle, rgba(230,81,156,0.22), transparent 70%)",
+            background: "radial-gradient(circle, rgba(255,43,214,0.22), transparent 70%)",
           }}
         />
         <div
           className="research-orb research-orb--violet"
           style={{
-            background: "radial-gradient(circle, rgba(142,124,220,0.22), transparent 70%)",
+            background: "radial-gradient(circle, rgba(138,43,255,0.22), transparent 70%)",
           }}
         />
         {/* Starfield (pure CSS dots — extremely light) */}
@@ -738,16 +738,16 @@ export default function ResearchPage() {
         }
         .research-rainbow-rule {
           background: linear-gradient(90deg,
-            #ff6a1f, #ff8a1f, #ffb020, #ffd83a, #28c9d6,
-            #4f8cd9, #8e7cdc, #b066d6, #e6519c,
-            #ff6a1f, #ff8a1f, #ffb020);
+            #FF8A00, #FF8A00, #FFE600, #FFE600, #00E5FF,
+            #006BFF, #8A2BFF, #8A2BFF, #FF2BD6,
+            #FF8A00, #FF8A00, #FFE600);
           background-size: 200% 100%;
           animation: research-rainbow-sweep 8s linear infinite;
         }
 
         @keyframes research-pulse-ring {
-          0%, 100% { box-shadow: 0 0 14px rgba(40,201,214,0.28), 0 0 0 0 rgba(40,201,214,0.45); }
-          50%      { box-shadow: 0 0 24px rgba(40,201,214,0.5),  0 0 0 6px rgba(40,201,214,0.0); }
+          0%, 100% { box-shadow: 0 0 14px rgba(0,229,255,0.28), 0 0 0 0 rgba(0,229,255,0.45); }
+          50%      { box-shadow: 0 0 24px rgba(0,229,255,0.5),  0 0 0 6px rgba(0,229,255,0.0); }
         }
         .research-hero-pill { animation: research-pulse-ring 3.2s ease-in-out infinite; }
 
@@ -774,10 +774,10 @@ export default function ResearchPage() {
             >
               <div
                 className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-5 bg-black"
-                style={{ border: "1.5px solid #28c9d6", boxShadow: "0 0 14px rgba(40,201,214,0.28)" }}
+                style={{ border: "1.5px solid #00E5FF", boxShadow: "0 0 14px rgba(0,229,255,0.28)" }}
               >
-                <GraduationCap className="w-3.5 h-3.5" style={{ color: "#28c9d6" }} />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: "#28c9d6" }}>
+                <GraduationCap className="w-3.5 h-3.5" style={{ color: "#00E5FF" }} />
+                <span className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: "#00E5FF" }}>
                   {language === "af" ? "Die Wetenskap" : "The Science"}
                 </span>
               </div>
@@ -835,14 +835,14 @@ export default function ResearchPage() {
               </GhostCta>
             </div>
 
-            <NeonShell color="#b066d6" className="mb-12" testId="card-comparison">
-              <div className="p-5 sm:p-6 text-center" style={{ borderBottom: "1px solid rgba(176,102,214,0.35)" }}>
+            <NeonShell color="#8A2BFF" className="mb-12" testId="card-comparison">
+              <div className="p-5 sm:p-6 text-center" style={{ borderBottom: "1px solid rgba(138,43,255,0.35)" }}>
                 <div
                   className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black mb-3"
-                  style={{ border: "1px solid #b066d6", boxShadow: "0 0 12px rgba(176,102,214,0.35)" }}
+                  style={{ border: "1px solid #8A2BFF", boxShadow: "0 0 12px rgba(138,43,255,0.35)" }}
                 >
-                  <BarChart3 className="w-3.5 h-3.5" style={{ color: "#b066d6" }} />
-                  <span className="text-[10px] font-black uppercase tracking-[0.22em]" style={{ color: "#b066d6" }}>
+                  <BarChart3 className="w-3.5 h-3.5" style={{ color: "#8A2BFF" }} />
+                  <span className="text-[10px] font-black uppercase tracking-[0.22em]" style={{ color: "#8A2BFF" }}>
                     {language === "af" ? "Hoofkop-teen-hoofkop" : "Head-to-Head"}
                   </span>
                 </div>
@@ -862,10 +862,10 @@ export default function ResearchPage() {
                   <div className="flex md:justify-end">
                     <span
                       className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black"
-                      style={{ border: "1px solid #28c9d6", boxShadow: "0 0 10px rgba(40,201,214,0.35)" }}
+                      style={{ border: "1px solid #00E5FF", boxShadow: "0 0 10px rgba(0,229,255,0.35)" }}
                     >
-                      <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#28c9d6", boxShadow: "0 0 6px #28c9d6" }} />
-                      <span className="text-[10px] font-black uppercase tracking-[0.22em]" style={{ color: "#28c9d6" }}>
+                      <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#00E5FF", boxShadow: "0 0 6px #00E5FF" }} />
+                      <span className="text-[10px] font-black uppercase tracking-[0.22em]" style={{ color: "#00E5FF" }}>
                         {c.comparisonBrainTrack}
                       </span>
                     </span>
@@ -884,12 +884,12 @@ export default function ResearchPage() {
                   </div>
                 </div>
 
-                <ComparisonRow label={c.comp1Label} bt={c.comp1BT} trad={c.comp1Trad} index={0} accent="#28c9d6" />
-                <ComparisonRow label={c.comp2Label} bt={c.comp2BT} trad={c.comp2Trad} index={1} accent="#8e7cdc" />
-                <ComparisonRow label={c.comp3Label} bt={c.comp3BT} trad={c.comp3Trad} index={2} accent="#ffd83a" />
-                <ComparisonRow label={c.comp4Label} bt={c.comp4BT} trad={c.comp4Trad} index={3} accent="#ff8a1f" />
-                <ComparisonRow label={c.comp5Label} bt={c.comp5BT} trad={c.comp5Trad} index={4} accent="#e6519c" />
-                <ComparisonRow label={c.comp6Label} bt={c.comp6BT} trad={c.comp6Trad} index={5} accent="#b066d6" />
+                <ComparisonRow label={c.comp1Label} bt={c.comp1BT} trad={c.comp1Trad} index={0} accent="#00E5FF" />
+                <ComparisonRow label={c.comp2Label} bt={c.comp2BT} trad={c.comp2Trad} index={1} accent="#8A2BFF" />
+                <ComparisonRow label={c.comp3Label} bt={c.comp3BT} trad={c.comp3Trad} index={2} accent="#FFE600" />
+                <ComparisonRow label={c.comp4Label} bt={c.comp4BT} trad={c.comp4Trad} index={3} accent="#FF8A00" />
+                <ComparisonRow label={c.comp5Label} bt={c.comp5BT} trad={c.comp5Trad} index={4} accent="#FF2BD6" />
+                <ComparisonRow label={c.comp6Label} bt={c.comp6BT} trad={c.comp6Trad} index={5} accent="#8A2BFF" />
               </div>
             </NeonShell>
 

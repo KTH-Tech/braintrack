@@ -115,12 +115,12 @@ function CosmicCard({ children, hex, className = "" }: { children: React.ReactNo
 }
 
 const COSMIC: Record<"cyan" | "emerald" | "amber" | "red" | "purple" | "pink", { hex: string; halo: string }> = {
-  cyan:    { hex: "#28c9d6", halo: "rgba(40,201,214,0.35)" },
+  cyan:    { hex: "#00E5FF", halo: "rgba(0,229,255,0.35)" },
   emerald: { hex: "#4ADE80", halo: "rgba(74,222,128,0.35)" },
-  amber:   { hex: "#ffd83a", halo: "rgba(255,216,58,0.35)" },
-  red:     { hex: "#e6519c", halo: "rgba(230,81,156,0.40)" },
-  purple:  { hex: "#b066d6", halo: "rgba(176,102,214,0.35)" },
-  pink:    { hex: "#e6519c", halo: "rgba(230,81,156,0.35)" },
+  amber:   { hex: "#FFE600", halo: "rgba(255,230,0,0.35)" },
+  red:     { hex: "#FF2BD6", halo: "rgba(255,43,214,0.40)" },
+  purple:  { hex: "#8A2BFF", halo: "rgba(138,43,255,0.35)" },
+  pink:    { hex: "#FF2BD6", halo: "rgba(255,43,214,0.35)" },
 };
 
 function GlowCard({ children, color = "cyan", className = "" }: { children: React.ReactNode; color?: "cyan" | "emerald" | "amber" | "red"; className?: string }) {
@@ -162,7 +162,7 @@ function TrendSparkline({ scores }: { scores: number[] }) {
   });
   const last = scores[scores.length - 1];
   const first = scores[0];
-  const color = last > first ? "#4ADE80" : last < first ? "#e6519c" : "#28c9d6";
+  const color = last > first ? "#4ADE80" : last < first ? "#FF2BD6" : "#00E5FF";
   return (
     <svg width={W} height={H} role="presentation" aria-hidden="true">
       <polyline points={pts.join(" ")} fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
@@ -310,8 +310,8 @@ function CountdownClock({ dateStr, startTime, hex, isAf }: { dateStr: string; st
 
   // Urgency ramp: <1d pink pulse, <7d orange, otherwise keep parent hex
   const urgentHex =
-    total < 24 * 3600 * 1000 ? "#e6519c" :
-    total < 7 * 86400 * 1000 ? "#ff8a1f" :
+    total < 24 * 3600 * 1000 ? "#FF2BD6" :
+    total < 7 * 86400 * 1000 ? "#FF8A00" :
     hex;
 
   const labels = isAf
@@ -329,7 +329,7 @@ function CountdownClock({ dateStr, startTime, hex, isAf }: { dateStr: string; st
     return (
       <div
         className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black text-[11px] font-black uppercase tracking-[0.18em] bt-pulse-ring"
-        style={{ color: "#e6519c", border: "1.5px solid #e6519c", boxShadow: "0 0 14px #e6519c99", ["--bt-ring" as any]: "rgba(230,81,156,0.7)" }}
+        style={{ color: "#FF2BD6", border: "1.5px solid #FF2BD6", boxShadow: "0 0 14px #FF2BD699", ["--bt-ring" as any]: "rgba(255,43,214,0.7)" }}
       >
         <Clock className="w-3 h-3" /> {isAf ? "Eksamen BEGIN!" : "EXAM IS ON!"}
       </div>
@@ -434,7 +434,7 @@ function ChildReadinessCard({
     questionsAnswered: progress?.totalQuestionsAnswered,
   });
   const overallBand = readinessBand(overall);
-  const overallHex = overallBand === "green" ? "#4ADE80" : overallBand === "amber" ? "#ffd83a" : "#e6519c";
+  const overallHex = overallBand === "green" ? "#4ADE80" : overallBand === "amber" ? "#FFE600" : "#FF2BD6";
 
   const subjectName = (id: number) => {
     const s = subjects?.find(x => x.id === id);
@@ -485,7 +485,7 @@ function ChildReadinessCard({
             <div className="flex flex-wrap gap-1.5" data-testid={`parent-child-pills-${learnerId}`}>
               {pills.map(({ id, score }) => {
                 const band = readinessBand(score);
-                const hex = band === "green" ? "#4ADE80" : band === "amber" ? "#ffd83a" : "#e6519c";
+                const hex = band === "green" ? "#4ADE80" : band === "amber" ? "#FFE600" : "#FF2BD6";
                 return (
                   <span
                     key={id}
@@ -512,7 +512,7 @@ function ReadinessPanel({ readiness, isAf }: { readiness: ReadinessItem[]; isAf:
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
-        <Zap className="w-4 h-4" style={{ color: "#28c9d6", filter: "drop-shadow(0 0 4px #28c9d6)" }} />
+        <Zap className="w-4 h-4" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
         <h3 className="font-bold text-white text-base">{isAf ? "Gereedheidstelsel per Vak" : "Readiness Score per Subject"}</h3>
       </div>
       <p className="text-xs text-white -mt-2">{isAf ? "Hoe gereed is jou kind vir die eksamen in elke vak?" : "How exam-ready is your child in each subject?"}</p>
@@ -590,7 +590,7 @@ function ReadinessCard({ item, bandColor, glowColor, isAf }: {
   const baselineDisplay = useCountUp(item.baselineMark, 900);
   const deltaDisplay = useCountUp(Math.abs(item.delta), 900);
   const deltaSign = item.delta >= 0 ? "+" : "-";
-  const barHex = item.masteryBand === "green" ? "#4ADE80" : item.masteryBand === "amber" ? "#ffd83a" : "#e6519c";
+  const barHex = item.masteryBand === "green" ? "#4ADE80" : item.masteryBand === "amber" ? "#FFE600" : "#FF2BD6";
   return (
             <GlowCard color={glowColor} className="p-4">
               <div className="flex items-start justify-between mb-3">
@@ -608,7 +608,7 @@ function ReadinessCard({ item, bandColor, glowColor, isAf }: {
                   </div>
                   <div className="flex items-center gap-1 mt-1">
                     {item.trendDirection === "up" && <ArrowUpRight className="w-3 h-3" style={{ color: "#4ADE80" }} />}
-                    {item.trendDirection === "down" && <TrendingDown className="w-3 h-3" style={{ color: "#e6519c" }} />}
+                    {item.trendDirection === "down" && <TrendingDown className="w-3 h-3" style={{ color: "#FF2BD6" }} />}
                     {item.trendDirection === "stable" && <Minus className="w-3 h-3 text-white" />}
                     <span className="text-[10px] text-white">
                       {item.trendDirection === "up" ? (isAf ? "Styg" : "Rising") : item.trendDirection === "down" ? (isAf ? "Daal" : "Dropping") : (isAf ? "Stabiel" : "Stable")}
@@ -618,7 +618,7 @@ function ReadinessCard({ item, bandColor, glowColor, isAf }: {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-[10px] text-white tabular-nums">{isAf ? "Aanvanglyn" : "Baseline"}: {baselineDisplay}%</span>
-                <span className="text-[10px] font-semibold tabular-nums" style={{ color: item.delta >= 0 ? "#4ADE80" : "#e6519c" }}>
+                <span className="text-[10px] font-semibold tabular-nums" style={{ color: item.delta >= 0 ? "#4ADE80" : "#FF2BD6" }}>
                   {deltaSign}{deltaDisplay}% {isAf ? "verbetering" : "change"}
                 </span>
               </div>
@@ -634,21 +634,21 @@ function RiskAlerts({ readiness, isAf }: { readiness: ReadinessItem[]; isAf: boo
   return (
     <GlowCard color="red" className="p-5">
       <div className="flex items-start gap-3">
-        <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shrink-0" style={{ border: "1px solid #e6519c", boxShadow: "0 0 12px rgba(230,81,156,0.45)" }}>
-          <ShieldAlert className="w-5 h-5" style={{ color: "#e6519c", filter: "drop-shadow(0 0 4px #e6519c)" }} />
+        <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shrink-0" style={{ border: "1px solid #FF2BD6", boxShadow: "0 0 12px rgba(255,43,214,0.45)" }}>
+          <ShieldAlert className="w-5 h-5" style={{ color: "#FF2BD6", filter: "drop-shadow(0 0 4px #FF2BD6)" }} />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2">
-            <h3 className="font-bold text-sm" style={{ color: "#e6519c" }}>{isAf ? "Aandag Vereis" : "Attention Needed"}</h3>
+            <h3 className="font-bold text-sm" style={{ color: "#FF2BD6" }}>{isAf ? "Aandag Vereis" : "Attention Needed"}</h3>
             <NeonBadge color="red">{alerts.length} {isAf ? "vak" : alerts.length === 1 ? "subject" : "subjects"}</NeonBadge>
           </div>
           <div className="space-y-2">
             {alerts.map((a) => (
-              <div key={a.subjectName} className="rounded-lg bg-black p-3" style={{ border: "1px solid rgba(230,81,156,0.45)" }}>
+              <div key={a.subjectName} className="rounded-lg bg-black p-3" style={{ border: "1px solid rgba(255,43,214,0.45)" }}>
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-sm font-semibold text-white">{a.subjectName}</span>
                   {a.trendDirection === "down" && (
-                    <span className="flex items-center gap-1 text-[10px]" style={{ color: "#e6519c" }}>
+                    <span className="flex items-center gap-1 text-[10px]" style={{ color: "#FF2BD6" }}>
                       <TrendingDown className="w-3 h-3" />
                       {isAf ? "Dalende tendens" : "Declining trend"}
                     </span>
@@ -690,18 +690,18 @@ function ActivityFeed({ events, isAf }: { events: ActivityEvent[]; isAf: boolean
   return (
     <GlowCard color="cyan" className="p-5">
       <div className="flex items-center gap-2 mb-4">
-        <Activity className="w-4 h-4" style={{ color: "#28c9d6", filter: "drop-shadow(0 0 4px #28c9d6)" }} />
+        <Activity className="w-4 h-4" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
         <h3 className="font-bold text-white text-sm">{isAf ? "Onlangse Aktiwiteit" : "Recent Activity"}</h3>
         <NeonBadge color="cyan">{isAf ? "Lewend" : "Live"}</NeonBadge>
       </div>
       <div className="space-y-2">
         {recent.map((event, i) => (
-          <div key={event.id} className="flex items-center gap-3 p-2.5 rounded-xl bg-black" style={{ border: `1px solid ${event.isCorrect ? "#4ADE80" : "#e6519c"}33` }}>
+          <div key={event.id} className="flex items-center gap-3 p-2.5 rounded-xl bg-black" style={{ border: `1px solid ${event.isCorrect ? "#4ADE80" : "#FF2BD6"}33` }}>
             <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 bg-black"
-              style={{ border: `1px solid ${event.isCorrect ? "#4ADE80" : "#e6519c"}66`, boxShadow: `0 0 8px ${event.isCorrect ? "#4ADE80" : "#e6519c"}55` }}>
+              style={{ border: `1px solid ${event.isCorrect ? "#4ADE80" : "#FF2BD6"}66`, boxShadow: `0 0 8px ${event.isCorrect ? "#4ADE80" : "#FF2BD6"}55` }}>
               {event.isCorrect
                 ? <CheckCircle className="w-3.5 h-3.5" style={{ color: "#4ADE80" }} />
-                : <AlertTriangle className="w-3.5 h-3.5" style={{ color: "#e6519c" }} />}
+                : <AlertTriangle className="w-3.5 h-3.5" style={{ color: "#FF2BD6" }} />}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-medium text-white truncate">
@@ -726,14 +726,14 @@ function MonthlySummaryPanel({ summary, isAf }: { summary: MonthlySummary; isAf:
   return (
     <GlowCard color="cyan" className="p-5">
       <div className="flex items-center gap-2 mb-5">
-        <BarChart3 className="w-4 h-4" style={{ color: "#28c9d6", filter: "drop-shadow(0 0 4px #28c9d6)" }} />
+        <BarChart3 className="w-4 h-4" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
         <h3 className="font-bold text-white text-sm">{isAf ? "30-Dae Opsomming" : "30-Day Summary"}</h3>
         <NeonBadge color="cyan">{isAf ? "Hierdie Maand" : "This Month"}</NeonBadge>
       </div>
       <div className="grid grid-cols-3 gap-3 mb-5">
         {[
-          { label: isAf ? "Vrae Beantwoord" : "Questions Answered", value: summary.questionsAnswered, hex: "#28c9d6" },
-          { label: isAf ? "Studiedae" : "Study Days",               value: summary.studyDays,         hex: "#4f8cd9" },
+          { label: isAf ? "Vrae Beantwoord" : "Questions Answered", value: summary.questionsAnswered, hex: "#00E5FF" },
+          { label: isAf ? "Studiedae" : "Study Days",               value: summary.studyDays,         hex: "#006BFF" },
           { label: isAf ? "Gem. Akkuraatheid" : "Avg Accuracy",     value: `${summary.avgAccuracy}%`, hex: "#4ADE80" },
         ].map(({ label, value, hex }) => (
           <div key={label} className="text-center p-3 rounded-xl bg-black" style={{ border: `1px solid ${hex}33`, boxShadow: `inset 0 0 12px ${hex}15` }}>
@@ -752,10 +752,10 @@ function MonthlySummaryPanel({ summary, isAf }: { summary: MonthlySummary; isAf:
                 <div className="flex-1">
                   <div className="flex justify-between mb-1">
                     <span className="text-xs text-white font-medium">{s.subjectName}</span>
-                    <span className="text-xs font-bold" style={{ color: "#28c9d6", textShadow: "0 0 6px rgba(40,201,214,0.7)" }}>{s.accuracy}%</span>
+                    <span className="text-xs font-bold" style={{ color: "#00E5FF", textShadow: "0 0 6px rgba(0,229,255,0.7)" }}>{s.accuracy}%</span>
                   </div>
                   <div className="h-1 rounded-full bg-black overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
-                    <div className="h-full rounded-full transition-all duration-700" style={{ width: `${s.accuracy}%`, background: "#28c9d6", boxShadow: "0 0 8px #28c9d6aa" }} />
+                    <div className="h-full rounded-full transition-all duration-700" style={{ width: `${s.accuracy}%`, background: "#00E5FF", boxShadow: "0 0 8px #00E5FFaa" }} />
                   </div>
                 </div>
               </div>
@@ -781,14 +781,14 @@ function SubscriptionPanel({ isAf }: { isAf: boolean }) {
 
   const statusMap: Record<string, { en: string; af: string; hex: string }> = {
     active:       { en: "Active",          af: "Aktief",         hex: "#4ADE80" },
-    trial:        { en: "Free Trial",      af: "Gratis Proeftyd", hex: "#28c9d6" },
-    trialing:     { en: "Free Trial",      af: "Gratis Proeftyd", hex: "#28c9d6" },
-    pending:      { en: "Pending",         af: "Hangend",        hex: "#ffd83a" },
-    grace:        { en: "Payment Issue",   af: "Betaalprobleem", hex: "#ff8a1f" },
-    grace_period: { en: "Payment Issue",   af: "Betaalprobleem", hex: "#ff8a1f" },
-    lapsed:       { en: "Expired",         af: "Verval",         hex: "#e6519c" },
-    cancelled:    { en: "Cancelled",       af: "Gekanselleer",   hex: "#e6519c" },
-    none:         { en: "Not Subscribed",  af: "Nie Ingeskryf",  hex: "#8e7cdc" },
+    trial:        { en: "Free Trial",      af: "Gratis Proeftyd", hex: "#00E5FF" },
+    trialing:     { en: "Free Trial",      af: "Gratis Proeftyd", hex: "#00E5FF" },
+    pending:      { en: "Pending",         af: "Hangend",        hex: "#FFE600" },
+    grace:        { en: "Payment Issue",   af: "Betaalprobleem", hex: "#FF8A00" },
+    grace_period: { en: "Payment Issue",   af: "Betaalprobleem", hex: "#FF8A00" },
+    lapsed:       { en: "Expired",         af: "Verval",         hex: "#FF2BD6" },
+    cancelled:    { en: "Cancelled",       af: "Gekanselleer",   hex: "#FF2BD6" },
+    none:         { en: "Not Subscribed",  af: "Nie Ingeskryf",  hex: "#8A2BFF" },
   };
   const s = statusMap[status] || statusMap.none;
 
@@ -839,8 +839,8 @@ function SubscriptionPanel({ isAf }: { isAf: boolean }) {
         <Link href="/subscribe">
           <Button
             size="sm"
-            className="shrink-0 bg-black text-[#28c9d6] hover:bg-[#28c9d6]/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
-            style={{ border: "1px solid #28c9d6", boxShadow: "0 0 12px rgba(40,201,214,0.35)" }}
+            className="shrink-0 bg-black text-[#00E5FF] hover:bg-[#00E5FF]/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+            style={{ border: "1px solid #00E5FF", boxShadow: "0 0 12px rgba(0,229,255,0.35)" }}
             data-testid="button-manage-subscription"
           >
             {isAf ? "Bestuur Betaling" : "Manage Payment"}
@@ -939,7 +939,7 @@ function WhatsAppLinkStatusPanel({ isAf }: { isAf: boolean }) {
     }
   };
 
-  const hex = isOpened ? "#4ADE80" : isDelivered ? "#28c9d6" : isFailed ? "#e6519c" : "#ffd83a";
+  const hex = isOpened ? "#4ADE80" : isDelivered ? "#00E5FF" : isFailed ? "#FF2BD6" : "#FFE600";
 
   return (
     <div
@@ -970,7 +970,7 @@ function WhatsAppLinkStatusPanel({ isAf }: { isAf: boolean }) {
             const deliveredAtLabel = fmtTime(data.deliveryUpdatedAt);
             return (
               <div className="flex items-center gap-2" data-testid="link-status-delivered">
-                <CheckCircle2 className="w-4 h-4" style={{ color: "#28c9d6" }} />
+                <CheckCircle2 className="w-4 h-4" style={{ color: "#00E5FF" }} />
                 <p className="text-sm font-semibold text-white">
                   {isAf ? "Afgelewer" : "Delivered"}
                   {deliveredAtLabel
@@ -985,7 +985,7 @@ function WhatsAppLinkStatusPanel({ isAf }: { isAf: boolean }) {
             const sentAtLabel = fmtTime(data.createdAt);
             return (
               <div className="flex items-center gap-2" data-testid="link-status-sent">
-                <Loader2 className="w-4 h-4 animate-spin" style={{ color: "#ffd83a" }} />
+                <Loader2 className="w-4 h-4 animate-spin" style={{ color: "#FFE600" }} />
                 <p className="text-sm text-white">
                   {isAf
                     ? <>Gestuur{sentAtLabel ? <span className="font-semibold"> {sentAtLabel}</span> : ""} — wag op bevestiging…</>
@@ -998,7 +998,7 @@ function WhatsAppLinkStatusPanel({ isAf }: { isAf: boolean }) {
           {!isOpened && isFailed && (
             <div data-testid="link-status-failed">
               <div className="flex items-center gap-2 mb-2">
-                <XCircle className="w-4 h-4" style={{ color: "#e6519c" }} />
+                <XCircle className="w-4 h-4" style={{ color: "#FF2BD6" }} />
                 <p className="text-sm font-semibold text-white">
                   {isAf ? "Aflewering misluk" : "Delivery failed"}
                 </p>
@@ -1011,7 +1011,7 @@ function WhatsAppLinkStatusPanel({ isAf }: { isAf: boolean }) {
 
           {!isOpened && isPending && (
             <div className="flex items-center gap-2" data-testid="link-status-pending">
-              <Loader2 className="w-4 h-4 animate-spin" style={{ color: "#ffd83a" }} />
+              <Loader2 className="w-4 h-4 animate-spin" style={{ color: "#FFE600" }} />
               <p className="text-sm text-white">
                 {isAf ? "Gestuur — skakel behoort binnekort te kom" : "Sent — link should arrive shortly"}
               </p>
@@ -1026,7 +1026,7 @@ function WhatsAppLinkStatusPanel({ isAf }: { isAf: boolean }) {
           )}
 
           {resendError && (
-            <p className="text-xs text-[#e6519c] mt-1" data-testid="resend-error">{resendError}</p>
+            <p className="text-xs text-[#FF2BD6] mt-1" data-testid="resend-error">{resendError}</p>
           )}
         </div>
 
@@ -1163,7 +1163,7 @@ function DownloadReportButton({ learnerName, isAf }: { learnerName: string; isAf
         title={hint}
         aria-label={hint}
         className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-black disabled:opacity-60 disabled:cursor-wait transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
-        style={{ color: "#28c9d6", border: "1px solid #28c9d6", boxShadow: "0 0 14px rgba(40,201,214,0.45)" }}
+        style={{ color: "#00E5FF", border: "1px solid #00E5FF", boxShadow: "0 0 14px rgba(0,229,255,0.45)" }}
         data-testid="button-download-report"
       >
         {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
@@ -1176,13 +1176,13 @@ function DownloadReportButton({ learnerName, isAf }: { learnerName: string; isAf
 const BAR_HEX: Record<string, string> = {
   "bg-emerald-500": "#4ADE80",
   "bg-emerald-400": "#4ADE80",
-  "bg-amber-500":   "#ffd83a",
-  "bg-amber-400":   "#ffd83a",
-  "bg-red-500":     "#e6519c",
-  "bg-red-400":     "#e6519c",
-  "bg-pink-500":    "#e6519c",
-  "bg-cyan-500":    "#28c9d6",
-  "bg-cyan-400":    "#28c9d6",
+  "bg-amber-500":   "#FFE600",
+  "bg-amber-400":   "#FFE600",
+  "bg-red-500":     "#FF2BD6",
+  "bg-red-400":     "#FF2BD6",
+  "bg-pink-500":    "#FF2BD6",
+  "bg-cyan-500":    "#00E5FF",
+  "bg-cyan-400":    "#00E5FF",
   "bg-muted-foreground/40": "rgba(255,255,255,0.28)",
   "bg-white/25":    "rgba(255,255,255,0.28)",
 };
@@ -1217,7 +1217,7 @@ function AccuracyCompare({ initial, current, isAf }: { initial: number; current:
       <AnimatedBar value={initial} color="bg-muted-foreground/40" delay={0} />
       <div className="flex items-center justify-between text-xs text-white">
         <span>{isAf ? "Huidig" : "Current"}</span>
-        <span className="font-semibold" style={{ color: isUp ? "#4ADE80" : diff < 0 ? "#e6519c" : undefined }}>{current}%</span>
+        <span className="font-semibold" style={{ color: isUp ? "#4ADE80" : diff < 0 ? "#FF2BD6" : undefined }}>{current}%</span>
       </div>
       <AnimatedBar value={current} color={isUp ? "bg-emerald-500" : diff < 0 ? "bg-red-500" : "bg-cyan-500"} delay={200} />
     </div>
@@ -1246,16 +1246,16 @@ function Sparkline({ studyDays, totalQ }: { studyDays: number; totalQ: number })
       <svg width={W} height={H} className="overflow-visible" role="presentation" aria-hidden="true">
         <defs>
           <linearGradient id="spark-fill-cosmic" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="rgba(40,201,214,0.28)" />
-            <stop offset="100%" stopColor="rgba(40,201,214,0)" />
+            <stop offset="0%" stopColor="rgba(0,229,255,0.28)" />
+            <stop offset="100%" stopColor="rgba(0,229,255,0)" />
           </linearGradient>
         </defs>
         <polygon points={filled} fill="url(#spark-fill-cosmic)" />
-        <polyline points={polyline} fill="none" stroke="#28c9d6" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" style={{ filter: "drop-shadow(0 0 4px #28c9d6)" }} />
+        <polyline points={polyline} fill="none" stroke="#00E5FF" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" style={{ filter: "drop-shadow(0 0 4px #00E5FF)" }} />
         {raw.map((v, i) => {
           const x = pad + (i / (days.length - 1)) * (W - pad * 2);
           const y = H - pad - (v / max) * (H - pad * 2);
-          return v > 0 ? <circle key={i} cx={x} cy={y} r="2.5" fill="#28c9d6" /> : null;
+          return v > 0 ? <circle key={i} cx={x} cy={y} r="2.5" fill="#00E5FF" /> : null;
         })}
       </svg>
       <div className="flex justify-between mt-0.5" style={{ width: W }}>
@@ -1431,18 +1431,18 @@ export default function ParentDashboardPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 relative">
         {/* Cosmic wordmark wash */}
         <div aria-hidden className="pointer-events-none absolute inset-0 -z-0 opacity-40">
-          <div className="absolute top-[2%] left-[8%] w-[440px] h-[440px] rounded-full blur-3xl" style={{ background: "radial-gradient(circle, rgba(40,201,214,0.22), transparent 70%)" }} />
-          <div className="absolute top-[30%] right-[2%] w-[400px] h-[400px] rounded-full blur-3xl" style={{ background: "radial-gradient(circle, rgba(142,124,220,0.22), transparent 70%)" }} />
-          <div className="absolute bottom-[4%] left-[32%] w-[420px] h-[420px] rounded-full blur-3xl" style={{ background: "radial-gradient(circle, rgba(230,81,156,0.16), transparent 70%)" }} />
+          <div className="absolute top-[2%] left-[8%] w-[440px] h-[440px] rounded-full blur-3xl" style={{ background: "radial-gradient(circle, rgba(0,229,255,0.22), transparent 70%)" }} />
+          <div className="absolute top-[30%] right-[2%] w-[400px] h-[400px] rounded-full blur-3xl" style={{ background: "radial-gradient(circle, rgba(138,43,255,0.22), transparent 70%)" }} />
+          <div className="absolute bottom-[4%] left-[32%] w-[420px] h-[420px] rounded-full blur-3xl" style={{ background: "radial-gradient(circle, rgba(255,43,214,0.16), transparent 70%)" }} />
         </div>
 
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-black"
-              style={{ border: "1px solid rgba(142,124,220,0.45)", boxShadow: "0 0 12px rgba(142,124,220,0.35)" }}
+              style={{ border: "1px solid rgba(138,43,255,0.45)", boxShadow: "0 0 12px rgba(138,43,255,0.35)" }}
             >
-              <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#8e7cdc", boxShadow: "0 0 6px #8e7cdc" }} />
-              <span className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: "#8e7cdc" }}>
+              <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#8A2BFF", boxShadow: "0 0 6px #8A2BFF" }} />
+              <span className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: "#8A2BFF" }}>
                 {isAf ? "Ouerverslag" : "Parent Report"}
               </span>
             </div>
@@ -1465,10 +1465,10 @@ export default function ParentDashboardPage() {
         )}
 
         {childProgressError ? (
-          <CosmicCard hex="#e6519c" className="p-0">
+          <CosmicCard hex="#FF2BD6" className="p-0">
             <div className="p-10 text-center" data-testid="parent-dashboard-error">
-              <div className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center mx-auto mb-4" style={{ border: "1px solid #e6519c", boxShadow: "0 0 18px #e6519c55" }}>
-                <AlertTriangle className="w-7 h-7" style={{ color: "#e6519c", filter: "drop-shadow(0 0 4px #e6519c)" }} />
+              <div className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center mx-auto mb-4" style={{ border: "1px solid #FF2BD6", boxShadow: "0 0 18px #FF2BD655" }}>
+                <AlertTriangle className="w-7 h-7" style={{ color: "#FF2BD6", filter: "drop-shadow(0 0 4px #FF2BD6)" }} />
               </div>
               <h2 className="text-lg font-bold text-white mb-2">
                 {isAf ? "Kon nie jou dashboard laai nie" : "Couldn't load your dashboard"}
@@ -1481,8 +1481,8 @@ export default function ParentDashboardPage() {
               <Button
                 onClick={() => refetchChildProgress()}
                 disabled={isRefetchingChildProgress}
-                className="bg-black text-[#e6519c] hover:bg-[#e6519c]/10"
-                style={{ border: "1px solid #e6519c", boxShadow: "0 0 14px rgba(230,81,156,0.45)" }}
+                className="bg-black text-[#FF2BD6] hover:bg-[#FF2BD6]/10"
+                style={{ border: "1px solid #FF2BD6", boxShadow: "0 0 14px rgba(255,43,214,0.45)" }}
                 data-testid="button-retry-parent-dashboard"
               >
                 <RefreshCw className={`w-4 h-4 mr-2 ${isRefetchingChildProgress ? "animate-spin" : ""}`} />
@@ -1500,16 +1500,16 @@ export default function ParentDashboardPage() {
             {(childrenData?.children?.length ?? 0) > 1 && (
               <div
                 className="relative rounded-2xl bg-black p-4 sm:p-5"
-                style={{ border: "1px solid rgba(142,124,220,0.45)", boxShadow: "0 0 18px rgba(142,124,220,0.25)" }}
+                style={{ border: "1px solid rgba(138,43,255,0.45)", boxShadow: "0 0 18px rgba(138,43,255,0.25)" }}
                 data-testid="parent-child-switcher"
               >
                 <div className="flex items-center gap-2 mb-3">
-                  <Users className="w-4 h-4" style={{ color: "#8e7cdc", filter: "drop-shadow(0 0 4px #8e7cdc)" }} />
+                  <Users className="w-4 h-4" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 4px #8A2BFF)" }} />
                   <h2 className="text-sm font-bold uppercase tracking-[0.18em] text-white">
                     {isAf ? "Kies Kind" : "Viewing Child"}
                   </h2>
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-black"
-                    style={{ color: "#8e7cdc", border: "1px solid #8e7cdc55" }}>
+                    style={{ color: "#8A2BFF", border: "1px solid #8A2BFF55" }}>
                     {childrenData!.children.length} {isAf ? "kinders" : "children"}
                   </span>
                 </div>
@@ -1526,7 +1526,7 @@ export default function ParentDashboardPage() {
                         className="px-3 py-1.5 rounded-full text-xs font-semibold transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
                         style={
                           active
-                            ? { background: "#8e7cdc", color: "#000", border: "1px solid #8e7cdc", boxShadow: "0 0 12px rgba(142,124,220,0.55)" }
+                            ? { background: "#8A2BFF", color: "#000", border: "1px solid #8A2BFF", boxShadow: "0 0 12px rgba(138,43,255,0.55)" }
                             : { background: "#000", color: "#fff", border: "1px solid rgba(255,255,255,0.18)" }
                         }
                       >
@@ -1541,22 +1541,22 @@ export default function ParentDashboardPage() {
             {/* Hero learner card — cosmic-neon */}
             <div
               className="relative overflow-hidden rounded-2xl bg-black p-6 sm:p-8"
-              style={{ border: "1.5px solid #28c9d6", boxShadow: "0 0 0 1px rgba(40,201,214,0.28), 0 0 26px rgba(40,201,214,0.3), inset 0 0 22px rgba(0,0,0,0.55)" }}
+              style={{ border: "1.5px solid #00E5FF", boxShadow: "0 0 0 1px rgba(0,229,255,0.28), 0 0 26px rgba(0,229,255,0.3), inset 0 0 22px rgba(0,0,0,0.55)" }}
             >
-              <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: "#28c9d6" }} />
-              <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2" style={{ borderColor: "#28c9d6" }} />
-              <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2" style={{ borderColor: "#28c9d6" }} />
-              <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: "#28c9d6" }} />
+              <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: "#00E5FF" }} />
+              <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2" style={{ borderColor: "#00E5FF" }} />
+              <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2" style={{ borderColor: "#00E5FF" }} />
+              <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: "#00E5FF" }} />
               <div className="relative flex flex-col sm:flex-row sm:items-center gap-6">
                 <div className="flex-1">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-1" style={{ color: "#28c9d6" }}>{isAf ? "Leerder" : "Learner"}</p>
-                  <h2 className="text-2xl sm:text-3xl font-bold text-white mb-1" style={{ textShadow: "0 0 12px rgba(40,201,214,0.4)" }}>{childProgress.learnerName}</h2>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-1" style={{ color: "#00E5FF" }}>{isAf ? "Leerder" : "Learner"}</p>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-white mb-1" style={{ textShadow: "0 0 12px rgba(0,229,255,0.4)" }}>{childProgress.learnerName}</h2>
                   <p className="text-white text-xs">
                     {isAf ? "Laas aktief" : "Last active"}: {formatDate(childProgress.lastActiveDate)}
                   </p>
                   {childProgress.varkPrimary && VARK_STYLES[childProgress.varkPrimary as keyof typeof VARK_STYLES] && (
                     <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black text-xs font-semibold"
-                      style={{ border: "1px solid #ffd83a", color: "#ffd83a", boxShadow: "0 0 10px rgba(255,216,58,0.35)" }}
+                      style={{ border: "1px solid #FFE600", color: "#FFE600", boxShadow: "0 0 10px rgba(255,230,0,0.35)" }}
                       data-testid="parent-vark-badge"
                     >
                       <span>{VARK_STYLES[childProgress.varkPrimary as keyof typeof VARK_STYLES].icon}</span>
@@ -1579,23 +1579,23 @@ export default function ParentDashboardPage() {
 
             {/* Stat cards — cosmic neon, live-animated */}
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <LiveStatCard icon={Flame}    label={isAf ? "Studie-reeks" : "Study Streak"}       target={childProgress.currentStreak}                 unit={isAf ? "dae" : "days"} hex="#ff8a1f" pulse={childProgress.currentStreak >= 7} />
-              <LiveStatCard icon={Target}   label={isAf ? "Akkuraatheid" : "Accuracy"}           target={childProgress.overallAccuracy}               unit="%"                     hex="#8e7cdc" />
-              <LiveStatCard icon={BookOpen} label={isAf ? "Vrae Voltooi" : "Questions Done"}     target={childProgress.totalQuestionsAnswered}        unit=""                      hex="#4f8cd9" />
-              <LiveStatCard icon={Clock}    label={isAf ? "Minute Hierdie Week" : "Minutes This Week"} target={childProgress.weeklyReport.totalMinutes} unit="min"                 hex="#28c9d6" />
+              <LiveStatCard icon={Flame}    label={isAf ? "Studie-reeks" : "Study Streak"}       target={childProgress.currentStreak}                 unit={isAf ? "dae" : "days"} hex="#FF8A00" pulse={childProgress.currentStreak >= 7} />
+              <LiveStatCard icon={Target}   label={isAf ? "Akkuraatheid" : "Accuracy"}           target={childProgress.overallAccuracy}               unit="%"                     hex="#8A2BFF" />
+              <LiveStatCard icon={BookOpen} label={isAf ? "Vrae Voltooi" : "Questions Done"}     target={childProgress.totalQuestionsAnswered}        unit=""                      hex="#006BFF" />
+              <LiveStatCard icon={Clock}    label={isAf ? "Minute Hierdie Week" : "Minutes This Week"} target={childProgress.weeklyReport.totalMinutes} unit="min"                 hex="#00E5FF" />
             </div>
 
             {/* Per-child readiness — one card per linked learner; numbers match each learner's own dashboard */}
             {(childrenData?.children ?? []).length > 0 && (
               <div className="space-y-3" data-testid="parent-children-readiness">
                 <div className="flex items-center gap-2">
-                  <Zap className="w-4 h-4" style={{ color: "#28c9d6", filter: "drop-shadow(0 0 4px #28c9d6)" }} />
+                  <Zap className="w-4 h-4" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
                   <h2 className="text-sm font-bold uppercase tracking-[0.18em] text-white">
                     {isAf ? "Gereedheid per Kind" : "Readiness per Child"}
                   </h2>
                   {(childrenData?.children?.length ?? 0) > 1 && (
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-black"
-                      style={{ color: "#28c9d6", border: "1px solid #28c9d655" }}>
+                      style={{ color: "#00E5FF", border: "1px solid #00E5FF55" }}>
                       {childrenData!.children.length} {isAf ? "kinders" : "children"}
                     </span>
                   )}
@@ -1625,11 +1625,11 @@ export default function ParentDashboardPage() {
               className="relative rounded-2xl bg-black p-6"
               style={{ border: "1px solid rgba(255,255,255,0.08)" }}
             >
-              <div aria-hidden className="absolute inset-y-4 left-0 w-[2px] rounded-r" style={{ background: "#28c9d6", boxShadow: "0 0 8px #28c9d6" }} />
+              <div aria-hidden className="absolute inset-y-4 left-0 w-[2px] rounded-r" style={{ background: "#00E5FF", boxShadow: "0 0 8px #00E5FF" }} />
               <div className="relative flex items-center justify-between flex-wrap gap-2 mb-5">
                 <div>
                   <h3 className="flex items-center gap-2 text-base font-bold text-white">
-                    <Calendar className="w-4 h-4" style={{ color: "#28c9d6", filter: "drop-shadow(0 0 4px #28c9d6)" }} />
+                    <Calendar className="w-4 h-4" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
                     {isAf ? "Weeklikse Vorderingsverslag" : "Weekly Progress Report"}
                   </h3>
                   <p className="text-xs text-white mt-0.5">
@@ -1638,7 +1638,7 @@ export default function ParentDashboardPage() {
                 </div>
                 <span
                   className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.22em] px-2 py-0.5 rounded-full bg-black"
-                  style={{ color: "#28c9d6", border: "1px solid #28c9d6", boxShadow: "0 0 10px rgba(40,201,214,0.35)" }}
+                  style={{ color: "#00E5FF", border: "1px solid #00E5FF", boxShadow: "0 0 10px rgba(0,229,255,0.35)" }}
                 >
                   {isAf ? "Hierdie Week" : "This Week"}
                 </span>
@@ -1660,10 +1660,10 @@ export default function ParentDashboardPage() {
                     <div
                       data-testid="weekly-report-empty"
                       className="relative rounded-xl bg-black p-6 text-center mb-2"
-                      style={{ border: "1px dashed rgba(40,201,214,0.45)" }}
+                      style={{ border: "1px dashed rgba(0,229,255,0.45)" }}
                     >
-                      <div className="w-12 h-12 rounded-xl bg-black flex items-center justify-center mx-auto mb-3" style={{ border: "1px solid #28c9d6", boxShadow: "0 0 12px #28c9d655" }}>
-                        <BookOpen className="w-6 h-6" style={{ color: "#28c9d6", filter: "drop-shadow(0 0 4px #28c9d6)" }} />
+                      <div className="w-12 h-12 rounded-xl bg-black flex items-center justify-center mx-auto mb-3" style={{ border: "1px solid #00E5FF", boxShadow: "0 0 12px #00E5FF55" }}>
+                        <BookOpen className="w-6 h-6" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
                       </div>
                       <p className="text-sm font-bold text-white mb-1">
                         {isAf ? "Nog geen aktiwiteit hierdie week nie" : "No activity logged this week yet"}
@@ -1680,10 +1680,10 @@ export default function ParentDashboardPage() {
                 return (
                   <div className="relative grid gap-3 grid-cols-2 sm:grid-cols-4 mb-6">
                     {[
-                      { label: isAf ? "Dae Gestudeer" : "Days Studied",   n: wr.studyDays,         suffix: "",  hex: "#ff6a1f" },
-                      { label: isAf ? "Minute Bestee" : "Minutes Spent",  n: wr.totalMinutes,      suffix: "",  hex: "#ffd83a" },
-                      { label: isAf ? "Vrae Voltooi" : "Questions Done",  n: wr.questionsAnswered, suffix: "",  hex: "#28c9d6" },
-                      { label: isAf ? "Akkuraatheid" : "Accuracy",        n: wr.accuracy,          suffix: "%", hex: "#8e7cdc" },
+                      { label: isAf ? "Dae Gestudeer" : "Days Studied",   n: wr.studyDays,         suffix: "",  hex: "#FF8A00" },
+                      { label: isAf ? "Minute Bestee" : "Minutes Spent",  n: wr.totalMinutes,      suffix: "",  hex: "#FFE600" },
+                      { label: isAf ? "Vrae Voltooi" : "Questions Done",  n: wr.questionsAnswered, suffix: "",  hex: "#00E5FF" },
+                      { label: isAf ? "Akkuraatheid" : "Accuracy",        n: wr.accuracy,          suffix: "%", hex: "#8A2BFF" },
                     ].map(({ label, n, suffix, hex }, i) => (
                       <WeeklyMiniStat key={i} label={label} target={n} suffix={suffix} hex={hex} />
                     ))}
@@ -1707,15 +1707,15 @@ export default function ParentDashboardPage() {
                   </div>
                 )}
                 {childProgress.weeklyReport.areasForImprovement.length > 0 && (
-                  <div className="relative p-4 rounded-xl bg-black overflow-hidden" style={{ border: "1px solid #ffd83aaa" }}>
-                    <div aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: "#ffd83a" }} />
-                    <h4 className="font-bold text-sm mb-3 flex items-center gap-2" style={{ color: "#ffd83a" }}>
-                      <AlertTriangle className="w-4 h-4" style={{ filter: "drop-shadow(0 0 4px #ffd83a)" }} />
+                  <div className="relative p-4 rounded-xl bg-black overflow-hidden" style={{ border: "1px solid #FFE600aa" }}>
+                    <div aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: "#FFE600" }} />
+                    <h4 className="font-bold text-sm mb-3 flex items-center gap-2" style={{ color: "#FFE600" }}>
+                      <AlertTriangle className="w-4 h-4" style={{ filter: "drop-shadow(0 0 4px #FFE600)" }} />
                       {isAf ? "Areas om op te Fokus" : "Areas to Focus On"}
                     </h4>
                     <div className="flex flex-wrap gap-2">
                       {childProgress.weeklyReport.areasForImprovement.map((a, i) => (
-                        <span key={i} className="px-2 py-0.5 rounded-full bg-black text-xs" style={{ color: "#ffd83a", border: "1px solid #ffd83a55" }}>{a}</span>
+                        <span key={i} className="px-2 py-0.5 rounded-full bg-black text-xs" style={{ color: "#FFE600", border: "1px solid #FFE60055" }}>{a}</span>
                       ))}
                     </div>
                   </div>
@@ -1725,18 +1725,18 @@ export default function ParentDashboardPage() {
 
             {/* Subject grids — cosmic neon */}
             <div className="grid gap-6 lg:grid-cols-2">
-              <CosmicCard hex="#4f8cd9">
+              <CosmicCard hex="#006BFF">
                 <h3 className="flex items-center gap-2 text-base font-bold text-white mb-1">
-                  <TrendingUp className="w-4 h-4" style={{ color: "#4f8cd9", filter: "drop-shadow(0 0 4px #4f8cd9)" }} />
+                  <TrendingUp className="w-4 h-4" style={{ color: "#006BFF", filter: "drop-shadow(0 0 4px #006BFF)" }} />
                   {isAf ? "Vakvordering" : "Subject Progress"}
                 </h3>
                 <p className="text-xs text-white mb-4">{isAf ? "Akkuraatheid per vak hierdie week" : "Accuracy per subject this week"}</p>
                 <div className="space-y-3">
                   {childProgress.weeklyReport.subjectBreakdown.map((subject, i) => {
-                    const accHex = subject.accuracy >= 70 ? "#4ADE80" : subject.accuracy >= 50 ? "#ffd83a" : "#e6519c";
+                    const accHex = subject.accuracy >= 70 ? "#4ADE80" : subject.accuracy >= 50 ? "#FFE600" : "#FF2BD6";
                     const mastery = subject.masteryScore ?? null;
                     const progress = subject.progressScore ?? null;
-                    const masteryHex = mastery == null ? "#8e7cdc" : mastery >= 75 ? "#4ADE80" : mastery >= 60 ? "#ffd83a" : "#e6519c";
+                    const masteryHex = mastery == null ? "#8A2BFF" : mastery >= 75 ? "#4ADE80" : mastery >= 60 ? "#FFE600" : "#FF2BD6";
                     return (
                       <div key={i} className="p-3 rounded-xl bg-black border border-white/10 space-y-2" data-testid={`parent-subject-row-${i}`}>
                         <div className="flex items-center justify-between">
@@ -1773,9 +1773,9 @@ export default function ParentDashboardPage() {
                 </div>
               </CosmicCard>
 
-              <CosmicCard hex="#8e7cdc">
+              <CosmicCard hex="#8A2BFF">
                 <h3 className="flex items-center gap-2 text-base font-bold text-white mb-1">
-                  <Target className="w-4 h-4" style={{ color: "#8e7cdc", filter: "drop-shadow(0 0 4px #8e7cdc)" }} />
+                  <Target className="w-4 h-4" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 4px #8A2BFF)" }} />
                   {isAf ? "Vakpuntevergelyking" : "Subject Marks Comparison"}
                 </h3>
                 <p className="text-xs text-white mb-4">{isAf ? "Aanvanklike vs Huidige Prestasie" : "Initial vs Current Performance"}</p>
@@ -1784,14 +1784,14 @@ export default function ParentDashboardPage() {
                     const diff = subject.currentMark - subject.initialMark;
                     const isUp = diff > 0;
                     const isDown = diff < 0;
-                    const diffHex = isUp ? "#4ADE80" : isDown ? "#e6519c" : "#ffffff";
+                    const diffHex = isUp ? "#4ADE80" : isDown ? "#FF2BD6" : "#ffffff";
                     return (
                       <div key={i} className="p-3 rounded-xl bg-black border border-white/10 space-y-2">
                         <div className="flex items-center justify-between">
                           <span className="font-medium text-sm text-white">{subject.subjectName}</span>
                           <div className="flex items-center gap-1">
                             {isUp && <ArrowUpRight className="w-3.5 h-3.5" style={{ color: "#4ADE80" }} />}
-                            {isDown && <ArrowDownRight className="w-3.5 h-3.5" style={{ color: "#e6519c" }} />}
+                            {isDown && <ArrowDownRight className="w-3.5 h-3.5" style={{ color: "#FF2BD6" }} />}
                             {!isUp && !isDown && <Minus className="w-3.5 h-3.5 text-white" />}
                             <span className="text-xs font-bold" style={{ color: diffHex }}>
                               {isUp ? "+" : ""}{diff}%
@@ -1823,9 +1823,9 @@ export default function ParentDashboardPage() {
             </div>
 
             {childProgress.examSessions && childProgress.examSessions.length > 0 && (
-              <CosmicCard hex="#ffd83a">
+              <CosmicCard hex="#FFE600">
                 <h3 className="flex items-center gap-2 text-base font-bold text-white mb-1">
-                  <Trophy className="w-4 h-4" style={{ color: "#ffd83a", filter: "drop-shadow(0 0 4px #ffd83a)" }} />
+                  <Trophy className="w-4 h-4" style={{ color: "#FFE600", filter: "drop-shadow(0 0 4px #FFE600)" }} />
                   {isAf ? "Eksamentyd Eksamenresultate" : "Crunch Time Exam Results"}
                 </h3>
                 <p className="text-xs text-white mb-4">
@@ -1836,7 +1836,7 @@ export default function ParentDashboardPage() {
                     const pct = session.score != null && session.totalMarks
                       ? Math.round((session.score / session.totalMarks) * 100)
                       : null;
-                    const pctHex = pct == null ? "#ffffff" : pct >= 60 ? "#4ADE80" : pct >= 40 ? "#ffd83a" : "#e6519c";
+                    const pctHex = pct == null ? "#ffffff" : pct >= 60 ? "#4ADE80" : pct >= 40 ? "#FFE600" : "#FF2BD6";
                     return (
                       <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-black border border-white/10">
                         <div>
@@ -1852,7 +1852,7 @@ export default function ParentDashboardPage() {
                               <p className="text-[10px] text-white">{session.score}/{session.totalMarks}</p>
                             </>
                           ) : (
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-black" style={{ color: "#28c9d6", border: "1px solid #28c9d655" }}>{isAf ? "Voltooi" : "Completed"}</span>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-black" style={{ color: "#00E5FF", border: "1px solid #00E5FF55" }}>{isAf ? "Voltooi" : "Completed"}</span>
                           )}
                         </div>
                       </div>
@@ -1875,10 +1875,10 @@ export default function ParentDashboardPage() {
               const nonExamDates = (learnerExamData.nonExamDays ?? []).map(e => e.examDate);
 
               return (
-                <CosmicCard hex="#4f8cd9">
+                <CosmicCard hex="#006BFF">
                   <div data-testid="parent-exam-timetable">
                     <h3 className="flex items-center gap-2 text-base font-bold text-white mb-1">
-                      <Calendar className="w-4 h-4" style={{ color: "#4f8cd9", filter: "drop-shadow(0 0 4px #4f8cd9)" }} />
+                      <Calendar className="w-4 h-4" style={{ color: "#006BFF", filter: "drop-shadow(0 0 4px #006BFF)" }} />
                       {isAf ? "NSC 2026 Eksamenrooster" : "NSC 2026 Exam Timetable"}
                     </h3>
                     <p className="text-xs text-white mb-4">
@@ -1892,7 +1892,7 @@ export default function ParentDashboardPage() {
                       const hasReadinessData = (childProgress?.totalQuestionsAnswered ?? 0) > 0;
                       const acc = childProgress?.overallAccuracy ?? 0;
                       const streak = childProgress?.currentStreak ?? 0;
-                      const accentHex = !hasReadinessData ? "#8e7cdc" : acc >= 70 ? "#4ADE80" : acc >= 50 ? "#ffd83a" : "#e6519c";
+                      const accentHex = !hasReadinessData ? "#8A2BFF" : acc >= 70 ? "#4ADE80" : acc >= 50 ? "#FFE600" : "#FF2BD6";
                       const labelText = !hasReadinessData
                         ? (isAf ? "Geen oefendata nog nie" : "No practice data yet")
                         : acc >= 70
@@ -1901,9 +1901,9 @@ export default function ParentDashboardPage() {
                             ? (isAf ? "Bou Momentum" : "Building Momentum")
                             : (isAf ? "Aandag Nodig" : "Needs Attention");
                       return (
-                        <div data-testid="parent-overall-readiness" className="flex items-center gap-3 p-3 rounded-xl bg-black mb-3" style={{ border: "1px solid #28c9d655" }}>
-                          <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center shrink-0" style={{ border: "1px solid #28c9d6", boxShadow: "0 0 10px #28c9d655" }}>
-                            <GraduationCap className="w-4 h-4" style={{ color: "#28c9d6" }} />
+                        <div data-testid="parent-overall-readiness" className="flex items-center gap-3 p-3 rounded-xl bg-black mb-3" style={{ border: "1px solid #00E5FF55" }}>
+                          <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center shrink-0" style={{ border: "1px solid #00E5FF", boxShadow: "0 0 10px #00E5FF55" }}>
+                            <GraduationCap className="w-4 h-4" style={{ color: "#00E5FF" }} />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-xs font-bold text-white">
@@ -1921,7 +1921,7 @@ export default function ParentDashboardPage() {
                             </p>
                           </div>
                           {hasReadinessData && acc < 50 && (
-                            <AlertTriangle className="w-4 h-4 shrink-0" style={{ color: "#ffd83a" }} />
+                            <AlertTriangle className="w-4 h-4 shrink-0" style={{ color: "#FFE600" }} />
                           )}
                         </div>
                       );
@@ -1930,10 +1930,10 @@ export default function ParentDashboardPage() {
                     {/* Today's directive — what the learner should focus on right now */}
                     {learnerDirective && learnerDirective.hasExam && (() => {
                       const urgencyMap: Record<string, { color: string; glow: string }> = {
-                        final_sprint:     { color: "#e6519c", glow: "rgba(230,81,156,0.45)" },
-                        exam_prep_mode:   { color: "#ff8a1f", glow: "rgba(255,138,31,0.45)" },
-                        focused_revision: { color: "#ffd83a", glow: "rgba(255,216,58,0.45)" },
-                        build_mastery:    { color: "#8e7cdc", glow: "rgba(142,124,220,0.45)" },
+                        final_sprint:     { color: "#FF2BD6", glow: "rgba(255,43,214,0.45)" },
+                        exam_prep_mode:   { color: "#FF8A00", glow: "rgba(255,138,0,0.45)" },
+                        focused_revision: { color: "#FFE600", glow: "rgba(255,230,0,0.45)" },
+                        build_mastery:    { color: "#8A2BFF", glow: "rgba(138,43,255,0.45)" },
                       };
                       const u = urgencyMap[learnerDirective.urgencyState] || urgencyMap.build_mastery;
                       const days = learnerDirective.daysUntil ?? 0;
@@ -1972,10 +1972,10 @@ export default function ParentDashboardPage() {
 
                     {/* Risk alerts: low readiness (< 50%) with exam within 7 days */}
                     {riskSubjects.length > 0 && (
-                      <div className="flex items-start gap-2 p-3 rounded-xl bg-black mb-3" style={{ border: "1px solid #e6519caa", boxShadow: "0 0 16px rgba(230,81,156,0.18)" }}>
-                        <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "#e6519c", filter: "drop-shadow(0 0 4px #e6519c)" }} />
+                      <div className="flex items-start gap-2 p-3 rounded-xl bg-black mb-3" style={{ border: "1px solid #FF2BD6aa", boxShadow: "0 0 16px rgba(255,43,214,0.18)" }}>
+                        <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "#FF2BD6", filter: "drop-shadow(0 0 4px #FF2BD6)" }} />
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-bold mb-1" style={{ color: "#e6519c" }}>
+                          <p className="text-xs font-bold mb-1" style={{ color: "#FF2BD6" }}>
                             {isAf ? "Risiko-waarskuwing — Eksamen binne 7 dae, lae gereedheid" : "Risk Alert — Exam within 7 days, low readiness"}
                           </p>
                           <p className="text-[10px] text-white">
@@ -1997,8 +1997,8 @@ export default function ParentDashboardPage() {
                         const d = new Date(entry.examDate + "T00:00:00");
                         const daysLeft = entry.daysRemaining;
                         const urgency = daysLeft <= 14 ? "red" : daysLeft <= 30 ? "amber" : daysLeft <= 60 ? "blue" : "emerald";
-                        const uHex = entry.isAtRisk ? "#e6519c" : urgency === "red" ? "#e6519c" : urgency === "amber" ? "#ffd83a" : urgency === "blue" ? "#4f8cd9" : "#4ADE80";
-                        const accHex = entry.subjectAccuracy == null ? "#ffffff" : entry.subjectAccuracy >= 70 ? "#4ADE80" : entry.subjectAccuracy >= 50 ? "#ffd83a" : "#e6519c";
+                        const uHex = entry.isAtRisk ? "#FF2BD6" : urgency === "red" ? "#FF2BD6" : urgency === "amber" ? "#FFE600" : urgency === "blue" ? "#006BFF" : "#4ADE80";
+                        const accHex = entry.subjectAccuracy == null ? "#ffffff" : entry.subjectAccuracy >= 70 ? "#4ADE80" : entry.subjectAccuracy >= 50 ? "#FFE600" : "#FF2BD6";
                         return (
                           <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-black" style={{ border: `1px solid ${uHex}55` }}>
                             <div className="w-2 h-2 rounded-full shrink-0" style={{ background: uHex, boxShadow: `0 0 6px ${uHex}` }} />
@@ -2009,7 +2009,7 @@ export default function ParentDashboardPage() {
                                   <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-black" style={{ color: accHex, border: `1px solid ${accHex}55` }}>{entry.subjectAccuracy}%</span>
                                 )}
                                 {entry.isAtRisk && (
-                                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-black" style={{ color: "#e6519c", border: "1px solid #e6519c" }}>
+                                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-black" style={{ color: "#FF2BD6", border: "1px solid #FF2BD6" }}>
                                     {isAf ? "RISIKO" : "RISK"}
                                   </span>
                                 )}
@@ -2029,12 +2029,12 @@ export default function ParentDashboardPage() {
                     {/* Non-examination days */}
                     {nonExamDates.length > 0 && (
                       <div className="border-t border-white/10 pt-3">
-                        <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "#ffd83a" }}>
+                        <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "#FFE600" }}>
                           {isAf ? "Nie-eksamen Dae (inhaal)" : "Non-Examination Days (catch-up)"}
                         </p>
                         <div className="flex flex-wrap gap-2">
                           {nonExamDates.map(d => (
-                            <span key={d} className="inline-flex px-2.5 py-1 rounded-lg bg-black text-[10px] font-semibold" style={{ color: "#ffd83a", border: "1px solid #ffd83a55" }}>
+                            <span key={d} className="inline-flex px-2.5 py-1 rounded-lg bg-black text-[10px] font-semibold" style={{ color: "#FFE600", border: "1px solid #FFE60055" }}>
                               {fmtDate(d + "T00:00:00", language, { weekday: "short", day: "numeric", month: "short" })}
                             </span>
                           ))}
@@ -2063,10 +2063,10 @@ export default function ParentDashboardPage() {
               className="relative rounded-2xl bg-black p-5 flex items-center justify-between gap-4"
               style={{ border: "1px solid rgba(255,255,255,0.08)" }}
             >
-              <div aria-hidden className="absolute inset-y-4 left-0 w-[2px] rounded-r" style={{ background: "#28c9d6", boxShadow: "0 0 8px #28c9d6" }} />
+              <div aria-hidden className="absolute inset-y-4 left-0 w-[2px] rounded-r" style={{ background: "#00E5FF", boxShadow: "0 0 8px #00E5FF" }} />
               <div className="relative flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shrink-0" style={{ border: "1px solid #28c9d6", boxShadow: "0 0 12px #28c9d655" }}>
-                  <MapPin className="w-5 h-5" style={{ color: "#28c9d6", filter: "drop-shadow(0 0 4px #28c9d6)" }} />
+                <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shrink-0" style={{ border: "1px solid #00E5FF", boxShadow: "0 0 12px #00E5FF55" }}>
+                  <MapPin className="w-5 h-5" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
                 </div>
                 <div>
                   <h3 className="font-bold text-sm text-white">
@@ -2080,8 +2080,8 @@ export default function ParentDashboardPage() {
               <Link href="/journey?parent=1">
                 <Button
                   size="sm"
-                  className="shrink-0 relative bg-black text-[#28c9d6] hover:bg-[#28c9d6]/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
-                  style={{ border: "1px solid #28c9d6", boxShadow: "0 0 12px rgba(40,201,214,0.35)" }}
+                  className="shrink-0 relative bg-black text-[#00E5FF] hover:bg-[#00E5FF]/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+                  style={{ border: "1px solid #00E5FF", boxShadow: "0 0 12px rgba(0,229,255,0.35)" }}
                 >
                   {isAf ? "Sien Reis" : "View Journey"}
                   <ChevronRight className="w-3.5 h-3.5 ml-1" />
@@ -2100,17 +2100,17 @@ export default function ParentDashboardPage() {
             <LinkHistorySection learnerId={selectedLearnerId} isAf={isAf} />
           </div>
         ) : (
-          <CosmicCard hex="#8e7cdc" className="p-0">
+          <CosmicCard hex="#8A2BFF" className="p-0">
             <div className="p-16 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-black flex items-center justify-center mx-auto mb-4" style={{ border: "1px solid #8e7cdc", boxShadow: "0 0 18px #8e7cdc55" }}>
-                <BookOpen className="w-8 h-8" style={{ color: "#8e7cdc", filter: "drop-shadow(0 0 4px #8e7cdc)" }} />
+              <div className="w-16 h-16 rounded-2xl bg-black flex items-center justify-center mx-auto mb-4" style={{ border: "1px solid #8A2BFF", boxShadow: "0 0 18px #8A2BFF55" }}>
+                <BookOpen className="w-8 h-8" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 4px #8A2BFF)" }} />
               </div>
               <h2 className="text-lg font-bold text-white mb-2">{isAf ? "Nog geen kinderrekening gekoppel nie" : "No child account linked yet"}</h2>
               <p className="text-sm text-white max-w-md mx-auto">
                 {isAf ? "Vra jou kind om sy aktiveringskode in Instellings te deel — sodra dit gekoppel is, sien jy hul vordering hier." : "Ask your child to share their activation code from Settings — once linked, you'll see their progress here."}
               </p>
               <div className="mt-5">
-                <a href="/subscribe" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm text-white transition-all" style={{ background: "linear-gradient(135deg, #8e7cdc, #b066d6)", boxShadow: "0 0 18px rgba(142,124,220,0.4)" }} data-testid="link-parent-get-started">
+                <a href="/subscribe" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm text-white transition-all" style={{ background: "linear-gradient(135deg, #8A2BFF, #8A2BFF)", boxShadow: "0 0 18px rgba(138,43,255,0.4)" }} data-testid="link-parent-get-started">
                   {isAf ? "Begin nou — Brain Boost" : "Get Started — Brain Boost"}
                 </a>
               </div>
@@ -2140,27 +2140,27 @@ function NoActivityEmptyState({ learnerName, isAf }: { learnerName: string; isAf
     <div className="space-y-6 relative z-10" data-testid="parent-no-activity-empty-state">
       <div
         className="relative overflow-hidden rounded-2xl bg-black p-8 sm:p-10 text-center"
-        style={{ border: "1.5px solid #28c9d6", boxShadow: "0 0 0 1px rgba(40,201,214,0.28), 0 0 26px rgba(40,201,214,0.3), inset 0 0 22px rgba(0,0,0,0.55)" }}
+        style={{ border: "1.5px solid #00E5FF", boxShadow: "0 0 0 1px rgba(0,229,255,0.28), 0 0 26px rgba(0,229,255,0.3), inset 0 0 22px rgba(0,0,0,0.55)" }}
       >
-        <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: "#28c9d6" }} />
-        <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2" style={{ borderColor: "#28c9d6" }} />
-        <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2" style={{ borderColor: "#28c9d6" }} />
-        <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: "#28c9d6" }} />
+        <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: "#00E5FF" }} />
+        <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2" style={{ borderColor: "#00E5FF" }} />
+        <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2" style={{ borderColor: "#00E5FF" }} />
+        <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: "#00E5FF" }} />
 
-        <div className="w-16 h-16 rounded-2xl bg-black flex items-center justify-center mx-auto mb-5" style={{ border: "1px solid #28c9d6", boxShadow: "0 0 18px rgba(40,201,214,0.45)" }}>
-          <Rocket className="w-8 h-8" style={{ color: "#28c9d6", filter: "drop-shadow(0 0 4px #28c9d6)" }} />
+        <div className="w-16 h-16 rounded-2xl bg-black flex items-center justify-center mx-auto mb-5" style={{ border: "1px solid #00E5FF", boxShadow: "0 0 18px rgba(0,229,255,0.45)" }}>
+          <Rocket className="w-8 h-8" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
         </div>
 
         <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-black mb-3"
-          style={{ border: "1px solid rgba(40,201,214,0.45)", boxShadow: "0 0 12px rgba(40,201,214,0.35)" }}
+          style={{ border: "1px solid rgba(0,229,255,0.45)", boxShadow: "0 0 12px rgba(0,229,255,0.35)" }}
         >
-          <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#28c9d6", boxShadow: "0 0 6px #28c9d6" }} />
-          <span className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: "#28c9d6" }}>
+          <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#00E5FF", boxShadow: "0 0 6px #00E5FF" }} />
+          <span className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: "#00E5FF" }}>
             {isAf ? "Gereed om te begin" : "Ready to begin"}
           </span>
         </div>
 
-        <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2" style={{ textShadow: "0 0 12px rgba(40,201,214,0.4)" }}>
+        <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2" style={{ textShadow: "0 0 12px rgba(0,229,255,0.4)" }}>
           {isAf ? `Nog geen aktiwiteit van ${learnerName} nie` : `No activity from ${learnerName} yet`}
         </h2>
         <p className="text-sm sm:text-base text-white max-w-xl mx-auto leading-relaxed">
@@ -2177,10 +2177,10 @@ function NoActivityEmptyState({ learnerName, isAf }: { learnerName: string; isAf
             className="relative rounded-2xl bg-black p-5"
             style={{ border: "1px solid rgba(255,255,255,0.08)" }}
           >
-            <div aria-hidden className="absolute inset-y-4 left-0 w-[2px] rounded-r" style={{ background: "#8e7cdc", boxShadow: "0 0 8px #8e7cdc" }} />
+            <div aria-hidden className="absolute inset-y-4 left-0 w-[2px] rounded-r" style={{ background: "#8A2BFF", boxShadow: "0 0 8px #8A2BFF" }} />
             <div className="relative flex items-start gap-3">
-              <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shrink-0" style={{ border: "1px solid #8e7cdc", boxShadow: "0 0 12px rgba(142,124,220,0.45)" }}>
-                <t.icon className="w-5 h-5" style={{ color: "#8e7cdc", filter: "drop-shadow(0 0 4px #8e7cdc)" }} />
+              <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shrink-0" style={{ border: "1px solid #8A2BFF", boxShadow: "0 0 12px rgba(138,43,255,0.45)" }}>
+                <t.icon className="w-5 h-5" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 4px #8A2BFF)" }} />
               </div>
               <div>
                 <h3 className="font-bold text-sm text-white mb-1">{t.title}</h3>
@@ -2217,7 +2217,7 @@ function PerformanceStatus({ childProgress, isAf }: { childProgress: ChildProgre
     accent = "red"; StatusIcon = AlertTriangle;
   }
 
-  const hexMap: Record<string, string> = { emerald: "#4ADE80", amber: "#ffd83a", red: "#e6519c" };
+  const hexMap: Record<string, string> = { emerald: "#4ADE80", amber: "#FFE600", red: "#FF2BD6" };
   const hex = hexMap[accent];
 
   return (
@@ -2258,14 +2258,14 @@ function CelebrationBanner({ childProgress, isAf }: { childProgress: ChildProgre
       style={{ border: "1px solid rgba(255,255,255,0.08)" }}
       data-testid="celebration-banner"
     >
-      <div aria-hidden className="absolute inset-y-4 left-0 w-[2px] rounded-r" style={{ background: "linear-gradient(180deg,#ffd83a,#e6519c,#28c9d6)", boxShadow: "0 0 8px #ffd83a" }} />
+      <div aria-hidden className="absolute inset-y-4 left-0 w-[2px] rounded-r" style={{ background: "linear-gradient(180deg,#FFE600,#FF2BD6,#00E5FF)", boxShadow: "0 0 8px #FFE600" }} />
       <div className="relative flex items-center gap-4">
-        <div className="w-12 h-12 rounded-2xl bg-black flex items-center justify-center shrink-0" style={{ border: "1px solid #ffd83a", boxShadow: "0 0 14px #ffd83a55" }}>
-          <Trophy className="w-6 h-6" style={{ color: "#ffd83a", filter: "drop-shadow(0 0 4px #ffd83a)" }} />
+        <div className="w-12 h-12 rounded-2xl bg-black flex items-center justify-center shrink-0" style={{ border: "1px solid #FFE600", boxShadow: "0 0 14px #FFE60055" }}>
+          <Trophy className="w-6 h-6" style={{ color: "#FFE600", filter: "drop-shadow(0 0 4px #FFE600)" }} />
         </div>
         <div>
           <h3 className="font-bold text-white flex items-center gap-2 mb-1">
-            <PartyPopper className="w-4 h-4" style={{ color: "#e6519c", filter: "drop-shadow(0 0 4px #e6519c)" }} />
+            <PartyPopper className="w-4 h-4" style={{ color: "#FF2BD6", filter: "drop-shadow(0 0 4px #FF2BD6)" }} />
             {isAf ? "Viering!" : "Celebration!"}
           </h3>
           {messages.map((msg, i) => <p key={i} className="text-sm text-white">{msg}</p>)}
@@ -2293,10 +2293,10 @@ function deliveryStatusHex(status: string | null, usedAt: string | null): string
   if (usedAt) return "#a3e635";
   switch (status) {
     case "delivered": return "#a3e635";
-    case "sent": return "#28c9d6";
+    case "sent": return "#00E5FF";
     case "failed":
-    case "undelivered": return "#e6519c";
-    default: return "#ffd83a";
+    case "undelivered": return "#FF2BD6";
+    default: return "#FFE600";
   }
 }
 
@@ -2370,7 +2370,7 @@ function LinkHistorySection({ learnerId, isAf }: { learnerId: string | null; isA
           )}
 
           {!isLoading && isError && (
-            <div className="flex items-center justify-center gap-2 py-8 text-[#e6519c] text-sm">
+            <div className="flex items-center justify-center gap-2 py-8 text-[#FF2BD6] text-sm">
               <AlertTriangle className="w-4 h-4 shrink-0" />
               {isAf ? "Kon nie geskiedenisinligting laai nie." : "Could not load link history."}
             </div>
@@ -2445,7 +2445,7 @@ function LinkHistorySection({ learnerId, isAf }: { learnerId: string | null; isA
                           )}
                         </div>
                         {r.deliveryError && (
-                          <div className="text-[10px] font-mono text-[#e6519c] break-all bg-[#e6519c]/10 px-2 py-1 rounded-lg">
+                          <div className="text-[10px] font-mono text-[#FF2BD6] break-all bg-[#FF2BD6]/10 px-2 py-1 rounded-lg">
                             {r.deliveryError}
                           </div>
                         )}
@@ -2488,13 +2488,13 @@ function ParentTipCard({ isAf }: { isAf: boolean }) {
       style={{ border: "1px solid rgba(255,255,255,0.08)" }}
       data-testid="parent-tip-card"
     >
-      <div aria-hidden className="absolute inset-y-4 left-0 w-[2px] rounded-r" style={{ background: "#ffd83a", boxShadow: "0 0 8px #ffd83a" }} />
+      <div aria-hidden className="absolute inset-y-4 left-0 w-[2px] rounded-r" style={{ background: "#FFE600", boxShadow: "0 0 8px #FFE600" }} />
       <div className="relative flex items-start gap-4">
-        <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shrink-0" style={{ border: "1px solid #ffd83a", boxShadow: "0 0 12px #ffd83a55" }}>
-          <Lightbulb className="w-5 h-5" style={{ color: "#ffd83a", filter: "drop-shadow(0 0 4px #ffd83a)" }} />
+        <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shrink-0" style={{ border: "1px solid #FFE600", boxShadow: "0 0 12px #FFE60055" }}>
+          <Lightbulb className="w-5 h-5" style={{ color: "#FFE600", filter: "drop-shadow(0 0 4px #FFE600)" }} />
         </div>
         <div>
-          <h3 className="font-bold text-sm mb-1" style={{ color: "#ffd83a" }}>{isAf ? "Ouertip van die Week" : "Parent Tip of the Week"}</h3>
+          <h3 className="font-bold text-sm mb-1" style={{ color: "#FFE600" }}>{isAf ? "Ouertip van die Week" : "Parent Tip of the Week"}</h3>
           <p className="text-sm text-white leading-relaxed">{tips[tipIndex]}</p>
         </div>
       </div>
@@ -2527,9 +2527,9 @@ function ParentFAQ({ isAf }: { isAf: boolean }) {
   const items = isAf ? PARENT_FAQ.af : PARENT_FAQ.en;
   return (
     <div className="mt-4">
-      <CosmicCard hex="#8e7cdc">
+      <CosmicCard hex="#8A2BFF">
         <h3 className="flex items-center gap-2 text-base font-bold text-white mb-4">
-          <HelpCircle className="w-4 h-4" style={{ color: "#8e7cdc", filter: "drop-shadow(0 0 4px #8e7cdc)" }} />
+          <HelpCircle className="w-4 h-4" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 4px #8A2BFF)" }} />
           {isAf ? "Gereelde Vrae vir Ouers" : "Parent FAQ"}
         </h3>
         <div className="divide-y divide-white/10">
@@ -2537,13 +2537,13 @@ function ParentFAQ({ isAf }: { isAf: boolean }) {
             <div key={idx}>
               <button
                 onClick={() => setOpenIdx(openIdx === idx ? null : idx)}
-                className="flex items-center justify-between w-full py-3.5 text-left text-sm font-medium text-white hover:text-[#8e7cdc] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b9aafd] rounded-md"
+                className="flex items-center justify-between w-full py-3.5 text-left text-sm font-medium text-white hover:text-[#8A2BFF] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b9aafd] rounded-md"
                 data-testid={`faq-parent-q-${idx}`}
               >
                 {item.q}
                 <ChevronDown
                   className={`w-4 h-4 shrink-0 transition-transform duration-200 ml-3 ${openIdx === idx ? "rotate-180" : ""}`}
-                  style={{ color: openIdx === idx ? "#8e7cdc" : "rgba(255,255,255,0.45)" }}
+                  style={{ color: openIdx === idx ? "#8A2BFF" : "rgba(255,255,255,0.45)" }}
                 />
               </button>
               {openIdx === idx && (

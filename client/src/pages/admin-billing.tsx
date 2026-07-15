@@ -623,9 +623,9 @@ export default function AdminBillingPage() {
   }
 
   const tabConfig: { id: Tab; label: string; color: string; count: number | undefined }[] = [
-    { id: "trials", label: "Trials — Expiring 48h", color: "#ffd83a", count: summary?.trial },
-    { id: "grace", label: "Grace Period", color: "#ff8a1f", count: summary?.grace },
-    { id: "lapsed", label: "Lapsed", color: "#e6519c", count: summary?.lapsed },
+    { id: "trials", label: "Trials — Expiring 48h", color: "#FFE600", count: summary?.trial },
+    { id: "grace", label: "Grace Period", color: "#FF8A00", count: summary?.grace },
+    { id: "lapsed", label: "Lapsed", color: "#FF2BD6", count: summary?.lapsed },
   ];
 
   return (
@@ -673,22 +673,22 @@ export default function AdminBillingPage() {
           <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white/50 mb-3">Live Billing KPIs</p>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             <NeonTile
-              color="#28c9d6" label="Active" testId="kpi-active"
+              color="#00E5FF" label="Active" testId="kpi-active"
               value={summary?.active ?? "—"} icon={Zap}
               subLabel="Paid subscribers"
             />
             <NeonTile
-              color="#ffd83a" label="Trials" testId="kpi-trial"
+              color="#FFE600" label="Trials" testId="kpi-trial"
               value={summary?.trial ?? "—"} icon={Clock}
               subLabel="14-day free trial"
             />
             <NeonTile
-              color="#ff8a1f" label="Grace" testId="kpi-grace"
+              color="#FF8A00" label="Grace" testId="kpi-grace"
               value={summary?.grace ?? "—"} icon={AlertTriangle}
               subLabel="3-day grace window"
             />
             <NeonTile
-              color="#e6519c" label="Lapsed" testId="kpi-lapsed"
+              color="#FF2BD6" label="Lapsed" testId="kpi-lapsed"
               value={summary?.lapsed ?? "—"} icon={XCircle}
               subLabel="Need reactivation"
             />
@@ -698,7 +698,7 @@ export default function AdminBillingPage() {
               subLabel="Voluntarily cancelled"
             />
             <NeonTile
-              color="#8e7cdc" label="MRR" testId="kpi-mrr"
+              color="#8A2BFF" label="MRR" testId="kpi-mrr"
               value={summary ? fmtMrr(summary.mrr) : "—"} icon={TrendingUp}
               subLabel="Monthly recurring revenue"
             />
@@ -916,10 +916,10 @@ export default function AdminBillingPage() {
                       {actionLog.map(row => {
                         const meta = row.details?.metadata;
                         const actionLabel: Record<string, { label: string; color: string }> = {
-                          "billing.extend_trial":  { label: "Extend Trial",  color: "#28c9d6" },
+                          "billing.extend_trial":  { label: "Extend Trial",  color: "#00E5FF" },
                           "billing.grant_trial":   { label: "Grant Trial",   color: "#a3e635" },
-                          "billing.mark_lapsed":   { label: "Mark Lapsed",   color: "#e6519c" },
-                          "billing.mark_active":   { label: "Mark Active",   color: "#28c9d6" },
+                          "billing.mark_lapsed":   { label: "Mark Lapsed",   color: "#FF2BD6" },
+                          "billing.mark_active":   { label: "Mark Active",   color: "#00E5FF" },
                         };
                         const { label, color } = actionLabel[row.action] ?? { label: row.action, color: "#ffffff60" };
                         return (
@@ -1172,7 +1172,7 @@ function TrialsTable({ rows, isLoading, inFlight, onSendReminder, onExtendTrial,
   onOpenLinks: (userId: string, userName: string | null) => void;
   lastNudgedMap: Record<string, string>;
 }) {
-  const color = "#ffd83a";
+  const color = "#FFE600";
   if (isLoading) return <LoadingState />;
   if (rows.length === 0) return <EmptyState message="No active trials." />;
 
@@ -1196,7 +1196,7 @@ function TrialsTable({ rows, isLoading, inFlight, onSendReminder, onExtendTrial,
           const days = daysUntil(r.trialEndsAt);
           const isD13 = days !== null && days === 1;
           const isD14 = days !== null && days === 0;
-          const urgentColor = (isD14 || isD13) ? "#ff6a1f" : color;
+          const urgentColor = (isD14 || isD13) ? "#FF8A00" : color;
           return (
             <tr key={r.userId} data-testid={`billing-row-${r.userId}`}>
               <Td><LearnerCell row={r} /></Td>
@@ -1206,7 +1206,7 @@ function TrialsTable({ rows, isLoading, inFlight, onSendReminder, onExtendTrial,
               <Td>
                 <span
                   className="font-black text-sm"
-                  style={{ color: days !== null && days <= 2 ? "#ff6a1f" : color }}
+                  style={{ color: days !== null && days <= 2 ? "#FF8A00" : color }}
                 >
                   {days !== null ? (days <= 0 ? "Expired" : `${days}d`) : "—"}
                 </span>
@@ -1226,7 +1226,7 @@ function TrialsTable({ rows, isLoading, inFlight, onSendReminder, onExtendTrial,
                 <div className="flex gap-2 flex-wrap">
                   <ActionBtn
                     label="Extend 7 days"
-                    color="#28c9d6"
+                    color="#00E5FF"
                     icon={CalendarPlus}
                     disabled={inFlight.has(r.userId)}
                     onClick={() => onExtendTrial(r.userId)}
@@ -1259,7 +1259,7 @@ function GraceTable({ rows, isLoading, inFlight, onSendReminder, onMarkLapsed, o
   onOpenLinks: (userId: string, userName: string | null) => void;
   lastNudgedMap: Record<string, string>;
 }) {
-  const color = "#ff8a1f";
+  const color = "#FF8A00";
   if (isLoading) return <LoadingState />;
   if (rows.length === 0) return <EmptyState message="No subscriptions in grace period." />;
 
@@ -1311,7 +1311,7 @@ function GraceTable({ rows, isLoading, inFlight, onSendReminder, onMarkLapsed, o
                   />
                   <ActionBtn
                     label="Mark Lapsed"
-                    color="#e6519c"
+                    color="#FF2BD6"
                     icon={XCircle}
                     disabled={inFlight.has(r.userId)}
                     onClick={() => onMarkLapsed(r.userId)}
@@ -1337,7 +1337,7 @@ function LapsedTable({ rows, isLoading, inFlight, onSendOutreach, onGrantTrial, 
   onOpenLinks: (userId: string, userName: string | null) => void;
   lastNudgedMap: Record<string, string>;
 }) {
-  const color = "#e6519c";
+  const color = "#FF2BD6";
   if (isLoading) return <LoadingState />;
   if (rows.length === 0) return <EmptyState message="No lapsed subscriptions." />;
 
@@ -1364,7 +1364,7 @@ function LapsedTable({ rows, isLoading, inFlight, onSendOutreach, onGrantTrial, 
               <Td><MethodBadge method={r.billingMethod} /></Td>
               <Td><span className="text-white/60 text-xs">{fmtDate(r.updatedAt)}</span></Td>
               <Td>
-                <span className="font-bold text-sm" style={{ color: ago !== null && ago <= 7 ? "#ff8a1f" : color }}>
+                <span className="font-bold text-sm" style={{ color: ago !== null && ago <= 7 ? "#FF8A00" : color }}>
                   {ago !== null ? `${ago}d` : "—"}
                 </span>
               </Td>
@@ -1373,7 +1373,7 @@ function LapsedTable({ rows, isLoading, inFlight, onSendOutreach, onGrantTrial, 
                 <div className="flex gap-2 flex-wrap">
                   <ActionBtn
                     label="Mark Active"
-                    color="#28c9d6"
+                    color="#00E5FF"
                     icon={ShieldCheck}
                     disabled={inFlight.has(r.userId)}
                     onClick={() => onMarkActive(r.userId)}

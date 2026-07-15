@@ -40,8 +40,8 @@ interface JourneyData {
 
 /* Wordmark rainbow — keep this the single source of truth for this page. */
 const RAINBOW = [
-  "#ff6a1f", "#ff8a1f", "#ffb020", "#ffd83a",
-  "#28c9d6", "#4f8cd9", "#8e7cdc", "#b066d6", "#e6519c",
+  "#FF8A00", "#FF8A00", "#FFE600", "#FFE600",
+  "#00E5FF", "#006BFF", "#8A2BFF", "#8A2BFF", "#FF2BD6",
 ] as const;
 
 const EVENT_ICONS: Record<string, any> = {
@@ -57,14 +57,14 @@ const EVENT_ICONS: Record<string, any> = {
 
 /* Map each event type to one stop on the rainbow. */
 const EVENT_HEX: Record<string, string> = {
-  onboarding: "#28c9d6",
-  first_quiz: "#ffd83a",
-  subject:    "#4f8cd9",
-  badge:      "#ffb020",
-  mastery:    "#b066d6",
-  streak:     "#ff6a1f",
-  paper:      "#8e7cdc",
-  daily:      "#e6519c",
+  onboarding: "#00E5FF",
+  first_quiz: "#FFE600",
+  subject:    "#006BFF",
+  badge:      "#FFE600",
+  mastery:    "#8A2BFF",
+  streak:     "#FF8A00",
+  paper:      "#8A2BFF",
+  daily:      "#FF2BD6",
 };
 
 const halo = (hex: string, a = 0.32) => {
@@ -148,11 +148,11 @@ export default function JourneyPage() {
             <div
               className="w-8 h-8 rounded-xl bg-black flex items-center justify-center shrink-0"
               style={{
-                border: "1px solid #28c9d6",
-                boxShadow: "0 0 12px rgba(40,201,214,0.4), inset 0 0 8px rgba(40,201,214,0.15)",
+                border: "1px solid #00E5FF",
+                boxShadow: "0 0 12px rgba(0,229,255,0.4), inset 0 0 8px rgba(0,229,255,0.15)",
               }}
             >
-              <MapPin className="w-4 h-4" style={{ color: "#28c9d6", filter: "drop-shadow(0 0 4px #28c9d6)" }} />
+              <MapPin className="w-4 h-4" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
             </div>
             <span className="font-black text-sm text-white truncate">
               {t.pageTitle}
@@ -160,7 +160,7 @@ export default function JourneyPage() {
             {isParentView && (
               <span
                 className="text-[9px] font-black uppercase tracking-[0.22em] px-2 py-0.5 rounded-full bg-black shrink-0"
-                style={{ color: "#8e7cdc", border: "1px solid #8e7cdc" }}
+                style={{ color: "#8A2BFF", border: "1px solid #8A2BFF" }}
               >
                 {t.parentBadge}
               </span>
@@ -219,11 +219,11 @@ export default function JourneyPage() {
             <div
               className="w-10 h-10 rounded-2xl bg-black flex items-center justify-center"
               style={{
-                border: "1.5px solid #ff8a1f",
-                boxShadow: "0 0 16px rgba(255,138,31,0.35), inset 0 0 10px rgba(255,138,31,0.15)",
+                border: "1.5px solid #FF8A00",
+                boxShadow: "0 0 16px rgba(255,138,0,0.35), inset 0 0 10px rgba(255,138,0,0.15)",
               }}
             >
-              <Rocket className="w-5 h-5" style={{ color: "#ff8a1f", filter: "drop-shadow(0 0 5px #ff8a1f)" }} />
+              <Rocket className="w-5 h-5" style={{ color: "#FF8A00", filter: "drop-shadow(0 0 5px #FF8A00)" }} />
             </div>
             <span className="text-[10px] font-black uppercase tracking-[0.28em] text-white">
               {t.heroLabel}
@@ -249,7 +249,7 @@ export default function JourneyPage() {
 
         {isLoading ? (
           <div className="flex justify-center py-24">
-            <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#28c9d6" }} />
+            <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#00E5FF" }} />
           </div>
         ) : (
           <>
@@ -257,22 +257,22 @@ export default function JourneyPage() {
             <section
               className="relative rounded-2xl bg-black p-5 sm:p-6 overflow-hidden"
               style={{
-                border: "1.5px solid #28c9d6",
-                boxShadow: `0 0 0 1px ${halo("#28c9d6", 0.2)}, 0 0 28px ${halo("#28c9d6", 0.3)}, inset 0 0 22px rgba(0,0,0,0.6)`,
+                border: "1.5px solid #00E5FF",
+                boxShadow: `0 0 0 1px ${halo("#00E5FF", 0.2)}, 0 0 28px ${halo("#00E5FF", 0.3)}, inset 0 0 22px rgba(0,0,0,0.6)`,
               }}
               data-testid="rizz-narrator"
             >
               <span aria-hidden className="absolute top-0 left-0 right-0 h-[2px]"
-                style={{ background: "#28c9d6", boxShadow: "0 0 10px #28c9d6" }} />
-              <span aria-hidden className="absolute top-1.5 left-1.5 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: "#28c9d6" }} />
-              <span aria-hidden className="absolute bottom-1.5 right-1.5 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: "#28c9d6" }} />
+                style={{ background: "#00E5FF", boxShadow: "0 0 10px #00E5FF" }} />
+              <span aria-hidden className="absolute top-1.5 left-1.5 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: "#00E5FF" }} />
+              <span aria-hidden className="absolute bottom-1.5 right-1.5 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: "#00E5FF" }} />
 
               <div className="flex items-start gap-4">
                 <div
                   className="shrink-0 w-14 h-14 rounded-2xl overflow-hidden bg-black"
                   style={{
-                    border: "1.5px solid #28c9d6",
-                    boxShadow: `0 0 14px ${halo("#28c9d6", 0.45)}`,
+                    border: "1.5px solid #00E5FF",
+                    boxShadow: `0 0 14px ${halo("#00E5FF", 0.45)}`,
                   }}
                 >
                   <img src={rizzAvatar} alt="Rizz" className="w-full h-full object-cover" />
@@ -280,7 +280,7 @@ export default function JourneyPage() {
                 <div className="flex-1 min-w-0">
                   <p
                     className="text-[10px] font-black mb-1.5 uppercase tracking-[0.28em]"
-                    style={{ color: "#28c9d6", textShadow: `0 0 8px ${halo("#28c9d6", 0.4)}` }}
+                    style={{ color: "#00E5FF", textShadow: `0 0 8px ${halo("#00E5FF", 0.4)}` }}
                   >
                     {t.rizzSays}
                   </p>
@@ -295,11 +295,11 @@ export default function JourneyPage() {
             {journey?.stats && (
               <section className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                 {[
-                  { label: t.statDays,      value: journey.stats.totalDays,         hex: "#28c9d6", Icon: Calendar,   testid: "stat-days"      },
-                  { label: t.statBadges,    value: journey.stats.badgesEarned,      hex: "#ffd83a", Icon: Trophy,     testid: "stat-badges"    },
-                  { label: t.statQuestions, value: journey.stats.questionsAnswered, hex: "#4f8cd9", Icon: HelpCircle, testid: "stat-questions" },
-                  { label: t.statPapers,    value: journey.stats.papersCompleted,   hex: "#8e7cdc", Icon: FileText,   testid: "stat-papers"    },
-                  { label: t.statStreak,    value: journey.stats.currentStreak,     hex: "#ff8a1f", Icon: Flame,      testid: "stat-streak"    },
+                  { label: t.statDays,      value: journey.stats.totalDays,         hex: "#00E5FF", Icon: Calendar,   testid: "stat-days"      },
+                  { label: t.statBadges,    value: journey.stats.badgesEarned,      hex: "#FFE600", Icon: Trophy,     testid: "stat-badges"    },
+                  { label: t.statQuestions, value: journey.stats.questionsAnswered, hex: "#006BFF", Icon: HelpCircle, testid: "stat-questions" },
+                  { label: t.statPapers,    value: journey.stats.papersCompleted,   hex: "#8A2BFF", Icon: FileText,   testid: "stat-papers"    },
+                  { label: t.statStreak,    value: journey.stats.currentStreak,     hex: "#FF8A00", Icon: Flame,      testid: "stat-streak"    },
                 ].map(({ label, value, hex, Icon, testid }) => {
                   const h = halo(hex, 0.32);
                   return (
@@ -342,11 +342,11 @@ export default function JourneyPage() {
             {/* ── Completed timeline ── */}
             <section className="space-y-3">
               <h2 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.28em] text-white">
-                <CheckCircle2 className="w-3.5 h-3.5" style={{ color: "#28c9d6", filter: "drop-shadow(0 0 4px #28c9d6)" }} />
+                <CheckCircle2 className="w-3.5 h-3.5" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
                 {t.completedMilestones}
                 <span
                   className="ml-1 px-2 py-0.5 rounded-full bg-black text-[9px] font-black tabular-nums"
-                  style={{ border: "1px solid #28c9d6", color: "#28c9d6" }}
+                  style={{ border: "1px solid #00E5FF", color: "#00E5FF" }}
                 >
                   {completed.length}
                 </span>
@@ -370,14 +370,14 @@ export default function JourneyPage() {
                       className="flex items-center gap-3 p-4 rounded-2xl bg-black text-white text-sm"
                       style={{ border: "1px solid rgba(255,255,255,0.1)" }}
                     >
-                      <Sparkles className="w-4 h-4 shrink-0" style={{ color: "#e6519c" }} />
+                      <Sparkles className="w-4 h-4 shrink-0" style={{ color: "#FF2BD6" }} />
                       {t.emptyMilestones}
                     </div>
                   )}
 
                   {completed.map((event) => {
                     const Icon = EVENT_ICONS[event.type] ?? Star;
-                    const hex = EVENT_HEX[event.type] ?? "#28c9d6";
+                    const hex = EVENT_HEX[event.type] ?? "#00E5FF";
                     const h = halo(hex, 0.32);
                     return (
                       <div key={event.id} className="relative flex gap-4" data-testid={`journey-event-${event.id}`}>
@@ -451,7 +451,7 @@ export default function JourneyPage() {
                 <div className="grid sm:grid-cols-2 gap-3">
                   {upcoming.slice(0, 6).map((event) => {
                     const Icon = EVENT_ICONS[event.type] ?? Star;
-                    const hex = EVENT_HEX[event.type] ?? "#28c9d6";
+                    const hex = EVENT_HEX[event.type] ?? "#00E5FF";
                     return (
                       <div
                         key={event.id}
@@ -487,15 +487,15 @@ export default function JourneyPage() {
               <section
                 className="relative rounded-2xl bg-black p-6 sm:p-7 flex flex-col sm:flex-row items-center justify-between gap-5 overflow-hidden"
                 style={{
-                  border: "1.5px solid #e6519c",
-                  boxShadow: `0 0 0 1px ${halo("#e6519c", 0.2)}, 0 0 26px ${halo("#e6519c", 0.3)}, inset 0 0 20px rgba(0,0,0,0.55)`,
+                  border: "1.5px solid #FF2BD6",
+                  boxShadow: `0 0 0 1px ${halo("#FF2BD6", 0.2)}, 0 0 26px ${halo("#FF2BD6", 0.3)}, inset 0 0 20px rgba(0,0,0,0.55)`,
                 }}
                 data-testid="journey-cta"
               >
-                <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: "#e6519c" }} />
-                <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2" style={{ borderColor: "#e6519c" }} />
-                <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2" style={{ borderColor: "#e6519c" }} />
-                <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: "#e6519c" }} />
+                <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: "#FF2BD6" }} />
+                <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2" style={{ borderColor: "#FF2BD6" }} />
+                <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2" style={{ borderColor: "#FF2BD6" }} />
+                <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: "#FF2BD6" }} />
 
                 <div className="min-w-0">
                   <h3 className="font-black text-xl text-white">
@@ -509,9 +509,9 @@ export default function JourneyPage() {
                   <button
                     className="shrink-0 inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-black font-black text-sm uppercase tracking-[0.16em]"
                     style={{
-                      color: "#e6519c",
-                      border: "1.5px solid #e6519c",
-                      boxShadow: `0 0 16px ${halo("#e6519c", 0.4)}`,
+                      color: "#FF2BD6",
+                      border: "1.5px solid #FF2BD6",
+                      boxShadow: `0 0 16px ${halo("#FF2BD6", 0.4)}`,
                     }}
                     data-testid="button-start-studying"
                   >

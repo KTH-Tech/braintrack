@@ -101,14 +101,14 @@ interface SubjectMastery {
 }
 
 const BAND_HEX: Record<string, string> = {
-  star: "#ffd83a",
+  star: "#FFE600",
   green: "#4ADE80",
-  amber: "#ff8a1f",
-  red: "#e6519c",
+  amber: "#FF8A00",
+  red: "#FF2BD6",
 };
 
 function getBandHex(band: string): string {
-  return BAND_HEX[band] ?? "#8e7cdc";
+  return BAND_HEX[band] ?? "#8A2BFF";
 }
 
 function getBandColor(_band: string) {
@@ -122,15 +122,15 @@ function getBandBg(band: string) {
 
 type CosmicColor = "cyan" | "emerald" | "amber" | "red" | "yellow" | "blue" | "purple" | "pink" | "orange";
 const COSMIC_HEX: Record<CosmicColor, string> = {
-  cyan: "#28c9d6",
+  cyan: "#00E5FF",
   emerald: "#4ADE80",
-  amber: "#ff8a1f",
-  red: "#e6519c",
-  yellow: "#ffd83a",
-  blue: "#4f8cd9",
-  purple: "#8e7cdc",
-  pink: "#e6519c",
-  orange: "#ff6a1f",
+  amber: "#FF8A00",
+  red: "#FF2BD6",
+  yellow: "#FFE600",
+  blue: "#006BFF",
+  purple: "#8A2BFF",
+  pink: "#FF2BD6",
+  orange: "#FF8A00",
 };
 
 function CosmicCard({ children, color = "cyan", className = "" }: { children: React.ReactNode; color?: CosmicColor; className?: string }) {
@@ -364,7 +364,7 @@ function TopicContentDrawer({
       <DialogContent className="max-w-2xl bg-black border-cyan-400/40 text-white" data-testid={`topic-content-dialog-${topicId}`}>
         <DialogHeader>
           <DialogTitle className="text-white flex items-center gap-2">
-            <BookOpen className="w-5 h-5" style={{ color: "#28c9d6" }} />
+            <BookOpen className="w-5 h-5" style={{ color: "#00E5FF" }} />
             {topicName}
           </DialogTitle>
           <DialogDescription className="text-white text-xs">
@@ -511,7 +511,7 @@ function TopicContentDrawer({
                   type="button"
                   onClick={() => setFlipped(f => !f)}
                   className="w-full min-h-[180px] rounded-2xl bg-black border border-cyan-400/40 p-5 text-left transition-all hover:border-cyan-400/80"
-                  style={{ boxShadow: "inset 0 0 18px #28c9d622" }}
+                  style={{ boxShadow: "inset 0 0 18px #00E5FF22" }}
                   data-testid="topic-flashcard-face"
                 >
                   <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-300 mb-2">
@@ -560,7 +560,7 @@ function TopicContentDrawer({
                 <Link href={deepLinkHref}>
                   <button
                     className="w-full py-2.5 rounded-xl bg-black text-xs font-black uppercase tracking-[0.18em] transition-all hover:scale-[1.02]"
-                    style={{ color: "#28c9d6", border: "1.5px solid #28c9d6", boxShadow: "0 0 14px #28c9d655" }}
+                    style={{ color: "#00E5FF", border: "1.5px solid #00E5FF", boxShadow: "0 0 14px #00E5FF55" }}
                     data-testid="button-open-flashcards-page"
                   >
                     {isAf ? "Begin volle hersieningssessie →" : "Start full review session →"}
@@ -618,7 +618,7 @@ function LiteratureWorkDialog({
       <DialogContent className="max-w-2xl bg-black border-cyan-400/40 text-white" data-testid={`literature-dialog-${workId}`}>
         <DialogHeader>
           <DialogTitle className="text-white flex items-center gap-2">
-            <BookMarked className="w-5 h-5" style={{ color: "#28c9d6" }} />
+            <BookMarked className="w-5 h-5" style={{ color: "#00E5FF" }} />
             {workTitle}
           </DialogTitle>
           <DialogDescription className="text-white text-xs">
@@ -711,19 +711,19 @@ function getBandLabel(band: string, isAf: boolean) {
 
 function getBandIcon(band: string) {
   switch (band) {
-    case "star":  return <Trophy className="w-4 h-4" style={{ color: "#ffd83a" }} />;
+    case "star":  return <Trophy className="w-4 h-4" style={{ color: "#FFE600" }} />;
     case "green": return <ShieldCheck className="w-4 h-4" style={{ color: "#4ADE80" }} />;
-    case "amber": return <BarChart2 className="w-4 h-4" style={{ color: "#ff8a1f" }} />;
-    default:      return <BookOpen className="w-4 h-4" style={{ color: "#e6519c" }} />;
+    case "amber": return <BarChart2 className="w-4 h-4" style={{ color: "#FF8A00" }} />;
+    default:      return <BookOpen className="w-4 h-4" style={{ color: "#FF2BD6" }} />;
   }
 }
 
 function getProgressColor(band: string) {
   switch (band) {
-    case "star":  return "[&>div]:bg-[#ffd83a]";
+    case "star":  return "[&>div]:bg-[#FFE600]";
     case "green": return "[&>div]:bg-[#4ADE80]";
-    case "amber": return "[&>div]:bg-[#ff8a1f]";
-    default:      return "[&>div]:bg-[#e6519c]";
+    case "amber": return "[&>div]:bg-[#FF8A00]";
+    default:      return "[&>div]:bg-[#FF2BD6]";
   }
 }
 
@@ -823,12 +823,12 @@ function TopicQuizDrawer({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-xl bg-black border-[#28c9d6]/40 text-white overflow-y-auto max-h-[90vh]"
+        className="max-w-xl bg-black border-[#00E5FF]/40 text-white overflow-y-auto max-h-[90vh]"
         data-testid="topic-quiz-drawer"
       >
         <DialogHeader>
           <DialogTitle className="text-white flex items-center gap-2">
-            <Zap className="w-5 h-5" style={{ color: "#28c9d6" }} />
+            <Zap className="w-5 h-5" style={{ color: "#00E5FF" }} />
             {isAf ? "Kwis" : "Quiz"}: {topicName}
           </DialogTitle>
           <DialogDescription className="text-white text-xs">
@@ -1221,11 +1221,11 @@ export default function SubjectDetailPage() {
               <Link href={miniMockHref}>
                 <button
                   className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-black text-left transition-all hover:scale-[1.01]"
-                  style={{ border: "1.5px solid #ffd83a", boxShadow: "0 0 14px #ffd83a44, inset 0 0 12px #ffd83a12" }}
+                  style={{ border: "1.5px solid #FFE600", boxShadow: "0 0 14px #FFE60044, inset 0 0 12px #FFE60012" }}
                   data-testid="button-mini-mock-shortcut"
                 >
                   <div className="flex items-center gap-3">
-                    <Zap className="w-5 h-5" style={{ color: "#ffd83a", filter: "drop-shadow(0 0 4px #ffd83a)" }} />
+                    <Zap className="w-5 h-5" style={{ color: "#FFE600", filter: "drop-shadow(0 0 4px #FFE600)" }} />
                     <div>
                       <p className="font-black text-sm text-white uppercase tracking-[0.14em]">
                         {isAf ? "Mini Mock" : "Mini Mock"}
@@ -1239,17 +1239,17 @@ export default function SubjectDetailPage() {
                       </p>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5" style={{ color: "#ffd83a" }} />
+                  <ChevronRight className="w-5 h-5" style={{ color: "#FFE600" }} />
                 </button>
               </Link>
               <Link href={`/exam/full?subject=${encodeURIComponent(subject.name)}`}>
                 <button
                   className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-black text-left transition-all hover:scale-[1.01]"
-                  style={{ border: "1.5px solid #8e7cdc", boxShadow: "0 0 14px #8e7cdc44, inset 0 0 12px #8e7cdc12" }}
+                  style={{ border: "1.5px solid #8A2BFF", boxShadow: "0 0 14px #8A2BFF44, inset 0 0 12px #8A2BFF12" }}
                   data-testid="button-full-exam-shortcut"
                 >
                   <div className="flex items-center gap-3">
-                    <GraduationCap className="w-5 h-5" style={{ color: "#8e7cdc", filter: "drop-shadow(0 0 4px #8e7cdc)" }} />
+                    <GraduationCap className="w-5 h-5" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 4px #8A2BFF)" }} />
                     <div>
                       <p className="font-black text-sm text-white uppercase tracking-[0.14em]">
                         {isAf ? "Volle Eksamen" : "Full Exam"}
@@ -1259,7 +1259,7 @@ export default function SubjectDetailPage() {
                       </p>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5" style={{ color: "#8e7cdc" }} />
+                  <ChevronRight className="w-5 h-5" style={{ color: "#8A2BFF" }} />
                 </button>
               </Link>
             </div>
@@ -1289,7 +1289,7 @@ export default function SubjectDetailPage() {
             );
             return (
               <div data-testid="ready-to-study-strip">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] mb-2" style={{ color: "#28c9d6" }}>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] mb-2" style={{ color: "#00E5FF" }}>
                   {isAf ? "Gereed om te studeer" : "Ready to Study"}
                 </p>
                 <div
@@ -1344,7 +1344,7 @@ export default function SubjectDetailPage() {
                         {resumeLabel && (
                           <span
                             className="mt-0.5 inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-full"
-                            style={{ background: "#28c9d622", color: "#28c9d6", border: "1px solid #28c9d655" }}
+                            style={{ background: "#00E5FF22", color: "#00E5FF", border: "1px solid #00E5FF55" }}
                             data-testid={`chip-resume-badge-${topic.id}`}
                             title={isAf ? "Hervat waar jy laas opgehou het" : "Resume where you left off"}
                           >
@@ -1363,16 +1363,16 @@ export default function SubjectDetailPage() {
           {mastery && (
             <>
               <div className="grid gap-4 grid-cols-2 sm:grid-cols-4" data-testid="stat-grid">
-                <div data-testid="stat-papers"><NeonStat hex="#ff6a1f"  icon={Shield}   value={mastery.progress.papersCompleted}   label={isAf ? "Eksamens" : "Exams"} /></div>
-                <div data-testid="stat-questions"><NeonStat hex="#ff8a1f" icon={Brain}    value={mastery.progress.questionsAttempted} label={isAf ? "Vrae" : "Questions"} /></div>
-                <div data-testid="stat-accuracy"><NeonStat hex="#ffd83a" icon={Target}   value={`${mastery.progress.accuracy}%`}     label={isAf ? "Akkuraatheid" : "Accuracy"} /></div>
-                <div data-testid="stat-readiness"><NeonStat hex="#8e7cdc" icon={Zap}      value={`${readinessScore}%`}                 label={isAf ? "Gereedheid" : "Readiness"} /></div>
+                <div data-testid="stat-papers"><NeonStat hex="#FF8A00"  icon={Shield}   value={mastery.progress.papersCompleted}   label={isAf ? "Eksamens" : "Exams"} /></div>
+                <div data-testid="stat-questions"><NeonStat hex="#FF8A00" icon={Brain}    value={mastery.progress.questionsAttempted} label={isAf ? "Vrae" : "Questions"} /></div>
+                <div data-testid="stat-accuracy"><NeonStat hex="#FFE600" icon={Target}   value={`${mastery.progress.accuracy}%`}     label={isAf ? "Akkuraatheid" : "Accuracy"} /></div>
+                <div data-testid="stat-readiness"><NeonStat hex="#8A2BFF" icon={Zap}      value={`${readinessScore}%`}                 label={isAf ? "Gereedheid" : "Readiness"} /></div>
               </div>
 
               <CosmicCard color="cyan" className="p-5" data-testid="current-vs-target">
                 <div className="flex items-center justify-between gap-4 flex-wrap mb-3">
                   <div className="flex items-center gap-2">
-                    <Target className="w-5 h-5" style={{ color: "#28c9d6", filter: "drop-shadow(0 0 4px #28c9d6)" }} />
+                    <Target className="w-5 h-5" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
                     <h3 className="font-bold text-base text-white">{isAf ? "Huidige vs Teiken Telling" : "Current vs Target Score"}</h3>
                   </div>
                   <NeonBadge color={scoreDiff >= 0 ? "emerald" : "pink"}>
@@ -1386,21 +1386,21 @@ export default function SubjectDetailPage() {
                   </div>
                   <div className="flex items-center justify-center">
                     <div className="flex flex-col items-center gap-1">
-                      <ChevronRight className="w-8 h-8" style={{ color: scoreDiff >= 0 ? "#4ADE80" : "#e6519c", filter: `drop-shadow(0 0 6px ${scoreDiff >= 0 ? "#4ADE80" : "#e6519c"})` }} />
+                      <ChevronRight className="w-8 h-8" style={{ color: scoreDiff >= 0 ? "#4ADE80" : "#FF2BD6", filter: `drop-shadow(0 0 6px ${scoreDiff >= 0 ? "#4ADE80" : "#FF2BD6"})` }} />
                       <p className="text-[10px] text-white">{scoreDiff >= 0 ? (isAf ? 'Op Koers' : 'On Track') : (isAf ? 'Moet Verbeter' : 'Needs Work')}</p>
                     </div>
                   </div>
-                  <div className="text-center p-3 rounded-xl bg-black" style={{ border: "1px solid #28c9d655", boxShadow: "inset 0 0 10px #28c9d620" }}>
-                    <p className="text-3xl font-black text-white tabular-nums" style={{ textShadow: "0 0 10px #28c9d6aa" }}>{targetScore}%</p>
+                  <div className="text-center p-3 rounded-xl bg-black" style={{ border: "1px solid #00E5FF55", boxShadow: "inset 0 0 10px #00E5FF20" }}>
+                    <p className="text-3xl font-black text-white tabular-nums" style={{ textShadow: "0 0 10px #00E5FFaa" }}>{targetScore}%</p>
                     <p className="text-[10px] text-white uppercase tracking-[0.14em] mt-1">{isAf ? "Teiken" : "Target"}</p>
                   </div>
                 </div>
                 <div className="h-2 rounded-full bg-black overflow-hidden mt-3" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
-                  <div className="h-full rounded-full" style={{ width: `${Math.min(100, Math.max(0, currentScore))}%`, background: "linear-gradient(90deg,#ff6a1f,#ff8a1f,#ffd83a,#28c9d6,#4f8cd9,#8e7cdc,#e6519c)", boxShadow: "0 0 10px rgba(40,201,214,0.6)" }} />
+                  <div className="h-full rounded-full" style={{ width: `${Math.min(100, Math.max(0, currentScore))}%`, background: "linear-gradient(90deg,#FF8A00,#FF8A00,#FFE600,#00E5FF,#006BFF,#8A2BFF,#FF2BD6)", boxShadow: "0 0 10px rgba(0,229,255,0.6)" }} />
                 </div>
                 <div className="flex justify-between mt-1">
                   <span className="text-[10px] text-white">0%</span>
-                  <span className="text-[10px] font-semibold" style={{ color: "#28c9d6" }}>{isAf ? 'Teiken' : 'Target'}: {targetScore}%</span>
+                  <span className="text-[10px] font-semibold" style={{ color: "#00E5FF" }}>{isAf ? 'Teiken' : 'Target'}: {targetScore}%</span>
                   <span className="text-[10px] text-white">100%</span>
                 </div>
               </CosmicCard>
@@ -1414,10 +1414,10 @@ export default function SubjectDetailPage() {
               style={{ background: "rgba(0,0,0,0.7)", border: "1px solid rgba(255,255,255,0.09)" }}
             >
               {([
-                { value: "practice", en: "Practice", af: "Oefen",      Icon: Zap,      hex: "#ffd83a" },
-                { value: "topics",   en: "Topics",   af: "Onderwerpe", Icon: Brain,    hex: "#28c9d6" },
-                { value: "plan",     en: "Plan",      af: "Plan",       Icon: Calendar, hex: "#4f8cd9" },
-                { value: "sources",  en: "Sources",   af: "Bronne",     Icon: BookOpen, hex: "#8e7cdc" },
+                { value: "practice", en: "Practice", af: "Oefen",      Icon: Zap,      hex: "#FFE600" },
+                { value: "topics",   en: "Topics",   af: "Onderwerpe", Icon: Brain,    hex: "#00E5FF" },
+                { value: "plan",     en: "Plan",      af: "Plan",       Icon: Calendar, hex: "#006BFF" },
+                { value: "sources",  en: "Sources",   af: "Bronne",     Icon: BookOpen, hex: "#8A2BFF" },
               ] as const).map(tab => (
                 <TabsTrigger
                   key={tab.value}
@@ -1439,7 +1439,7 @@ export default function SubjectDetailPage() {
                     <Link href="/bst-exam">
                       <button
                         className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-black text-xs font-bold transition-all hover:scale-[1.02]"
-                        style={{ border: "1.5px solid #ff6a1f", boxShadow: "0 0 10px #ff6a1f44", color: "#ff6a1f" }}
+                        style={{ border: "1.5px solid #FF8A00", boxShadow: "0 0 10px #FF8A0044", color: "#FF8A00" }}
                         data-testid="button-crunch-time"
                       >
                         <Shield className="w-3.5 h-3.5" /> Crunch Time
@@ -1449,7 +1449,7 @@ export default function SubjectDetailPage() {
                   <Link href="/exam-mode">
                     <button
                       className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-black text-xs font-bold transition-all hover:scale-[1.02]"
-                      style={{ border: "1.5px solid #ff8a1f", boxShadow: "0 0 10px #ff8a1f44", color: "#ff8a1f" }}
+                      style={{ border: "1.5px solid #FF8A00", boxShadow: "0 0 10px #FF8A0044", color: "#FF8A00" }}
                       data-testid="button-exam-mode"
                     >
                       <GraduationCap className="w-3.5 h-3.5" />
@@ -1459,7 +1459,7 @@ export default function SubjectDetailPage() {
                   <Link href={`/tutor?subject=${id}`}>
                     <button
                       className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-black text-xs font-bold transition-all hover:scale-[1.02]"
-                      style={{ border: "1.5px solid #8e7cdc", boxShadow: "0 0 10px #8e7cdc44", color: "#8e7cdc" }}
+                      style={{ border: "1.5px solid #8A2BFF", boxShadow: "0 0 10px #8A2BFF44", color: "#8A2BFF" }}
                       data-testid="button-smart-tutor"
                     >
                       <Brain className="w-3.5 h-3.5" /> Rizz
@@ -1476,7 +1476,7 @@ export default function SubjectDetailPage() {
                   <div className="grid sm:grid-cols-2 gap-4">
                     <CosmicCard color="yellow" className="p-5 space-y-3" data-testid="recommended-quiz-card">
                       <div className="flex items-center gap-2">
-                        <Zap className="w-5 h-5" style={{ color: "#ffd83a", filter: "drop-shadow(0 0 4px #ffd83a)" }} />
+                        <Zap className="w-5 h-5" style={{ color: "#FFE600", filter: "drop-shadow(0 0 4px #FFE600)" }} />
                         <span className="font-black text-sm text-white uppercase tracking-[0.14em]">
                           {isAf ? "Aanbevole Vasvraag" : "Recommended Quiz"}
                         </span>
@@ -1488,7 +1488,7 @@ export default function SubjectDetailPage() {
                       </p>
                       <button
                         className="w-full py-2 rounded-xl bg-black text-xs font-black uppercase tracking-[0.18em] transition-all hover:scale-[1.02]"
-                        style={{ color: "#ffd83a", border: "1.5px solid #ffd83a", boxShadow: "0 0 14px #ffd83a55" }}
+                        style={{ color: "#FFE600", border: "1.5px solid #FFE600", boxShadow: "0 0 14px #FFE60055" }}
                         onClick={() => {
                           setRecommendedTopicFocus(weakestTopic.name);
                           const el = document.getElementById("boost-quiz-section");
@@ -1502,7 +1502,7 @@ export default function SubjectDetailPage() {
 
                     <CosmicCard color="purple" className="p-5 space-y-3" data-testid="revision-mode-card">
                       <div className="flex items-center gap-2">
-                        <BookOpen className="w-5 h-5" style={{ color: "#8e7cdc", filter: "drop-shadow(0 0 4px #8e7cdc)" }} />
+                        <BookOpen className="w-5 h-5" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 4px #8A2BFF)" }} />
                         <span className="font-black text-sm text-white uppercase tracking-[0.14em]">
                           {isAf ? "Hersien Verkeerde Antwoorde" : "Revise Wrong Answers"}
                         </span>
@@ -1517,7 +1517,7 @@ export default function SubjectDetailPage() {
                       <Link href={`/revision/${subject.id}`}>
                         <button
                           className="w-full py-2 rounded-xl bg-black text-xs font-black uppercase tracking-[0.18em] transition-all hover:scale-[1.02]"
-                          style={{ color: "#8e7cdc", border: "1.5px solid #8e7cdc", boxShadow: "0 0 14px #8e7cdc55" }}
+                          style={{ color: "#8A2BFF", border: "1.5px solid #8A2BFF", boxShadow: "0 0 14px #8A2BFF55" }}
                           data-testid="button-revision-mode"
                         >
                           {isAf ? "Begin Hersiening" : "Start Revision"} →
@@ -1548,7 +1548,7 @@ export default function SubjectDetailPage() {
               <div id="audio" />
               <CosmicCard color="cyan" className="p-5">
                 <div className="flex items-center gap-2 mb-4">
-                  <Target className="w-5 h-5" style={{ color: "#28c9d6", filter: "drop-shadow(0 0 4px #28c9d6)" }} />
+                  <Target className="w-5 h-5" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
                   <h3 className="font-bold text-base text-white">{isAf ? "Onderwerp Bemeestering" : "Topic Mastery"}</h3>
                   {mastery && mastery.topics.length > 0 && <NeonBadge color="cyan">{mastery.topics.length}</NeonBadge>}
                 </div>
@@ -1580,7 +1580,7 @@ export default function SubjectDetailPage() {
                                 {topic.hasNotes && (
                                   <span
                                     className="text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-[0.14em]"
-                                    style={{ color: "#28c9d6", border: "1px solid #28c9d655", background: "#28c9d610" }}
+                                    style={{ color: "#00E5FF", border: "1px solid #00E5FF55", background: "#00E5FF10" }}
                                     data-testid={`badge-curated-${topic.id}`}
                                   >
                                     {isAf ? "Gekureer" : "Curated"}
@@ -1593,7 +1593,7 @@ export default function SubjectDetailPage() {
                                   : `${topic.questionsAttempted} attempted · ${topic.questionsCorrect} correct`
                                 }
                                 {topic.consecutiveCorrect > 0 && (
-                                  <span className="ml-2" style={{ color: "#ff8a1f" }}>
+                                  <span className="ml-2" style={{ color: "#FF8A00" }}>
                                     🔥 {topic.consecutiveCorrect}x {isAf ? "reeks" : "streak"}
                                   </span>
                                 )}
@@ -1613,7 +1613,7 @@ export default function SubjectDetailPage() {
                           </div>
                           {topic.confidenceLevel > 0 && (
                             <div className="flex items-center gap-1 mt-2">
-                              <Zap className="w-3 h-3" style={{ color: "#28c9d6" }} />
+                              <Zap className="w-3 h-3" style={{ color: "#00E5FF" }} />
                               <span className="text-[10px] text-white">
                                 {isAf ? "Vertroue" : "Confidence"}: {topic.confidenceLevel}%
                               </span>
@@ -1697,10 +1697,10 @@ export default function SubjectDetailPage() {
                       <p className="text-[10px] font-bold mb-2 uppercase tracking-[0.18em] text-white">{isAf ? "Bemeestering Bande" : "Mastery Bands"}</p>
                       <div className="flex items-center gap-4 flex-wrap">
                         {[
-                          { hex: "#e6519c", label: isAf ? "Inhaal" : "Catch Up", range: "0-59%" },
-                          { hex: "#ff8a1f", label: isAf ? "Bou" : "Building", range: "60-74%" },
+                          { hex: "#FF2BD6", label: isAf ? "Inhaal" : "Catch Up", range: "0-59%" },
+                          { hex: "#FF8A00", label: isAf ? "Bou" : "Building", range: "60-74%" },
                           { hex: "#4ADE80", label: isAf ? "Op Koers" : "Locked In", range: "75-84%" },
-                          { hex: "#ffd83a", label: isAf ? "Ster" : "Star", range: "85-100%" },
+                          { hex: "#FFE600", label: isAf ? "Ster" : "Star", range: "85-100%" },
                         ].map(b => (
                           <div key={b.label} className="flex items-center gap-1.5">
                             <span className="w-2 h-2 rounded-full" style={{ background: b.hex, boxShadow: `0 0 6px ${b.hex}` }} />
@@ -1724,20 +1724,20 @@ export default function SubjectDetailPage() {
             <TabsContent value="plan" className="space-y-6 mt-6">
               <CosmicCard color="blue" className="p-5">
                 <div className="flex items-center gap-2 mb-4">
-                  <Calendar className="w-5 h-5" style={{ color: "#4f8cd9", filter: "drop-shadow(0 0 4px #4f8cd9)" }} />
+                  <Calendar className="w-5 h-5" style={{ color: "#006BFF", filter: "drop-shadow(0 0 4px #006BFF)" }} />
                   <h3 className="font-bold text-base text-white">{isAf ? "Persoonlike Studieplan" : "Personalized Study Plan"}</h3>
                   <NeonBadge color="blue">{isAf ? "7 Dae" : "7 Day"}</NeonBadge>
                 </div>
                 {masteryLoading && personalizedPlan.length === 0 ? (
                   <div className="space-y-2" data-testid="plan-loading">
                     {[0,1,2].map(i => (
-                      <div key={i} className="h-14 rounded-xl animate-pulse" style={{ background:"rgba(79,140,217,0.08)", border:"1px solid rgba(79,140,217,0.15)" }} />
+                      <div key={i} className="h-14 rounded-xl animate-pulse" style={{ background:"rgba(0,107,255,0.08)", border:"1px solid rgba(0,107,255,0.15)" }} />
                     ))}
                   </div>
                 ) : personalizedPlan.length > 0 ? (
                   <div className="space-y-2">
                     {personalizedPlan.map((item, idx) => {
-                      const pHex = item.priority === "high" ? "#e6519c" : item.priority === "low" ? "#4ADE80" : "#4f8cd9";
+                      const pHex = item.priority === "high" ? "#FF2BD6" : item.priority === "low" ? "#4ADE80" : "#006BFF";
                       return (
                         <div
                           key={idx}
@@ -1756,7 +1756,7 @@ export default function SubjectDetailPage() {
                             </div>
                           </div>
                           <div className="flex items-center gap-2 shrink-0">
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-black inline-flex items-center gap-1" style={{ color: "#28c9d6", border: "1px solid #28c9d655" }}>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-black inline-flex items-center gap-1" style={{ color: "#00E5FF", border: "1px solid #00E5FF55" }}>
                               <Clock className="w-3 h-3" /> {item.duration}min
                             </span>
                             {item.priority === "high" && <NeonBadge color="pink">{isAf ? "Prioriteit" : "Priority"}</NeonBadge>}
@@ -1782,7 +1782,7 @@ export default function SubjectDetailPage() {
               {badges && badges.length > 0 && (
                 <CosmicCard color="yellow" className="p-5">
                   <div className="flex items-center gap-2 mb-4">
-                    <Award className="w-5 h-5" style={{ color: "#ffd83a", filter: "drop-shadow(0 0 4px #ffd83a)" }} />
+                    <Award className="w-5 h-5" style={{ color: "#FFE600", filter: "drop-shadow(0 0 4px #FFE600)" }} />
                     <h3 className="font-bold text-base text-white">{isAf ? "Prestasies" : "Achievements"}</h3>
                     <NeonBadge color="yellow">{badges.length}</NeonBadge>
                   </div>
@@ -1795,10 +1795,10 @@ export default function SubjectDetailPage() {
                         <div
                           key={badge.id}
                           className="flex items-center gap-2 px-3 py-2 rounded-xl bg-black"
-                          style={{ border: "1px solid #ffd83a44", boxShadow: "inset 0 0 8px #ffd83a15" }}
+                          style={{ border: "1px solid #FFE60044", boxShadow: "inset 0 0 8px #FFE60015" }}
                           data-testid={`badge-${badge.badgeCode}`}
                         >
-                          <IconComp className="w-4 h-4" style={{ color: "#ffd83a", filter: "drop-shadow(0 0 3px #ffd83a)" }} />
+                          <IconComp className="w-4 h-4" style={{ color: "#FFE600", filter: "drop-shadow(0 0 3px #FFE600)" }} />
                           <span className="text-sm font-semibold text-white">
                             {isAf ? info.nameAfrikaans : info.name}
                           </span>
@@ -1819,7 +1819,7 @@ export default function SubjectDetailPage() {
                   <CosmicCard color="cyan" className="p-5" data-testid="card-literature-selection">
                     <div className="flex items-center justify-between gap-3 flex-wrap mb-2">
                       <h3 className="flex items-center gap-2 font-bold text-base text-white">
-                        <BookMarked className="w-5 h-5" style={{ color: "#28c9d6", filter: "drop-shadow(0 0 4px #28c9d6)" }} />
+                        <BookMarked className="w-5 h-5" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
                         {isAf ? "Jou Voorgeskryfde Werke" : "Your Prescribed Works"}
                       </h3>
                       <button
@@ -1827,7 +1827,7 @@ export default function SubjectDetailPage() {
                         disabled={saveLitMutation.isPending}
                         data-testid="button-save-literature"
                         className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-black text-xs font-black uppercase tracking-[0.14em] transition-all hover:scale-[1.02] disabled:opacity-60"
-                        style={{ color: "#28c9d6", border: "1.5px solid #28c9d6", boxShadow: "0 0 12px #28c9d655" }}
+                        style={{ color: "#00E5FF", border: "1.5px solid #00E5FF", boxShadow: "0 0 12px #00E5FF55" }}
                       >
                         {litSaved ? (
                           <><Check className="w-3.5 h-3.5" /> {isAf ? "Gestoor" : "Saved"}</>
@@ -1861,7 +1861,7 @@ export default function SubjectDetailPage() {
                                 <div
                                   key={w.id}
                                   className="flex items-start justify-between gap-2 rounded-xl bg-black p-3"
-                                  style={{ border: "1px solid #28c9d633" }}
+                                  style={{ border: "1px solid #00E5FF33" }}
                                   data-testid={`lit-work-card-${w.id}`}
                                 >
                                   <div className="min-w-0 flex-1">
@@ -1875,7 +1875,7 @@ export default function SubjectDetailPage() {
                                       type="button"
                                       onClick={() => setLitWorkDialog({ id: dbWork.id, title: dbWork.title })}
                                       className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-black text-[10px] font-black uppercase tracking-[0.14em] transition-all hover:scale-[1.02]"
-                                      style={{ color: "#28c9d6", border: "1.5px solid #28c9d6", boxShadow: "0 0 10px #28c9d655" }}
+                                      style={{ color: "#00E5FF", border: "1.5px solid #00E5FF", boxShadow: "0 0 10px #00E5FF55" }}
                                       data-testid={`button-notes-${w.id}`}
                                     >
                                       <FileText className="w-3 h-3" />
@@ -1936,7 +1936,7 @@ export default function SubjectDetailPage() {
                                         type="button"
                                         onClick={() => setLitWorkDialog({ id: dbWork.id, title: dbWork.title })}
                                         className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-black text-[10px] font-black uppercase tracking-[0.14em] transition-all hover:scale-[1.02]"
-                                        style={{ color: "#28c9d6", border: "1.5px solid #28c9d6", boxShadow: "0 0 10px #28c9d655" }}
+                                        style={{ color: "#00E5FF", border: "1.5px solid #00E5FF", boxShadow: "0 0 10px #00E5FF55" }}
                                         data-testid={`button-view-lit-${cat.type}`}
                                       >
                                         <FileText className="w-3 h-3" />
@@ -1951,9 +1951,9 @@ export default function SubjectDetailPage() {
                         })}
                       </div>
                       {hasAnySelection && (
-                        <div className="mt-4 p-3 rounded-xl bg-black" style={{ border: "1px solid #28c9d655", boxShadow: "inset 0 0 8px #28c9d615" }}>
+                        <div className="mt-4 p-3 rounded-xl bg-black" style={{ border: "1px solid #00E5FF55", boxShadow: "inset 0 0 8px #00E5FF15" }}>
                           <p className="text-xs text-white flex items-center gap-2">
-                            <BookMarked className="w-4 h-4 shrink-0" style={{ color: "#28c9d6" }} />
+                            <BookMarked className="w-4 h-4 shrink-0" style={{ color: "#00E5FF" }} />
                             {isAf
                               ? "Rizz sal jou vrae, opsommings en ontledings rig rondom hierdie werke."
                               : "Rizz will direct your questions, summaries and analysis around these prescribed works."}
@@ -1967,7 +1967,7 @@ export default function SubjectDetailPage() {
 
               <CosmicCard color="blue" className="p-5">
                 <div className="flex items-center gap-2 mb-4">
-                  <ExternalLink className="w-5 h-5" style={{ color: "#4f8cd9", filter: "drop-shadow(0 0 4px #4f8cd9)" }} />
+                  <ExternalLink className="w-5 h-5" style={{ color: "#006BFF", filter: "drop-shadow(0 0 4px #006BFF)" }} />
                   <h3 className="font-bold text-base text-white">{isAf ? "Amptelike Bronne" : "Official Sources"}</h3>
                 </div>
                 <div className="space-y-2">
@@ -1982,10 +1982,10 @@ export default function SubjectDetailPage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 p-2.5 rounded-xl bg-black text-sm font-semibold text-white hover:text-white transition-all hover:-translate-y-px"
-                      style={{ border: "1px solid #4f8cd955", boxShadow: "inset 0 0 8px #4f8cd915" }}
+                      style={{ border: "1px solid #006BFF55", boxShadow: "inset 0 0 8px #006BFF15" }}
                       data-testid={lnk.tid}
                     >
-                      <ExternalLink className="w-3 h-3 shrink-0" style={{ color: "#4f8cd9" }} />
+                      <ExternalLink className="w-3 h-3 shrink-0" style={{ color: "#006BFF" }} />
                       <span>{lnk.label}</span>
                     </a>
                   ))}
@@ -1996,7 +1996,7 @@ export default function SubjectDetailPage() {
                         : "This subject dashboard is CAPS-aligned and informed by analysis of NSC examination patterns (10-year window). All questions are original and simulated."
                       }
                     </p>
-                    <p className="text-[11px] mt-1 font-black tracking-[0.14em]" style={{ background: "linear-gradient(90deg,#ff6a1f,#ffd83a,#28c9d6,#8e7cdc,#e6519c)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                    <p className="text-[11px] mt-1 font-black tracking-[0.14em]" style={{ background: "linear-gradient(90deg,#FF8A00,#FFE600,#00E5FF,#8A2BFF,#FF2BD6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
                       BrainTrack™
                     </p>
                   </div>

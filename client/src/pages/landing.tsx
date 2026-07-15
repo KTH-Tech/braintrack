@@ -13,6 +13,7 @@ import { BrainTrackLogo } from "@/components/braintrack-logo";
 import { ExamCountdown } from "@/components/exam-countdown";
 import { AnimatedIcon, type AnimatedIconName } from "@/components/animated-icon";
 import { SALandmarkScene } from "@/components/sa-landmark-scene";
+import { GraffitiSplats } from "@/components/graffiti-splats";
 import novaIcon from "@assets/ChatGPT_Image_Mar_5,_2026,_10_44_55_AM_1772701049699.png";
 import heroBrain from "@assets/brain_only_transparent.png";
 import { useRolePromptNav } from "@/components/role-prompt-modal";
@@ -643,13 +644,14 @@ export default function LandingPage() {
       <main className="pt-14 overflow-x-hidden">
 
         <section className="relative overflow-hidden py-8 sm:py-12 md:py-16 bg-background">
+          <GraffitiSplats variant="hero" opacity={0.2} />
           <div ref={heroAnim.ref} className={`relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-700 ${heroAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
             <div
               className="relative overflow-hidden rounded-[32px] bg-background p-4 sm:p-12 md:p-16"
               style={{
-                border: "1.5px solid #28c9d6",
+                border: "1.5px solid #00E5FF",
                 boxShadow:
-                  "0 0 0 1px rgba(40,201,214,0.35), 0 0 60px rgba(40,201,214,0.45), inset 0 0 50px rgba(0,0,0,0.7)",
+                  "0 0 0 1px rgba(0,229,255,0.35), 0 0 60px rgba(0,229,255,0.45), inset 0 0 50px rgba(0,0,0,0.7)",
               }}
             >
               <div
@@ -657,17 +659,17 @@ export default function LandingPage() {
                 className="absolute top-0 left-0 right-0 h-[4px]"
                 style={{
                   background:
-                    "linear-gradient(90deg, #ff6a1f, #ff8a1f, #ffb020, #ffd83a, #28c9d6, #4f8cd9, #8e7cdc, #b066d6, #e6519c)",
+                    "linear-gradient(90deg, #FF8A00, #FF8A00, #FFE600, #FFE600, #00E5FF, #006BFF, #8A2BFF, #8A2BFF, #FF2BD6)",
                 }}
               />
               <div aria-hidden className="absolute -top-32 -right-32 w-96 h-96 rounded-full blur-3xl pointer-events-none"
-                style={{ background: "radial-gradient(circle, rgba(40,201,214,0.32), transparent 70%)" }} />
+                style={{ background: "radial-gradient(circle, rgba(0,229,255,0.32), transparent 70%)" }} />
               <div aria-hidden className="absolute -bottom-32 -left-32 w-96 h-96 rounded-full blur-3xl pointer-events-none"
-                style={{ background: "radial-gradient(circle, rgba(230,81,156,0.22), transparent 70%)" }} />
-              <span aria-hidden className="absolute top-3 left-3 w-5 h-5 border-t-2 border-l-2" style={{ borderColor: "#28c9d6" }} />
-              <span aria-hidden className="absolute top-3 right-3 w-5 h-5 border-t-2 border-r-2" style={{ borderColor: "#28c9d6" }} />
-              <span aria-hidden className="absolute bottom-3 left-3 w-5 h-5 border-b-2 border-l-2" style={{ borderColor: "#28c9d6" }} />
-              <span aria-hidden className="absolute bottom-3 right-3 w-5 h-5 border-b-2 border-r-2" style={{ borderColor: "#28c9d6" }} />
+                style={{ background: "radial-gradient(circle, rgba(255,43,214,0.22), transparent 70%)" }} />
+              <span aria-hidden className="absolute top-3 left-3 w-5 h-5 border-t-2 border-l-2" style={{ borderColor: "#00E5FF" }} />
+              <span aria-hidden className="absolute top-3 right-3 w-5 h-5 border-t-2 border-r-2" style={{ borderColor: "#00E5FF" }} />
+              <span aria-hidden className="absolute bottom-3 left-3 w-5 h-5 border-b-2 border-l-2" style={{ borderColor: "#00E5FF" }} />
+              <span aria-hidden className="absolute bottom-3 right-3 w-5 h-5 border-b-2 border-r-2" style={{ borderColor: "#00E5FF" }} />
 
               <div className="relative grid md:grid-cols-[0.95fr_1.05fr] gap-8 md:gap-10 items-center">
               <div className="flex flex-col items-center text-center md:items-start md:text-left gap-6 sm:gap-7 min-w-0">
@@ -675,28 +677,28 @@ export default function LandingPage() {
                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
                   <div
                     className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
-                    style={{ border: "1px solid #28c9d6", boxShadow: "0 0 14px rgba(40,201,214,0.55)" }}
+                    style={{ border: "1px solid #00E5FF", boxShadow: "0 0 14px rgba(0,229,255,0.55)" }}
                   >
-                    <Sparkles className="w-3 h-3" style={{ color: "#28c9d6", filter: "drop-shadow(0 0 4px #28c9d6)" }} />
-                    <span className="text-[10px] font-black uppercase tracking-[0.24em]" style={{ color: "#28c9d6" }}>
+                    <Sparkles className="w-3 h-3" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
+                    <span className="text-[10px] font-black uppercase tracking-[0.24em]" style={{ color: "#00E5FF" }}>
                       {language === "af" ? "Graad 12 · KABV" : "Grade 12 · CAPS"}
                     </span>
                   </div>
                   <div
                     className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
-                    style={{ border: "1px solid rgba(255,216,58,0.65)", boxShadow: "0 0 12px rgba(255,216,58,0.4)" }}
+                    style={{ border: "1px solid rgba(255,230,0,0.65)", boxShadow: "0 0 12px rgba(255,230,0,0.4)" }}
                   >
-                    <Flame className="w-3 h-3" style={{ color: "#ffd83a", filter: "drop-shadow(0 0 4px #ffd83a)" }} />
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#ffd83a" }}>
+                    <Flame className="w-3 h-3" style={{ color: "#FFE600", filter: "drop-shadow(0 0 4px #FFE600)" }} />
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#FFE600" }}>
                       {language === "af" ? "Proewe Kom Nader" : "Prelims Around the Corner"}
                     </span>
                   </div>
                   <div
                     className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
-                    style={{ border: "1px solid rgba(230,81,156,0.6)", boxShadow: "0 0 10px rgba(230,81,156,0.4)" }}
+                    style={{ border: "1px solid rgba(255,43,214,0.6)", boxShadow: "0 0 10px rgba(255,43,214,0.4)" }}
                   >
-                    <Star className="w-3 h-3" style={{ color: "#e6519c", filter: "drop-shadow(0 0 4px #e6519c)" }} />
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#e6519c" }}>
+                    <Star className="w-3 h-3" style={{ color: "#FF2BD6", filter: "drop-shadow(0 0 4px #FF2BD6)" }} />
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#FF2BD6" }}>
                       R169/mo
                     </span>
                   </div>
@@ -706,14 +708,14 @@ export default function LandingPage() {
                   data-testid="hero-title"
                   className="font-black tracking-tight leading-[0.95] max-w-4xl text-white text-[clamp(1.75rem,5vw+1rem,4.5rem)] max-[479px]:text-[1.55rem]"
                   style={{
-                    filter: "drop-shadow(0 0 28px rgba(40,201,214,0.38))",
+                    filter: "drop-shadow(0 0 28px rgba(0,229,255,0.38))",
                   }}
                 >
                   {t.hero.titleBase}{" "}
                   <span
                     style={{
                       background:
-                        "linear-gradient(90deg, #ff6a1f, #ff8a1f, #ffb020, #ffd83a, #28c9d6, #4f8cd9, #8e7cdc, #b066d6, #e6519c)",
+                        "linear-gradient(90deg, #FF8A00, #FF8A00, #FFE600, #FFE600, #00E5FF, #006BFF, #8A2BFF, #8A2BFF, #FF2BD6)",
                       WebkitBackgroundClip: "text",
                       WebkitTextFillColor: "transparent",
                       backgroundClip: "text",
@@ -729,7 +731,7 @@ export default function LandingPage() {
 
                 <div className="flex flex-wrap justify-center md:justify-start gap-2 overflow-x-hidden">
                   {t.hero.pills.map((pill, idx) => {
-                    const pillHexes = ["#ff6a1f", "#28c9d6", "#e6519c"];
+                    const pillHexes = ["#FF8A00", "#00E5FF", "#FF2BD6"];
                     const hex = pillHexes[idx % pillHexes.length];
                     return (
                       <span
@@ -746,7 +748,7 @@ export default function LandingPage() {
 
                 <div className="flex flex-wrap justify-center md:justify-start gap-2 overflow-x-hidden">
                   {t.hero.trustBadges.map((badge, idx) => {
-                    const hexes = ["#28c9d6", "#ffd83a", "#b066d6", "#e6519c", "#4f8cd9"];
+                    const hexes = ["#00E5FF", "#FFE600", "#8A2BFF", "#FF2BD6", "#006BFF"];
                     const hex = hexes[idx % hexes.length];
                     return (
                       <span
@@ -763,9 +765,9 @@ export default function LandingPage() {
 
                 <div
                   className="w-full max-w-xl rounded-2xl bg-black px-4 py-3"
-                  style={{ border: "1px solid rgba(255,216,58,0.45)", boxShadow: "0 0 14px rgba(255,216,58,0.25)" }}
+                  style={{ border: "1px solid rgba(255,230,0,0.45)", boxShadow: "0 0 14px rgba(255,230,0,0.25)" }}
                 >
-                  <p className="text-sm sm:text-base font-bold text-center" style={{ color: "#ffd83a", textShadow: "0 0 6px rgba(255,216,58,0.5)" }}>
+                  <p className="text-sm sm:text-base font-bold text-center" style={{ color: "#FFE600", textShadow: "0 0 6px rgba(255,230,0,0.5)" }}>
                     {t.hero.urgency}
                   </p>
                 </div>
@@ -778,9 +780,9 @@ export default function LandingPage() {
                     style={{
                       fontSize: "clamp(0.875rem, 1vw + 0.5rem, 1.125rem)",
                       padding: "clamp(0.875rem, 1.2vw + 0.4rem, 1.25rem) clamp(1.75rem, 2.5vw + 0.75rem, 2.5rem)",
-                      color: "#28c9d6",
-                      border: "1.5px solid #28c9d6",
-                      boxShadow: "0 0 24px rgba(40,201,214,0.55), inset 0 0 20px rgba(40,201,214,0.08)",
+                      color: "#00E5FF",
+                      border: "1.5px solid #00E5FF",
+                      boxShadow: "0 0 24px rgba(0,229,255,0.55), inset 0 0 20px rgba(0,229,255,0.08)",
                     }}
                   >
                     <AnimatedIcon name="brain" size={22} />
@@ -796,9 +798,9 @@ export default function LandingPage() {
 
                 <div data-testid="stats-strip" className="grid grid-cols-3 gap-1.5 sm:gap-3 w-full max-w-lg pt-2">
                   {[
-                    { k: language === "af" ? "Vakke" : "Subjects", v: "24+", hex: "#28c9d6" },
-                    { k: language === "af" ? "Vraestelle" : "Papers", v: "10y", hex: "#ffd83a" },
-                    { k: language === "af" ? "AI Tutor" : "AI Tutor", v: "24/7", hex: "#b066d6" },
+                    { k: language === "af" ? "Vakke" : "Subjects", v: "24+", hex: "#00E5FF" },
+                    { k: language === "af" ? "Vraestelle" : "Papers", v: "10y", hex: "#FFE600" },
+                    { k: language === "af" ? "AI Tutor" : "AI Tutor", v: "24/7", hex: "#8A2BFF" },
                   ].map(({ k, v, hex }) => (
                     <div
                       key={k}
@@ -818,7 +820,7 @@ export default function LandingPage() {
                   className="absolute inset-0 rounded-full blur-3xl pointer-events-none"
                   style={{
                     background:
-                      "radial-gradient(circle at 50% 50%, rgba(230,81,156,0.40), rgba(40,201,214,0.30) 40%, transparent 70%)",
+                      "radial-gradient(circle at 50% 50%, rgba(255,43,214,0.40), rgba(0,229,255,0.30) 40%, transparent 70%)",
                     animation: "hero-aura-spin 14s linear infinite",
                   }}
                 />
@@ -840,26 +842,27 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="everything" ref={featuresAnim.ref} className={`py-20 bg-black transition-all duration-700 ${featuresAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section id="everything" ref={featuresAnim.ref} className={`relative overflow-hidden py-20 bg-background transition-all duration-700 ${featuresAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+          {featuresAnim.inView && <GraffitiSplats variant="band" opacity={0.14} />}
+          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <div
                 className="inline-flex items-center gap-2 rounded-full px-3.5 py-1 mb-5 bg-black"
-                style={{ border: "1px solid #28c9d6", boxShadow: "0 0 14px rgba(40,201,214,0.45)" }}
+                style={{ border: "1px solid #00E5FF", boxShadow: "0 0 14px rgba(0,229,255,0.45)" }}
               >
-                <Target className="w-3.5 h-3.5" style={{ color: "#28c9d6", filter: "drop-shadow(0 0 4px #28c9d6)" }} />
-                <span className="text-[10px] font-black uppercase tracking-[0.28em]" style={{ color: "#28c9d6" }}>
+                <Target className="w-3.5 h-3.5" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
+                <span className="text-[10px] font-black uppercase tracking-[0.28em]" style={{ color: "#00E5FF" }}>
                   {language === "af" ? "Die Toolkit" : "The Toolkit"}
                 </span>
               </div>
               <h2
                 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-[1.1] max-w-3xl mx-auto break-words"
                 style={{
-                  background: "linear-gradient(90deg, #ff8a1f, #ffd83a, #28c9d6, #8e7cdc, #e6519c)",
+                  background: "linear-gradient(90deg, #FF8A00, #FFE600, #00E5FF, #8A2BFF, #FF2BD6)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
-                  filter: "drop-shadow(0 0 22px rgba(40,201,214,0.32))",
+                  filter: "drop-shadow(0 0 22px rgba(0,229,255,0.32))",
                 }}
               >
                 {language === "en" ? "Everything you need to nail Matric" : "Alles wat jy nodig het om Matriek te klop"}
@@ -874,7 +877,7 @@ export default function LandingPage() {
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {t.everything.cards.map((card, idx) => {
                 const Icon = everythingIcons[idx];
-                const hexes = ["#28c9d6", "#ffd83a", "#b066d6", "#e6519c"];
+                const hexes = ["#00E5FF", "#FFE600", "#8A2BFF", "#FF2BD6"];
                 const hex = hexes[idx % hexes.length];
                 return (
                   <div
@@ -911,26 +914,27 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section ref={pricingAnim.ref} className={`py-20 bg-black transition-all duration-700 ${pricingAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`} id="pricing">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section ref={pricingAnim.ref} className={`relative overflow-hidden py-20 bg-background transition-all duration-700 ${pricingAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`} id="pricing">
+          {pricingAnim.inView && <GraffitiSplats variant="corner" opacity={0.14} />}
+          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <div
                 className="inline-flex items-center gap-2 rounded-full px-3.5 py-1 mb-5 bg-black"
-                style={{ border: "1px solid #ffd83a", boxShadow: "0 0 14px rgba(255,216,58,0.4)" }}
+                style={{ border: "1px solid #FFE600", boxShadow: "0 0 14px rgba(255,230,0,0.4)" }}
               >
-                <CreditCard className="w-3.5 h-3.5" style={{ color: "#ffd83a", filter: "drop-shadow(0 0 4px #ffd83a)" }} />
-                <span className="text-[10px] font-black uppercase tracking-[0.28em]" style={{ color: "#ffd83a" }}>
+                <CreditCard className="w-3.5 h-3.5" style={{ color: "#FFE600", filter: "drop-shadow(0 0 4px #FFE600)" }} />
+                <span className="text-[10px] font-black uppercase tracking-[0.28em]" style={{ color: "#FFE600" }}>
                   {language === "af" ? "Pryse" : "Pricing"}
                 </span>
               </div>
               <h2
                 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-[1.1] max-w-3xl mx-auto break-words"
                 style={{
-                  background: "linear-gradient(90deg, #ffd83a, #28c9d6, #b066d6, #e6519c)",
+                  background: "linear-gradient(90deg, #FFE600, #00E5FF, #8A2BFF, #FF2BD6)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
-                  filter: "drop-shadow(0 0 22px rgba(255,216,58,0.3))",
+                  filter: "drop-shadow(0 0 22px rgba(255,230,0,0.3))",
                 }}
               >
                 {language === "en" ? "One plan. Real Matric marks." : "Een plan. Regte Matriekpunte."}
@@ -947,8 +951,8 @@ export default function LandingPage() {
                     key={idx}
                     className={`relative overflow-hidden rounded-3xl bg-black p-6 sm:p-8 w-full max-w-md transition-all duration-500 ${pricingAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
                     style={{
-                      border: "1.5px solid #28c9d6",
-                      boxShadow: "0 0 0 1px rgba(40,201,214,0.32), 0 0 40px rgba(40,201,214,0.45), inset 0 0 30px rgba(0,0,0,0.55)",
+                      border: "1.5px solid #00E5FF",
+                      boxShadow: "0 0 0 1px rgba(0,229,255,0.32), 0 0 40px rgba(0,229,255,0.45), inset 0 0 30px rgba(0,0,0,0.55)",
                       transitionDelay: pricingAnim.inView ? `${idx * 100}ms` : '0ms',
                     }}
                     data-testid={`product-card-${idx}`}
@@ -958,16 +962,16 @@ export default function LandingPage() {
                       className="absolute top-0 left-0 right-0 h-[3px]"
                       style={{
                         background:
-                          "linear-gradient(90deg, #ff6a1f, #ff8a1f, #ffb020, #ffd83a, #28c9d6, #4f8cd9, #8e7cdc, #b066d6, #e6519c)",
+                          "linear-gradient(90deg, #FF8A00, #FF8A00, #FFE600, #FFE600, #00E5FF, #006BFF, #8A2BFF, #8A2BFF, #FF2BD6)",
                       }}
                     />
                     <div aria-hidden className="absolute -top-20 -right-20 w-56 h-56 rounded-full blur-3xl pointer-events-none"
-                      style={{ background: "radial-gradient(circle, rgba(40,201,214,0.28), transparent 70%)" }} />
+                      style={{ background: "radial-gradient(circle, rgba(0,229,255,0.28), transparent 70%)" }} />
 
                     {product.badge && (
                       <div
                         className="absolute top-3 right-3 inline-flex items-center gap-1 rounded-full px-2.5 py-1 bg-black text-[9px] font-black uppercase tracking-[0.18em]"
-                        style={{ color: "#ffd83a", border: "1px solid #ffd83a", boxShadow: "0 0 10px rgba(255,216,58,0.45)" }}
+                        style={{ color: "#FFE600", border: "1px solid #FFE600", boxShadow: "0 0 10px rgba(255,230,0,0.45)" }}
                       >
                         <Sparkles className="w-3 h-3" />
                         {product.badge}
@@ -978,7 +982,7 @@ export default function LandingPage() {
                       <div className="flex items-center gap-3 pr-16 sm:pr-20">
                         <div
                           className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-black"
-                          style={{ border: "1px solid #28c9d6", boxShadow: "0 0 14px rgba(40,201,214,0.5)", color: "#28c9d6" }}
+                          style={{ border: "1px solid #00E5FF", boxShadow: "0 0 14px rgba(0,229,255,0.5)", color: "#00E5FF" }}
                         >
                           <Icon className="w-6 h-6" />
                         </div>
@@ -992,11 +996,11 @@ export default function LandingPage() {
                         <span
                           className="text-4xl sm:text-5xl font-black tabular-nums"
                           style={{
-                            background: "linear-gradient(90deg, #ffd83a, #28c9d6, #b066d6, #e6519c)",
+                            background: "linear-gradient(90deg, #FFE600, #00E5FF, #8A2BFF, #FF2BD6)",
                             WebkitBackgroundClip: "text",
                             WebkitTextFillColor: "transparent",
                             backgroundClip: "text",
-                            filter: "drop-shadow(0 0 10px rgba(40,201,214,0.35))",
+                            filter: "drop-shadow(0 0 10px rgba(0,229,255,0.35))",
                           }}
                         >
                           {product.price}
@@ -1007,7 +1011,7 @@ export default function LandingPage() {
                       {"trial" in product && product.trial && (
                         <span
                           className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 bg-black text-[10px] font-bold uppercase tracking-[0.18em]"
-                          style={{ color: "#e6519c", border: "1px solid rgba(230,81,156,0.6)", boxShadow: "0 0 10px rgba(230,81,156,0.35)" }}
+                          style={{ color: "#FF2BD6", border: "1px solid rgba(255,43,214,0.6)", boxShadow: "0 0 10px rgba(255,43,214,0.35)" }}
                         >
                           <Sparkles className="w-3 h-3" />
                           {product.trial}
@@ -1019,7 +1023,7 @@ export default function LandingPage() {
                           <li key={i} className="flex items-start gap-2.5 text-sm text-white">
                             <div
                               className="mt-0.5 rounded-full p-0.5 shrink-0 bg-black"
-                              style={{ border: "1px solid #28c9d6", boxShadow: "0 0 6px rgba(40,201,214,0.4)", color: "#28c9d6" }}
+                              style={{ border: "1px solid #00E5FF", boxShadow: "0 0 6px rgba(0,229,255,0.4)", color: "#00E5FF" }}
                             >
                               <Check className="w-2.5 h-2.5" />
                             </div>
@@ -1052,12 +1056,12 @@ export default function LandingPage() {
               <div
                 className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-5 bg-black"
                 style={{
-                  border: "1.5px solid #8e7cdc",
-                  boxShadow: "0 0 14px rgba(142,124,220,0.45)",
+                  border: "1.5px solid #8A2BFF",
+                  boxShadow: "0 0 14px rgba(138,43,255,0.45)",
                 }}
               >
-                <Brain className="w-4 h-4" style={{ color: "#8e7cdc", filter: "drop-shadow(0 0 6px rgba(142,124,220,0.8))" }} />
-                <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#8e7cdc" }}>{t.nova.badge}</span>
+                <Brain className="w-4 h-4" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 6px rgba(138,43,255,0.8))" }} />
+                <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#8A2BFF" }}>{t.nova.badge}</span>
               </div>
               <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold mb-4 text-white leading-[1.1] tracking-tight break-words">
                 {language === "en" ? (
@@ -1071,7 +1075,7 @@ export default function LandingPage() {
               </p>
               <div className="flex flex-wrap justify-center gap-x-3 sm:gap-x-5 gap-y-2">
                 {t.nova.features.map((feat, idx) => {
-                  const hexes = ["#28c9d6", "#8e7cdc", "#ffd83a"];
+                  const hexes = ["#00E5FF", "#8A2BFF", "#FFE600"];
                   const hex = hexes[idx % hexes.length];
                   return (
                     <div key={idx} className="flex items-center gap-2 text-sm font-medium text-white">
@@ -1087,47 +1091,47 @@ export default function LandingPage() {
             <div
               className="relative rounded-2xl bg-black overflow-hidden"
               style={{
-                border: "1.5px solid #8e7cdc",
-                boxShadow: "0 0 0 1px rgba(142,124,220,0.35), 0 0 40px rgba(142,124,220,0.35), inset 0 0 24px rgba(0,0,0,0.6)",
+                border: "1.5px solid #8A2BFF",
+                boxShadow: "0 0 0 1px rgba(138,43,255,0.35), 0 0 40px rgba(138,43,255,0.35), inset 0 0 24px rgba(0,0,0,0.6)",
               }}
               data-testid="rizz-demo-console"
             >
               {/* corner brackets */}
-              <span aria-hidden className="absolute top-0 left-0 w-3.5 h-3.5 border-t-2 border-l-2 z-10" style={{ borderColor: "#8e7cdc" }} />
-              <span aria-hidden className="absolute top-0 right-0 w-3.5 h-3.5 border-t-2 border-r-2 z-10" style={{ borderColor: "#8e7cdc" }} />
-              <span aria-hidden className="absolute bottom-0 left-0 w-3.5 h-3.5 border-b-2 border-l-2 z-10" style={{ borderColor: "#8e7cdc" }} />
-              <span aria-hidden className="absolute bottom-0 right-0 w-3.5 h-3.5 border-b-2 border-r-2 z-10" style={{ borderColor: "#8e7cdc" }} />
+              <span aria-hidden className="absolute top-0 left-0 w-3.5 h-3.5 border-t-2 border-l-2 z-10" style={{ borderColor: "#8A2BFF" }} />
+              <span aria-hidden className="absolute top-0 right-0 w-3.5 h-3.5 border-t-2 border-r-2 z-10" style={{ borderColor: "#8A2BFF" }} />
+              <span aria-hidden className="absolute bottom-0 left-0 w-3.5 h-3.5 border-b-2 border-l-2 z-10" style={{ borderColor: "#8A2BFF" }} />
+              <span aria-hidden className="absolute bottom-0 right-0 w-3.5 h-3.5 border-b-2 border-r-2 z-10" style={{ borderColor: "#8A2BFF" }} />
 
               {/* Chat header */}
               <div
                 className="p-4 sm:p-5 flex items-center gap-3 bg-black"
-                style={{ borderBottom: "1px solid rgba(142,124,220,0.35)" }}
+                style={{ borderBottom: "1px solid rgba(138,43,255,0.35)" }}
               >
                 <div className="relative">
                   <div
                     className="w-12 h-12 rounded-full overflow-hidden shrink-0"
                     style={{
-                      border: "1.5px solid #28c9d6",
-                      boxShadow: "0 0 16px rgba(40,201,214,0.55), inset 0 0 8px rgba(40,201,214,0.25)",
+                      border: "1.5px solid #00E5FF",
+                      boxShadow: "0 0 16px rgba(0,229,255,0.55), inset 0 0 8px rgba(0,229,255,0.25)",
                     }}
                   >
                     <img src={novaIcon} alt="Rizz AI tutor for Grade 12 Matric learners — step-by-step CAPS explanations" className="w-full h-full object-cover" loading="lazy" data-testid="img-nova-demo" />
                   </div>
                   <div
                     className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-black"
-                    style={{ background: "#28c9d6", boxShadow: "0 0 10px rgba(40,201,214,0.9)" }}
+                    style={{ background: "#00E5FF", boxShadow: "0 0 10px rgba(0,229,255,0.9)" }}
                   />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="text-base font-bold text-white leading-tight">Rizz</div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#28c9d6", boxShadow: "0 0 6px #28c9d6" }} />
-                    <span className="text-[11px] font-semibold uppercase tracking-widest" style={{ color: "#28c9d6" }}>{language === "af" ? "Aanlyn" : "Online"}</span>
+                    <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#00E5FF", boxShadow: "0 0 6px #00E5FF" }} />
+                    <span className="text-[11px] font-semibold uppercase tracking-widest" style={{ color: "#00E5FF" }}>{language === "af" ? "Aanlyn" : "Online"}</span>
                   </div>
                 </div>
                 <div
                   className="hidden sm:block text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-black"
-                  style={{ color: "#ffd83a", border: "1px solid rgba(255,216,58,0.55)", boxShadow: "0 0 10px rgba(255,216,58,0.35)" }}
+                  style={{ color: "#FFE600", border: "1px solid rgba(255,230,0,0.55)", boxShadow: "0 0 10px rgba(255,230,0,0.35)" }}
                 >
                   {language === "af" ? "KABV-belyn" : "CAPS-aligned"}
                 </div>
@@ -1155,9 +1159,9 @@ export default function LandingPage() {
                         style={
                           active
                             ? {
-                                color: "#8e7cdc",
-                                border: "1.5px solid #8e7cdc",
-                                boxShadow: "0 0 14px rgba(142,124,220,0.6), inset 0 0 10px rgba(142,124,220,0.25)",
+                                color: "#8A2BFF",
+                                border: "1.5px solid #8A2BFF",
+                                boxShadow: "0 0 14px rgba(138,43,255,0.6), inset 0 0 10px rgba(138,43,255,0.25)",
                               }
                             : {
                                 color:"#ffffff",
@@ -1176,11 +1180,11 @@ export default function LandingPage() {
                 <div
                   className="rounded-xl p-4 bg-black"
                   style={{
-                    border: "1px solid rgba(230,81,156,0.45)",
-                    boxShadow: "0 0 18px rgba(230,81,156,0.25)",
+                    border: "1px solid rgba(255,43,214,0.45)",
+                    boxShadow: "0 0 18px rgba(255,43,214,0.25)",
                   }}
                 >
-                  <p className="text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color: "#e6519c" }}>{t.nova.studentQ}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color: "#FF2BD6" }}>{t.nova.studentQ}</p>
                   <p className="text-base text-white leading-relaxed font-medium">
                     {demoQuestions[language][demoQuestion].question}
                   </p>
@@ -1190,11 +1194,11 @@ export default function LandingPage() {
                   <>
                     <div
                       className="rounded-xl p-4 bg-black animate-in fade-in slide-in-from-bottom-2 duration-300"
-                      style={{ border: "1px solid rgba(79,140,217,0.5)", boxShadow: "0 0 18px rgba(79,140,217,0.25)" }}
+                      style={{ border: "1px solid rgba(0,107,255,0.5)", boxShadow: "0 0 18px rgba(0,107,255,0.25)" }}
                     >
                       <div className="flex items-center gap-2 mb-2">
-                        <GraduationCap className="w-4 h-4" style={{ color: "#4f8cd9", filter: "drop-shadow(0 0 4px #4f8cd9)" }} />
-                        <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "#4f8cd9" }}>{t.nova.thinking}</p>
+                        <GraduationCap className="w-4 h-4" style={{ color: "#006BFF", filter: "drop-shadow(0 0 4px #006BFF)" }} />
+                        <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "#006BFF" }}>{t.nova.thinking}</p>
                       </div>
                       <p className="text-sm text-white italic whitespace-pre-line leading-relaxed">
                         {demoQuestions[language][demoQuestion].thinking}
@@ -1203,11 +1207,11 @@ export default function LandingPage() {
 
                     <div
                       className="rounded-xl p-4 bg-black animate-in fade-in slide-in-from-bottom-2 duration-300"
-                      style={{ border: "1px solid rgba(40,201,214,0.5)", boxShadow: "0 0 18px rgba(40,201,214,0.3)" }}
+                      style={{ border: "1px solid rgba(0,229,255,0.5)", boxShadow: "0 0 18px rgba(0,229,255,0.3)" }}
                     >
                       <div className="flex items-center gap-2 mb-2">
-                        <MessageSquare className="w-4 h-4" style={{ color: "#28c9d6", filter: "drop-shadow(0 0 4px #28c9d6)" }} />
-                        <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "#28c9d6" }}>{t.nova.response}</p>
+                        <MessageSquare className="w-4 h-4" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
+                        <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "#00E5FF" }}>{t.nova.response}</p>
                       </div>
                       <div className="text-sm sm:text-base text-white space-y-2 whitespace-pre-line leading-relaxed">
                         {demoQuestions[language][demoQuestion].response}
@@ -1222,9 +1226,9 @@ export default function LandingPage() {
                     onClick={() => setDemoStep(1)}
                     data-testid="demo-next-step"
                     style={{
-                      color: "#28c9d6",
-                      border: "1.5px solid #28c9d6",
-                      boxShadow: "0 0 16px rgba(40,201,214,0.5)",
+                      color: "#00E5FF",
+                      border: "1.5px solid #00E5FF",
+                      boxShadow: "0 0 16px rgba(0,229,255,0.5)",
                     }}
                   >
                     {t.nova.seeResponse}
@@ -1234,7 +1238,7 @@ export default function LandingPage() {
                     className="w-full rounded-xl py-3 bg-black font-bold text-sm transition-none"
                     onClick={() => setDemoStep(0)}
                     data-testid="demo-reset"
-                    style={{ color: "#8e7cdc", border: "1.5px solid #8e7cdc", boxShadow: "0 0 14px rgba(142,124,220,0.4)" }}
+                    style={{ color: "#8A2BFF", border: "1.5px solid #8A2BFF", boxShadow: "0 0 14px rgba(138,43,255,0.4)" }}
                   >
                     {t.nova.tryAnotherQ}
                   </button>
@@ -1249,21 +1253,21 @@ export default function LandingPage() {
             <div className="text-center mb-12">
               <div
                 className="inline-flex items-center gap-2 rounded-full px-3.5 py-1 mb-5 bg-black"
-                style={{ border: "1px solid #b066d6", boxShadow: "0 0 14px rgba(176,102,214,0.4)" }}
+                style={{ border: "1px solid #8A2BFF", boxShadow: "0 0 14px rgba(138,43,255,0.4)" }}
               >
-                <Users className="w-3.5 h-3.5" style={{ color: "#b066d6", filter: "drop-shadow(0 0 4px #b066d6)" }} />
-                <span className="text-[10px] font-black uppercase tracking-[0.28em]" style={{ color: "#b066d6" }}>
+                <Users className="w-3.5 h-3.5" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 4px #8A2BFF)" }} />
+                <span className="text-[10px] font-black uppercase tracking-[0.28em]" style={{ color: "#8A2BFF" }}>
                   {language === "af" ? "Vir Ouers" : "For Parents"}
                 </span>
               </div>
               <h2
                 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-[1.1] max-w-3xl mx-auto break-words"
                 style={{
-                  background: "linear-gradient(90deg, #8e7cdc, #b066d6, #e6519c)",
+                  background: "linear-gradient(90deg, #8A2BFF, #8A2BFF, #FF2BD6)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
-                  filter: "drop-shadow(0 0 22px rgba(176,102,214,0.32))",
+                  filter: "drop-shadow(0 0 22px rgba(138,43,255,0.32))",
                 }}
               >
                 {t.parents.title}
@@ -1271,7 +1275,7 @@ export default function LandingPage() {
             </div>
             <div className="grid sm:grid-cols-2 gap-4 mb-8">
               {t.parents.items.map((item, idx) => {
-                const hexes = ["#b066d6", "#8e7cdc", "#e6519c", "#4f8cd9"];
+                const hexes = ["#8A2BFF", "#8A2BFF", "#FF2BD6", "#006BFF"];
                 const hex = hexes[idx % hexes.length];
                 return (
                   <div
@@ -1310,21 +1314,21 @@ export default function LandingPage() {
             <div className="text-center mb-12">
               <div
                 className="inline-flex items-center gap-2 rounded-full px-3.5 py-1 mb-5 bg-black"
-                style={{ border: "1px solid #ff8a1f", boxShadow: "0 0 14px rgba(255,138,31,0.4)" }}
+                style={{ border: "1px solid #FF8A00", boxShadow: "0 0 14px rgba(255,138,0,0.4)" }}
               >
-                <GraduationCap className="w-3.5 h-3.5" style={{ color: "#ff8a1f", filter: "drop-shadow(0 0 4px #ff8a1f)" }} />
-                <span className="text-[10px] font-black uppercase tracking-[0.28em]" style={{ color: "#ff8a1f" }}>
+                <GraduationCap className="w-3.5 h-3.5" style={{ color: "#FF8A00", filter: "drop-shadow(0 0 4px #FF8A00)" }} />
+                <span className="text-[10px] font-black uppercase tracking-[0.28em]" style={{ color: "#FF8A00" }}>
                   {language === "af" ? "Vir Skole" : "For Schools"}
                 </span>
               </div>
               <h2
                 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-[1.1] max-w-3xl mx-auto break-words"
                 style={{
-                  background: "linear-gradient(90deg, #ff6a1f, #ff8a1f, #ffb020, #ffd83a)",
+                  background: "linear-gradient(90deg, #FF8A00, #FF8A00, #FFE600, #FFE600)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
-                  filter: "drop-shadow(0 0 22px rgba(255,138,31,0.3))",
+                  filter: "drop-shadow(0 0 22px rgba(255,138,0,0.3))",
                 }}
               >
                 {t.schools.title}
@@ -1332,7 +1336,7 @@ export default function LandingPage() {
             </div>
             <div className="grid sm:grid-cols-2 gap-4 mb-8">
               {t.schools.items.map((item, idx) => {
-                const hexes = ["#ff8a1f", "#ffd83a", "#ffb020", "#ff6a1f"];
+                const hexes = ["#FF8A00", "#FFE600", "#FFE600", "#FF8A00"];
                 const hex = hexes[idx % hexes.length];
                 return (
                   <div
@@ -1368,21 +1372,21 @@ export default function LandingPage() {
 
         <section ref={faqAnim.ref} className={`relative py-20 bg-black overflow-x-hidden transition-all duration-700 ${faqAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`} id="faq-section">
           {/* funky floating blobs */}
-          <div aria-hidden className="absolute top-16 -left-16 w-72 h-72 rounded-full blur-3xl opacity-30 pointer-events-none" style={{ background: "radial-gradient(circle, #e6519c, transparent 70%)" }} />
-          <div aria-hidden className="absolute bottom-10 -right-20 w-80 h-80 rounded-full blur-3xl opacity-25 pointer-events-none" style={{ background: "radial-gradient(circle, #28c9d6, transparent 70%)" }} />
+          <div aria-hidden className="absolute top-16 -left-16 w-72 h-72 rounded-full blur-3xl opacity-30 pointer-events-none" style={{ background: "radial-gradient(circle, #FF2BD6, transparent 70%)" }} />
+          <div aria-hidden className="absolute bottom-10 -right-20 w-80 h-80 rounded-full blur-3xl opacity-25 pointer-events-none" style={{ background: "radial-gradient(circle, #00E5FF, transparent 70%)" }} />
 
           <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <span
                 className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.28em] px-3 py-1 rounded-full bg-black mb-4"
-                style={{ color: "#ffd83a", border: "1px solid #ffd83a", boxShadow: "0 0 14px rgba(255,216,58,0.4)" }}
+                style={{ color: "#FFE600", border: "1px solid #FFE600", boxShadow: "0 0 14px rgba(255,230,0,0.4)" }}
               >
                 <Sparkles className="w-3 h-3" />
                 {language === "af" ? "Vra Weg" : "Ask Away"}
                 <Sparkles className="w-3 h-3" />
               </span>
               <h2 className="text-2xl sm:text-3xl md:text-5xl font-black leading-tight text-transparent bg-clip-text break-words"
-                style={{ backgroundImage: "linear-gradient(90deg,#ff6a1f,#ffd83a,#28c9d6,#8e7cdc,#e6519c)" }}
+                style={{ backgroundImage: "linear-gradient(90deg,#FF8A00,#FFE600,#00E5FF,#8A2BFF,#FF2BD6)" }}
               >
                 {t.faq.title}
               </h2>
@@ -1394,12 +1398,12 @@ export default function LandingPage() {
             <div className="space-y-4">
               {t.faq.items.map((faqItem, idx) => {
                 const palette = [
-                  { hex: "#ff8a1f", halo: "rgba(255,138,31,0.45)", Icon: Flame,       rot: "-rotate-1" },
-                  { hex: "#ffd83a", halo: "rgba(255,216,58,0.45)", Icon: Zap,         rot: "rotate-1"  },
-                  { hex: "#28c9d6", halo: "rgba(40,201,214,0.45)", Icon: Sparkles,    rot: "-rotate-1" },
-                  { hex: "#4f8cd9", halo: "rgba(79,140,217,0.45)", Icon: Star,        rot: "rotate-1"  },
-                  { hex: "#8e7cdc", halo: "rgba(142,124,220,0.45)",Icon: Brain,       rot: "-rotate-1" },
-                  { hex: "#e6519c", halo: "rgba(230,81,156,0.45)", Icon: MessageSquare, rot: "rotate-1" },
+                  { hex: "#FF8A00", halo: "rgba(255,138,0,0.45)", Icon: Flame,       rot: "-rotate-1" },
+                  { hex: "#FFE600", halo: "rgba(255,230,0,0.45)", Icon: Zap,         rot: "rotate-1"  },
+                  { hex: "#00E5FF", halo: "rgba(0,229,255,0.45)", Icon: Sparkles,    rot: "-rotate-1" },
+                  { hex: "#006BFF", halo: "rgba(0,107,255,0.45)", Icon: Star,        rot: "rotate-1"  },
+                  { hex: "#8A2BFF", halo: "rgba(138,43,255,0.45)",Icon: Brain,       rot: "-rotate-1" },
+                  { hex: "#FF2BD6", halo: "rgba(255,43,214,0.45)", Icon: MessageSquare, rot: "rotate-1" },
                 ];
                 const { hex, halo, Icon, rot } = palette[idx % palette.length];
                 const isOpen = openFaq === idx;
@@ -1497,9 +1501,9 @@ export default function LandingPage() {
             <div className="mt-10 flex justify-center">
               <span
                 className="inline-flex items-center gap-2 text-[11px] font-bold px-4 py-2 rounded-full bg-black"
-                style={{ color: "#28c9d6", border: "1px solid #28c9d655" }}
+                style={{ color: "#00E5FF", border: "1px solid #00E5FF55" }}
               >
-                <Sparkles className="w-3.5 h-3.5" style={{ filter: "drop-shadow(0 0 4px #28c9d6)" }} />
+                <Sparkles className="w-3.5 h-3.5" style={{ filter: "drop-shadow(0 0 4px #00E5FF)" }} />
                 {language === "af" ? "Nog 'n vraag? Vra vir Rizz in die app." : "Still curious? Ask Rizz inside the app."}
               </span>
             </div>

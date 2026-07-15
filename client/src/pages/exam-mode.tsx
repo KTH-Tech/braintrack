@@ -300,22 +300,22 @@ const EXAM_CONFIG: Record<string, {
 
 // Canonical rainbow stops for per-card accents
 const RAINBOW_ACCENTS: { hex: string; halo: string }[] = [
-  { hex: "#ff6a1f", halo: "rgba(255,106,31,0.32)" },
-  { hex: "#ffb020", halo: "rgba(255,176,32,0.32)" },
-  { hex: "#ffd83a", halo: "rgba(255,216,58,0.32)" },
-  { hex: "#28c9d6", halo: "rgba(40,201,214,0.32)" },
-  { hex: "#4f8cd9", halo: "rgba(79,140,217,0.32)" },
-  { hex: "#8e7cdc", halo: "rgba(142,124,220,0.32)" },
-  { hex: "#b066d6", halo: "rgba(176,102,214,0.32)" },
-  { hex: "#e6519c", halo: "rgba(230,81,156,0.32)" },
+  { hex: "#FF8A00", halo: "rgba(255,138,0,0.32)" },
+  { hex: "#FFE600", halo: "rgba(255,230,0,0.32)" },
+  { hex: "#FFE600", halo: "rgba(255,230,0,0.32)" },
+  { hex: "#00E5FF", halo: "rgba(0,229,255,0.32)" },
+  { hex: "#006BFF", halo: "rgba(0,107,255,0.32)" },
+  { hex: "#8A2BFF", halo: "rgba(138,43,255,0.32)" },
+  { hex: "#8A2BFF", halo: "rgba(138,43,255,0.32)" },
+  { hex: "#FF2BD6", halo: "rgba(255,43,214,0.32)" },
 ];
 
 function getBandHex(band: string): { hex: string; halo: string; label: string } {
   switch (band) {
-    case "star":  return { hex: "#ffd83a", halo: "rgba(255,216,58,0.32)",  label: "STAR" };
-    case "green": return { hex: "#28c9d6", halo: "rgba(40,201,214,0.32)",  label: "GREEN" };
-    case "amber": return { hex: "#ff8a1f", halo: "rgba(255,138,31,0.32)",  label: "AMBER" };
-    default:      return { hex: "#e6519c", halo: "rgba(230,81,156,0.32)",  label: "RED" };
+    case "star":  return { hex: "#FFE600", halo: "rgba(255,230,0,0.32)",  label: "STAR" };
+    case "green": return { hex: "#00E5FF", halo: "rgba(0,229,255,0.32)",  label: "GREEN" };
+    case "amber": return { hex: "#FF8A00", halo: "rgba(255,138,0,0.32)",  label: "AMBER" };
+    default:      return { hex: "#FF2BD6", halo: "rgba(255,43,214,0.32)",  label: "RED" };
   }
 }
 
@@ -395,9 +395,9 @@ function SubjectExamCard({ subject, isAf, t, colorIndex }: { subject: Subject; i
               <span
                 className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.2em] bg-black"
                 style={{
-                  color: isActive ? "#28c9d6" : "#ff8a1f",
-                  border: `1px solid ${isActive ? "#28c9d6" : "#ff8a1f"}`,
-                  boxShadow: `0 0 8px ${isActive ? "rgba(40,201,214,0.45)" : "rgba(255,138,31,0.4)"}`,
+                  color: isActive ? "#00E5FF" : "#FF8A00",
+                  border: `1px solid ${isActive ? "#00E5FF" : "#FF8A00"}`,
+                  boxShadow: `0 0 8px ${isActive ? "rgba(0,229,255,0.45)" : "rgba(255,138,0,0.4)"}`,
                 }}
               >
                 {isActive ? t.liveLabel : t.soonLabel}
@@ -425,10 +425,10 @@ function SubjectExamCard({ subject, isAf, t, colorIndex }: { subject: Subject; i
       {mastery && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
           {[
-            { v: mastery.progress.papersCompleted, k: t.examsAbbr, hex: "#ff8a1f" },
-            { v: mastery.progress.questionsAttempted, k: t.questionsAbbr, hex: "#ffd83a" },
-            { v: `${mastery.progress.accuracy}%`, k: t.accuracyAbbr, hex: "#8e7cdc" },
-            { v: `${readiness}%`, k: t.readyAbbr, hex: "#28c9d6" },
+            { v: mastery.progress.papersCompleted, k: t.examsAbbr, hex: "#FF8A00" },
+            { v: mastery.progress.questionsAttempted, k: t.questionsAbbr, hex: "#FFE600" },
+            { v: `${mastery.progress.accuracy}%`, k: t.accuracyAbbr, hex: "#8A2BFF" },
+            { v: `${readiness}%`, k: t.readyAbbr, hex: "#00E5FF" },
           ].map((s, i) => (
             <div
               key={i}
@@ -681,22 +681,22 @@ export default function ExamModePage() {
         className="pointer-events-none fixed inset-0 z-0"
         style={{
           background:
-            "radial-gradient(ellipse 55% 45% at 12% 8%,  rgba(255,106,31,0.10) 0%, transparent 60%)," +
-            "radial-gradient(ellipse 55% 45% at 88% 6%,  rgba(230,81,156,0.10) 0%, transparent 60%)," +
-            "radial-gradient(ellipse 70% 55% at 50% 100%, rgba(40,201,214,0.10) 0%, transparent 65%)," +
+            "radial-gradient(ellipse 55% 45% at 12% 8%,  rgba(255,138,0,0.10) 0%, transparent 60%)," +
+            "radial-gradient(ellipse 55% 45% at 88% 6%,  rgba(255,43,214,0.10) 0%, transparent 60%)," +
+            "radial-gradient(ellipse 70% 55% at 50% 100%, rgba(0,229,255,0.10) 0%, transparent 65%)," +
             "#000",
         }}
       />
       <div className="relative z-10">
         <header
           className="sticky top-0 z-50 backdrop-blur-xl bg-black/80"
-          style={{ borderBottom: "1px solid rgba(230,81,156,0.35)" }}
+          style={{ borderBottom: "1px solid rgba(255,43,214,0.35)" }}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-14 gap-4">
               <div className="flex items-center gap-2">
-                <Timer className="w-4 h-4" style={{ color: "#e6519c", filter: "drop-shadow(0 0 4px #e6519c)" }} />
-                <span className="font-black text-sm uppercase tracking-[0.18em]" style={{ color: "#e6519c" }}>
+                <Timer className="w-4 h-4" style={{ color: "#FF2BD6", filter: "drop-shadow(0 0 4px #FF2BD6)" }} />
+                <span className="font-black text-sm uppercase tracking-[0.18em]" style={{ color: "#FF2BD6" }}>
                   {t.pageTitle}
                 </span>
               </div>
@@ -729,9 +729,9 @@ export default function ExamModePage() {
           <section
             className="relative overflow-hidden rounded-3xl bg-black p-6 sm:p-10 md:p-12"
             style={{
-              border: "1.5px solid #e6519c",
+              border: "1.5px solid #FF2BD6",
               boxShadow:
-                "0 0 0 1px rgba(230,81,156,0.32), 0 0 40px rgba(230,81,156,0.42), inset 0 0 32px rgba(0,0,0,0.65)",
+                "0 0 0 1px rgba(255,43,214,0.32), 0 0 40px rgba(255,43,214,0.42), inset 0 0 32px rgba(0,0,0,0.65)",
             }}
           >
             <div
@@ -739,7 +739,7 @@ export default function ExamModePage() {
               className="absolute top-0 left-0 right-0 h-[3px]"
               style={{
                 background:
-                  "linear-gradient(90deg, #ff6a1f, #ff8a1f, #ffb020, #ffd83a, #28c9d6, #4f8cd9, #8e7cdc, #b066d6, #e6519c)",
+                  "linear-gradient(90deg, #FF8A00, #FF8A00, #FFE600, #FFE600, #00E5FF, #006BFF, #8A2BFF, #8A2BFF, #FF2BD6)",
               }}
             />
             <div
@@ -747,47 +747,47 @@ export default function ExamModePage() {
               className="absolute left-0 right-0 h-px pointer-events-none progress-hero-scan"
               style={{
                 background:
-                  "linear-gradient(90deg, transparent, #e6519c 20%, #8e7cdc 50%, #28c9d6 80%, transparent)",
-                boxShadow: "0 0 14px #e6519c, 0 0 28px #8e7cdc",
+                  "linear-gradient(90deg, transparent, #FF2BD6 20%, #8A2BFF 50%, #00E5FF 80%, transparent)",
+                boxShadow: "0 0 14px #FF2BD6, 0 0 28px #8A2BFF",
               }}
             />
             <div aria-hidden className="absolute -top-24 -right-24 w-72 h-72 rounded-full blur-3xl pointer-events-none"
-              style={{ background: "radial-gradient(circle, rgba(230,81,156,0.28), transparent 70%)" }} />
+              style={{ background: "radial-gradient(circle, rgba(255,43,214,0.28), transparent 70%)" }} />
             <div aria-hidden className="absolute -bottom-24 -left-24 w-72 h-72 rounded-full blur-3xl pointer-events-none"
-              style={{ background: "radial-gradient(circle, rgba(255,138,31,0.22), transparent 70%)" }} />
+              style={{ background: "radial-gradient(circle, rgba(255,138,0,0.22), transparent 70%)" }} />
 
-            <span aria-hidden className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2" style={{ borderColor: "#e6519c" }} />
-            <span aria-hidden className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2" style={{ borderColor: "#e6519c" }} />
-            <span aria-hidden className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2" style={{ borderColor: "#e6519c" }} />
-            <span aria-hidden className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2" style={{ borderColor: "#e6519c" }} />
+            <span aria-hidden className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2" style={{ borderColor: "#FF2BD6" }} />
+            <span aria-hidden className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2" style={{ borderColor: "#FF2BD6" }} />
+            <span aria-hidden className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2" style={{ borderColor: "#FF2BD6" }} />
+            <span aria-hidden className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2" style={{ borderColor: "#FF2BD6" }} />
 
             <div className="relative text-center space-y-5">
               {/* HUD pills */}
               <div className="flex flex-wrap items-center justify-center gap-2">
                 <div
                   className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
-                  style={{ border: "1px solid #e6519c", boxShadow: "0 0 14px rgba(230,81,156,0.5)" }}
+                  style={{ border: "1px solid #FF2BD6", boxShadow: "0 0 14px rgba(255,43,214,0.5)" }}
                 >
-                  <Flame className="w-3 h-3" style={{ color: "#e6519c", filter: "drop-shadow(0 0 4px #e6519c)" }} />
-                  <span className="text-[10px] font-black uppercase tracking-[0.24em]" style={{ color: "#e6519c" }}>
+                  <Flame className="w-3 h-3" style={{ color: "#FF2BD6", filter: "drop-shadow(0 0 4px #FF2BD6)" }} />
+                  <span className="text-[10px] font-black uppercase tracking-[0.24em]" style={{ color: "#FF2BD6" }}>
                     {t.examSimulation}
                   </span>
                 </div>
                 <div
                   className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
-                  style={{ border: "1px solid rgba(40,201,214,0.65)", boxShadow: "0 0 10px rgba(40,201,214,0.4)" }}
+                  style={{ border: "1px solid rgba(0,229,255,0.65)", boxShadow: "0 0 10px rgba(0,229,255,0.4)" }}
                 >
-                  <span className="w-1.5 h-1.5 rounded-full progress-hero-pulse" style={{ background: "#28c9d6", boxShadow: "0 0 6px #28c9d6" }} />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#28c9d6" }}>
+                  <span className="w-1.5 h-1.5 rounded-full progress-hero-pulse" style={{ background: "#00E5FF", boxShadow: "0 0 6px #00E5FF" }} />
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#00E5FF" }}>
                     {t.capsLabel}
                   </span>
                 </div>
                 <div
                   className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
-                  style={{ border: "1px solid rgba(255,216,58,0.65)", boxShadow: "0 0 10px rgba(255,216,58,0.4)" }}
+                  style={{ border: "1px solid rgba(255,230,0,0.65)", boxShadow: "0 0 10px rgba(255,230,0,0.4)" }}
                 >
-                  <AlertCircle className="w-3 h-3" style={{ color: "#ffd83a", filter: "drop-shadow(0 0 4px #ffd83a)" }} />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#ffd83a" }}>
+                  <AlertCircle className="w-3 h-3" style={{ color: "#FFE600", filter: "drop-shadow(0 0 4px #FFE600)" }} />
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#FFE600" }}>
                     {t.timedScored}
                   </span>
                 </div>
@@ -797,11 +797,11 @@ export default function ExamModePage() {
                 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-[0.98] max-w-4xl mx-auto"
                 style={{
                   background:
-                    "linear-gradient(90deg, #ff6a1f, #ff8a1f, #ffb020, #ffd83a, #28c9d6, #4f8cd9, #8e7cdc, #b066d6, #e6519c)",
+                    "linear-gradient(90deg, #FF8A00, #FF8A00, #FFE600, #FFE600, #00E5FF, #006BFF, #8A2BFF, #8A2BFF, #FF2BD6)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
-                  filter: "drop-shadow(0 0 22px rgba(230,81,156,0.32))",
+                  filter: "drop-shadow(0 0 22px rgba(255,43,214,0.32))",
                 }}
                 data-testid="text-crunch-time-title"
               >
@@ -814,9 +814,9 @@ export default function ExamModePage() {
               {/* Stat ticker */}
               <div className="grid grid-cols-3 gap-3 max-w-xl mx-auto pt-1">
                 {[
-                  { k: t.subjectsLabel, v: learnerSubjects.length, hex: "#28c9d6" },
-                  { k: t.liveLabel, v: liveCount, hex: "#ffd83a" },
-                  { k: t.papersLabel, v: totalPapers, hex: "#e6519c" },
+                  { k: t.subjectsLabel, v: learnerSubjects.length, hex: "#00E5FF" },
+                  { k: t.liveLabel, v: liveCount, hex: "#FFE600" },
+                  { k: t.papersLabel, v: totalPapers, hex: "#FF2BD6" },
                 ].map(({ k, v, hex }) => (
                   <div
                     key={k}
@@ -837,9 +837,9 @@ export default function ExamModePage() {
               {
                 href: "/exam/mini-mock",
                 testid: "tile-mini-mock",
-                hex: "#28c9d6",
-                halo: "rgba(40,201,214,",
-                icon: <Zap className="w-7 h-7" style={{ color: "#28c9d6", filter: "drop-shadow(0 0 6px rgba(40,201,214,0.6))" }} />,
+                hex: "#00E5FF",
+                halo: "rgba(0,229,255,",
+                icon: <Zap className="w-7 h-7" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 6px rgba(0,229,255,0.6))" }} />,
                 title: t.miniMockTitle,
                 tag: t.miniMockTag,
                 sub: t.miniMockSub,
@@ -848,9 +848,9 @@ export default function ExamModePage() {
               {
                 href: "/exam/full",
                 testid: "tile-full-exam",
-                hex: "#e6519c",
-                halo: "rgba(230,81,156,",
-                icon: <GraduationCap className="w-7 h-7" style={{ color: "#e6519c", filter: "drop-shadow(0 0 6px rgba(230,81,156,0.6))" }} />,
+                hex: "#FF2BD6",
+                halo: "rgba(255,43,214,",
+                icon: <GraduationCap className="w-7 h-7" style={{ color: "#FF2BD6", filter: "drop-shadow(0 0 6px rgba(255,43,214,0.6))" }} />,
                 title: t.fullExamTitle,
                 tag: t.fullExamTag,
                 sub: t.fullExamSub,
@@ -918,15 +918,15 @@ export default function ExamModePage() {
             <div
               className="relative rounded-2xl bg-black p-12 text-center overflow-hidden"
               style={{
-                border: "1.5px solid #ff8a1f",
-                boxShadow: "0 0 0 1px rgba(255,138,31,0.28), 0 0 26px rgba(255,138,31,0.35), inset 0 0 18px rgba(0,0,0,0.55)",
+                border: "1.5px solid #FF8A00",
+                boxShadow: "0 0 0 1px rgba(255,138,0,0.28), 0 0 26px rgba(255,138,0,0.35), inset 0 0 18px rgba(0,0,0,0.55)",
               }}
             >
-              <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: "#ff8a1f" }} />
-              <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2" style={{ borderColor: "#ff8a1f" }} />
-              <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2" style={{ borderColor: "#ff8a1f" }} />
-              <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: "#ff8a1f" }} />
-              <GraduationCap className="w-16 h-16 mx-auto mb-4" style={{ color: "#ff8a1f", filter: "drop-shadow(0 0 10px rgba(255,138,31,0.6))" }} />
+              <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: "#FF8A00" }} />
+              <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2" style={{ borderColor: "#FF8A00" }} />
+              <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2" style={{ borderColor: "#FF8A00" }} />
+              <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: "#FF8A00" }} />
+              <GraduationCap className="w-16 h-16 mx-auto mb-4" style={{ color: "#FF8A00", filter: "drop-shadow(0 0 10px rgba(255,138,0,0.6))" }} />
               <p className="text-xl font-black text-white">
                 {t.noSubjectsMsg}
               </p>
@@ -937,9 +937,9 @@ export default function ExamModePage() {
                 <button
                   className="inline-flex items-center gap-2 mt-5 px-6 py-2.5 rounded-xl bg-black font-black uppercase tracking-[0.16em] text-sm"
                   style={{
-                    color: "#ff8a1f",
-                    border: "1.5px solid #ff8a1f",
-                    boxShadow: "0 0 14px rgba(255,138,31,0.5)",
+                    color: "#FF8A00",
+                    border: "1.5px solid #FF8A00",
+                    boxShadow: "0 0 14px rgba(255,138,0,0.5)",
                   }}
                   data-testid="button-setup-profile"
                 >

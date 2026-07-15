@@ -14,7 +14,7 @@ type Partner = {
   totalReferrals: number;
 };
 
-const NEON = "#28c9d6";
+const NEON = "#00E5FF";
 
 function hexToRgba(hex: string, a: number) {
   const r = parseInt(hex.slice(1, 3), 16);
@@ -105,7 +105,7 @@ function PartnerQRCard({ partner, baseUrl }: { partner: Partner; baseUrl: string
         <button
           onClick={copyLink}
           className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold transition-all hover:opacity-80"
-          style={{ background: hexToRgba("#b066d6", 0.1), color: "#b066d6", border: `1px solid ${hexToRgba("#b066d6", 0.25)}` }}
+          style={{ background: hexToRgba("#8A2BFF", 0.1), color: "#8A2BFF", border: `1px solid ${hexToRgba("#8A2BFF", 0.25)}` }}
         >
           {copied ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
           {copied ? "Copied" : "Copy link"}
@@ -268,7 +268,7 @@ export default function AdminSchoolQRPage() {
               <button
                 onClick={() => window.print()}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:opacity-80"
-                style={{ background: hexToRgba("#ffd83a", 0.1), color: "#ffd83a", border: `1px solid ${hexToRgba("#ffd83a", 0.25)}` }}
+                style={{ background: hexToRgba("#FFE600", 0.1), color: "#FFE600", border: `1px solid ${hexToRgba("#FFE600", 0.25)}` }}
               >
                 <Printer className="w-4 h-4" />
                 {isAf ? "Druk alles" : "Print all"}

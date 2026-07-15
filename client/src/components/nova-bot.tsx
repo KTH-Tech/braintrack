@@ -323,7 +323,7 @@ const knowledge: KnowledgeEntry[] = [
   {
     keywords: ["cancel", "kanselleer", "billing", "fakturering", "payment", "betaling", "refund", "terugbetaling"],
     en: "There's nothing to cancel — BrainTrack is free for everyone right now. If you have a billing question for later, email learn@kth-tech.com.",
-    af: "Jy kan enige tyd in Instellings → Intekening kanselleer — kansellasie word deur Paystack verwerk en stop alle toekomstige heffings. Faktureringsvrae? E-pos learn@kth-tech.com.",
+    af: "Jy kan enige tyd direk in die app kanselleer — Instellings → Intekening → Kanselleer. Dit stop alle toekomstige heffings onmiddellik. Faktureringsvrae? E-pos learn@kth-tech.com.",
   },
 ];
 

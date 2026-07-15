@@ -21,28 +21,28 @@ export default function PrivacyPolicyPage() {
     <div className="dark min-h-screen bg-black text-white">
       <header
         className="sticky top-0 z-50 bg-black/90 backdrop-blur-lg"
-        style={{ borderBottom: "1px solid rgba(142,124,220,0.35)" }}
+        style={{ borderBottom: "1px solid rgba(138,43,255,0.35)" }}
       >
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link href="/">
               <button
                 className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black text-xs font-semibold"
-                style={{ color: "#28c9d6", border: "1.5px solid #28c9d6", boxShadow: "0 0 10px rgba(40,201,214,0.3)" }}
+                style={{ color: "#00E5FF", border: "1.5px solid #00E5FF", boxShadow: "0 0 10px rgba(0,229,255,0.3)" }}
                 data-testid="privacy-nav-back"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 {isAf ? "Terug" : "Back"}
               </button>
             </Link>
-            <span className="font-black text-sm hidden sm:inline tracking-tight" style={{ color: "#ffd83a", textShadow: "0 0 8px rgba(255,216,58,0.4)" }}>{isAf ? "Privaatheidsbeleid" : "Privacy Policy"}</span>
+            <span className="font-black text-sm hidden sm:inline tracking-tight" style={{ color: "#FFE600", textShadow: "0 0 8px rgba(255,230,0,0.4)" }}>{isAf ? "Privaatheidsbeleid" : "Privacy Policy"}</span>
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <button
               onClick={toggleLanguage}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black text-[11px] font-black"
-              style={{ color: "#8e7cdc", border: "1px solid rgba(142,124,220,0.55)", boxShadow: "0 0 10px rgba(142,124,220,0.35)" }}
+              style={{ color: "#8A2BFF", border: "1px solid rgba(138,43,255,0.55)", boxShadow: "0 0 10px rgba(138,43,255,0.35)" }}
               data-testid="button-language-toggle"
             >
               <Globe className="h-3.5 w-3.5" />
@@ -56,21 +56,21 @@ export default function PrivacyPolicyPage() {
         <div
           aria-hidden
           className="pointer-events-none absolute top-0 left-0 w-[420px] h-[420px] rounded-full opacity-40 blur-3xl"
-          style={{ background: "radial-gradient(circle, rgba(40,201,214,0.35), transparent 70%)" }}
+          style={{ background: "radial-gradient(circle, rgba(0,229,255,0.35), transparent 70%)" }}
         />
         <div
           aria-hidden
           className="pointer-events-none absolute top-10 right-0 w-[420px] h-[420px] rounded-full opacity-40 blur-3xl"
-          style={{ background: "radial-gradient(circle, rgba(230,81,156,0.3), transparent 70%)" }}
+          style={{ background: "radial-gradient(circle, rgba(255,43,214,0.3), transparent 70%)" }}
         />
         <div className="relative text-center space-y-3 py-6">
           <div
             className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-black mx-auto"
-            style={{ border: "1.5px solid #28c9d6", boxShadow: "0 0 20px rgba(40,201,214,0.4), inset 0 0 14px rgba(40,201,214,0.15)" }}
+            style={{ border: "1.5px solid #00E5FF", boxShadow: "0 0 20px rgba(0,229,255,0.4), inset 0 0 14px rgba(0,229,255,0.15)" }}
           >
-            <Shield className="w-6 h-6" style={{ color: "#28c9d6", filter: "drop-shadow(0 0 6px rgba(40,201,214,0.7))" }} />
+            <Shield className="w-6 h-6" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 6px rgba(0,229,255,0.7))" }} />
           </div>
-          <h1 className="text-2xl font-black text-white" style={{ textShadow: "0 0 10px rgba(40,201,214,0.4)" }}>{isAf ? "Privaatheidsbeleid & POPIA-Nakoming" : "Privacy Policy & POPIA Compliance"}</h1>
+          <h1 className="text-2xl font-black text-white" style={{ textShadow: "0 0 10px rgba(0,229,255,0.4)" }}>{isAf ? "Privaatheidsbeleid & POPIA-Nakoming" : "Privacy Policy & POPIA Compliance"}</h1>
           <p className="text-sm text-white">
             {isAf
               ? "BrainTrack is daartoe verbind om jou privaatheid te beskerm in ooreenstemming met die Wet op die Beskerming van Persoonlike Inligting (POPIA) van Suid-Afrika."

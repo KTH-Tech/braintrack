@@ -173,15 +173,15 @@ h3 { font-size: 1.125rem; line-height: 1.25; }
 h1, .rainbow-text {
   background-image: linear-gradient(
     90deg,
-    #ff6a1f 0%,
-    #ff8a1f 12%,
-    #ffb020 24%,
-    #ffd83a 36%,
-    #28c9d6 50%,
-    #4f8cd9 66%,
-    #8e7cdc 78%,
-    #b066d6 88%,
-    #e6519c 100%
+    #FF8A00 0%,
+    #FF8A00 12%,
+    #FFE600 24%,
+    #FFE600 36%,
+    #00E5FF 50%,
+    #006BFF 66%,
+    #8A2BFF 78%,
+    #8A2BFF 88%,
+    #FF2BD6 100%
   );
   background-size: 100% 100%;
   background-repeat: no-repeat;
@@ -266,15 +266,15 @@ h1.no-rainbow *, .no-rainbow * {
   backdrop-filter: blur(14px) saturate(1.6);
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   box-shadow:
-    0 0 20px rgba(40, 201, 214, 0.08),
+    0 0 20px rgba(0,229,255, 0.08),
     0 8px 32px rgba(0, 0, 0, 0.65),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 .shadcn-card:hover {
   background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(40, 201, 214, 0.22) !important;
+  border: 1px solid rgba(0,229,255, 0.22) !important;
   box-shadow:
-    0 0 30px rgba(40, 201, 214, 0.20),
+    0 0 30px rgba(0,229,255, 0.20),
     0 12px 40px rgba(0, 0, 0, 0.75),
     inset 0 1px 0 rgba(255, 255, 255, 0.10);
 }
@@ -293,12 +293,12 @@ h1.no-rainbow *, .no-rainbow * {
 .glass-neon {
   -webkit-backdrop-filter: blur(16px) saturate(1.8);
   backdrop-filter: blur(16px) saturate(1.8);
-  background: rgba(40, 201, 214, 0.05);
-  border: 1px solid rgba(40, 201, 214, 0.22);
+  background: rgba(0,229,255, 0.05);
+  border: 1px solid rgba(0,229,255, 0.22);
   box-shadow:
-    0 0 22px rgba(40, 201, 214, 0.14),
+    0 0 22px rgba(0,229,255, 0.14),
     0 4px 24px rgba(0, 0, 0, 0.60),
-    inset 0 1px 0 rgba(40, 201, 214, 0.08);
+    inset 0 1px 0 rgba(0,229,255, 0.08);
 }
 
 .glass-rainbow {
@@ -1657,15 +1657,15 @@ html.light .nav-mobile-panel {
   @apply bg-clip-text text-transparent;
   background-image: linear-gradient(
     90deg,
-    #ff6a1f 0%,
-    #ff8a1f 12%,
-    #ffb020 24%,
-    #ffd83a 36%,
-    #28c9d6 50%,
-    #4f8cd9 66%,
-    #8e7cdc 78%,
-    #b066d6 88%,
-    #e6519c 100%
+    #FF8A00 0%,
+    #FF8A00 12%,
+    #FFE600 24%,
+    #FFE600 36%,
+    #00E5FF 50%,
+    #006BFF 66%,
+    #8A2BFF 78%,
+    #8A2BFF 88%,
+    #FF2BD6 100%
   );
   background-size: 100% 100%;
 }
@@ -1673,15 +1673,15 @@ html.light .nav-mobile-panel {
   @apply bg-clip-text text-transparent;
   background-image: linear-gradient(
     90deg,
-    #ff6a1f 0%,
-    #ff8a1f 12%,
-    #ffb020 24%,
-    #ffd83a 36%,
-    #28c9d6 50%,
-    #4f8cd9 66%,
-    #8e7cdc 78%,
-    #b066d6 88%,
-    #e6519c 100%
+    #FF8A00 0%,
+    #FF8A00 12%,
+    #FFE600 24%,
+    #FFE600 36%,
+    #00E5FF 50%,
+    #006BFF 66%,
+    #8A2BFF 78%,
+    #8A2BFF 88%,
+    #FF2BD6 100%
   );
   background-size: 100% 100%;
   /* animation disabled — only .anicon-* may animate */
@@ -1712,10 +1712,10 @@ html.light .nav-mobile-panel {
 .neon-tile {
   position: relative;
   background: #000;
-  border: 1.5px solid rgba(40, 201, 214, 0.32);
+  border: 1.5px solid rgba(0,229,255, 0.32);
   border-radius: 1rem;
   box-shadow:
-    0 0 18px rgba(40, 201, 214, 0.12),
+    0 0 18px rgba(0,229,255, 0.12),
     0 6px 20px rgba(0, 0, 0, 0.55);
   transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
   overflow: hidden;
@@ -1724,9 +1724,9 @@ html.light .nav-mobile-panel {
 .neon-tile::before,
 .neon-tile::after { display: none !important; }
 .neon-tile:hover {
-  border-color: rgba(40, 201, 214, 0.55);
+  border-color: rgba(0,229,255, 0.55);
   box-shadow:
-    0 0 24px rgba(40, 201, 214, 0.25),
+    0 0 24px rgba(0,229,255, 0.25),
     0 10px 28px rgba(0, 0, 0, 0.65);
   transform: translateY(-1px);
 }
@@ -1891,17 +1891,17 @@ h3.header-bare {
 
 /* Dark-mode section washes — pure black with a single wordmark-stop glow.
    Keeps the landing page on-brand with the cosmic-neon theme used app-wide. */
-.rainbow-wash-blue   { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(79,140,217,0.14) 0%, transparent 65%), #000; }
-.rainbow-wash-cyan   { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(40,201,214,0.16) 0%, transparent 65%), #000; }
-.rainbow-wash-purple { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(176,102,214,0.16) 0%, transparent 65%), #000; }
-.rainbow-wash-pink   { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(230,81,156,0.16) 0%, transparent 65%), #000; }
-.rainbow-wash-green  { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(142,124,220,0.14) 0%, transparent 65%), #000; }
-.rainbow-wash-amber  { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(255,176,32,0.14)  0%, transparent 65%), #000; }
+.rainbow-wash-blue   { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(0,107,255,0.14) 0%, transparent 65%), #000; }
+.rainbow-wash-cyan   { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(0,229,255,0.16) 0%, transparent 65%), #000; }
+.rainbow-wash-purple { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(138,43,255,0.16) 0%, transparent 65%), #000; }
+.rainbow-wash-pink   { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(255,43,214,0.16) 0%, transparent 65%), #000; }
+.rainbow-wash-green  { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(138,43,255,0.14) 0%, transparent 65%), #000; }
+.rainbow-wash-amber  { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(255,230,0,0.14)  0%, transparent 65%), #000; }
 .rainbow-wash-full   {
   background:
-    radial-gradient(ellipse 55% 45% at 15% 0%,  rgba(255,106,31,0.12)  0%, transparent 60%),
-    radial-gradient(ellipse 55% 45% at 85% 0%,  rgba(230,81,156,0.12)  0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 50% 100%,rgba(40,201,214,0.14)  0%, transparent 65%),
+    radial-gradient(ellipse 55% 45% at 15% 0%,  rgba(255,138,0,0.12)  0%, transparent 60%),
+    radial-gradient(ellipse 55% 45% at 85% 0%,  rgba(255,43,214,0.12)  0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 50% 100%,rgba(0,229,255,0.14)  0%, transparent 65%),
     #000;
 }
 html.light .rainbow-wash-blue,
@@ -1943,44 +1943,44 @@ html.light .rainbow-wash-full {
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
-/* Wordmark-stop panel tints: #4f8cd9 / #28c9d6 / #b066d6 / #e6519c / #8e7cdc / #ff8a1f / #ff6a1f */
+/* Wordmark-stop panel tints: #006BFF / #00E5FF / #8A2BFF / #FF2BD6 / #8A2BFF / #FF8A00 / #FF8A00 */
 .rainbow-card-blue {
   background:
-    linear-gradient(160deg, rgba(79,140,217,0.30) 0%, rgba(79,140,217,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(79,140,217,0.22), 0 4px 14px rgba(0,0,0,0.60) !important;
+    linear-gradient(160deg, rgba(0,107,255,0.30) 0%, rgba(0,107,255,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(0,107,255,0.22), 0 4px 14px rgba(0,0,0,0.60) !important;
 }
 .rainbow-card-cyan {
   background:
-    linear-gradient(160deg, rgba(40,201,214,0.30) 0%, rgba(40,201,214,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(40,201,214,0.22), 0 4px 14px rgba(0,0,0,0.60) !important;
+    linear-gradient(160deg, rgba(0,229,255,0.30) 0%, rgba(0,229,255,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(0,229,255,0.22), 0 4px 14px rgba(0,0,0,0.60) !important;
 }
 .rainbow-card-purple {
   background:
-    linear-gradient(160deg, rgba(176,102,214,0.30) 0%, rgba(176,102,214,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(176,102,214,0.24), 0 4px 14px rgba(0,0,0,0.60) !important;
+    linear-gradient(160deg, rgba(138,43,255,0.30) 0%, rgba(138,43,255,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(138,43,255,0.24), 0 4px 14px rgba(0,0,0,0.60) !important;
 }
 .rainbow-card-pink {
   background:
-    linear-gradient(160deg, rgba(230,81,156,0.30) 0%, rgba(230,81,156,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(230,81,156,0.24), 0 4px 14px rgba(0,0,0,0.60) !important;
+    linear-gradient(160deg, rgba(255,43,214,0.30) 0%, rgba(255,43,214,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(255,43,214,0.24), 0 4px 14px rgba(0,0,0,0.60) !important;
 }
 .rainbow-card-green {
   /* violet stands in for green (no green in wordmark palette) */
   background:
-    linear-gradient(160deg, rgba(142,124,220,0.30) 0%, rgba(142,124,220,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(142,124,220,0.22), 0 4px 14px rgba(0,0,0,0.60) !important;
+    linear-gradient(160deg, rgba(138,43,255,0.30) 0%, rgba(138,43,255,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(138,43,255,0.22), 0 4px 14px rgba(0,0,0,0.60) !important;
 }
 .rainbow-card-amber,
 .rainbow-card-orange {
   background:
-    linear-gradient(160deg, rgba(255,138,31,0.30) 0%, rgba(255,138,31,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(255,138,31,0.24), 0 4px 14px rgba(0,0,0,0.60) !important;
+    linear-gradient(160deg, rgba(255,138,0,0.30) 0%, rgba(255,138,0,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(255,138,0,0.24), 0 4px 14px rgba(0,0,0,0.60) !important;
 }
 .rainbow-card-red {
   /* warm orange stands in for red (no red in wordmark palette) */
   background:
-    linear-gradient(160deg, rgba(255,106,31,0.32) 0%, rgba(255,106,31,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(255,106,31,0.24), 0 4px 14px rgba(0,0,0,0.60) !important;
+    linear-gradient(160deg, rgba(255,138,0,0.32) 0%, rgba(255,138,0,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(255,138,0,0.24), 0 4px 14px rgba(0,0,0,0.60) !important;
 }
 
 .rainbow-card-blue:hover,
@@ -2522,22 +2522,22 @@ html.light .rainbow-wash-full {
 .rizz-flash-icon {
   background:
     conic-gradient(from 210deg,
-      #ff6a1f 0deg,
-      #ff8a1f 45deg,
-      #ffb020 85deg,
-      #ffd83a 125deg,
-      #28c9d6 180deg,
-      #4f8cd9 230deg,
-      #8e7cdc 275deg,
-      #b066d6 315deg,
-      #e6519c 360deg);
+      #FF8A00 0deg,
+      #FF8A00 45deg,
+      #FFE600 85deg,
+      #FFE600 125deg,
+      #00E5FF 180deg,
+      #006BFF 230deg,
+      #8A2BFF 275deg,
+      #8A2BFF 315deg,
+      #FF2BD6 360deg);
   padding: 2.5px;
   box-shadow:
     0 0 0 1px rgba(255,255,255,0.06),
     0 8px 24px rgba(0,0,0,0.55),
-    0 0 28px rgba(255,106,31,0.25),
-    0 0 36px rgba(40,201,214,0.20),
-    0 0 44px rgba(230,81,156,0.22);
+    0 0 28px rgba(255,138,0,0.25),
+    0 0 36px rgba(0,229,255,0.20),
+    0 0 44px rgba(255,43,214,0.22);
   animation: rizz-halo-breathe 3.6s ease-in-out infinite !important;
 }
 .rizz-flash-icon::before {
@@ -3080,6 +3080,32 @@ html.light .rainbow-wash-full {
    `--background`, body bg, and `.bg-background` all ignored `html.light`. The
    two brand themes (dark + light) now own the surface via the tokens above. */
 
+/* ── Graffiti splat decoration (GraffitiSplats component) ─────────────────
+   Splats "hit the wall" on load: overshoot scale-in with a settle wobble.
+   Static (visible, unanimated) under reduced motion. */
+.bt-splat-field {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.bt-splat {
+  position: absolute;
+  display: block;
+  animation: bt-splat-in 0.55s cubic-bezier(0.18, 1.4, 0.4, 1) both;
+  will-change: transform, opacity;
+}
+@keyframes bt-splat-in {
+  0%   { opacity: 0; scale: 0.2; }
+  60%  { opacity: 1; scale: 1.18; }
+  80%  { scale: 0.94; }
+  100% { opacity: 1; scale: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bt-splat { animation: none; }
+}
+
 /* Countdown-clock animations */
 @keyframes bt-tick-glow {
   0%   { filter: brightness(1.8) drop-shadow(0 0 6px currentColor); }
@@ -3090,7 +3116,7 @@ html.light .rainbow-wash-full {
   50%,100% { opacity: 0.12; }
 }
 @keyframes bt-pulse-ring {
-  0%, 100% { box-shadow: 0 0 0 0 var(--bt-ring, rgba(40,201,214,0.55)); }
+  0%, 100% { box-shadow: 0 0 0 0 var(--bt-ring, rgba(0,229,255,0.55)); }
   50%      { box-shadow: 0 0 0 6px rgba(0,0,0,0); }
 }
 @keyframes bt-tagline-sweep {
@@ -3101,7 +3127,7 @@ html.light .rainbow-wash-full {
 .bt-blink-colon { animation: bt-alarm-blink 1s steps(1,end) infinite; }
 .bt-pulse-ring { animation: bt-pulse-ring 1.8s ease-out infinite; }
 .bt-tagline-sweep {
-  background: linear-gradient(90deg,#ff6a1f,#ff8a1f,#ffd83a,#28c9d6,#4f8cd9,#8e7cdc,#e6519c,#ff6a1f);
+  background: linear-gradient(90deg,#FF8A00,#FF8A00,#FFE600,#00E5FF,#006BFF,#8A2BFF,#FF2BD6,#FF8A00);
   background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;

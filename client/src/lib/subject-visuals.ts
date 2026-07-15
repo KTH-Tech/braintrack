@@ -82,15 +82,15 @@ export function getSubjectLucide(name: string): LucideIcon {
 }
 
 export const SUBJECT_RAINBOW = [
-  "#ff6a1f",
-  "#ff8a1f",
-  "#ffb020",
-  "#ffd83a",
-  "#28c9d6",
-  "#4f8cd9",
-  "#8e7cdc",
-  "#b066d6",
-  "#e6519c",
+  "#FF8A00",
+  "#FF8A00",
+  "#FFE600",
+  "#FFE600",
+  "#00E5FF",
+  "#006BFF",
+  "#8A2BFF",
+  "#8A2BFF",
+  "#FF2BD6",
 ];
 
 export function getSubjectHex(seed: string | number | undefined | null): string {

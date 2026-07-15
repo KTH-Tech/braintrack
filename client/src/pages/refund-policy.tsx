@@ -4,8 +4,8 @@ import { useLanguage } from "@/lib/language-context";
 import { useSEO } from "@/hooks/use-seo";
 
 const NEON_PALETTE = [
-  "#28c9d6", "#4f8cd9", "#8e7cdc", "#b066d6", "#e6519c",
-  "#ff6a1f", "#ffd83a", "#ff8a1f", "#28c9d6",
+  "#00E5FF", "#006BFF", "#8A2BFF", "#8A2BFF", "#FF2BD6",
+  "#FF8A00", "#FFE600", "#FF8A00", "#00E5FF",
 ];
 
 function hexToRgba(hex: string, alpha: number) {
@@ -40,12 +40,12 @@ export default function RefundPolicyPage() {
         icon: Undo2,
         title: "2. Cancellation",
         content: [
-          "You may cancel your subscription at any time directly in the app under Settings → Subscription. Cancellation is processed through our payment provider, Paystack, and stops all future charges immediately.",
+          "You cancel your subscription directly in the app — Settings → Subscription → Cancel. It takes effect immediately and stops all future charges. No emails, no phone calls, no third-party portals needed.",
           "Cancellation takes effect at the end of the current paid billing cycle — you retain full access until that date.",
           "There are no long-term contracts or cancellation fees."
         ],
         bullets: [
-          "Cancel via: Settings → Subscription → Cancel Subscription (processed by Paystack)",
+          "Cancel in the app: Settings → Subscription → Cancel Subscription",
           "Access continues until end of the paid period",
           "No fee to cancel",
         ],
@@ -115,7 +115,7 @@ export default function RefundPolicyPage() {
         icon: Undo2,
         title: "2. Kansellasie",
         content: [
-          "Jy kan jou intekening te eniger tyd kanselleer direk in die app onder Instellings → Intekening. Kansellasie word deur ons betalingsverskaffer, Paystack, verwerk en stop alle toekomstige heffings onmiddellik.",
+          "Jy kanselleer jou intekening direk in die app — Instellings → Intekening → Kanselleer. Dit tree onmiddellik in werking en stop alle toekomstige heffings. Geen e-posse, geen oproepe, geen derdeparty-portale nodig nie.",
           "Kansellasie tree in werking aan die einde van die huidige betaalde faktureringssiklus — jy behou volle toegang tot daardie datum.",
           "Daar is geen langtermynkontrakte of kansellasiegelde nie."
         ],
@@ -184,28 +184,28 @@ export default function RefundPolicyPage() {
     <div className="min-h-screen bg-black text-white">
       <header
         className="sticky top-0 z-50 bg-black/90 backdrop-blur-lg"
-        style={{ borderBottom: "1px solid rgba(142,124,220,0.35)" }}
+        style={{ borderBottom: "1px solid rgba(138,43,255,0.35)" }}
       >
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link href="/">
               <button
                 className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black text-xs font-bold"
-                style={{ color: "#28c9d6", border: "1.5px solid #28c9d6", boxShadow: "0 0 12px rgba(40,201,214,0.4)" }}
+                style={{ color: "#00E5FF", border: "1.5px solid #00E5FF", boxShadow: "0 0 12px rgba(0,229,255,0.4)" }}
                 data-testid="refund-nav-back"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 {isAf ? "Terug" : "Back"}
               </button>
             </Link>
-            <span className="font-black text-sm hidden sm:inline tracking-tight" style={{ color: "#ffd83a", textShadow: "0 0 8px rgba(255,216,58,0.4)" }}>
+            <span className="font-black text-sm hidden sm:inline tracking-tight" style={{ color: "#FFE600", textShadow: "0 0 8px rgba(255,230,0,0.4)" }}>
               {isAf ? "Terugbetalingsbeleid" : "Refund Policy"}
             </span>
           </div>
           <button
             onClick={toggleLanguage}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black text-[11px] font-black"
-            style={{ color: "#8e7cdc", border: "1px solid rgba(142,124,220,0.55)", boxShadow: "0 0 10px rgba(142,124,220,0.35)" }}
+            style={{ color: "#8A2BFF", border: "1px solid rgba(138,43,255,0.55)", boxShadow: "0 0 10px rgba(138,43,255,0.35)" }}
             data-testid="button-language-toggle"
           >
             <Globe className="h-3.5 w-3.5" />
@@ -218,31 +218,31 @@ export default function RefundPolicyPage() {
         <div
           aria-hidden
           className="pointer-events-none absolute top-0 left-0 w-[420px] h-[420px] rounded-full opacity-40 blur-3xl"
-          style={{ background: "radial-gradient(circle, rgba(40,201,214,0.35), transparent 70%)" }}
+          style={{ background: "radial-gradient(circle, rgba(0,229,255,0.35), transparent 70%)" }}
         />
         <div
           aria-hidden
           className="pointer-events-none absolute top-10 right-0 w-[420px] h-[420px] rounded-full opacity-40 blur-3xl"
-          style={{ background: "radial-gradient(circle, rgba(230,81,156,0.3), transparent 70%)" }}
+          style={{ background: "radial-gradient(circle, rgba(255,43,214,0.3), transparent 70%)" }}
         />
 
         <div className="relative text-center space-y-4 py-6">
           <span
             className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.28em] px-4 py-1.5 rounded-full bg-black"
-            style={{ color: "#28c9d6", border: "1px solid rgba(40,201,214,0.55)", boxShadow: "0 0 14px rgba(40,201,214,0.35)" }}
+            style={{ color: "#00E5FF", border: "1px solid rgba(0,229,255,0.55)", boxShadow: "0 0 14px rgba(0,229,255,0.35)" }}
           >
-            <Undo2 className="w-3.5 h-3.5" style={{ filter: "drop-shadow(0 0 4px #28c9d6)" }} />
+            <Undo2 className="w-3.5 h-3.5" style={{ filter: "drop-shadow(0 0 4px #00E5FF)" }} />
             {isAf ? "Terugbetalings en Kansellasies" : "Refunds & Cancellations"}
           </span>
           <h1
             className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-[1.05]"
             data-testid="text-refund-title"
             style={{
-              background: "linear-gradient(90deg, #28c9d6, #8e7cdc, #e6519c, #ffd83a)",
+              background: "linear-gradient(90deg, #00E5FF, #8A2BFF, #FF2BD6, #FFE600)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
-              filter: "drop-shadow(0 0 22px rgba(40,201,214,0.28))",
+              filter: "drop-shadow(0 0 22px rgba(0,229,255,0.28))",
             }}
           >
             {isAf ? "Terugbetalingsbeleid" : "Refund Policy"}
@@ -252,7 +252,7 @@ export default function RefundPolicyPage() {
               ? "Ons is deursigtig oor hoe fakturering, kansellasies en terugbetalings werk."
               : "We're transparent about how billing, cancellations, and refunds work."}
           </p>
-          <p className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "#ffd83a" }}>
+          <p className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "#FFE600" }}>
             {isAf ? "Laas opgedateer: 29 Junie 2026" : "Last updated: 29 June 2026"}
           </p>
         </div>
@@ -332,7 +332,7 @@ export default function RefundPolicyPage() {
 
         <div className="text-center pt-4">
           <Link href="/terms-of-service">
-            <button className="text-xs text-white hover:text-[#28c9d6] transition-colors underline underline-offset-2">
+            <button className="text-xs text-white hover:text-[#00E5FF] transition-colors underline underline-offset-2">
               {isAf ? "Volledige Diensbepalings bekyk" : "View full Terms of Service"}
             </button>
           </Link>
