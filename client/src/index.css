@@ -869,37 +869,28 @@ html.light .nav-mobile-panel {
   to { width: 16px; opacity: 1; }
 }
 
-/* Rainbow CTA — matches BrainTrack wordmark */
+/* Primary CTA — modern flat single-colour (brand Electric Blue).
+   Replaces the old rainbow-gradient CTA; no gradients, no uppercase shout. */
 .nav-cta-btn,
 [data-testid="button-hero-cta"],
 .btn-rainbow {
-  background-image: linear-gradient(
-    90deg,
-    #ff6a1f 0%,
-    #ff8a1f 12%,
-    #ffb020 24%,
-    #ffd83a 36%,
-    #28c9d6 50%,
-    #4f8cd9 66%,
-    #8e7cdc 78%,
-    #b066d6 88%,
-    #e6519c 100%
-  ) !important;
-  background-size: 200% 100% !important;
-  background-position: 0% 50% !important;
-  color: #0a0a0a !important;
+  background-image: none !important;
+  background-color: #006BFF !important;
+  color: #ffffff !important;
   border: 0 !important;
-  font-weight: 600 !important;
+  border-radius: 0.75rem !important;
+  font-weight: 700 !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
   text-shadow: none;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.15) !important;
-  transition: background-position 0.4s ease, transform 0.2s ease;
+  box-shadow: none !important;
+  transition: background-color 0.15s ease, transform 0.15s ease;
 }
 .nav-cta-btn:hover,
 [data-testid="button-hero-cta"]:hover,
 .btn-rainbow:hover {
-  background-position: 100% 50% !important;
+  background-color: #0057D6 !important;
   transform: translateY(-1px);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.18) !important;
 }
 .nav-cta-btn:active,
 [data-testid="button-hero-cta"]:active,

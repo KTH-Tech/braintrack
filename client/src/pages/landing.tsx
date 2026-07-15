@@ -102,15 +102,15 @@ const translations = {
       ],
     },
     products: {
-      title: "Choose your plan",
-      subtitle: "Start with Brain Boost. Add the rest only if you want to.",
+      title: "Two ways in. Same full access.",
+      subtitle: "Monthly, or one payment that covers you to the final exam.",
       cta: "Start 14 days free",
       items: [
         {
           name: "Brain Boost",
           price: "R169",
           period: "/month",
-          desc: "Full access — everything you need for Matric, one plan",
+          desc: "Full access — everything you need for Matric, month by month",
           badge: "Most Popular",
           highlight: true,
           trial: "14 days free",
@@ -124,45 +124,18 @@ const translations = {
           ],
         },
         {
-          name: "Rizz Unlimited",
-          price: "R49",
-          period: "/month add-on",
-          desc: "Endless AI help — no daily caps, no cut-offs",
-          badge: "Add-on",
-          highlight: false,
-          features: [
-            "Ask Rizz as much as you want",
-            "Full worked solutions, unlimited",
-            "Front-of-the-queue replies",
-            "Needs an active Brain Boost plan",
-          ],
-        },
-        {
-          name: "Exam Crunch Pack",
-          price: "R99",
-          period: "once-off",
-          desc: "Deep prep for the final push — mocks, timed drills, reports",
+          // PRICE PLACEHOLDER — confirm final Season Pass price before launch.
+          name: "Season Pass",
+          price: "R699",
+          period: "once-off · to 30 Nov",
+          desc: "One payment. Everything in Brain Boost, all the way to your final exam.",
           badge: "Best Value",
           highlight: false,
           features: [
-            "10 full mock exams per subject",
-            "Honest performance breakdowns",
-            "Timed exam-day simulations",
-            "Exam-day strategy from Rizz",
-          ],
-        },
-        {
-          name: "Subject Deep Dive",
-          price: "R39",
-          period: "/subject once-off",
-          desc: "Extra firepower for the subjects that scare you",
-          badge: "",
-          highlight: false,
-          features: [
-            "500+ extra practice questions",
-            "Topic-by-topic walkthroughs",
-            "The common mistakes (and how to dodge them)",
-            "Exam-style worked examples",
+            "Everything in Brain Boost",
+            "Covers the full exam season — July to 30 November",
+            "One payment, no monthly debits",
+            "Locked-in price for the whole season",
           ],
         },
       ],
@@ -222,7 +195,7 @@ const translations = {
       title: "Things you probably want to ask",
       items: [
         { q: "So what is BrainTrack, exactly?", a: "It's a Grade 12 study app built for CAPS and the NSC exam. You get a weekly plan, 10 years of real past papers with memos, an AI tutor called Rizz, and weekly parent reports — all of it aimed at one thing: shifting your Matric marks." },
-        { q: "What does it cost?", a: "Brain Boost is R169/month with 14 days free. Cancel before Day 15 and you pay nothing. Rizz Unlimited (R49/month) and Exam Crunch Pack (R99 once-off) are optional — only add them if you actually want them." },
+        { q: "What does it cost?", a: "Brain Boost is R169/month with 14 days free — cancel before Day 15 and you pay nothing. Or grab the Season Pass: one once-off payment that covers everything to 30 November, no monthly debits." },
         { q: "Are my subjects in there?", a: "If you're writing it, we've got it. Maths, Physical Sciences, Life Sciences, Accounting, Business Studies, Geography, History, English and Afrikaans — all the core Grade 12 CAPS subjects are live." },
         { q: "Are these real NSC papers?", a: "Yep — 10 years of actual NSC exam papers (2015–2025) with the official memos. You're practising the real thing, not a watered-down version." },
         { q: "How does Rizz actually work?", a: "Rizz is an AI tutor that breaks things down step by step in English or Afrikaans. It picks up where you're strong, where you're shaky, and explains it at your level — not generically." },
@@ -324,15 +297,15 @@ const translations = {
       ],
     },
     products: {
-      title: "Kies jou plan",
-      subtitle: "Begin by Brain Boost. Voeg die res by net as jy wil.",
+      title: "Twee maniere in. Dieselfde volle toegang.",
+      subtitle: "Maandeliks, of een betaling wat jou tot die finale eksamen dek.",
       cta: "Begin 14 gratis dae",
       items: [
         {
           name: "Brain Boost",
           price: "R169",
           period: "/maand",
-          desc: "Volle toegang — alles wat jy vir Matriek nodig het, een plan",
+          desc: "Volle toegang — alles wat jy vir Matriek nodig het, maand vir maand",
           badge: "Gewildste",
           highlight: true,
           trial: "14 dae gratis",
@@ -346,45 +319,18 @@ const translations = {
           ],
         },
         {
-          name: "Rizz Onbeperk",
-          price: "R49",
-          period: "/maand byvoeging",
-          desc: "Eindelose KI-hulp — geen daaglikse limiete, geen afsnypunte",
-          badge: "Byvoeging",
-          highlight: false,
-          features: [
-            "Vra Rizz so veel jy wil",
-            "Volledige oplossings, onbeperk",
-            "Voor-aan-die-ry antwoorde",
-            "Benodig 'n aktiewe Brain Boost-plan",
-          ],
-        },
-        {
-          name: "Eksamentyd Pak",
-          price: "R99",
-          period: "eenmalig",
-          desc: "Diep voorbereiding vir die laaste druk — proewe, tydsgebonde drille, verslae",
+          // PRYS-PLEKHOUER — bevestig finale Seisoenpas-prys voor bekendstelling.
+          name: "Seisoenpas",
+          price: "R699",
+          period: "eenmalig · tot 30 Nov",
+          desc: "Een betaling. Alles in Brain Boost, tot en met jou finale eksamen.",
           badge: "Beste Waarde",
           highlight: false,
           features: [
-            "10 volle proefeksamens per vak",
-            "Eerlike prestasie-uiteensettings",
-            "Tydsgebonde eksamendag-simulasies",
-            "Eksamendag-strategie van Rizz",
-          ],
-        },
-        {
-          name: "Vak Diepduik",
-          price: "R39",
-          period: "/vak eenmalig",
-          desc: "Ekstra krag vir die vakke wat jou laat sweet",
-          badge: "",
-          highlight: false,
-          features: [
-            "500+ ekstra oefenvrae",
-            "Onderwerp-vir-onderwerp deurlope",
-            "Die algemene foute (en hoe om hulle te systap)",
-            "Eksamen-styl uitgewerkte voorbeelde",
+            "Alles in Brain Boost",
+            "Dek die volle eksamenseisoen — Julie tot 30 November",
+            "Een betaling, geen maandelikse debiete",
+            "Vaste prys vir die hele seisoen",
           ],
         },
       ],
@@ -444,7 +390,7 @@ const translations = {
       title: "Goed wat jy waarskynlik wil vra",
       items: [
         { q: "So wat is BrainTrack presies?", a: "Dis 'n Graad 12-studie-app wat gebou is vir KABV en die NSS-eksamen. Jy kry 'n weekplan, 10 jaar se regte vorige vraestelle met memo's, 'n KI-tutor genaamd Rizz, en weeklikse ouerverslae — alles gerig op een ding: jou Matriekpunte skuif." },
-        { q: "Wat kos dit?", a: "Brain Boost is R169/maand met 14 dae gratis. Kanselleer voor Dag 15 en jy betaal niks. Rizz Onbeperk (R49/maand) en die Eksamentyd Pak (R99 eenmalig) is opsioneel — voeg hulle net by as jy dit regtig wil hê." },
+        { q: "Wat kos dit?", a: "Brain Boost is R169/maand met 14 dae gratis — kanselleer voor Dag 15 en jy betaal niks. Of kry die Seisoenpas: een eenmalige betaling wat alles tot 30 November dek, geen maandelikse debiete nie." },
         { q: "Is my vakke daar in?", a: "As jy dit skryf, het ons dit. Wiskunde, Fisiese Wetenskappe, Lewenswetenskappe, Rekeningkunde, Besigheidstudies, Geografie, Geskiedenis, Engels en Afrikaans — al die kern Graad 12 KABV-vakke is lewend." },
         { q: "Is dit regte NSS-vraestelle?", a: "Ja — 10 jaar se egte NSS-eksamenvraestelle (2015–2025) met die amptelike memo's. Jy oefen die regte ding, nie 'n verwaterde weergawe nie." },
         { q: "Hoe werk Rizz eintlik?", a: "Rizz is 'n KI-tutor wat dinge stap vir stap afbreek in Engels of Afrikaans. Hy sien waar jy sterk is, waar jy bewe, en verduidelik op jou vlak — nie generies nie." },
@@ -1082,16 +1028,11 @@ export default function LandingPage() {
                         ))}
                       </ul>
 
-                      {/* Pricing CTA */}
+                      {/* Pricing CTA — modern flat single-colour (brand blue) */}
                       <button
                         onClick={handleCta}
                         data-testid="button-pricing-cta"
-                        className="mt-2 w-full inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3.5 font-black text-sm uppercase tracking-[0.14em] transition-transform hover:scale-[1.02]"
-                        style={{
-                          color: "#000",
-                          background: "linear-gradient(90deg, #28c9d6, #4f8cd9)",
-                          boxShadow: "0 0 24px rgba(40,201,214,0.55)",
-                        }}
+                        className="mt-2 w-full inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3.5 font-bold text-sm text-white bg-[#006BFF] hover:bg-[#0057D6] transition-colors"
                       >
                         <Zap className="w-4 h-4" />
                         {t.hero.cta}
