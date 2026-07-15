@@ -1,4 +1,5 @@
 ﻿import { Undo2, CreditCard, AlertCircle, Clock, Mail, ArrowLeft, Globe, Scale } from "lucide-react";
+import { GraffitiSplats } from "@/components/graffiti-splats";
 import { Link } from "wouter";
 import { useLanguage } from "@/lib/language-context";
 import { useSEO } from "@/hooks/use-seo";
@@ -181,10 +182,11 @@ export default function RefundPolicyPage() {
   const currentSections = sections[isAf ? "af" : "en"];
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="relative min-h-screen bg-background text-white overflow-hidden">
+      <GraffitiSplats variant="full" opacity={0.4} />
       <header
-        className="sticky top-0 z-50 bg-black/90 backdrop-blur-lg"
-        style={{ borderBottom: "1px solid rgba(138,43,255,0.35)" }}
+        className="sticky top-0 z-50 bg-background/95"
+        style={{ borderBottom: "2px solid rgba(0,229,255,0.4)", boxShadow: "0 0 20px rgba(0,229,255,0.15)" }}
       >
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -198,7 +200,7 @@ export default function RefundPolicyPage() {
                 {isAf ? "Terug" : "Back"}
               </button>
             </Link>
-            <span className="font-black text-sm hidden sm:inline tracking-tight" style={{ color: "#FFE600", textShadow: "0 0 8px rgba(255,230,0,0.4)" }}>
+            <span className="graffiti-hand text-base hidden sm:inline tracking-tight" style={{ color: "#FFE600", textShadow: "0 0 8px rgba(255,230,0,0.4)" }}>
               {isAf ? "Terugbetalingsbeleid" : "Refund Policy"}
             </span>
           </div>
@@ -214,17 +216,7 @@ export default function RefundPolicyPage() {
         </div>
       </header>
 
-      <main className="relative max-w-4xl mx-auto px-4 py-10 space-y-6">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute top-0 left-0 w-[420px] h-[420px] rounded-full opacity-40 blur-3xl"
-          style={{ background: "radial-gradient(circle, rgba(0,229,255,0.35), transparent 70%)" }}
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute top-10 right-0 w-[420px] h-[420px] rounded-full opacity-40 blur-3xl"
-          style={{ background: "radial-gradient(circle, rgba(255,43,214,0.3), transparent 70%)" }}
-        />
+      <main className="relative z-10 max-w-4xl mx-auto px-4 py-10 space-y-6">
 
         <div className="relative text-center space-y-4 py-6">
           <span
@@ -235,7 +227,7 @@ export default function RefundPolicyPage() {
             {isAf ? "Terugbetalings en Kansellasies" : "Refunds & Cancellations"}
           </span>
           <h1
-            className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-[1.05]"
+            className="graffiti-hand text-3xl sm:text-4xl md:text-5xl tracking-tight leading-[1.05]"
             data-testid="text-refund-title"
             style={{
               background: "linear-gradient(90deg, #00E5FF, #8A2BFF, #FF2BD6, #FFE600)",

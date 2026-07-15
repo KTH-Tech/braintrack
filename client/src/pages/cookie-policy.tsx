@@ -4,6 +4,7 @@ import { Cookie, Shield, Database, Clock, ArrowLeft, Globe, SlidersHorizontal } 
 import { Link } from "wouter";
 import { BrainTrackLogo } from "@/components/braintrack-logo";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { GraffitiSplats } from "@/components/graffiti-splats";
 import { useLanguage } from "@/lib/language-context";
 import { useSEO } from "@/hooks/use-seo";
 
@@ -18,10 +19,11 @@ export default function CookiePolicyPage() {
   });
 
   return (
-    <div className="dark min-h-screen bg-black text-white">
+    <div className="dark relative min-h-screen bg-background text-white overflow-hidden">
+      <GraffitiSplats variant="full" opacity={0.4} />
       <header
-        className="sticky top-0 z-50 bg-black/90 backdrop-blur-lg"
-        style={{ borderBottom: "1px solid rgba(138,43,255,0.35)" }}
+        className="sticky top-0 z-50 bg-background/95"
+        style={{ borderBottom: "2px solid rgba(0,229,255,0.4)", boxShadow: "0 0 20px rgba(0,229,255,0.15)" }}
       >
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -35,7 +37,7 @@ export default function CookiePolicyPage() {
                 {isAf ? "Terug" : "Back"}
               </button>
             </Link>
-            <span className="font-black text-sm hidden sm:inline tracking-tight" style={{ color: "#FFE600", textShadow: "0 0 8px rgba(255,230,0,0.4)" }}>
+            <span className="graffiti-hand text-base hidden sm:inline tracking-tight" style={{ color: "#FFE600", textShadow: "0 0 8px rgba(255,230,0,0.4)" }}>
               {isAf ? "Koekiebeleid" : "Cookie Policy"}
             </span>
           </div>
@@ -54,17 +56,7 @@ export default function CookiePolicyPage() {
         </div>
       </header>
 
-      <main className="relative max-w-4xl mx-auto px-4 py-10 space-y-6">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute top-0 left-0 w-[420px] h-[420px] rounded-full opacity-40 blur-3xl"
-          style={{ background: "radial-gradient(circle, rgba(0,229,255,0.35), transparent 70%)" }}
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute top-10 right-0 w-[420px] h-[420px] rounded-full opacity-40 blur-3xl"
-          style={{ background: "radial-gradient(circle, rgba(255,43,214,0.3), transparent 70%)" }}
-        />
+      <main className="relative z-10 max-w-4xl mx-auto px-4 py-10 space-y-6">
         <div className="relative text-center space-y-3 py-6">
           <div
             className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-black mx-auto"
@@ -72,7 +64,7 @@ export default function CookiePolicyPage() {
           >
             <Cookie className="w-6 h-6" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 6px rgba(0,229,255,0.7))" }} />
           </div>
-          <h1 className="text-2xl font-black text-white" style={{ textShadow: "0 0 10px rgba(0,229,255,0.4)" }}>
+          <h1 className="graffiti-hand text-3xl" style={{ textShadow: "0 0 10px rgba(0,229,255,0.4)" }}>
             {isAf ? "Koekiebeleid" : "Cookie Policy"}
           </h1>
           <p className="text-sm text-white max-w-xl mx-auto">

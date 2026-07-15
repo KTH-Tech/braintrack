@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=Permanent+Marker&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -3077,6 +3077,21 @@ html.light .rainbow-wash-full {
 }
 @media (prefers-reduced-motion: reduce) {
   .bt-splat { animation: none; }
+}
+
+/* ── Hand-drawn graffiti type (brand board) ────────────────────────────
+   .graffiti-hand — Permanent Marker tag lettering for headings/labels.
+   .spray-title  — wrapper for a heading with a SpraySmear behind it. */
+.graffiti-hand {
+  font-family: 'Permanent Marker', 'Sora', cursive;
+  letter-spacing: 0.02em;
+  font-weight: 400; /* marker font has one weight; keep it un-bolded */
+}
+.spray-title {
+  position: relative;
+  display: inline-block;
+  isolation: isolate;
+  padding: 0.1em 0.35em;
 }
 
 /* Countdown-clock animations */
