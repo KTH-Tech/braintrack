@@ -14,7 +14,7 @@ export default function CookiePolicyPage() {
   useSEO({
     title: "Cookie Policy | BrainTrack",
     description: "BrainTrack cookie policy — how we use essential, analytics and marketing cookies in compliance with POPIA. Manage your cookie preferences by category.",
-    canonical: "https://braintrack.app/cookie-policy",
+    canonical: "https://braintrack.co.za/cookie-policy",
   });
 
   return (

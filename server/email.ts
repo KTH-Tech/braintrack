@@ -29,7 +29,7 @@ async function sendViaResend(opts: {
   }
 
   const cfg = await getEmailSenderConfig();
-  const fromEmail = cfg?.fromEmail ?? "learn@braintrack.app";
+  const fromEmail = cfg?.fromEmail ?? "learn@kth-tech.com";
   const fromName = cfg?.fromName ?? "BrainTrack";
   const from = `${fromName} <${fromEmail}>`;
 
@@ -224,19 +224,19 @@ function buildHtmlWrapper(opts: {
               </p>
               <p style="margin:0 0 10px;font-family:Arial,Helvetica,sans-serif;font-size:12px;
                         font-weight:600;color:#666666;text-align:center;letter-spacing:0.4px;">
-                <a href="https://braintrack.app" style="color:#7c3aed;text-decoration:none;">braintrack.app</a>
+                <a href="https://braintrack.co.za" style="color:#7c3aed;text-decoration:none;">braintrack.co.za</a>
                 &nbsp;·&nbsp;
-                <a href="mailto:learn@braintrack.app" style="color:#7c3aed;text-decoration:none;">learn@braintrack.app</a>
+                <a href="mailto:learn@kth-tech.com" style="color:#7c3aed;text-decoration:none;">learn@kth-tech.com</a>
               </p>
               <p style="margin:0 0 10px;font-family:Arial,Helvetica,sans-serif;font-size:11px;
                         color:#aaaaaa;text-align:center;letter-spacing:0.2px;">
-                <a href="https://braintrack.app" style="color:#888;text-decoration:none;">Website</a>
+                <a href="https://braintrack.co.za" style="color:#888;text-decoration:none;">Website</a>
                 &nbsp;&nbsp;|&nbsp;&nbsp;
-                <a href="https://braintrack.app/dashboard" style="color:#888;text-decoration:none;">Dashboard</a>
+                <a href="https://app.braintrack.co.za/dashboard" style="color:#888;text-decoration:none;">Dashboard</a>
                 &nbsp;&nbsp;|&nbsp;&nbsp;
-                <a href="https://braintrack.app/subscribe" style="color:#888;text-decoration:none;">Subscribe</a>
+                <a href="https://app.braintrack.co.za/subscribe" style="color:#888;text-decoration:none;">Subscribe</a>
                 &nbsp;&nbsp;|&nbsp;&nbsp;
-                <a href="mailto:learn@braintrack.app" style="color:#888;text-decoration:none;">Contact Us</a>
+                <a href="mailto:learn@kth-tech.com" style="color:#888;text-decoration:none;">Contact Us</a>
               </p>
               <p style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:11px;
                         color:#aaaaaa;text-align:center;letter-spacing:0.3px;">
@@ -495,7 +495,7 @@ export type EmailPreviewType =
   | "exam-countdown"
   | "inactivity-nudge";
 
-const SAMPLE_BASE_URL = "https://braintrack.app";
+const SAMPLE_BASE_URL = "https://braintrack.co.za";
 
 export function getEmailPreview(
   type: EmailPreviewType,
@@ -930,7 +930,7 @@ export async function sendBrandedEmail(opts: BrandedEmailOpts): Promise<BrandedE
   const html = buildHtmlWrapper({ heading, bodyHtml, ctaLabel, ctaUrl, language });
 
   const plainText = textBody
-    ?? `${heading}\n\n${bodyHtml.replace(/<[^>]+>/g, " ").replace(/\s{2,}/g, " ").trim()}${ctaLabel && ctaUrl ? `\n\n${ctaLabel}: ${ctaUrl}` : ""}\n\n— BrainTrack\nhttps://braintrack.app`;
+    ?? `${heading}\n\n${bodyHtml.replace(/<[^>]+>/g, " ").replace(/\s{2,}/g, " ").trim()}${ctaLabel && ctaUrl ? `\n\n${ctaLabel}: ${ctaUrl}` : ""}\n\n— BrainTrack\nhttps://braintrack.co.za`;
 
   // Task #666 — prefer Resend when configured, fall back to SendGrid otherwise.
   const resendResult = await sendViaResend({ to, subject, html, text: plainText, attachments });
@@ -1151,12 +1151,12 @@ function buildSchoolEnquiryConfirmationPayload(opts: {
       <ul style="padding-left:20px;margin:0 0 16px;">
         <li style="margin-bottom:8px;">A member of our schools team will review your application and get in touch within <strong>2–3 business days</strong>.</li>
         <li style="margin-bottom:8px;">We'll send details on pricing, learner access, and how to onboard your Grade 12 cohort.</li>
-        <li>If you have any urgent questions in the meantime, email us at <a href="mailto:schools@braintrack.app" style="color:#7c3aed;text-decoration:none;">schools@braintrack.app</a> and quote your reference number.</li>
+        <li>If you have any urgent questions in the meantime, email us at <a href="mailto:learn@kth-tech.com" style="color:#7c3aed;text-decoration:none;">learn@kth-tech.com</a> and quote your reference number.</li>
       </ul>
       <p>We're excited about the possibility of supporting your learners as they prepare for their NSC exams. 🎓</p>
     `,
     ctaLabel: "Learn more about BrainTrack for Schools",
-    ctaUrl: "https://braintrack.app",
+    ctaUrl: "https://braintrack.co.za",
   };
 }
 

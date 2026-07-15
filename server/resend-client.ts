@@ -9,13 +9,13 @@
  * Always call getUncachableResendClient() fresh — tokens from the connector proxy
  * expire and must not be cached between requests.
  *
- * Sender domain: braintrack.app must be verified in the Resend dashboard.
+ * Sender domain: kth-tech.com must be verified in the Resend dashboard.
  * Steps (one-time, done by account owner):
- *   1. resend.com → Domains → Add Domain → enter "braintrack.app"
+ *   1. resend.com → Domains → Add Domain → enter "kth-tech.com"
  *   2. Add the three DNS records Resend shows (SPF TXT, DKIM CNAME ×2)
- *      to your DNS provider for braintrack.app
+ *      to your DNS provider for kth-tech.com
  *   3. Click "Verify" in the Resend dashboard — status turns "Verified"
- *   4. Emails will then send from learn@braintrack.app with no "via resend.dev" warning
+ *   4. Emails will then send from learn@kth-tech.com with no "via resend.dev" warning
  */
 
 import { Resend } from "resend";

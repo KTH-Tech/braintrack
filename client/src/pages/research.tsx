@@ -616,16 +616,16 @@ export default function ResearchPage() {
   useSEO({
     title: "Research | BrainTrack™ Learning Science Behind Grade 12 Matric Prep",
     description: "BrainTrack™ is built on spaced repetition, active recall and 10 years of real NSC exam patterns. Discover the learning science powering CAPS-aligned Matric preparation.",
-    canonical: "https://braintrack.app/research",
+    canonical: "https://braintrack.co.za/research",
     ogTitle: "The Science Behind BrainTrack™ — Why It Improves Matric Marks",
     ogDescription: "Spaced repetition, active recall, and 10 years of NSC exam data power every BrainTrack feature. Learn the research behind South Africa's Grade 12 prep platform.",
-    ogUrl: "https://braintrack.app/research",
+    ogUrl: "https://braintrack.co.za/research",
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://braintrack.app/" },
-        { "@type": "ListItem", "position": 2, "name": "Research", "item": "https://braintrack.app/research" },
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://braintrack.co.za/" },
+        { "@type": "ListItem", "position": 2, "name": "Research", "item": "https://braintrack.co.za/research" },
       ],
     },
   });

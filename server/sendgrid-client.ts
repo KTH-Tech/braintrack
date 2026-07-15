@@ -52,7 +52,7 @@ export async function getEmailSenderConfig(): Promise<EmailSenderConfig | null> 
 
   return {
     apiKey,
-    fromEmail: dbCfg["sendgrid_from_email"] || process.env.EMAIL_FROM || "learn@braintrack.app",
+    fromEmail: dbCfg["sendgrid_from_email"] || process.env.EMAIL_FROM || "learn@kth-tech.com",
     fromName: dbCfg["sendgrid_from_name"] || process.env.EMAIL_FROM_NAME || "BrainTrack",
     replyTo: dbCfg["sendgrid_reply_to"] || process.env.EMAIL_REPLY_TO || "",
   };

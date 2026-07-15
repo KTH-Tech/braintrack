@@ -579,7 +579,7 @@ export default function LandingPage() {
   useSEO({
     title: "BrainTrack™ | Grade 12 Matric Past Papers, Memos & AI Tutor — South Africa",
     description: "Pass Matric with confidence. 10 years of NSC past papers + memos, CAPS-aligned weekly study plan, AI tutor, NSC 2026 exam timetable and parent reports. Built for SA Grade 12. R169/month — 14 days free.",
-    canonical: "https://braintrack.app/",
+    canonical: "https://braintrack.co.za/",
     ogTitle: "Matric Past Papers, Memos & AI Tutor for Grade 12 SA | BrainTrack™",
     ogDescription: "10 years of NSC past papers + memos, CAPS-aligned weekly revision, AI tutor and parent reports. Built for South African Matric learners. R169/month — 14 days free.",
     jsonLd: [
@@ -587,8 +587,8 @@ export default function LandingPage() {
         "@context": "https://schema.org",
         "@type": "Organization",
         "name": "BrainTrack",
-        "url": "https://braintrack.app",
-        "logo": "https://braintrack.app/favicon.png",
+        "url": "https://braintrack.co.za",
+        "logo": "https://braintrack.co.za/favicon.png",
         "description":
           "Grade 12 Matric exam preparation platform — CAPS-aligned study plans, NSC past papers with memos, AI tutor, and progress tracking for South African learners.",
         "contactPoint": {
@@ -614,7 +614,7 @@ export default function LandingPage() {
             "acceptedAnswer": {
               "@type": "Answer",
               "text":
-                "BrainTrack gives you 10 years of official DBE NSC Grade 12 past exam papers (2015–2025) with memorandums for every CAPS subject — Mathematics, Physical Sciences, Life Sciences, English HL/FAL, Afrikaans Huistaal/EAT, Accounting, Business Studies, Geography, History and more. Browse them free at braintrack.app/past-papers.",
+                "BrainTrack gives you 10 years of official DBE NSC Grade 12 past exam papers (2015–2025) with memorandums for every CAPS subject — Mathematics, Physical Sciences, Life Sciences, English HL/FAL, Afrikaans Huistaal/EAT, Accounting, Business Studies, Geography, History and more. Browse them free at braintrack.co.za/past-papers.",
             },
           },
           {

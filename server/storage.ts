@@ -1764,10 +1764,12 @@ export class DatabaseStorage implements IStorage {
         email: "test-admin@braintrack.test",
         firstName: "Test",
         lastName: "Admin",
-        // Admin access is now restricted to the email allowlist in
-        // server/replit_integrations/auth/replitAuth.ts. Seeded test users
-        // get learner role; only allowlisted emails are promoted at login.
-        role: "learner",
+        // seedTestUsers only runs outside production, so the dev Test Admin
+        // gets the admin role directly — requireRole("admin") reads the DB
+        // role, and a dev admin that can't reach admin pages is useless.
+        // Production admin access stays gated by the ADMIN_EMAILS allowlist
+        // at real login.
+        role: "admin",
         roleConfirmed: true,
         theme: "dark",
         preferredLanguage: "en",

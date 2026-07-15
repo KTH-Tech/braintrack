@@ -15,12 +15,12 @@ export default function ParentPurchasePage() {
 
   useSEO({
     title: isAf
-      ? "Ouer-aanmelding — Binnekort | BrainTrack"
-      : "Parent Sign-Up — Coming Soon | BrainTrack",
+      ? "Brain Boost — 14-dae gratis proef | BrainTrack"
+      : "Brain Boost — 14-Day Free Trial | BrainTrack",
     description: isAf
-      ? "Brain Boost is gratis vir nou — geen oueraankoop nodig nie."
-      : "Brain Boost is free for now — no parent purchase required.",
-    canonical: "https://braintrack.app/parent-purchase",
+      ? "Brain Boost: R169/maand met 14 dae gratis. Kanselleer enige tyd."
+      : "Brain Boost: R169/month with 14 days free. Cancel anytime.",
+    canonical: "https://app.braintrack.co.za/parent-purchase",
   });
 
   const homeHref = isAuthenticated ? "/parent" : "/";

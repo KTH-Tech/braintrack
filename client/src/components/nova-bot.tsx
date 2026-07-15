@@ -64,14 +64,14 @@ const TROUBLESHOOT_CATEGORIES: TsCategory[] = [
     stepsEn: [
       "Hard refresh this page: Ctrl+Shift+R (Windows) or Cmd+Shift+R (Mac).",
       "Sign out fully, close the tab, then open BrainTrack again and sign in.",
-      "Make sure third-party cookies are allowed for braintrack.app in your browser settings.",
+      "Make sure third-party cookies are allowed for braintrack.co.za in your browser settings.",
       "Try a different browser (Chrome, Edge, Safari) — your saved progress is on our servers, not the device.",
       "Check your internet connection — open any other site to confirm it's working.",
     ],
     stepsAf: [
       "Herlaai die bladsy: Ctrl+Shift+R (Windows) of Cmd+Shift+R (Mac).",
       "Meld heeltemal af, maak die oortjie toe, en open BrainTrack weer en meld aan.",
-      "Maak seker derdeparty-koekies is toegelaat vir braintrack.app in jou blaaier-instellings.",
+      "Maak seker derdeparty-koekies is toegelaat vir braintrack.co.za in jou blaaier-instellings.",
       "Probeer 'n ander blaaier (Chrome, Edge, Safari) — jou vordering is op ons bedieners, nie op die toestel nie.",
       "Kyk jou internetverbinding — open enige ander webwerf om te bevestig dit werk.",
     ],
@@ -85,13 +85,13 @@ const TROUBLESHOOT_CATEGORIES: TsCategory[] = [
     introEn: "Question about your plan, trial, or a payment? Check these first:",
     introAf: "Vraag oor jou plan, proeftydperk, of 'n betaling? Kyk eers hierna:",
     stepsEn: [
-      "BrainTrack is currently free for every signed-in learner and parent — no payment is required right now.",
+      "Brain Boost is R169/month with a 14-day free trial — no charge during the trial, and you can cancel anytime with no fees.",
       "Open Settings → Subscription to see your current plan and any trial dates.",
       "If you started a trial, your conversion reminders are sent on Days 13 and 14.",
       "For a billing dispute or refund question, our support team is the right place — escalate below.",
     ],
     stepsAf: [
-      "BrainTrack is op die oomblik gratis vir elke ingetekende leerder en ouer — geen betaling nou nodig nie.",
+      "Brain Boost kos R169/maand met 'n 14-dae gratis proeftydperk — geen heffing tydens die proef nie, en jy kan enige tyd sonder fooie kanselleer.",
       "Open Instellings → Intekening om jou huidige plan en proefdatums te sien.",
       "As jy 'n proef begin het, kry jy herinneringe op Dag 13 en 14.",
       "Vir 'n faktureringsgeskil of terugbetaling, eskaleer hieronder na ons ondersteuningspan.",
@@ -109,14 +109,14 @@ const TROUBLESHOOT_CATEGORIES: TsCategory[] = [
     stepsEn: [
       "Hard refresh this page: Ctrl+Shift+R (Windows) or Cmd+Shift+R (Mac).",
       "Check your internet connection by opening another website.",
-      "Disable browser extensions or ad blockers for braintrack.app — they can block our images and PDFs.",
+      "Disable browser extensions or ad blockers for braintrack.co.za — they can block our images and PDFs.",
       "Try in an incognito / private window to rule out a cached corruption.",
       "If only one subject or paper is empty, it may not be released yet — try another and let us know which one is missing below.",
     ],
     stepsAf: [
       "Herlaai die bladsy: Ctrl+Shift+R (Windows) of Cmd+Shift+R (Mac).",
       "Kyk jou internetverbinding deur 'n ander webwerf te open.",
-      "Skakel blaaier-uitbreidings of advertensie-blokkeerders vir braintrack.app af — hulle blokkeer soms ons beelde en PDF's.",
+      "Skakel blaaier-uitbreidings of advertensie-blokkeerders vir braintrack.co.za af — hulle blokkeer soms ons beelde en PDF's.",
       "Probeer in 'n privaat venster om 'n korrupte kas uit te skakel.",
       "As net een vak of vraestel leeg is, is dit dalk nog nie vrygestel nie — probeer 'n ander en laat weet hieronder watter een ontbreek.",
     ],
@@ -154,14 +154,14 @@ const TROUBLESHOOT_CATEGORIES: TsCategory[] = [
     introAf: "Kry jy nie BrainTrack-kennisgewings op jou foon of skootrekenaar nie? Kyk hierna:",
     stepsEn: [
       "Open Settings → Notifications and confirm push is enabled.",
-      "In your browser, check the lock icon next to the URL and make sure Notifications is set to Allow for braintrack.app.",
+      "In your browser, check the lock icon next to the URL and make sure Notifications is set to Allow for braintrack.co.za.",
       "On your phone, check your system notification settings for your browser app.",
       "Daily focus reminders go out around 06:00 SAST — make sure your device is online at that time.",
       "If you blocked notifications by mistake, you'll need to clear that block in your browser before BrainTrack can ask again.",
     ],
     stepsAf: [
       "Open Instellings → Kennisgewings en bevestig dat push aan is.",
-      "In jou blaaier: klik die slot-ikoon langs die URL en maak seker Kennisgewings is op Toelaat vir braintrack.app.",
+      "In jou blaaier: klik die slot-ikoon langs die URL en maak seker Kennisgewings is op Toelaat vir braintrack.co.za.",
       "Op jou foon: kyk jou stelsel-kennisgewing-instellings vir die blaaier-app.",
       "Daaglikse fokus-herinneringe gaan uit ongeveer 06:00 SAST — maak seker jou toestel is dan aanlyn.",
       "As jy kennisgewings per ongeluk geblokkeer het, moet jy daardie blokkering in jou blaaier opklaar voordat BrainTrack weer kan vra.",
@@ -267,8 +267,8 @@ const knowledge: KnowledgeEntry[] = [
   },
   {
     keywords: ["sign", "register", "join", "start", "begin", "aansluit", "registreer", "signup", "aan", "how do i", "hoe"],
-    en: "Just click Sign In — no payment needed right now. Pick whether you're a learner or a parent, finish the quick onboarding, and you're in. Takes about 2 minutes.",
-    af: "Klik net Aanmeld — geen betaling nou nodig nie. Kies of jy 'n leerder of 'n ouer is, voltooi die kort aanboord, en jy's binne. Dit neem sowat 2 minute.",
+    en: "Just click Sign In and start your 14-day free trial — no charge during the trial. Pick whether you're a learner or a parent, finish the quick onboarding, and you're in. Takes about 2 minutes.",
+    af: "Klik net Aanmeld en begin jou 14-dae gratis proeftydperk — geen heffing tydens die proef nie. Kies of jy 'n leerder of 'n ouer is, voltooi die kort aanboord, en jy's binne. Dit neem sowat 2 minute.",
   },
   {
     keywords: ["school", "skool", "skole", "teacher", "onderwyser", "partner", "vennoot"],
@@ -323,7 +323,7 @@ const knowledge: KnowledgeEntry[] = [
   {
     keywords: ["cancel", "kanselleer", "billing", "fakturering", "payment", "betaling", "refund", "terugbetaling"],
     en: "There's nothing to cancel — BrainTrack is free for everyone right now. If you have a billing question for later, email learn@kth-tech.com.",
-    af: "Daar is niks om te kanselleer nie — BrainTrack is op die oomblik gratis vir almal. As jy later 'n faktureringsvraag het, e-pos learn@kth-tech.com.",
+    af: "Jy kan enige tyd in Instellings → Intekening kanselleer — kansellasie word deur Paystack verwerk en stop alle toekomstige heffings. Faktureringsvrae? E-pos learn@kth-tech.com.",
   },
 ];
 

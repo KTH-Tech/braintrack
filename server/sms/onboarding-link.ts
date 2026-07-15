@@ -28,20 +28,17 @@ function getSecret(): string {
   return createHash("sha256").update(`${secret}::onboarding-link::v1`).digest("hex");
 }
 
+// Base URL for links embedded in outbound comms (welcome email, WhatsApp
+// magic links). APP_URL is the canonical production origin — Replit domains
+// must NEVER leak into learner-facing messages.
 export function publicBaseUrl(req?: { protocol?: string; get?: (h: string) => string | undefined }): string {
-  const fromEnv =
-    process.env.PUBLIC_BASE_URL ||
-    (process.env.REPLIT_DOMAINS?.split(",")[0]?.trim()
-      ? `https://${process.env.REPLIT_DOMAINS!.split(",")[0]!.trim()}`
-      : process.env.REPLIT_DEV_DOMAIN
-        ? `https://${process.env.REPLIT_DEV_DOMAIN}`
-        : null);
+  const fromEnv = process.env.APP_URL || process.env.PUBLIC_BASE_URL || null;
   if (fromEnv) return fromEnv.replace(/\/$/, "");
   if (req?.protocol && req.get) {
     const host = req.get("host");
     if (host) return `${req.protocol}://${host}`;
   }
-  return "https://braintrack.app";
+  return "https://app.braintrack.co.za";
 }
 
 function messageCopy(language: "en" | "af", url: string): string {

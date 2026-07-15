@@ -407,7 +407,7 @@ export default function AdminEmailsPage() {
                 type="email"
                 value={fromEmailInput}
                 onChange={(e) => setFromEmailInput(e.target.value)}
-                placeholder="learn@braintrack.app"
+                placeholder="learn@kth-tech.com"
                 data-testid="from-email-input"
                 className="w-full px-3 py-2.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary"
               />
@@ -440,7 +440,7 @@ export default function AdminEmailsPage() {
                 type="email"
                 value={replyToInput}
                 onChange={(e) => setReplyToInput(e.target.value)}
-                placeholder={isAf ? "antwoord@braintrack.app" : "replies@braintrack.app"}
+                placeholder={isAf ? "learn@kth-tech.com" : "learn@kth-tech.com"}
                 data-testid="reply-to-input"
                 className="w-full px-3 py-2.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary"
               />

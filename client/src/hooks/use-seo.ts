@@ -57,7 +57,7 @@ export function useSEO({
   canonical,
   ogTitle,
   ogDescription,
-  ogImage = "https://braintrack.app/og-image.png",
+  ogImage = "https://braintrack.co.za/og-image.png",
   ogType = "website",
   ogUrl,
   twitterCard = "summary_large_image",

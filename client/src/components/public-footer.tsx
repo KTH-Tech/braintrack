@@ -97,7 +97,6 @@ export function PublicFooter() {
   const { language } = useLanguage();
   const { isAuthenticated, user } = useAuth();
   const isAf = language === "af";
-  const isAdmin = isAuthenticated && user?.role === "admin";
   const isParent = user?.role === "parent";
   const cols = COLS[language];
   const t = COPY[language];
@@ -190,30 +189,9 @@ export function PublicFooter() {
                     )}
                   </li>
                 ))}
-                {/* Admin Login — only shown to logged-out visitors */}
-                {col.heading === "Platform" && !isAuthenticated && (
-                  <li>
-                    <a
-                      href="/api/login"
-                      data-testid="footer-link-admin-login"
-                      className="group inline-flex items-center text-sm text-white hover:text-[#28c9d6] transition-colors duration-150"
-                    >
-                      {isAf ? "Admin Aanmelding" : "Admin Login"}
-                    </a>
-                  </li>
-                )}
-                {/* Conditional: authenticated admin sees DBE Portal link */}
-                {col.heading === "Platform" && isAdmin && (
-                  <li>
-                    <Link
-                      href="/learn/admin/dbe-portal"
-                      data-testid="footer-link-dbe-portal"
-                      className="group inline-flex items-center text-sm text-white hover:text-[#28c9d6] transition-colors"
-                    >
-                      {isAf ? "DBE Portaal" : "DBE Portal"}
-                    </Link>
-                  </li>
-                )}
+                {/* Admin/DBE entry points are intentionally NOT linked in the
+                    footer — admins land on their tools via role-based sign-in
+                    routing; no admin surface is advertised to learners/parents. */}
                 {/* Conditional: parent dashboard link */}
                 {col.heading === "Platform" && isParent && (
                   <li>
@@ -262,16 +240,6 @@ export function PublicFooter() {
               </a>
             )}
 
-            {/* Admin sign-in: de-emphasised by size (10px), not by grey/opacity */}
-            <a
-              href="/api/login"
-              data-testid="footer-link-admin-signin"
-              className="inline-flex items-center gap-1 text-[10px] text-white hover:text-[#28c9d6] transition-colors"
-              aria-label={isAf ? "Admin-aanmelding" : "Admin sign-in"}
-            >
-              <ExternalLink className="w-3 h-3" />
-              {t.adminLabel}
-            </a>
           </div>
         </div>
 

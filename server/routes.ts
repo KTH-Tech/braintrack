@@ -2778,6 +2778,11 @@ export async function registerRoutes(
         }
       })();
 
+      // Welcome push upon activation — best-effort, never blocks the response.
+      sendWelcomePush(userId).catch((err) =>
+        console.error("[welcome-push] threw:", err instanceof Error ? err.message : String(err)),
+      );
+
       // Task #412 — fire off the learner's onboarding magic-link SMS. We
       // never block trial-creation on SMS delivery: a clear retry path is
       // surfaced on the parent's confirmation card if Twilio fails.
@@ -2961,6 +2966,42 @@ export async function registerRoutes(
   // notification with bilingual title/body and a link back to /subscribe#resend.
   // Disabled or dead subscriptions are pruned the same way the trial-reminder
   // job does it (HTTP 404 / 410 from the push service → delete the row).
+  // ─── Welcome push: fired when a learner's trial activates ──────────────────
+  // Mirrors sendDeliveryFailurePush: best-effort, bilingual, sent to every
+  // enabled push subscription the learner has. Never blocks trial creation.
+  async function sendWelcomePush(userId: string) {
+    if (!process.env.VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) return;
+    const subs = await db
+      .select()
+      .from(pushSubscriptions)
+      .where(and(eq(pushSubscriptions.userId, userId), eq(pushSubscriptions.enabled, true)));
+    if (subs.length === 0) return;
+
+    const payload = JSON.stringify({
+      title: "Welcome to BrainTrack 🎉 · Welkom by BrainTrack 🎉",
+      body: "Your 14-day trial is live — let's start studying. · Jou 14-dae proeftydperk is aktief — kom ons begin studeer.",
+      tag: "welcome-activation",
+      url: "/dashboard",
+      data: { url: "/dashboard" },
+    });
+
+    for (const sub of subs) {
+      try {
+        await webpush.sendNotification(
+          { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+          payload,
+        );
+      } catch (err: any) {
+        const code = err?.statusCode;
+        if (code === 404 || code === 410) {
+          try { await db.delete(pushSubscriptions).where(eq(pushSubscriptions.id, sub.id)); } catch {}
+        } else {
+          console.error("[welcome-push] send failed:", err?.message ?? err);
+        }
+      }
+    }
+  }
+
   async function sendDeliveryFailurePush(userId: string, deliveryError: string | null) {
     if (!process.env.VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) return;
     const subs = await db
@@ -3431,7 +3472,7 @@ export async function registerRoutes(
                 to: learner.email,
                 firstName: learner.firstName ?? "",
                 language: learner.preferredLanguage === "af" ? "af" : "en",
-                dashboardUrl: `${process.env.PUBLIC_BASE_URL ?? "https://braintrack.app"}/dashboard`,
+                dashboardUrl: `${process.env.APP_URL ?? process.env.PUBLIC_BASE_URL ?? "https://app.braintrack.co.za"}/dashboard`,
                 isRenewal: false,
                 planName: "Brain Boost",
                 amountRands: sub.priceRands ?? 169,
@@ -3456,7 +3497,7 @@ export async function registerRoutes(
                 to: learner.email,
                 firstName: learner.firstName ?? "",
                 language: learner.preferredLanguage === "af" ? "af" : "en",
-                dashboardUrl: `${process.env.PUBLIC_BASE_URL ?? "https://braintrack.app"}/dashboard`,
+                dashboardUrl: `${process.env.APP_URL ?? process.env.PUBLIC_BASE_URL ?? "https://app.braintrack.co.za"}/dashboard`,
                 isRenewal: true,
                 planName: "Brain Boost",
                 amountRands: sub.priceRands ?? 169,
@@ -3641,7 +3682,7 @@ export async function registerRoutes(
                 to: learner.email,
                 firstName: learner.firstName ?? "",
                 language: learner.preferredLanguage === "af" ? "af" : "en",
-                dashboardUrl: `${process.env.PUBLIC_BASE_URL ?? "https://braintrack.app"}/dashboard`,
+                dashboardUrl: `${process.env.APP_URL ?? process.env.PUBLIC_BASE_URL ?? "https://app.braintrack.co.za"}/dashboard`,
                 isRenewal: false,
                 planName: "Brain Boost",
                 amountRands: sub.priceRands ?? 169,
@@ -3670,7 +3711,7 @@ export async function registerRoutes(
                 to: learner.email,
                 firstName: learner.firstName ?? "",
                 language: learner.preferredLanguage === "af" ? "af" : "en",
-                dashboardUrl: `${process.env.PUBLIC_BASE_URL ?? "https://braintrack.app"}/dashboard`,
+                dashboardUrl: `${process.env.APP_URL ?? process.env.PUBLIC_BASE_URL ?? "https://app.braintrack.co.za"}/dashboard`,
                 isRenewal: true,
                 planName: "Brain Boost",
                 amountRands: sub.priceRands ?? 169,
@@ -8460,9 +8501,7 @@ Create comprehensive study notes for the topic provided.`;
         return res.status(400).json({ error: "School code already exists. Please use a different code." });
       }
 
-      const baseUrl = process.env.REPL_SLUG 
-        ? `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`
-        : 'https://braintrack.app';
+      const baseUrl = process.env.APP_URL ?? process.env.PUBLIC_BASE_URL ?? 'https://app.braintrack.co.za';
       
       const referralUrl = `${baseUrl}/purchase?ref=${finalCode}`;
       
@@ -8746,9 +8785,7 @@ Create comprehensive study notes for the topic provided.`;
         return res.status(404).json({ error: "Partner school not found" });
       }
 
-      const baseUrl = process.env.REPL_SLUG 
-        ? `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`
-        : 'https://braintrack.app';
+      const baseUrl = process.env.APP_URL ?? process.env.PUBLIC_BASE_URL ?? 'https://app.braintrack.co.za';
       
       const referralUrl = `${baseUrl}/purchase?ref=${school.schoolCode}`;
       
@@ -20507,7 +20544,7 @@ p{color:#cfcfd9;line-height:1.5;font-size:15px;margin:8px 0}
 a{color:#28c9d6;text-decoration:none}</style></head>
 <body><div class="card"><h1>${title}</h1><p>${message}</p>
 <p style="margin-top:20px;font-size:13px;color:#888">You can re-enable scheduled reports anytime from the parent dashboard.</p>
-<p style="margin-top:20px"><a href="https://braintrack.app/parent-dashboard">Open parent dashboard →</a></p></div></body></html>`);
+<p style="margin-top:20px"><a href="https://app.braintrack.co.za/parent-dashboard">Open parent dashboard →</a></p></div></body></html>`);
     };
 
     try {
@@ -21239,7 +21276,7 @@ a{color:#28c9d6;text-decoration:none}</style></head>
         bodyHtml: `<p>This is a test email sent from the BrainTrack Admin Console.</p>
 <p>If you are reading this, transactional email is correctly configured and delivering to <strong>${user.email}</strong>.</p>`,
         ctaLabel: "Go to Admin Console",
-        ctaUrl: "https://braintrack.app/learn/admin/reports",
+        ctaUrl: "https://app.braintrack.co.za/learn/admin/reports",
         language: "en",
       });
 
@@ -21276,7 +21313,7 @@ a{color:#28c9d6;text-decoration:none}</style></head>
         apiKeyDisplay = `${envKey.slice(0, 4)}${"•".repeat(8)} (env)`;
       }
 
-      const fromEmail = byKey["sendgrid_from_email"] || process.env.EMAIL_FROM || "learn@braintrack.app";
+      const fromEmail = byKey["sendgrid_from_email"] || process.env.EMAIL_FROM || "learn@kth-tech.com";
       const fromName = byKey["sendgrid_from_name"] || process.env.EMAIL_FROM_NAME || "BrainTrack";
       const replyTo = byKey["sendgrid_reply_to"] || process.env.EMAIL_REPLY_TO || "";
       const isConfigured = !!(rawKey || process.env.SENDGRID_API_KEY);

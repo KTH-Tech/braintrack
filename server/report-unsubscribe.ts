@@ -58,6 +58,6 @@ export function buildUnsubscribeUrl(
   learnerUserId: string,
 ): string {
   const token = signUnsubscribeToken(parentUserId, learnerUserId);
-  const base = (process.env.PUBLIC_BASE_URL || "https://braintrack.app").replace(/\/$/, "");
+  const base = (process.env.APP_URL || process.env.PUBLIC_BASE_URL || "https://app.braintrack.co.za").replace(/\/$/, "");
   return `${base}/api/unsubscribe/report-email?token=${encodeURIComponent(token)}`;
 }

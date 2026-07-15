@@ -163,7 +163,7 @@ async function sendReportEmail(opts: {
     heading,
     bodyHtml,
     ctaLabel: isAf ? "Bekyk Volledige Dashboard" : "View Full Dashboard",
-    ctaUrl: "https://braintrack.app/dashboard",
+    ctaUrl: "https://app.braintrack.co.za/dashboard",
     language: isAf ? "af" : "en",
     attachments: [
       {

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Globe, Menu, X, LogOut, FlaskConical, Sparkles, BookOpen, FileText } from "lucide-react";
+import { Globe, Menu, X, LogOut, FlaskConical, Sparkles, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/language-context";
 import { useAuth } from "@/hooks/use-auth";
@@ -13,14 +13,11 @@ const navLinks = [
   { href: "/subscribe", en: "Pricing", af: "Pryse", icon: BadgeDollarSign },
 ];
 
-const adminNavLinks = [
-  { href: "/learn/admin/dbe-portal", en: "DBE Portal", af: "DBE Portaal", icon: FileText },
-];
-
+// Admin/DBE entry points are intentionally NOT rendered in the nav — admins
+// reach their tools via role-based sign-in routing, not advertised links.
 export function PublicNav() {
   const { language, toggleLanguage } = useLanguage();
   const { isAuthenticated, user } = useAuth();
-  const isAdmin = isAuthenticated && user?.role === "admin";
   const [location] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -49,7 +46,7 @@ export function PublicNav() {
             </Link>
 
             <div className="flex items-center h-14 gap-0.5">
-              {[...navLinks, ...(isAdmin ? adminNavLinks : [])].map((link) => {
+              {navLinks.map((link) => {
                 const isActive = location === link.href;
                 return (
                   <Link
@@ -110,9 +107,6 @@ export function PublicNav() {
                     {language === "en" ? "Sign In" : "Kom In"}
                   </Button>
                 </a>
-                <span className="text-[9px] text-white leading-none" data-testid="text-replit-auth-note">
-                  {language === "en" ? "Sign-in powered by Replit" : "Aanmeld via Replit"}
-                </span>
               </div>
             ) : null}
           </div>
@@ -153,7 +147,7 @@ export function PublicNav() {
           data-testid="nav-mobile-menu"
         >
           <div className="px-3 py-3 space-y-0.5">
-            {[...navLinks, ...(isAdmin ? adminNavLinks : [])].map((link, idx) => {
+            {navLinks.map((link, idx) => {
               const isActive = location === link.href;
               return (
                 <Link

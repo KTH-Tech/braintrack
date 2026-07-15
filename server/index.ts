@@ -106,6 +106,27 @@ app.get("/healthz", (_req, res) => {
 // rate limiters use clientIp() (prefers CF-Connecting-IP) in routes.ts.
 app.set("trust proxy", 1);
 
+// ── Dev-only: local role picker instead of Replit OIDC ──────────────────────
+// Locally there is no real Replit OIDC client (REPL_ID is the "local-preview"
+// stub), so any redirect to /api/login would dead-end at Replit's
+// "invalid client" error. Intercept it before the auth routes register and
+// offer the seeded test roles instead. Never active in production.
+if (process.env.NODE_ENV !== "production" && (!process.env.REPL_ID || process.env.REPL_ID === "local-preview")) {
+  app.get("/api/login", (_req, res) => {
+    res.status(200).type("html").send(`<!doctype html><html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>BrainTrack — Dev Sign-in</title>
+<style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#000;font-family:system-ui,sans-serif}
+.card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);border-radius:20px;padding:36px;text-align:center;backdrop-filter:blur(16px)}
+h1{color:#fff;font-size:22px;margin:0 0 6px}p{color:#00E5FF;font-size:13px;margin:0 0 22px}
+a{display:block;margin:10px 0;padding:13px 40px;border-radius:12px;font-weight:700;text-decoration:none;color:#000}
+.l{background:#00E5FF}.p{background:#22FF66}.a{background:#FF2BD6;color:#fff}</style></head><body>
+<div class="card"><h1>Dev Sign-in</h1><p>Local preview — pick a role</p>
+<a class="l" href="/api/dev/login-as/learner">Learner</a>
+<a class="p" href="/api/dev/login-as/parent">Parent</a>
+<a class="a" href="/api/dev/login-as/admin">Admin</a></div></body></html>`);
+  });
+}
+
 // Disable X-Powered-By header (security)
 app.disable("x-powered-by");
 

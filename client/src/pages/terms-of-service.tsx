@@ -23,7 +23,7 @@ export default function TermsOfServicePage() {
   useSEO({
     title: "Terms & Conditions | BrainTrack",
     description: "BrainTrack terms and conditions covering platform usage, CAPS alignment, intellectual property, data protection and learner responsibilities. Powered by BrainTrack.",
-    canonical: "https://braintrack.app/terms-of-service",
+    canonical: "https://braintrack.co.za/terms-of-service",
   });
 
   const sections = {
