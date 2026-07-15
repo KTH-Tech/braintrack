@@ -696,7 +696,7 @@ export default function LandingPage() {
       <PublicNav />
       <main className="pt-14 overflow-x-hidden">
 
-        <section className="relative overflow-hidden py-8 sm:py-12 md:py-16 bg-black">
+        <section className="relative overflow-hidden py-8 sm:py-12 md:py-16 bg-background">
           <div ref={heroAnim.ref} className={`relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-700 ${heroAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
             <div
               className="relative overflow-hidden rounded-[32px] bg-black p-4 sm:p-12 md:p-16"

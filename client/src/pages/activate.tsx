@@ -154,10 +154,10 @@ export default function ActivatePage() {
                   <Sparkles className="w-4 h-4 mr-2" />
                   {isAf ? "Kom ons begin!" : "Start Learning"}
                 </Button>
-                <p className="mt-3 text-[11px] text-white leading-relaxed" data-testid="text-activate-replit-auth-note">
+                <p className="mt-3 text-[11px] text-white leading-relaxed">
                   {isAf
-                    ? "Aanmelding word deur Replit hanteer. As jy jou wagwoord moet terugstel, gebruik 'Wagwoord vergeet?' op die Replit-aanmeldskerm."
-                    : "Sign-in is handled by Replit. To reset your password, use 'Forgot password?' on the Replit sign-in screen."}
+                    ? "Om jou wagwoord terug te stel, gebruik 'Wagwoord vergeet?' op die aanmeldskerm."
+                    : "To reset your password, use 'Forgot password?' on the sign-in screen."}
                 </p>
               </CardContent>
             </Card>

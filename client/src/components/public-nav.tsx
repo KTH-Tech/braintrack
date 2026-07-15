@@ -207,11 +207,6 @@ export function PublicNav() {
                     {language === "en" ? "Sign In" : "Kom In"}
                   </Button>
                 </a>
-                <p className="mt-2 text-[10px] text-center text-white leading-snug" data-testid="text-mobile-replit-auth-note">
-                  {language === "en"
-                    ? "Sign-in powered by Replit. Account and password reset are managed there."
-                    : "Aanmeld via Replit. Rekening en wagwoord-terugstel word daar bestuur."}
-                </p>
               </div>
             ) : null}
           </div>

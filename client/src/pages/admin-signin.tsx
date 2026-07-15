@@ -46,10 +46,10 @@ export default function AdminSignInPage() {
               ? "Hierdie area is slegs vir gemagtigde personeel. Meld aan om voort te gaan."
               : "This area is restricted to authorised personnel. Sign in to continue."}
           </p>
-          <p className="text-[11px] text-white leading-relaxed" data-testid="text-admin-signin-replit-note">
+          <p className="text-[11px] text-white leading-relaxed">
             {isAf
-              ? "Rekening en wagwoord word deur Replit bestuur. Gebruik 'Wagwoord vergeet?' op die Replit-aanmeldskerm om dit terug te stel."
-              : "Account and password are managed by Replit. Use 'Forgot password?' on the Replit sign-in screen to reset."}
+              ? "Gebruik 'Wagwoord vergeet?' op die aanmeldskerm om jou wagwoord terug te stel."
+              : "Use 'Forgot password?' on the sign-in screen to reset your password."}
           </p>
 
           {isAuthorized && (
