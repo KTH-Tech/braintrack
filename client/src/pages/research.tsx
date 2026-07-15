@@ -11,17 +11,14 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 
-type NeonHex = "#FF8A00" | "#FF8A00" | "#FFE600" | "#FFE600" | "#00E5FF" | "#006BFF" | "#8A2BFF" | "#8A2BFF" | "#FF2BD6";
+type NeonHex = "#FF8A00" | "#FFE600" | "#00E5FF" | "#006BFF" | "#8A2BFF" | "#FF2BD6";
 
 function haloFor(color: NeonHex, alpha = 0.28) {
   const map: Record<NeonHex, string> = {
     "#FF8A00": `rgba(255,138,0,${alpha})`,
-    "#FF8A00": `rgba(255,138,0,${alpha})`,
-    "#FFE600": `rgba(255,230,0,${alpha})`,
     "#FFE600": `rgba(255,230,0,${alpha})`,
     "#00E5FF": `rgba(0,229,255,${alpha})`,
     "#006BFF": `rgba(0,107,255,${alpha})`,
-    "#8A2BFF": `rgba(138,43,255,${alpha})`,
     "#8A2BFF": `rgba(138,43,255,${alpha})`,
     "#FF2BD6": `rgba(255,43,214,${alpha})`,
   };

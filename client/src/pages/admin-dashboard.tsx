@@ -14,20 +14,18 @@ import {
 } from "lucide-react";
 
 type NeonHex =
-  | "#FF8A00" | "#FF8A00" | "#FFE600" | "#FFE600"
-  | "#00E5FF" | "#006BFF" | "#8A2BFF" | "#8A2BFF" | "#FF2BD6";
+  | "#FF8A00" | "#FFE600"
+  | "#00E5FF" | "#006BFF" | "#8A2BFF" | "#FF2BD6";
 
 function halo(color: NeonHex, a = 0.28) {
+  // Brand-hex rgb triplets (matching the 7-colour brand palette).
   const rgb: Record<NeonHex, string> = {
-    "#FF8A00": "255,106,31",
-    "#FF8A00": "255,138,31",
-    "#FFE600": "255,176,32",
-    "#FFE600": "255,216,58",
-    "#00E5FF": "40,201,214",
-    "#006BFF": "79,140,217",
-    "#8A2BFF": "142,124,220",
-    "#8A2BFF": "176,102,214",
-    "#FF2BD6": "230,81,156",
+    "#FF8A00": "255,138,0",
+    "#FFE600": "255,230,0",
+    "#00E5FF": "0,229,255",
+    "#006BFF": "0,107,255",
+    "#8A2BFF": "138,43,255",
+    "#FF2BD6": "255,43,214",
   };
   return `rgba(${rgb[color]},${a})`;
 }
