@@ -34,17 +34,14 @@ const ALL_THEME_CLASSES = [
   "theme-bubblegum", "theme-glitter", "theme-ocean", "theme-solar",
 ]
 
+// Default is "blanc" — the sentinel that applies NO palette overlay so our
+// two brand themes (dark + light) via bt-theme own the surface. Users who
+// unlocked a paid palette in the rewards store still get their unlock applied
+// on top. Any other legacy value migrates to blanc so we don't fight the toggle.
 function migrateStoredTheme(stored: string | null): ThemeMode {
-  if (!stored) return "obsidian"
-  if (stored === "blanc") return "obsidian"
-  if (stored === "clear-classroom") return "obsidian"
-  if (stored === "rainbow-pop") return "dopamine"
-  if (stored === "neon-glow") return "vaporwave"
-  if (stored === "dark-academia") return "obsidian"
-  if (stored === "dark") return "obsidian"
-  if (stored === "blossom") return "obsidian"
+  if (!stored) return "blanc"
   if ((VALID_THEMES as string[]).includes(stored)) return stored as ThemeMode
-  return "obsidian"
+  return "blanc"
 }
 
 export function useTheme() {

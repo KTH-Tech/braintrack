@@ -35,7 +35,7 @@ export function PublicFooter() {
 
   return (
     <footer
-      className="relative border-t border-white/10 bg-black"
+      className="relative border-t border-border bg-background text-foreground"
       data-testid="footer-public"
       aria-label="Site footer"
     >

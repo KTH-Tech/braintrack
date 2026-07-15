@@ -492,97 +492,100 @@ img {
   --elevate-1: rgba(255,255,255, .04);
   --elevate-2: rgba(255,255,255, .08);
 
-  /* Cosmic dark: pure black + pure white ink (no faded-white "grey") */
-  --background: 0 0% 0%;
-  --foreground: 0 0% 100%;
+  /* ─── Brand: Dark (graffiti neon on Deep Black) ──────────────────
+     From the brand board: Deep Black #02040A ground, pure-white ink
+     (no grey — rule holds), rainbow accents from the 7-hex brand set. */
+  --background: 226 67% 3%;         /* Deep Black #02040A */
+  --foreground: 0 0% 100%;           /* pure white — no faded-white grey */
 
-  --border: 0 0% 18%;
+  --border: 226 30% 15%;
 
-  --card: 0 0% 0%;
-  --card-foreground: 200 18% 94%;
-  --card-border: 0 0% 16%;
+  --card: 226 67% 3%;
+  --card-foreground: 0 0% 100%;
+  --card-border: 226 30% 15%;
 
-  --sidebar: 0 0% 0%;
-  --sidebar-foreground: 200 18% 94%;
-  --sidebar-border: 0 0% 14%;
-  --sidebar-primary: 188 95% 55%;
-  --sidebar-primary-foreground: 0 0% 0%;
-  --sidebar-accent: 0 0% 8%;
-  --sidebar-accent-foreground: 200 15% 82%;
-  --sidebar-ring: 188 95% 55%;
+  --sidebar: 226 67% 3%;
+  --sidebar-foreground: 0 0% 100%;
+  --sidebar-border: 226 30% 12%;
+  --sidebar-primary: 187 100% 50%;
+  --sidebar-primary-foreground: 226 67% 3%;
+  --sidebar-accent: 226 40% 8%;
+  --sidebar-accent-foreground: 0 0% 100%;
+  --sidebar-ring: 187 100% 50%;
 
-  --popover: 0 0% 0%;
-  --popover-foreground: 200 18% 94%;
-  --popover-border: 0 0% 18%;
+  --popover: 226 67% 3%;
+  --popover-foreground: 0 0% 100%;
+  --popover-border: 226 30% 15%;
 
-  --primary: 188 95% 55%;
-  --primary-foreground: 220 35% 6%;
+  --primary: 187 100% 50%;           /* Cyan #00E5FF — brand primary */
+  --primary-foreground: 226 67% 3%;   /* deep ink for readable text on cyan */
 
-  --secondary: 330 90% 60%;
+  --secondary: 313 100% 58%;          /* Pink #FF2BD6 */
   --secondary-foreground: 0 0% 100%;
 
-  --muted: 220 18% 11%;
-  /* No-grey rule: muted-foreground is a container-tone hint, not a text fade.
-     Kept as pure white; hierarchy comes from size/weight/accent, not opacity. */
+  --muted: 226 40% 8%;
+  /* No-grey rule: pure white ink; hierarchy via size/weight/accent only. */
   --muted-foreground: 0 0% 100%;
 
-  --accent: 145 75% 55%;
-  --accent-foreground: 220 35% 6%;
+  --accent: 136 100% 57%;             /* Green #22FF66 */
+  --accent-foreground: 226 67% 3%;    /* deep ink on green */
 
-  --destructive: 0 80% 58%;
+  --destructive: 0 90% 60%;
   --destructive-foreground: 0 0% 100%;
 
-  --input: 200 18% 14%;
-  --ring: 188 95% 55%;
+  --input: 226 40% 10%;
+  --ring: 187 100% 50%;              /* Cyan focus ring */
 
   --font-sans: 'Sora', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-heading: 'Sora', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --radius: 0.75rem;
 }
 
-/* ── Light theme (toggled via <html class="light">) ───────── */
+/* ─── Brand: Light (graffiti pastel on Off-White) ──────────────────
+   From the brand board: Off White #FAFAFC ground, Deep Black ink,
+   same rainbow accents darkened just enough to stay legible on light.
+   Toggled via <html class="light"> by ThemeToggle. */
 html.light {
-  --background: 0 0% 100%;
-  --foreground: 222 25% 12%;
+  --background: 240 20% 99%;         /* Off White #FAFAFC */
+  --foreground: 226 67% 3%;           /* Deep Black — pure ink, no grey */
 
-  --border: 220 15% 86%;
+  --border: 226 15% 88%;
 
   --card: 0 0% 100%;
-  --card-foreground: 222 25% 12%;
-  --card-border: 220 15% 86%;
+  --card-foreground: 226 67% 3%;
+  --card-border: 226 15% 90%;
 
-  --sidebar: 0 0% 100%;
-  --sidebar-foreground: 222 25% 12%;
-  --sidebar-border: 220 15% 86%;
-  --sidebar-primary: 188 80% 38%;
+  --sidebar: 240 20% 99%;
+  --sidebar-foreground: 226 67% 3%;
+  --sidebar-border: 226 15% 90%;
+  --sidebar-primary: 207 100% 45%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 210 30% 94%;
-  --sidebar-accent-foreground: 222 25% 18%;
-  --sidebar-ring: 188 80% 38%;
+  --sidebar-accent: 240 20% 96%;
+  --sidebar-accent-foreground: 226 67% 3%;
+  --sidebar-ring: 207 100% 45%;
 
   --popover: 0 0% 100%;
-  --popover-foreground: 222 25% 12%;
-  --popover-border: 220 15% 86%;
+  --popover-foreground: 226 67% 3%;
+  --popover-border: 226 15% 90%;
 
-  --primary: 188 80% 38%;
+  --primary: 207 100% 45%;            /* Electric Blue — brand primary on light */
   --primary-foreground: 0 0% 100%;
 
-  --secondary: 330 75% 50%;
+  --secondary: 313 90% 45%;           /* Pink darker for light legibility */
   --secondary-foreground: 0 0% 100%;
 
-  --muted: 210 30% 94%;
-  /* No-grey rule: match --foreground so muted text becomes pure ink, not grey.
-     Hierarchy comes from size/weight/accent, never from a grey fill. */
-  --muted-foreground: 222 25% 12%;
+  --muted: 240 20% 96%;
+  /* No-grey rule: pure ink; hierarchy via size/weight/accent only. */
+  --muted-foreground: 226 67% 3%;
 
-  --accent: 145 55% 42%;
+  --accent: 136 70% 40%;              /* Green darker for light contrast */
   --accent-foreground: 0 0% 100%;
 
-  --destructive: 0 70% 50%;
+  --destructive: 0 75% 45%;
   --destructive-foreground: 0 0% 100%;
 
-  --input: 220 15% 92%;
-  --ring: 188 80% 38%;
+  --input: 226 15% 94%;
+  --ring: 207 100% 45%;
 
   --elevate-1: rgba(0,0,0, .04);
   --elevate-2: rgba(0,0,0, .08);
@@ -3081,23 +3084,10 @@ html.light .rainbow-wash-full {
   header.sticky nav::before { animation: none !important; }
 }
 
-/* ── PURE BLACK GLOBAL MANDATE ─────────────────────────────────
-   Force pure #000 page background regardless of selected theme.
-   Neon/rainbow only on icons, borders, brackets, glows. */
-:root,
-html,
-body,
-html.light,
-html.dark,
-[class*="theme-"] {
-  --background: 0 0% 0% !important;
-}
-html, body, html.light, html.light body {
-  background: #000 !important;
-  background-color: #000 !important;
-  color: #fff;
-}
-.bg-background { background-color: #000 !important; }
+/* Removed: the "PURE BLACK GLOBAL MANDATE" block that force-locked every
+   theme token to black with !important. It defeated the entire theme system —
+   `--background`, body bg, and `.bg-background` all ignored `html.light`. The
+   two brand themes (dark + light) now own the surface via the tokens above. */
 
 /* Countdown-clock animations */
 @keyframes bt-tick-glow {
