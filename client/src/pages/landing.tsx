@@ -645,31 +645,9 @@ export default function LandingPage() {
         <section className="relative overflow-hidden py-8 sm:py-12 md:py-16 bg-background">
           <GraffitiSplats variant="hero" opacity={0.55} />
           <div ref={heroAnim.ref} className={`relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-700 ${heroAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-            <div
-              className="relative overflow-hidden rounded-[32px] bg-background p-4 sm:p-12 md:p-16"
-              style={{
-                border: "1.5px solid #00E5FF",
-                boxShadow:
-                  "0 0 0 1px rgba(0,229,255,0.35), 0 0 60px rgba(0,229,255,0.45), inset 0 0 50px rgba(0,0,0,0.7)",
-              }}
-            >
-              <div
-                aria-hidden
-                className="absolute top-0 left-0 right-0 h-[4px]"
-                style={{
-                  background:
-                    "linear-gradient(90deg, #FF8A00, #FF8A00, #FFE600, #FFE600, #00E5FF, #006BFF, #8A2BFF, #8A2BFF, #FF2BD6)",
-                }}
-              />
-              <div aria-hidden className="absolute -top-32 -right-32 w-96 h-96 rounded-full blur-3xl pointer-events-none"
-                style={{ background: "radial-gradient(circle, rgba(0,229,255,0.32), transparent 70%)" }} />
-              <div aria-hidden className="absolute -bottom-32 -left-32 w-96 h-96 rounded-full blur-3xl pointer-events-none"
-                style={{ background: "radial-gradient(circle, rgba(255,43,214,0.22), transparent 70%)" }} />
-              <span aria-hidden className="absolute top-3 left-3 w-5 h-5 border-t-2 border-l-2" style={{ borderColor: "#00E5FF" }} />
-              <span aria-hidden className="absolute top-3 right-3 w-5 h-5 border-t-2 border-r-2" style={{ borderColor: "#00E5FF" }} />
-              <span aria-hidden className="absolute bottom-3 left-3 w-5 h-5 border-b-2 border-l-2" style={{ borderColor: "#00E5FF" }} />
-              <span aria-hidden className="absolute bottom-3 right-3 w-5 h-5 border-b-2 border-r-2" style={{ borderColor: "#00E5FF" }} />
-
+            {/* Wall-written hero — no card box; everything sits straight on
+                the graffiti wall. */}
+            <div className="relative p-2 sm:p-6 md:p-8">
               <div className="relative grid md:grid-cols-[0.95fr_1.05fr] gap-8 md:gap-10 items-center">
               <div className="flex flex-col items-center text-center md:items-start md:text-left gap-6 sm:gap-7 min-w-0">
 
@@ -775,18 +753,15 @@ export default function LandingPage() {
                   <button
                     onClick={handleCta}
                     data-testid="button-hero-cta"
-                    className="group relative inline-flex items-center gap-3 rounded-2xl bg-black font-black uppercase tracking-[0.14em] transition-transform hover:scale-[1.03]"
+                    className="group relative inline-flex items-center gap-2 rounded-xl bg-black text-sm font-bold transition-transform hover:scale-[1.03] px-5 py-2.5"
                     style={{
-                      fontSize: "clamp(0.875rem, 1vw + 0.5rem, 1.125rem)",
-                      padding: "clamp(0.875rem, 1.2vw + 0.4rem, 1.25rem) clamp(1.75rem, 2.5vw + 0.75rem, 2.5rem)",
                       color: "#00E5FF",
                       border: "1.5px solid #00E5FF",
-                      boxShadow: "0 0 24px rgba(0,229,255,0.55), inset 0 0 20px rgba(0,229,255,0.08)",
+                      boxShadow: "0 0 16px rgba(0,229,255,0.4)",
                     }}
                   >
-                    <AnimatedIcon name="brain" size={22} />
                     {t.hero.cta}
-                    <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                   </button>
                   {t.hero.tagline && (
                     <p className="text-xs text-white font-medium">

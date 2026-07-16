@@ -3,7 +3,9 @@
 // hand-drawn doodles (crowns, stars, arrows, scribbles, bolts) scattered on
 // the page ground. Pure SVG, deterministic layouts, pointer-events-none.
 
-const BRAND = ["#006BFF", "#00E5FF", "#22FF66", "#FFE600", "#FF8A00", "#FF2BD6", "#8A2BFF"];
+// Pastel tints of the brand palette — softer "pastel vibes" on the dark wall
+// while borders/CTAs keep the full-strength neon hexes.
+const BRAND = ["#6FA8FF", "#7FEFFF", "#93FFB8", "#FFF29E", "#FFC48F", "#FF9FE5", "#C6A4FF"];
 
 /* Fine spray mist ring — deterministic speckles: [cx, cy, r] */
 const SPECKLES: Array<[number, number, number]> = [
@@ -128,7 +130,7 @@ type DoodleSpec = { kind: DoodleKind; c: number; size: number; x: string; y: str
 
 export function GraffitiSplats({
   variant = "hero",
-  opacity = 0.55,
+  opacity = 0.7,
 }: {
   variant?: "hero" | "corner" | "band" | "full";
   opacity?: number;

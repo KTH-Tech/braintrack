@@ -37,47 +37,6 @@ const COPY = {
   },
 } as const;
 
-function FooterDrips() {
-  // Paint running DOWN from the footer's top edge: each drip starts full-width
-  // at the rule, tapers as it falls, and ends in a rounded bead. No floating
-  // lollipop heads.
-  const drips = [
-    { color: "#8A2BFF", x: 40,  w: 12, h: 34 },
-    { color: "#006BFF", x: 190, w: 14, h: 44 },
-    { color: "#00E5FF", x: 330, w: 9,  h: 22 },
-    { color: "#22FF66", x: 450, w: 16, h: 52 },
-    { color: "#FFE600", x: 580, w: 10, h: 28 },
-    { color: "#FF8A00", x: 690, w: 13, h: 46 },
-    { color: "#FF2BD6", x: 810, w: 9,  h: 24 },
-    { color: "#8A2BFF", x: 920, w: 11, h: 38 },
-  ];
-  return (
-    <div
-      aria-hidden
-      style={{ position: "absolute", top: 0, left: 0, right: 0, height: 56, pointerEvents: "none", overflow: "visible" }}
-    >
-      <svg viewBox="0 0 1000 56" preserveAspectRatio="none" style={{ width: "100%", height: 56, overflow: "visible", display: "block" }}>
-        {drips.map((d, i) => {
-          const midX = d.x + d.w / 2;
-          const tipW = d.w * 0.42;
-          const tipY = d.h - tipW / 2;
-          return (
-            <g key={i}>
-              {/* tapering body: full width at the top rule, narrowing downward */}
-              <path
-                d={`M${d.x} 0 L${d.x + d.w} 0 L${midX + tipW / 2} ${tipY} L${midX - tipW / 2} ${tipY} Z`}
-                fill={d.color}
-              />
-              {/* rounded bead at the tip */}
-              <circle cx={midX} cy={tipY} r={tipW / 2 + 0.5} fill={d.color} />
-            </g>
-          );
-        })}
-      </svg>
-    </div>
-  );
-}
-
 export function PublicFooter() {
   const { language } = useLanguage();
   const t = COPY[language];
@@ -93,8 +52,6 @@ export function PublicFooter() {
         borderImage: "linear-gradient(90deg,#8A2BFF,#FF2BD6,#FF8A00,#FFE600,#22FF66,#00E5FF,#006BFF) 1",
       }}
     >
-      <FooterDrips />
-
       {/* Rainbow tag rule — thicker, glowing */}
       <div aria-hidden style={{
         position: "absolute", top: 0, left: 0, right: 0, height: 3,

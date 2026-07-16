@@ -14,47 +14,6 @@ const navLinks = [
   { href: "/subscribe", en: "Pricing",  af: "Pryse",     icon: BadgeDollarSign, color: "#FF2BD6", dark: false },
 ];
 
-function PaintDrips() {
-  const drips = [
-    { color: "#006BFF", x: 48,   w: 8,  h: 22 },
-    { color: "#00E5FF", x: 148,  w: 5,  h: 14 },
-    { color: "#22FF66", x: 265,  w: 9,  h: 28 },
-    { color: "#FFE600", x: 420,  w: 6,  h: 17 },
-    { color: "#FF8A00", x: 540,  w: 5,  h: 11 },
-    { color: "#FF2BD6", x: 700,  w: 10, h: 32 },
-    { color: "#8A2BFF", x: 840,  w: 7,  h: 20 },
-    { color: "#00E5FF", x: 186,  w: 4,  h: 9  },
-    { color: "#22FF66", x: 610,  w: 5,  h: 15 },
-    { color: "#FFE600", x: 920,  w: 6,  h: 12 },
-    { color: "#FF2BD6", x: 105,  w: 4,  h: 7  },
-    { color: "#006BFF", x: 768,  w: 4,  h: 9  },
-  ];
-  return (
-    <div
-      aria-hidden
-      style={{ position: "absolute", bottom: 0, transform: "translateY(100%)", left: 0, right: 0, height: 34, pointerEvents: "none", overflow: "visible", zIndex: 49 }}
-    >
-      <svg viewBox="0 0 1000 34" preserveAspectRatio="none" style={{ width: "100%", height: 34, overflow: "visible", display: "block" }}>
-        {drips.map((d, i) => {
-          const midX = d.x + d.w / 2;
-          const tipW = d.w * 0.42;
-          const tipY = d.h - tipW / 2;
-          return (
-            <g key={i}>
-              {/* tapering body from the nav edge down to a rounded bead */}
-              <path
-                d={`M${d.x} 0 L${d.x + d.w} 0 L${midX + tipW / 2} ${tipY} L${midX - tipW / 2} ${tipY} Z`}
-                fill={d.color}
-              />
-              <circle cx={midX} cy={tipY} r={tipW / 2 + 0.5} fill={d.color} />
-            </g>
-          );
-        })}
-      </svg>
-    </div>
-  );
-}
-
 export function PublicNav() {
   const { language, toggleLanguage } = useLanguage();
   const { isAuthenticated, user } = useAuth();
@@ -72,17 +31,11 @@ export function PublicNav() {
       }}
       data-testid="nav-public"
     >
-      <PaintDrips />
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-2">
 
           {/* ── Desktop layout ─────────────────────────────── */}
           <div className="hidden md:flex items-center gap-3">
-            <Link href="/" className="shrink-0 flex items-center" data-testid="link-brand">
-              <span className="graffiti-hand rainbow-text text-2xl leading-none">BrainTrack</span>
-            </Link>
-
             <div className="flex items-center gap-1">
               {navLinks.map((link) => {
                 const isActive = location === link.href;
@@ -160,8 +113,8 @@ export function PublicNav() {
 
           {/* ── Mobile layout ──────────────────────────────── */}
           <div className="md:hidden flex items-center justify-between w-full h-16">
-            <Link href="/" className="shrink-0 flex items-center" data-testid="link-mobile-brand">
-              <span className="graffiti-hand rainbow-text text-xl leading-none">BrainTrack</span>
+            <Link href="/" className="shrink-0 flex items-center text-[11px] font-bold uppercase tracking-widest text-white" data-testid="link-mobile-brand">
+              {language === "en" ? "Home" : "Tuis"}
             </Link>
             <div className="flex items-center gap-2">
               <button

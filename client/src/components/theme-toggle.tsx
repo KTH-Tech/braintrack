@@ -18,7 +18,19 @@ function applyTheme(next: Mode) {
   window.dispatchEvent(new CustomEvent("bt-theme-change", { detail: next }));
 }
 
-export function ThemeToggle({ compact = false }: { compact?: boolean } = {}) {
+// Light mode is switched OFF (user decision 2026-07-16): the app is dark
+// graffiti only. The toggle renders nothing and force-clears any stored
+// light preference so previously-toggled devices come back to dark.
+export function ThemeToggle(_props: { compact?: boolean } = {}) {
+  useEffect(() => {
+    document.documentElement.classList.remove("light");
+    document.documentElement.classList.add("dark");
+    try { window.localStorage.setItem("bt-theme", "dark"); } catch { /* private mode */ }
+  }, []);
+  return null;
+}
+
+function LegacyThemeToggle({ compact = false }: { compact?: boolean } = {}) {
   const [mode, setMode] = useState<Mode>(readTheme);
 
   // Cross-tab / cross-component sync
