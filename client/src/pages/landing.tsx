@@ -642,7 +642,7 @@ export default function LandingPage() {
       {/* Graffiti filters through the ENTIRE page — one fixed layer behind all
           content, so paint flows continuously as you scroll (no per-section gaps). */}
       <div aria-hidden className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
-        <GraffitiSplats variant="full" opacity={0.55} />
+        <GraffitiSplats variant="full" opacity={0.42} />
       </div>
       <PublicNav />
       <main className="relative z-10 pt-14 overflow-x-hidden">
