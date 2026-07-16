@@ -820,6 +820,12 @@ function Router() {
           <DbePortalAliasRedirect />
         </Route>
 
+        <Route path="/learn/admin">
+          <RequireAdminRoute>
+            <AdminDashboardPage />
+          </RequireAdminRoute>
+        </Route>
+
         <Route path="/learn/admin/dbe-portal">
           <RequireAdminRoute>
             <DBEPortalPage />
