@@ -261,6 +261,12 @@ h1.no-rainbow *, .no-rainbow * {
   box-shadow: 0 0 24px rgba(127, 239, 255, 0.35), 0 0 44px rgba(255, 159, 229, 0.22);
 }
 
+/* Icon glow — ONLY icons should carry a soft pastel neon glow; the rest of the
+   UI stays flat (user: take the glare off everything except icons). */
+.icon-neon {
+  filter: drop-shadow(0 0 5px currentColor) drop-shadow(0 0 10px currentColor);
+}
+
 /* ── Landing entrance animation (staggered rise-in) ─────────────────── */
 @keyframes bt-rise {
   0%   { opacity: 0; transform: translateY(22px); }
@@ -2331,8 +2337,8 @@ html.light .rainbow-wash-full {
   /* Flat brand panel — no glass, no blur. Pastel edge. */
   border-radius: 1.25rem !important;
   background: #050608 !important;
-  border: 2px solid rgba(127,239,255,0.6) !important;
-  box-shadow: 0 0 22px rgba(127,239,255,0.22), 0 8px 30px rgba(0,0,0,0.6) !important;
+  border: 1.5px solid rgba(127,239,255,0.4) !important;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.6) !important;
   position: relative;
   overflow: hidden;
 }
@@ -3095,8 +3101,8 @@ html.light .rainbow-wash-full {
   display: block;
   animation: bt-splat-in 0.55s cubic-bezier(0.18, 1.4, 0.4, 1) both;
   will-change: transform, opacity;
-  /* Soft bloom so splats read as sprayed paint, not flat shapes. */
-  filter: drop-shadow(0 0 10px currentColor);
+  /* Flat paint — no bloom/glare on the background graffiti (user: remove neon glare). */
+  filter: none;
 }
 @keyframes bt-splat-in {
   0%   { opacity: 0; scale: 0.05; rotate: -15deg; }
