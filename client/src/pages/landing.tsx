@@ -817,8 +817,7 @@ export default function LandingPage() {
               <h2
                 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] max-w-3xl mx-auto break-words"
                 style={{
-                  background: "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)",
-                  display: "inline",
+                  backgroundImage: "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)",
                   color: "#0a0a0a",
                   WebkitTextFillColor: "#0a0a0a",
                   padding: "0.05em 0.32em",
@@ -889,8 +888,7 @@ export default function LandingPage() {
               <h2
                 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] max-w-3xl mx-auto break-words"
                 style={{
-                  background: "linear-gradient(90deg, #FFF29E, #7FEFFF, #C6A4FF, #FF9FE5)",
-                  display: "inline",
+                  backgroundImage: "linear-gradient(90deg, #FFF29E, #7FEFFF, #C6A4FF, #FF9FE5)",
                   color: "#0a0a0a",
                   WebkitTextFillColor: "#0a0a0a",
                   padding: "0.05em 0.32em",
@@ -1182,8 +1180,7 @@ export default function LandingPage() {
               <h2
                 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] max-w-3xl mx-auto break-words"
                 style={{
-                  background: "linear-gradient(90deg, #C6A4FF, #C6A4FF, #FF9FE5)",
-                  display: "inline",
+                  backgroundImage: "linear-gradient(90deg, #C6A4FF, #C6A4FF, #FF9FE5)",
                   color: "#0a0a0a",
                   WebkitTextFillColor: "#0a0a0a",
                   padding: "0.05em 0.32em",
@@ -1236,8 +1233,7 @@ export default function LandingPage() {
               <h2
                 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] max-w-3xl mx-auto break-words"
                 style={{
-                  background: "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)",
-                  display: "inline",
+                  backgroundImage: "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)",
                   color: "#0a0a0a",
                   WebkitTextFillColor: "#0a0a0a",
                   padding: "0.05em 0.32em",
