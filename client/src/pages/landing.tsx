@@ -643,7 +643,7 @@ export default function LandingPage() {
       <main className="pt-14 overflow-x-hidden">
 
         <section className="relative overflow-hidden py-8 sm:py-12 md:py-16 bg-background">
-          <GraffitiSplats variant="hero" opacity={0.55} />
+          <GraffitiSplats variant="hero" opacity={0.9} />
           <div ref={heroAnim.ref} className={`relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-700 ${heroAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
             {/* Wall-written hero — no card box; everything sits straight on
                 the graffiti wall. */}
@@ -796,7 +796,7 @@ export default function LandingPage() {
                 className="relative mx-auto w-full max-w-[560px] min-h-[300px] sm:min-h-[420px] flex items-center justify-center"
                 data-testid="hero-graffiti-tag"
               >
-                <GraffitiSplats variant="corner" opacity={0.65} />
+                <GraffitiSplats variant="corner" opacity={0.9} />
 
                 {/* hand-drawn white crown */}
                 <svg
@@ -865,7 +865,7 @@ export default function LandingPage() {
         </section>
 
         <section id="everything" ref={featuresAnim.ref} className={`relative overflow-hidden py-20 bg-background transition-all duration-700 ${featuresAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-          {featuresAnim.inView && <GraffitiSplats variant="band" opacity={0.42} />}
+          {featuresAnim.inView && <GraffitiSplats variant="band" opacity={0.8} />}
           <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <div
@@ -937,7 +937,7 @@ export default function LandingPage() {
         </section>
 
         <section ref={pricingAnim.ref} className={`relative overflow-hidden py-20 bg-background transition-all duration-700 ${pricingAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`} id="pricing">
-          {pricingAnim.inView && <GraffitiSplats variant="corner" opacity={0.42} />}
+          {pricingAnim.inView && <GraffitiSplats variant="corner" opacity={0.8} />}
           <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <div

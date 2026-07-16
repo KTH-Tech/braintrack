@@ -71,9 +71,6 @@ export function PublicFooter() {
               style={{ textDecoration: "none" }}
             >
               <BrainTrackLogo className="h-10 w-10" />
-              <span className="font-black text-2xl tracking-tight leading-none rainbow-text">
-                BrainTrack
-              </span>
             </Link>
             <p className="text-white text-sm font-semibold mt-1">{t.tagline}</p>
             <a
