@@ -14,10 +14,23 @@ import "./index.css";
   root.classList.add(theme);
 })();
 
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js").catch(() => {});
-  });
+// Service worker ONLY in production. In dev it aggressively caches and serves
+// stale bundles (edits appear not to land even after hard-refresh), so we skip
+// registration locally and proactively tear down any SW/caches a previous dev
+// session left behind.
+if (import.meta.env.PROD) {
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("/sw.js").catch(() => {});
+    });
+  }
+} else if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.getRegistrations().then((regs) => {
+    regs.forEach((r) => r.unregister());
+  }).catch(() => {});
+  if (window.caches) {
+    caches.keys().then((keys) => keys.forEach((k) => caches.delete(k))).catch(() => {});
+  }
 }
 
 createRoot(document.getElementById("root")!).render(<App />);
