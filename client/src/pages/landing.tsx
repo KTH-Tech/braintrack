@@ -814,20 +814,8 @@ export default function LandingPage() {
                   {language === "af" ? "Die Toolkit" : "The Toolkit"}
                 </span>
               </div>
-              <h2
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] max-w-3xl mx-auto break-words"
-                style={{
-                  backgroundImage: "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)",
-                  color: "#0a0a0a",
-                  WebkitTextFillColor: "#0a0a0a",
-                  padding: "0.05em 0.32em",
-                  borderRadius: "0.14em",
-                  WebkitBoxDecorationBreak: "clone",
-                  boxDecorationBreak: "clone",
-                  filter: "drop-shadow(0 0 22px rgba(127,239,255,0.32))",
-                }}
-              >
-                {language === "en" ? "Everything you need to nail Matric" : "Alles wat jy nodig het om Matriek te klop"}
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] max-w-3xl mx-auto break-words text-center">
+                <span className="callout-hl">{language === "en" ? "Everything you need to nail Matric" : "Alles wat jy nodig het om Matriek te klop"}</span>
               </h2>
               <p className="mt-4 text-white max-w-2xl mx-auto text-sm sm:text-base">
                 {language === "en"
@@ -885,20 +873,8 @@ export default function LandingPage() {
                   {language === "af" ? "Pryse" : "Pricing"}
                 </span>
               </div>
-              <h2
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] max-w-3xl mx-auto break-words"
-                style={{
-                  backgroundImage: "linear-gradient(90deg, #FFF29E, #7FEFFF, #C6A4FF, #FF9FE5)",
-                  color: "#0a0a0a",
-                  WebkitTextFillColor: "#0a0a0a",
-                  padding: "0.05em 0.32em",
-                  borderRadius: "0.14em",
-                  WebkitBoxDecorationBreak: "clone",
-                  boxDecorationBreak: "clone",
-                  filter: "drop-shadow(0 0 22px rgba(255,242,158,0.3))",
-                }}
-              >
-                {language === "en" ? "One plan. Real Matric marks." : "Een plan. Regte Matriekpunte."}
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] max-w-3xl mx-auto break-words text-center">
+                <span className="callout-hl">{language === "en" ? "One plan. Real Matric marks." : "Een plan. Regte Matriekpunte."}</span>
               </h2>
               <p className="mt-4 text-white max-w-xl mx-auto text-sm sm:text-base">{t.products.subtitle}</p>
             </div>
@@ -1177,20 +1153,8 @@ export default function LandingPage() {
                   {language === "af" ? "Vir Ouers" : "For Parents"}
                 </span>
               </div>
-              <h2
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] max-w-3xl mx-auto break-words"
-                style={{
-                  backgroundImage: "linear-gradient(90deg, #C6A4FF, #C6A4FF, #FF9FE5)",
-                  color: "#0a0a0a",
-                  WebkitTextFillColor: "#0a0a0a",
-                  padding: "0.05em 0.32em",
-                  borderRadius: "0.14em",
-                  WebkitBoxDecorationBreak: "clone",
-                  boxDecorationBreak: "clone",
-                  filter: "drop-shadow(0 0 22px rgba(198,164,255,0.32))",
-                }}
-              >
-                {t.parents.title}
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] max-w-3xl mx-auto break-words text-center">
+                <span className="callout-hl">{t.parents.title}</span>
               </h2>
             </div>
             <div className="grid sm:grid-cols-2 gap-4 mb-8">
@@ -1230,20 +1194,8 @@ export default function LandingPage() {
                   {language === "af" ? "Vir Skole" : "For Schools"}
                 </span>
               </div>
-              <h2
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] max-w-3xl mx-auto break-words"
-                style={{
-                  backgroundImage: "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)",
-                  color: "#0a0a0a",
-                  WebkitTextFillColor: "#0a0a0a",
-                  padding: "0.05em 0.32em",
-                  borderRadius: "0.14em",
-                  WebkitBoxDecorationBreak: "clone",
-                  boxDecorationBreak: "clone",
-                  filter: "drop-shadow(0 0 22px rgba(255,196,143,0.3))",
-                }}
-              >
-                {t.schools.title}
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] max-w-3xl mx-auto break-words text-center">
+                <span className="callout-hl">{t.schools.title}</span>
               </h2>
             </div>
             <div className="grid sm:grid-cols-2 gap-4 mb-8">

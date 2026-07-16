@@ -1,5 +1,4 @@
 import { Link } from "wouter";
-import { BrainTrackLogo } from "@/components/braintrack-logo";
 import { useLanguage } from "@/lib/language-context";
 
 const SUPPORT_EMAIL = "learn@kth-tech.com";
@@ -51,18 +50,9 @@ export function PublicFooter() {
       style={{ background: "#000", borderTop: "1px solid rgba(255,255,255,0.10)" }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* One quiet row: logo · links · email */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <Link
-            href="/"
-            data-testid="footer-logo"
-            className="inline-flex items-center gap-2 shrink-0"
-            style={{ textDecoration: "none" }}
-          >
-            <BrainTrackLogo className="h-7 w-7" />
-          </Link>
-
-          <nav className="flex flex-wrap items-center gap-x-5 gap-y-2">
+        {/* One quiet row: links · email (no logo/wordmark) */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-4">
+          <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
             {links.map((l) => (
               <Link
                 key={l.href}

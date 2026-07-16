@@ -113,17 +113,22 @@ app.set("trust proxy", 1);
 // offer the seeded test roles instead. Never active in production.
 if (process.env.NODE_ENV !== "production" && (!process.env.REPL_ID || process.env.REPL_ID === "local-preview")) {
   app.get("/api/login", (_req, res) => {
+    // Only learner + parent are offered here. Admin and DBE portal are NEVER
+    // selectable from a picker — they are reachable only through an
+    // authenticated sign-in whose email is on the ADMIN_EMAILS allowlist
+    // ("sign in by me"). In production this route is disabled entirely and real
+    // OIDC handles it; locally the owner reaches admin via the private
+    // /api/dev/login-as/admin URL directly (not advertised).
     res.status(200).type("html").send(`<!doctype html><html><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><title>BrainTrack — Dev Sign-in</title>
 <style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#000;font-family:system-ui,sans-serif}
-.card{background:#0a0b12;border:2px solid #00E5FF;border-radius:20px;padding:36px;text-align:center;box-shadow:0 0 30px rgba(0,229,255,.35)}
-h1{color:#fff;font-size:22px;margin:0 0 6px}p{color:#00E5FF;font-size:13px;margin:0 0 22px}
-a{display:block;margin:10px 0;padding:13px 40px;border-radius:12px;font-weight:700;text-decoration:none;color:#000}
-.l{background:#00E5FF}.p{background:#22FF66}.a{background:#FF2BD6;color:#fff}</style></head><body>
+.card{background:#0a0b12;border:2px solid #7FEFFF;border-radius:20px;padding:36px;text-align:center;box-shadow:0 0 26px rgba(127,239,255,.22)}
+h1{color:#fff;font-size:22px;margin:0 0 6px}p{color:#7FEFFF;font-size:13px;margin:0 0 22px}
+a{display:block;margin:10px 0;padding:13px 40px;border-radius:12px;font-weight:700;text-decoration:none;color:#0a0a0a}
+.l{background:#7FEFFF}.p{background:#93FFB8}</style></head><body>
 <div class="card"><h1>Dev Sign-in</h1><p>Local preview — pick a role</p>
 <a class="l" href="/api/dev/login-as/learner">Learner</a>
-<a class="p" href="/api/dev/login-as/parent">Parent</a>
-<a class="a" href="/api/dev/login-as/admin">Admin</a></div></body></html>`);
+<a class="p" href="/api/dev/login-as/parent">Parent</a></div></body></html>`);
   });
 }
 
