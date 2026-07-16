@@ -624,7 +624,7 @@ export default function SubjectsPage() {
                   value={browseSearch}
                   onChange={(e) => setBrowseSearch(e.target.value)}
                   data-testid="input-browse-search"
-                  className="pl-11 h-12 bg-background border-white/15 text-white placeholder:text-white/60 rounded-xl focus-visible:border-[#00E5FF] focus-visible:ring-[#00E5FF]/30"
+                  className="pl-11 h-12 bg-background border-white/15 text-white placeholder:text-white rounded-xl focus-visible:border-[#00E5FF] focus-visible:ring-[#00E5FF]/30"
                 />
               </div>
 

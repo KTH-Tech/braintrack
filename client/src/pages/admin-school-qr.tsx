@@ -88,7 +88,7 @@ function PartnerQRCard({ partner, baseUrl }: { partner: Partner; baseUrl: string
       </div>
 
       {/* Referral count */}
-      <p className="text-[11px] text-white/35">
+      <p className="text-[11px] text-white">
         {partner.totalReferrals} learner{partner.totalReferrals !== 1 ? "s" : ""} joined
       </p>
 
@@ -158,7 +158,7 @@ function AddPartnerForm({ onClose }: { onClose: () => void }) {
     >
       <div className="flex items-center justify-between mb-4">
         <p className="text-sm font-semibold text-white">New partner</p>
-        <button onClick={onClose} className="text-white/40 hover:text-white/70">
+        <button onClick={onClose} className="text-white hover:text-white">
           <X className="w-4 h-4" />
         </button>
       </div>
@@ -168,7 +168,7 @@ function AddPartnerForm({ onClose }: { onClose: () => void }) {
           placeholder="Partner name (e.g. D6 Education)"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="flex-1 px-3 py-2.5 rounded-xl bg-white/5 text-sm text-white placeholder:text-white/30 focus:outline-none"
+          className="flex-1 px-3 py-2.5 rounded-xl bg-white/5 text-sm text-white placeholder:text-white focus:outline-none"
           style={{ border: `1px solid ${hexToRgba(NEON, 0.2)}` }}
         />
         <input
@@ -176,7 +176,7 @@ function AddPartnerForm({ onClose }: { onClose: () => void }) {
           placeholder="Code (e.g. D6)"
           value={code}
           onChange={(e) => setCode(e.target.value.replace(/[^a-z0-9]/gi, "").toUpperCase())}
-          className="w-full sm:w-36 px-3 py-2.5 rounded-xl bg-white/5 text-sm text-white font-mono uppercase placeholder:text-white/30 focus:outline-none"
+          className="w-full sm:w-36 px-3 py-2.5 rounded-xl bg-white/5 text-sm text-white font-mono uppercase placeholder:text-white focus:outline-none"
           style={{ border: `1px solid ${hexToRgba(NEON, 0.2)}` }}
           maxLength={20}
         />
@@ -250,7 +250,7 @@ export default function AdminSchoolQRPage() {
                 <h1 className="text-xl font-bold text-white">
                   {isAf ? "Vennoot QR-kodes" : "Partner QR Codes"}
                 </h1>
-                <p className="text-sm text-white/45">
+                <p className="text-sm text-white">
                   {partners.length} {isAf ? "aktiewe vennote" : "active partners"}
                 </p>
               </div>
@@ -289,8 +289,8 @@ export default function AdminSchoolQRPage() {
           {/* Empty */}
           {!isLoading && partners.length === 0 && (
             <div className="text-center py-20">
-              <QrCode className="w-10 h-10 mx-auto mb-3 text-white/20" />
-              <p className="text-white/40 text-sm mb-4">
+              <QrCode className="w-10 h-10 mx-auto mb-3 text-white" />
+              <p className="text-white text-sm mb-4">
                 {isAf ? "Geen vennote gevind nie" : "No partners yet"}
               </p>
               <button
@@ -315,7 +315,7 @@ export default function AdminSchoolQRPage() {
 
           {/* URL note */}
           {!isLoading && partners.length > 0 && (
-            <p className="no-print text-center text-[11px] text-white/25 mt-10">
+            <p className="no-print text-center text-[11px] text-white mt-10">
               {isAf
                 ? `Leerders sluit aan via ${baseUrl}/join/CODE`
                 : `Learners join at ${baseUrl}/join/CODE`}

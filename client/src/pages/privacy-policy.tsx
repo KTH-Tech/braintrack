@@ -94,7 +94,7 @@ export default function PrivacyPolicyPage() {
               ? "BrainTrack is daartoe verbind om jou privaatheid te beskerm in ooreenstemming met die Wet op die Beskerming van Persoonlike Inligting (POPIA) van Suid-Afrika."
               : "BrainTrack is committed to protecting your privacy in accordance with the Protection of Personal Information Act (POPIA) of South Africa."}
           </p>
-          <p className="text-sm text-white">{isAf ? "Laas opgedateer: 29 Junie 2026" : "Last updated: 29 June 2026"}</p>
+          <p className="text-sm text-white">{isAf ? "Laas opgedateer: 16 Julie 2026" : "Last updated: 16 July 2026"}</p>
         </div>
 
         <WallSection icon={FileText} color="#006BFF" title={isAf ? "1. Inleiding" : "1. Introduction"}>

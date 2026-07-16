@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type ReactNode } from "react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { GraffitiSplats } from "@/components/graffiti-splats";
+import { GraffitiSplats, SpraySmear } from "@/components/graffiti-splats";
 import {
   Sparkles,
   ArrowLeft,
@@ -41,6 +41,32 @@ interface SmsResult {
   jti: string | null;
   error: string | null;
   message: string | null;
+}
+
+const MARKER_SHADOW = { textShadow: "0 2px 0 rgba(0,0,0,0.6)" } as const;
+
+// Compact CTA sizing — brand max is px-5 py-2.5 text-sm font-bold rounded-xl.
+const CTA_CLASSES = "px-5 py-2.5 text-sm font-bold rounded-xl h-auto";
+
+/** Dark graffiti wall screen — splats behind, content written on the wall. */
+function WallScreen({ children, testId }: { children: ReactNode; testId?: string }) {
+  return (
+    <div className="relative min-h-screen bg-background text-white overflow-hidden">
+      <GraffitiSplats variant="full" opacity={0.5} />
+      <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-16">
+        <div className="max-w-lg w-full" data-testid={testId}>{children}</div>
+      </div>
+    </div>
+  );
+}
+
+/** Wall callout — 3px pastel left rule + padding, no box. */
+function WallCallout({ color, children, className = "" }: { color: string; children: ReactNode; className?: string }) {
+  return (
+    <div className={`pl-4 py-1 text-left ${className}`} style={{ borderLeft: `3px solid ${color}` }}>
+      {children}
+    </div>
+  );
 }
 
 export default function SubscribePage() {
@@ -253,94 +279,104 @@ export default function SubscribePage() {
 
   if (pageState === "loading" || authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <div className="relative min-h-screen bg-background text-white overflow-hidden flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#7FEFFF" }} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-16">
-      <div className="prismglass-panel max-w-lg w-full px-6 py-10 sm:px-10 sm:py-12" data-testid="subscribe-plan-panel">
+    <WallScreen testId="subscribe-plan-panel">
+      <div className="text-center mb-10">
+        <Sparkles
+          className="w-9 h-9 mx-auto mb-5"
+          style={{ color: "#FFF29E", filter: "drop-shadow(0 0 8px #FFF29E)" }}
+        />
+        {/* Plan name — marker heading over a spray smear */}
+        <h1
+          className="spray-title graffiti-hand text-3xl text-white mb-5 -rotate-1"
+          style={MARKER_SHADOW}
+          data-testid="subscribe-heading"
+        >
+          <SpraySmear color="#FF9FE5" />
+          {isAf ? "Brain Boost: 14-dae Gratis Proef" : "Brain Boost: 14-day Free Trial"}
+        </h1>
+        <p className="text-white text-lg">
+          {isAf
+            ? "Kry volle toegang tot alle kenmerke. R169/maand daarna. Kanselleer enige tyd."
+            : "Get full access to all features. R169/month thereafter. Cancel anytime."}
+        </p>
+      </div>
 
-        <div className="text-center mb-8">
-          <div className="w-14 h-14 mx-auto rounded-2xl flex items-center justify-center bg-primary/10 border border-primary/30 mb-5">
-            <Sparkles className="w-7 h-7 text-primary" />
-          </div>
-          <h1 className="text-3xl font-black text-foreground mb-3" data-testid="subscribe-heading">
-            {isAf ? "Brain Boost: 14-dae Gratis Proef" : "Brain Boost: 14-day Free Trial"}
-          </h1>
-          <p className="text-white text-lg">
-            {isAf
-              ? "Kry volle toegang tot alle kenmerke. R169/maand daarna. Kanselleer enige tyd."
-              : "Get full access to all features. R169/month thereafter. Cancel anytime."}
-          </p>
-        </div>
+      {errorMsg && (
+        <WallCallout color="#FFC48F" className="mb-8 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#FFC48F" }} />
+          <p className="text-sm text-white">{errorMsg}</p>
+        </WallCallout>
+      )}
 
-        {errorMsg && (
-          <div className="bg-destructive/10 border border-destructive/30 rounded-xl p-4 mb-8 flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
-            <p className="text-sm text-destructive-foreground">{errorMsg}</p>
-          </div>
-        )}
-
-        <div className="space-y-6 mb-10">
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-white ml-1">
-              {isAf ? "Ouer se selfoonnommer" : "Parent's cell phone number"}
-            </label>
-            <div className="relative">
-              <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white" />
-              <Input
-                type="tel"
-                placeholder="082 123 4567"
-                className="pl-12 bg-white/5 border-white/10 h-12 text-lg"
-                value={parentCell}
-                onChange={(e) => setParentCell(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-white ml-1">
-              {isAf ? "Leerder se selfoonnommer" : "Learner's cell phone number"}
-            </label>
-            <div className="relative">
-              <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white" />
-              <Input
-                type="tel"
-                placeholder="071 234 5678"
-                className="pl-12 bg-white/5 border-white/10 h-12 text-lg"
-                value={learnerCell}
-                onChange={(e) => setLearnerCell(e.target.value)}
-              />
-            </div>
+      <div className="space-y-6 mb-10">
+        <div className="space-y-2">
+          <label className="text-sm font-bold text-white ml-1">
+            {isAf ? "Ouer se selfoonnommer" : "Parent's cell phone number"}
+          </label>
+          <div className="relative">
+            <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: "#6FA8FF" }} />
+            <Input
+              type="tel"
+              placeholder="082 123 4567"
+              className="pl-12 h-12 text-lg bg-transparent text-white"
+              style={{ borderColor: "#6FA8FF" }}
+              value={parentCell}
+              onChange={(e) => setParentCell(e.target.value)}
+            />
           </div>
         </div>
 
+        <div className="space-y-2">
+          <label className="text-sm font-bold text-white ml-1">
+            {isAf ? "Leerder se selfoonnommer" : "Learner's cell phone number"}
+          </label>
+          <div className="relative">
+            <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: "#6FA8FF" }} />
+            <Input
+              type="tel"
+              placeholder="071 234 5678"
+              className="pl-12 h-12 text-lg bg-transparent text-white"
+              style={{ borderColor: "#6FA8FF" }}
+              value={learnerCell}
+              onChange={(e) => setLearnerCell(e.target.value)}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* ONE compact CTA — full-strength neon allowed on small CTAs */}
+      <div className="flex justify-center">
         <Button
           onClick={handleStartTrial}
-          className="w-full h-14 text-lg font-bold rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20"
+          className={CTA_CLASSES}
+          style={{ background: "#FF2BD6", color: "#000" }}
           data-testid="button-subscribe-cta"
         >
           {isAf ? "Begin Gratis Proef" : "Start Free Trial"}
         </Button>
-
-        <p className="text-center text-white text-xs mt-6 px-4 leading-relaxed">
-          {isAf
-            ? "Deur voort te gaan, stem jy in tot ons Diensvoorwaardes en Privaatheidsbeleid. Ons sal vir jou 'n herinnering stuur voor jou proeftydperk verval."
-            : "By continuing, you agree to our Terms of Service and Privacy Policy. We'll send you a reminder before your trial expires."}
-        </p>
-
-        <button
-          onClick={() => navigate(homeHref)}
-          className="w-full mt-8 flex items-center justify-center gap-2 text-white hover:text-foreground transition-colors text-sm font-medium"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          {isAf ? "Terug na tuisblad" : "Back to home"}
-        </button>
       </div>
-    </div>
+
+      <p className="text-center text-white text-xs mt-6 px-4 leading-relaxed">
+        {isAf
+          ? "Deur voort te gaan, stem jy in tot ons Diensvoorwaardes en Privaatheidsbeleid. Ons sal vir jou 'n herinnering stuur voor jou proeftydperk verval."
+          : "By continuing, you agree to our Terms of Service and Privacy Policy. We'll send you a reminder before your trial expires."}
+      </p>
+
+      <button
+        onClick={() => navigate(homeHref)}
+        className="w-full mt-8 flex items-center justify-center gap-2 text-white text-sm font-medium"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        {isAf ? "Terug na tuisblad" : "Back to home"}
+      </button>
+    </WallScreen>
   );
 }
 
@@ -438,112 +474,121 @@ function PaymentPickerScreen({
   const anyLoading = loadingMethod !== null;
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-16 relative overflow-hidden">
-      <GraffitiSplats variant="hero" opacity={0.45} />
-      <div className="prismglass-panel max-w-lg w-full px-6 py-10 sm:px-10 sm:py-12 relative z-10">
-
-        <div className="text-center mb-8">
-          <div className="w-14 h-14 mx-auto rounded-2xl flex items-center justify-center bg-primary/10 border border-primary/30 mb-5">
-            <CreditCard className="w-7 h-7 text-primary" />
-          </div>
-          <h1 className="text-2xl font-black text-foreground mb-3">{t.headline}</h1>
-          <p className="text-white">{t.subheadline}</p>
-        </div>
-
-        {/* Cancelled banner */}
-        {showCancelledBanner && (
-          <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 mb-6 flex items-start gap-3">
-            <XCircle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-semibold text-amber-300 mb-0.5">{t.cancelledTitle}</p>
-              <p className="text-xs text-amber-200/70">{t.cancelledDesc}</p>
-            </div>
-          </div>
-        )}
-
-        {/* Error banner */}
-        {errorMsg && (
-          <div className="bg-destructive/10 border border-destructive/30 rounded-xl p-4 mb-6 flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
-            <p className="text-sm text-destructive-foreground">{errorMsg}</p>
-          </div>
-        )}
-
-        {/* Charge summary */}
-        <div className="bg-primary/5 border border-primary/20 rounded-xl px-5 py-3 mb-6 flex items-center gap-3">
-          <Sparkles className="w-4 h-4 text-primary shrink-0" />
-          <div>
-            <p className="text-xs font-bold text-primary uppercase tracking-wide">{t.charge}</p>
-            <p className="text-sm text-foreground">{t.chargeDetail}</p>
-          </div>
-        </div>
-
-        {/* Method cards */}
-        <div className="space-y-4 mb-8">
-
-          {/* DebiCheck */}
-          <button
-            onClick={() => handleMethodSelect("debicheck")}
-            disabled={anyLoading}
-            className="w-full text-left rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-primary/40 transition-all p-5 group disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            <div className="flex items-start gap-4">
-              <div className="w-11 h-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
-                {loadingMethod === "debicheck" ? (
-                  <Loader2 className="w-5 h-5 text-primary animate-spin" />
-                ) : (
-                  <Landmark className="w-5 h-5 text-primary" />
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="font-bold text-foreground">{t.debicheck}</span>
-                  <span className="text-[10px] font-bold uppercase tracking-wide bg-primary/20 text-primary px-2 py-0.5 rounded-full">
-                    {t.debicheckBadge}
-                  </span>
-                </div>
-                <p className="text-sm text-white leading-relaxed">{t.debicheckDesc}</p>
-              </div>
-              <ChevronRight className="w-5 h-5 text-white group-hover:text-primary transition-colors shrink-0 mt-0.5" />
-            </div>
-          </button>
-
-          {/* Card */}
-          <button
-            onClick={() => handleMethodSelect("card")}
-            disabled={anyLoading}
-            className="w-full text-left rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-primary/40 transition-all p-5 group disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            <div className="flex items-start gap-4">
-              <div className="w-11 h-11 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center shrink-0">
-                {loadingMethod === "card" ? (
-                  <Loader2 className="w-5 h-5 text-foreground animate-spin" />
-                ) : (
-                  <CreditCard className="w-5 h-5 text-foreground" />
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <span className="font-bold text-foreground block mb-1">{t.card}</span>
-                <p className="text-sm text-white leading-relaxed">{t.cardDesc}</p>
-              </div>
-              <ChevronRight className="w-5 h-5 text-white group-hover:text-primary transition-colors shrink-0 mt-0.5" />
-            </div>
-          </button>
-        </div>
-
-        <p className="text-center text-white text-xs px-4 leading-relaxed mb-8">
-          {t.secure}
-        </p>
-
-        <button
-          onClick={() => (window.location.href = homeHref)} // nosemgrep: no-raw-window-location-href-variable
-          className="w-full flex items-center justify-center gap-2 text-white hover:text-foreground transition-colors text-sm font-medium"
+    <WallScreen>
+      <div className="text-center mb-8">
+        <CreditCard
+          className="w-9 h-9 mx-auto mb-5"
+          style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 8px #7FEFFF)" }}
+        />
+        <h1
+          className="spray-title graffiti-hand text-2xl sm:text-3xl text-white mb-4 -rotate-1"
+          style={MARKER_SHADOW}
         >
-          <ArrowLeft className="w-4 h-4" />
-          {t.back}
+          <SpraySmear color="#7FEFFF" />
+          {t.headline}
+        </h1>
+        <p className="text-white">{t.subheadline}</p>
+      </div>
+
+      {/* Cancelled banner */}
+      {showCancelledBanner && (
+        <WallCallout color="#FFC48F" className="mb-6 flex items-start gap-3">
+          <XCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#FFC48F" }} />
+          <div>
+            <p className="text-sm font-bold text-white mb-0.5">{t.cancelledTitle}</p>
+            <p className="text-xs text-white">{t.cancelledDesc}</p>
+          </div>
+        </WallCallout>
+      )}
+
+      {/* Error banner */}
+      {errorMsg && (
+        <WallCallout color="#FFC48F" className="mb-6 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#FFC48F" }} />
+          <p className="text-sm text-white">{errorMsg}</p>
+        </WallCallout>
+      )}
+
+      {/* Charge summary — price in big pastel marker */}
+      <WallCallout color="#FFF29E" className="mb-8">
+        <p className="graffiti-hand text-xs uppercase tracking-[0.22em] mb-1" style={{ color: "#FFF29E", ...MARKER_SHADOW }}>
+          {t.charge}
+        </p>
+        <p className="graffiti-hand text-xl leading-snug" style={{ color: "#FFF29E", ...MARKER_SHADOW }}>
+          {t.chargeDetail}
+        </p>
+      </WallCallout>
+
+      {/* Method options — pastel left rules, recommended tagged in marker */}
+      <div className="space-y-6 mb-8">
+
+        {/* DebiCheck — recommended */}
+        <button
+          onClick={() => handleMethodSelect("debicheck")}
+          disabled={anyLoading}
+          className="w-full text-left pl-4 py-2 group transition-opacity disabled:opacity-60 disabled:cursor-not-allowed"
+          style={{ borderLeft: "3px solid #93FFB8" }}
+        >
+          <div className="flex items-start gap-4">
+            <div className="w-9 h-9 flex items-center justify-center shrink-0">
+              {loadingMethod === "debicheck" ? (
+                <Loader2 className="w-5 h-5 animate-spin" style={{ color: "#93FFB8" }} />
+              ) : (
+                <Landmark className="w-5 h-5" style={{ color: "#93FFB8", filter: "drop-shadow(0 0 6px #93FFB8)" }} />
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2 mb-1">
+                <span className="font-bold text-white">{t.debicheck}</span>
+                <span
+                  className="graffiti-hand text-xs uppercase tracking-[0.15em]"
+                  style={{ color: "#93FFB8", ...MARKER_SHADOW }}
+                >
+                  {t.debicheckBadge}
+                </span>
+              </div>
+              <p className="text-sm text-white leading-relaxed">{t.debicheckDesc}</p>
+            </div>
+            <ChevronRight className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#93FFB8" }} />
+          </div>
+        </button>
+
+        {/* Card */}
+        <button
+          onClick={() => handleMethodSelect("card")}
+          disabled={anyLoading}
+          className="w-full text-left pl-4 py-2 group transition-opacity disabled:opacity-60 disabled:cursor-not-allowed"
+          style={{ borderLeft: "3px solid #6FA8FF" }}
+        >
+          <div className="flex items-start gap-4">
+            <div className="w-9 h-9 flex items-center justify-center shrink-0">
+              {loadingMethod === "card" ? (
+                <Loader2 className="w-5 h-5 animate-spin" style={{ color: "#6FA8FF" }} />
+              ) : (
+                <CreditCard className="w-5 h-5" style={{ color: "#6FA8FF", filter: "drop-shadow(0 0 6px #6FA8FF)" }} />
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <span className="font-bold text-white block mb-1">{t.card}</span>
+              <p className="text-sm text-white leading-relaxed">{t.cardDesc}</p>
+            </div>
+            <ChevronRight className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#6FA8FF" }} />
+          </div>
         </button>
       </div>
-    </div>
+
+      <p className="text-center text-white text-xs px-4 leading-relaxed mb-8">
+        {t.secure}
+      </p>
+
+      <button
+        onClick={() => (window.location.href = homeHref)} // nosemgrep: no-raw-window-location-href-variable
+        className="w-full flex items-center justify-center gap-2 text-white text-sm font-medium"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        {t.back}
+      </button>
+    </WallScreen>
   );
 }
 
@@ -701,12 +746,17 @@ function SuccessScreen({
   const smsSent = smsResult !== null && smsResult.sent;
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-16 text-center">
-      <div className="prismglass-panel max-w-lg w-full px-8 py-12">
-        <div className="w-20 h-20 mx-auto rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center mb-6">
-          <CheckCircle2 className="w-10 h-10 text-green-500" />
-        </div>
-        <h1 className="text-3xl font-black text-foreground mb-4">
+    <WallScreen>
+      <div className="text-center">
+        <CheckCircle2
+          className="w-14 h-14 mx-auto mb-6"
+          style={{ color: "#93FFB8", filter: "drop-shadow(0 0 10px #93FFB8)" }}
+        />
+        <h1
+          className="spray-title graffiti-hand text-3xl text-white mb-6 -rotate-1"
+          style={MARKER_SHADOW}
+        >
+          <SpraySmear color="#93FFB8" />
           {isAf ? "Welkom by Brain Boost!" : "Welcome to Brain Boost!"}
         </h1>
         <p className="text-white text-lg mb-6">
@@ -715,35 +765,34 @@ function SuccessScreen({
             : "Your 14-day free trial is now active."}
         </p>
 
-        {/* SMS delivery status banner */}
+        {/* SMS delivery status */}
         {smsFailed && (
-          <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 mb-6 flex items-start gap-3 text-left">
-            <AlertCircle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+          <WallCallout color="#FFC48F" className="mb-6 flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#FFC48F" }} />
             <div>
-              <p className="text-sm font-semibold text-amber-300 mb-0.5">
+              <p className="text-sm font-bold text-white mb-0.5">
                 {isAf ? "WhatsApp-skakel nie gestuur nie" : "WhatsApp link not sent"}
               </p>
-              <p className="text-xs text-amber-200/70">
+              <p className="text-xs text-white">
                 {isAf
                   ? "Die aanmeldingskakels kon nie afgelewer word nie. Gebruik die knoppie hieronder om dit weer te probeer of die nommer reg te stel."
                   : "The sign-in link could not be delivered. Use the button below to retry or correct the number."}
               </p>
             </div>
-          </div>
+          </WallCallout>
         )}
 
         {smsSent && !smsFailed && (
-          <div className={`rounded-xl p-3 mb-6 flex items-center gap-2 text-left transition-colors ${
-            deliveryStatus === "delivered" || deliveryStatus === "opened"
-              ? "bg-green-500/10 border border-green-500/20"
-              : "bg-white/5 border border-white/10"
-          }`}>
+          <WallCallout
+            color={deliveryStatus === "delivered" || deliveryStatus === "opened" ? "#93FFB8" : "#7FEFFF"}
+            className="mb-6 flex items-center gap-2 transition-colors"
+          >
             {deliveryStatus === "delivered" || deliveryStatus === "opened" ? (
-              <CheckCircle2 className="w-4 h-4 text-green-400 shrink-0" />
+              <CheckCircle2 className="w-4 h-4 shrink-0" style={{ color: "#93FFB8" }} />
             ) : (
-              <Loader2 className="w-4 h-4 text-white shrink-0 animate-spin" />
+              <Loader2 className="w-4 h-4 shrink-0 animate-spin" style={{ color: "#7FEFFF" }} />
             )}
-            <p className={`text-xs ${deliveryStatus === "delivered" || deliveryStatus === "opened" ? "text-green-300" : "text-white"}`}>
+            <p className="text-xs text-white">
               {deliveryStatus === "delivered"
                 ? (isAf ? `Skakel afgelewer aan ${smsResult.to}` : `Link delivered to ${smsResult.to}`)
                 : deliveryStatus === "opened"
@@ -752,21 +801,21 @@ function SuccessScreen({
                   ? `Aanmeldingskakel gestuur na ${smsResult.to} — kontroleer aflewering…`
                   : `Sign-in link sent to ${smsResult.to} — checking delivery…`)}
             </p>
-          </div>
+          </WallCallout>
         )}
 
         {/* Inline resend feedback */}
         {resendStatus === "success" && resendMsg && (
-          <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-3 mb-4 flex items-center gap-2 text-left">
-            <CheckCircle2 className="w-4 h-4 text-green-400 shrink-0" />
-            <p className="text-xs text-green-300">{resendMsg}</p>
-          </div>
+          <WallCallout color="#93FFB8" className="mb-4 flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 shrink-0" style={{ color: "#93FFB8" }} />
+            <p className="text-xs text-white">{resendMsg}</p>
+          </WallCallout>
         )}
         {resendStatus === "error" && resendMsg && (
-          <div className="bg-destructive/10 border border-destructive/30 rounded-xl p-3 mb-4 flex items-start gap-2 text-left">
-            <AlertCircle className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
-            <p className="text-xs text-destructive-foreground">{resendMsg}</p>
-          </div>
+          <WallCallout color="#FFC48F" className="mb-4 flex items-start gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "#FFC48F" }} />
+            <p className="text-xs text-white">{resendMsg}</p>
+          </WallCallout>
         )}
 
         {/* Corrected cell input (shown on demand) */}
@@ -776,11 +825,12 @@ function SuccessScreen({
               {isAf ? "Leerder se selfoonnommer" : "Learner's cell number"}
             </label>
             <div className="relative">
-              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white" />
+              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#6FA8FF" }} />
               <Input
                 type="tel"
                 placeholder="071 234 5678"
-                className="pl-10 bg-white/5 border-white/10 h-10 text-sm"
+                className="pl-10 h-10 text-sm bg-transparent text-white"
+                style={{ borderColor: "#6FA8FF" }}
                 value={editCell}
                 onChange={(e) => setEditCell(e.target.value)}
               />
@@ -789,13 +839,14 @@ function SuccessScreen({
         )}
 
         {/* Resend / correct number actions */}
-        <div className={`flex gap-3 mb-8 ${smsFailed ? "flex-col" : "flex-row justify-center"}`}>
+        <div className={`flex gap-3 mb-8 ${smsFailed ? "flex-col items-center" : "flex-row justify-center"}`}>
           {smsFailed ? (
             <>
               <Button
                 onClick={handleResend}
                 disabled={resendLoading || cooldownSecs > 0}
-                className="w-full h-11 font-semibold bg-amber-500 hover:bg-amber-400 text-black"
+                className={CTA_CLASSES}
+                style={{ background: "#FFE600", color: "#000" }}
               >
                 {resendLoading ? (
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
@@ -808,7 +859,7 @@ function SuccessScreen({
               </Button>
               <button
                 onClick={() => setShowCellInput((v) => !v)}
-                className="text-sm text-white hover:text-foreground transition-colors underline underline-offset-2"
+                className="text-sm text-white underline underline-offset-2"
               >
                 {isAf ? "Nommer reg te stel" : "Correct the number"}
               </button>
@@ -821,9 +872,9 @@ function SuccessScreen({
                 setResendMsg(null);
               }}
               disabled={resendLoading || cooldownSecs > 0}
-              className="flex items-center gap-1.5 text-sm text-white hover:text-foreground transition-colors"
+              className="flex items-center gap-1.5 text-sm text-white"
             >
-              <RefreshCw className="w-3.5 h-3.5" />
+              <RefreshCw className="w-3.5 h-3.5" style={{ color: "#7FEFFF" }} />
               {cooldownSecs > 0
                 ? (isAf ? `Wag ${cooldownSecs}s...` : `Wait ${cooldownSecs}s...`)
                 : (isAf ? "Stuur skakel weer" : "Resend link")}
@@ -836,8 +887,8 @@ function SuccessScreen({
           <Button
             onClick={handleResend}
             disabled={resendLoading || cooldownSecs > 0}
-            variant="outline"
-            className="w-full h-10 text-sm mb-6"
+            className={`${CTA_CLASSES} mb-6 bg-transparent text-white`}
+            style={{ border: "2px solid #7FEFFF", background: "transparent", color: "#fff" }}
           >
             {resendLoading ? (
               <Loader2 className="w-4 h-4 animate-spin mr-2" />
@@ -850,14 +901,17 @@ function SuccessScreen({
           </Button>
         )}
 
-        <Button
-          onClick={() => navigate("/dashboard")}
-          className="w-full h-14 text-lg font-bold"
-        >
-          {isAf ? "Gaan na Dashboard" : "Go to Dashboard"}
-        </Button>
+        <div className="flex justify-center">
+          <Button
+            onClick={() => navigate("/dashboard")}
+            className={CTA_CLASSES}
+            style={{ background: "#FF2BD6", color: "#000" }}
+          >
+            {isAf ? "Gaan na Dashboard" : "Go to Dashboard"}
+          </Button>
+        </div>
       </div>
-    </div>
+    </WallScreen>
   );
 }
 
@@ -883,13 +937,19 @@ function PaymentSuccessScreen({
         : "Your card will be charged R169 each month. Netcash securely stores the card for you.");
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-16 text-center">
-      <div className="prismglass-panel max-w-lg w-full px-8 py-12" data-testid="payment-success-panel">
-        <div className="w-20 h-20 mx-auto rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center mb-6">
-          <CheckCircle2 className="w-10 h-10 text-green-500" />
-        </div>
+    <WallScreen testId="payment-success-panel">
+      <div className="text-center">
+        <CheckCircle2
+          className="w-14 h-14 mx-auto mb-6"
+          style={{ color: "#93FFB8", filter: "drop-shadow(0 0 10px #93FFB8)" }}
+        />
 
-        <h1 className="text-3xl font-black text-foreground mb-3" data-testid="payment-success-heading">
+        <h1
+          className="spray-title graffiti-hand text-3xl text-white mb-5 -rotate-1"
+          style={MARKER_SHADOW}
+          data-testid="payment-success-heading"
+        >
+          <SpraySmear color="#93FFB8" />
           {isAf ? "Betaling suksesvol" : "Payment successful"}
         </h1>
         <p className="text-white text-lg mb-8">
@@ -898,20 +958,19 @@ function PaymentSuccessScreen({
             : "Brain Boost is now active on your account."}
         </p>
 
-        <div className="bg-primary/5 border border-primary/20 rounded-xl p-5 mb-6 text-left">
-          <div className="flex items-start gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
-              {isDebicheck ? (
-                <Landmark className="w-5 h-5 text-primary" />
-              ) : (
-                <CreditCard className="w-5 h-5 text-primary" />
-              )}
-            </div>
+        {/* Payment method — pastel left rule, no box */}
+        <WallCallout color="#6FA8FF" className="mb-6">
+          <div className="flex items-start gap-3 mb-2">
+            {isDebicheck ? (
+              <Landmark className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#6FA8FF", filter: "drop-shadow(0 0 6px #6FA8FF)" }} />
+            ) : (
+              <CreditCard className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#6FA8FF", filter: "drop-shadow(0 0 6px #6FA8FF)" }} />
+            )}
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-primary uppercase tracking-wide mb-0.5">
+              <p className="graffiti-hand text-xs uppercase tracking-[0.22em] mb-0.5" style={{ color: "#6FA8FF", ...MARKER_SHADOW }}>
                 {isAf ? "Betaalmetode" : "Payment method"}
               </p>
-              <p className="font-bold text-foreground" data-testid="payment-success-method">
+              <p className="font-bold text-white" data-testid="payment-success-method">
                 {methodLabel}
               </p>
             </div>
@@ -919,42 +978,48 @@ function PaymentSuccessScreen({
           <p className="text-sm text-white leading-relaxed">
             {methodDesc}
           </p>
-        </div>
+        </WallCallout>
 
-        <div className="bg-white/5 border border-white/10 rounded-xl px-5 py-3 mb-8 flex items-center gap-3 text-left">
-          <Sparkles className="w-4 h-4 text-primary shrink-0" />
-          <div>
-            <p className="text-xs font-bold text-white uppercase tracking-wide">
-              {isAf ? "Maandeliks gehef" : "Billed monthly"}
-            </p>
-            <p className="text-sm text-foreground font-semibold">
-              {isAf
-                ? "R169/maand · Kanselleer enige tyd"
-                : "R169/month · Cancel anytime"}
-            </p>
-          </div>
-        </div>
+        {/* Billing — price in big pastel marker */}
+        <WallCallout color="#FFF29E" className="mb-8">
+          <p className="graffiti-hand text-xs uppercase tracking-[0.22em] mb-1" style={{ color: "#FFF29E", ...MARKER_SHADOW }}>
+            {isAf ? "Maandeliks gehef" : "Billed monthly"}
+          </p>
+          <p className="graffiti-hand text-xl" style={{ color: "#FFF29E", ...MARKER_SHADOW }}>
+            {isAf
+              ? "R169/maand · Kanselleer enige tyd"
+              : "R169/month · Cancel anytime"}
+          </p>
+        </WallCallout>
 
-        <Button
-          onClick={() => navigate("/dashboard")}
-          className="w-full h-14 text-lg font-bold"
-          data-testid="button-payment-success-dashboard"
-        >
-          {isAf ? "Gaan na Dashboard" : "Go to Dashboard"}
-        </Button>
+        <div className="flex justify-center">
+          <Button
+            onClick={() => navigate("/dashboard")}
+            className={CTA_CLASSES}
+            style={{ background: "#FF2BD6", color: "#000" }}
+            data-testid="button-payment-success-dashboard"
+          >
+            {isAf ? "Gaan na Dashboard" : "Go to Dashboard"}
+          </Button>
+        </div>
       </div>
-    </div>
+    </WallScreen>
   );
 }
 
 function NotConfiguredScreen({ isAf, homeHref }: { isAf: boolean, homeHref: string }) {
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-16 text-center">
-      <div className="prismglass-panel max-w-lg w-full px-8 py-12">
-        <div className="w-20 h-20 mx-auto rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-6">
-          <AlertCircle className="w-10 h-10 text-amber-500" />
-        </div>
-        <h1 className="text-2xl font-black text-foreground mb-4">
+    <WallScreen>
+      <div className="text-center">
+        <AlertCircle
+          className="w-14 h-14 mx-auto mb-6"
+          style={{ color: "#FFC48F", filter: "drop-shadow(0 0 10px #FFC48F)" }}
+        />
+        <h1
+          className="spray-title graffiti-hand text-2xl sm:text-3xl text-white mb-5 -rotate-1"
+          style={MARKER_SHADOW}
+        >
+          <SpraySmear color="#FFC48F" />
           {isAf ? "Betalings nie opgestel nie" : "Payments not configured"}
         </h1>
         <p className="text-white mb-10">
@@ -962,10 +1027,14 @@ function NotConfiguredScreen({ isAf, homeHref }: { isAf: boolean, homeHref: stri
             ? "Ons kan nie tans nuwe proeftydperke verwerk nie. Probeer asseblief later weer."
             : "We cannot process new trials at this time. Please try again later."}
         </p>
-        <Button variant="outline" asChild className="w-full h-12">
-          <a href={homeHref}>{isAf ? "Terug" : "Back"}</a>
-        </Button>
+        <a
+          href={homeHref}
+          className="inline-flex items-center justify-center px-5 py-2.5 text-sm font-bold rounded-xl text-white"
+          style={{ border: "2px solid #7FEFFF" }}
+        >
+          {isAf ? "Terug" : "Back"}
+        </a>
       </div>
-    </div>
+    </WallScreen>
   );
 }

@@ -4,6 +4,7 @@ import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/language-context";
 import { AdminTopNav } from "@/components/admin-top-nav";
+import { GraffitiSplats, SpraySmear } from "@/components/graffiti-splats";
 import { formatNumber } from "@/lib/formatters";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -194,7 +195,7 @@ function FraudFlagsPanel({ isAf }: { isAf: boolean }) {
             className="shrink-0 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider transition-colors"
             style={{
               border: `1px solid ${showReviewed ? "#FF8A00" : "rgba(255,255,255,0.18)"}`,
-              color: showReviewed ? "#FF8A00" : "rgba(255,255,255,0.7)",
+              color: showReviewed ? "#FF8A00" : "#fff",
               background: showReviewed ? "rgba(255,138,0,0.12)" : "transparent",
             }}
           >
@@ -246,7 +247,6 @@ function FraudFlagsPanel({ isAf }: { isAf: boolean }) {
                       key={flag.id}
                       className="border-t border-white/5"
                       data-testid={`fraud-flag-row-${flag.id}`}
-                      style={flag.reviewed ? { opacity: 0.5 } : undefined}
                     >
                       <td className="px-3 py-2 text-white tabular-nums font-mono">{flag.id}</td>
                       <td className="px-3 py-2 text-white font-mono truncate max-w-[120px]" title={flag.referrerId}>
@@ -273,7 +273,7 @@ function FraudFlagsPanel({ isAf }: { isAf: boolean }) {
                             {isAf ? "Ja" : "Yes"}
                           </span>
                         ) : (
-                          <span className="text-white/40">—</span>
+                          <span className="text-white">—</span>
                         )}
                       </td>
                       <td className="px-3 py-2 text-white tabular-nums">{flagDate}</td>
@@ -437,9 +437,9 @@ function DbHealthPanel({ isAf }: { isAf: boolean }) {
                 </p>
                 <p className="text-2xl font-black text-white tabular-nums">
                   {data!.poolStats.total}
-                  <span className="text-base font-bold" style={{ color: "rgba(255,255,255,0.4)" }}>/{data!.poolStats.max}</span>
+                  <span className="text-base font-bold" style={{ color: "#fff" }}>/{data!.poolStats.max}</span>
                 </p>
-                <p className="text-[10px] mt-1" style={{ color: "rgba(255,255,255,0.55)" }}>
+                <p className="text-[10px] mt-1" style={{ color: "#fff" }}>
                   {isAf ? `${data!.poolStats.idle} ledig · ${data!.poolStats.waiting} wag` : `${data!.poolStats.idle} idle · ${data!.poolStats.waiting} waiting`}
                 </p>
                 <div className="mt-2 h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.1)" }}>
@@ -460,9 +460,9 @@ function DbHealthPanel({ isAf }: { isAf: boolean }) {
                 </p>
                 <p className="text-2xl font-black text-white tabular-nums">
                   {data!.activity.active}
-                  <span className="text-base font-bold" style={{ color: "rgba(255,255,255,0.4)" }}>/{data!.activity.total}</span>
+                  <span className="text-base font-bold" style={{ color: "#fff" }}>/{data!.activity.total}</span>
                 </p>
-                <p className="text-[10px] mt-1" style={{ color: "rgba(255,255,255,0.55)" }}>
+                <p className="text-[10px] mt-1" style={{ color: "#fff" }}>
                   {isAf ? `${data!.activity.idle} ledig in DB` : `${data!.activity.idle} idle in DB`}
                 </p>
               </div>
@@ -475,7 +475,7 @@ function DbHealthPanel({ isAf }: { isAf: boolean }) {
                 <p className="text-2xl font-black tabular-nums" style={{ color: data!.slowQueryCount > 0 ? "#FFE600" : "white" }}>
                   {data!.slowQueryCount}
                 </p>
-                <p className="text-[10px] mt-1" style={{ color: "rgba(255,255,255,0.55)" }}>
+                <p className="text-[10px] mt-1" style={{ color: "#fff" }}>
                   {data!.slowQuerySource === "pg_stat_statements_delta"
                     ? (isAf
                         ? `>500ms gem — laaste ${data!.slowWindowMinutes ?? "?"}min`
@@ -494,7 +494,7 @@ function DbHealthPanel({ isAf }: { isAf: boolean }) {
                 <p className="text-2xl font-black text-white">
                   {formatUptime(data!.dbStarted)}
                 </p>
-                <p className="text-[10px] mt-1" style={{ color: "rgba(255,255,255,0.55)" }}>
+                <p className="text-[10px] mt-1" style={{ color: "#fff" }}>
                   {isAf ? "sedert herbegin" : "since last restart"}
                 </p>
               </div>
@@ -502,19 +502,19 @@ function DbHealthPanel({ isAf }: { isAf: boolean }) {
 
             {/* Last migration + refresh */}
             <div className="flex items-center justify-between gap-3 flex-wrap">
-              <div className="flex items-center gap-2 text-xs" style={{ color: "rgba(255,255,255,0.6)" }}>
+              <div className="flex items-center gap-2 text-xs" style={{ color: "#fff" }}>
                 <Activity className="w-3 h-3" style={{ color }} />
                 <span>
                   {isAf ? "Laaste migrasie:" : "Last migration:"}&nbsp;
                   <span className="font-bold text-white">{lastMig}</span>
                   {lastMigTag && (
-                    <span className="ml-1 font-mono text-[10px]" style={{ color: "rgba(255,255,255,0.4)" }}>
+                    <span className="ml-1 font-mono text-[10px]" style={{ color: "#fff" }}>
                       ({lastMigTag})
                     </span>
                   )}
                 </span>
                 {fetchedAt && (
-                  <span className="ml-2 opacity-60">
+                  <span className="ml-2">
                     {isAf ? `Opgedateer ${fetchedAt}` : `Updated ${fetchedAt}`}
                   </span>
                 )}
@@ -590,7 +590,7 @@ function PartnerSchoolInquiriesPanel({ isAf }: { isAf: boolean }) {
             {isAf ? "Laai aansoeke…" : "Loading inquiries…"}
           </div>
         ) : inquiries.length === 0 ? (
-          <p className="text-white/60 text-xs py-4">{isAf ? "Geen uitstaande aansoeke nie." : "No pending school inquiries."}</p>
+          <p className="text-white text-xs py-4">{isAf ? "Geen uitstaande aansoeke nie." : "No pending school inquiries."}</p>
         ) : (
           <div className="space-y-2">
             {inquiries.map((inq) => {
@@ -614,14 +614,14 @@ function PartnerSchoolInquiriesPanel({ isAf }: { isAf: boolean }) {
                           {inq.schoolType}
                         </span>
                       </div>
-                      <div className="text-[11px] text-white/70 mt-0.5 truncate">
+                      <div className="text-[11px] text-white mt-0.5 truncate">
                         {inq.contactName ?? "—"} · {inq.contactEmail ?? "—"}
                         {inq.expectedLearnerCount ? ` · ${inq.expectedLearnerCount} ${isAf ? "leerders" : "learners"}` : ""}
                       </div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-[10px] text-white/50">{fmt(inq.createdAt)}</span>
-                      {isOpen ? <ChevronUp className="w-4 h-4 text-white/50" /> : <ChevronDown className="w-4 h-4 text-white/50" />}
+                      <span className="text-[10px] text-white">{fmt(inq.createdAt)}</span>
+                      {isOpen ? <ChevronUp className="w-4 h-4 text-white" /> : <ChevronDown className="w-4 h-4 text-white" />}
                     </div>
                   </button>
 
@@ -640,14 +640,14 @@ function PartnerSchoolInquiriesPanel({ isAf }: { isAf: boolean }) {
                           { label: isAf ? "Ontvang" : "Received", value: fmt(inq.createdAt) },
                         ].map(({ label, value }) => (
                           <div key={label} className="rounded-lg bg-black/40 px-3 py-2" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
-                            <div className="text-[10px] font-black uppercase tracking-wider text-white/50">{label}</div>
+                            <div className="text-[10px] font-black uppercase tracking-wider text-white">{label}</div>
                             <div className="text-xs text-white mt-0.5 break-all">{value}</div>
                           </div>
                         ))}
                       </div>
 
                       <div className="space-y-1">
-                        <label className="text-[10px] font-black uppercase tracking-wider text-white/50">
+                        <label className="text-[10px] font-black uppercase tracking-wider text-white">
                           {isAf ? "Notas" : "Notes"}
                         </label>
                         <textarea
@@ -655,7 +655,7 @@ function PartnerSchoolInquiriesPanel({ isAf }: { isAf: boolean }) {
                           onChange={(e) => setNoteInputs((prev) => ({ ...prev, [inq.id]: e.target.value }))}
                           rows={2}
                           placeholder={isAf ? "Voeg notas by…" : "Add notes…"}
-                          className="w-full px-3 py-2 rounded-lg bg-black/50 text-white text-xs placeholder-white/30 focus:outline-none resize-none"
+                          className="w-full px-3 py-2 rounded-lg bg-black/50 text-white text-xs placeholder-white focus:outline-none resize-none"
                           style={{ border: "1px solid rgba(255,255,255,0.15)" }}
                         />
                       </div>
@@ -692,7 +692,7 @@ function PartnerSchoolInquiriesPanel({ isAf }: { isAf: boolean }) {
                             disabled={doAction.isPending}
                             onClick={() => doAction.mutate({ id: inq.id, action: "contacted", notes: noteInputs[inq.id] })}
                             className="px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider"
-                            style={{ border: "1px solid rgba(255,255,255,0.3)", color: "white" }}
+                            style={{ border: "1px solid #fff", color: "#fff" }}
                             data-testid={`inq-${inq.id}-save-notes`}
                           >
                             {isAf ? "Stoor notas" : "Save notes"}
@@ -790,8 +790,8 @@ function SchoolEnquiriesPanel({ isAf }: { isAf: boolean }) {
                       </div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-[10px] text-white/50">{fmt(enq.createdAt)}</span>
-                      {isOpen ? <ChevronUp className="w-4 h-4 text-white/50" /> : <ChevronDown className="w-4 h-4 text-white/50" />}
+                      <span className="text-[10px] text-white">{fmt(enq.createdAt)}</span>
+                      {isOpen ? <ChevronUp className="w-4 h-4 text-white" /> : <ChevronDown className="w-4 h-4 text-white" />}
                     </div>
                   </button>
 
@@ -807,14 +807,14 @@ function SchoolEnquiriesPanel({ isAf }: { isAf: boolean }) {
                           { label: isAf ? "Ontvang" : "Received", value: fmt(enq.createdAt) },
                         ].map(({ label, value }) => (
                           <div key={label} className="rounded-lg bg-black/40 px-3 py-2" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
-                            <div className="text-[10px] font-black uppercase tracking-wider text-white/50">{label}</div>
+                            <div className="text-[10px] font-black uppercase tracking-wider text-white">{label}</div>
                             <div className="text-xs text-white mt-0.5 break-all">{value}</div>
                           </div>
                         ))}
                       </div>
 
                       <div className="space-y-1">
-                        <label className="text-[10px] font-black uppercase tracking-wider text-white/50">
+                        <label className="text-[10px] font-black uppercase tracking-wider text-white">
                           {isAf ? "Notas" : "Notes"}
                         </label>
                         <textarea
@@ -822,7 +822,7 @@ function SchoolEnquiriesPanel({ isAf }: { isAf: boolean }) {
                           onChange={(e) => setNoteInputs((prev) => ({ ...prev, [enq.id]: e.target.value }))}
                           rows={2}
                           placeholder={isAf ? "Voeg notas by…" : "Add notes…"}
-                          className="w-full px-3 py-2 rounded-lg bg-black/50 text-white text-xs placeholder-white/30 focus:outline-none resize-none"
+                          className="w-full px-3 py-2 rounded-lg bg-black/50 text-white text-xs placeholder-white focus:outline-none resize-none"
                           style={{ border: "1px solid rgba(255,255,255,0.15)" }}
                         />
                       </div>
@@ -863,7 +863,7 @@ function SchoolEnquiriesPanel({ isAf }: { isAf: boolean }) {
                               adminNotes: noteInputs[enq.id],
                             })}
                             className="px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider"
-                            style={{ border: "1px solid rgba(255,255,255,0.3)", color: "white" }}
+                            style={{ border: "1px solid #fff", color: "#fff" }}
                             data-testid={`enq-${enq.id}-save-notes`}
                           >
                             {isAf ? "Stoor notas" : "Save notes"}
@@ -1121,10 +1121,11 @@ export default function AdminDashboardPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white relative overflow-hidden">
+      <GraffitiSplats variant="corner" opacity={0.35} />
       <AdminTopNav current="dashboard" />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8">
         {/* Hero */}
         <section
           className="relative overflow-hidden rounded-3xl bg-black p-6 sm:p-8 md:p-10"
@@ -1181,17 +1182,11 @@ export default function AdminDashboardPage() {
           </div>
 
           <p className="text-white font-semibold text-sm mb-1">{isAf ? "Welkom terug," : "Welcome back,"}</p>
-          <h1
-            className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-[0.98]"
-            style={{
-              background: "linear-gradient(90deg, #FF8A00, #FF8A00, #FFE600, #FFE600, #00E5FF, #006BFF, #8A2BFF, #8A2BFF, #FF2BD6)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-              filter: "drop-shadow(0 0 20px rgba(138,43,255,0.35))",
-            }}
-          >
-            {firstName}.
+          <h1 className="text-4xl sm:text-5xl md:text-6xl text-white tracking-tight leading-[0.98] graffiti-hand">
+            <span className="spray-title graffiti-hand">
+              <SpraySmear color="#8A2BFF" />
+              {firstName}.
+            </span>
           </h1>
           <p className="text-white text-base sm:text-lg mt-2 max-w-xl">
             {isAf
@@ -1298,7 +1293,7 @@ export default function AdminDashboardPage() {
                       className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider transition-colors"
                       style={{
                         border: `1px solid ${active ? "#00E5FF" : "rgba(255,255,255,0.18)"}`,
-                        color: active ? "#00E5FF" : "rgba(255,255,255,0.7)",
+                        color: active ? "#00E5FF" : "#fff",
                         background: active ? "rgba(0,229,255,0.12)" : "transparent",
                       }}
                     >
@@ -1312,7 +1307,7 @@ export default function AdminDashboardPage() {
                   onChange={(e) => setRefSearchInput(e.target.value)}
                   placeholder={isAf ? "Soek op e-pos…" : "Search by email…"}
                   data-testid="ref-search-input"
-                  className="ml-1 flex-1 min-w-[200px] px-3 py-1.5 rounded-lg bg-black/50 text-white text-xs placeholder-white/35 focus:outline-none"
+                  className="ml-1 flex-1 min-w-[200px] px-3 py-1.5 rounded-lg bg-black/50 text-white text-xs placeholder-white focus:outline-none"
                   style={{ border: "1px solid rgba(255,255,255,0.18)" }}
                 />
                 <input

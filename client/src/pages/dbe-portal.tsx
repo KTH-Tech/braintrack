@@ -287,7 +287,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
           localStorage.setItem("braintrack:dbe-portal:ui", JSON.stringify(saved));
         } catch {}
       }} data-testid={`subject-toggle-${row.subject}`}>
-        {open ? <ChevronDown className="w-4 h-4 shrink-0 text-white/60" /> : <ChevronRight className="w-4 h-4 shrink-0 text-white/60" />}
+        {open ? <ChevronDown className="w-4 h-4 shrink-0 text-white" /> : <ChevronRight className="w-4 h-4 shrink-0 text-white" />}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="font-black text-sm truncate text-white">{row.subject}</span>
@@ -1414,7 +1414,7 @@ export default function DBEPortal() {
               <Database className="w-6 h-6 text-cyan-400" />
               DBE Content Portal
             </h1>
-            <p className="text-white/50 text-sm mt-1">
+            <p className="text-white text-sm mt-1">
               {allSubjects.length} subjects · {formatNumber(totalDone, language)}/{formatNumber(totalPapers, language)} papers · {formatNumber(totalQuestions, language)} practice questions
             </p>
           </div>
@@ -1555,7 +1555,7 @@ export default function DBEPortal() {
                   {Math.min(100, Math.round(((seedNotesStatus.done + seedNotesStatus.skipped) / seedNotesStatus.total) * 100))}% · {seedNotesStatus.done}✓ {seedNotesStatus.skipped}skip{seedNotesStatus.failed > 0 ? <span className="text-red-400"> {seedNotesStatus.failed}fail</span> : null}
                 </span>
                 {seedNotesStatus.currentSubject && (
-                  <span className="text-[11px] text-white/50 truncate max-w-[160px]">{seedNotesStatus.currentSubject}</span>
+                  <span className="text-[11px] text-white truncate max-w-[160px]">{seedNotesStatus.currentSubject}</span>
                 )}
               </div>
             )}
@@ -1564,8 +1564,8 @@ export default function DBEPortal() {
 
         {/* Search */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
-          <Input placeholder="Search subjects…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-black/40 border-white/10 text-white placeholder:text-white/30" data-testid="input-search" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white" />
+          <Input placeholder="Search subjects…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-black/40 border-white/10 text-white placeholder:text-white" data-testid="input-search" />
         </div>
 
         {/* Main tabs */}
@@ -1580,7 +1580,7 @@ export default function DBEPortal() {
               { value: "sync", label: "Sync & Ops" },
             ].map((tab) => (
               <TabsTrigger key={tab.value} value={tab.value} data-testid={`tab-${tab.value}`}
-                className="rounded-xl text-xs px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-cyan-300 data-[state=active]:border data-[state=active]:border-cyan-400 data-[state=active]:shadow-[0_0_14px_rgba(0,229,255,0.45)] data-[state=active]:font-black text-white/60 hover:text-white transition-colors">
+                className="rounded-xl text-xs px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-cyan-300 data-[state=active]:border data-[state=active]:border-cyan-400 data-[state=active]:shadow-[0_0_14px_rgba(0,229,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors">
                 {tab.label}
               </TabsTrigger>
             ))}
@@ -1634,7 +1634,7 @@ export default function DBEPortal() {
                   <CloudUpload className="w-5 h-5 shrink-0" style={{ color: "#00E5FF" }} />
                   <div>
                     <p className="text-sm font-black uppercase tracking-[0.1em] text-white">Sync to Production</p>
-                    <p className="text-xs text-white/50">Rebuild mastery scores + topic coverage — marks data as production-ready.</p>
+                    <p className="text-xs text-white">Rebuild mastery scores + topic coverage — marks data as production-ready.</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 flex-wrap">
@@ -1657,9 +1657,9 @@ export default function DBEPortal() {
               <CardHeader className="py-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <History className="w-4 h-4 text-white/50" />
+                    <History className="w-4 h-4 text-white" />
                     <CardTitle className="text-sm">Sync History</CardTitle>
-                    {syncHistory && syncHistory.length > 0 && <span className="text-xs text-white/50">— last {syncHistory.length} syncs</span>}
+                    {syncHistory && syncHistory.length > 0 && <span className="text-xs text-white">— last {syncHistory.length} syncs</span>}
                   </div>
                   <Button size="sm" variant="ghost" className="h-7 px-2 text-xs gap-1.5" onClick={() => refetchSyncHistory()} data-testid="btn-refresh-sync-history">
                     <RefreshCw className="w-3 h-3" /> Refresh
@@ -1668,23 +1668,23 @@ export default function DBEPortal() {
               </CardHeader>
               <CardContent className="pt-0">
                 {!syncHistory || syncHistory.length === 0 ? (
-                  <p className="text-xs text-white/40 italic">No production syncs recorded yet.</p>
+                  <p className="text-xs text-white italic">No production syncs recorded yet.</p>
                 ) : (
                   <div className="overflow-x-auto rounded-lg border border-border/40">
                     <table className="w-full text-xs">
                       <thead>
                         <tr className="border-b border-border/60 bg-muted/30">
-                          <th className="text-left px-4 py-2 font-medium text-white/60">Timestamp</th>
-                          <th className="text-left px-4 py-2 font-medium text-white/60">Status</th>
-                          <th className="text-left px-4 py-2 font-medium text-white/60">Subjects</th>
-                          <th className="text-left px-4 py-2 font-medium text-white/60">Questions</th>
-                          <th className="text-left px-4 py-2 font-medium text-white/60">Notes</th>
+                          <th className="text-left px-4 py-2 font-medium text-white">Timestamp</th>
+                          <th className="text-left px-4 py-2 font-medium text-white">Status</th>
+                          <th className="text-left px-4 py-2 font-medium text-white">Subjects</th>
+                          <th className="text-left px-4 py-2 font-medium text-white">Questions</th>
+                          <th className="text-left px-4 py-2 font-medium text-white">Notes</th>
                         </tr>
                       </thead>
                       <tbody>
                         {syncHistory.map((entry, i) => (
                           <tr key={entry.id} className={`border-t border-border/40 ${i % 2 === 0 ? "" : "bg-muted/10"}`}>
-                            <td className="px-4 py-2 tabular-nums text-white/70 whitespace-nowrap">
+                            <td className="px-4 py-2 tabular-nums text-white whitespace-nowrap">
                               {entry.timestamp ? formatDateTime(entry.timestamp, language, { dateStyle: "short", timeStyle: "short" }) : "—"}
                             </td>
                             <td className="px-4 py-2">
@@ -1694,9 +1694,9 @@ export default function DBEPortal() {
                                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 font-semibold"><XCircle className="w-3 h-3" /> Failed</span>
                               )}
                             </td>
-                            <td className="px-4 py-2 tabular-nums text-white/70">{entry.subjectsSynced ?? "—"}</td>
-                            <td className="px-4 py-2 tabular-nums text-white/70">{entry.questionsSynced != null ? formatNumber(Number(entry.questionsSynced), language) : "—"}</td>
-                            <td className="px-4 py-2 text-white/50 max-w-xs truncate">
+                            <td className="px-4 py-2 tabular-nums text-white">{entry.subjectsSynced ?? "—"}</td>
+                            <td className="px-4 py-2 tabular-nums text-white">{entry.questionsSynced != null ? formatNumber(Number(entry.questionsSynced), language) : "—"}</td>
+                            <td className="px-4 py-2 text-white max-w-xs truncate">
                               {entry.error ? <span className="text-red-400" title={entry.error}>{entry.error}</span> : entry.status === "success" ? <span className="text-emerald-400">Completed</span> : "—"}
                             </td>
                           </tr>
@@ -1716,22 +1716,22 @@ export default function DBEPortal() {
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto dark bg-black border-cyan-500/30">
           <DialogHeader>
             <DialogTitle className="text-white">Question Preview — {previewSubject}</DialogTitle>
-            <DialogDescription className="text-white/50">Sample verbatim questions from the ingested papers.</DialogDescription>
+            <DialogDescription className="text-white">Sample verbatim questions from the ingested papers.</DialogDescription>
           </DialogHeader>
           {previewData?.questions?.length ? (
             <div className="space-y-3 mt-2">
               {previewData.questions.slice(0, 10).map((q) => (
                 <div key={q.id} className="border border-white/10 rounded-lg p-3 space-y-1">
-                  <div className="flex items-center gap-2 text-[10px] text-white/50">
+                  <div className="flex items-center gap-2 text-[10px] text-white">
                     <span>{q.year}</span> · <span>P{q.paperNumber}</span> · <span>{q.language}</span> · <span>{q.marks ?? "?"}M</span> · <span>{q.cognitiveLevel}</span>
                   </div>
                   <p className="text-sm text-white">{q.questionText?.slice(0, 300)}{(q.questionText?.length ?? 0) > 300 ? "…" : ""}</p>
-                  {q.memoText && <p className="text-xs text-white/50 italic">Memo: {q.memoText?.slice(0, 150)}{(q.memoText?.length ?? 0) > 150 ? "…" : ""}</p>}
+                  {q.memoText && <p className="text-xs text-white italic">Memo: {q.memoText?.slice(0, 150)}{(q.memoText?.length ?? 0) > 150 ? "…" : ""}</p>}
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-white/50 text-sm py-6 text-center">No questions ingested yet for this subject.</p>
+            <p className="text-white text-sm py-6 text-center">No questions ingested yet for this subject.</p>
           )}
         </DialogContent>
       </Dialog>

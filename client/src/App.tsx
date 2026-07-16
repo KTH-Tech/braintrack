@@ -443,7 +443,7 @@ function RequireSchoolAdminRoute({ children }: { children: React.ReactNode }) {
         <h1 className="text-xl font-black text-white mt-2">
           This page is for school administrators.
         </h1>
-        <p className="text-sm text-white/60 mt-3">
+        <p className="text-sm text-white mt-3">
           Your account does not have school admin access. Contact your school representative or BrainTrack support.
         </p>
         <a href="/dashboard" className="inline-block mt-5 text-xs font-bold underline text-white">

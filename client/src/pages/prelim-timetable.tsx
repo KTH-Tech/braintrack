@@ -362,7 +362,7 @@ export default function PrelimTimetablePage() {
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <Link href="/study-calendar">
-              <Button size="sm" variant="ghost" className="gap-1.5 text-white/70 hover:text-white hover:bg-white/10">
+              <Button size="sm" variant="ghost" className="gap-1.5 text-white hover:text-white hover:bg-white/10">
                 <ArrowLeft className="w-4 h-4" />
                 {isAf ? "Terug" : "Back"}
               </Button>
@@ -533,7 +533,7 @@ export default function PrelimTimetablePage() {
         <div className="flex justify-between items-center pt-2">
           <Button
             size="sm" variant="ghost"
-            className="gap-1.5 text-white/60 hover:text-white hover:bg-white/10 disabled:opacity-30"
+            className="gap-1.5 text-white hover:text-white hover:bg-white/10 disabled:opacity-30"
             disabled={activeWeek === 0}
             onClick={() => setActiveWeek((w) => Math.max(0, w - 1))}
           >
@@ -545,7 +545,7 @@ export default function PrelimTimetablePage() {
           </span>
           <Button
             size="sm" variant="ghost"
-            className="gap-1.5 text-white/60 hover:text-white hover:bg-white/10 disabled:opacity-30"
+            className="gap-1.5 text-white hover:text-white hover:bg-white/10 disabled:opacity-30"
             disabled={activeWeek === WEEKS.length - 1}
             onClick={() => setActiveWeek((w) => Math.min(WEEKS.length - 1, w + 1))}
           >

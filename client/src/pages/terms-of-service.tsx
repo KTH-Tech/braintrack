@@ -1,4 +1,4 @@
-﻿import { FileText, Shield, Users, Scale, BookOpen, Lock, RefreshCw, Globe, CreditCard, Undo2, ArrowLeft, Sparkles } from "lucide-react";
+import { FileText, Shield, Users, Scale, BookOpen, Lock, RefreshCw, Globe, CreditCard, Undo2, ArrowLeft, Sparkles } from "lucide-react";
 import { FooterPageHomeButton } from "@/components/footer-page-nav";
 import { GraffitiSplats } from "@/components/graffiti-splats";
 import { Link } from "wouter";
@@ -408,7 +408,7 @@ export default function TermsOfServicePage() {
               : "Everything you need to know before using BrainTrack™ — straight up, no small print games."}
           </p>
           <p className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "#FFE600" }}>
-            {isAf ? "Laas opgedateer: 29 Junie 2026" : "Last updated: 29 June 2026"}
+            {isAf ? "Laas opgedateer: 16 Julie 2026" : "Last updated: 16 July 2026"}
           </p>
         </div>
 

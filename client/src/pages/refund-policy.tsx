@@ -1,4 +1,4 @@
-﻿import { Undo2, CreditCard, AlertCircle, Clock, Mail, ArrowLeft, Globe, Scale } from "lucide-react";
+import { Undo2, CreditCard, AlertCircle, Clock, Mail, ArrowLeft, Globe, Scale } from "lucide-react";
 import { GraffitiSplats } from "@/components/graffiti-splats";
 import { Link } from "wouter";
 import { useLanguage } from "@/lib/language-context";
@@ -245,7 +245,7 @@ export default function RefundPolicyPage() {
               : "We're transparent about how billing, cancellations, and refunds work."}
           </p>
           <p className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "#FFE600" }}>
-            {isAf ? "Laas opgedateer: 29 Junie 2026" : "Last updated: 29 June 2026"}
+            {isAf ? "Laas opgedateer: 16 Julie 2026" : "Last updated: 16 July 2026"}
           </p>
         </div>
 

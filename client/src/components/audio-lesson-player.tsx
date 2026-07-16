@@ -232,7 +232,7 @@ export function AudioLessonPlayer({ topicId, topicName, language, isAf, onPlayed
         <span className="font-bold text-sm text-white uppercase tracking-[0.14em]">
           {isAf ? "My Stemles" : "My Voice Lesson"}
         </span>
-        <span className="text-[10px] text-white/70 ml-1 truncate">{topicName}</span>
+        <span className="text-[10px] text-white ml-1 truncate">{topicName}</span>
       </div>
 
       {activeUrl ? (
@@ -276,7 +276,7 @@ export function AudioLessonPlayer({ topicId, topicName, language, isAf, onPlayed
                   style={{ width: `${duration ? (progress / duration) * 100 : 0}%`, background: "#8A2BFF", boxShadow: "0 0 8px #8A2BFFaa" }}
                 />
               </div>
-              <div className="flex items-center justify-between mt-1 text-[10px] text-white/70 tabular-nums">
+              <div className="flex items-center justify-between mt-1 text-[10px] text-white tabular-nums">
                 <span>{formatTime(progress)}</span>
                 <span>{formatTime(duration)}</span>
               </div>
@@ -302,7 +302,7 @@ export function AudioLessonPlayer({ topicId, topicName, language, isAf, onPlayed
           </div>
         </>
       ) : (
-        <div className="text-[11px] text-white/70 leading-relaxed">
+        <div className="text-[11px] text-white leading-relaxed">
           {loadingRecording
             ? (isAf ? "Laai jou opname..." : "Loading your recording...")
             : (isAf
@@ -332,7 +332,7 @@ export function AudioLessonPlayer({ topicId, topicName, language, isAf, onPlayed
                     style={{ width: `${(recElapsed / MAX_RECORDING_SECS) * 100}%`, background: "#FF2BD6", boxShadow: "0 0 6px #FF2BD6" }}
                   />
                 </div>
-                <span className="text-[10px] text-white/70 tabular-nums">{formatTime(MAX_RECORDING_SECS)}</span>
+                <span className="text-[10px] text-white tabular-nums">{formatTime(MAX_RECORDING_SECS)}</span>
               </>
             ) : (
               <>
@@ -354,7 +354,7 @@ export function AudioLessonPlayer({ topicId, topicName, language, isAf, onPlayed
                   <button
                     onClick={deleteRecording}
                     disabled={uploading || deleting}
-                    className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded-xl bg-black text-[10px] font-bold uppercase tracking-[0.12em] text-white/70 hover:text-red-400 disabled:opacity-60"
+                    className="inline-flex items-center gap-1.5 px-2 py-1.5 rounded-xl bg-black text-[10px] font-bold uppercase tracking-[0.12em] text-white hover:text-red-400 disabled:opacity-60"
                     style={{ border: "1px solid rgba(255,255,255,0.15)" }}
                     aria-label={isAf ? "Verwyder opname" : "Remove recording"}
                     data-testid={`button-delete-lesson-recording-${topicId}`}
@@ -363,7 +363,7 @@ export function AudioLessonPlayer({ topicId, topicName, language, isAf, onPlayed
                   </button>
                 )}
                 {recording && (
-                  <span className="text-[10px] text-white/60 tabular-nums">
+                  <span className="text-[10px] text-white tabular-nums">
                     {formatTime(recording.durationSeconds)}
                   </span>
                 )}
@@ -371,7 +371,7 @@ export function AudioLessonPlayer({ topicId, topicName, language, isAf, onPlayed
             )}
           </div>
         ) : (
-          <span className="inline-flex items-center gap-1 text-[10px] text-white/60">
+          <span className="inline-flex items-center gap-1 text-[10px] text-white">
             <MicOff className="w-3 h-3" /> {isAf ? "Opneem nie ondersteun nie" : "Recording not supported"}
           </span>
         )}

@@ -725,19 +725,19 @@ export default function ExamReadyPage() {
               <CardContent className="space-y-3">
                 <div className="flex items-start gap-3">
                   <Shield className="w-5 h-5 text-accent mt-0.5" />
-                  <p className="text-sm text-white/80">{isAfrikaans ? "Volskerm is vereis. As jy volskerm verlaat, word die eksamen gekanselleer." : "Fullscreen mode is required. Exiting fullscreen will cancel the exam."}</p>
+                  <p className="text-sm text-white">{isAfrikaans ? "Volskerm is vereis. As jy volskerm verlaat, word die eksamen gekanselleer." : "Fullscreen mode is required. Exiting fullscreen will cancel the exam."}</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <Eye className="w-5 h-5 text-accent mt-0.5" />
-                  <p className="text-sm text-white/80">{isAfrikaans ? "Oortjie-wisseling of die verlaat van die venster sal die eksamen onmiddellik kanselleer." : "Tab switching or leaving the window will immediately cancel the exam."}</p>
+                  <p className="text-sm text-white">{isAfrikaans ? "Oortjie-wisseling of die verlaat van die venster sal die eksamen onmiddellik kanselleer." : "Tab switching or leaving the window will immediately cancel the exam."}</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <Clock className="w-5 h-5 text-accent mt-0.5" />
-                  <p className="text-sm text-white/80">{isAfrikaans ? "Onaktiwiteit van meer as 10 sekondes gee 'n waarskuwing. Langer pouses kanselleer die eksamen." : "Pausing for more than 10 seconds triggers a warning. Extended pauses cancel the exam."}</p>
+                  <p className="text-sm text-white">{isAfrikaans ? "Onaktiwiteit van meer as 10 sekondes gee 'n waarskuwing. Langer pouses kanselleer die eksamen." : "Pausing for more than 10 seconds triggers a warning. Extended pauses cancel the exam."}</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <XCircle className="w-5 h-5 text-accent mt-0.5" />
-                  <p className="text-sm text-white/80">{isAfrikaans ? "Geen KI-hulp toegelaat nie. Antwoorde moet uit jou eie kennis kom." : "No AI assistance allowed. Answers must come from your own knowledge."}</p>
+                  <p className="text-sm text-white">{isAfrikaans ? "Geen KI-hulp toegelaat nie. Antwoorde moet uit jou eie kennis kom." : "No AI assistance allowed. Answers must come from your own knowledge."}</p>
                 </div>
               </CardContent>
             </Card>
@@ -745,7 +745,7 @@ export default function ExamReadyPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-white">{isAfrikaans ? "Kies Jou Vraestel" : "Choose Your Paper"}</CardTitle>
-                <p className="text-sm text-white/60">
+                <p className="text-sm text-white">
                   {isAfrikaans
                     ? "Hierdie is gesimuleerde KABV-belynde vraestelle — nie amptelike DBO-eksamens nie."
                     : "These are simulated CAPS-aligned papers — not official DBE exams."}
@@ -805,7 +805,7 @@ export default function ExamReadyPage() {
                                   <div className="flex items-center justify-between">
                                     <div>
                                       <p className="font-medium text-white">{name}</p>
-                                      <p className="text-sm text-white/60">
+                                      <p className="text-sm text-white">
                                         {isAfrikaans ? "Vraestel" : "Paper"} {paper.paperNumber} — {paper.totalMarks} {isAfrikaans ? "punte" : "marks"} — {paper.duration}
                                       </p>
                                     </div>
@@ -868,7 +868,7 @@ export default function ExamReadyPage() {
               <Maximize2 className="w-8 h-8 text-primary" />
             </div>
             <CardTitle className="text-white">{isAfrikaans ? "Gereed om te Begin" : "Ready to Begin"}</CardTitle>
-            <CardDescription className="text-base mt-2 text-white/80">
+            <CardDescription className="text-base mt-2 text-white">
               {selectedPaperData?.paper?.subjectName
                 ? (isAfrikaans ? selectedPaperData.paper.subjectNameAf : selectedPaperData.paper.subjectName)
                 : selectedSubject} {selectedPaperNum ? `— ${isAfrikaans ? "Vraestel" : "Paper"} ${selectedPaperNum}` : ""}
@@ -876,7 +876,7 @@ export default function ExamReadyPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="p-4 bg-accent/10 border border-accent/30 rounded-lg">
-              <p className="text-sm text-center text-white/80">
+              <p className="text-sm text-center text-white">
                 {isAfrikaans
                   ? "Klik op \"Volskerm\" om die eksamenstimer te begin. Maak seker jy is gereed en sal nie onderbreek word nie."
                   : "Clicking \"Enter Fullscreen\" will start the exam timer. Make sure you're ready and won't be interrupted."}
@@ -925,7 +925,7 @@ export default function ExamReadyPage() {
           <div className="flex items-center gap-4">
             <div>
               <p className="font-semibold text-white">{selectedSubject}</p>
-              <p className="text-sm text-white/60">
+              <p className="text-sm text-white">
                 {selectedPaper?.year} {selectedPaper?.month} - {isAfrikaans ? "Vraestel" : "Paper"} {selectedPaper?.paperNumber}
               </p>
             </div>
@@ -984,7 +984,7 @@ export default function ExamReadyPage() {
           
           <div className="mt-6 space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-white/80">{isAfrikaans ? "Vordering" : "Progress"}</span>
+              <span className="text-white">{isAfrikaans ? "Vordering" : "Progress"}</span>
               <span className="text-white">{answeredCount}/{totalQuestions}</span>
             </div>
             <Progress value={(answeredCount / totalQuestions) * 100} />

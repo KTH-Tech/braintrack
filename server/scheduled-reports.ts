@@ -129,29 +129,29 @@ async function sendReportEmail(opts: {
 
   const partnerBlock = partnerName
     ? isAf
-      ? `<p style="color:#666666;font-size:13px;">In vennootskap met <strong>${partnerName}</strong>.</p>`
-      : `<p style="color:#666666;font-size:13px;">In partnership with <strong>${partnerName}</strong>.</p>`
+      ? `<p style="color:#ffffff;font-size:13px;">In vennootskap met <strong style="color:#00E5FF;">${partnerName}</strong>.</p>`
+      : `<p style="color:#ffffff;font-size:13px;">In partnership with <strong style="color:#00E5FF;">${partnerName}</strong>.</p>`
     : "";
 
   const unsubBlock = isAf
-    ? `<p style="color:#888888;font-size:12px;margin-top:24px;border-top:1px solid #eeeeee;padding-top:12px;">Wil jy nie meer hierdie geskeduleerde verslae ontvang nie? <a href="${unsubscribeUrl}" style="color:#7c3aed;">Skryf uit met een klik</a>.</p>`
-    : `<p style="color:#888888;font-size:12px;margin-top:24px;border-top:1px solid #eeeeee;padding-top:12px;">No longer want to receive these scheduled reports? <a href="${unsubscribeUrl}" style="color:#7c3aed;">Unsubscribe with one click</a>.</p>`;
+    ? `<p style="color:#ffffff;font-size:12px;margin-top:24px;border-top:1px solid rgba(255,255,255,0.15);padding-top:12px;">Wil jy nie meer hierdie geskeduleerde verslae ontvang nie? <a href="${unsubscribeUrl}" style="color:#00E5FF;">Skryf uit met een klik</a>.</p>`
+    : `<p style="color:#ffffff;font-size:12px;margin-top:24px;border-top:1px solid rgba(255,255,255,0.15);padding-top:12px;">No longer want to receive these scheduled reports? <a href="${unsubscribeUrl}" style="color:#00E5FF;">Unsubscribe with one click</a>.</p>`;
 
   const bodyHtml = isAf
     ? `
       <p>Hallo,</p>
-      <p>Hierdie week se <strong style="color:#7c3aed;">BrainTrack vorderingsverslag</strong> vir <strong>${learnerName}</strong> is aangeheg as PDF.</p>
+      <p>Hierdie week se <strong style="color:#00E5FF;">BrainTrack vorderingsverslag</strong> vir <strong>${learnerName}</strong> is aangeheg as PDF.</p>
       <p>Oop die aangehegte PDF om jou kind se prestasie oor vakke, studietyd en areas wat aandag nodig het te sien.</p>
       ${partnerBlock}
-      <p style="color:#666666;font-size:13px;">Aanmeld by BrainTrack om meer gedetailleerde insigte te sien en jou kind se studieplanne direk te monitor.</p>
+      <p style="color:#ffffff;font-size:13px;">Aanmeld by BrainTrack om meer gedetailleerde insigte te sien en jou kind se studieplanne direk te monitor.</p>
       ${unsubBlock}
     `
     : `
       <p>Hi there,</p>
-      <p>Your scheduled <strong style="color:#7c3aed;">BrainTrack progress report</strong> for <strong>${learnerName}</strong> is attached as a PDF.</p>
+      <p>Your scheduled <strong style="color:#00E5FF;">BrainTrack progress report</strong> for <strong>${learnerName}</strong> is attached as a PDF.</p>
       <p>Open the attached PDF to see your child's performance across subjects, study activity, and areas that need attention.</p>
       ${partnerBlock}
-      <p style="color:#666666;font-size:13px;">Log in to BrainTrack to see more detailed insights and monitor your child's study plans directly.</p>
+      <p style="color:#ffffff;font-size:13px;">Log in to BrainTrack to see more detailed insights and monitor your child's study plans directly.</p>
       ${unsubBlock}
     `;
 

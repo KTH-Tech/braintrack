@@ -24,6 +24,7 @@ import {
 import { PageHeader } from "@/components/page-header";
 import { VARK_STYLES } from "@/lib/vark";
 import { BrandThemeToggle } from "@/components/theme-toggle";
+import { GraffitiSplats, SpraySmear } from "@/components/graffiti-splats";
 import { calcReadiness, readinessBand } from "@/lib/readiness";
 import { downloadBlob } from "@/lib/download-file";
 
@@ -102,40 +103,38 @@ interface MonthlySummary {
   topSubjects: { subjectName: string; attempts: number; accuracy: number }[];
 }
 
+// Wall-written section — no card box. Content sits directly on the wall with a
+// spray-paint accent stripe down the left edge (brand-board style).
 function CosmicCard({ children, hex, className = "" }: { children: React.ReactNode; hex: string; className?: string }) {
   return (
-    <div
-      className={`relative rounded-2xl bg-black p-6 ${className}`}
-      style={{ border: "1px solid rgba(255,255,255,0.08)" }}
+    <section
+      className={`relative pl-4 sm:pl-5 ${className}`}
+      style={{ borderLeft: `3px solid ${hex}` }}
     >
-      <div aria-hidden className="absolute inset-y-4 left-0 w-[2px] rounded-r" style={{ background: hex, boxShadow: `0 0 8px ${hex}` }} />
-      <div className="relative">{children}</div>
-    </div>
+      {children}
+    </section>
   );
 }
 
 const COSMIC: Record<"cyan" | "emerald" | "amber" | "red" | "purple" | "pink", { hex: string; halo: string }> = {
   cyan:    { hex: "#00E5FF", halo: "rgba(0,229,255,0.35)" },
-  emerald: { hex: "#4ADE80", halo: "rgba(74,222,128,0.35)" },
+  emerald: { hex: "#22FF66", halo: "rgba(34,255,102,0.35)" },
   amber:   { hex: "#FFE600", halo: "rgba(255,230,0,0.35)" },
   red:     { hex: "#FF2BD6", halo: "rgba(255,43,214,0.40)" },
   purple:  { hex: "#8A2BFF", halo: "rgba(138,43,255,0.35)" },
   pink:    { hex: "#FF2BD6", halo: "rgba(255,43,214,0.35)" },
 };
 
+// Wall-written highlight — no box, just a neon spray stripe on the left.
 function GlowCard({ children, color = "cyan", className = "" }: { children: React.ReactNode; color?: "cyan" | "emerald" | "amber" | "red"; className?: string }) {
-  const { hex, halo } = COSMIC[color];
+  const { hex } = COSMIC[color];
   return (
-    <div
-      className={`relative rounded-2xl bg-black overflow-hidden ${className}`}
-      style={{ border: `1.5px solid ${hex}`, boxShadow: `0 0 18px ${halo}, inset 0 0 14px rgba(0,0,0,0.55)` }}
+    <section
+      className={`relative pl-4 sm:pl-5 ${className}`}
+      style={{ borderLeft: `3px solid ${hex}` }}
     >
-      <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 pointer-events-none" style={{ borderColor: hex }} />
-      <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 pointer-events-none" style={{ borderColor: hex }} />
-      <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 pointer-events-none" style={{ borderColor: hex }} />
-      <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 pointer-events-none" style={{ borderColor: hex }} />
       {children}
-    </div>
+    </section>
   );
 }
 
@@ -162,7 +161,7 @@ function TrendSparkline({ scores }: { scores: number[] }) {
   });
   const last = scores[scores.length - 1];
   const first = scores[0];
-  const color = last > first ? "#4ADE80" : last < first ? "#FF2BD6" : "#00E5FF";
+  const color = last > first ? "#22FF66" : last < first ? "#FF2BD6" : "#00E5FF";
   return (
     <svg width={W} height={H} role="presentation" aria-hidden="true">
       <polyline points={pts.join(" ")} fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
@@ -235,33 +234,19 @@ function LiveStatCard({
   pulse?: boolean;
 }) {
   const display = useCountUp(Math.max(0, Math.round(target)), 1100);
+  // Wall-written stat: big neon number sprayed straight on the wall, small white label. No box.
   return (
-    <div
-      className="relative rounded-2xl p-5 bg-black overflow-hidden"
-      style={{
-        border: `1px solid ${hex}55`,
-        boxShadow: `0 0 12px ${hex}22, inset 0 0 10px rgba(0,0,0,0.55)`,
-      }}
-    >
-      <div aria-hidden className="absolute inset-y-4 left-0 w-[2px] rounded-r" style={{ background: hex, boxShadow: `0 0 8px ${hex}` }} />
-      <div aria-hidden
-        className="absolute -right-6 -top-6 w-20 h-20 rounded-full opacity-30 blur-2xl pointer-events-none"
-        style={{ background: hex }}
+    <div className="relative flex items-start gap-3">
+      <Icon
+        className={`w-6 h-6 shrink-0 mt-1 ${pulse ? "bt-pulse-ring rounded-full" : ""}`}
+        style={{ color: hex, filter: `drop-shadow(0 0 6px ${hex})`, ["--bt-ring" as any]: `${hex}80` }}
       />
-      <div className="relative flex items-center gap-3">
-        <div
-          className={`w-10 h-10 rounded-xl bg-black flex items-center justify-center shrink-0 ${pulse ? "bt-pulse-ring" : ""}`}
-          style={{ border: `1px solid ${hex}`, boxShadow: `0 0 10px ${hex}66`, ["--bt-ring" as any]: `${hex}80` }}
-        >
-          <Icon className="w-5 h-5" style={{ color: hex, filter: `drop-shadow(0 0 4px ${hex})` }} />
-        </div>
-        <div className="min-w-0">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] truncate text-white">{label}</p>
-          <p className="text-2xl font-black leading-tight tabular-nums" style={{ color: "#fff", textShadow: `0 0 8px ${hex}55` }}>
-            {display}
-            <span className="text-sm font-medium text-white ml-1">{unit}</span>
-          </p>
-        </div>
+      <div className="min-w-0">
+        <p className="text-4xl font-black leading-none tabular-nums" style={{ color: hex, textShadow: `0 0 14px ${hex}` }}>
+          {display}
+          <span className="text-sm font-bold text-white ml-1">{unit}</span>
+        </p>
+        <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-white mt-1.5">{label}</p>
       </div>
     </div>
   );
@@ -269,15 +254,13 @@ function LiveStatCard({
 
 function WeeklyMiniStat({ label, target, suffix, hex }: { label: string; target: number; suffix: string; hex: string }) {
   const display = useCountUp(Math.max(0, Math.round(target)), 950);
+  // Wall-written mini stat: neon number, plain white label, no box.
   return (
-    <div
-      className="text-center p-3 rounded-xl bg-black"
-      style={{ border: `1px solid ${hex}55`, boxShadow: `0 0 10px ${hex}18` }}
-    >
-      <p className="text-2xl font-black tabular-nums" style={{ color: "#fff", textShadow: `0 0 6px ${hex}66` }}>
+    <div className="text-center">
+      <p className="text-3xl font-black tabular-nums" style={{ color: hex, textShadow: `0 0 12px ${hex}` }}>
         {display}{suffix}
       </p>
-      <p className="text-[10px] mt-1 font-semibold uppercase tracking-wider" style={{ color: `${hex}bb` }}>{label}</p>
+      <p className="text-[10px] mt-1 font-bold uppercase tracking-wider text-white">{label}</p>
     </div>
   );
 }
@@ -434,7 +417,7 @@ function ChildReadinessCard({
     questionsAnswered: progress?.totalQuestionsAnswered,
   });
   const overallBand = readinessBand(overall);
-  const overallHex = overallBand === "green" ? "#4ADE80" : overallBand === "amber" ? "#FFE600" : "#FF2BD6";
+  const overallHex = overallBand === "green" ? "#22FF66" : overallBand === "amber" ? "#FFE600" : "#FF2BD6";
 
   const subjectName = (id: number) => {
     const s = subjects?.find(x => x.id === id);
@@ -461,13 +444,13 @@ function ChildReadinessCard({
             {linkOpened && (
               <span
                 className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full bg-black text-[10px] font-bold"
-                style={{ color: "#4ADE80", border: "1px solid #4ADE8066", boxShadow: "0 0 8px #4ADE8033" }}
+                style={{ color: "#22FF66", border: "1px solid #22FF6666", boxShadow: "0 0 8px #22FF6633" }}
                 data-testid={`parent-child-link-opened-${learnerId}`}
                 title={isAf ? "Jou kind het die teken-in-skakel oopgemaak" : "Your child has opened the sign-in link"}
               >
-                <CheckCircle2 className="w-3 h-3" style={{ color: "#4ADE80" }} />
+                <CheckCircle2 className="w-3 h-3" style={{ color: "#22FF66" }} />
                 {isAf ? "Skakel oopgemaak" : "Opened link"}
-                {linkOpenedAt ? <span className="font-normal text-white/60">· {linkOpenedAt}</span> : null}
+                {linkOpenedAt ? <span className="font-normal text-white">· {linkOpenedAt}</span> : null}
               </span>
             )}
             <p className="text-[11px] text-white mt-0.5">
@@ -485,7 +468,7 @@ function ChildReadinessCard({
             <div className="flex flex-wrap gap-1.5" data-testid={`parent-child-pills-${learnerId}`}>
               {pills.map(({ id, score }) => {
                 const band = readinessBand(score);
-                const hex = band === "green" ? "#4ADE80" : band === "amber" ? "#FFE600" : "#FF2BD6";
+                const hex = band === "green" ? "#22FF66" : band === "amber" ? "#FFE600" : "#FF2BD6";
                 return (
                   <span
                     key={id}
@@ -511,11 +494,12 @@ function ReadinessPanel({ readiness, isAf }: { readiness: ReadinessItem[]; isAf:
   if (!readiness.length) return null;
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <Zap className="w-4 h-4" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
-        <h3 className="font-bold text-white text-base">{isAf ? "Gereedheidstelsel per Vak" : "Readiness Score per Subject"}</h3>
-      </div>
-      <p className="text-xs text-white -mt-2">{isAf ? "Hoe gereed is jou kind vir die eksamen in elke vak?" : "How exam-ready is your child in each subject?"}</p>
+      <h3 className="spray-title graffiti-hand text-lg sm:text-xl text-white" style={{ textShadow: "0 2px 0 rgba(0,0,0,0.85)" }}>
+        <SpraySmear color="#00E5FF" />
+        <Zap className="inline w-4 h-4 mr-2 align-[-2px]" style={{ color: "#fff", filter: "drop-shadow(0 0 6px #00E5FF)" }} />
+        {isAf ? "Gereedheidstelsel per Vak" : "Readiness Score per Subject"}
+      </h3>
+      <p className="text-xs text-white">{isAf ? "Hoe gereed is jou kind vir die eksamen in elke vak?" : "How exam-ready is your child in each subject?"}</p>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {readiness.map((item) => {
           const bandColor: "emerald" | "amber" | "red" = item.masteryBand === "green" ? "emerald" : item.masteryBand === "amber" ? "amber" : "red";
@@ -590,9 +574,9 @@ function ReadinessCard({ item, bandColor, glowColor, isAf }: {
   const baselineDisplay = useCountUp(item.baselineMark, 900);
   const deltaDisplay = useCountUp(Math.abs(item.delta), 900);
   const deltaSign = item.delta >= 0 ? "+" : "-";
-  const barHex = item.masteryBand === "green" ? "#4ADE80" : item.masteryBand === "amber" ? "#FFE600" : "#FF2BD6";
+  const barHex = item.masteryBand === "green" ? "#22FF66" : item.masteryBand === "amber" ? "#FFE600" : "#FF2BD6";
   return (
-            <GlowCard color={glowColor} className="p-4">
+            <GlowCard color={glowColor} className="py-1">
               <div className="flex items-start justify-between mb-3">
                 <p className="font-semibold text-sm text-white leading-tight">{item.subjectName}</p>
                 <NeonBadge color={bandColor}>
@@ -607,7 +591,7 @@ function ReadinessCard({ item, bandColor, glowColor, isAf }: {
                     <TrendSparkline scores={item.trendScores} />
                   </div>
                   <div className="flex items-center gap-1 mt-1">
-                    {item.trendDirection === "up" && <ArrowUpRight className="w-3 h-3" style={{ color: "#4ADE80" }} />}
+                    {item.trendDirection === "up" && <ArrowUpRight className="w-3 h-3" style={{ color: "#22FF66" }} />}
                     {item.trendDirection === "down" && <TrendingDown className="w-3 h-3" style={{ color: "#FF2BD6" }} />}
                     {item.trendDirection === "stable" && <Minus className="w-3 h-3 text-white" />}
                     <span className="text-[10px] text-white">
@@ -618,7 +602,7 @@ function ReadinessCard({ item, bandColor, glowColor, isAf }: {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-[10px] text-white tabular-nums">{isAf ? "Aanvanglyn" : "Baseline"}: {baselineDisplay}%</span>
-                <span className="text-[10px] font-semibold tabular-nums" style={{ color: item.delta >= 0 ? "#4ADE80" : "#FF2BD6" }}>
+                <span className="text-[10px] font-semibold tabular-nums" style={{ color: item.delta >= 0 ? "#22FF66" : "#FF2BD6" }}>
                   {deltaSign}{deltaDisplay}% {isAf ? "verbetering" : "change"}
                 </span>
               </div>
@@ -632,23 +616,24 @@ function RiskAlerts({ readiness, isAf }: { readiness: ReadinessItem[]; isAf: boo
   );
   if (!alerts.length) return null;
   return (
-    <GlowCard color="red" className="p-5">
-      <div className="flex items-start gap-3">
-        <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shrink-0" style={{ border: "1px solid #FF2BD6", boxShadow: "0 0 12px rgba(255,43,214,0.45)" }}>
-          <ShieldAlert className="w-5 h-5" style={{ color: "#FF2BD6", filter: "drop-shadow(0 0 4px #FF2BD6)" }} />
+    <GlowCard color="red" className="py-1">
+      <div>
+        <div className="flex items-center gap-3 mb-3 flex-wrap">
+          <h3 className="spray-title graffiti-hand text-lg text-white" style={{ textShadow: "0 2px 0 rgba(0,0,0,0.85)" }}>
+            <SpraySmear color="#FF2BD6" />
+            <ShieldAlert className="inline w-4 h-4 mr-2 align-[-2px]" style={{ color: "#fff", filter: "drop-shadow(0 0 6px #FF2BD6)" }} />
+            {isAf ? "Aandag Vereis" : "Attention Needed"}
+          </h3>
+          <NeonBadge color="red">{alerts.length} {isAf ? "vak" : alerts.length === 1 ? "subject" : "subjects"}</NeonBadge>
         </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-2">
-            <h3 className="font-bold text-sm" style={{ color: "#FF2BD6" }}>{isAf ? "Aandag Vereis" : "Attention Needed"}</h3>
-            <NeonBadge color="red">{alerts.length} {isAf ? "vak" : alerts.length === 1 ? "subject" : "subjects"}</NeonBadge>
-          </div>
-          <div className="space-y-2">
+        <div className="min-w-0">
+          <div className="space-y-3">
             {alerts.map((a) => (
-              <div key={a.subjectName} className="rounded-lg bg-black p-3" style={{ border: "1px solid rgba(255,43,214,0.45)" }}>
+              <div key={a.subjectName} className="pl-3" style={{ borderLeft: "3px solid #FF2BD6" }}>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-semibold text-white">{a.subjectName}</span>
+                  <span className="text-sm font-bold text-white">{a.subjectName}</span>
                   {a.trendDirection === "down" && (
-                    <span className="flex items-center gap-1 text-[10px]" style={{ color: "#FF2BD6" }}>
+                    <span className="flex items-center gap-1 text-[10px] font-bold" style={{ color: "#FF2BD6" }}>
                       <TrendingDown className="w-3 h-3" />
                       {isAf ? "Dalende tendens" : "Declining trend"}
                     </span>
@@ -688,21 +673,21 @@ function ActivityFeed({ events, isAf }: { events: ActivityEvent[]; isAf: boolean
   };
 
   return (
-    <GlowCard color="cyan" className="p-5">
-      <div className="flex items-center gap-2 mb-4">
-        <Activity className="w-4 h-4" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
-        <h3 className="font-bold text-white text-sm">{isAf ? "Onlangse Aktiwiteit" : "Recent Activity"}</h3>
+    <GlowCard color="cyan" className="py-1">
+      <div className="flex items-center gap-3 mb-4 flex-wrap">
+        <h3 className="spray-title graffiti-hand text-lg text-white" style={{ textShadow: "0 2px 0 rgba(0,0,0,0.85)" }}>
+          <SpraySmear color="#00E5FF" />
+          <Activity className="inline w-4 h-4 mr-2 align-[-2px]" style={{ color: "#fff", filter: "drop-shadow(0 0 6px #00E5FF)" }} />
+          {isAf ? "Onlangse Aktiwiteit" : "Recent Activity"}
+        </h3>
         <NeonBadge color="cyan">{isAf ? "Lewend" : "Live"}</NeonBadge>
       </div>
-      <div className="space-y-2">
+      <div className="space-y-3">
         {recent.map((event, i) => (
-          <div key={event.id} className="flex items-center gap-3 p-2.5 rounded-xl bg-black" style={{ border: `1px solid ${event.isCorrect ? "#4ADE80" : "#FF2BD6"}33` }}>
-            <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 bg-black"
-              style={{ border: `1px solid ${event.isCorrect ? "#4ADE80" : "#FF2BD6"}66`, boxShadow: `0 0 8px ${event.isCorrect ? "#4ADE80" : "#FF2BD6"}55` }}>
-              {event.isCorrect
-                ? <CheckCircle className="w-3.5 h-3.5" style={{ color: "#4ADE80" }} />
-                : <AlertTriangle className="w-3.5 h-3.5" style={{ color: "#FF2BD6" }} />}
-            </div>
+          <div key={event.id} className="flex items-center gap-3 pl-3" style={{ borderLeft: `3px solid ${event.isCorrect ? "#22FF66" : "#FF2BD6"}` }}>
+            {event.isCorrect
+              ? <CheckCircle className="w-4 h-4 shrink-0" style={{ color: "#22FF66", filter: "drop-shadow(0 0 4px #22FF66)" }} />
+              : <AlertTriangle className="w-4 h-4 shrink-0" style={{ color: "#FF2BD6", filter: "drop-shadow(0 0 4px #FF2BD6)" }} />}
             <div className="flex-1 min-w-0">
               <p className="text-xs font-medium text-white truncate">
                 {event.subjectName}{event.topicName ? ` · ${event.topicName}` : ""}
@@ -724,21 +709,24 @@ function ActivityFeed({ events, isAf }: { events: ActivityEvent[]; isAf: boolean
 
 function MonthlySummaryPanel({ summary, isAf }: { summary: MonthlySummary; isAf: boolean }) {
   return (
-    <GlowCard color="cyan" className="p-5">
-      <div className="flex items-center gap-2 mb-5">
-        <BarChart3 className="w-4 h-4" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
-        <h3 className="font-bold text-white text-sm">{isAf ? "30-Dae Opsomming" : "30-Day Summary"}</h3>
-        <NeonBadge color="cyan">{isAf ? "Hierdie Maand" : "This Month"}</NeonBadge>
+    <GlowCard color="amber" className="py-1">
+      <div className="flex items-center gap-3 mb-5 flex-wrap">
+        <h3 className="spray-title graffiti-hand text-lg text-white" style={{ textShadow: "0 2px 0 rgba(0,0,0,0.85)" }}>
+          <SpraySmear color="#FFE600" />
+          <BarChart3 className="inline w-4 h-4 mr-2 align-[-2px]" style={{ color: "#fff", filter: "drop-shadow(0 0 6px #FFE600)" }} />
+          {isAf ? "30-Dae Opsomming" : "30-Day Summary"}
+        </h3>
+        <NeonBadge color="amber">{isAf ? "Hierdie Maand" : "This Month"}</NeonBadge>
       </div>
       <div className="grid grid-cols-3 gap-3 mb-5">
         {[
           { label: isAf ? "Vrae Beantwoord" : "Questions Answered", value: summary.questionsAnswered, hex: "#00E5FF" },
           { label: isAf ? "Studiedae" : "Study Days",               value: summary.studyDays,         hex: "#006BFF" },
-          { label: isAf ? "Gem. Akkuraatheid" : "Avg Accuracy",     value: `${summary.avgAccuracy}%`, hex: "#4ADE80" },
+          { label: isAf ? "Gem. Akkuraatheid" : "Avg Accuracy",     value: `${summary.avgAccuracy}%`, hex: "#22FF66" },
         ].map(({ label, value, hex }) => (
-          <div key={label} className="text-center p-3 rounded-xl bg-black" style={{ border: `1px solid ${hex}33`, boxShadow: `inset 0 0 12px ${hex}15` }}>
-            <p className="text-2xl font-bold" style={{ color: hex, textShadow: `0 0 10px ${hex}80` }}>{value}</p>
-            <p className="text-[10px] text-white mt-1 font-semibold uppercase tracking-wider">{label}</p>
+          <div key={label} className="text-center">
+            <p className="text-3xl font-black tabular-nums" style={{ color: hex, textShadow: `0 0 12px ${hex}` }}>{value}</p>
+            <p className="text-[10px] text-white mt-1 font-bold uppercase tracking-wider">{label}</p>
           </div>
         ))}
       </div>
@@ -754,7 +742,7 @@ function MonthlySummaryPanel({ summary, isAf }: { summary: MonthlySummary; isAf:
                     <span className="text-xs text-white font-medium">{s.subjectName}</span>
                     <span className="text-xs font-bold" style={{ color: "#00E5FF", textShadow: "0 0 6px rgba(0,229,255,0.7)" }}>{s.accuracy}%</span>
                   </div>
-                  <div className="h-1 rounded-full bg-black overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
+                  <div className="h-1 rounded-full bg-black overflow-hidden" style={{ border: "1px solid #ffffff" }}>
                     <div className="h-full rounded-full transition-all duration-700" style={{ width: `${s.accuracy}%`, background: "#00E5FF", boxShadow: "0 0 8px #00E5FFaa" }} />
                   </div>
                 </div>
@@ -780,7 +768,7 @@ function SubscriptionPanel({ isAf }: { isAf: boolean }) {
   const planName = sub?.plan || "Brain Boost";
 
   const statusMap: Record<string, { en: string; af: string; hex: string }> = {
-    active:       { en: "Active",          af: "Aktief",         hex: "#4ADE80" },
+    active:       { en: "Active",          af: "Aktief",         hex: "#22FF66" },
     trial:        { en: "Free Trial",      af: "Gratis Proeftyd", hex: "#00E5FF" },
     trialing:     { en: "Free Trial",      af: "Gratis Proeftyd", hex: "#00E5FF" },
     pending:      { en: "Pending",         af: "Hangend",        hex: "#FFE600" },
@@ -811,18 +799,17 @@ function SubscriptionPanel({ isAf }: { isAf: boolean }) {
     : (isAf ? "Volgende fakturering" : "Next billing");
 
   return (
-    <div
-      className="relative rounded-2xl bg-black p-5"
-      style={{ border: "1px solid rgba(255,255,255,0.08)" }}
+    <section
+      className="relative pl-4 sm:pl-5 py-1"
+      style={{ borderLeft: `3px solid ${s.hex}` }}
       data-testid="parent-subscription-panel"
     >
-      <div aria-hidden className="absolute inset-y-4 left-0 w-[2px] rounded-r" style={{ background: s.hex, boxShadow: `0 0 8px ${s.hex}` }} />
       <div className="relative flex items-start gap-4 flex-wrap">
         <div className="flex-1 min-w-[200px]">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-1" style={{ color: s.hex }}>
             {isAf ? "Intekening" : "Subscription"}
           </p>
-          <h3 className="text-lg font-bold text-white">{planName}</h3>
+          <h3 className="graffiti-hand text-xl text-white" style={{ textShadow: `0 0 10px ${s.hex}` }}>{planName}</h3>
           <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black text-[11px] font-bold"
             style={{ color: s.hex, border: `1px solid ${s.hex}66`, boxShadow: `0 0 8px ${s.hex}33` }}
             data-testid="parent-subscription-status"
@@ -839,15 +826,15 @@ function SubscriptionPanel({ isAf }: { isAf: boolean }) {
         <Link href="/subscribe">
           <Button
             size="sm"
-            className="shrink-0 bg-black text-[#00E5FF] hover:bg-[#00E5FF]/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
-            style={{ border: "1px solid #00E5FF", boxShadow: "0 0 12px rgba(0,229,255,0.35)" }}
+            className="shrink-0 rounded-xl font-bold text-sm bg-black text-[#00E5FF] hover:bg-[#00E5FF]/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+            style={{ border: "1.5px solid #00E5FF", boxShadow: "0 0 12px rgba(0,229,255,0.35)" }}
             data-testid="button-manage-subscription"
           >
             {isAf ? "Bestuur Betaling" : "Manage Payment"}
           </Button>
         </Link>
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -939,15 +926,14 @@ function WhatsAppLinkStatusPanel({ isAf }: { isAf: boolean }) {
     }
   };
 
-  const hex = isOpened ? "#4ADE80" : isDelivered ? "#00E5FF" : isFailed ? "#FF2BD6" : "#FFE600";
+  const hex = isOpened ? "#22FF66" : isDelivered ? "#00E5FF" : isFailed ? "#FF2BD6" : "#FFE600";
 
   return (
-    <div
-      className="relative rounded-2xl bg-black p-5"
-      style={{ border: `1px solid ${hex}44`, boxShadow: `0 0 14px ${hex}22` }}
+    <section
+      className="relative pl-4 sm:pl-5 py-1"
+      style={{ borderLeft: `3px solid ${hex}` }}
       data-testid="whatsapp-link-status-panel"
     >
-      <div aria-hidden className="absolute inset-y-4 left-0 w-[2px] rounded-r" style={{ background: hex, boxShadow: `0 0 8px ${hex}` }} />
       <div className="relative flex items-start gap-3 flex-wrap">
         <div className="flex-1 min-w-[200px]">
           <div className="flex items-center gap-2 mb-1">
@@ -959,7 +945,7 @@ function WhatsAppLinkStatusPanel({ isAf }: { isAf: boolean }) {
 
           {isOpened && (
             <div className="flex items-center gap-2" data-testid="link-status-opened">
-              <CheckCircle2 className="w-4 h-4" style={{ color: "#4ADE80" }} />
+              <CheckCircle2 className="w-4 h-4" style={{ color: "#22FF66" }} />
               <p className="text-sm font-semibold text-white">
                 {isAf ? "Skakel gebruik ✓" : "Link opened ✓"}
               </p>
@@ -974,7 +960,7 @@ function WhatsAppLinkStatusPanel({ isAf }: { isAf: boolean }) {
                 <p className="text-sm font-semibold text-white">
                   {isAf ? "Afgelewer" : "Delivered"}
                   {deliveredAtLabel
-                    ? <span className="ml-1 font-normal text-white/70">{deliveredAtLabel} ✓</span>
+                    ? <span className="ml-1 font-normal text-white">{deliveredAtLabel} ✓</span>
                     : " ✓"}
                 </p>
               </div>
@@ -1035,8 +1021,8 @@ function WhatsAppLinkStatusPanel({ isAf }: { isAf: boolean }) {
             size="sm"
             disabled={resending || resendCooldown > 0 || isInFlight}
             onClick={handleResend}
-            className="shrink-0 bg-black hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-            style={{ color: hex, border: `1px solid ${hex}`, boxShadow: `0 0 10px ${hex}33` }}
+            className="shrink-0 rounded-xl font-bold text-sm bg-black hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            style={{ color: hex, border: `1.5px solid ${hex}`, boxShadow: `0 0 10px ${hex}33` }}
             data-testid="button-resend-whatsapp-link"
             title={isInFlight ? (isAf ? "Wag totdat die skakel afgelewer is" : "Wait until delivery is confirmed") : undefined}
           >
@@ -1053,7 +1039,7 @@ function WhatsAppLinkStatusPanel({ isAf }: { isAf: boolean }) {
           </Button>
         )}
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -1095,14 +1081,14 @@ function ReportEmailOptOutToggle({ learnerUserId, isAf }: { learnerUserId: strin
       : "Turn on to stop scheduled progress reports being emailed to you.";
 
   return (
-    <div
-      className="flex items-start justify-between gap-4 p-4 rounded-xl bg-black/40"
-      style={{ border: "1px solid rgba(124,124,220,0.35)" }}
+    <section
+      className="flex items-start justify-between gap-4 pl-4 sm:pl-5 py-1"
+      style={{ borderLeft: "3px solid #8A2BFF" }}
       data-testid="report-email-opt-out-toggle"
     >
       <div className="min-w-0">
-        <div className="text-sm font-semibold text-white">{label}</div>
-        <div className="text-xs text-muted-foreground mt-1">{helper}</div>
+        <div className="text-sm font-bold text-white">{label}</div>
+        <div className="text-xs text-white mt-1">{helper}</div>
       </div>
       <button
         type="button"
@@ -1113,9 +1099,9 @@ function ReportEmailOptOutToggle({ learnerUserId, isAf }: { learnerUserId: strin
         data-testid="button-toggle-report-email-opt-out"
         className="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 disabled:opacity-50"
         style={{
-          background: optedOut ? "#7c3aed" : "rgba(255,255,255,0.18)",
-          border: `1px solid ${optedOut ? "#7c3aed" : "rgba(255,255,255,0.25)"}`,
-          boxShadow: optedOut ? "0 0 10px rgba(124,58,237,0.45)" : "none",
+          background: optedOut ? "#8A2BFF" : "#000000",
+          border: `1.5px solid ${optedOut ? "#8A2BFF" : "#ffffff"}`,
+          boxShadow: optedOut ? "0 0 10px rgba(138,43,255,0.45)" : "none",
         }}
       >
         <span
@@ -1123,7 +1109,7 @@ function ReportEmailOptOutToggle({ learnerUserId, isAf }: { learnerUserId: strin
           style={{ transform: optedOut ? "translateX(22px)" : "translateX(4px)" }}
         />
       </button>
-    </div>
+    </section>
   );
 }
 
@@ -1162,8 +1148,8 @@ function DownloadReportButton({ learnerName, isAf }: { learnerName: string; isAf
         disabled={loading}
         title={hint}
         aria-label={hint}
-        className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-black disabled:opacity-60 disabled:cursor-wait transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
-        style={{ color: "#00E5FF", border: "1px solid #00E5FF", boxShadow: "0 0 14px rgba(0,229,255,0.45)" }}
+        className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold bg-black disabled:opacity-60 disabled:cursor-wait transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+        style={{ color: "#00E5FF", border: "1.5px solid #00E5FF", boxShadow: "0 0 14px rgba(0,229,255,0.45)" }}
         data-testid="button-download-report"
       >
         {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
@@ -1174,8 +1160,8 @@ function DownloadReportButton({ learnerName, isAf }: { learnerName: string; isAf
 }
 
 const BAR_HEX: Record<string, string> = {
-  "bg-emerald-500": "#4ADE80",
-  "bg-emerald-400": "#4ADE80",
+  "bg-emerald-500": "#22FF66",
+  "bg-emerald-400": "#22FF66",
   "bg-amber-500":   "#FFE600",
   "bg-amber-400":   "#FFE600",
   "bg-red-500":     "#FF2BD6",
@@ -1183,8 +1169,8 @@ const BAR_HEX: Record<string, string> = {
   "bg-pink-500":    "#FF2BD6",
   "bg-cyan-500":    "#00E5FF",
   "bg-cyan-400":    "#00E5FF",
-  "bg-muted-foreground/40": "rgba(255,255,255,0.28)",
-  "bg-white/25":    "rgba(255,255,255,0.28)",
+  "bg-muted-foreground/40": "#ffffff",
+  "bg-white/25":    "#ffffff",
 };
 
 function AnimatedBar({ value, color, delay = 0 }: { value: number; color: string; delay?: number }) {
@@ -1196,7 +1182,7 @@ function AnimatedBar({ value, color, delay = 0 }: { value: number; color: string
   const fill = BAR_HEX[color] ?? color;
   const glow = fill.startsWith("#") ? `0 0 8px ${fill}80` : "none";
   return (
-    <div className="h-2 rounded-full bg-black overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
+    <div className="h-2 rounded-full bg-black overflow-hidden" style={{ border: "1px solid #ffffff" }}>
       <div
         className="h-full rounded-full transition-all duration-700 ease-out"
         style={{ width: `${width}%`, background: fill, boxShadow: glow }}
@@ -1217,7 +1203,7 @@ function AccuracyCompare({ initial, current, isAf }: { initial: number; current:
       <AnimatedBar value={initial} color="bg-muted-foreground/40" delay={0} />
       <div className="flex items-center justify-between text-xs text-white">
         <span>{isAf ? "Huidig" : "Current"}</span>
-        <span className="font-semibold" style={{ color: isUp ? "#4ADE80" : diff < 0 ? "#FF2BD6" : undefined }}>{current}%</span>
+        <span className="font-semibold" style={{ color: isUp ? "#22FF66" : diff < 0 ? "#FF2BD6" : undefined }}>{current}%</span>
       </div>
       <AnimatedBar value={current} color={isUp ? "bg-emerald-500" : diff < 0 ? "bg-red-500" : "bg-cyan-500"} delay={200} />
     </div>
@@ -1388,36 +1374,52 @@ export default function ParentDashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" />
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-2 rounded-full" style={{ borderColor: "#00E5FF", borderTopColor: "transparent" }} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen">
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-black/95 ">
+    <div className="relative min-h-screen bg-background text-white overflow-hidden">
+      <GraffitiSplats variant="full" opacity={0.5} />
+      <header
+        className="sticky top-0 z-50 bg-background/95"
+        style={{ borderBottom: "2px solid rgba(0,229,255,0.4)", boxShadow: "0 0 20px rgba(0,229,255,0.15)" }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-end h-14 gap-4">
+          <div className="flex items-center justify-between h-14 gap-4">
+            <span className="graffiti-hand text-base tracking-tight" style={{ color: "#FFE600", textShadow: "0 0 8px rgba(255,230,0,0.4)" }}>
+              {isAf ? "Ouerpaneel" : "Parent Dashboard"}
+            </span>
             <div className="flex items-center gap-1.5">
               <BrandThemeToggle />
               <button
                 onClick={toggleLanguage}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-white hover:text-white transition-colors text-xs font-semibold border border-border hover:border-border/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-black text-xs font-bold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+                style={{ color: "#8A2BFF", border: "1.5px solid #8A2BFF", boxShadow: "0 0 10px rgba(138,43,255,0.35)" }}
                 data-testid="button-language-toggle"
               >
                 <Globe className="h-3.5 w-3.5" />
                 {language === "en" ? "EN" : "AF"}
               </button>
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => window.history.back()} title={isAf ? "Terug" : "Back"}>
+              <button
+                onClick={() => window.history.back()}
+                title={isAf ? "Terug" : "Back"}
+                className="text-white transition-colors p-1.5 rounded-xl hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+              >
                 <ArrowLeft className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate("/")} title={isAf ? "Tuis" : "Home"}>
+              </button>
+              <button
+                onClick={() => navigate("/")}
+                title={isAf ? "Tuis" : "Home"}
+                className="text-white transition-colors p-1.5 rounded-xl hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+              >
                 <Home className="h-4 w-4" />
-              </Button>
+              </button>
               <button
                 onClick={() => logout()}
-                className="text-white hover:text-white transition-colors p-1.5 rounded-lg hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+                className="text-white transition-colors p-1.5 rounded-xl hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
                 data-testid="button-logout"
                 title={isAf ? "Uitteken" : "Sign Out"}
               >
@@ -1428,25 +1430,18 @@ export default function ParentDashboardPage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 relative">
-        {/* Cosmic wordmark wash */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 -z-0 opacity-40">
-          <div className="absolute top-[2%] left-[8%] w-[440px] h-[440px] rounded-full blur-3xl" style={{ background: "radial-gradient(circle, rgba(0,229,255,0.22), transparent 70%)" }} />
-          <div className="absolute top-[30%] right-[2%] w-[400px] h-[400px] rounded-full blur-3xl" style={{ background: "radial-gradient(circle, rgba(138,43,255,0.22), transparent 70%)" }} />
-          <div className="absolute bottom-[4%] left-[32%] w-[420px] h-[420px] rounded-full blur-3xl" style={{ background: "radial-gradient(circle, rgba(255,43,214,0.16), transparent 70%)" }} />
-        </div>
-
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-black"
-              style={{ border: "1px solid rgba(138,43,255,0.45)", boxShadow: "0 0 12px rgba(138,43,255,0.35)" }}
+              style={{ border: "1.5px solid #8A2BFF", boxShadow: "0 0 12px rgba(138,43,255,0.35)" }}
             >
               <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#8A2BFF", boxShadow: "0 0 6px #8A2BFF" }} />
               <span className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: "#8A2BFF" }}>
                 {isAf ? "Ouerverslag" : "Parent Report"}
               </span>
             </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold gradient-text tracking-tight leading-[1.05]">
+            <h1 className="graffiti-hand text-3xl sm:text-4xl md:text-5xl text-white tracking-tight leading-[1.05]" style={{ textShadow: "0 0 12px rgba(0,229,255,0.4)" }}>
               {isAf ? `Welkom, ${user?.firstName || "Ouer"}` : `Welcome, ${user?.firstName || "Parent"}`}
             </h1>
             <p className="text-white font-medium text-base sm:text-lg max-w-2xl">
@@ -1465,12 +1460,10 @@ export default function ParentDashboardPage() {
         )}
 
         {childProgressError ? (
-          <CosmicCard hex="#FF2BD6" className="p-0">
-            <div className="p-10 text-center" data-testid="parent-dashboard-error">
-              <div className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center mx-auto mb-4" style={{ border: "1px solid #FF2BD6", boxShadow: "0 0 18px #FF2BD655" }}>
-                <AlertTriangle className="w-7 h-7" style={{ color: "#FF2BD6", filter: "drop-shadow(0 0 4px #FF2BD6)" }} />
-              </div>
-              <h2 className="text-lg font-bold text-white mb-2">
+          <CosmicCard hex="#FF2BD6">
+            <div className="py-10 text-center" data-testid="parent-dashboard-error">
+              <AlertTriangle className="w-10 h-10 mx-auto mb-4" style={{ color: "#FF2BD6", filter: "drop-shadow(0 0 6px #FF2BD6)" }} />
+              <h2 className="graffiti-hand text-2xl text-white mb-2" style={{ textShadow: "0 0 10px rgba(255,43,214,0.5)" }}>
                 {isAf ? "Kon nie jou dashboard laai nie" : "Couldn't load your dashboard"}
               </h2>
               <p className="text-sm text-white max-w-md mx-auto mb-5">
@@ -1481,8 +1474,8 @@ export default function ParentDashboardPage() {
               <Button
                 onClick={() => refetchChildProgress()}
                 disabled={isRefetchingChildProgress}
-                className="bg-black text-[#FF2BD6] hover:bg-[#FF2BD6]/10"
-                style={{ border: "1px solid #FF2BD6", boxShadow: "0 0 14px rgba(255,43,214,0.45)" }}
+                className="rounded-xl font-bold text-sm bg-black text-[#FF2BD6] hover:bg-[#FF2BD6]/10"
+                style={{ border: "1.5px solid #FF2BD6", boxShadow: "0 0 14px rgba(255,43,214,0.45)" }}
                 data-testid="button-retry-parent-dashboard"
               >
                 <RefreshCw className={`w-4 h-4 mr-2 ${isRefetchingChildProgress ? "animate-spin" : ""}`} />
@@ -1498,18 +1491,15 @@ export default function ParentDashboardPage() {
                 queryKey, so React Query refetches the hero, stats, weekly report, readiness,
                 activity feed, monthly summary and exam schedule together. */}
             {(childrenData?.children?.length ?? 0) > 1 && (
-              <div
-                className="relative rounded-2xl bg-black p-4 sm:p-5"
-                style={{ border: "1px solid rgba(138,43,255,0.45)", boxShadow: "0 0 18px rgba(138,43,255,0.25)" }}
-                data-testid="parent-child-switcher"
-              >
-                <div className="flex items-center gap-2 mb-3">
-                  <Users className="w-4 h-4" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 4px #8A2BFF)" }} />
-                  <h2 className="text-sm font-bold uppercase tracking-[0.18em] text-white">
+              <section className="relative" data-testid="parent-child-switcher">
+                <div className="flex items-center gap-3 mb-3 flex-wrap">
+                  <h2 className="spray-title graffiti-hand text-lg text-white" style={{ textShadow: "0 2px 0 rgba(0,0,0,0.85)" }}>
+                    <SpraySmear color="#FF2BD6" />
+                    <Users className="inline w-4 h-4 mr-2 align-[-2px]" style={{ color: "#fff", filter: "drop-shadow(0 0 6px #FF2BD6)" }} />
                     {isAf ? "Kies Kind" : "Viewing Child"}
                   </h2>
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-black"
-                    style={{ color: "#8A2BFF", border: "1px solid #8A2BFF55" }}>
+                    style={{ color: "#8A2BFF", border: "1px solid #8A2BFF" }}>
                     {childrenData!.children.length} {isAf ? "kinders" : "children"}
                   </span>
                 </div>
@@ -1523,11 +1513,11 @@ export default function ParentDashboardPage() {
                         aria-selected={active}
                         onClick={() => setSelectedLearnerId(c.learnerUserId)}
                         data-testid={`parent-switch-child-${c.learnerUserId}`}
-                        className="px-3 py-1.5 rounded-full text-xs font-semibold transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+                        className="px-3 py-1.5 rounded-xl text-xs font-bold transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
                         style={
                           active
-                            ? { background: "#8A2BFF", color: "#000", border: "1px solid #8A2BFF", boxShadow: "0 0 12px rgba(138,43,255,0.55)" }
-                            : { background: "#000", color: "#fff", border: "1px solid rgba(255,255,255,0.18)" }
+                            ? { background: "#8A2BFF", color: "#000", border: "1.5px solid #8A2BFF", boxShadow: "0 0 12px rgba(138,43,255,0.55)" }
+                            : { background: "#000", color: "#fff", border: "1.5px solid #ffffff" }
                         }
                       >
                         {c.learnerName}
@@ -1535,22 +1525,18 @@ export default function ParentDashboardPage() {
                     );
                   })}
                 </div>
-              </div>
+              </section>
             )}
 
-            {/* Hero learner card — cosmic-neon */}
-            <div
-              className="relative overflow-hidden rounded-2xl bg-black p-6 sm:p-8"
-              style={{ border: "1.5px solid #00E5FF", boxShadow: "0 0 0 1px rgba(0,229,255,0.28), 0 0 26px rgba(0,229,255,0.3), inset 0 0 22px rgba(0,0,0,0.55)" }}
-            >
-              <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: "#00E5FF" }} />
-              <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2" style={{ borderColor: "#00E5FF" }} />
-              <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2" style={{ borderColor: "#00E5FF" }} />
-              <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: "#00E5FF" }} />
+            {/* Hero learner — wall-written, no box */}
+            <section className="relative">
               <div className="relative flex flex-col sm:flex-row sm:items-center gap-6">
                 <div className="flex-1">
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-1" style={{ color: "#00E5FF" }}>{isAf ? "Leerder" : "Learner"}</p>
-                  <h2 className="text-2xl sm:text-3xl font-bold text-white mb-1" style={{ textShadow: "0 0 12px rgba(0,229,255,0.4)" }}>{childProgress.learnerName}</h2>
+                  <h2 className="spray-title graffiti-hand text-2xl sm:text-3xl text-white mb-1" style={{ textShadow: "0 2px 0 rgba(0,0,0,0.85)" }}>
+                    <SpraySmear color="#006BFF" />
+                    {childProgress.learnerName}
+                  </h2>
                   <p className="text-white text-xs">
                     {isAf ? "Laas aktief" : "Last active"}: {formatDate(childProgress.lastActiveDate)}
                   </p>
@@ -1575,7 +1561,7 @@ export default function ParentDashboardPage() {
                   <Sparkline studyDays={childProgress.weeklyReport.studyDays} totalQ={childProgress.weeklyReport.questionsAnswered} />
                 </div>
               </div>
-            </div>
+            </section>
 
             {/* Stat cards — cosmic neon, live-animated */}
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -1588,14 +1574,15 @@ export default function ParentDashboardPage() {
             {/* Per-child readiness — one card per linked learner; numbers match each learner's own dashboard */}
             {(childrenData?.children ?? []).length > 0 && (
               <div className="space-y-3" data-testid="parent-children-readiness">
-                <div className="flex items-center gap-2">
-                  <Zap className="w-4 h-4" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
-                  <h2 className="text-sm font-bold uppercase tracking-[0.18em] text-white">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <h2 className="spray-title graffiti-hand text-lg text-white" style={{ textShadow: "0 2px 0 rgba(0,0,0,0.85)" }}>
+                    <SpraySmear color="#FFE600" />
+                    <Zap className="inline w-4 h-4 mr-2 align-[-2px]" style={{ color: "#fff", filter: "drop-shadow(0 0 6px #FFE600)" }} />
                     {isAf ? "Gereedheid per Kind" : "Readiness per Child"}
                   </h2>
                   {(childrenData?.children?.length ?? 0) > 1 && (
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-black"
-                      style={{ color: "#00E5FF", border: "1px solid #00E5FF55" }}>
+                      style={{ color: "#00E5FF", border: "1px solid #00E5FF" }}>
                       {childrenData!.children.length} {isAf ? "kinders" : "children"}
                     </span>
                   )}
@@ -1620,25 +1607,22 @@ export default function ParentDashboardPage() {
             {/* Readiness scores per subject */}
             {readiness.length > 0 && <ReadinessPanel readiness={readiness} isAf={isAf} />}
 
-            {/* Weekly report */}
-            <div
-              className="relative rounded-2xl bg-black p-6"
-              style={{ border: "1px solid rgba(255,255,255,0.08)" }}
-            >
-              <div aria-hidden className="absolute inset-y-4 left-0 w-[2px] rounded-r" style={{ background: "#00E5FF", boxShadow: "0 0 8px #00E5FF" }} />
+            {/* Weekly report — wall-written */}
+            <section className="relative">
               <div className="relative flex items-center justify-between flex-wrap gap-2 mb-5">
                 <div>
-                  <h3 className="flex items-center gap-2 text-base font-bold text-white">
-                    <Calendar className="w-4 h-4" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
+                  <h3 className="spray-title graffiti-hand text-lg sm:text-xl text-white" style={{ textShadow: "0 2px 0 rgba(0,0,0,0.85)" }}>
+                    <SpraySmear color="#FF8A00" />
+                    <Calendar className="inline w-4 h-4 mr-2 align-[-2px]" style={{ color: "#fff", filter: "drop-shadow(0 0 6px #FF8A00)" }} />
                     {isAf ? "Weeklikse Vorderingsverslag" : "Weekly Progress Report"}
                   </h3>
-                  <p className="text-xs text-white mt-0.5">
+                  <p className="text-xs text-white mt-1.5">
                     {formatDate(childProgress.weeklyReport.weekStarting)} – {formatDate(childProgress.weeklyReport.weekEnding)}
                   </p>
                 </div>
                 <span
                   className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.22em] px-2 py-0.5 rounded-full bg-black"
-                  style={{ color: "#00E5FF", border: "1px solid #00E5FF", boxShadow: "0 0 10px rgba(0,229,255,0.35)" }}
+                  style={{ color: "#FF8A00", border: "1px solid #FF8A00", boxShadow: "0 0 10px rgba(255,138,0,0.35)" }}
                 >
                   {isAf ? "Hierdie Week" : "This Week"}
                 </span>
@@ -1659,12 +1643,10 @@ export default function ParentDashboardPage() {
                   return (
                     <div
                       data-testid="weekly-report-empty"
-                      className="relative rounded-xl bg-black p-6 text-center mb-2"
-                      style={{ border: "1px dashed rgba(0,229,255,0.45)" }}
+                      className="relative pl-4 py-2 mb-2"
+                      style={{ borderLeft: "3px solid #00E5FF" }}
                     >
-                      <div className="w-12 h-12 rounded-xl bg-black flex items-center justify-center mx-auto mb-3" style={{ border: "1px solid #00E5FF", boxShadow: "0 0 12px #00E5FF55" }}>
-                        <BookOpen className="w-6 h-6" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
-                      </div>
+                      <BookOpen className="w-6 h-6 mb-2" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
                       <p className="text-sm font-bold text-white mb-1">
                         {isAf ? "Nog geen aktiwiteit hierdie week nie" : "No activity logged this week yet"}
                       </p>
@@ -1693,57 +1675,56 @@ export default function ParentDashboardPage() {
 
               <div className="relative grid gap-4 sm:grid-cols-2">
                 {childProgress.weeklyReport.achievements.length > 0 && (
-                  <div className="relative p-4 rounded-xl bg-black overflow-hidden" style={{ border: "1px solid #4ADE80aa" }}>
-                    <div aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: "#4ADE80" }} />
-                    <h4 className="font-bold text-sm mb-3 flex items-center gap-2" style={{ color: "#4ADE80" }}>
-                      <CheckCircle className="w-4 h-4" style={{ filter: "drop-shadow(0 0 4px #4ADE80)" }} />
+                  <div className="relative pl-4 py-1" style={{ borderLeft: "3px solid #22FF66" }}>
+                    <h4 className="font-bold text-sm mb-3 flex items-center gap-2" style={{ color: "#22FF66" }}>
+                      <CheckCircle className="w-4 h-4" style={{ filter: "drop-shadow(0 0 4px #22FF66)" }} />
                       {isAf ? "Prestasies Hierdie Week" : "Achievements This Week"}
                     </h4>
                     <div className="flex flex-wrap gap-2">
                       {childProgress.weeklyReport.achievements.map((a, i) => (
-                        <span key={i} className="px-2 py-0.5 rounded-full bg-black text-xs" style={{ color: "#4ADE80", border: "1px solid #4ADE8055" }}>{a}</span>
+                        <span key={i} className="px-2 py-0.5 rounded-full bg-black text-xs font-bold" style={{ color: "#22FF66", border: "1px solid #22FF66" }}>{a}</span>
                       ))}
                     </div>
                   </div>
                 )}
                 {childProgress.weeklyReport.areasForImprovement.length > 0 && (
-                  <div className="relative p-4 rounded-xl bg-black overflow-hidden" style={{ border: "1px solid #FFE600aa" }}>
-                    <div aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: "#FFE600" }} />
+                  <div className="relative pl-4 py-1" style={{ borderLeft: "3px solid #FFE600" }}>
                     <h4 className="font-bold text-sm mb-3 flex items-center gap-2" style={{ color: "#FFE600" }}>
                       <AlertTriangle className="w-4 h-4" style={{ filter: "drop-shadow(0 0 4px #FFE600)" }} />
                       {isAf ? "Areas om op te Fokus" : "Areas to Focus On"}
                     </h4>
                     <div className="flex flex-wrap gap-2">
                       {childProgress.weeklyReport.areasForImprovement.map((a, i) => (
-                        <span key={i} className="px-2 py-0.5 rounded-full bg-black text-xs" style={{ color: "#FFE600", border: "1px solid #FFE60055" }}>{a}</span>
+                        <span key={i} className="px-2 py-0.5 rounded-full bg-black text-xs font-bold" style={{ color: "#FFE600", border: "1px solid #FFE600" }}>{a}</span>
                       ))}
                     </div>
                   </div>
                 )}
               </div>
-            </div>
+            </section>
 
-            {/* Subject grids — cosmic neon */}
+            {/* Subject grids — wall-written */}
             <div className="grid gap-6 lg:grid-cols-2">
               <CosmicCard hex="#006BFF">
-                <h3 className="flex items-center gap-2 text-base font-bold text-white mb-1">
-                  <TrendingUp className="w-4 h-4" style={{ color: "#006BFF", filter: "drop-shadow(0 0 4px #006BFF)" }} />
+                <h3 className="spray-title graffiti-hand text-lg text-white mb-2" style={{ textShadow: "0 2px 0 rgba(0,0,0,0.85)" }}>
+                  <SpraySmear color="#006BFF" />
+                  <TrendingUp className="inline w-4 h-4 mr-2 align-[-2px]" style={{ color: "#fff", filter: "drop-shadow(0 0 6px #006BFF)" }} />
                   {isAf ? "Vakvordering" : "Subject Progress"}
                 </h3>
                 <p className="text-xs text-white mb-4">{isAf ? "Akkuraatheid per vak hierdie week" : "Accuracy per subject this week"}</p>
                 <div className="space-y-3">
                   {childProgress.weeklyReport.subjectBreakdown.map((subject, i) => {
-                    const accHex = subject.accuracy >= 70 ? "#4ADE80" : subject.accuracy >= 50 ? "#FFE600" : "#FF2BD6";
+                    const accHex = subject.accuracy >= 70 ? "#22FF66" : subject.accuracy >= 50 ? "#FFE600" : "#FF2BD6";
                     const mastery = subject.masteryScore ?? null;
                     const progress = subject.progressScore ?? null;
-                    const masteryHex = mastery == null ? "#8A2BFF" : mastery >= 75 ? "#4ADE80" : mastery >= 60 ? "#FFE600" : "#FF2BD6";
+                    const masteryHex = mastery == null ? "#8A2BFF" : mastery >= 75 ? "#22FF66" : mastery >= 60 ? "#FFE600" : "#FF2BD6";
                     return (
-                      <div key={i} className="p-3 rounded-xl bg-black border border-white/10 space-y-2" data-testid={`parent-subject-row-${i}`}>
+                      <div key={i} className="py-1 space-y-2" data-testid={`parent-subject-row-${i}`}>
                         <div className="flex items-center justify-between">
                           <span className="font-medium text-sm text-white">{subject.subjectName}</span>
                           <div className="flex items-center gap-2">
                             <span className="text-xs text-white">{subject.questionsAttempted} {isAf ? "vrae" : "q's"}</span>
-                            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-black" style={{ color: accHex, border: `1px solid ${accHex}55` }}>{subject.accuracy}%</span>
+                            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-black" style={{ color: accHex, border: `1px solid ${accHex}` }}>{subject.accuracy}%</span>
                           </div>
                         </div>
                         <AnimatedBar
@@ -1774,8 +1755,9 @@ export default function ParentDashboardPage() {
               </CosmicCard>
 
               <CosmicCard hex="#8A2BFF">
-                <h3 className="flex items-center gap-2 text-base font-bold text-white mb-1">
-                  <Target className="w-4 h-4" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 4px #8A2BFF)" }} />
+                <h3 className="spray-title graffiti-hand text-lg text-white mb-2" style={{ textShadow: "0 2px 0 rgba(0,0,0,0.85)" }}>
+                  <SpraySmear color="#8A2BFF" />
+                  <Target className="inline w-4 h-4 mr-2 align-[-2px]" style={{ color: "#fff", filter: "drop-shadow(0 0 6px #8A2BFF)" }} />
                   {isAf ? "Vakpuntevergelyking" : "Subject Marks Comparison"}
                 </h3>
                 <p className="text-xs text-white mb-4">{isAf ? "Aanvanklike vs Huidige Prestasie" : "Initial vs Current Performance"}</p>
@@ -1784,13 +1766,13 @@ export default function ParentDashboardPage() {
                     const diff = subject.currentMark - subject.initialMark;
                     const isUp = diff > 0;
                     const isDown = diff < 0;
-                    const diffHex = isUp ? "#4ADE80" : isDown ? "#FF2BD6" : "#ffffff";
+                    const diffHex = isUp ? "#22FF66" : isDown ? "#FF2BD6" : "#ffffff";
                     return (
-                      <div key={i} className="p-3 rounded-xl bg-black border border-white/10 space-y-2">
+                      <div key={i} className="py-1 space-y-2">
                         <div className="flex items-center justify-between">
                           <span className="font-medium text-sm text-white">{subject.subjectName}</span>
                           <div className="flex items-center gap-1">
-                            {isUp && <ArrowUpRight className="w-3.5 h-3.5" style={{ color: "#4ADE80" }} />}
+                            {isUp && <ArrowUpRight className="w-3.5 h-3.5" style={{ color: "#22FF66" }} />}
                             {isDown && <ArrowDownRight className="w-3.5 h-3.5" style={{ color: "#FF2BD6" }} />}
                             {!isUp && !isDown && <Minus className="w-3.5 h-3.5 text-white" />}
                             <span className="text-xs font-bold" style={{ color: diffHex }}>
@@ -1824,8 +1806,9 @@ export default function ParentDashboardPage() {
 
             {childProgress.examSessions && childProgress.examSessions.length > 0 && (
               <CosmicCard hex="#FFE600">
-                <h3 className="flex items-center gap-2 text-base font-bold text-white mb-1">
-                  <Trophy className="w-4 h-4" style={{ color: "#FFE600", filter: "drop-shadow(0 0 4px #FFE600)" }} />
+                <h3 className="spray-title graffiti-hand text-lg text-white mb-2" style={{ textShadow: "0 2px 0 rgba(0,0,0,0.85)" }}>
+                  <SpraySmear color="#FFE600" />
+                  <Trophy className="inline w-4 h-4 mr-2 align-[-2px]" style={{ color: "#fff", filter: "drop-shadow(0 0 6px #FFE600)" }} />
                   {isAf ? "Eksamentyd Eksamenresultate" : "Crunch Time Exam Results"}
                 </h3>
                 <p className="text-xs text-white mb-4">
@@ -1836,9 +1819,9 @@ export default function ParentDashboardPage() {
                     const pct = session.score != null && session.totalMarks
                       ? Math.round((session.score / session.totalMarks) * 100)
                       : null;
-                    const pctHex = pct == null ? "#ffffff" : pct >= 60 ? "#4ADE80" : pct >= 40 ? "#FFE600" : "#FF2BD6";
+                    const pctHex = pct == null ? "#ffffff" : pct >= 60 ? "#22FF66" : pct >= 40 ? "#FFE600" : "#FF2BD6";
                     return (
-                      <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-black border border-white/10">
+                      <div key={i} className="flex items-center justify-between py-1 pl-3" style={{ borderLeft: `3px solid ${pctHex === "#ffffff" ? "#00E5FF" : pctHex}` }}>
                         <div>
                           <p className="text-sm font-medium text-white">{session.subject}</p>
                           <p className="text-[10px] text-white">
@@ -1852,7 +1835,7 @@ export default function ParentDashboardPage() {
                               <p className="text-[10px] text-white">{session.score}/{session.totalMarks}</p>
                             </>
                           ) : (
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-black" style={{ color: "#00E5FF", border: "1px solid #00E5FF55" }}>{isAf ? "Voltooi" : "Completed"}</span>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-black" style={{ color: "#00E5FF", border: "1px solid #00E5FF" }}>{isAf ? "Voltooi" : "Completed"}</span>
                           )}
                         </div>
                       </div>
@@ -1877,8 +1860,9 @@ export default function ParentDashboardPage() {
               return (
                 <CosmicCard hex="#006BFF">
                   <div data-testid="parent-exam-timetable">
-                    <h3 className="flex items-center gap-2 text-base font-bold text-white mb-1">
-                      <Calendar className="w-4 h-4" style={{ color: "#006BFF", filter: "drop-shadow(0 0 4px #006BFF)" }} />
+                    <h3 className="spray-title graffiti-hand text-lg text-white mb-2" style={{ textShadow: "0 2px 0 rgba(0,0,0,0.85)" }}>
+                      <SpraySmear color="#006BFF" />
+                      <Calendar className="inline w-4 h-4 mr-2 align-[-2px]" style={{ color: "#fff", filter: "drop-shadow(0 0 6px #006BFF)" }} />
                       {isAf ? "NSC 2026 Eksamenrooster" : "NSC 2026 Exam Timetable"}
                     </h3>
                     <p className="text-xs text-white mb-4">
@@ -1892,7 +1876,7 @@ export default function ParentDashboardPage() {
                       const hasReadinessData = (childProgress?.totalQuestionsAnswered ?? 0) > 0;
                       const acc = childProgress?.overallAccuracy ?? 0;
                       const streak = childProgress?.currentStreak ?? 0;
-                      const accentHex = !hasReadinessData ? "#8A2BFF" : acc >= 70 ? "#4ADE80" : acc >= 50 ? "#FFE600" : "#FF2BD6";
+                      const accentHex = !hasReadinessData ? "#8A2BFF" : acc >= 70 ? "#22FF66" : acc >= 50 ? "#FFE600" : "#FF2BD6";
                       const labelText = !hasReadinessData
                         ? (isAf ? "Geen oefendata nog nie" : "No practice data yet")
                         : acc >= 70
@@ -1901,10 +1885,8 @@ export default function ParentDashboardPage() {
                             ? (isAf ? "Bou Momentum" : "Building Momentum")
                             : (isAf ? "Aandag Nodig" : "Needs Attention");
                       return (
-                        <div data-testid="parent-overall-readiness" className="flex items-center gap-3 p-3 rounded-xl bg-black mb-3" style={{ border: "1px solid #00E5FF55" }}>
-                          <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center shrink-0" style={{ border: "1px solid #00E5FF", boxShadow: "0 0 10px #00E5FF55" }}>
-                            <GraduationCap className="w-4 h-4" style={{ color: "#00E5FF" }} />
-                          </div>
+                        <div data-testid="parent-overall-readiness" className="flex items-center gap-3 pl-3 py-1 mb-3" style={{ borderLeft: `3px solid ${accentHex}` }}>
+                          <GraduationCap className="w-5 h-5 shrink-0" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
                           <div className="flex-1 min-w-0">
                             <p className="text-xs font-bold text-white">
                               {isAf ? "Gereedheidsein" : "Overall Readiness"}:{" "}
@@ -1941,15 +1923,10 @@ export default function ParentDashboardPage() {
                       return (
                         <div
                           data-testid="parent-today-directive"
-                          className="flex items-center gap-3 p-3 rounded-xl bg-black mb-3"
-                          style={{ border: `1px solid ${u.color}aa`, boxShadow: `0 0 14px ${u.glow}` }}
+                          className="flex items-center gap-3 pl-3 py-1 mb-3"
+                          style={{ borderLeft: `3px solid ${u.color}` }}
                         >
-                          <div
-                            className="w-8 h-8 rounded-lg bg-black flex items-center justify-center shrink-0"
-                            style={{ border: `1px solid ${u.color}`, boxShadow: `0 0 10px ${u.glow}` }}
-                          >
-                            <Rocket className="w-4 h-4" style={{ color: u.color, filter: `drop-shadow(0 0 4px ${u.glow})` }} />
-                          </div>
+                          <Rocket className="w-5 h-5 shrink-0" style={{ color: u.color, filter: `drop-shadow(0 0 4px ${u.glow})` }} />
                           <div className="flex-1 min-w-0">
                             <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-0.5" style={{ color: u.color }}>
                               {learnerDirective.isExamToday
@@ -1972,7 +1949,7 @@ export default function ParentDashboardPage() {
 
                     {/* Risk alerts: low readiness (< 50%) with exam within 7 days */}
                     {riskSubjects.length > 0 && (
-                      <div className="flex items-start gap-2 p-3 rounded-xl bg-black mb-3" style={{ border: "1px solid #FF2BD6aa", boxShadow: "0 0 16px rgba(255,43,214,0.18)" }}>
+                      <div className="flex items-start gap-2 pl-3 py-1 mb-3" style={{ borderLeft: "3px solid #FF2BD6" }}>
                         <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "#FF2BD6", filter: "drop-shadow(0 0 4px #FF2BD6)" }} />
                         <div className="flex-1 min-w-0">
                           <p className="text-xs font-bold mb-1" style={{ color: "#FF2BD6" }}>
@@ -1997,16 +1974,15 @@ export default function ParentDashboardPage() {
                         const d = new Date(entry.examDate + "T00:00:00");
                         const daysLeft = entry.daysRemaining;
                         const urgency = daysLeft <= 14 ? "red" : daysLeft <= 30 ? "amber" : daysLeft <= 60 ? "blue" : "emerald";
-                        const uHex = entry.isAtRisk ? "#FF2BD6" : urgency === "red" ? "#FF2BD6" : urgency === "amber" ? "#FFE600" : urgency === "blue" ? "#006BFF" : "#4ADE80";
-                        const accHex = entry.subjectAccuracy == null ? "#ffffff" : entry.subjectAccuracy >= 70 ? "#4ADE80" : entry.subjectAccuracy >= 50 ? "#FFE600" : "#FF2BD6";
+                        const uHex = entry.isAtRisk ? "#FF2BD6" : urgency === "red" ? "#FF2BD6" : urgency === "amber" ? "#FFE600" : urgency === "blue" ? "#006BFF" : "#22FF66";
+                        const accHex = entry.subjectAccuracy == null ? "#ffffff" : entry.subjectAccuracy >= 70 ? "#22FF66" : entry.subjectAccuracy >= 50 ? "#FFE600" : "#FF2BD6";
                         return (
-                          <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-black" style={{ border: `1px solid ${uHex}55` }}>
-                            <div className="w-2 h-2 rounded-full shrink-0" style={{ background: uHex, boxShadow: `0 0 6px ${uHex}` }} />
+                          <div key={i} className="flex items-center gap-3 pl-3 py-1" style={{ borderLeft: `3px solid ${uHex}` }}>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-1.5 flex-wrap">
                                 <p className="text-xs font-bold text-white truncate">{entry.subjectName}</p>
                                 {entry.subjectAccuracy !== null && (
-                                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-black" style={{ color: accHex, border: `1px solid ${accHex}55` }}>{entry.subjectAccuracy}%</span>
+                                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-black" style={{ color: accHex, border: `1px solid ${accHex}` }}>{entry.subjectAccuracy}%</span>
                                 )}
                                 {entry.isAtRisk && (
                                   <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-black" style={{ color: "#FF2BD6", border: "1px solid #FF2BD6" }}>
@@ -2028,13 +2004,13 @@ export default function ParentDashboardPage() {
 
                     {/* Non-examination days */}
                     {nonExamDates.length > 0 && (
-                      <div className="border-t border-white/10 pt-3">
+                      <div className="pl-3 pt-3" style={{ borderLeft: "3px solid #FFE600" }}>
                         <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "#FFE600" }}>
                           {isAf ? "Nie-eksamen Dae (inhaal)" : "Non-Examination Days (catch-up)"}
                         </p>
                         <div className="flex flex-wrap gap-2">
                           {nonExamDates.map(d => (
-                            <span key={d} className="inline-flex px-2.5 py-1 rounded-lg bg-black text-[10px] font-semibold" style={{ color: "#FFE600", border: "1px solid #FFE60055" }}>
+                            <span key={d} className="inline-flex px-2.5 py-1 rounded-lg bg-black text-[10px] font-bold" style={{ color: "#FFE600", border: "1px solid #FFE600" }}>
                               {fmtDate(d + "T00:00:00", language, { weekday: "short", day: "numeric", month: "short" })}
                             </span>
                           ))}
@@ -2058,18 +2034,15 @@ export default function ParentDashboardPage() {
               <CelebrationBanner childProgress={childProgress} isAf={isAf} />
             )}
 
-            {/* Journey link */}
-            <div
-              className="relative rounded-2xl bg-black p-5 flex items-center justify-between gap-4"
-              style={{ border: "1px solid rgba(255,255,255,0.08)" }}
+            {/* Journey link — wall callout */}
+            <section
+              className="relative pl-4 sm:pl-5 py-1 flex items-center justify-between gap-4"
+              style={{ borderLeft: "3px solid #22FF66" }}
             >
-              <div aria-hidden className="absolute inset-y-4 left-0 w-[2px] rounded-r" style={{ background: "#00E5FF", boxShadow: "0 0 8px #00E5FF" }} />
               <div className="relative flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shrink-0" style={{ border: "1px solid #00E5FF", boxShadow: "0 0 12px #00E5FF55" }}>
-                  <MapPin className="w-5 h-5" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
-                </div>
+                <MapPin className="w-6 h-6 shrink-0" style={{ color: "#22FF66", filter: "drop-shadow(0 0 6px #22FF66)" }} />
                 <div>
-                  <h3 className="font-bold text-sm text-white">
+                  <h3 className="graffiti-hand text-base text-white">
                     {isAf ? "Leerreis Tydlyn" : "Learning Journey Timeline"}
                   </h3>
                   <p className="text-xs text-white mt-0.5">
@@ -2080,14 +2053,14 @@ export default function ParentDashboardPage() {
               <Link href="/journey?parent=1">
                 <Button
                   size="sm"
-                  className="shrink-0 relative bg-black text-[#00E5FF] hover:bg-[#00E5FF]/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
-                  style={{ border: "1px solid #00E5FF", boxShadow: "0 0 12px rgba(0,229,255,0.35)" }}
+                  className="shrink-0 relative rounded-xl font-bold text-sm bg-black text-[#22FF66] hover:bg-[#22FF66]/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+                  style={{ border: "1.5px solid #22FF66", boxShadow: "0 0 12px rgba(34,255,102,0.35)" }}
                 >
                   {isAf ? "Sien Reis" : "View Journey"}
                   <ChevronRight className="w-3.5 h-3.5 ml-1" />
                 </Button>
               </Link>
-            </div>
+            </section>
 
             <ParentTipCard isAf={isAf} />
 
@@ -2100,17 +2073,15 @@ export default function ParentDashboardPage() {
             <LinkHistorySection learnerId={selectedLearnerId} isAf={isAf} />
           </div>
         ) : (
-          <CosmicCard hex="#8A2BFF" className="p-0">
-            <div className="p-16 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-black flex items-center justify-center mx-auto mb-4" style={{ border: "1px solid #8A2BFF", boxShadow: "0 0 18px #8A2BFF55" }}>
-                <BookOpen className="w-8 h-8" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 4px #8A2BFF)" }} />
-              </div>
-              <h2 className="text-lg font-bold text-white mb-2">{isAf ? "Nog geen kinderrekening gekoppel nie" : "No child account linked yet"}</h2>
+          <CosmicCard hex="#8A2BFF">
+            <div className="py-16 text-center relative z-10">
+              <BookOpen className="w-12 h-12 mx-auto mb-4" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 6px #8A2BFF)" }} />
+              <h2 className="graffiti-hand text-2xl text-white mb-2" style={{ textShadow: "0 0 10px rgba(138,43,255,0.5)" }}>{isAf ? "Nog geen kinderrekening gekoppel nie" : "No child account linked yet"}</h2>
               <p className="text-sm text-white max-w-md mx-auto">
                 {isAf ? "Vra jou kind om sy aktiveringskode in Instellings te deel — sodra dit gekoppel is, sien jy hul vordering hier." : "Ask your child to share their activation code from Settings — once linked, you'll see their progress here."}
               </p>
               <div className="mt-5">
-                <a href="/subscribe" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm text-white transition-all" style={{ background: "linear-gradient(135deg, #8A2BFF, #8A2BFF)", boxShadow: "0 0 18px rgba(138,43,255,0.4)" }} data-testid="link-parent-get-started">
+                <a href="/subscribe" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-black transition-all" style={{ background: "#8A2BFF", boxShadow: "0 0 18px rgba(138,43,255,0.4)" }} data-testid="link-parent-get-started">
                   {isAf ? "Begin nou — Brain Boost" : "Get Started — Brain Boost"}
                 </a>
               </div>
@@ -2138,21 +2109,11 @@ function NoActivityEmptyState({ learnerName, isAf }: { learnerName: string; isAf
 
   return (
     <div className="space-y-6 relative z-10" data-testid="parent-no-activity-empty-state">
-      <div
-        className="relative overflow-hidden rounded-2xl bg-black p-8 sm:p-10 text-center"
-        style={{ border: "1.5px solid #00E5FF", boxShadow: "0 0 0 1px rgba(0,229,255,0.28), 0 0 26px rgba(0,229,255,0.3), inset 0 0 22px rgba(0,0,0,0.55)" }}
-      >
-        <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: "#00E5FF" }} />
-        <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2" style={{ borderColor: "#00E5FF" }} />
-        <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2" style={{ borderColor: "#00E5FF" }} />
-        <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: "#00E5FF" }} />
-
-        <div className="w-16 h-16 rounded-2xl bg-black flex items-center justify-center mx-auto mb-5" style={{ border: "1px solid #00E5FF", boxShadow: "0 0 18px rgba(0,229,255,0.45)" }}>
-          <Rocket className="w-8 h-8" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
-        </div>
+      <div className="relative py-8 sm:py-10 text-center">
+        <Rocket className="w-12 h-12 mx-auto mb-5" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 6px #00E5FF)" }} />
 
         <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-black mb-3"
-          style={{ border: "1px solid rgba(0,229,255,0.45)", boxShadow: "0 0 12px rgba(0,229,255,0.35)" }}
+          style={{ border: "1.5px solid #00E5FF", boxShadow: "0 0 12px rgba(0,229,255,0.35)" }}
         >
           <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#00E5FF", boxShadow: "0 0 6px #00E5FF" }} />
           <span className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: "#00E5FF" }}>
@@ -2160,7 +2121,7 @@ function NoActivityEmptyState({ learnerName, isAf }: { learnerName: string; isAf
           </span>
         </div>
 
-        <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2" style={{ textShadow: "0 0 12px rgba(0,229,255,0.4)" }}>
+        <h2 className="graffiti-hand text-2xl sm:text-3xl text-white mb-2" style={{ textShadow: "0 0 12px rgba(0,229,255,0.4)" }}>
           {isAf ? `Nog geen aktiwiteit van ${learnerName} nie` : `No activity from ${learnerName} yet`}
         </h2>
         <p className="text-sm sm:text-base text-white max-w-xl mx-auto leading-relaxed">
@@ -2174,14 +2135,11 @@ function NoActivityEmptyState({ learnerName, isAf }: { learnerName: string; isAf
         {tips.map((t, i) => (
           <div
             key={i}
-            className="relative rounded-2xl bg-black p-5"
-            style={{ border: "1px solid rgba(255,255,255,0.08)" }}
+            className="relative pl-4 py-1"
+            style={{ borderLeft: "3px solid #8A2BFF" }}
           >
-            <div aria-hidden className="absolute inset-y-4 left-0 w-[2px] rounded-r" style={{ background: "#8A2BFF", boxShadow: "0 0 8px #8A2BFF" }} />
             <div className="relative flex items-start gap-3">
-              <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shrink-0" style={{ border: "1px solid #8A2BFF", boxShadow: "0 0 12px rgba(138,43,255,0.45)" }}>
-                <t.icon className="w-5 h-5" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 4px #8A2BFF)" }} />
-              </div>
+              <t.icon className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 4px #8A2BFF)" }} />
               <div>
                 <h3 className="font-bold text-sm text-white mb-1">{t.title}</h3>
                 <p className="text-xs text-white leading-relaxed">{t.body}</p>
@@ -2217,29 +2175,26 @@ function PerformanceStatus({ childProgress, isAf }: { childProgress: ChildProgre
     accent = "red"; StatusIcon = AlertTriangle;
   }
 
-  const hexMap: Record<string, string> = { emerald: "#4ADE80", amber: "#FFE600", red: "#FF2BD6" };
+  const hexMap: Record<string, string> = { emerald: "#22FF66", amber: "#FFE600", red: "#FF2BD6" };
   const hex = hexMap[accent];
 
   return (
-    <div
-      className="relative rounded-2xl bg-black p-5"
-      style={{ border: "1px solid rgba(255,255,255,0.08)" }}
+    <section
+      className="relative pl-4 sm:pl-5 py-1"
+      style={{ borderLeft: `3px solid ${hex}` }}
       data-testid="performance-status"
     >
-      <div aria-hidden className="absolute inset-y-4 left-0 w-[2px] rounded-r" style={{ background: hex, boxShadow: `0 0 8px ${hex}` }} />
       <div className="relative flex items-start gap-4">
-        <div className="w-11 h-11 rounded-xl bg-black flex items-center justify-center shrink-0" style={{ border: `1px solid ${hex}`, boxShadow: `0 0 12px ${hex}55` }}>
-          <StatusIcon className="w-5 h-5" style={{ color: hex, filter: `drop-shadow(0 0 4px ${hex})` }} />
-        </div>
+        <StatusIcon className="w-6 h-6 shrink-0 mt-0.5" style={{ color: hex, filter: `drop-shadow(0 0 4px ${hex})` }} />
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-bold text-sm" style={{ color: hex }}>{statusLabel}</h3>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-black" style={{ color: hex, border: `1px solid ${hex}55` }}>{isAf ? "Hierdie Week" : "This Week"}</span>
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
+            <h3 className="graffiti-hand text-base" style={{ color: hex, textShadow: `0 0 8px ${hex}` }}>{statusLabel}</h3>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-black" style={{ color: hex, border: `1px solid ${hex}` }}>{isAf ? "Hierdie Week" : "This Week"}</span>
           </div>
           <p className="text-sm leading-relaxed text-white">{statusDesc}</p>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -2253,25 +2208,23 @@ function CelebrationBanner({ childProgress, isAf }: { childProgress: ChildProgre
   if (messages.length === 0) return null;
 
   return (
-    <div
-      className="relative rounded-2xl bg-black p-5"
-      style={{ border: "1px solid rgba(255,255,255,0.08)" }}
+    <section
+      className="relative pl-4 sm:pl-5 py-1"
+      style={{ borderLeft: "3px solid #FFE600" }}
       data-testid="celebration-banner"
     >
-      <div aria-hidden className="absolute inset-y-4 left-0 w-[2px] rounded-r" style={{ background: "linear-gradient(180deg,#FFE600,#FF2BD6,#00E5FF)", boxShadow: "0 0 8px #FFE600" }} />
       <div className="relative flex items-center gap-4">
-        <div className="w-12 h-12 rounded-2xl bg-black flex items-center justify-center shrink-0" style={{ border: "1px solid #FFE600", boxShadow: "0 0 14px #FFE60055" }}>
-          <Trophy className="w-6 h-6" style={{ color: "#FFE600", filter: "drop-shadow(0 0 4px #FFE600)" }} />
-        </div>
+        <Trophy className="w-8 h-8 shrink-0" style={{ color: "#FFE600", filter: "drop-shadow(0 0 6px #FFE600)" }} />
         <div>
-          <h3 className="font-bold text-white flex items-center gap-2 mb-1">
-            <PartyPopper className="w-4 h-4" style={{ color: "#FF2BD6", filter: "drop-shadow(0 0 4px #FF2BD6)" }} />
+          <h3 className="spray-title graffiti-hand text-lg text-white flex items-center gap-2 mb-1" style={{ textShadow: "0 2px 0 rgba(0,0,0,0.85)" }}>
+            <SpraySmear color="#FF2BD6" />
+            <PartyPopper className="inline w-4 h-4" style={{ color: "#fff", filter: "drop-shadow(0 0 6px #FF2BD6)" }} />
             {isAf ? "Viering!" : "Celebration!"}
           </h3>
           {messages.map((msg, i) => <p key={i} className="text-sm text-white">{msg}</p>)}
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -2290,9 +2243,9 @@ interface LinkHistoryRow {
 }
 
 function deliveryStatusHex(status: string | null, usedAt: string | null): string {
-  if (usedAt) return "#a3e635";
+  if (usedAt) return "#22FF66";
   switch (status) {
-    case "delivered": return "#a3e635";
+    case "delivered": return "#22FF66";
     case "sent": return "#00E5FF";
     case "failed":
     case "undelivered": return "#FF2BD6";
@@ -2324,28 +2277,23 @@ function LinkHistorySection({ learnerId, isAf }: { learnerId: string | null; isA
   const count = rows?.length ?? 0;
 
   return (
-    <div
-      className="relative rounded-2xl bg-black overflow-hidden"
-      style={{ border: "1px solid rgba(125,211,252,0.25)" }}
+    <section
+      className="relative pl-4 sm:pl-5 py-1"
+      style={{ borderLeft: "3px solid #00E5FF" }}
       data-testid="parent-link-history"
     >
       <button
         type="button"
         onClick={() => setOpen(o => !o)}
-        className="flex items-center justify-between w-full px-5 py-4 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+        className="flex items-center justify-between w-full py-2 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
       >
         <div className="flex items-center gap-3">
-          <div
-            className="w-8 h-8 rounded-xl bg-black flex items-center justify-center shrink-0"
-            style={{ border: "1px solid #7dd3fc", boxShadow: "0 0 10px #7dd3fc44" }}
-          >
-            <Link2 className="w-4 h-4" style={{ color: "#7dd3fc", filter: "drop-shadow(0 0 3px #7dd3fc)" }} />
-          </div>
+          <Link2 className="w-5 h-5 shrink-0" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
           <div>
-            <h3 className="text-sm font-bold text-white">
+            <h3 className="graffiti-hand text-base text-white">
               {isAf ? "Inskakelingskakelskedule" : "Onboarding Link History"}
             </h3>
-            <p className="text-xs text-white/40 mt-0.5">
+            <p className="text-xs text-white mt-0.5">
               {isLoading
                 ? (isAf ? "Laai tans..." : "Loading…")
                 : count === 0
@@ -2356,14 +2304,14 @@ function LinkHistorySection({ learnerId, isAf }: { learnerId: string | null; isA
         </div>
         <ChevronDown
           className={`w-4 h-4 shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
-          style={{ color: "rgba(255,255,255,0.35)" }}
+          style={{ color: "#ffffff" }}
         />
       </button>
 
       {open && (
-        <div className="border-t border-white/10 px-5 pb-5 pt-4">
+        <div className="pb-4 pt-2">
           {isLoading && (
-            <div className="flex items-center justify-center gap-2 py-8 text-white/40 text-sm">
+            <div className="flex items-center justify-center gap-2 py-8 text-white text-sm">
               <RefreshCw className="w-4 h-4 animate-spin" />
               {isAf ? "Laai tans..." : "Loading…"}
             </div>
@@ -2377,45 +2325,45 @@ function LinkHistorySection({ learnerId, isAf }: { learnerId: string | null; isA
           )}
 
           {!isLoading && !isError && count === 0 && (
-            <p className="text-sm text-white/40 italic text-center py-8">
+            <p className="text-sm text-white italic text-center py-8">
               {isAf ? "Geen inskakelingskakels gevind nie." : "No onboarding links found."}
             </p>
           )}
 
           {!isLoading && !isError && rows && rows.length > 0 && (
-            <div className="space-y-2">
+            <div className="space-y-3">
               {rows.map((r, i) => {
                 const hex = deliveryStatusHex(r.deliveryStatus, r.usedAt);
                 const displayStatus = r.usedAt ? "opened" : (r.deliveryStatus ?? "pending");
                 return (
                   <div
                     key={r.jti}
-                    className="rounded-xl p-3"
-                    style={{ border: `1px solid ${hex}33`, background: `${hex}0a` }}
+                    className="pl-3 py-1"
+                    style={{ borderLeft: `3px solid ${hex}` }}
                     data-testid={`parent-link-row-${i}`}
                   >
                     <div className="flex items-start gap-3">
-                      <div
-                        className="shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black"
-                        style={{ background: `${hex}22`, color: hex }}
+                      <span
+                        className="shrink-0 text-sm font-black tabular-nums"
+                        style={{ color: hex, textShadow: `0 0 6px ${hex}` }}
                       >
                         {i + 1}
-                      </div>
+                      </span>
                       <div className="flex-1 min-w-0 space-y-1.5">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span
-                            className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full tracking-wider"
-                            style={{ background: `${hex}22`, color: hex }}
+                            className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full tracking-wider bg-black"
+                            style={{ border: `1px solid ${hex}`, color: hex }}
                           >
                             {displayStatus}
                           </span>
                           {r.channel && (
-                            <span className="text-[10px] text-white/40 uppercase tracking-wider">
+                            <span className="text-[10px] text-white uppercase tracking-wider">
                               via {r.channel}
                             </span>
                           )}
                           {(r.retryCount ?? 0) > 0 && (
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "#fb923c22", color: "#fb923c" }}>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-black" style={{ border: "1px solid #FF8A00", color: "#FF8A00" }}>
                               {r.retryCount} {isAf ? "herprobeer" : "retry"}
                             </span>
                           )}
@@ -2423,29 +2371,29 @@ function LinkHistorySection({ learnerId, isAf }: { learnerId: string | null; isA
                         <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px]">
                           {r.sentTo && (
                             <div>
-                              <span className="text-white/40">{isAf ? "Gestuur aan " : "Sent to "}</span>
-                              <span className="text-white font-mono">{r.sentTo}</span>
+                              <span className="text-white">{isAf ? "Gestuur aan " : "Sent to "}</span>
+                              <span className="text-white font-mono font-bold">{r.sentTo}</span>
                             </div>
                           )}
                           <div>
-                            <span className="text-white/40">{isAf ? "Uitgereik " : "Issued "}</span>
-                            <span className="text-white/70">{fmtDt(r.createdAt)}</span>
+                            <span className="text-white">{isAf ? "Uitgereik " : "Issued "}</span>
+                            <span className="text-white font-bold">{fmtDt(r.createdAt)}</span>
                           </div>
                           {r.deliveryUpdatedAt && (
                             <div>
-                              <span className="text-white/40">{isAf ? "Status " : "Status "}</span>
-                              <span className="text-white/70">{fmtDt(r.deliveryUpdatedAt)}</span>
+                              <span className="text-white">{isAf ? "Status " : "Status "}</span>
+                              <span className="text-white font-bold">{fmtDt(r.deliveryUpdatedAt)}</span>
                             </div>
                           )}
                           {r.usedAt && (
                             <div>
-                              <span className="text-white/40">{isAf ? "Oopgemaak " : "Opened "}</span>
-                              <span className="text-white/70">{fmtDt(r.usedAt)}</span>
+                              <span className="text-white">{isAf ? "Oopgemaak " : "Opened "}</span>
+                              <span className="text-white font-bold">{fmtDt(r.usedAt)}</span>
                             </div>
                           )}
                         </div>
                         {r.deliveryError && (
-                          <div className="text-[10px] font-mono text-[#FF2BD6] break-all bg-[#FF2BD6]/10 px-2 py-1 rounded-lg">
+                          <div className="text-[10px] font-mono text-[#FF2BD6] break-all pl-2 py-1" style={{ borderLeft: "3px solid #FF2BD6" }}>
                             {r.deliveryError}
                           </div>
                         )}
@@ -2458,7 +2406,7 @@ function LinkHistorySection({ learnerId, isAf }: { learnerId: string | null; isA
           )}
         </div>
       )}
-    </div>
+    </section>
   );
 }
 
@@ -2483,22 +2431,19 @@ function ParentTipCard({ isAf }: { isAf: boolean }) {
   const tips = isAf ? PARENT_TIPS.af : PARENT_TIPS.en;
   const [tipIndex] = useState(() => Math.floor(Math.random() * tips.length));
   return (
-    <div
-      className="relative rounded-2xl bg-black p-5"
-      style={{ border: "1px solid rgba(255,255,255,0.08)" }}
+    <section
+      className="relative pl-4 sm:pl-5 py-1"
+      style={{ borderLeft: "3px solid #FFE600" }}
       data-testid="parent-tip-card"
     >
-      <div aria-hidden className="absolute inset-y-4 left-0 w-[2px] rounded-r" style={{ background: "#FFE600", boxShadow: "0 0 8px #FFE600" }} />
       <div className="relative flex items-start gap-4">
-        <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shrink-0" style={{ border: "1px solid #FFE600", boxShadow: "0 0 12px #FFE60055" }}>
-          <Lightbulb className="w-5 h-5" style={{ color: "#FFE600", filter: "drop-shadow(0 0 4px #FFE600)" }} />
-        </div>
+        <Lightbulb className="w-6 h-6 shrink-0 mt-0.5" style={{ color: "#FFE600", filter: "drop-shadow(0 0 4px #FFE600)" }} />
         <div>
-          <h3 className="font-bold text-sm mb-1" style={{ color: "#FFE600" }}>{isAf ? "Ouertip van die Week" : "Parent Tip of the Week"}</h3>
+          <h3 className="graffiti-hand text-base mb-1" style={{ color: "#FFE600", textShadow: "0 0 8px rgba(255,230,0,0.5)" }}>{isAf ? "Ouertip van die Week" : "Parent Tip of the Week"}</h3>
           <p className="text-sm text-white leading-relaxed">{tips[tipIndex]}</p>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -2543,7 +2488,7 @@ function ParentFAQ({ isAf }: { isAf: boolean }) {
                 {item.q}
                 <ChevronDown
                   className={`w-4 h-4 shrink-0 transition-transform duration-200 ml-3 ${openIdx === idx ? "rotate-180" : ""}`}
-                  style={{ color: openIdx === idx ? "#8A2BFF" : "rgba(255,255,255,0.45)" }}
+                  style={{ color: openIdx === idx ? "#8A2BFF" : "#ffffff" }}
                 />
               </button>
               {openIdx === idx && (

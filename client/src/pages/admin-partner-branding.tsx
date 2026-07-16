@@ -287,7 +287,7 @@ export default function AdminPartnerBrandingPage() {
             <h1 className="text-2xl font-black text-white">
               {isAf ? "Vennoothandels-instellings" : "Partner Branding Settings"}
             </h1>
-            <p className="mt-1 text-sm text-white/60 leading-relaxed max-w-xl">
+            <p className="mt-1 text-sm text-white leading-relaxed max-w-xl">
               {isAf
                 ? "Stel 'n vennootnaam en logo in. Dit sal in alle nuut gegenereerde ouerverslae verskyn, langs die BrainTrack-handelsmerk."
                 : "Set a partner display name and logo. These appear in all newly generated parent reports, alongside the BrainTrack brand."}
@@ -311,7 +311,7 @@ export default function AdminPartnerBrandingPage() {
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-black uppercase tracking-[0.18em] text-white/60 mb-2">
+                    <label className="block text-[11px] font-black uppercase tracking-[0.18em] text-white mb-2">
                       {isAf ? "Vertoonaam (opsioneel)" : "Display name (optional)"}
                     </label>
                     <input
@@ -324,13 +324,13 @@ export default function AdminPartnerBrandingPage() {
                       className="w-full rounded-xl bg-black text-white text-sm px-4 py-3 outline-none focus:ring-2 placeholder-white/30"
                       style={{ border: "1px solid rgba(138,43,255,0.4)" }}
                     />
-                    <p className="mt-1.5 text-[10px] text-white/40">
+                    <p className="mt-1.5 text-[10px] text-white">
                       {isAf ? "Laat leeg om geen vennootteks te wys nie." : "Leave empty to show no partner text."}
                     </p>
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-black uppercase tracking-[0.18em] text-white/60 mb-2">
+                    <label className="block text-[11px] font-black uppercase tracking-[0.18em] text-white mb-2">
                       {isAf ? "Vennootlogo" : "Partner Logo"}
                     </label>
 
@@ -354,7 +354,7 @@ export default function AdminPartnerBrandingPage() {
                       <button type="button" onClick={() => fileInputRef.current?.click()} className="w-full flex flex-col items-center justify-center gap-2 rounded-xl py-6 text-sm font-semibold transition-all hover:bg-white/5" style={{ border: "2px dashed rgba(138,43,255,0.4)", color: "#8A2BFF" }} data-testid="btn-upload-logo">
                         <ImageIcon className="w-8 h-8 opacity-60" />
                         <span>{isAf ? "Klik om logo op te laai" : "Click to upload logo"}</span>
-                        <span className="text-[11px] text-white/40 font-normal">{isAf ? "PNG, JPG of SVG · maks 2 MB" : "PNG, JPG or SVG · max 2 MB"}</span>
+                        <span className="text-[11px] text-white font-normal">{isAf ? "PNG, JPG of SVG · maks 2 MB" : "PNG, JPG or SVG · max 2 MB"}</span>
                       </button>
                     )}
 
@@ -385,7 +385,7 @@ export default function AdminPartnerBrandingPage() {
                     <h2 className="text-base font-black text-white">{isAf ? "Verslag-kopstuk-voorskou" : "Report Header Preview"}</h2>
                   </div>
 
-                  <p className="text-xs text-white/50">
+                  <p className="text-xs text-white">
                     {isAf ? "Hierdie is 'n benadering van hoe die PDF-kopstuk sal lyk." : "This approximates how the PDF header will look."}
                   </p>
 
@@ -393,7 +393,7 @@ export default function AdminPartnerBrandingPage() {
                     <div className="px-5 py-4">
                       <div className="text-2xl font-black text-white" style={{ fontFamily: "serif" }}>BrainTrack™</div>
                       <div className="text-xs mt-0.5" style={{ color: "#c4b5fd" }}>{isAf ? "Vorderingsverslag" : "Progress Report"}</div>
-                      <div className="mt-2 text-[11px] text-white/80">{isAf ? "Leerder:" : "Learner:"} {isAf ? "U Kind" : "Your Child"}</div>
+                      <div className="mt-2 text-[11px] text-white">{isAf ? "Leerder:" : "Learner:"} {isAf ? "U Kind" : "Your Child"}</div>
                       {(partnerName || hasAnyLogo) && (
                         <div className="mt-2 flex items-center gap-3">
                           <span className="text-[10px]" style={{ color: "#c4b5fd" }}>
@@ -409,7 +409,7 @@ export default function AdminPartnerBrandingPage() {
 
                   <div className="rounded-xl p-4 space-y-2" style={{ background: "rgba(0,229,255,0.06)", border: "1px solid rgba(0,229,255,0.18)" }}>
                     <p className="text-[11px] font-bold text-white" style={{ color: "#00E5FF" }}>{isAf ? "Wenke" : "Tips"}</p>
-                    <ul className="text-[11px] text-white/60 space-y-1 list-disc list-inside">
+                    <ul className="text-[11px] text-white space-y-1 list-disc list-inside">
                       <li>{isAf ? "Gebruik 'n logo met deurskynende agtergrond (PNG) vir beste resultate." : "Use a logo with transparent background (PNG) for best results."}</li>
                       <li>{isAf ? "Horisontale logo's werk die beste in die koptekst." : "Horizontal logos work best in the header."}</li>
                       <li>{isAf ? "Veranderinge word onmiddellik op alle nuwe verslae toegepas." : "Changes apply immediately to all new reports."}</li>
@@ -429,7 +429,7 @@ export default function AdminPartnerBrandingPage() {
               <Calendar className="w-5 h-5" style={{ color: "#f59e0b" }} />
               {isAf ? "Geskeduleerde Verslag-e-pos" : "Scheduled Report Emails"}
             </h2>
-            <p className="mt-1 text-sm text-white/60 leading-relaxed max-w-xl">
+            <p className="mt-1 text-sm text-white leading-relaxed max-w-xl">
               {isAf
                 ? "Stuur outomaties die vorderingsverslag na alle aktiewe ouers op 'n gereelde skedule. Die verslag word as PDF aangeheg."
                 : "Automatically email the progress report to all active parents on a regular schedule. The report is attached as a PDF."}
@@ -456,7 +456,7 @@ export default function AdminPartnerBrandingPage() {
                   <div className="flex items-center justify-between gap-4">
                     <div>
                       <p className="text-sm font-bold text-white">{isAf ? "Skedule aktief" : "Schedule enabled"}</p>
-                      <p className="text-[11px] text-white/50 mt-0.5">
+                      <p className="text-[11px] text-white mt-0.5">
                         {isAf ? "Skakel outomatiese versending aan of af." : "Turn automatic sending on or off."}
                       </p>
                     </div>
@@ -480,7 +480,7 @@ export default function AdminPartnerBrandingPage() {
 
                   {/* Frequency */}
                   <div>
-                    <label className="block text-[11px] font-black uppercase tracking-[0.18em] text-white/60 mb-2">
+                    <label className="block text-[11px] font-black uppercase tracking-[0.18em] text-white mb-2">
                       {isAf ? "Frekwensie" : "Frequency"}
                     </label>
                     <div className="grid grid-cols-2 gap-2">
@@ -506,7 +506,7 @@ export default function AdminPartnerBrandingPage() {
                   {/* Day picker */}
                   {scheduleFrequency === "weekly" ? (
                     <div>
-                      <label className="block text-[11px] font-black uppercase tracking-[0.18em] text-white/60 mb-2">
+                      <label className="block text-[11px] font-black uppercase tracking-[0.18em] text-white mb-2">
                         {isAf ? "Dag van die week" : "Day of week"}
                       </label>
                       <select
@@ -523,7 +523,7 @@ export default function AdminPartnerBrandingPage() {
                     </div>
                   ) : (
                     <div>
-                      <label className="block text-[11px] font-black uppercase tracking-[0.18em] text-white/60 mb-2">
+                      <label className="block text-[11px] font-black uppercase tracking-[0.18em] text-white mb-2">
                         {isAf ? "Dag van die maand" : "Day of month"}
                       </label>
                       <select
@@ -537,7 +537,7 @@ export default function AdminPartnerBrandingPage() {
                           <option key={d} value={d}>{d}</option>
                         ))}
                       </select>
-                      <p className="mt-1.5 text-[10px] text-white/40">
+                      <p className="mt-1.5 text-[10px] text-white">
                         {isAf ? "Gebruik 1–28 om alle maande te dek." : "Use 1–28 to cover all months."}
                       </p>
                     </div>
@@ -545,7 +545,7 @@ export default function AdminPartnerBrandingPage() {
 
                   {/* Send hour */}
                   <div>
-                    <label className="block text-[11px] font-black uppercase tracking-[0.18em] text-white/60 mb-2">
+                    <label className="block text-[11px] font-black uppercase tracking-[0.18em] text-white mb-2">
                       {isAf ? "Stuuruur (SAST)" : "Send hour (SAST)"}
                     </label>
                     <select
@@ -592,28 +592,28 @@ export default function AdminPartnerBrandingPage() {
                   {/* Summary card */}
                   <div className="rounded-xl p-4 space-y-2" style={{ background: "rgba(16,185,129,0.06)", border: "1px solid rgba(16,185,129,0.2)" }}>
                     <div className="grid grid-cols-2 gap-y-2 text-xs">
-                      <span className="text-white/50">{isAf ? "Status:" : "Status:"}</span>
-                      <span className={scheduleEnabled ? "text-green-400 font-bold" : "text-white/40"}>
+                      <span className="text-white">{isAf ? "Status:" : "Status:"}</span>
+                      <span className={scheduleEnabled ? "text-green-400 font-bold" : "text-white"}>
                         {scheduleEnabled ? (isAf ? "✓ Aktief" : "✓ Active") : (isAf ? "✗ Af" : "✗ Off")}
                       </span>
-                      <span className="text-white/50">{isAf ? "Frekwensie:" : "Frequency:"}</span>
+                      <span className="text-white">{isAf ? "Frekwensie:" : "Frequency:"}</span>
                       <span className="text-white font-semibold">
                         {scheduleFrequency === "weekly" ? (isAf ? "Weekliks" : "Weekly") : (isAf ? "Maandeliks" : "Monthly")}
                       </span>
-                      <span className="text-white/50">{isAf ? "Dag:" : "Day:"}</span>
+                      <span className="text-white">{isAf ? "Dag:" : "Day:"}</span>
                       <span className="text-white font-semibold">
                         {scheduleFrequency === "weekly"
                           ? dayNames[scheduleDayOfWeek]
                           : `${isAf ? "Dag" : "Day"} ${scheduleDayOfMonth}`}
                       </span>
-                      <span className="text-white/50">{isAf ? "Tyd:" : "Time:"}</span>
+                      <span className="text-white">{isAf ? "Tyd:" : "Time:"}</span>
                       <span className="text-white font-semibold">{formatSendTime()}</span>
                     </div>
                   </div>
 
                   <div className="rounded-xl p-4 space-y-2" style={{ background: "rgba(16,185,129,0.06)", border: "1px solid rgba(16,185,129,0.18)" }}>
                     <p className="text-[11px] font-bold" style={{ color: "#10b981" }}>{isAf ? "Hoe dit werk" : "How it works"}</p>
-                    <ul className="text-[11px] text-white/60 space-y-1 list-disc list-inside">
+                    <ul className="text-[11px] text-white space-y-1 list-disc list-inside">
                       <li>{isAf ? "Elke aktiewe ouer met 'n bekende e-posadres ontvang die verslag." : "Every active parent with a known email receives the report."}</li>
                       <li>{isAf ? "Die PDF word intyds gegenereer met die nuutste data." : "The PDF is generated in real-time with the latest data."}</li>
                       <li>{isAf ? "Vennoothandels-logo en naam word ingesluit indien ingestel." : "Partner branding logo and name are included if set."}</li>
@@ -633,7 +633,7 @@ export default function AdminPartnerBrandingPage() {
                     {sendNowMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                     {sendNowMutation.isPending ? (isAf ? "Stuur tans…" : "Sending…") : (isAf ? "Stuur Nou aan Alle Ouers" : "Send Now to All Parents")}
                   </button>
-                  <p className="text-[10px] text-white/30 text-center">
+                  <p className="text-[10px] text-white text-center">
                     {isAf
                       ? "Stuur onmiddellik aan alle aktiewe ouers, ongeag die skedule."
                       : "Sends immediately to all active parents, regardless of schedule."}
@@ -670,10 +670,10 @@ export default function AdminPartnerBrandingPage() {
               ) : sendLog.length === 0 ? (
                 <div className="text-center py-8">
                   <History className="w-10 h-10 mx-auto mb-3 opacity-20" />
-                  <p className="text-sm text-white/40">
+                  <p className="text-sm text-white">
                     {isAf ? "Nog geen verslae gestuur nie." : "No reports sent yet."}
                   </p>
-                  <p className="text-xs text-white/25 mt-1">
+                  <p className="text-xs text-white mt-1">
                     {isAf ? "Stuur nou of aktiveer die skedule hierbo." : "Send now or activate the schedule above."}
                   </p>
                 </div>
@@ -681,7 +681,7 @@ export default function AdminPartnerBrandingPage() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-xs">
                     <thead>
-                      <tr className="text-white/40 font-black uppercase tracking-wider text-[10px]">
+                      <tr className="text-white font-black uppercase tracking-wider text-[10px]">
                         <th className="text-left pb-3 pr-4">{isAf ? "Tyd" : "Time"}</th>
                         <th className="text-left pb-3 pr-4">{isAf ? "Leerder" : "Learner"}</th>
                         <th className="text-left pb-3 pr-4">{isAf ? "Na" : "To"}</th>
@@ -692,7 +692,7 @@ export default function AdminPartnerBrandingPage() {
                     <tbody className="divide-y divide-white/5">
                       {sendLog.slice(0, 50).map((entry) => (
                         <tr key={entry.id} className="hover:bg-white/3 transition">
-                          <td className="py-2.5 pr-4 text-white/50 whitespace-nowrap">
+                          <td className="py-2.5 pr-4 text-white whitespace-nowrap">
                             {entry.sentAt
                               ? new Date(entry.sentAt).toLocaleDateString("en-ZA", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })
                               : "—"}
@@ -700,7 +700,7 @@ export default function AdminPartnerBrandingPage() {
                           <td className="py-2.5 pr-4 text-white font-medium max-w-[120px] truncate">
                             {entry.learnerName ?? "—"}
                           </td>
-                          <td className="py-2.5 pr-4 text-white/60 max-w-[160px] truncate">
+                          <td className="py-2.5 pr-4 text-white max-w-[160px] truncate">
                             {entry.sentToEmail ?? "—"}
                           </td>
                           <td className="py-2.5 pr-4">
@@ -717,7 +717,7 @@ export default function AdminPartnerBrandingPage() {
                             )}
                           </td>
                           <td className="py-2.5">
-                            <span className="text-[10px] text-white/40">
+                            <span className="text-[10px] text-white">
                               {entry.trigger === "manual" ? (isAf ? "Handmatig" : "Manual") : (isAf ? "Gepland" : "Scheduled")}
                             </span>
                           </td>
@@ -741,7 +741,7 @@ export default function AdminPartnerBrandingPage() {
                   {isAf ? "Afmeld / Heraansluit-geskiedenis" : "Opt-out / Re-subscribe history"}
                 </h2>
               </div>
-              <p className="text-xs text-white/40 mb-4">
+              <p className="text-xs text-white mb-4">
                 {isAf
                   ? "Wanneer ouers afgemeld of weer aangesluit het vir verslag-e-posse."
                   : "When parents unsubscribed from or re-enabled scheduled report emails."}
@@ -754,7 +754,7 @@ export default function AdminPartnerBrandingPage() {
               ) : (optOutLogData?.log ?? []).length === 0 ? (
                 <div className="text-center py-8">
                   <History className="w-10 h-10 mx-auto mb-3 opacity-20" />
-                  <p className="text-sm text-white/40">
+                  <p className="text-sm text-white">
                     {isAf ? "Nog geen afmeld-aktiwiteit nie." : "No opt-out activity yet."}
                   </p>
                 </div>
@@ -762,7 +762,7 @@ export default function AdminPartnerBrandingPage() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-xs">
                     <thead>
-                      <tr className="text-white/40 font-black uppercase tracking-wider text-[10px]">
+                      <tr className="text-white font-black uppercase tracking-wider text-[10px]">
                         <th className="text-left pb-3 pr-4">{isAf ? "Tyd" : "Time"}</th>
                         <th className="text-left pb-3 pr-4">{isAf ? "Leerder" : "Learner"}</th>
                         <th className="text-left pb-3 pr-4">{isAf ? "Ouer-e-pos" : "Parent email"}</th>
@@ -775,7 +775,7 @@ export default function AdminPartnerBrandingPage() {
                         const isResub = entry.action === "resubscribed";
                         return (
                           <tr key={entry.id} className="hover:bg-white/3 transition">
-                            <td className="py-2.5 pr-4 text-white/50 whitespace-nowrap">
+                            <td className="py-2.5 pr-4 text-white whitespace-nowrap">
                               {entry.createdAt
                                 ? new Date(entry.createdAt).toLocaleDateString("en-ZA", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })
                                 : "—"}
@@ -783,7 +783,7 @@ export default function AdminPartnerBrandingPage() {
                             <td className="py-2.5 pr-4 text-white font-medium max-w-[120px] truncate">
                               {entry.learnerName ?? "—"}
                             </td>
-                            <td className="py-2.5 pr-4 text-white/60 max-w-[160px] truncate">
+                            <td className="py-2.5 pr-4 text-white max-w-[160px] truncate">
                               {entry.parentEmail ?? "—"}
                             </td>
                             <td className="py-2.5 pr-4">
@@ -799,7 +799,7 @@ export default function AdminPartnerBrandingPage() {
                               </span>
                             </td>
                             <td className="py-2.5">
-                              <span className="text-[10px] text-white/40">
+                              <span className="text-[10px] text-white">
                                 {entry.source === "unsubscribe_link"
                                   ? (isAf ? "E-pos skakel" : "Email link")
                                   : (isAf ? "Ouer-paneel" : "Parent dashboard")}

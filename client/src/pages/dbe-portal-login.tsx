@@ -80,7 +80,7 @@ export default function DBEPortalLogin() {
             >
               Content Console
             </h1>
-            <p className="text-sm text-white/50 mt-1.5">
+            <p className="text-sm text-white mt-1.5">
               Restricted to verified administrators.
             </p>
           </div>
@@ -95,7 +95,7 @@ export default function DBEPortalLogin() {
               >
                 Access Denied
               </p>
-              <p className="text-xs text-white/60">
+              <p className="text-xs text-white">
                 Your account does not have administrator access. Contact BrainTrack support if you believe this is an error.
               </p>
               <a
@@ -121,7 +121,7 @@ export default function DBEPortalLogin() {
                 <ShieldCheck className="w-4 h-4" />
                 Sign in with Replit
               </a>
-              <p className="text-center text-[11px] text-white/35">
+              <p className="text-center text-[11px] text-white">
                 Admin access verified via ADMIN_EMAILS allowlist
               </p>
             </>

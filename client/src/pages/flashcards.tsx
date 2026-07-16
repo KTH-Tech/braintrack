@@ -492,7 +492,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
               <div key={label} className="rounded-xl border border-white/10 bg-white/5 p-3 text-center">
                 <Icon className="w-4 h-4 mx-auto mb-1 text-primary" />
                 <p className="text-xl font-bold text-white">{value}</p>
-                <p className="text-[10px] text-white/50 font-semibold uppercase tracking-wider">{label}</p>
+                <p className="text-[10px] text-white font-semibold uppercase tracking-wider">{label}</p>
               </div>
             ))}
           </div>
@@ -502,7 +502,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
                 <Zap className="w-4 h-4 text-amber-400" />
                 <span>{isAf ? "Huidige reeks" : "Current streak"}: <strong>{serverStats.currentStreak}</strong> {isAf ? "dae" : "days"}</span>
               </div>
-              <div className="text-xs text-white/60">
+              <div className="text-xs text-white">
                 {isAf ? "Beste" : "Best"}: <strong className="text-white">{serverStats.longestStreak}</strong>
               </div>
             </div>

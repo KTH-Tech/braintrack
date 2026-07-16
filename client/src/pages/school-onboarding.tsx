@@ -130,7 +130,7 @@ export default function SchoolOnboardingPage() {
                 value={schoolName}
                 onChange={(e) => setSchoolName(e.target.value)}
                 placeholder={isAf ? "bv. Hoërskool Stellenbosch" : "e.g. Greenside High School"}
-                className="text-foreground placeholder:text-white/40 bg-black/30 border-white/20 focus:border-primary"
+                className="text-foreground placeholder:text-white bg-black/30 border-white/20 focus:border-primary"
                 data-testid="input-school-name"
               />
             </div>
@@ -144,7 +144,7 @@ export default function SchoolOnboardingPage() {
                 value={contactPerson}
                 onChange={(e) => setContactPerson(e.target.value)}
                 placeholder={isAf ? "bv. Mnr. Joubert" : "e.g. Mr. Smith"}
-                className="text-foreground placeholder:text-white/40 bg-black/30 border-white/20 focus:border-primary"
+                className="text-foreground placeholder:text-white bg-black/30 border-white/20 focus:border-primary"
                 data-testid="input-contact-person"
               />
             </div>
@@ -159,7 +159,7 @@ export default function SchoolOnboardingPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={isAf ? "kontakpersoon@skool.co.za" : "contact@school.co.za"}
-                className="text-foreground placeholder:text-white/40 bg-black/30 border-white/20 focus:border-primary"
+                className="text-foreground placeholder:text-white bg-black/30 border-white/20 focus:border-primary"
                 data-testid="input-email"
               />
             </div>
@@ -174,7 +174,7 @@ export default function SchoolOnboardingPage() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="+27 21 000 0000"
-                className="text-foreground placeholder:text-white/40 bg-black/30 border-white/20 focus:border-primary"
+                className="text-foreground placeholder:text-white bg-black/30 border-white/20 focus:border-primary"
                 data-testid="input-phone"
               />
             </div>
@@ -190,12 +190,12 @@ export default function SchoolOnboardingPage() {
                 value={numLearners}
                 onChange={(e) => setNumLearners(e.target.value)}
                 placeholder={isAf ? "bv. 250" : "e.g. 250"}
-                className="text-foreground placeholder:text-white/40 bg-black/30 border-white/20 focus:border-primary"
+                className="text-foreground placeholder:text-white bg-black/30 border-white/20 focus:border-primary"
                 data-testid="input-num-learners"
               />
             </div>
 
-            <p className="text-xs text-white/50">
+            <p className="text-xs text-white">
               <span className="text-red-400">*</span> {isAf ? "Verpligte velde" : "Required fields"}
             </p>
 

@@ -1,4 +1,5 @@
 import { PublicNav } from "@/components/public-nav";
+import { GraffitiSplats, SpraySmear } from "@/components/graffiti-splats";
 import { useLanguage } from "@/lib/language-context";
 import { useSEO } from "@/hooks/use-seo";
 import {
@@ -17,9 +18,6 @@ import {
   GraduationCap,
   TrendingUp,
   ClipboardCheck,
-  Sparkles,
-  AlertTriangle,
-  ArrowRight,
 } from "lucide-react";
 
 const t = {
@@ -177,34 +175,8 @@ const t = {
   },
 };
 
-// Canonical rainbow
-// Section accents — one colour per section, not per tile. Drives borders,
-// glows, icon hue and section header pill. Stops the page reading as a
-// fruit-salad of nine simultaneous rainbow tiles.
-const ACCENT = {
-  core:    { hex: "#00E5FF", halo: "rgba(0,229,255,0.28)" },  // cyan — Brain Boost (included)
-  price:   { hex: "#FFE600", halo: "rgba(255,230,0,0.28)" },  // yellow — price highlight only
-  power:   { hex: "#8A2BFF", halo: "rgba(138,43,255,0.28)" }, // violet — optional add-ons
-  rescue:  { hex: "#FF2BD6", halo: "rgba(255,43,214,0.28)" },  // pink — emergency packs
-  proof:   { hex: "#006BFF", halo: "rgba(0,107,255,0.28)" },  // blue — proof / strategy
-} as const;
-type Accent = { hex: string; halo: string };
-// Back-compat: the bento + lists used to map RAINBOW[i] per tile. Kept as a
-// constant alias to a single colour so existing callers compile unchanged.
-const RAINBOW: Accent[] = Array.from({ length: 9 }, () => ACCENT.core);
-
-/** Bento layout – each core feature gets a span + tone */
-const bentoLayout: Array<{ col: string; row: string; tone: "hero" | "wide" | "std" }> = [
-  { col: "md:col-span-2 md:row-span-2", row: "", tone: "hero" },
-  { col: "md:col-span-2",                 row: "", tone: "wide" },
-  { col: "",                              row: "", tone: "std"  },
-  { col: "",                              row: "", tone: "std"  },
-  { col: "md:col-span-2",                 row: "", tone: "wide" },
-  { col: "",                              row: "", tone: "std"  },
-  { col: "",                              row: "", tone: "std"  },
-  { col: "",                              row: "", tone: "std"  },
-  { col: "",                              row: "", tone: "std"  },
-];
+// Soft pastel wall palette — borders, highlights and marker accents only.
+const PASTELS = ["#6FA8FF", "#7FEFFF", "#93FFB8", "#FFF29E", "#FFC48F", "#FF9FE5", "#C6A4FF"];
 
 const coreFeatures = [
   { icon: BookOpen,        titleKey: "f1", descKey: "f1d" },
@@ -244,119 +216,39 @@ const featuresBreadcrumb = {
   ],
 };
 
-/** Bento tile — scales internal typography based on tone */
-function BentoTile({
-  accent,
-  icon: Icon,
-  title,
-  desc,
-  layout,
-  testId,
-}: {
-  accent: { hex: string; halo: string };
-  icon: typeof BookOpen;
-  title: string;
-  desc: string;
-  layout: (typeof bentoLayout)[number];
-  testId?: string;
-}) {
-  const isHero = layout.tone === "hero";
-  const isWide = layout.tone === "wide";
-  return (
-    <div
-      className={`relative rounded-2xl bg-black p-5 overflow-hidden transition-transform duration-300 hover:-translate-y-0.5 ${layout.col} ${layout.row}`}
-      style={{
-        border: `1.5px solid ${accent.hex}`,
-        boxShadow: `0 0 0 1px ${accent.halo}, 0 0 22px ${accent.halo}, inset 0 0 18px rgba(0,0,0,0.55)`,
-      }}
-      data-testid={testId}
-    >
-      {/* Corner brackets */}
-      <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: accent.hex }} />
-      <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2" style={{ borderColor: accent.hex }} />
-      <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2" style={{ borderColor: accent.hex }} />
-      <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: accent.hex }} />
+const MARKER_SHADOW = { textShadow: "0 2px 0 rgba(0,0,0,0.6)" } as const;
 
-      {isHero && (
-        <div
-          aria-hidden
-          className="absolute -right-12 -bottom-12 w-56 h-56 rounded-full opacity-40 pointer-events-none"
-          style={{
-            background: `radial-gradient(circle, ${accent.halo} 0%, transparent 70%)`,
-          }}
-        />
-      )}
-
-      <div className={`relative ${isHero ? "h-full flex flex-col justify-between" : "flex items-start gap-4"}`}>
-        <div
-          className={`rounded-xl bg-black flex items-center justify-center shrink-0 ${isHero ? "w-14 h-14" : "w-11 h-11"}`}
-          style={{
-            border: `1.5px solid ${accent.hex}`,
-            boxShadow: `0 0 14px ${accent.halo}, inset 0 0 10px ${accent.halo}`,
-          }}
-        >
-          <Icon
-            className={isHero ? "w-7 h-7" : "w-5 h-5"}
-            style={{ color: accent.hex, filter: `drop-shadow(0 0 6px ${accent.halo})` }}
-          />
-        </div>
-        <div className={`min-w-0 ${isHero ? "mt-4 space-y-3" : "space-y-1.5"}`}>
-          <h3
-            className={`font-black text-white leading-tight ${isHero ? "text-2xl md:text-3xl" : isWide ? "text-lg" : "text-base font-bold"}`}
-            style={{ textShadow: `0 0 10px ${accent.halo}` }}
-          >
-            {title}
-          </h3>
-          <p className={`text-white font-medium leading-relaxed ${isHero ? "text-base" : "text-sm"}`}>
-            {desc}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/** Section header */
-function SectionHeader({
+/** Wall-written section heading — marker lettering over a spray smear,
+ * with an optional marker eyebrow and plain white subtitle. No boxes. */
+function WallHeading({
+  smear,
   eyebrow,
-  pill,
-  pillIcon: PillIcon,
-  pillHex,
   title,
   subtitle,
 }: {
+  smear: string;
   eyebrow?: string;
-  pill: string;
-  pillIcon: typeof Sparkles;
-  pillHex: string;
   title: React.ReactNode;
   subtitle?: string;
 }) {
   return (
     <div className="space-y-3">
-      <div className="flex items-center gap-3">
-        <div
-          className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-black"
-          style={{ border: `1px solid ${pillHex}`, boxShadow: `0 0 14px ${pillHex}66` }}
+      {eyebrow && (
+        <p
+          className="graffiti-hand text-xs uppercase tracking-[0.24em]"
+          style={{ color: smear, ...MARKER_SHADOW }}
         >
-          <PillIcon className="w-3.5 h-3.5" style={{ color: pillHex, filter: `drop-shadow(0 0 4px ${pillHex})` }} />
-          <span className="text-[10px] font-black uppercase tracking-[0.22em]" style={{ color: pillHex }}>
-            {pill}
-          </span>
-        </div>
-        {eyebrow && (
-          <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-white">
-            {eyebrow}
-          </span>
-        )}
-      </div>
+          {eyebrow}
+        </p>
+      )}
       <h2
-        className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-[1.05] text-white"
-        style={{ textShadow: `0 0 18px ${pillHex}55` }}
+        className="spray-title graffiti-hand text-3xl sm:text-4xl md:text-5xl text-white -rotate-1"
+        style={MARKER_SHADOW}
       >
+        <SpraySmear color={smear} />
         {title}
       </h2>
-      {subtitle && <p className="text-white font-medium max-w-2xl">{subtitle}</p>}
+      {subtitle && <p className="text-white max-w-2xl leading-relaxed">{subtitle}</p>}
     </div>
   );
 }
@@ -378,201 +270,100 @@ export default function FeaturesPage() {
   const isAf = language === "af";
 
   return (
-    <div className="min-h-screen relative bg-black text-white">
-      {/* Cosmic wash */}
-      <div
-        aria-hidden
-        className="pointer-events-none fixed inset-0 z-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 55% 45% at 12% 8%,  rgba(255,138,0,0.10) 0%, transparent 60%)," +
-            "radial-gradient(ellipse 55% 45% at 88% 6%,  rgba(255,43,214,0.10) 0%, transparent 60%)," +
-            "radial-gradient(ellipse 70% 55% at 50% 100%, rgba(0,229,255,0.10) 0%, transparent 65%)," +
-            "#000",
-        }}
-      />
+    <div className="relative min-h-screen bg-background text-white overflow-hidden">
+      <GraffitiSplats variant="full" opacity={0.5} />
       <div className="relative z-10">
         <PublicNav />
         <main className="pt-14">
-          {/* ═══ Hero ═══ */}
-          <section className="px-4 sm:px-6 lg:px-8 pt-10 pb-14">
+          {/* ═══ Hero — written straight on the wall ═══ */}
+          <section className="px-4 sm:px-6 lg:px-8 pt-12 pb-16">
             <div className="max-w-5xl mx-auto">
-              <div className="flex flex-wrap items-center gap-3 mb-6">
-                <div
-                  className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-black"
-                  style={{ border: "1px solid #00E5FF", boxShadow: "0 0 12px rgba(0,229,255,0.35)" }}
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-6">
+                <span
+                  className="graffiti-hand text-sm uppercase tracking-[0.24em]"
+                  style={{ color: "#7FEFFF", ...MARKER_SHADOW }}
                 >
-                  <Sparkles className="w-3.5 h-3.5" style={{ color: "#00E5FF" }} />
-                  <span className="text-[10px] font-black uppercase tracking-[0.22em]" style={{ color: "#00E5FF" }}>
-                    {c.heroPill}
-                  </span>
-                </div>
+                  {c.heroPill}
+                </span>
                 <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-white">
                   {c.heroEyebrow}
                 </span>
               </div>
 
               <h1
-                className="text-5xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[0.98] max-w-5xl"
+                className="spray-title graffiti-hand text-4xl sm:text-5xl md:text-6xl leading-[1.05] text-white -rotate-1 max-w-4xl"
+                style={MARKER_SHADOW}
                 data-testid="text-features-title"
               >
+                <SpraySmear color="#6FA8FF" />
                 {c.heroTitle}
               </h1>
 
-              {/* Single accent rule (was a rainbow gradient) */}
-              <div
-                aria-hidden
-                className="h-[2px] my-7 max-w-xl"
-                style={{
-                  background:
-                    "linear-gradient(90deg, transparent, #00E5FF 35%, #00E5FF 65%, transparent)",
-                  boxShadow: "0 0 14px rgba(0,229,255,0.45)",
-                }}
-              />
-
-              <p className="text-white max-w-2xl leading-relaxed text-lg" data-testid="text-features-subtitle">
+              <p className="text-white max-w-2xl leading-relaxed text-lg mt-7" data-testid="text-features-subtitle">
                 {c.heroSubtitle}
               </p>
 
-              {/* Inline count chips */}
-              <div className="flex flex-wrap gap-2.5 mt-7">
+              {/* Count marks — plain wall text with coloured dots, no pills */}
+              <div className="flex flex-wrap gap-x-6 gap-y-2 mt-7">
                 {[
-                  { label: c.heroChip1, hex: "#00E5FF" },
-                  { label: c.heroChip2, hex: "#FFE600" },
-                  { label: c.heroChip3, hex: "#FF2BD6" },
+                  { label: c.heroChip1, hex: "#7FEFFF" },
+                  { label: c.heroChip2, hex: "#C6A4FF" },
+                  { label: c.heroChip3, hex: "#FF9FE5" },
                 ].map(({ label, hex }) => (
-                  <div
-                    key={label}
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black"
-                    style={{ border: `1px solid ${hex}88`, boxShadow: `0 0 10px ${hex}44` }}
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full" style={{ background: hex, boxShadow: `0 0 6px ${hex}` }} />
-                    <span className="text-xs font-black uppercase tracking-[0.18em]" style={{ color: hex }}>{label}</span>
-                  </div>
+                  <span key={label} className="inline-flex items-center gap-2 text-sm font-bold text-white">
+                    <span
+                      className="w-2 h-2 rounded-full shrink-0"
+                      style={{ background: hex, boxShadow: `0 0 8px ${hex}` }}
+                      aria-hidden
+                    />
+                    {label}
+                  </span>
                 ))}
               </div>
             </div>
           </section>
 
-          {/* ═══ Core Features — BENTO ═══ */}
-          <section className="px-4 sm:px-6 lg:px-8 pb-14">
-            <div className="max-w-6xl mx-auto">
-              <SectionHeader
+          {/* ═══ Core Features — Brain Boost ═══ */}
+          <section className="px-4 sm:px-6 lg:px-8 pb-16">
+            <div className="max-w-5xl mx-auto">
+              <WallHeading
+                smear="#7FEFFF"
                 eyebrow={isAf ? "Kerninhoud" : "What's Included"}
-                pill="Brain Boost"
-                pillIcon={Sparkles}
-                pillHex="#00E5FF"
-                title={<span>{c.sectionCore}</span>}
+                title={c.sectionCore}
                 subtitle={c.coreDesc}
               />
 
-              {/* Price strip */}
-              <div className="mt-5 mb-7 flex flex-wrap items-center gap-3">
-                <div
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black"
-                  style={{ border: "1px solid #FFE60088" }}
+              {/* Price — big pastel marker, small white label. No box. */}
+              <div className="mt-6 mb-10">
+                <p
+                  className="graffiti-hand text-3xl sm:text-4xl"
+                  style={{ color: "#FFF29E", ...MARKER_SHADOW }}
+                  data-testid="text-core-price"
                 >
-                  <Sparkles className="w-3.5 h-3.5" style={{ color: "#FFE600" }} />
-                  <span className="text-sm font-black" style={{ color: "#FFE600" }} data-testid="text-core-price">
-                    {c.corePriceLabel}
-                  </span>
-                </div>
-                <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-white">
+                  {c.corePriceLabel}
+                </p>
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-white mt-1.5">
                   {c.corePriceSub}
-                </span>
+                </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-4 auto-rows-[minmax(180px,auto)] gap-4">
-                {coreFeatures.map((f, i) => (
-                  <BentoTile
-                    key={i}
-                    accent={ACCENT.core}
-                    icon={f.icon}
-                    title={c[f.titleKey as keyof typeof c] as string}
-                    desc={c[f.descKey as keyof typeof c] as string}
-                    layout={bentoLayout[i]}
-                    testId={`card-feature-${i}`}
-                  />
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* ═══ Power-Ups — EDITORIAL NUMBERED LIST ═══ */}
-          <section className="px-4 sm:px-6 lg:px-8 pb-14">
-            <div className="max-w-5xl mx-auto">
-              <SectionHeader
-                eyebrow={isAf ? "Opsioneel" : "Optional"}
-                pill={c.powerUpPill}
-                pillIcon={Zap}
-                pillHex="#8A2BFF"
-                title={
-                  language === "en" ? (
-                    <>Optional <span style={{ color: "#8A2BFF" }}>Power-Ups</span></>
-                  ) : (
-                    <>Opsionele <span style={{ color: "#8A2BFF" }}>Krag-Opgradings</span></>
-                  )
-                }
-                subtitle={c.powerUpDesc}
-              />
-
-              <div className="mt-10 divide-y divide-white/10">
-                {powerUps.map((f, i) => {
-                  const accent = ACCENT.power;
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-10 gap-y-9">
+                {coreFeatures.map((f, i) => {
+                  const hex = PASTELS[i % PASTELS.length];
                   const Icon = f.icon;
                   return (
-                    <div
-                      key={i}
-                      className="grid grid-cols-[auto_1fr] md:grid-cols-[auto_auto_1fr_auto] gap-4 md:gap-6 items-center py-6"
-                      data-testid={`card-powerup-${i}`}
-                    >
-                      {/* Big numeral */}
-                      <div
-                        className="font-black tabular-nums text-5xl md:text-6xl leading-none"
-                        style={{
-                          color: accent.hex,
-                          textShadow: `0 0 18px ${accent.halo}`,
-                          fontVariantNumeric: "tabular-nums",
-                        }}
-                      >
-                        {String(i + 1).padStart(2, "0")}
-                      </div>
-
-                      {/* Icon chip (desktop) */}
-                      <div
-                        className="hidden md:flex w-11 h-11 rounded-xl bg-black items-center justify-center"
-                        style={{
-                          border: `1.5px solid ${accent.hex}`,
-                          boxShadow: `0 0 14px ${accent.halo}, inset 0 0 10px ${accent.halo}`,
-                        }}
-                      >
-                        <Icon className="w-5 h-5" style={{ color: accent.hex, filter: `drop-shadow(0 0 6px ${accent.halo})` }} />
-                      </div>
-
-                      {/* Text */}
-                      <div className="col-span-2 md:col-span-1 min-w-0">
-                        <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                          <h3
-                            className="text-lg md:text-xl font-black text-white leading-tight"
-                            style={{ textShadow: `0 0 10px ${accent.halo}` }}
-                          >
-                            {c[f.titleKey as keyof typeof c] as string}
-                          </h3>
-                          <span
-                            className="inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.22em] bg-black"
-                            style={{ color: accent.hex, border: `1px solid ${accent.hex}`, boxShadow: `0 0 10px ${accent.halo}` }}
-                          >
-                            {c.powerUpPill}
-                          </span>
-                        </div>
-                        <p className="text-sm text-white font-medium leading-relaxed">
+                    <div key={i} className="flex items-start gap-3" data-testid={`card-feature-${i}`}>
+                      <Icon
+                        className="w-5 h-5 mt-1.5 shrink-0"
+                        style={{ color: hex, filter: `drop-shadow(0 0 6px ${hex})` }}
+                      />
+                      <div className="min-w-0">
+                        <h3 className="graffiti-hand text-lg text-white leading-snug" style={MARKER_SHADOW}>
+                          {c[f.titleKey as keyof typeof c] as string}
+                        </h3>
+                        <p className="text-sm text-white leading-relaxed mt-1.5">
                           {c[f.descKey as keyof typeof c] as string}
                         </p>
-                      </div>
-
-                      {/* Arrow (desktop) */}
-                      <div className="hidden md:block">
-                        <ArrowRight className="w-5 h-5" style={{ color: accent.hex, filter: `drop-shadow(0 0 6px ${accent.halo})` }} />
                       </div>
                     </div>
                   );
@@ -581,118 +372,122 @@ export default function FeaturesPage() {
             </div>
           </section>
 
-          {/* ═══ Rescue Packs — EMERGENCY BAND ═══ */}
-          <section className="px-4 sm:px-6 lg:px-8 pb-14">
-            <div className="max-w-6xl mx-auto">
-              <SectionHeader
-                eyebrow={isAf ? "Nood" : "Emergency"}
-                pill={c.rescuePill}
-                pillIcon={AlertTriangle}
-                pillHex="#FF2BD6"
-                title={<span>{c.sectionRescue}</span>}
-                subtitle={c.rescueDesc}
+          {/* ═══ Power-Ups — big pastel numerals on the wall ═══ */}
+          <section className="px-4 sm:px-6 lg:px-8 pb-16">
+            <div className="max-w-5xl mx-auto">
+              <WallHeading
+                smear="#C6A4FF"
+                eyebrow={isAf ? "Opsioneel" : "Optional"}
+                title={c.sectionPowerUps}
+                subtitle={c.powerUpDesc}
               />
 
-              {/* Calm container — single pink hairline + soft halo (was a
-                  diagonal candy-cane band that fought the cards inside it) */}
-              <div
-                className="mt-8 rounded-2xl bg-black p-4 sm:p-5"
-                style={{
-                  border: "1px solid rgba(255,43,214,0.55)",
-                  boxShadow: "0 0 22px rgba(255,43,214,0.18)",
-                }}
-              >
-                <div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                    {rescuePacks.map((f, i) => {
-                      const accent = ACCENT.rescue;
-                      const Icon = f.icon;
-                      return (
-                        <div
-                          key={i}
-                          className="relative rounded-xl bg-black p-4 group"
-                          style={{
-                            border: `1.5px solid ${accent.hex}`,
-                            boxShadow: `0 0 18px ${accent.halo}, inset 0 0 12px rgba(0,0,0,0.6)`,
-                          }}
-                          data-testid={`card-rescue-${i}`}
-                        >
-                          <div className="flex items-center gap-2.5 mb-3">
-                            <div
-                              className="w-9 h-9 rounded-lg bg-black flex items-center justify-center shrink-0"
-                              style={{
-                                border: `1.5px solid ${accent.hex}`,
-                                boxShadow: `0 0 10px ${accent.halo}`,
-                              }}
-                            >
-                              <Icon className="w-4 h-4" style={{ color: accent.hex, filter: `drop-shadow(0 0 5px ${accent.halo})` }} />
-                            </div>
-                            <span
-                              className="inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.22em] bg-black"
-                              style={{ color: accent.hex, border: `1px solid ${accent.hex}` }}
-                            >
-                              SOS · {String(i + 1).padStart(2, "0")}
-                            </span>
-                          </div>
-                          <h3
-                            className="text-base font-black text-white leading-snug mb-3 min-h-[2.6em]"
-                            style={{ textShadow: `0 0 4px ${accent.halo}` }}
-                          >
+              <div className="mt-10 space-y-9">
+                {powerUps.map((f, i) => {
+                  const hex = PASTELS[(i + 2) % PASTELS.length];
+                  const Icon = f.icon;
+                  return (
+                    <div key={i} className="flex items-start gap-5" data-testid={`card-powerup-${i}`}>
+                      <span
+                        className="graffiti-hand text-4xl md:text-5xl leading-none shrink-0 w-14 md:w-16"
+                        style={{ color: hex, ...MARKER_SHADOW }}
+                        aria-hidden
+                      >
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-1.5">
+                          <Icon
+                            className="w-4 h-4 shrink-0"
+                            style={{ color: hex, filter: `drop-shadow(0 0 6px ${hex})` }}
+                          />
+                          <h3 className="text-lg md:text-xl font-bold text-white leading-tight">
                             {c[f.titleKey as keyof typeof c] as string}
                           </h3>
-                          <p className="text-xs text-white font-medium leading-relaxed">
-                            {c[f.descKey as keyof typeof c] as string}
-                          </p>
+                          <span
+                            className="graffiti-hand text-xs uppercase tracking-[0.18em]"
+                            style={{ color: hex, ...MARKER_SHADOW }}
+                          >
+                            {c.powerUpPill}
+                          </span>
                         </div>
-                      );
-                    })}
-                  </div>
-                </div>
+                        <p className="text-sm text-white leading-relaxed max-w-2xl">
+                          {c[f.descKey as keyof typeof c] as string}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </section>
 
-          {/* ═══ Why BrainTrack Works — STATS + POINTS ═══ */}
+          {/* ═══ Rescue Packs — pastel left-border callouts ═══ */}
+          <section className="px-4 sm:px-6 lg:px-8 pb-16">
+            <div className="max-w-5xl mx-auto">
+              <WallHeading
+                smear="#FF9FE5"
+                eyebrow={c.rescuePill}
+                title={c.sectionRescue}
+                subtitle={c.rescueDesc}
+              />
+
+              <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
+                {rescuePacks.map((f, i) => {
+                  const hex = PASTELS[(i + 4) % PASTELS.length];
+                  const Icon = f.icon;
+                  return (
+                    <div
+                      key={i}
+                      className="pl-4 py-1"
+                      style={{ borderLeft: `3px solid ${hex}` }}
+                      data-testid={`card-rescue-${i}`}
+                    >
+                      <p
+                        className="graffiti-hand text-xs uppercase tracking-[0.22em] mb-1.5"
+                        style={{ color: hex, ...MARKER_SHADOW }}
+                      >
+                        SOS · {String(i + 1).padStart(2, "0")}
+                      </p>
+                      <h3 className="flex items-center gap-2 text-base font-bold text-white leading-snug mb-1.5">
+                        <Icon
+                          className="w-4 h-4 shrink-0"
+                          style={{ color: hex, filter: `drop-shadow(0 0 6px ${hex})` }}
+                        />
+                        {c[f.titleKey as keyof typeof c] as string}
+                      </h3>
+                      <p className="text-sm text-white leading-relaxed">
+                        {c[f.descKey as keyof typeof c] as string}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+
+          {/* ═══ Why BrainTrack Works — stats + checklist ═══ */}
           <section className="px-4 sm:px-6 lg:px-8 pb-20">
-            <div className="max-w-6xl mx-auto">
-              <SectionHeader
+            <div className="max-w-5xl mx-auto">
+              <WallHeading
+                smear="#93FFB8"
                 eyebrow={isAf ? "Strategie" : "Strategy"}
-                pill={isAf ? "Strategie" : "Strategy"}
-                pillIcon={Target}
-                pillHex="#006BFF"
-                title={
-                  language === "en" ? (
-                    <>Why <span style={{ color: "#006BFF" }}>BrainTrack</span> Works</>
-                  ) : (
-                    <>Hoekom <span style={{ color: "#006BFF" }}>BrainTrack</span> Werk</>
-                  )
-                }
+                title={c.sectionDiff}
                 subtitle={c.diffSubtitle}
               />
 
-              {/* Big stat cards */}
-              <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+              {/* Stats — big pastel numbers, small white labels. No boxes. */}
+              <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8">
                 {[
-                  { label: c.stat1L, value: c.stat1V, hex: "#00E5FF" },
-                  { label: c.stat2L, value: c.stat2V, hex: "#FFE600" },
-                  { label: c.stat3L, value: c.stat3V, hex: "#8A2BFF" },
-                  { label: c.stat4L, value: c.stat4V, hex: "#FF2BD6" },
+                  { label: c.stat1L, value: c.stat1V, hex: "#7FEFFF" },
+                  { label: c.stat2L, value: c.stat2V, hex: "#FFF29E" },
+                  { label: c.stat3L, value: c.stat3V, hex: "#C6A4FF" },
+                  { label: c.stat4L, value: c.stat4V, hex: "#FF9FE5" },
                 ].map(({ label, value, hex }) => (
-                  <div
-                    key={label}
-                    className="relative rounded-2xl bg-black p-5 overflow-hidden"
-                    style={{
-                      border: `1.5px solid ${hex}`,
-                      boxShadow: `0 0 18px ${hex}44, inset 0 0 16px rgba(0,0,0,0.6)`,
-                    }}
-                  >
-                    <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: hex }} />
-                    <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2" style={{ borderColor: hex }} />
-                    <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2" style={{ borderColor: hex }} />
-                    <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: hex }} />
+                  <div key={label}>
                     <div
-                      className="text-4xl md:text-5xl font-black tabular-nums leading-none"
-                      style={{ color: hex, textShadow: `0 0 18px ${hex}77`, fontVariantNumeric: "tabular-nums" }}
+                      className="graffiti-hand text-4xl md:text-5xl leading-none"
+                      style={{ color: hex, ...MARKER_SHADOW }}
                     >
                       {value}
                     </div>
@@ -703,13 +498,16 @@ export default function FeaturesPage() {
                 ))}
               </div>
 
-              {/* Differentiator points — single proof-blue accent on every check */}
-              <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
+              {/* Differentiator checklist — small pastel checks, plain white text */}
+              <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
                 {diffPoints.map((key, i) => (
                   <div key={i} className="flex items-center gap-3" data-testid={`text-diff-point-${i}`}>
                     <CheckCircle
                       className="w-4 h-4 shrink-0"
-                      style={{ color: ACCENT.proof.hex, filter: `drop-shadow(0 0 5px ${ACCENT.proof.halo})` }}
+                      style={{
+                        color: PASTELS[i % PASTELS.length],
+                        filter: `drop-shadow(0 0 5px ${PASTELS[i % PASTELS.length]})`,
+                      }}
                     />
                     <span className="text-white font-medium leading-snug">{c[key as keyof typeof c] as string}</span>
                   </div>
@@ -717,7 +515,6 @@ export default function FeaturesPage() {
               </div>
             </div>
           </section>
-
         </main>
       </div>
     </div>

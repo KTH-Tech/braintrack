@@ -13,7 +13,7 @@ import { BrainTrackLogo } from "@/components/braintrack-logo";
 import { ExamCountdown } from "@/components/exam-countdown";
 import { AnimatedIcon, type AnimatedIconName } from "@/components/animated-icon";
 import { SALandmarkScene } from "@/components/sa-landmark-scene";
-import { GraffitiSplats } from "@/components/graffiti-splats";
+import { GraffitiSplats, SpraySmear } from "@/components/graffiti-splats";
 import novaIcon from "@assets/ChatGPT_Image_Mar_5,_2026,_10_44_55_AM_1772701049699.png";
 import { useRolePromptNav } from "@/components/role-prompt-modal";
 
@@ -740,14 +740,13 @@ export default function LandingPage() {
                   })}
                 </div>
 
-                <div
-                  className="w-full max-w-xl rounded-2xl bg-black px-4 py-3"
-                  style={{ border: "1px solid rgba(255,230,0,0.45)", boxShadow: "0 0 14px rgba(255,230,0,0.25)" }}
+                {/* Urgency line — written straight on the wall, no box */}
+                <p
+                  className="graffiti-hand w-full max-w-xl text-base sm:text-lg text-center md:text-left -rotate-1"
+                  style={{ color: "#FFE600", textShadow: "0 0 12px rgba(255,230,0,0.55), 0 2px 0 rgba(0,0,0,0.6)" }}
                 >
-                  <p className="text-sm sm:text-base font-bold text-center" style={{ color: "#FFE600", textShadow: "0 0 6px rgba(255,230,0,0.5)" }}>
-                    {t.hero.urgency}
-                  </p>
-                </div>
+                  {t.hero.urgency}
+                </p>
 
                 <div className="flex flex-col items-center md:items-start gap-3 pt-2">
                   <button
@@ -776,13 +775,14 @@ export default function LandingPage() {
                     { k: language === "af" ? "Vraestelle" : "Papers", v: "10y", hex: "#FFE600" },
                     { k: language === "af" ? "AI Tutor" : "AI Tutor", v: "24/7", hex: "#8A2BFF" },
                   ].map(({ k, v, hex }) => (
-                    <div
-                      key={k}
-                      className="rounded-xl bg-black px-2 py-2 sm:px-3 sm:py-2.5"
-                      style={{ border: `1px solid ${hex}55`, boxShadow: `0 0 10px ${hex}33` }}
-                    >
-                      <div className="text-[7px] sm:text-[9px] font-bold uppercase tracking-[0.1em] sm:tracking-[0.18em] text-white">{k}</div>
-                      <div className="text-lg max-[479px]:text-base sm:text-2xl font-black tabular-nums" style={{ color: hex, textShadow: `0 0 8px ${hex}55` }}>{v}</div>
+                    <div key={k} className="text-center md:text-left">
+                      <div
+                        className="graffiti-hand text-2xl max-[479px]:text-xl sm:text-4xl tabular-nums leading-none"
+                        style={{ color: hex, textShadow: `0 0 14px ${hex}66, 0 2px 0 rgba(0,0,0,0.6)` }}
+                      >
+                        {v}
+                      </div>
+                      <div className="mt-1 text-[8px] sm:text-[10px] font-bold uppercase tracking-[0.14em] sm:tracking-[0.2em] text-white">{k}</div>
                     </div>
                   ))}
                 </div>
@@ -904,26 +904,22 @@ export default function LandingPage() {
                 return (
                   <div
                     key={idx}
-                    className={`relative overflow-hidden rounded-2xl bg-black p-5 transition-all duration-500 ${featuresAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
-                    style={{
-                      border: `1px solid ${hex}66`,
-                      boxShadow: `0 0 18px ${hex}33, inset 0 0 20px rgba(0,0,0,0.4)`,
-                      transitionDelay: featuresAnim.inView ? `${idx * 120}ms` : '0ms',
-                    }}
+                    className={`transition-all duration-500 ${featuresAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+                    style={{ transitionDelay: featuresAnim.inView ? `${idx * 120}ms` : '0ms' }}
                   >
-                    <div aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: hex, boxShadow: `0 0 8px ${hex}` }} />
+                    {/* Wall-written feature — marker heading + plain white list, no box */}
                     <div className="space-y-3">
-                      <div
-                        className="w-10 h-10 rounded-xl flex items-center justify-center bg-black"
-                        style={{ border: `1px solid ${hex}88`, boxShadow: `0 0 10px ${hex}44`, color: hex }}
-                      >
+                      <div className="flex items-center gap-2.5" style={{ color: hex, filter: `drop-shadow(0 0 6px ${hex}88)` }}>
                         <AnimatedIcon name={Icon} size={22} data-testid={`icon-everything-${Icon}`} />
                       </div>
-                      <h3 className="text-base sm:text-lg font-bold text-white">{card.title}</h3>
+                      <h3 className="spray-title graffiti-hand text-lg sm:text-xl text-white -rotate-1" style={{ textShadow: "0 2px 0 rgba(0,0,0,0.6)" }}>
+                        <SpraySmear color={hex} />
+                        {card.title}
+                      </h3>
                       <ul className="space-y-1.5">
                         {card.items.map((item, i) => (
                           <li key={i} className="flex items-start gap-2 text-sm text-white">
-                            <CheckCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: hex }} />
+                            <CheckCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: hex, filter: `drop-shadow(0 0 4px ${hex}88)` }} />
                             <span>{item}</span>
                           </li>
                         ))}
@@ -971,94 +967,69 @@ export default function LandingPage() {
                 return (
                   <div
                     key={idx}
-                    className={`relative overflow-hidden rounded-3xl bg-black p-6 sm:p-8 w-full max-w-md transition-all duration-500 ${pricingAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+                    className={`w-full max-w-md pl-5 sm:pl-6 transition-all duration-500 ${pricingAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
                     style={{
-                      border: "1.5px solid #00E5FF",
-                      boxShadow: "0 0 0 1px rgba(0,229,255,0.32), 0 0 40px rgba(0,229,255,0.45), inset 0 0 30px rgba(0,0,0,0.55)",
+                      // Recommended plan's only mark: a thin 3px neon left border.
+                      borderLeft: product.highlight ? "3px solid #00E5FF" : undefined,
                       transitionDelay: pricingAnim.inView ? `${idx * 100}ms` : '0ms',
                     }}
                     data-testid={`product-card-${idx}`}
                   >
-                    <div
-                      aria-hidden
-                      className="absolute top-0 left-0 right-0 h-[3px]"
-                      style={{
-                        background:
-                          "linear-gradient(90deg, #FF8A00, #FF8A00, #FFE600, #FFE600, #00E5FF, #006BFF, #8A2BFF, #8A2BFF, #FF2BD6)",
-                      }}
-                    />
-                    <div aria-hidden className="absolute -top-20 -right-20 w-56 h-56 rounded-full blur-3xl pointer-events-none"
-                      style={{ background: "radial-gradient(circle, rgba(0,229,255,0.28), transparent 70%)" }} />
-
-                    {product.badge && (
-                      <div
-                        className="absolute top-3 right-3 inline-flex items-center gap-1 rounded-full px-2.5 py-1 bg-black text-[9px] font-black uppercase tracking-[0.18em]"
-                        style={{ color: "#FFE600", border: "1px solid #FFE600", boxShadow: "0 0 10px rgba(255,230,0,0.45)" }}
-                      >
-                        <Sparkles className="w-3 h-3" />
-                        {product.badge}
-                      </div>
-                    )}
-
-                    <div className="relative space-y-5">
-                      <div className="flex items-center gap-3 pr-16 sm:pr-20">
-                        <div
-                          className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-black"
-                          style={{ border: "1px solid #00E5FF", boxShadow: "0 0 14px rgba(0,229,255,0.5)", color: "#00E5FF" }}
+                    {/* Wall-written plan — no panel box */}
+                    <div className="space-y-5">
+                      {product.badge && (
+                        <p
+                          className="graffiti-hand text-sm -rotate-1 flex items-center gap-1.5"
+                          style={{ color: "#FFE600", textShadow: "0 0 10px rgba(255,230,0,0.5)" }}
                         >
-                          <Icon className="w-6 h-6" />
-                        </div>
-                        <div className="min-w-0">
-                          <h3 className="text-lg sm:text-xl font-black text-white leading-tight">{product.name}</h3>
-                          <p className="text-[11px] text-white leading-tight">{product.desc}</p>
-                        </div>
-                      </div>
+                          <Sparkles className="w-3.5 h-3.5" style={{ filter: "drop-shadow(0 0 4px #FFE600)" }} />
+                          {product.badge}
+                        </p>
+                      )}
 
-                      <div className="flex items-end gap-1.5">
+                      <div className="flex items-center gap-3">
+                        <Icon className="w-6 h-6 shrink-0" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 6px rgba(0,229,255,0.7))" }} />
+                        <h3 className="spray-title graffiti-hand text-2xl sm:text-3xl text-white -rotate-1" style={{ textShadow: "0 2px 0 rgba(0,0,0,0.6)" }}>
+                          <SpraySmear color="#00E5FF" />
+                          {product.name}
+                        </h3>
+                      </div>
+                      <p className="text-sm text-white leading-snug">{product.desc}</p>
+
+                      <div className="flex items-end gap-2">
                         <span
-                          className="text-4xl sm:text-5xl font-black tabular-nums"
-                          style={{
-                            background: "linear-gradient(90deg, #FFE600, #00E5FF, #8A2BFF, #FF2BD6)",
-                            WebkitBackgroundClip: "text",
-                            WebkitTextFillColor: "transparent",
-                            backgroundClip: "text",
-                            filter: "drop-shadow(0 0 10px rgba(0,229,255,0.35))",
-                          }}
+                          className="graffiti-hand text-5xl sm:text-6xl tabular-nums leading-none"
+                          style={{ color: "#00E5FF", textShadow: "0 0 18px rgba(0,229,255,0.55), 0 3px 0 rgba(0,0,0,0.6)" }}
                         >
                           {product.price}
                         </span>
-                        <span className="text-xs text-white font-semibold mb-1.5">{product.period}</span>
+                        <span className="text-xs text-white font-semibold mb-1">{product.period}</span>
                       </div>
 
                       {"trial" in product && product.trial && (
-                        <span
-                          className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 bg-black text-[10px] font-bold uppercase tracking-[0.18em]"
-                          style={{ color: "#FF2BD6", border: "1px solid rgba(255,43,214,0.6)", boxShadow: "0 0 10px rgba(255,43,214,0.35)" }}
+                        <p
+                          className="graffiti-hand text-sm rotate-1 flex items-center gap-1.5"
+                          style={{ color: "#FF2BD6", textShadow: "0 0 10px rgba(255,43,214,0.5)" }}
                         >
-                          <Sparkles className="w-3 h-3" />
+                          <Sparkles className="w-3.5 h-3.5" style={{ filter: "drop-shadow(0 0 4px #FF2BD6)" }} />
                           {product.trial}
-                        </span>
+                        </p>
                       )}
 
                       <ul className="space-y-2 pt-1">
                         {product.features.map((feature, i) => (
                           <li key={i} className="flex items-start gap-2.5 text-sm text-white">
-                            <div
-                              className="mt-0.5 rounded-full p-0.5 shrink-0 bg-black"
-                              style={{ border: "1px solid #00E5FF", boxShadow: "0 0 6px rgba(0,229,255,0.4)", color: "#00E5FF" }}
-                            >
-                              <Check className="w-2.5 h-2.5" />
-                            </div>
+                            <Check className="w-4 h-4 mt-0.5 shrink-0" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px rgba(0,229,255,0.6))" }} />
                             <span>{feature}</span>
                           </li>
                         ))}
                       </ul>
 
-                      {/* Pricing CTA — modern flat single-colour (brand blue) */}
+                      {/* Pricing CTA — compact flat single-colour (brand blue) */}
                       <button
                         onClick={handleCta}
                         data-testid="button-pricing-cta"
-                        className="mt-2 w-full inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3.5 font-bold text-sm text-white bg-[#006BFF] hover:bg-[#0057D6] transition-colors"
+                        className="mt-2 inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 font-bold text-sm text-white bg-[#006BFF] hover:bg-[#0057D6] transition-colors"
                       >
                         <Zap className="w-4 h-4" />
                         {t.hero.cta}
@@ -1109,25 +1080,12 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Cosmic-neon chat console */}
-            <div
-              className="relative rounded-2xl bg-black overflow-hidden"
-              style={{
-                border: "1.5px solid #8A2BFF",
-                boxShadow: "0 0 0 1px rgba(138,43,255,0.35), 0 0 40px rgba(138,43,255,0.35), inset 0 0 24px rgba(0,0,0,0.6)",
-              }}
-              data-testid="rizz-demo-console"
-            >
-              {/* corner brackets */}
-              <span aria-hidden className="absolute top-0 left-0 w-3.5 h-3.5 border-t-2 border-l-2 z-10" style={{ borderColor: "#8A2BFF" }} />
-              <span aria-hidden className="absolute top-0 right-0 w-3.5 h-3.5 border-t-2 border-r-2 z-10" style={{ borderColor: "#8A2BFF" }} />
-              <span aria-hidden className="absolute bottom-0 left-0 w-3.5 h-3.5 border-b-2 border-l-2 z-10" style={{ borderColor: "#8A2BFF" }} />
-              <span aria-hidden className="absolute bottom-0 right-0 w-3.5 h-3.5 border-b-2 border-r-2 z-10" style={{ borderColor: "#8A2BFF" }} />
-
-              {/* Chat header */}
+            {/* Wall-written chat demo — no console box */}
+            <div className="relative" data-testid="rizz-demo-console">
+              {/* Chat header — straight on the wall */}
               <div
-                className="p-4 sm:p-5 flex items-center gap-3 bg-black"
-                style={{ borderBottom: "1px solid rgba(138,43,255,0.35)" }}
+                className="py-4 sm:py-5 flex items-center gap-3"
+                style={{ borderBottom: "1px solid rgba(255,255,255,0.15)" }}
               >
                 <div className="relative">
                   <div
@@ -1160,7 +1118,7 @@ export default function LandingPage() {
               </div>
 
               {/* Chat body */}
-              <div className="p-4 sm:p-6 space-y-4">
+              <div className="py-4 sm:py-6 space-y-5">
                 {/* Subject pills */}
                 <div className="flex flex-wrap gap-2 mb-2">
                   {demoQuestions[language].map((q, idx) => {
@@ -1198,15 +1156,9 @@ export default function LandingPage() {
                   })}
                 </div>
 
-                {/* Student question bubble */}
-                <div
-                  className="rounded-xl p-4 bg-black"
-                  style={{
-                    border: "1px solid rgba(255,43,214,0.45)",
-                    boxShadow: "0 0 18px rgba(255,43,214,0.25)",
-                  }}
-                >
-                  <p className="text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color: "#FF2BD6" }}>{t.nova.studentQ}</p>
+                {/* Student question — written on the wall, thin neon accent only */}
+                <div className="pl-4" style={{ borderLeft: "3px solid #FF2BD6" }}>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color: "#FF2BD6", textShadow: "0 0 8px rgba(255,43,214,0.5)" }}>{t.nova.studentQ}</p>
                   <p className="text-base text-white leading-relaxed font-medium">
                     {demoQuestions[language][demoQuestion].question}
                   </p>
@@ -1215,8 +1167,8 @@ export default function LandingPage() {
                 {demoStep >= 1 && (
                   <>
                     <div
-                      className="rounded-xl p-4 bg-black animate-in fade-in slide-in-from-bottom-2 duration-300"
-                      style={{ border: "1px solid rgba(0,107,255,0.5)", boxShadow: "0 0 18px rgba(0,107,255,0.25)" }}
+                      className="pl-4 animate-in fade-in slide-in-from-bottom-2 duration-300"
+                      style={{ borderLeft: "3px solid #006BFF" }}
                     >
                       <div className="flex items-center gap-2 mb-2">
                         <GraduationCap className="w-4 h-4" style={{ color: "#006BFF", filter: "drop-shadow(0 0 4px #006BFF)" }} />
@@ -1228,8 +1180,8 @@ export default function LandingPage() {
                     </div>
 
                     <div
-                      className="rounded-xl p-4 bg-black animate-in fade-in slide-in-from-bottom-2 duration-300"
-                      style={{ border: "1px solid rgba(0,229,255,0.5)", boxShadow: "0 0 18px rgba(0,229,255,0.3)" }}
+                      className="pl-4 animate-in fade-in slide-in-from-bottom-2 duration-300"
+                      style={{ borderLeft: "3px solid #00E5FF" }}
                     >
                       <div className="flex items-center gap-2 mb-2">
                         <MessageSquare className="w-4 h-4" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
@@ -1244,7 +1196,7 @@ export default function LandingPage() {
 
                 {demoStep === 0 ? (
                   <button
-                    className="w-full rounded-xl py-3 bg-black font-bold text-sm transition-none"
+                    className="inline-flex items-center justify-center rounded-xl px-5 py-2.5 bg-black font-bold text-sm transition-none"
                     onClick={() => setDemoStep(1)}
                     data-testid="demo-next-step"
                     style={{
@@ -1257,7 +1209,7 @@ export default function LandingPage() {
                   </button>
                 ) : (
                   <button
-                    className="w-full rounded-xl py-3 bg-black font-bold text-sm transition-none"
+                    className="inline-flex items-center justify-center rounded-xl px-5 py-2.5 bg-black font-bold text-sm transition-none"
                     onClick={() => setDemoStep(0)}
                     data-testid="demo-reset"
                     style={{ color: "#8A2BFF", border: "1.5px solid #8A2BFF", boxShadow: "0 0 14px rgba(138,43,255,0.4)" }}
@@ -1302,24 +1254,13 @@ export default function LandingPage() {
                 return (
                   <div
                     key={idx}
-                    className={`relative overflow-hidden rounded-2xl bg-black p-5 transition-all duration-500 ${parentsAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
-                    style={{
-                      border: `1px solid ${hex}66`,
-                      boxShadow: `0 0 14px ${hex}28, inset 0 0 18px rgba(0,0,0,0.4)`,
-                      transitionDelay: parentsAnim.inView ? `${idx * 100}ms` : '0ms',
-                    }}
+                    className={`transition-all duration-500 ${parentsAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+                    style={{ transitionDelay: parentsAnim.inView ? `${idx * 100}ms` : '0ms' }}
                   >
-                    <div aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: hex, boxShadow: `0 0 6px ${hex}` }} />
-                    <span aria-hidden className="absolute top-1.5 left-1.5 w-2 h-2 border-t-2 border-l-2" style={{ borderColor: hex }} />
-                    <span aria-hidden className="absolute bottom-1.5 right-1.5 w-2 h-2 border-b-2 border-r-2" style={{ borderColor: hex }} />
-                    <div className="relative flex items-start gap-3">
-                      <div
-                        className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-black"
-                        style={{ border: `1px solid ${hex}`, boxShadow: `0 0 10px ${hex}55`, color: hex }}
-                      >
-                        <Users className="w-4 h-4" />
-                      </div>
-                      <p className="text-sm text-white leading-relaxed pt-1">{item}</p>
+                    {/* Wall-written point — neon icon + plain white text, no box */}
+                    <div className="flex items-start gap-3">
+                      <Users className="w-5 h-5 mt-0.5 shrink-0" style={{ color: hex, filter: `drop-shadow(0 0 6px ${hex}88)` }} />
+                      <p className="text-sm text-white leading-relaxed">{item}</p>
                     </div>
                   </div>
                 );
@@ -1363,24 +1304,13 @@ export default function LandingPage() {
                 return (
                   <div
                     key={idx}
-                    className={`relative overflow-hidden rounded-2xl bg-black p-5 transition-all duration-500 ${schoolsAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
-                    style={{
-                      border: `1px solid ${hex}66`,
-                      boxShadow: `0 0 14px ${hex}28, inset 0 0 18px rgba(0,0,0,0.4)`,
-                      transitionDelay: schoolsAnim.inView ? `${idx * 100}ms` : '0ms',
-                    }}
+                    className={`transition-all duration-500 ${schoolsAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+                    style={{ transitionDelay: schoolsAnim.inView ? `${idx * 100}ms` : '0ms' }}
                   >
-                    <div aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: hex, boxShadow: `0 0 6px ${hex}` }} />
-                    <span aria-hidden className="absolute top-1.5 left-1.5 w-2 h-2 border-t-2 border-l-2" style={{ borderColor: hex }} />
-                    <span aria-hidden className="absolute bottom-1.5 right-1.5 w-2 h-2 border-b-2 border-r-2" style={{ borderColor: hex }} />
-                    <div className="relative flex items-start gap-3">
-                      <div
-                        className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-black"
-                        style={{ border: `1px solid ${hex}`, boxShadow: `0 0 10px ${hex}55`, color: hex }}
-                      >
-                        <GraduationCap className="w-4 h-4" />
-                      </div>
-                      <p className="text-sm text-white leading-relaxed pt-1">{item}</p>
+                    {/* Wall-written point — neon icon + plain white text, no box */}
+                    <div className="flex items-start gap-3">
+                      <GraduationCap className="w-5 h-5 mt-0.5 shrink-0" style={{ color: hex, filter: `drop-shadow(0 0 6px ${hex}88)` }} />
+                      <p className="text-sm text-white leading-relaxed">{item}</p>
                     </div>
                   </div>
                 );
@@ -1417,7 +1347,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="space-y-4">
+            <div>
               {t.faq.items.map((faqItem, idx) => {
                 const palette = [
                   { hex: "#FF8A00", halo: "rgba(255,138,0,0.45)", Icon: Flame,       rot: "-rotate-1" },
@@ -1427,89 +1357,53 @@ export default function LandingPage() {
                   { hex: "#8A2BFF", halo: "rgba(138,43,255,0.45)",Icon: Brain,       rot: "-rotate-1" },
                   { hex: "#FF2BD6", halo: "rgba(255,43,214,0.45)", Icon: MessageSquare, rot: "rotate-1" },
                 ];
-                const { hex, halo, Icon, rot } = palette[idx % palette.length];
+                const { hex, Icon } = palette[idx % palette.length];
                 const isOpen = openFaq === idx;
                 return (
                   <div
                     key={idx}
-                    className={`relative transition-all duration-500 ${faqAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'} ${isOpen ? 'rotate-0' : `${rot} hover:rotate-0 hover:-translate-y-0.5`}`}
-                    style={{ transitionDelay: faqAnim.inView ? `${idx * 90}ms` : '0ms' }}
+                    className={`transition-all duration-500 ${faqAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+                    style={{
+                      transitionDelay: faqAnim.inView ? `${idx * 90}ms` : '0ms',
+                      // Wall-written FAQ — only a thin hairline separates questions.
+                      borderBottom: "1px solid rgba(255,255,255,0.15)",
+                    }}
                   >
-                    <div
-                      className="relative overflow-hidden rounded-[22px] bg-black transition-all duration-300"
-                      style={{
-                        border: `1.5px solid ${isOpen ? hex : `${hex}66`}`,
-                        boxShadow: isOpen
-                          ? `0 14px 40px -10px ${halo}, 0 0 0 3px ${hex}22`
-                          : `0 6px 20px -10px ${halo}`,
-                      }}
+                    <button
+                      className="w-full text-left py-4 sm:py-5 flex items-center gap-3 sm:gap-4 cursor-pointer group"
+                      onClick={() => setOpenFaq(isOpen ? null : idx)}
+                      aria-expanded={isOpen}
+                      aria-controls={`faq-answer-${idx}`}
                     >
-                      {/* sticker-tape top ribbon */}
-                      <div
-                        aria-hidden
-                        className="absolute top-0 left-0 right-0 h-[3px]"
-                        style={{
-                          background: `repeating-linear-gradient(90deg, ${hex} 0 14px, transparent 14px 24px)`,
-                          boxShadow: `0 0 10px ${hex}`,
-                        }}
+                      <Icon className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" style={{ color: hex, filter: `drop-shadow(0 0 6px ${hex})` }} />
+                      <span className="graffiti-hand shrink-0 text-sm" style={{ color: hex, textShadow: `0 0 8px ${hex}66` }}>
+                        Q{idx + 1}
+                      </span>
+
+                      <span className="text-sm sm:text-base font-extrabold text-white flex-1 min-w-0 leading-snug">
+                        {faqItem.q}
+                      </span>
+
+                      <ChevronDown
+                        className={`w-4 h-4 shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : 'group-hover:translate-y-0.5'}`}
+                        style={{ color: hex, filter: `drop-shadow(0 0 4px ${hex})` }}
                       />
-                      {/* aura bloom */}
-                      <div aria-hidden className="absolute -top-20 -right-20 w-56 h-56 rounded-full blur-3xl pointer-events-none transition-opacity duration-300"
-                        style={{ background: `radial-gradient(circle, ${halo}, transparent 70%)`, opacity: isOpen ? 0.9 : 0.35 }}
-                      />
+                    </button>
 
-                      <button
-                        className="relative w-full text-left p-4 sm:p-5 lg:p-6 flex items-center gap-3 sm:gap-4 cursor-pointer group"
-                        onClick={() => setOpenFaq(isOpen ? null : idx)}
-                        aria-expanded={isOpen}
-                        aria-controls={`faq-answer-${idx}`}
-                      >
-                        {/* Q badge — big bold number + icon */}
-                        <div className="relative shrink-0">
-                          <div
-                            className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-black flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-hover:rotate-[-6deg]"
-                            style={{ border: `2px solid ${hex}`, boxShadow: `0 0 16px ${halo}, inset 0 0 10px ${halo}` }}
-                          >
-                            <Icon className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: hex, filter: `drop-shadow(0 0 6px ${hex})` }} />
-                          </div>
-                          <span
-                            className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-black flex items-center justify-center text-[10px] font-black"
-                            style={{ color: hex, border: `1.5px solid ${hex}`, boxShadow: `0 0 8px ${halo}` }}
-                          >
-                            Q{idx + 1}
-                          </span>
-                        </div>
-
-                        <span className="text-sm sm:text-base font-extrabold text-white flex-1 min-w-0 leading-snug">
-                          {faqItem.q}
-                        </span>
-
-                        <div
-                          className={`shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black flex items-center justify-center transition-all duration-300 ${isOpen ? 'rotate-180' : 'group-hover:translate-y-0.5'}`}
-                          style={{ border: `1.5px solid ${hex}`, boxShadow: `0 0 10px ${halo}` }}
-                        >
-                          <ChevronDown className="w-4 h-4" style={{ color: hex }} />
-                        </div>
-                      </button>
-
-                      {/* answer panel */}
-                      <div
-                        className="grid transition-all duration-300 ease-out"
-                        style={{ gridTemplateRows: isOpen ? '1fr' : '0fr' }}
-                      >
-                        <div className="overflow-hidden" id={`faq-answer-${idx}`} role="region">
-                          <div className="relative px-4 sm:px-5 lg:px-6 pb-5 pl-[52px] sm:pl-[82px] lg:pl-[96px]">
-                            <div className="flex items-start gap-3">
-                              <span
-                                className="shrink-0 text-[11px] font-black uppercase tracking-[0.22em] px-2 py-0.5 rounded-full bg-black mt-0.5"
-                                style={{ color: hex, border: `1px solid ${hex}`, boxShadow: `0 0 10px ${halo}` }}
-                              >
-                                A{idx + 1}
-                              </span>
-                              <p className="text-sm text-white leading-relaxed flex-1">
-                                {faqItem.a}
-                              </p>
-                            </div>
+                    {/* answer — plain white text on the wall */}
+                    <div
+                      className="grid transition-all duration-300 ease-out"
+                      style={{ gridTemplateRows: isOpen ? '1fr' : '0fr' }}
+                    >
+                      <div className="overflow-hidden" id={`faq-answer-${idx}`} role="region">
+                        <div className="pb-5 pl-[44px] sm:pl-[52px]">
+                          <div className="flex items-start gap-3">
+                            <span className="graffiti-hand shrink-0 text-sm mt-0.5" style={{ color: hex, textShadow: `0 0 8px ${hex}66` }}>
+                              A{idx + 1}
+                            </span>
+                            <p className="text-sm text-white leading-relaxed flex-1">
+                              {faqItem.a}
+                            </p>
                           </div>
                         </div>
                       </div>

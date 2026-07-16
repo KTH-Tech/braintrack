@@ -80,7 +80,7 @@ const T = {
 function InputRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-xs font-semibold text-white/60 uppercase tracking-widest">{label}</label>
+      <label className="text-xs font-semibold text-white uppercase tracking-widest">{label}</label>
       {children}
     </div>
   );
@@ -90,7 +90,7 @@ function NeonInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
       {...props}
-      className="w-full px-4 py-3 rounded-xl text-sm text-white bg-white/5 outline-none transition-all focus:bg-white/8 placeholder:text-white/25"
+      className="w-full px-4 py-3 rounded-xl text-sm text-white bg-white/5 outline-none transition-all focus:bg-white/8 placeholder:text-white"
       style={{ border: `1px solid ${hexRgba(NEON, 0.2)}`, ...(props.style ?? {}) }}
     />
   );
@@ -194,8 +194,8 @@ export default function JoinPage() {
   if (schoolError || !school) {
     return (
       <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-4 px-6 text-center">
-        <School className="w-10 h-10 text-white/20" />
-        <p className="text-white/50 text-sm max-w-xs">{t.invalidSchool}</p>
+        <School className="w-10 h-10 text-white" />
+        <p className="text-white text-sm max-w-xs">{t.invalidSchool}</p>
       </div>
     );
   }
@@ -222,7 +222,7 @@ export default function JoinPage() {
             </span>
           </div>
           <p className="text-white font-bold text-lg leading-snug">{school.schoolName}</p>
-          <p className="text-white/35 text-xs mt-1">{t.tagline}</p>
+          <p className="text-white text-xs mt-1">{t.tagline}</p>
         </div>
 
         {/* Card */}
@@ -239,7 +239,7 @@ export default function JoinPage() {
                 <span className="text-xs" style={{ color: step === s ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.3)" }}>
                   {i === 0 ? t.step1 : t.step2}
                 </span>
-                {i === 0 && <ChevronRight className="w-3 h-3 text-white/15" />}
+                {i === 0 && <ChevronRight className="w-3 h-3 text-white" />}
               </div>
             ))}
           </div>
@@ -258,7 +258,7 @@ export default function JoinPage() {
 
               <InputRow label={t.phone}>
                 <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/25 pointer-events-none" />
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white pointer-events-none" />
                   <NeonInput type="tel" value={form.phone} onChange={e => setField("phone", e.target.value)} placeholder={t.phonePlaceholder} className="pl-9" autoComplete="tel" style={{ paddingLeft: "2.25rem", border: `1px solid ${hexRgba(NEON, 0.2)}` }} />
                 </div>
               </InputRow>
@@ -280,7 +280,7 @@ export default function JoinPage() {
 
               <InputRow label={t.parentEmail}>
                 <NeonInput type="email" value={form.parentEmail} onChange={e => setField("parentEmail", e.target.value)} placeholder="parent@email.com" autoComplete="email" />
-                <p className="text-[10px] text-white/30 leading-relaxed">{t.parentEmailHint}</p>
+                <p className="text-[10px] text-white leading-relaxed">{t.parentEmailHint}</p>
               </InputRow>
 
               <button
@@ -302,7 +302,7 @@ export default function JoinPage() {
                 <Hash className="w-6 h-6" style={{ color: NEON }} />
               </div>
               <div>
-                <p className="text-white/60 text-sm">{t.otpSent}</p>
+                <p className="text-white text-sm">{t.otpSent}</p>
                 <p className="text-white font-semibold text-sm mt-0.5">{form.phone}</p>
               </div>
               <input
@@ -325,7 +325,7 @@ export default function JoinPage() {
                 {verifyMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
                 {t.verify}
               </button>
-              <button onClick={() => { setStep("details"); setOtp(""); }} className="flex items-center gap-1.5 text-xs text-white/35 hover:text-white/60 transition-colors">
+              <button onClick={() => { setStep("details"); setOtp(""); }} className="flex items-center gap-1.5 text-xs text-white hover:text-white transition-colors">
                 <RotateCcw className="w-3 h-3" />
                 {t.resend}
               </button>
@@ -337,21 +337,21 @@ export default function JoinPage() {
             <div className="flex flex-col items-center gap-4 py-4 text-center">
               <CheckCircle2 className="w-10 h-10" style={{ color: NEON }} />
               <p className="text-white font-semibold">{t.success}</p>
-              <Loader2 className="w-5 h-5 animate-spin text-white/40" />
+              <Loader2 className="w-5 h-5 animate-spin text-white" />
             </div>
           )}
         </div>
 
         {/* Sign-in link */}
         {step === "details" && (
-          <p className="text-center text-xs text-white/30">
+          <p className="text-center text-xs text-white">
             {t.alreadyHave}{" "}
             <a href="/api/login" className="underline" style={{ color: hexRgba(NEON, 0.8) }}>{t.signIn}</a>
           </p>
         )}
 
         {/* School code pill */}
-        <p className="text-center text-[10px] font-mono text-white/15">{school.schoolCode}</p>
+        <p className="text-center text-[10px] font-mono text-white">{school.schoolCode}</p>
       </div>
     </div>
   );

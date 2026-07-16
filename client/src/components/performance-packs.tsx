@@ -761,7 +761,7 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
               <p className="relative text-2xl sm:text-3xl font-bold text-white tabular-nums" data-testid="boost-percentage-display">
                 {percentage}%
               </p>
-              <p className="relative text-[10px] uppercase tracking-wider text-white/80">{isAf ? "Telling" : "Score"}</p>
+              <p className="relative text-[10px] uppercase tracking-wider text-white">{isAf ? "Telling" : "Score"}</p>
             </div>
             <div className="rounded-xl border border-yellow-400/30 bg-yellow-400/10 px-3 py-3.5 flex flex-col items-center gap-1">
               <p className="text-2xl sm:text-3xl font-bold text-yellow-300 tabular-nums flex items-center gap-1" data-testid="boost-coins-display">

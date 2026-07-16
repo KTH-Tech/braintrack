@@ -301,8 +301,8 @@ function SchoolOnboardingForm({ onClose, onSuccess }: { onClose: () => void; onS
 
   const A = "#00E5FF";
   const iSty = { border: "1px solid rgba(255,255,255,0.12)" } as const;
-  const iCls = "h-9 text-sm bg-black text-white placeholder:text-white/35";
-  const lCls = "text-[10px] font-bold uppercase tracking-[0.18em] mb-1.5 block text-white/70";
+  const iCls = "h-9 text-sm bg-black text-white placeholder:text-white";
+  const lCls = "text-[10px] font-bold uppercase tracking-[0.18em] mb-1.5 block text-white";
 
   return (
     <div className="space-y-5">
@@ -454,7 +454,7 @@ function SchoolOnboardingForm({ onClose, onSuccess }: { onClose: () => void; onS
               placeholder={isAf ? "Ooreengekome terme, opvolgstappe, ens…" : "Agreed terms, follow-up actions, etc…"}
               value={form.notes}
               onChange={e => update("notes", e.target.value)}
-              className="text-sm min-h-[64px] bg-black text-white placeholder:text-white/35 resize-none"
+              className="text-sm min-h-[64px] bg-black text-white placeholder:text-white resize-none"
               style={iSty}
               rows={3}
             />
@@ -467,14 +467,14 @@ function SchoolOnboardingForm({ onClose, onSuccess }: { onClose: () => void; onS
                 <span className="text-[11px] font-bold uppercase tracking-[0.12em]" style={{ color: "#FFE600" }}>{isAf ? "Waardeprojeksie" : "Value Projection"}</span>
               </div>
               <div className="text-right">
-                <div className="text-xl font-black" style={{ color: "#FFE600" }}>R{formatNumber((parseInt(form.expectedLearnerCount || "0") || 0) * 35, language)}<span className="text-xs font-semibold text-white/60">/{isAf ? "mo" : "mo"}</span></div>
-                <div className="text-[10px] text-white/50">{form.expectedLearnerCount} × R35</div>
+                <div className="text-xl font-black" style={{ color: "#FFE600" }}>R{formatNumber((parseInt(form.expectedLearnerCount || "0") || 0) * 35, language)}<span className="text-xs font-semibold text-white">/{isAf ? "mo" : "mo"}</span></div>
+                <div className="text-[10px] text-white">{form.expectedLearnerCount} × R35</div>
               </div>
             </div>
           )}
           {/* Summary */}
-          <div className="p-3 rounded-xl bg-black text-[11px] text-white/70 space-y-1" style={{ border: "1px solid rgba(255,255,255,0.1)" }}>
-            <div className="text-[10px] font-black uppercase tracking-[0.14em] text-white/40 mb-2">{isAf ? "Opsomming" : "Summary"}</div>
+          <div className="p-3 rounded-xl bg-black text-[11px] text-white space-y-1" style={{ border: "1px solid rgba(255,255,255,0.1)" }}>
+            <div className="text-[10px] font-black uppercase tracking-[0.14em] text-white mb-2">{isAf ? "Opsomming" : "Summary"}</div>
             <div className="font-semibold text-white">{form.schoolName || "—"}{form.province ? ` · ${form.province}` : ""}</div>
             <div>{form.schoolType} · {isAf ? "Grade" : "Grades"} {form.gradeRange}{form.contactEmail ? ` · ${form.contactEmail}` : ""}</div>
             {form.endorsementStatus !== "none" && <div>{isAf ? "Onderskrywing" : "Endorsement"}: {form.endorsementStatus}</div>}
@@ -486,7 +486,7 @@ function SchoolOnboardingForm({ onClose, onSuccess }: { onClose: () => void; onS
       <div className="flex justify-between items-center pt-1 border-t border-white/[0.06]">
         <button
           onClick={onClose}
-          className="text-xs text-white/40 hover:text-white/70 transition-colors"
+          className="text-xs text-white hover:text-white transition-colors"
         >
           {isAf ? "Kanselleer" : "Cancel"}
         </button>
@@ -494,7 +494,7 @@ function SchoolOnboardingForm({ onClose, onSuccess }: { onClose: () => void; onS
           {step > 0 && (
             <button
               onClick={() => setStep(s => s - 1)}
-              className="inline-flex items-center rounded-xl bg-black px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-white/70 hover:text-white"
+              className="inline-flex items-center rounded-xl bg-black px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-white hover:text-white"
               style={{ border: "1px solid rgba(255,255,255,0.15)" }}
             >
               {isAf ? "Terug" : "Back"}
@@ -833,7 +833,7 @@ function SendTestEmailCard({ language }: { language: string }) {
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6 pt-2 space-y-3">
-        <p className="text-xs text-white/60 leading-snug">
+        <p className="text-xs text-white leading-snug">
           {isAf
             ? "Stuur 'n vinnige toets-e-pos na jou eie adres om te bevestig dat transaksionele e-posse afgelewer word."
             : "Send a quick test email to your own address to confirm transactional emails are delivering correctly."}
@@ -1775,7 +1775,7 @@ export default function AdminReportsPage() {
                 {language === "af" ? "Voeg Nuwe Skool By" : "Onboard New School"}
               </span>
             </DialogTitle>
-            <p className="text-[11px] text-white/60 mt-1.5 leading-relaxed">
+            <p className="text-[11px] text-white mt-1.5 leading-relaxed">
               {language === "af" ? "Proeflopie, kontakte en waardeprojeksie in een vloei." : "Trial, contacts and value projection in one flow."}
             </p>
           </DialogHeader>
@@ -2529,7 +2529,7 @@ function ReminderCampaignView() {
             <div className="space-y-2">{[1, 2].map(i => <div key={i} className="h-14 rounded-xl bg-muted/50 animate-pulse" />)}</div>
           ) : campaigns.length === 0 ? (
             <div className="flex flex-col items-center py-8 text-center gap-2">
-              <Bell className="w-8 h-8 text-white/30" />
+              <Bell className="w-8 h-8 text-white" />
               <p className="text-sm text-white">{language === "af" ? "Nog geen veldtogte opgestel nie. Klik “Stuur Nou” om die globale veldtog te begin." : "No campaigns configured yet. Click \"Send Now\" to initialise the global campaign."}</p>
             </div>
           ) : (
@@ -2628,7 +2628,7 @@ function ReminderCampaignView() {
             <div className="space-y-2">{[1,2,3].map(i => <div key={i} className="h-8 rounded bg-muted/50 animate-pulse" />)}</div>
           ) : log.length === 0 ? (
             <div className="flex flex-col items-center py-10 text-center gap-2">
-              <Bell className="w-8 h-8 text-white/30" />
+              <Bell className="w-8 h-8 text-white" />
               <p className="text-sm text-white">{language === "af" ? "Nog geen herinneringe gestuur nie." : "No reminders sent yet."}</p>
             </div>
           ) : (
@@ -3135,7 +3135,7 @@ function ExamPressureView() {
             </div>
           ) : cohort.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
-              <Calendar className="w-10 h-10 text-white/30 mb-3" />
+              <Calendar className="w-10 h-10 text-white mb-3" />
               <p className="text-sm font-semibold text-white">{language === "af" ? "Nog geen eksamenroosters gegenereer nie" : "No exam schedules generated yet"}</p>
               <p className="text-xs text-white mt-1">
                 {language === "af" ? "Leerderroosters word outomaties gebou wanneer leerders aanmeld. Gaan na DBO Admin → Rooster om alles te hergenereer." : "Learner schedules are built automatically when learners log in. Go to DBE Admin → Timetable to regenerate all."}
@@ -3338,8 +3338,8 @@ function DailyFocusPushView() {
             <div className="h-48 rounded-xl bg-muted/40 animate-pulse" />
           ) : trendPoints.length === 0 ? (
             <div className="flex flex-col items-center gap-3 py-10 text-center">
-              <BellOff className="w-7 h-7 text-white/20" />
-              <p className="text-sm text-white/50">{trendLabels.noTrend}</p>
+              <BellOff className="w-7 h-7 text-white" />
+              <p className="text-sm text-white">{trendLabels.noTrend}</p>
             </div>
           ) : (
             <ResponsiveContainer width="100%" height={200}>
@@ -3380,10 +3380,10 @@ function DailyFocusPushView() {
                 <Send className="w-4 h-4" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 6px #00E5FF)" }} />
                 {t.title}
               </CardTitle>
-              <p className="text-xs text-white/60 mt-1">{t.subtitle}</p>
+              <p className="text-xs text-white mt-1">{t.subtitle}</p>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <label className="text-xs text-white/70 font-medium">{t.date}</label>
+              <label className="text-xs text-white font-medium">{t.date}</label>
               <Input
                 type="date"
                 value={selectedDate}
@@ -3407,23 +3407,23 @@ function DailyFocusPushView() {
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
               <div className="rounded-xl bg-blue-500/10 border border-blue-500/20 p-4 text-center">
                 <div className="text-2xl font-black text-blue-400">{Number(summary?.learners_reached ?? 0)}</div>
-                <div className="text-[10px] text-white/70 mt-1 uppercase tracking-wide">{t.learnersReached}</div>
+                <div className="text-[10px] text-white mt-1 uppercase tracking-wide">{t.learnersReached}</div>
               </div>
               <div className="rounded-xl bg-purple-500/10 border border-purple-500/20 p-4 text-center">
                 <div className="text-2xl font-black text-purple-400">{Number(summary?.parents_reached ?? 0)}</div>
-                <div className="text-[10px] text-white/70 mt-1 uppercase tracking-wide">{t.parentsReached}</div>
+                <div className="text-[10px] text-white mt-1 uppercase tracking-wide">{t.parentsReached}</div>
               </div>
               <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-4 text-center">
                 <div className="text-2xl font-black text-red-400">{Number(summary?.failed ?? 0)}</div>
-                <div className="text-[10px] text-white/70 mt-1 uppercase tracking-wide">{t.failed}</div>
+                <div className="text-[10px] text-white mt-1 uppercase tracking-wide">{t.failed}</div>
               </div>
               <div className="rounded-xl bg-yellow-500/10 border border-yellow-500/20 p-4 text-center">
                 <div className="text-2xl font-black text-yellow-400">{skipped}</div>
-                <div className="text-[10px] text-white/70 mt-1 uppercase tracking-wide">{t.skipped}</div>
+                <div className="text-[10px] text-white mt-1 uppercase tracking-wide">{t.skipped}</div>
               </div>
               <div className="rounded-xl bg-white/5 border border-white/10 p-4 text-center">
                 <div className="text-2xl font-black text-white">{Number(summary?.total_attempts ?? 0)}</div>
-                <div className="text-[10px] text-white/70 mt-1 uppercase tracking-wide">{t.totalAttempts}</div>
+                <div className="text-[10px] text-white mt-1 uppercase tracking-wide">{t.totalAttempts}</div>
               </div>
             </div>
           )}
@@ -3434,7 +3434,7 @@ function DailyFocusPushView() {
       <Card className="bg-black border-white/15 rounded-2xl">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm flex items-center gap-2">
-            <Users className="w-4 h-4 text-white/60" />
+            <Users className="w-4 h-4 text-white" />
             {language === "af" ? "Per-Gebruiker Rekords" : "Per-User Records"}
             {allRows.length > 0 && (
               <Badge variant="outline" className="ml-auto text-[10px]">{allRows.length}</Badge>
@@ -3448,8 +3448,8 @@ function DailyFocusPushView() {
             </div>
           ) : isError ? null : allRows.length === 0 ? (
             <div className="flex flex-col items-center gap-3 py-12 text-center">
-              <BellOff className="w-8 h-8 text-white/20" />
-              <p className="text-sm text-white/50">{t.noData}</p>
+              <BellOff className="w-8 h-8 text-white" />
+              <p className="text-sm text-white">{t.noData}</p>
             </div>
           ) : (
             <>
@@ -3457,12 +3457,12 @@ function DailyFocusPushView() {
                 <Table>
                   <TableHeader>
                     <TableRow className="border-white/10 hover:bg-transparent">
-                      <TableHead className="text-[11px] text-white/50 font-medium">{t.user}</TableHead>
-                      <TableHead className="text-[11px] text-white/50 font-medium">{t.channel}</TableHead>
-                      <TableHead className="text-[11px] text-white/50 font-medium">{t.tag}</TableHead>
-                      <TableHead className="text-[11px] text-white/50 font-medium">{t.status}</TableHead>
-                      <TableHead className="text-[11px] text-white/50 font-medium">{t.errorDetail}</TableHead>
-                      <TableHead className="text-[11px] text-white/50 font-medium">{t.time}</TableHead>
+                      <TableHead className="text-[11px] text-white font-medium">{t.user}</TableHead>
+                      <TableHead className="text-[11px] text-white font-medium">{t.channel}</TableHead>
+                      <TableHead className="text-[11px] text-white font-medium">{t.tag}</TableHead>
+                      <TableHead className="text-[11px] text-white font-medium">{t.status}</TableHead>
+                      <TableHead className="text-[11px] text-white font-medium">{t.errorDetail}</TableHead>
+                      <TableHead className="text-[11px] text-white font-medium">{t.time}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>

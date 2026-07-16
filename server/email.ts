@@ -738,43 +738,90 @@ function buildWeeklyProgressPayload(opts: {
   const hours = Math.floor(studyMinutes / 60);
   const mins = studyMinutes % 60;
   const timeStr = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
-  if (language === "af") {
-    return {
-      language,
-      subject: `Jou BrainTrack-weeklikse opsomming`,
-      heading: `Jou week in 'n oogopslag, ${name}`,
-      bodyHtml: `
-        <p>Hallo ${name},</p>
-        <p>Hier's jou studiebewegings van die afgelope 7 dae:</p>
-        <ul style="padding-left:20px;margin:0 0 16px;line-height:1.8;">
-          <li><strong style="color:#006BFF;">${questionsAnswered}</strong> vrae beantwoord</li>
-          <li><strong style="color:#006BFF;">${topicsCovered}</strong> onderwerpe behandel</li>
-          <li><strong style="color:#006BFF;">${timeStr}</strong> studietyd</li>
-          <li>Top vak: <strong style="color:#00E5FF;">${subjectEsc}</strong></li>
-        </ul>
-        <p>Lekker werk! Klik hieronder om die volle opsomming en jou volgende fokusareas te sien.</p>
-      `,
-      ctaLabel: "Sien volle vordering",
-      ctaUrl: dashboardUrl,
-    };
-  }
+
+  const isAf = language === "af";
+  const t = isAf
+    ? {
+        subject: `Jou BrainTrack-weeklikse opsomming`,
+        heading: `Jou week in 'n oogopslag, ${name}`,
+        intro: `Hallo ${name}, hier's jou afgelope 7 dae op BrainTrack — in syfers:`,
+        heroLabel: "vrae di&eacute; week beantwoord",
+        topicsLabel: "onderwerpe behandel",
+        timeLabel: "studietyd",
+        subjectLabel: "top vak",
+        focusHeading: "Volgende fokus",
+        focus1: `Hou die momentum in <strong style="color:#FF8A00;">${subjectEsc}</strong> aan die gang met 'n vinnige vasvra.`,
+        focus2: `Bekyk jou volgende fokusareas en die volle uiteensetting op jou vorderingsblad.`,
+        cta: "Sien volle vordering",
+      }
+    : {
+        subject: `Your BrainTrack weekly recap`,
+        heading: `Your week at a glance, ${name}`,
+        intro: `Hi ${name}, here's your last 7 days on BrainTrack — by the numbers:`,
+        heroLabel: "questions answered this week",
+        topicsLabel: "topics covered",
+        timeLabel: "study time",
+        subjectLabel: "top subject",
+        focusHeading: "Next up",
+        focus1: `Keep the momentum going in <strong style="color:#FF8A00;">${subjectEsc}</strong> with a quick quiz.`,
+        focus2: `Check your next focus areas and the full breakdown on your progress page.`,
+        cta: "See full progress",
+      };
+
+  const bodyHtml = `
+      <p style="margin:0 0 20px;">${t.intro}</p>
+
+      <!-- Headline stat -->
+      <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:0 0 18px;">
+        <tr>
+          <td align="center" style="background:#050608;border:1.5px solid rgba(0,229,255,0.4);border-radius:14px;padding:24px 16px 20px;">
+            <div style="font-family:Arial,Helvetica,sans-serif;font-size:48px;line-height:1;font-weight:800;color:#00E5FF;">${questionsAnswered}</div>
+            <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:700;color:#ffffff;margin-top:8px;letter-spacing:1.5px;text-transform:uppercase;">${t.heroLabel}</div>
+          </td>
+        </tr>
+      </table>
+
+      <!-- This-week metrics: 3-column neon number row -->
+      <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:0 0 28px;">
+        <tr>
+          <td align="center" width="33%" valign="top" style="padding:10px 4px;">
+            <div style="font-family:Arial,Helvetica,sans-serif;font-size:28px;font-weight:800;color:#22FF66;line-height:1.15;">${topicsCovered}</div>
+            <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:600;color:#ffffff;margin-top:5px;">${t.topicsLabel}</div>
+          </td>
+          <td align="center" width="34%" valign="top" style="padding:10px 4px;border-left:1px solid rgba(0,229,255,0.3);border-right:1px solid rgba(0,229,255,0.3);">
+            <div style="font-family:Arial,Helvetica,sans-serif;font-size:28px;font-weight:800;color:#FFE600;line-height:1.15;">${timeStr}</div>
+            <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:600;color:#ffffff;margin-top:5px;">${t.timeLabel}</div>
+          </td>
+          <td align="center" width="33%" valign="top" style="padding:10px 4px;">
+            <div style="font-family:Arial,Helvetica,sans-serif;font-size:19px;font-weight:800;color:#FF2BD6;line-height:1.3;">${subjectEsc}</div>
+            <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:600;color:#ffffff;margin-top:6px;">${t.subjectLabel}</div>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Focus list: neon left-border lines -->
+      <div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:800;color:#ffffff;letter-spacing:1.2px;text-transform:uppercase;margin:0 0 12px;">${t.focusHeading}</div>
+      <div style="border-left:3px solid #FF8A00;padding-left:14px;margin:0 0 10px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#ffffff;">${t.focus1}</div>
+      <div style="border-left:3px solid #8A2BFF;padding-left:14px;margin:0 0 28px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#ffffff;">${t.focus2}</div>
+
+      <!-- Compact CTA -->
+      <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:0 0 8px;">
+        <tr>
+          <td align="center">
+            <a href="${dashboardUrl}" target="_blank"
+               style="display:inline-block;background:#006BFF;color:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;text-decoration:none;padding:12px 28px;border-radius:12px;border:2px solid #00E5FF;">
+              ${t.cta}
+            </a>
+          </td>
+        </tr>
+      </table>
+  `;
+
   return {
     language,
-    subject: `Your BrainTrack weekly recap`,
-    heading: `Your week at a glance, ${name}`,
-    bodyHtml: `
-      <p>Hi ${name},</p>
-      <p>Here's what your last 7 days of study looked like:</p>
-      <ul style="padding-left:20px;margin:0 0 16px;line-height:1.8;">
-        <li><strong style="color:#006BFF;">${questionsAnswered}</strong> questions answered</li>
-        <li><strong style="color:#006BFF;">${topicsCovered}</strong> topics covered</li>
-        <li><strong style="color:#006BFF;">${timeStr}</strong> study time</li>
-        <li>Top subject: <strong style="color:#00E5FF;">${subjectEsc}</strong></li>
-      </ul>
-      <p>Nice work! Tap below to see the full breakdown and your next focus areas.</p>
-    `,
-    ctaLabel: "See full progress",
-    ctaUrl: dashboardUrl,
+    subject: t.subject,
+    heading: t.heading,
+    bodyHtml,
   };
 }
 

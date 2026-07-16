@@ -170,7 +170,7 @@ function Field({
 }: { label: string; value: string; onChange: (v: string) => void; rows?: number }) {
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-[10px] font-bold uppercase tracking-widest text-white/50">{label}</label>
+      <label className="text-[10px] font-bold uppercase tracking-widest text-white">{label}</label>
       <textarea
         className="w-full resize-y rounded-lg bg-white/5 px-3 py-2 text-sm text-white placeholder-white/20 outline-none ring-1 ring-white/10 focus:ring-white/30"
         rows={rows}
@@ -189,7 +189,7 @@ function JsonField({
   const [err, setErr] = useState<string | null>(null);
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-[10px] font-bold uppercase tracking-widest text-white/50">{label}</label>
+      <label className="text-[10px] font-bold uppercase tracking-widest text-white">{label}</label>
       <textarea
         className={`w-full resize-y rounded-lg bg-white/5 px-3 py-2 font-mono text-xs text-white placeholder-white/20 outline-none ring-1 focus:ring-white/30 ${err ? "ring-red-500" : "ring-white/10"}`}
         rows={6}
@@ -222,7 +222,7 @@ function SearchBar({
   return (
     <div className="flex items-center gap-3">
       <div className="relative flex-1">
-        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
+        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white" />
         <input
           className="w-full rounded-lg bg-white/5 py-2 pl-8 pr-3 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-white/30 placeholder-white/25"
           placeholder={placeholder}
@@ -231,7 +231,7 @@ function SearchBar({
         />
       </div>
       {right}
-      <span className="shrink-0 text-xs text-white/40">{count} rows</span>
+      <span className="shrink-0 text-xs text-white">{count} rows</span>
     </div>
   );
 }
@@ -286,7 +286,7 @@ function CoverageBanner({
             {reviewed} of {total} {label} reviewed
           </span>
           {unreviewed > 0 && (
-            <span className="text-xs text-white/40">
+            <span className="text-xs text-white">
               — {unreviewed} seed-only
             </span>
           )}
@@ -368,7 +368,7 @@ function SubjectBreakdownPanel({
           data-testid="coverage-by-subject-panel"
         >
           <div className="px-4 py-2 border-b border-white/5">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-white">
               {bySubject.length} subjects · click name to filter
             </span>
           </div>
@@ -388,7 +388,7 @@ function SubjectBreakdownPanel({
                     {name}
                   </button>
                   <div className="flex items-center gap-2 shrink-0">
-                    <span className="text-[10px] text-white/40 w-20 text-right">
+                    <span className="text-[10px] text-white w-20 text-right">
                       {reviewed} / {total}
                     </span>
                     <div className="w-20 h-1.5 rounded-full bg-white/10 overflow-hidden">
@@ -526,18 +526,18 @@ function BulkImportPanel({
           <p className="mb-1 text-sm font-bold" style={{ color: accent }}>
             Bulk Import — {type === "notes" ? "Topic Notes" : "Flashcards"}
           </p>
-          <p className="mb-3 text-xs text-white/40">
-            Paste a JSON array. Notes upsert on <code className="text-white/60">(topicId, language)</code>.
-            Flashcards insert new rows; include <code className="text-white/60">"id"</code> to update existing ones.
+          <p className="mb-3 text-xs text-white">
+            Paste a JSON array. Notes upsert on <code className="text-white">(topicId, language)</code>.
+            Flashcards insert new rows; include <code className="text-white">"id"</code> to update existing ones.
             Max 500 items per batch.
           </p>
 
           <div className="mb-2 flex flex-col gap-1">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-white/50">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-white">
               Schema example (click to copy)
             </label>
             <pre
-              className="cursor-pointer rounded-lg bg-white/5 p-3 text-[10px] text-white/40 ring-1 ring-white/10 hover:text-white/60 transition-colors overflow-x-auto"
+              className="cursor-pointer rounded-lg bg-white/5 p-3 text-[10px] text-white ring-1 ring-white/10 hover:text-white transition-colors overflow-x-auto"
               onClick={() => { setRaw(schemaHint); setParseError(null); setResult(null); }}
               title="Click to copy example into editor"
             >
@@ -546,7 +546,7 @@ function BulkImportPanel({
           </div>
 
           <div className="flex flex-col gap-1 mb-3">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-white/50">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-white">
               JSON Payload
             </label>
             <textarea
@@ -576,7 +576,7 @@ function BulkImportPanel({
                 {result.errored > 0 ? <AlertCircle size={13} /> : <CheckCircle2 size={13} />}
                 {result.errored > 0 ? "Import completed with errors" : "Import successful"}
               </div>
-              <div className="flex gap-4 text-white/60">
+              <div className="flex gap-4 text-white">
                 <span><span className="text-green-400 font-bold">{result.created}</span> created</span>
                 <span><span className="text-amber-400 font-bold">{result.updated}</span> updated</span>
                 <span><span className="text-red-400 font-bold">{result.errored}</span> errored</span>
@@ -587,7 +587,7 @@ function BulkImportPanel({
                     <li key={e.index}>Item [{e.index}]: {e.reason}</li>
                   ))}
                   {result.errors.length > 10 && (
-                    <li className="text-white/40">…and {result.errors.length - 10} more</li>
+                    <li className="text-white">…and {result.errors.length - 10} more</li>
                   )}
                 </ul>
               )}
@@ -595,7 +595,7 @@ function BulkImportPanel({
           )}
 
           <div className="flex justify-end gap-2">
-            <Button size="sm" variant="ghost" className="text-white/50" onClick={() => setOpen(false)}>
+            <Button size="sm" variant="ghost" className="text-white" onClick={() => setOpen(false)}>
               Close
             </Button>
             <Button
@@ -697,7 +697,7 @@ function TopicNotesTab() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="animate-spin text-white/40" size={32} />
+        <Loader2 className="animate-spin text-white" size={32} />
       </div>
     );
   }
@@ -757,11 +757,11 @@ function TopicNotesTab() {
 
       {creating && (
         <GlowCard accent={HEX.green}>
-          <p className="mb-4 text-sm font-bold text-white/70">New Topic Note</p>
+          <p className="mb-4 text-sm font-bold text-white">New Topic Note</p>
           <div className="flex flex-col gap-3">
             <div className="flex gap-3">
               <div className="flex flex-col gap-1 flex-1">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-white/50">Topic ID</label>
+                <label className="text-[10px] font-bold uppercase tracking-widest text-white">Topic ID</label>
                 <input
                   className="rounded-lg bg-white/5 px-3 py-2 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-white/30"
                   placeholder="e.g. 42"
@@ -770,7 +770,7 @@ function TopicNotesTab() {
                 />
               </div>
               <div className="flex flex-col gap-1 w-24">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-white/50">Language</label>
+                <label className="text-[10px] font-bold uppercase tracking-widest text-white">Language</label>
                 <select
                   className="rounded-lg bg-white/5 px-3 py-2 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-white/30"
                   value={newNote.language}
@@ -783,7 +783,7 @@ function TopicNotesTab() {
             </div>
             <Field label="Summary" value={newNote.summary} rows={3} onChange={(v) => setNewNote((n) => ({ ...n, summary: v }))} />
             <div className="flex flex-col gap-1">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-white/50">Key Concepts (JSON array)</label>
+              <label className="text-[10px] font-bold uppercase tracking-widest text-white">Key Concepts (JSON array)</label>
               <textarea
                 className="w-full resize-y rounded-lg bg-white/5 px-3 py-2 font-mono text-xs text-white outline-none ring-1 ring-white/10 focus:ring-white/30"
                 rows={3}
@@ -792,7 +792,7 @@ function TopicNotesTab() {
               />
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-white/50">Worked Examples (JSON array)</label>
+              <label className="text-[10px] font-bold uppercase tracking-widest text-white">Worked Examples (JSON array)</label>
               <textarea
                 className="w-full resize-y rounded-lg bg-white/5 px-3 py-2 font-mono text-xs text-white outline-none ring-1 ring-white/10 focus:ring-white/30"
                 rows={3}
@@ -801,7 +801,7 @@ function TopicNotesTab() {
               />
             </div>
             <div className="flex justify-end gap-2 pt-1">
-              <Button size="sm" variant="ghost" className="text-white/50" onClick={() => setCreating(false)}>Cancel</Button>
+              <Button size="sm" variant="ghost" className="text-white" onClick={() => setCreating(false)}>Cancel</Button>
               <Button
                 size="sm"
                 style={{ background: `${HEX.green}33`, color: HEX.green, border: `1px solid ${HEX.green}55` }}
@@ -822,20 +822,20 @@ function TopicNotesTab() {
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2 mb-1">
-                <span className="text-xs font-bold text-white/60 uppercase tracking-widest">{row.subjectName}</span>
-                <span className="text-white/30">›</span>
+                <span className="text-xs font-bold text-white uppercase tracking-widest">{row.subjectName}</span>
+                <span className="text-white">›</span>
                 <span className="text-sm font-semibold text-white truncate">{row.topicName}</span>
                 <LangPill lang={row.language} />
                 <SourceBadge source={row.source} />
               </div>
               {editingId !== row.id && (
-                <p className="line-clamp-2 text-xs text-white/50 mt-1">{row.summary || <em>No summary</em>}</p>
+                <p className="line-clamp-2 text-xs text-white mt-1">{row.summary || <em>No summary</em>}</p>
               )}
             </div>
             <div className="flex shrink-0 items-center gap-2">
               {editingId === row.id ? (
                 <>
-                  <Button size="sm" variant="ghost" className="text-white/50 hover:text-white" onClick={() => setEditingId(null)} disabled={updateMutation.isPending}>
+                  <Button size="sm" variant="ghost" className="text-white hover:text-white" onClick={() => setEditingId(null)} disabled={updateMutation.isPending}>
                     <X size={14} />
                   </Button>
                   <Button
@@ -851,7 +851,7 @@ function TopicNotesTab() {
                 </>
               ) : (
                 <>
-                  <Button size="sm" variant="ghost" className="text-white/40 hover:text-white" onClick={() => startEdit(row)} data-testid={`edit-note-${row.id}`}>
+                  <Button size="sm" variant="ghost" className="text-white hover:text-white" onClick={() => startEdit(row)} data-testid={`edit-note-${row.id}`}>
                     <Pencil size={13} />
                   </Button>
                   <Button
@@ -891,7 +891,7 @@ function TopicNotesTab() {
       ))}
 
       {filtered.length === 0 && !creating && (
-        <div className="py-16 text-center text-white/30 text-sm">No topic notes found.</div>
+        <div className="py-16 text-center text-white text-sm">No topic notes found.</div>
       )}
     </div>
   );
@@ -968,7 +968,7 @@ function TopicFlashcardsTab() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="animate-spin text-white/40" size={32} />
+        <Loader2 className="animate-spin text-white" size={32} />
       </div>
     );
   }
@@ -1028,11 +1028,11 @@ function TopicFlashcardsTab() {
 
       {creating && (
         <GlowCard accent={HEX.green}>
-          <p className="mb-4 text-sm font-bold text-white/70">New Flashcard</p>
+          <p className="mb-4 text-sm font-bold text-white">New Flashcard</p>
           <div className="flex flex-col gap-3">
             <div className="flex gap-3">
               <div className="flex flex-col gap-1 flex-1">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-white/50">Topic ID</label>
+                <label className="text-[10px] font-bold uppercase tracking-widest text-white">Topic ID</label>
                 <input
                   className="rounded-lg bg-white/5 px-3 py-2 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-white/30"
                   placeholder="e.g. 42"
@@ -1041,7 +1041,7 @@ function TopicFlashcardsTab() {
                 />
               </div>
               <div className="flex flex-col gap-1 w-24">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-white/50">Language</label>
+                <label className="text-[10px] font-bold uppercase tracking-widest text-white">Language</label>
                 <select
                   className="rounded-lg bg-white/5 px-3 py-2 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-white/30"
                   value={newCard.language}
@@ -1052,7 +1052,7 @@ function TopicFlashcardsTab() {
                 </select>
               </div>
               <div className="flex flex-col gap-1 w-28">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-white/50">Type</label>
+                <label className="text-[10px] font-bold uppercase tracking-widest text-white">Type</label>
                 <select
                   className="rounded-lg bg-white/5 px-3 py-2 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-white/30"
                   value={newCard.cardType}
@@ -1068,7 +1068,7 @@ function TopicFlashcardsTab() {
             <Field label="Front (question / prompt)" value={newCard.front} rows={2} onChange={(v) => setNewCard((c) => ({ ...c, front: v }))} />
             <Field label="Back (answer / explanation)" value={newCard.back} rows={3} onChange={(v) => setNewCard((c) => ({ ...c, back: v }))} />
             <div className="flex justify-end gap-2 pt-1">
-              <Button size="sm" variant="ghost" className="text-white/50" onClick={() => setCreating(false)}>Cancel</Button>
+              <Button size="sm" variant="ghost" className="text-white" onClick={() => setCreating(false)}>Cancel</Button>
               <Button
                 size="sm"
                 style={{ background: `${HEX.green}33`, color: HEX.green, border: `1px solid ${HEX.green}55` }}
@@ -1089,8 +1089,8 @@ function TopicFlashcardsTab() {
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2 mb-1">
-                <span className="text-xs font-bold text-white/60 uppercase tracking-widest">{row.subjectName}</span>
-                <span className="text-white/30">›</span>
+                <span className="text-xs font-bold text-white uppercase tracking-widest">{row.subjectName}</span>
+                <span className="text-white">›</span>
                 <span className="text-sm font-semibold text-white">{row.topicName}</span>
                 <LangPill lang={row.language} />
                 <span
@@ -1102,15 +1102,15 @@ function TopicFlashcardsTab() {
                 <SourceBadge source={row.source} />
               </div>
               {editingId !== row.id && (
-                <p className="line-clamp-1 text-xs text-white/60 mt-1">
-                  <span className="text-white/40 mr-1">Q:</span>{row.front}
+                <p className="line-clamp-1 text-xs text-white mt-1">
+                  <span className="text-white mr-1">Q:</span>{row.front}
                 </p>
               )}
             </div>
             <div className="flex shrink-0 items-center gap-2">
               {editingId === row.id ? (
                 <>
-                  <Button size="sm" variant="ghost" className="text-white/50 hover:text-white" onClick={() => setEditingId(null)} disabled={updateMutation.isPending}>
+                  <Button size="sm" variant="ghost" className="text-white hover:text-white" onClick={() => setEditingId(null)} disabled={updateMutation.isPending}>
                     <X size={14} />
                   </Button>
                   <Button
@@ -1126,7 +1126,7 @@ function TopicFlashcardsTab() {
                 </>
               ) : (
                 <>
-                  <Button size="sm" variant="ghost" className="text-white/40 hover:text-white" onClick={() => startEdit(row)} data-testid={`edit-card-${row.id}`}>
+                  <Button size="sm" variant="ghost" className="text-white hover:text-white" onClick={() => startEdit(row)} data-testid={`edit-card-${row.id}`}>
                     <Pencil size={13} />
                   </Button>
                   <Button
@@ -1148,7 +1148,7 @@ function TopicFlashcardsTab() {
               <Field label="Back (answer / explanation)" value={draft.back} rows={3} onChange={(v) => setDraft((d) => ({ ...d, back: v }))} />
               <div className="flex gap-3">
                 <div className="flex flex-col gap-1 flex-1">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-white/50">Card Type</label>
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-white">Card Type</label>
                   <select
                     className="rounded-lg bg-white/5 px-3 py-2 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-white/30"
                     value={draft.cardType}
@@ -1161,7 +1161,7 @@ function TopicFlashcardsTab() {
                   </select>
                 </div>
                 <div className="flex flex-col gap-1 w-24">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-white/50">Order</label>
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-white">Order</label>
                   <input
                     type="number"
                     className="rounded-lg bg-white/5 px-3 py-2 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-white/30"
@@ -1176,7 +1176,7 @@ function TopicFlashcardsTab() {
       ))}
 
       {filtered.length === 0 && !creating && (
-        <div className="py-16 text-center text-white/30 text-sm">No flashcards found.</div>
+        <div className="py-16 text-center text-white text-sm">No flashcards found.</div>
       )}
     </div>
   );
@@ -1259,7 +1259,7 @@ function LiteratureNotesTab() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="animate-spin text-white/40" size={32} />
+        <Loader2 className="animate-spin text-white" size={32} />
       </div>
     );
   }
@@ -1299,11 +1299,11 @@ function LiteratureNotesTab() {
 
       {creating && (
         <GlowCard accent={HEX.green}>
-          <p className="mb-4 text-sm font-bold text-white/70">New Literature Note</p>
+          <p className="mb-4 text-sm font-bold text-white">New Literature Note</p>
           <div className="flex flex-col gap-3">
             <div className="flex gap-3">
               <div className="flex flex-col gap-1 flex-1">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-white/50">Work ID</label>
+                <label className="text-[10px] font-bold uppercase tracking-widest text-white">Work ID</label>
                 <input
                   className="rounded-lg bg-white/5 px-3 py-2 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-white/30"
                   placeholder="e.g. 5"
@@ -1312,7 +1312,7 @@ function LiteratureNotesTab() {
                 />
               </div>
               <div className="flex flex-col gap-1 w-24">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-white/50">Language</label>
+                <label className="text-[10px] font-bold uppercase tracking-widest text-white">Language</label>
                 <select
                   className="rounded-lg bg-white/5 px-3 py-2 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-white/30"
                   value={newNote.language}
@@ -1325,7 +1325,7 @@ function LiteratureNotesTab() {
             </div>
             <Field label="Summary" value={newNote.summary} rows={3} onChange={(v) => setNewNote((n) => ({ ...n, summary: v }))} />
             <div className="flex justify-end gap-2 pt-1">
-              <Button size="sm" variant="ghost" className="text-white/50" onClick={() => setCreating(false)}>Cancel</Button>
+              <Button size="sm" variant="ghost" className="text-white" onClick={() => setCreating(false)}>Cancel</Button>
               <Button
                 size="sm"
                 style={{ background: `${HEX.green}33`, color: HEX.green, border: `1px solid ${HEX.green}55` }}
@@ -1347,18 +1347,18 @@ function LiteratureNotesTab() {
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2 mb-1">
                 <span className="text-sm font-semibold text-white">{row.workTitle}</span>
-                <span className="text-xs text-white/40">by {row.author}</span>
+                <span className="text-xs text-white">by {row.author}</span>
                 <LangPill lang={row.language} />
                 <SourceBadge source={row.source} />
               </div>
               {editingId !== row.id && (
-                <p className="line-clamp-2 text-xs text-white/50 mt-1">{row.summary || <em>No summary</em>}</p>
+                <p className="line-clamp-2 text-xs text-white mt-1">{row.summary || <em>No summary</em>}</p>
               )}
             </div>
             <div className="flex shrink-0 items-center gap-2">
               {editingId === row.id ? (
                 <>
-                  <Button size="sm" variant="ghost" className="text-white/50 hover:text-white" onClick={() => setEditingId(null)} disabled={updateMutation.isPending}>
+                  <Button size="sm" variant="ghost" className="text-white hover:text-white" onClick={() => setEditingId(null)} disabled={updateMutation.isPending}>
                     <X size={14} />
                   </Button>
                   <Button
@@ -1374,7 +1374,7 @@ function LiteratureNotesTab() {
                 </>
               ) : (
                 <>
-                  <Button size="sm" variant="ghost" className="text-white/40 hover:text-white" onClick={() => startEdit(row)} data-testid={`edit-lit-${row.id}`}>
+                  <Button size="sm" variant="ghost" className="text-white hover:text-white" onClick={() => startEdit(row)} data-testid={`edit-lit-${row.id}`}>
                     <Pencil size={13} />
                   </Button>
                   <Button
@@ -1403,7 +1403,7 @@ function LiteratureNotesTab() {
       ))}
 
       {filtered.length === 0 && !creating && (
-        <div className="py-16 text-center text-white/30 text-sm">No literature notes found.</div>
+        <div className="py-16 text-center text-white text-sm">No literature notes found.</div>
       )}
     </div>
   );
@@ -1436,7 +1436,7 @@ export default function AdminContentEditorPage() {
           <h2 className="text-2xl font-black uppercase tracking-widest text-white">
             {isAf ? "Inhoudsredigeerder" : "Content Editor"}
           </h2>
-          <p className="mt-1 text-sm text-white/40">
+          <p className="mt-1 text-sm text-white">
             {isAf
               ? "Wysig onderwerpnotas, flitskaarte en literatuurnotas. Wysigings word geskryf met source = 'admin' sodat die saad dit nie oorskyf nie."
               : "Edit topic notes, flashcards and literature notes. Changes are written with source = 'admin' so the seeder won't overwrite them."}

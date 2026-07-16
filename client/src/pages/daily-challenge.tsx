@@ -677,12 +677,12 @@ function ResultsView({
                 <p className="text-5xl font-semibold text-white tabular-nums">
                   {correctCount}/{totalQuestions}
                 </p>
-                <p className="text-sm font-semibold text-white/90">{isAf ? "Korrek" : "Correct"}</p>
+                <p className="text-sm font-semibold text-white">{isAf ? "Korrek" : "Correct"}</p>
               </div>
               <div className="w-px h-12 bg-white/30" />
               <div className="text-center" data-testid="text-result-percentage">
                 <p className="text-5xl font-semibold text-white tabular-nums">{percentage}%</p>
-                <p className="text-sm font-semibold text-white/90">{isAf ? "Telling" : "Score"}</p>
+                <p className="text-sm font-semibold text-white">{isAf ? "Telling" : "Score"}</p>
               </div>
             </div>
             <div className="flex items-center justify-center gap-2 pt-4 flex-wrap">

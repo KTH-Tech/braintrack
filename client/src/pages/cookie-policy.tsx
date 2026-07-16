@@ -1,4 +1,4 @@
-﻿import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Cookie, Shield, Database, Clock, ArrowLeft, Globe, SlidersHorizontal } from "lucide-react";
 import { Link } from "wouter";
@@ -73,7 +73,7 @@ export default function CookiePolicyPage() {
               : "BrainTrack uses essential cookies and optional cookies by category — Analytics and Marketing. You can manage each category separately via our cookie preferences panel."}
           </p>
           <p className="text-sm text-white">
-            {isAf ? "Laas opgedateer: 15 Mei 2026" : "Last updated: 15 May 2026"}
+            {isAf ? "Laas opgedateer: 16 Julie 2026" : "Last updated: 16 July 2026"}
           </p>
         </div>
 

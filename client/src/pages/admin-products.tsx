@@ -275,7 +275,7 @@ export default function AdminProductsPage() {
 
           <TabsContent value="products">
             <div className="flex items-center justify-between mb-4">
-              <p className="text-xs text-white/60">{products.length} {isAf ? "produkte" : "products"}</p>
+              <p className="text-xs text-white">{products.length} {isAf ? "produkte" : "products"}</p>
               <button
                 onClick={() => { setForm(blankForm); setShowCreateDialog(true); }}
                 className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-[0.12em] transition-transform hover:scale-[1.02]"
@@ -437,21 +437,21 @@ export default function AdminProductsPage() {
               {/* Name row */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-bold uppercase tracking-widest text-white/70">Name (EN)</Label>
+                  <Label className="text-xs font-bold uppercase tracking-widest text-white">Name (EN)</Label>
                   <Input
                     value={form.nameEn}
                     onChange={e => setField("nameEn", e.target.value)}
                     placeholder="e.g. Brain Boost Pack"
-                    className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white/30 focus-visible:ring-[#00E5FF]/50 h-9 text-sm"
+                    className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#00E5FF]/50 h-9 text-sm"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-bold uppercase tracking-widest text-white/70">Name (AF)</Label>
+                  <Label className="text-xs font-bold uppercase tracking-widest text-white">Name (AF)</Label>
                   <Input
                     value={form.nameAf}
                     onChange={e => setField("nameAf", e.target.value)}
                     placeholder="e.g. Brein-aansporing-pak"
-                    className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white/30 focus-visible:ring-[#00E5FF]/50 h-9 text-sm"
+                    className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#00E5FF]/50 h-9 text-sm"
                   />
                 </div>
               </div>
@@ -459,61 +459,61 @@ export default function AdminProductsPage() {
               {/* Slug + Category + Price */}
               <div className="grid grid-cols-3 gap-3">
                 <div className="space-y-1.5 col-span-1">
-                  <Label className="text-xs font-bold uppercase tracking-widest text-white/70">Slug</Label>
+                  <Label className="text-xs font-bold uppercase tracking-widest text-white">Slug</Label>
                   <Input
                     value={form.slug}
                     onChange={e => setField("slug", slugify(e.target.value))}
                     placeholder="brain-boost-pack"
-                    className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white/30 focus-visible:ring-[#00E5FF]/50 h-9 text-sm font-mono"
+                    className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#00E5FF]/50 h-9 text-sm font-mono"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-bold uppercase tracking-widest text-white/70">Category</Label>
+                  <Label className="text-xs font-bold uppercase tracking-widest text-white">Category</Label>
                   <Input
                     value={form.category}
                     onChange={e => setField("category", e.target.value)}
                     placeholder={categories[0] || "power-up"}
                     list="category-list"
-                    className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white/30 focus-visible:ring-[#00E5FF]/50 h-9 text-sm"
+                    className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#00E5FF]/50 h-9 text-sm"
                   />
                   <datalist id="category-list">
                     {categories.map(c => <option key={c} value={c} />)}
                   </datalist>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-bold uppercase tracking-widest text-white/70">Price (R)</Label>
+                  <Label className="text-xs font-bold uppercase tracking-widest text-white">Price (R)</Label>
                   <Input
                     type="number"
                     min={0}
                     value={form.priceRands}
                     onChange={e => setField("priceRands", e.target.value)}
                     placeholder="49"
-                    className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white/30 focus-visible:ring-[#00E5FF]/50 h-9 text-sm"
+                    className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#00E5FF]/50 h-9 text-sm"
                   />
                 </div>
               </div>
 
               {/* Description EN */}
               <div className="space-y-1.5">
-                <Label className="text-xs font-bold uppercase tracking-widest text-white/70">Description (EN)</Label>
+                <Label className="text-xs font-bold uppercase tracking-widest text-white">Description (EN)</Label>
                 <Textarea
                   value={form.descriptionEn}
                   onChange={e => setField("descriptionEn", e.target.value)}
                   placeholder="Short English description…"
                   rows={2}
-                  className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white/30 focus-visible:ring-[#00E5FF]/50 text-sm resize-none"
+                  className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#00E5FF]/50 text-sm resize-none"
                 />
               </div>
 
               {/* Description AF */}
               <div className="space-y-1.5">
-                <Label className="text-xs font-bold uppercase tracking-widest text-white/70">Description (AF)</Label>
+                <Label className="text-xs font-bold uppercase tracking-widest text-white">Description (AF)</Label>
                 <Textarea
                   value={form.descriptionAf}
                   onChange={e => setField("descriptionAf", e.target.value)}
                   placeholder="Kort Afrikaanse beskrywing…"
                   rows={2}
-                  className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white/30 focus-visible:ring-[#00E5FF]/50 text-sm resize-none"
+                  className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#00E5FF]/50 text-sm resize-none"
                 />
               </div>
 
@@ -535,7 +535,7 @@ export default function AdminProductsPage() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="rounded-xl text-white/70 hover:text-white"
+                className="rounded-xl text-white hover:text-white"
                 onClick={() => setShowCreateDialog(false)}
                 disabled={createProductMutation.isPending}
               >

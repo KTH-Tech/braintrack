@@ -36,7 +36,7 @@ export default function AdminSignInPage() {
       <div className="w-full max-w-sm rounded-2xl border border-border/60 bg-card/70 p-8 shadow-xl">
         <div className="flex flex-col items-center text-center gap-4">
           <div className="w-14 h-14 rounded-full bg-muted/40 border border-border/60 flex items-center justify-center">
-            <Shield className="w-7 h-7 text-white/80" />
+            <Shield className="w-7 h-7 text-white" />
           </div>
           <h1 className="text-lg font-semibold tracking-tight" data-testid="text-admin-signin-title">
             {isAf ? "Beveiligde Aanmelding" : "Secure Sign in"}

@@ -30,6 +30,7 @@ import {
   CalendarDays,
 } from "lucide-react";
 import type { Subject, OnboardingResult } from "@shared/schema";
+import { SpraySmear } from "@/components/graffiti-splats";
 import brainLogo from "@/assets/brain-logo.png";
 
 type NeonHex = "#00E5FF" | "#006BFF" | "#FFE600" | "#FF2BD6" | "#8A2BFF";
@@ -41,35 +42,28 @@ function NeonCard({ color, icon: Icon, title, subtitle, children, testId }: {
   children: React.ReactNode;
   testId?: string;
 }) {
-  const halo = color === "#00E5FF" ? "rgba(0,229,255,0.28)"
-            : color === "#006BFF" ? "rgba(0,107,255,0.28)"
-            : color === "#FFE600" ? "rgba(255,230,0,0.28)"
-            : color === "#FF2BD6" ? "rgba(255,43,214,0.28)"
-            :                       "rgba(138,43,255,0.28)";
+  // Sections sit directly on the wall: marker+smear header, plain white content,
+  // thin hairline separator between sections — no card boxes.
   return (
-    <div
-      className="relative rounded-2xl bg-black p-6 sm:p-7 overflow-hidden"
-      style={{ border: `1.5px solid ${color}`, boxShadow: `0 0 0 1px ${halo}, 0 0 28px ${halo}` }}
+    <section
+      className="relative pb-8"
+      style={{ borderBottom: "1px solid rgba(255,255,255,0.12)" }}
       data-testid={testId}
     >
-      <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: color }} />
-      <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2" style={{ borderColor: color }} />
-      <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2" style={{ borderColor: color }} />
-      <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: color }} />
-      <div className="flex items-center gap-3 mb-2">
-        <div
-          className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shrink-0"
-          style={{ border: `1.5px solid ${color}`, boxShadow: `0 0 14px ${halo}, inset 0 0 10px ${halo}` }}
-        >
-          <Icon className="w-5 h-5" style={{ color, filter: `drop-shadow(0 0 5px ${halo})` }} />
-        </div>
+      <div className="flex items-start gap-3 mb-2">
+        <Icon className="w-5 h-5 shrink-0 mt-1.5" style={{ color, filter: `drop-shadow(0 0 5px ${color})` }} />
         <div className="min-w-0">
-          <h3 className="font-bold text-base text-white leading-tight">{title}</h3>
-          {subtitle && <p className="text-xs text-white mt-0.5 leading-snug">{subtitle}</p>}
+          <h3 className="text-xl text-white leading-tight graffiti-hand">
+            <span className="spray-title graffiti-hand">
+              <SpraySmear color={color} />
+              {title}
+            </span>
+          </h3>
+          {subtitle && <p className="text-xs text-white mt-1 leading-snug">{subtitle}</p>}
         </div>
       </div>
       <div className="mt-4 space-y-4">{children}</div>
-    </div>
+    </section>
   );
 }
 
@@ -759,7 +753,7 @@ export default function SettingsPage() {
                   <button
                     onClick={handleRequestOtp}
                     disabled={!newPhone || requestOtpMutation.isPending}
-                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-black font-black text-xs uppercase tracking-[0.18em] disabled:opacity-40"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-black font-bold text-sm disabled:opacity-40"
                     style={{
                       color: "#00E5FF",
                       border: "1.5px solid #00E5FF",
@@ -809,7 +803,7 @@ export default function SettingsPage() {
                         if (verifyError) setVerifyError("");
                       }}
                       maxLength={6}
-                      className={`text-center text-2xl tracking-[0.4em] bg-black text-white placeholder:text-white/30 font-black focus-visible:ring-[#00E5FF]/50 ${verifyError ? "border-red-500/70" : "border-[#00E5FF]/50"}`}
+                      className={`text-center text-2xl tracking-[0.4em] bg-black text-white placeholder:text-white font-black focus-visible:ring-[#00E5FF]/50 ${verifyError ? "border-red-500/70" : "border-[#00E5FF]/50"}`}
                       data-testid="input-otp-code"
                     />
                     {verifyError && (
@@ -819,14 +813,14 @@ export default function SettingsPage() {
                     )}
                   </div>
 
-                  <div className="flex gap-3">
+                  <div className="flex gap-3 justify-end">
                     <button
                       onClick={() => {
                         setStep("input");
                         setOtpCode("");
                       }}
-                      className="flex-1 inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-black font-black text-xs uppercase tracking-[0.18em] text-white hover:text-white"
-                      style={{ border: "1px solid rgba(255,255,255,0.22)" }}
+                      className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-black font-bold text-sm text-white hover:text-white"
+                      style={{ border: "1px solid #fff" }}
                       data-testid="button-cancel-verify"
                     >
                       {t.cancel}
@@ -834,7 +828,7 @@ export default function SettingsPage() {
                     <button
                       onClick={handleVerifyOtp}
                       disabled={otpCode.length !== 6 || verifyOtpMutation.isPending}
-                      className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-black font-black text-xs uppercase tracking-[0.18em] disabled:opacity-40"
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-black font-bold text-sm disabled:opacity-40"
                       style={{
                         color: "#00E5FF",
                         border: "1.5px solid #00E5FF",
@@ -860,7 +854,7 @@ export default function SettingsPage() {
                   <button
                     onClick={() => requestOtpMutation.mutate(pendingPhone)}
                     disabled={requestOtpMutation.isPending}
-                    className="w-full text-xs font-bold uppercase tracking-[0.18em] text-white hover:text-white py-2 disabled:opacity-40"
+                    className="w-full text-xs font-bold text-white hover:text-white py-2 disabled:opacity-40 underline underline-offset-2"
                     data-testid="button-resend-otp"
                   >
                     {t.resendCode}
@@ -883,7 +877,7 @@ export default function SettingsPage() {
                   <div className="space-y-3">
                     {(subjects || []).length === 0 ? (
                       <div className="text-center py-6">
-                        <BookOpen className="w-8 h-8 mx-auto mb-2 opacity-40" style={{ color: "#006BFF" }} />
+                        <BookOpen className="w-8 h-8 mx-auto mb-2" style={{ color: "#006BFF" }} />
                         <p className="text-sm text-white">
                           {t.loadingSubjects}
                         </p>
@@ -901,7 +895,6 @@ export default function SettingsPage() {
                               style={{
                                 border: active ? "1.5px solid #006BFF" : "1px solid rgba(255,255,255,0.12)",
                                 boxShadow: active ? "0 0 14px rgba(0,107,255,0.35), inset 0 0 10px rgba(0,107,255,0.12)" : "none",
-                                opacity: active ? 1 : 0.72,
                               }}
                               data-testid={`subject-chip-${subject.id}`}
                             >
@@ -941,7 +934,7 @@ export default function SettingsPage() {
                         disabled={!canSave}
                         className="h-8 px-4 text-[11px] font-black uppercase tracking-[0.18em] bg-black border disabled:opacity-40"
                         style={{
-                          color: canSave ? "#006BFF" : "rgba(255,255,255,0.4)",
+                          color: canSave ? "#006BFF" : "#fff",
                           borderColor: canSave ? "#006BFF" : "rgba(255,255,255,0.18)",
                           boxShadow: canSave ? "0 0 12px rgba(0,107,255,0.4)" : "none",
                         }}
@@ -978,7 +971,7 @@ export default function SettingsPage() {
               if (selectedSubjectsList.length === 0) {
                 return (
                   <div className="text-center py-6">
-                    <CalendarDays className="w-8 h-8 mx-auto mb-2 opacity-40" style={{ color: "#00E5FF" }} />
+                    <CalendarDays className="w-8 h-8 mx-auto mb-2" style={{ color: "#00E5FF" }} />
                     <p className="text-sm text-white">
                       {t.selectSubjectsFirst}
                     </p>
@@ -1058,7 +1051,7 @@ export default function SettingsPage() {
                       disabled={!prelimDirty || updatePrelimsMutation.isPending}
                       className="h-8 px-4 text-[11px] font-black uppercase tracking-[0.18em] bg-black border disabled:opacity-40"
                       style={{
-                        color: prelimDirty ? "#00E5FF" : "rgba(255,255,255,0.4)",
+                        color: prelimDirty ? "#00E5FF" : "#fff",
                         borderColor: prelimDirty ? "#00E5FF" : "rgba(255,255,255,0.18)",
                         boxShadow: prelimDirty ? "0 0 12px rgba(0,229,255,0.4)" : "none",
                       }}
@@ -1134,7 +1127,7 @@ export default function SettingsPage() {
               <button
                 onClick={copyReferralLink}
                 disabled={!referral}
-                className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-black font-black text-xs uppercase tracking-[0.18em] disabled:opacity-40"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-black font-bold text-sm disabled:opacity-40"
                 style={{
                   color: "#FF2BD6",
                   border: "1.5px solid #FF2BD6",
@@ -1248,7 +1241,7 @@ export default function SettingsPage() {
 
             {activities.length === 0 && (
               <div className="text-center py-4 text-white">
-                <Dumbbell className="w-8 h-8 mx-auto mb-2 opacity-40" style={{ color: "#FFE600" }} />
+                <Dumbbell className="w-8 h-8 mx-auto mb-2" style={{ color: "#FFE600" }} />
                 <p className="text-sm">{t.noActivities}</p>
               </div>
             )}
@@ -1258,7 +1251,7 @@ export default function SettingsPage() {
                 toast({ title: t.activitiesSaved, description: `${activities.length} ${t.activitiesSavedDesc}` });
               }}
               disabled={activities.length === 0}
-              className="w-full px-4 py-2.5 rounded-xl bg-black font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-40"
+              className="px-4 py-2 rounded-xl bg-black font-bold text-sm inline-flex items-center justify-center gap-2 disabled:opacity-40"
               style={{ color: "#FFE600", border: "1.5px solid #FFE600", boxShadow: "0 0 12px rgba(255,230,0,0.28)" }}
               data-testid="button-save-activities"
             >

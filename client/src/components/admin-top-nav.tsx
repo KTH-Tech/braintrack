@@ -189,36 +189,6 @@ interface AdminTopNavProps {
   current?: AdminNavKey;
 }
 
-function AdminDrips() {
-  const drips = [
-    { color: "#8A2BFF", x: 20,  w: 6,  h: 12 },
-    { color: "#FF2BD6", x: 120, w: 5,  h: 8  },
-    { color: "#00E5FF", x: 280, w: 7,  h: 16 },
-    { color: "#22FF66", x: 480, w: 5,  h: 10 },
-    { color: "#FFE600", x: 640, w: 6,  h: 14 },
-    { color: "#FF8A00", x: 800, w: 5,  h: 9  },
-    { color: "#8A2BFF", x: 940, w: 6,  h: 13 },
-  ];
-  return (
-    <div
-      aria-hidden
-      style={{ position: "absolute", bottom: 0, transform: "translateY(100%)", left: 0, right: 0, height: 20, pointerEvents: "none", overflow: "visible", zIndex: 39 }}
-    >
-      <svg viewBox="0 0 1000 20" preserveAspectRatio="none" style={{ width: "100%", height: 20, overflow: "visible", display: "block" }}>
-        {drips.map((d, i) => {
-          const cx = d.x + d.w / 2;
-          return (
-            <g key={i}>
-              <rect x={d.x} y={0} width={d.w} height={d.h} fill={d.color} rx={d.w / 2} />
-              <circle cx={cx} cy={d.h} r={d.w / 2 + 2} fill={d.color} />
-            </g>
-          );
-        })}
-      </svg>
-    </div>
-  );
-}
-
 export function AdminTopNav({ current }: AdminTopNavProps) {
   const { language, toggleLanguage } = useLanguage();
   const isAf = language === "af";
@@ -236,8 +206,6 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
       }}
       data-testid="admin-top-nav"
     >
-      <AdminDrips />
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3">
         <Link href="/learn/admin" className="flex items-center gap-2.5 min-w-0" data-testid="admin-nav-brand">
           <div

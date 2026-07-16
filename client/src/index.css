@@ -249,15 +249,15 @@ h1.no-rainbow *, .no-rainbow * {
 .glass,
 .glass-neon,
 .glass-rainbow {
-  --tile-neon: 0, 229, 255;
+  --tile-neon: 127, 239, 255;
   position: relative;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   background: #0a0b12;
-  border: 1.5px solid rgb(var(--tile-neon));
+  border: 1.5px solid rgba(var(--tile-neon), 0.5);
   border-radius: 16px;
   box-shadow:
-    0 0 18px rgba(var(--tile-neon), 0.30),
+    0 0 14px rgba(var(--tile-neon), 0.15),
     0 8px 24px rgba(0, 0, 0, 0.55);
   transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
   overflow: hidden;
@@ -267,23 +267,23 @@ h1.no-rainbow *, .no-rainbow * {
 .glass:hover,
 .glass-neon:hover,
 .glass-rainbow:hover {
-  border-color: rgb(var(--tile-neon)) !important;
+  border-color: rgba(var(--tile-neon), 0.75) !important;
   box-shadow:
-    0 0 28px rgba(var(--tile-neon), 0.5),
+    0 0 20px rgba(var(--tile-neon), 0.28),
     0 12px 30px rgba(0, 0, 0, 0.65);
   transform: translateY(-2px);
 }
 /* Colour cycling so adjacent panels get different neon hues. */
-.prismglass-panel:nth-child(7n+1), .shadcn-card:nth-child(7n+1), .glass:nth-child(7n+1) { --tile-neon: 0, 107, 255; }
-.prismglass-panel:nth-child(7n+2), .shadcn-card:nth-child(7n+2), .glass:nth-child(7n+2) { --tile-neon: 0, 229, 255; }
-.prismglass-panel:nth-child(7n+3), .shadcn-card:nth-child(7n+3), .glass:nth-child(7n+3) { --tile-neon: 34, 255, 102; }
-.prismglass-panel:nth-child(7n+4), .shadcn-card:nth-child(7n+4), .glass:nth-child(7n+4) { --tile-neon: 255, 230, 0; }
-.prismglass-panel:nth-child(7n+5), .shadcn-card:nth-child(7n+5), .glass:nth-child(7n+5) { --tile-neon: 255, 138, 0; }
-.prismglass-panel:nth-child(7n+6), .shadcn-card:nth-child(7n+6), .glass:nth-child(7n+6) { --tile-neon: 255, 43, 214; }
-.prismglass-panel:nth-child(7n+7), .shadcn-card:nth-child(7n+7), .glass:nth-child(7n+7) { --tile-neon: 138, 43, 255; }
+.prismglass-panel:nth-child(7n+1), .shadcn-card:nth-child(7n+1), .glass:nth-child(7n+1) { --tile-neon: 111, 168, 255; }
+.prismglass-panel:nth-child(7n+2), .shadcn-card:nth-child(7n+2), .glass:nth-child(7n+2) { --tile-neon: 127, 239, 255; }
+.prismglass-panel:nth-child(7n+3), .shadcn-card:nth-child(7n+3), .glass:nth-child(7n+3) { --tile-neon: 147, 255, 184; }
+.prismglass-panel:nth-child(7n+4), .shadcn-card:nth-child(7n+4), .glass:nth-child(7n+4) { --tile-neon: 255, 242, 158; }
+.prismglass-panel:nth-child(7n+5), .shadcn-card:nth-child(7n+5), .glass:nth-child(7n+5) { --tile-neon: 255, 196, 143; }
+.prismglass-panel:nth-child(7n+6), .shadcn-card:nth-child(7n+6), .glass:nth-child(7n+6) { --tile-neon: 255, 159, 229; }
+.prismglass-panel:nth-child(7n+7), .shadcn-card:nth-child(7n+7), .glass:nth-child(7n+7) { --tile-neon: 198, 164, 255; }
 /* Named neon colours for explicit assignment. */
-.glass-neon   { --tile-neon: 0, 229, 255 !important; }
-.glass-rainbow { --tile-neon: 138, 43, 255 !important; }
+.glass-neon   { --tile-neon: 127, 239, 255 !important; }
+.glass-rainbow { --tile-neon: 198, 164, 255 !important; }
 
 @keyframes border-rotate {
   0% { --border-angle: 0deg; }
@@ -1710,12 +1710,12 @@ html.light .nav-mobile-panel { background: #f9f9ff; border-top: 2px solid rgba(0
 .neon-tile {
   position: relative;
   /* Per-card neon hue — overridden by the nth-child cycle below. Defaults cyan. */
-  --tile-neon: 0, 229, 255;
+  --tile-neon: 127, 239, 255;
   background: #0a0b12;
-  border: 1.5px solid rgb(var(--tile-neon));
+  border: 1.5px solid rgba(var(--tile-neon), 0.5);
   border-radius: 16px;
   box-shadow:
-    0 0 18px rgba(var(--tile-neon), 0.30),
+    0 0 14px rgba(var(--tile-neon), 0.15),
     0 8px 24px rgba(0, 0, 0, 0.55);
   transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
   overflow: hidden;
@@ -1726,37 +1726,37 @@ html.light .nav-mobile-panel { background: #f9f9ff; border-top: 2px solid rgba(0
 .neon-tile:hover {
   border-color: rgb(var(--tile-neon));
   box-shadow:
-    0 0 28px rgba(var(--tile-neon), 0.5),
+    0 0 20px rgba(var(--tile-neon), 0.28),
     0 12px 30px rgba(0, 0, 0, 0.65);
   transform: translateY(-2px);
 }
 /* Multicolour identity: cards in a grid cycle through the brand neons like the
    brand board, instead of every card being the same cyan. */
-.neon-tile:nth-child(7n+1) { --tile-neon: 0, 107, 255; }    /* electric blue */
-.neon-tile:nth-child(7n+2) { --tile-neon: 0, 229, 255; }    /* cyan */
-.neon-tile:nth-child(7n+3) { --tile-neon: 34, 255, 102; }   /* green */
-.neon-tile:nth-child(7n+4) { --tile-neon: 255, 230, 0; }    /* yellow */
-.neon-tile:nth-child(7n+5) { --tile-neon: 255, 138, 0; }    /* orange */
-.neon-tile:nth-child(7n+6) { --tile-neon: 255, 43, 214; }   /* pink */
-.neon-tile:nth-child(7n+7) { --tile-neon: 138, 43, 255; }   /* purple */
+.neon-tile:nth-child(7n+1) { --tile-neon: 111, 168, 255; }    /* electric blue */
+.neon-tile:nth-child(7n+2) { --tile-neon: 127, 239, 255; }    /* cyan */
+.neon-tile:nth-child(7n+3) { --tile-neon: 147, 255, 184; }   /* green */
+.neon-tile:nth-child(7n+4) { --tile-neon: 255, 242, 158; }    /* yellow */
+.neon-tile:nth-child(7n+5) { --tile-neon: 255, 196, 143; }    /* orange */
+.neon-tile:nth-child(7n+6) { --tile-neon: 255, 159, 229; }   /* pink */
+.neon-tile:nth-child(7n+7) { --tile-neon: 198, 164, 255; }   /* purple */
 /* When a grid wraps each tile in <a>/<div>, cycle on those wrappers too. */
-.grid > a:nth-child(7n+1) .neon-tile, .grid > div:nth-child(7n+1) .neon-tile { --tile-neon: 0, 107, 255; }
-.grid > a:nth-child(7n+2) .neon-tile, .grid > div:nth-child(7n+2) .neon-tile { --tile-neon: 0, 229, 255; }
-.grid > a:nth-child(7n+3) .neon-tile, .grid > div:nth-child(7n+3) .neon-tile { --tile-neon: 34, 255, 102; }
-.grid > a:nth-child(7n+4) .neon-tile, .grid > div:nth-child(7n+4) .neon-tile { --tile-neon: 255, 230, 0; }
-.grid > a:nth-child(7n+5) .neon-tile, .grid > div:nth-child(7n+5) .neon-tile { --tile-neon: 255, 138, 0; }
-.grid > a:nth-child(7n+6) .neon-tile, .grid > div:nth-child(7n+6) .neon-tile { --tile-neon: 255, 43, 214; }
-.grid > a:nth-child(7n+7) .neon-tile, .grid > div:nth-child(7n+7) .neon-tile { --tile-neon: 138, 43, 255; }
+.grid > a:nth-child(7n+1) .neon-tile, .grid > div:nth-child(7n+1) .neon-tile { --tile-neon: 111, 168, 255; }
+.grid > a:nth-child(7n+2) .neon-tile, .grid > div:nth-child(7n+2) .neon-tile { --tile-neon: 127, 239, 255; }
+.grid > a:nth-child(7n+3) .neon-tile, .grid > div:nth-child(7n+3) .neon-tile { --tile-neon: 147, 255, 184; }
+.grid > a:nth-child(7n+4) .neon-tile, .grid > div:nth-child(7n+4) .neon-tile { --tile-neon: 255, 242, 158; }
+.grid > a:nth-child(7n+5) .neon-tile, .grid > div:nth-child(7n+5) .neon-tile { --tile-neon: 255, 196, 143; }
+.grid > a:nth-child(7n+6) .neon-tile, .grid > div:nth-child(7n+6) .neon-tile { --tile-neon: 255, 159, 229; }
+.grid > a:nth-child(7n+7) .neon-tile, .grid > div:nth-child(7n+7) .neon-tile { --tile-neon: 198, 164, 255; }
 .neon-tile:hover::before { opacity: 0.85; }
 /* Explicit fixed-colour tiles now drive the same --tile-neon variable so their
    border + glow match the brightened default. !important beats the nth-child cycle. */
-.neon-tile-pink   { --tile-neon: 255, 43, 214 !important; }
-.neon-tile-cyan   { --tile-neon: 0, 229, 255 !important; }
-.neon-tile-blue   { --tile-neon: 0, 107, 255 !important; }
-.neon-tile-green  { --tile-neon: 34, 255, 102 !important; }
-.neon-tile-orange { --tile-neon: 255, 138, 0 !important; }
-.neon-tile-yellow { --tile-neon: 255, 230, 0 !important; }
-.neon-tile-purple { --tile-neon: 138, 43, 255 !important; }
+.neon-tile-pink   { --tile-neon: 255, 159, 229 !important; }
+.neon-tile-cyan   { --tile-neon: 127, 239, 255 !important; }
+.neon-tile-blue   { --tile-neon: 111, 168, 255 !important; }
+.neon-tile-green  { --tile-neon: 147, 255, 184 !important; }
+.neon-tile-orange { --tile-neon: 255, 196, 143 !important; }
+.neon-tile-yellow { --tile-neon: 255, 242, 158 !important; }
+.neon-tile-purple { --tile-neon: 198, 164, 255 !important; }
 
 /* Glow-only neon button (replaces solid prismglass-btn fills) */
 .neon-btn {

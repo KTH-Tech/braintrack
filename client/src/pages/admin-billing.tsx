@@ -173,7 +173,7 @@ function NeonTile({
       <div className="text-3xl font-black tabular-nums text-white" style={{ textShadow: `0 0 14px ${color}88` }}>
         {value}
       </div>
-      {subLabel && <div className="text-[10px] text-white/50">{subLabel}</div>}
+      {subLabel && <div className="text-[10px] text-white">{subLabel}</div>}
     </div>
   );
 }
@@ -265,13 +265,13 @@ function LinkHistoryModal({
         <div className="flex items-center gap-3 px-5 py-4 border-b border-white/10 shrink-0">
           <Link2 className="w-4 h-4 shrink-0" style={{ color: "#7dd3fc" }} />
           <div className="flex-1 min-w-0">
-            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/50">Onboarding Link History</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white">Onboarding Link History</p>
             <p className="text-sm font-bold text-white truncate">{userName || userId}</p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="w-7 h-7 flex items-center justify-center rounded-lg text-white/50 hover:text-white transition"
+            className="w-7 h-7 flex items-center justify-center rounded-lg text-white hover:text-white transition"
             style={{ border: "1px solid rgba(255,255,255,0.1)" }}
           >
             <X className="w-4 h-4" />
@@ -280,7 +280,7 @@ function LinkHistoryModal({
 
         <div className="overflow-y-auto flex-1 p-4">
           {isLoading && (
-            <div className="flex items-center justify-center gap-2 py-12 text-white/40 text-sm">
+            <div className="flex items-center justify-center gap-2 py-12 text-white text-sm">
               <RefreshCw className="w-4 h-4 animate-spin" /> Loading…
             </div>
           )}
@@ -293,7 +293,7 @@ function LinkHistoryModal({
           )}
 
           {!isLoading && !isError && (!rows || rows.length === 0) && (
-            <p className="text-sm text-white/40 italic text-center py-12">No onboarding links found for this user.</p>
+            <p className="text-sm text-white italic text-center py-12">No onboarding links found for this user.</p>
           )}
 
           {!isLoading && !isError && rows && rows.length > 0 && (
@@ -324,7 +324,7 @@ function LinkHistoryModal({
                             {displayStatus}
                           </span>
                           {r.channel && (
-                            <span className="text-[10px] text-white/40 uppercase tracking-wider">
+                            <span className="text-[10px] text-white uppercase tracking-wider">
                               via {r.channel}
                             </span>
                           )}
@@ -338,29 +338,29 @@ function LinkHistoryModal({
                         <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px]">
                           {r.sentTo && (
                             <div>
-                              <span className="text-white/40">Sent to </span>
+                              <span className="text-white">Sent to </span>
                               <span className="text-white font-mono">{r.sentTo}</span>
                             </div>
                           )}
                           <div>
-                            <span className="text-white/40">Issued </span>
-                            <span className="text-white/80">{fmtDateTime(r.createdAt)}</span>
+                            <span className="text-white">Issued </span>
+                            <span className="text-white">{fmtDateTime(r.createdAt)}</span>
                           </div>
                           {r.deliveryUpdatedAt && (
                             <div>
-                              <span className="text-white/40">Status updated </span>
-                              <span className="text-white/80">{fmtDateTime(r.deliveryUpdatedAt)}</span>
+                              <span className="text-white">Status updated </span>
+                              <span className="text-white">{fmtDateTime(r.deliveryUpdatedAt)}</span>
                             </div>
                           )}
                           {r.usedAt && (
                             <div>
-                              <span className="text-white/40">Opened </span>
-                              <span className="text-white/80">{fmtDateTime(r.usedAt)}</span>
+                              <span className="text-white">Opened </span>
+                              <span className="text-white">{fmtDateTime(r.usedAt)}</span>
                             </div>
                           )}
                           <div>
-                            <span className="text-white/40">Expires </span>
-                            <span className="text-white/80">{fmtDateTime(r.expiresAt)}</span>
+                            <span className="text-white">Expires </span>
+                            <span className="text-white">{fmtDateTime(r.expiresAt)}</span>
                           </div>
                         </div>
 
@@ -379,10 +379,10 @@ function LinkHistoryModal({
         </div>
 
         <div className="px-5 py-3 border-t border-white/10 shrink-0 flex items-center justify-between">
-          <span className="text-[10px] text-white/30">
+          <span className="text-[10px] text-white">
             {rows ? `${rows.length} link${rows.length !== 1 ? "s" : ""} issued` : ""}
           </span>
-          <span className="text-[10px] text-white/30">Read-only — resend is a parent action</span>
+          <span className="text-[10px] text-white">Read-only — resend is a parent action</span>
         </div>
       </div>
     </div>
@@ -642,11 +642,11 @@ export default function AdminBillingPage() {
       <div className="border-b border-white/10 bg-black/60 px-6 py-3">
         <div className="max-w-7xl mx-auto flex items-center gap-4">
           <div className="min-w-0">
-            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/50">Admin</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white">Admin</p>
             <h1 className="text-base font-black text-white leading-tight">Billing & Operations</h1>
           </div>
           <div className="ml-auto flex items-center gap-3">
-            <span className="text-[10px] text-white/40">
+            <span className="text-[10px] text-white">
               Updated {fmtDateTime(lastUpdatedRef.current.toISOString())}
             </span>
             <button
@@ -657,7 +657,7 @@ export default function AdminBillingPage() {
                 qc.invalidateQueries({ queryKey: ["/api/admin/billing?status=grace"] });
                 qc.invalidateQueries({ queryKey: ["/api/admin/billing?status=lapsed"] });
               }}
-              className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg text-white/60 hover:text-white transition"
+              className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg text-white hover:text-white transition"
               style={{ border: "1px solid rgba(255,255,255,0.15)" }}
             >
               <RefreshCw className="w-3 h-3" /> Refresh
@@ -670,7 +670,7 @@ export default function AdminBillingPage() {
 
         {/* KPI Strip */}
         <section data-testid="billing-kpi-strip">
-          <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white/50 mb-3">Live Billing KPIs</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white mb-3">Live Billing KPIs</p>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             <NeonTile
               color="#00E5FF" label="Active" testId="kpi-active"
@@ -718,7 +718,7 @@ export default function AdminBillingPage() {
                   <p className="text-sm font-black" style={{ color: "#f87171" }}>
                     {stuckLinks.count} onboarding link{stuckLinks.count !== 1 ? "s" : ""} stuck &gt;24h — learners may be unable to onboard
                   </p>
-                  <p className="text-xs text-white/50 mt-1">
+                  <p className="text-xs text-white mt-1">
                     These links have been in a non-delivered state for over 24 hours and the learner hasn't tapped them yet.
                     Re-send from the parent's confirmation card or check WhatsApp/Twilio configuration.
                   </p>
@@ -727,23 +727,23 @@ export default function AdminBillingPage() {
                       <thead>
                         <tr>
                           {["Sent To", "Status", "Age", "Retries"].map(h => (
-                            <th key={h} className="text-left pb-1.5 pr-4 font-bold uppercase tracking-wider text-white/30">{h}</th>
+                            <th key={h} className="text-left pb-1.5 pr-4 font-bold uppercase tracking-wider text-white">{h}</th>
                           ))}
                         </tr>
                       </thead>
                       <tbody>
                         {stuckLinks.links.slice(0, 10).map(l => (
                           <tr key={l.jti} style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-                            <td className="py-1.5 pr-4 font-mono text-white/80">{l.sentTo}</td>
+                            <td className="py-1.5 pr-4 font-mono text-white">{l.sentTo}</td>
                             <td className="py-1.5 pr-4" style={{ color: "#f87171" }}>{l.deliveryStatus}</td>
-                            <td className="py-1.5 pr-4 text-white/50">{l.hoursAgo}h ago</td>
-                            <td className="py-1.5 text-white/50">{l.retryCount}</td>
+                            <td className="py-1.5 pr-4 text-white">{l.hoursAgo}h ago</td>
+                            <td className="py-1.5 text-white">{l.retryCount}</td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
                     {stuckLinks.count > 10 && (
-                      <p className="text-[10px] text-white/30 mt-2">+ {stuckLinks.count - 10} more — check Admin Billing → Onboarding Link History per learner</p>
+                      <p className="text-[10px] text-white mt-2">+ {stuckLinks.count - 10} more — check Admin Billing → Onboarding Link History per learner</p>
                     )}
                   </div>
                 </div>
@@ -831,7 +831,7 @@ export default function AdminBillingPage() {
           <section data-testid="onboarding-sms-section">
             <div className="flex items-center gap-2 mb-3">
               <MessageSquare className="w-4 h-4" style={{ color: "#7dd3fc" }} />
-              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white/50">
+              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white">
                 Onboarding WhatsApp Links — last {smsStats.days} days
               </p>
             </div>
@@ -851,13 +851,13 @@ export default function AdminBillingPage() {
               ] as Array<{ k: keyof Pick<SmsStats, "total"|"sent"|"delivered"|"opened"|"failed"|"pending"|"autoRetried">; label: string; color: string }>
               ).map(c => (
                 <div key={c.k} className="rounded-xl bg-white/5 px-3 py-2" data-testid={`sms-stat-${c.k}`}>
-                  <div className="text-[10px] uppercase tracking-wider text-white/50">{c.label}</div>
+                  <div className="text-[10px] uppercase tracking-wider text-white">{c.label}</div>
                   <div className="text-2xl font-black" style={{ color: c.color }}>{smsStats[c.k] ?? 0}</div>
                 </div>
               ))}
             </div>
             {smsStats.notConfigured > 0 && (
-              <p className="text-xs text-white/40 mt-2">
+              <p className="text-xs text-white mt-2">
                 {smsStats.notConfigured} link(s) couldn't be sent — Twilio not configured on this environment.
               </p>
             )}
@@ -869,7 +869,7 @@ export default function AdminBillingPage() {
           <button
             type="button"
             onClick={() => setActionLogOpen(v => !v)}
-            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-white/50 hover:text-white/80 transition mb-3"
+            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-white hover:text-white transition mb-3"
           >
             <History className="w-4 h-4" style={{ color: "#fb923c" }} />
             <span style={{ color: "#fb923c" }}>Admin Action History</span>
@@ -891,13 +891,13 @@ export default function AdminBillingPage() {
               data-testid="action-log-panel"
             >
               {actionLogLoading && (
-                <div className="flex items-center justify-center gap-2 py-10 text-white/40 text-sm">
+                <div className="flex items-center justify-center gap-2 py-10 text-white text-sm">
                   <RefreshCw className="w-4 h-4 animate-spin" /> Loading…
                 </div>
               )}
 
               {!actionLogLoading && (!actionLog || actionLog.length === 0) && (
-                <p className="text-sm text-white/40 italic text-center py-10">No billing actions recorded yet.</p>
+                <p className="text-sm text-white italic text-center py-10">No billing actions recorded yet.</p>
               )}
 
               {!actionLogLoading && actionLog && actionLog.length > 0 && (
@@ -925,7 +925,7 @@ export default function AdminBillingPage() {
                         return (
                           <tr key={row.id} data-testid={`action-log-row-${row.id}`}>
                             <Td>
-                              <span className="text-white/70 text-xs font-mono">{fmtDateTime(row.createdAt)}</span>
+                              <span className="text-white text-xs font-mono">{fmtDateTime(row.createdAt)}</span>
                             </Td>
                             <Td>
                               <span
@@ -937,16 +937,16 @@ export default function AdminBillingPage() {
                             </Td>
                             <Td>
                               {meta?.targetUserId ? (
-                                <span className="text-white/70 text-xs font-mono">{meta.targetUserId.slice(0, 16)}…</span>
+                                <span className="text-white text-xs font-mono">{meta.targetUserId.slice(0, 16)}…</span>
                               ) : (
-                                <span className="text-white/20 text-xs">—</span>
+                                <span className="text-white text-xs">—</span>
                               )}
                             </Td>
                             <Td>
-                              <span className="text-white/60 text-xs font-mono">{row.adminUserId.slice(0, 16)}…</span>
+                              <span className="text-white text-xs font-mono">{row.adminUserId.slice(0, 16)}…</span>
                             </Td>
                             <Td>
-                              <div className="text-[10px] text-white/50 space-y-0.5">
+                              <div className="text-[10px] text-white space-y-0.5">
                                 {meta?.days !== undefined && (
                                   <div>+{meta.days} days</div>
                                 )}
@@ -954,7 +954,7 @@ export default function AdminBillingPage() {
                                   <div>→ {fmtDate(meta.newTrialEndsAt)}</div>
                                 )}
                                 {meta?.note && (
-                                  <div className="text-white/70 italic">"{meta.note}"</div>
+                                  <div className="text-white italic">"{meta.note}"</div>
                                 )}
                               </div>
                             </Td>
@@ -967,7 +967,7 @@ export default function AdminBillingPage() {
               )}
 
               {!actionLogLoading && actionLog && actionLog.length > 0 && (
-                <div className="px-4 py-2 border-t border-white/5 text-[10px] text-white/30">
+                <div className="px-4 py-2 border-t border-white/5 text-[10px] text-white">
                   Showing last {actionLog.length} action{actionLog.length !== 1 ? "s" : ""}
                 </div>
               )}
@@ -980,7 +980,7 @@ export default function AdminBillingPage() {
           <button
             type="button"
             onClick={() => setReminderHistoryOpen(v => !v)}
-            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-white/50 hover:text-white/80 transition mb-3"
+            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-white hover:text-white transition mb-3"
           >
             <History className="w-4 h-4" style={{ color: "#c084fc" }} />
             <span style={{ color: "#c084fc" }}>Reminder History</span>
@@ -1002,13 +1002,13 @@ export default function AdminBillingPage() {
               data-testid="reminder-history-panel"
             >
               {reminderHistoryLoading && (
-                <div className="flex items-center justify-center gap-2 py-10 text-white/40 text-sm">
+                <div className="flex items-center justify-center gap-2 py-10 text-white text-sm">
                   <RefreshCw className="w-4 h-4 animate-spin" /> Loading…
                 </div>
               )}
 
               {!reminderHistoryLoading && (!reminderHistory || reminderHistory.length === 0) && (
-                <p className="text-sm text-white/40 italic text-center py-10">No reminders dispatched yet.</p>
+                <p className="text-sm text-white italic text-center py-10">No reminders dispatched yet.</p>
               )}
 
               {!reminderHistoryLoading && reminderHistory && reminderHistory.length > 0 && (
@@ -1032,13 +1032,13 @@ export default function AdminBillingPage() {
                         const reason = r.result?.reason;
                         return (
                           <tr key={r.id} data-testid={`reminder-row-${r.id}`}>
-                            <Td><span className="text-white/70 text-xs font-mono">{fmtDateTime(r.sentAt)}</span></Td>
+                            <Td><span className="text-white text-xs font-mono">{fmtDateTime(r.sentAt)}</span></Td>
                             <Td>
                               <div className="font-semibold text-white text-xs">
                                 {r.targetName || r.targetEmail || r.userId.slice(0, 8)}
                               </div>
                               {r.targetEmail && r.targetName && (
-                                <div className="text-[10px] text-white/40">{r.targetEmail}</div>
+                                <div className="text-[10px] text-white">{r.targetEmail}</div>
                               )}
                             </Td>
                             <Td>
@@ -1069,7 +1069,7 @@ export default function AdminBillingPage() {
                               {reason ? (
                                 <span className="text-[10px] font-mono text-red-400">{reason}</span>
                               ) : (
-                                <span className="text-white/20 text-xs">—</span>
+                                <span className="text-white text-xs">—</span>
                               )}
                             </Td>
                           </tr>
@@ -1081,7 +1081,7 @@ export default function AdminBillingPage() {
               )}
 
               {!reminderHistoryLoading && reminderHistory && reminderHistory.length > 0 && (
-                <div className="px-4 py-2 border-t border-white/5 text-[10px] text-white/30">
+                <div className="px-4 py-2 border-t border-white/5 text-[10px] text-white">
                   Showing last {reminderHistory.length} dispatch{reminderHistory.length !== 1 ? "es" : ""}
                 </div>
               )}
@@ -1089,7 +1089,7 @@ export default function AdminBillingPage() {
           )}
         </section>
 
-        <p className="text-xs text-white/30 flex items-center gap-1.5 pt-2 border-t border-white/10">
+        <p className="text-xs text-white flex items-center gap-1.5 pt-2 border-t border-white/10">
           <AlertTriangle className="w-3 h-3" />
           Data from the Netcash webhook. Failed recurring payments enter a 3-day grace period before lapsing.
           Lapse enforcement runs daily at 04:30 UTC. Auto-refreshes every 30 s.
@@ -1101,7 +1101,7 @@ export default function AdminBillingPage() {
 
 function EmptyState({ message }: { message: string }) {
   return (
-    <p className="text-sm text-white/40 italic px-4 py-8 text-center rounded-2xl bg-white/5 border border-white/10">
+    <p className="text-sm text-white italic px-4 py-8 text-center rounded-2xl bg-white/5 border border-white/10">
       {message}
     </p>
   );
@@ -1117,7 +1117,7 @@ function TableShell({ color, children }: { color: string; children: React.ReactN
 
 function Th({ children }: { children: React.ReactNode }) {
   return (
-    <th className="text-left px-4 py-2.5 text-[10px] font-black uppercase tracking-[0.18em] text-white/40 bg-black/60 whitespace-nowrap">
+    <th className="text-left px-4 py-2.5 text-[10px] font-black uppercase tracking-[0.18em] text-white bg-black/60 whitespace-nowrap">
       {children}
     </th>
   );
@@ -1131,14 +1131,14 @@ function LearnerCell({ row }: { row: BillingRow }) {
   return (
     <div>
       <div className="font-semibold text-white">{row.userName || row.userEmail || row.userId.slice(0, 8)}</div>
-      {row.userEmail && row.userName && <div className="text-[10px] text-white/40">{row.userEmail}</div>}
-      {row.parentCell && <div className="text-[10px] text-white/30 font-mono">{row.parentCell}</div>}
+      {row.userEmail && row.userName && <div className="text-[10px] text-white">{row.userEmail}</div>}
+      {row.parentCell && <div className="text-[10px] text-white font-mono">{row.parentCell}</div>}
     </div>
   );
 }
 
 function LastNudgedBadge({ sentAt }: { sentAt: string | undefined }) {
-  if (!sentAt) return <span className="text-white/20 text-xs">—</span>;
+  if (!sentAt) return <span className="text-white text-xs">—</span>;
   const daysAgoVal = Math.floor((Date.now() - new Date(sentAt).getTime()) / 86_400_000);
   const label = daysAgoVal === 0 ? "Today" : daysAgoVal === 1 ? "Yesterday" : `${daysAgoVal}d ago`;
   const color = daysAgoVal === 0 ? "#a3e635" : daysAgoVal <= 2 ? "#22d3ee" : "#c084fc";
@@ -1150,7 +1150,7 @@ function LastNudgedBadge({ sentAt }: { sentAt: string | undefined }) {
       >
         {label}
       </span>
-      <div className="text-[10px] text-white/30 mt-0.5">{fmtDateTime(sentAt)}</div>
+      <div className="text-[10px] text-white mt-0.5">{fmtDateTime(sentAt)}</div>
     </div>
   );
 }
@@ -1201,7 +1201,7 @@ function TrialsTable({ rows, isLoading, inFlight, onSendReminder, onExtendTrial,
             <tr key={r.userId} data-testid={`billing-row-${r.userId}`}>
               <Td><LearnerCell row={r} /></Td>
               <Td><MethodBadge method={r.billingMethod} /></Td>
-              <Td><span className="text-white/60 text-xs">{fmtDate(r.createdAt)}</span></Td>
+              <Td><span className="text-white text-xs">{fmtDate(r.createdAt)}</span></Td>
               <Td><span className="text-white text-xs">{fmtDate(r.trialEndsAt)}</span></Td>
               <Td>
                 <span
@@ -1214,12 +1214,12 @@ function TrialsTable({ rows, isLoading, inFlight, onSendReminder, onExtendTrial,
               <Td>
                 {r.trialReminderD13Sent
                   ? <CheckCircle className="w-4 h-4 text-green-400" />
-                  : <span className="text-white/20 text-xs">—</span>}
+                  : <span className="text-white text-xs">—</span>}
               </Td>
               <Td>
                 {r.trialReminderD14Sent
                   ? <CheckCircle className="w-4 h-4 text-green-400" />
-                  : <span className="text-white/20 text-xs">—</span>}
+                  : <span className="text-white text-xs">—</span>}
               </Td>
               <Td><LastNudgedBadge sentAt={lastNudgedMap[r.userId]} /></Td>
               <Td>
@@ -1284,7 +1284,7 @@ function GraceTable({ rows, isLoading, inFlight, onSendReminder, onMarkLapsed, o
               <Td><LearnerCell row={r} /></Td>
               <Td><MethodBadge method={r.billingMethod} /></Td>
               <Td>
-                <div className="text-xs text-white/60">{fmtDate(r.lastPaymentAt)}</div>
+                <div className="text-xs text-white">{fmtDate(r.lastPaymentAt)}</div>
                 {r.lastPaymentStatus && (
                   <div className="text-[10px] font-bold text-red-400">{r.lastPaymentStatus}</div>
                 )}
@@ -1360,9 +1360,9 @@ function LapsedTable({ rows, isLoading, inFlight, onSendOutreach, onGrantTrial, 
           return (
             <tr key={r.userId} data-testid={`billing-row-${r.userId}`}>
               <Td><LearnerCell row={r} /></Td>
-              <Td><span className="text-white/70 text-xs">{r.plan ?? "—"}</span></Td>
+              <Td><span className="text-white text-xs">{r.plan ?? "—"}</span></Td>
               <Td><MethodBadge method={r.billingMethod} /></Td>
-              <Td><span className="text-white/60 text-xs">{fmtDate(r.updatedAt)}</span></Td>
+              <Td><span className="text-white text-xs">{fmtDate(r.updatedAt)}</span></Td>
               <Td>
                 <span className="font-bold text-sm" style={{ color: ago !== null && ago <= 7 ? "#FF8A00" : color }}>
                   {ago !== null ? `${ago}d` : "—"}
@@ -1409,7 +1409,7 @@ function LapsedTable({ rows, isLoading, inFlight, onSendOutreach, onGrantTrial, 
 
 function LoadingState() {
   return (
-    <div className="flex items-center justify-center gap-2 py-16 text-white/40 text-sm">
+    <div className="flex items-center justify-center gap-2 py-16 text-white text-sm">
       <RefreshCw className="w-4 h-4 animate-spin" /> Loading…
     </div>
   );

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { PublicNav } from "@/components/public-nav";
+import { GraffitiSplats, SpraySmear } from "@/components/graffiti-splats";
 import { useLanguage } from "@/lib/language-context";
 import { useAuth } from "@/hooks/use-auth";
 import { useSEO } from "@/hooks/use-seo";
@@ -11,60 +12,10 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 
-type NeonHex = "#FF8A00" | "#FFE600" | "#00E5FF" | "#006BFF" | "#8A2BFF" | "#FF2BD6";
+// Soft pastel wall palette — accents, borders and marker highlights only.
+const PASTELS = ["#6FA8FF", "#7FEFFF", "#93FFB8", "#FFF29E", "#FFC48F", "#FF9FE5", "#C6A4FF"];
 
-function haloFor(color: NeonHex, alpha = 0.28) {
-  const map: Record<NeonHex, string> = {
-    "#FF8A00": `rgba(255,138,0,${alpha})`,
-    "#FFE600": `rgba(255,230,0,${alpha})`,
-    "#00E5FF": `rgba(0,229,255,${alpha})`,
-    "#006BFF": `rgba(0,107,255,${alpha})`,
-    "#8A2BFF": `rgba(138,43,255,${alpha})`,
-    "#FF2BD6": `rgba(255,43,214,${alpha})`,
-  };
-  return map[color];
-}
-
-// Research page uses a deep near-black cosmic tone (not pure #000) so we can
-// layer ambient nebula/noise animations without them being invisible.
-const RESEARCH_SURFACE = "#0a0b12";
-const RESEARCH_SURFACE_2 = "#0d0f17";
-
-function NeonShell({ color, children, className = "", testId, onClick }: {
-  color: NeonHex;
-  children: React.ReactNode;
-  className?: string;
-  testId?: string;
-  onClick?: () => void;
-}) {
-  const halo = haloFor(color, 0.28);
-  return (
-    <div
-      className={`group relative rounded-2xl overflow-hidden transition-all duration-300 ease-out will-change-transform hover:-translate-y-0.5 ${onClick ? "cursor-pointer" : ""} ${className}`}
-      style={{
-        background: `linear-gradient(180deg, ${RESEARCH_SURFACE_2} 0%, ${RESEARCH_SURFACE} 100%)`,
-        border: `1.5px solid ${color}`,
-        boxShadow: `0 0 0 1px ${halo}, 0 0 28px ${halo}, inset 0 0 18px rgba(0,0,0,0.55)`,
-      }}
-      data-testid={testId}
-      onClick={onClick}
-    >
-      {/* Subtle sweep on hover */}
-      <span
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-        style={{
-          background: `radial-gradient(circle at 50% 0%, ${haloFor(color, 0.18)} 0%, transparent 60%)`,
-        }}
-      />
-      <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: color }} />
-      <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2" style={{ borderColor: color }} />
-      <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2" style={{ borderColor: color }} />
-      <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: color }} />
-      <div className="relative">{children}</div>
-    </div>
-  );
-}
+const MARKER_SHADOW = { textShadow: "0 2px 0 rgba(0,0,0,0.6)" } as const;
 
 function useInView(options?: { threshold?: number; once?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -293,68 +244,62 @@ const t = {
 };
 
 const scienceCards = [
-  { icon: Brain,         color: "#006BFF" as NeonHex, titleKey: "c1Title" as const, descKey: "c1Desc" as const, detailKey: "c1Detail" as const, sourceKey: "c1Source" as const, statKey: null,                  statLabelKey: null,                        barValue: 40, barLabel: "engagement" },
-  { icon: Target,        color: "#00E5FF" as NeonHex, titleKey: "c2Title" as const, descKey: "c2Desc" as const, detailKey: "c2Detail" as const, sourceKey: "c2Source" as const, statKey: "c2Stat" as const, statLabelKey: "c2StatLabel" as const, barValue: 80, barLabel: "recall" },
-  { icon: Zap,           color: "#FFE600" as NeonHex, titleKey: "c3Title" as const, descKey: "c3Desc" as const, detailKey: "c3Detail" as const, sourceKey: "c3Source" as const, statKey: "c3Stat" as const, statLabelKey: "c3StatLabel" as const, barValue: 75, barLabel: "retention" },
-  { icon: BookOpen,      color: "#8A2BFF" as NeonHex, titleKey: "c4Title" as const, descKey: "c4Desc" as const, detailKey: "c4Detail" as const, sourceKey: "c4Source" as const, statKey: "c4Stat" as const, statLabelKey: "c4StatLabel" as const, barValue: 40, barLabel: "effectiveness" },
-  { icon: MessageSquare, color: "#FF2BD6" as NeonHex, titleKey: "c5Title" as const, descKey: "c5Desc" as const, detailKey: "c5Detail" as const, sourceKey: "c5Source" as const, statKey: null,                  statLabelKey: null,                        barValue: 73, barLabel: "effect size" },
-  { icon: Shield,        color: "#8A2BFF" as NeonHex, titleKey: "c6Title" as const, descKey: "c6Desc" as const, detailKey: "c6Detail" as const, sourceKey: "c6Source" as const, statKey: null,                  statLabelKey: null,                        barValue: 58, barLabel: "improvement" },
+  { icon: Brain,         color: "#6FA8FF", titleKey: "c1Title" as const, descKey: "c1Desc" as const, detailKey: "c1Detail" as const, sourceKey: "c1Source" as const, statKey: null,                  statLabelKey: null,                        barValue: 40, barLabel: "engagement" },
+  { icon: Target,        color: "#7FEFFF", titleKey: "c2Title" as const, descKey: "c2Desc" as const, detailKey: "c2Detail" as const, sourceKey: "c2Source" as const, statKey: "c2Stat" as const, statLabelKey: "c2StatLabel" as const, barValue: 80, barLabel: "recall" },
+  { icon: Zap,           color: "#FFF29E", titleKey: "c3Title" as const, descKey: "c3Desc" as const, detailKey: "c3Detail" as const, sourceKey: "c3Source" as const, statKey: "c3Stat" as const, statLabelKey: "c3StatLabel" as const, barValue: 75, barLabel: "retention" },
+  { icon: BookOpen,      color: "#C6A4FF", titleKey: "c4Title" as const, descKey: "c4Desc" as const, detailKey: "c4Detail" as const, sourceKey: "c4Source" as const, statKey: "c4Stat" as const, statLabelKey: "c4StatLabel" as const, barValue: 40, barLabel: "effectiveness" },
+  { icon: MessageSquare, color: "#FF9FE5", titleKey: "c5Title" as const, descKey: "c5Desc" as const, detailKey: "c5Detail" as const, sourceKey: "c5Source" as const, statKey: null,                  statLabelKey: null,                        barValue: 73, barLabel: "effect size" },
+  { icon: Shield,        color: "#93FFB8", titleKey: "c6Title" as const, descKey: "c6Desc" as const, detailKey: "c6Detail" as const, sourceKey: "c6Source" as const, statKey: null,                  statLabelKey: null,                        barValue: 58, barLabel: "improvement" },
 ] as const;
 
 const caseStudyItems = [
-  { key: "1", icon: TrendingUp, color: "#FF8A00" as NeonHex },
-  { key: "2", icon: Clock,      color: "#FFE600" as NeonHex },
-  { key: "3", icon: Target,     color: "#00E5FF" as NeonHex },
-  { key: "4", icon: Flame,      color: "#FF8A00" as NeonHex },
-  { key: "5", icon: Repeat,     color: "#8A2BFF" as NeonHex },
-  { key: "6", icon: Users,      color: "#006BFF" as NeonHex },
+  { key: "1", icon: TrendingUp, color: "#FFC48F" },
+  { key: "2", icon: Clock,      color: "#FFF29E" },
+  { key: "3", icon: Target,     color: "#7FEFFF" },
+  { key: "4", icon: Flame,      color: "#FF9FE5" },
+  { key: "5", icon: Repeat,     color: "#C6A4FF" },
+  { key: "6", icon: Users,      color: "#6FA8FF" },
 ] as const;
 
-function AnimatedBar({ value, delay, color, parentInView }: { value: number; delay: number; color: NeonHex; parentInView?: boolean }) {
+function AnimatedBar({ value, delay, color, parentInView }: { value: number; delay: number; color: string; parentInView?: boolean }) {
   const { ref, inView: selfInView } = useInView();
   const isVisible = parentInView !== undefined ? parentInView : selfInView;
 
   return (
-    <div ref={ref} className="w-full h-2 rounded-full bg-black overflow-hidden" style={{ border: `1px solid ${haloFor(color, 0.35)}` }}>
+    <div ref={ref} className="w-full h-1.5 rounded-full overflow-hidden" style={{ border: `1px solid ${color}` }}>
       <div
         className="h-full rounded-full transition-all duration-1000 ease-out"
         style={{
           width: isVisible ? `${value}%` : "0%",
           transitionDelay: `${delay}ms`,
           background: color,
-          boxShadow: `0 0 10px ${haloFor(color, 0.7)}`,
         }}
       />
     </div>
   );
 }
 
-function AnimatedStatCard({ s, i }: { s: { value: string; label: string; icon: any; color: NeonHex }; i: number }) {
+function AnimatedStatCard({ s, i }: { s: { value: string; label: string; icon: any; color: string }; i: number }) {
   const { ref, inView } = useInView();
   const animatedValue = useAnimatedCounter(s.value, inView);
   const Icon = s.icon;
-  const halo = haloFor(s.color, 0.28);
 
   return (
     <div
       ref={ref}
-      className="transition-all duration-700 ease-out"
+      className="text-center transition-all duration-700 ease-out"
       style={{
         opacity: inView ? 1 : 0,
         transform: inView ? "translateY(0)" : "translateY(24px)",
         transitionDelay: `${i * 100}ms`,
       }}
+      data-testid={`card-stat-${i}`}
     >
-      <NeonShell color={s.color} className="p-4 text-center" testId={`card-stat-${i}`}>
-        <div
-          className="w-9 h-9 rounded-xl bg-black mx-auto mb-2 flex items-center justify-center"
-          style={{ border: `1.5px solid ${s.color}`, boxShadow: `0 0 12px ${halo}, inset 0 0 8px ${halo}` }}
-        >
-          <Icon className="w-4 h-4" style={{ color: s.color, filter: `drop-shadow(0 0 5px ${halo})` }} />
-        </div>
-        <p className="text-2xl sm:text-3xl font-black text-white" style={{ textShadow: `0 0 14px ${haloFor(s.color, 0.55)}` }}>{animatedValue}</p>
-        <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] mt-1" style={{ color: s.color }}>{s.label}</p>
-      </NeonShell>
+      <Icon className="w-5 h-5 mx-auto mb-2" style={{ color: s.color, filter: `drop-shadow(0 0 6px ${s.color})` }} />
+      <p className="graffiti-hand text-3xl sm:text-4xl leading-none" style={{ color: s.color, ...MARKER_SHADOW }}>
+        {animatedValue}
+      </p>
+      <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] text-white mt-2">{s.label}</p>
     </div>
   );
 }
@@ -376,7 +321,6 @@ function ScienceCard({ card, index, c, sourceLabel, tapToLearn, collapse }: {
   const source = c[card.sourceKey] as string;
   const stat = card.statKey ? (c[card.statKey] as string) : null;
   const statLabel = card.statLabelKey ? (c[card.statLabelKey] as string) : null;
-  const halo = haloFor(card.color, 0.28);
 
   return (
     <div
@@ -388,148 +332,129 @@ function ScienceCard({ card, index, c, sourceLabel, tapToLearn, collapse }: {
         transitionDelay: `${index * 150}ms`,
       }}
     >
-      <NeonShell color={card.color} className="h-full" testId={`card-research-${index}`} onClick={() => setExpanded(!expanded)}>
-        <div className="p-5 space-y-3">
-          <div className="flex items-start justify-between">
-            <div
-              className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shrink-0"
-              style={{ border: `1.5px solid ${card.color}`, boxShadow: `0 0 14px ${halo}, inset 0 0 10px ${halo}` }}
-            >
-              <Icon className="h-5 w-5" style={{ color: card.color, filter: `drop-shadow(0 0 5px ${halo})` }} />
-            </div>
-            <button
-              className="text-white hover:text-white transition-colors p-1"
-              aria-label={expanded ? collapse : tapToLearn}
-            >
-              {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            </button>
-          </div>
-
-          <h3 className="text-base sm:text-lg font-black text-white leading-tight" data-testid={`text-research-card-title-${index}`}>
-            {title}
-          </h3>
-
-          {stat && (
-            <div className="flex items-center gap-3">
-              <div
-                className="px-4 py-2 rounded-xl bg-black"
-                style={{ border: `1.5px solid ${card.color}`, boxShadow: `0 0 12px ${halo}` }}
-              >
-                <span className="text-2xl font-black" style={{ color: card.color, textShadow: `0 0 10px ${halo}` }}>{stat}</span>
-              </div>
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">{statLabel}</span>
-            </div>
-          )}
-
-          <AnimatedBar value={card.barValue} delay={index * 200} color={card.color} parentInView={inView} />
-          <p className="text-[10px] text-white uppercase tracking-[0.2em] font-black">{card.barLabel}</p>
-
-          <p className="text-white font-medium leading-relaxed text-sm" data-testid={`text-research-card-desc-${index}`}>
-            {desc}
-          </p>
-
-          {!expanded && (
-            <p className="text-xs text-white font-medium flex items-center gap-1">
-              <Eye className="w-3 h-3" />
-              {tapToLearn}
-            </p>
-          )}
-
-          <div
-            className={`overflow-hidden transition-all duration-500 ease-in-out ${
-              expanded ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
-            }`}
+      <div
+        className="h-full cursor-pointer space-y-3"
+        data-testid={`card-research-${index}`}
+        onClick={() => setExpanded(!expanded)}
+      >
+        <div className="flex items-start justify-between">
+          <Icon
+            className="h-6 w-6 shrink-0"
+            style={{ color: card.color, filter: `drop-shadow(0 0 6px ${card.color})` }}
+          />
+          <button
+            className="text-white p-1"
+            aria-label={expanded ? collapse : tapToLearn}
           >
-            <div className="pt-3 space-y-3" style={{ borderTop: `1px solid ${haloFor(card.color, 0.35)}` }}>
-              <p className="text-sm text-white leading-relaxed">{detail}</p>
-              <div
-                className="flex items-start gap-2 p-2.5 rounded-lg bg-black"
-                style={{ border: `1px solid ${haloFor(card.color, 0.35)}` }}
-              >
-                <GraduationCap className="w-3.5 h-3.5 shrink-0 mt-0.5" style={{ color: card.color }} />
-                <p className="text-[11px] text-white italic">
-                  <span className="font-bold not-italic" style={{ color: card.color }}>{sourceLabel}:</span> {source}
-                </p>
-              </div>
+            {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
+        </div>
+
+        <h3 className="graffiti-hand text-xl text-white leading-tight" style={MARKER_SHADOW} data-testid={`text-research-card-title-${index}`}>
+          {title}
+        </h3>
+
+        {stat && (
+          <div className="flex items-baseline gap-3">
+            <span className="graffiti-hand text-3xl leading-none" style={{ color: card.color, ...MARKER_SHADOW }}>{stat}</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">{statLabel}</span>
+          </div>
+        )}
+
+        <AnimatedBar value={card.barValue} delay={index * 200} color={card.color} parentInView={inView} />
+        <p className="text-[10px] text-white uppercase tracking-[0.2em] font-black">{card.barLabel}</p>
+
+        <p className="text-white font-medium leading-relaxed text-sm" data-testid={`text-research-card-desc-${index}`}>
+          {desc}
+        </p>
+
+        {!expanded && (
+          <p className="text-xs text-white font-medium flex items-center gap-1.5">
+            <Eye className="w-3 h-3" style={{ color: card.color }} />
+            {tapToLearn}
+          </p>
+        )}
+
+        <div
+          className={`overflow-hidden transition-all duration-500 ease-in-out ${
+            expanded ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+          }`}
+        >
+          <div className="pt-1 space-y-3">
+            <p className="text-sm text-white leading-relaxed">{detail}</p>
+            {/* Source callout — pastel left rule, no box */}
+            <div className="flex items-start gap-2 pl-3" style={{ borderLeft: `3px solid ${card.color}` }}>
+              <GraduationCap className="w-3.5 h-3.5 shrink-0 mt-0.5" style={{ color: card.color }} />
+              <p className="text-[11px] text-white italic">
+                <span className="graffiti-hand not-italic" style={{ color: card.color }}>{sourceLabel}:</span> {source}
+              </p>
             </div>
           </div>
         </div>
-      </NeonShell>
+      </div>
     </div>
   );
 }
 
-function ComparisonRow({ label, bt, trad, index, accent }: { label: string; bt: string; trad: string; index: number; accent: NeonHex }) {
+function ComparisonRow({ label, bt, trad, btLabel, tradLabel, index, accent }: {
+  label: string; bt: string; trad: string; btLabel: string; tradLabel: string; index: number; accent: string;
+}) {
   const { ref, inView } = useInView();
-  const halo = haloFor(accent, 0.35);
 
   return (
     <div
       ref={ref}
-      className="grid grid-cols-1 md:grid-cols-[1.1fr_auto_1.1fr] items-center gap-3 md:gap-4 py-4 transition-all duration-700 ease-out"
+      className="grid grid-cols-1 md:grid-cols-[1.1fr_auto_1.1fr] items-center gap-3 md:gap-4 py-5 transition-all duration-700 ease-out"
       style={{
         opacity: inView ? 1 : 0,
         transform: inView ? "translateX(0)" : "translateX(-24px)",
         transitionDelay: `${index * 90}ms`,
-        borderTop: index === 0 ? "none" : "1px solid rgba(255,255,255,0.06)",
       }}
     >
-      {/* BrainTrack side — neon, celebrated */}
+      {/* BrainTrack side — pastel check, celebrated */}
       <div className="flex items-center gap-3 md:justify-end order-1">
         <div className="flex-1 md:flex-none md:text-right min-w-0">
-          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white mb-1 md:hidden">
-            BrainTrack
+          <p className="graffiti-hand text-[10px] uppercase tracking-[0.22em] mb-1 md:hidden" style={{ color: accent }}>
+            {btLabel}
           </p>
-          <div
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-black"
-            style={{ border: `1.5px solid ${accent}`, boxShadow: `0 0 14px ${halo}` }}
-          >
+          <span className="inline-flex items-center gap-2">
             <CheckCircle2
               className="w-4 h-4 shrink-0"
-              style={{ color: accent, filter: `drop-shadow(0 0 5px ${haloFor(accent, 0.8)})` }}
+              style={{ color: accent, filter: `drop-shadow(0 0 5px ${accent})` }}
             />
-            <span className="text-sm sm:text-base font-black text-white" style={{ textShadow: `0 0 10px ${halo}` }}>
+            <span className="graffiti-hand text-lg sm:text-xl text-white" style={MARKER_SHADOW}>
               {bt}
             </span>
-          </div>
+          </span>
         </div>
       </div>
 
-      {/* Center label + VS ribbon */}
+      {/* Center label + VS mark */}
       <div className="order-0 md:order-2 flex md:flex-col items-center justify-center gap-2 md:gap-1.5 md:px-2">
         <span className="text-[11px] sm:text-xs font-black uppercase tracking-[0.22em] text-white text-center md:order-2">
           {label}
         </span>
         <span
-          className="hidden md:inline-flex w-8 h-8 rounded-full items-center justify-center text-[10px] font-black text-white md:order-1"
-          style={{
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.12)",
-          }}
+          className="hidden md:inline graffiti-hand text-xs md:order-1"
+          style={{ color: accent }}
           aria-hidden
         >
           VS
         </span>
       </div>
 
-      {/* Traditional side — muted, deprecated */}
+      {/* Traditional side — plain white, deprecated */}
       <div className="flex items-center gap-3 order-3">
         <div className="flex-1 md:flex-none min-w-0">
-          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white mb-1 md:hidden">
-            Traditional
+          <p className="graffiti-hand text-[10px] uppercase tracking-[0.22em] text-white mb-1 md:hidden">
+            {tradLabel}
           </p>
-          <div
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl"
-            style={{
-              background: "rgba(255,255,255,0.03)",
-              border: "1px dashed rgba(255,255,255,0.18)",
-            }}
-          >
-            <span className="w-3.5 h-3.5 shrink-0 rounded-full" style={{ background: "rgba(255,255,255,0.12)" }} aria-hidden />
-            <span className="text-sm sm:text-base font-bold text-white">
+          <span className="inline-flex items-center gap-2">
+            <span className="w-2 h-2 shrink-0 rounded-full" style={{ background: accent }} aria-hidden />
+            <span className="text-base sm:text-lg font-bold text-white">
               {trad}
             </span>
-          </div>
+          </span>
         </div>
       </div>
     </div>
@@ -542,7 +467,6 @@ function CaseStudyCard({ item, index, c }: { item: typeof caseStudyItems[number]
   const stat = c[`caseStudy${item.key}Stat` as keyof typeof c] as string;
   const desc = c[`caseStudy${item.key}Desc` as keyof typeof c] as string;
   const Icon = item.icon;
-  const halo = haloFor(item.color, 0.28);
 
   return (
     <div
@@ -554,39 +478,30 @@ function CaseStudyCard({ item, index, c }: { item: typeof caseStudyItems[number]
         transitionDelay: `${index * 100}ms`,
       }}
     >
-      <NeonShell color={item.color} className="h-full" testId={`card-case-study-${item.key}`}>
-        <div className="p-5 space-y-3">
-          <div className="flex items-center gap-3">
-            <div
-              className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shrink-0"
-              style={{ border: `1.5px solid ${item.color}`, boxShadow: `0 0 14px ${halo}, inset 0 0 10px ${halo}` }}
-            >
-              <Icon className="h-5 w-5" style={{ color: item.color, filter: `drop-shadow(0 0 5px ${halo})` }} />
-            </div>
-            <span
-              className="text-xs font-black px-3 py-1 rounded-full bg-black uppercase tracking-[0.15em]"
-              style={{ color: item.color, border: `1.5px solid ${item.color}`, boxShadow: `0 0 10px ${halo}` }}
-            >
-              {stat}
-            </span>
-          </div>
-          <h3 className="text-base sm:text-lg font-black text-white leading-tight">{title}</h3>
-          <p className="text-white font-medium leading-relaxed text-sm">{desc}</p>
+      <div className="h-full space-y-3" data-testid={`card-case-study-${item.key}`}>
+        <div className="flex items-center gap-3">
+          <Icon
+            className="h-5 w-5 shrink-0"
+            style={{ color: item.color, filter: `drop-shadow(0 0 6px ${item.color})` }}
+          />
+          <span className="graffiti-hand text-sm uppercase tracking-[0.15em]" style={{ color: item.color, ...MARKER_SHADOW }}>
+            {stat}
+          </span>
         </div>
-      </NeonShell>
+        <h3 className="graffiti-hand text-lg sm:text-xl text-white leading-tight" style={MARKER_SHADOW}>{title}</h3>
+        <p className="text-white font-medium leading-relaxed text-sm">{desc}</p>
+      </div>
     </div>
   );
 }
 
-function RainbowCta({ children, href, testId }: { children: React.ReactNode; href: string; testId?: string }) {
+/* Compact CTAs — small buttons only; full-strength neon allowed here. */
+function SolidCta({ children, href, testId }: { children: React.ReactNode; href: string; testId?: string }) {
   return (
     <Link href={href} data-testid={testId}>
       <button
-        className="relative px-8 py-3 rounded-2xl font-black text-black text-sm sm:text-base uppercase tracking-[0.12em] inline-flex items-center gap-2"
-        style={{
-          background: "linear-gradient(90deg, #FF8A00, #FF8A00, #FFE600, #FFE600, #00E5FF, #006BFF, #8A2BFF, #8A2BFF, #FF2BD6)",
-          boxShadow: "0 0 24px rgba(255,230,0,0.35), 0 0 36px rgba(138,43,255,0.25)",
-        }}
+        className="px-5 py-2.5 text-sm font-bold rounded-xl inline-flex items-center gap-2"
+        style={{ background: "#FF2BD6", color: "#000" }}
       >
         {children}
       </button>
@@ -598,8 +513,8 @@ function GhostCta({ children, href, testId }: { children: React.ReactNode; href:
   return (
     <Link href={href} data-testid={testId}>
       <button
-        className="px-8 py-3 rounded-2xl font-black text-white text-sm sm:text-base uppercase tracking-[0.12em] bg-black inline-flex items-center gap-2"
-        style={{ border: "1.5px solid #00E5FF", boxShadow: "0 0 20px rgba(0,229,255,0.25)" }}
+        className="px-5 py-2.5 text-sm font-bold rounded-xl inline-flex items-center gap-2 text-white bg-transparent"
+        style={{ border: "2px solid #7FEFFF" }}
       >
         {children}
       </button>
@@ -636,305 +551,195 @@ export default function ResearchPage() {
   const caseStudyHeaderAnim = useInView();
   const bottomCtaAnim = useInView();
 
-  const statsGrid: { value: string; label: string; icon: any; color: NeonHex }[] = [
-    { value: "80%", label: language === "af" ? "Langtermyn Herroeping" : "Long-term Recall", icon: BarChart3, color: "#00E5FF" },
-    { value: "3×", label: language === "af" ? "Beter Retensie" : "Better Retention", icon: TrendingUp, color: "#8A2BFF" },
-    { value: "0.73", label: language === "af" ? "Terugvoer Effekgrootte" : "Feedback Effect Size", icon: Zap, color: "#FFE600" },
-    { value: "10yr", label: language === "af" ? "NSC-vraestelle" : "NSC Papers", icon: BookOpen, color: "#FF2BD6" },
+  const statsGrid: { value: string; label: string; icon: any; color: string }[] = [
+    { value: "80%", label: language === "af" ? "Langtermyn Herroeping" : "Long-term Recall", icon: BarChart3, color: "#7FEFFF" },
+    { value: "3×", label: language === "af" ? "Beter Retensie" : "Better Retention", icon: TrendingUp, color: "#C6A4FF" },
+    { value: "0.73", label: language === "af" ? "Terugvoer Effekgrootte" : "Feedback Effect Size", icon: Zap, color: "#FFF29E" },
+    { value: "10yr", label: language === "af" ? "NSC-vraestelle" : "NSC Papers", icon: BookOpen, color: "#FF9FE5" },
   ];
 
   return (
-    <div
-      className="min-h-screen relative"
-      style={{
-        background: `radial-gradient(ellipse 80% 60% at 10% -5%, rgba(0,229,255,0.10) 0%, transparent 55%),
-                     radial-gradient(ellipse 80% 60% at 90% 0%, rgba(138,43,255,0.10) 0%, transparent 55%),
-                     radial-gradient(ellipse 100% 80% at 50% 110%, rgba(138,43,255,0.10) 0%, transparent 60%),
-                     linear-gradient(180deg, ${RESEARCH_SURFACE_2} 0%, ${RESEARCH_SURFACE} 50%, #070810 100%)`,
-      }}
-    >
-      {/* Drifting nebula orbs (GPU translate3d for smoothness) */}
-      <div
-        aria-hidden
-        className="pointer-events-none fixed inset-0 z-0 overflow-hidden"
-      >
-        <div
-          className="research-orb research-orb--cyan"
-          style={{
-            background: "radial-gradient(circle, rgba(0,229,255,0.28), transparent 70%)",
-          }}
-        />
-        <div
-          className="research-orb research-orb--magenta"
-          style={{
-            background: "radial-gradient(circle, rgba(255,43,214,0.22), transparent 70%)",
-          }}
-        />
-        <div
-          className="research-orb research-orb--violet"
-          style={{
-            background: "radial-gradient(circle, rgba(138,43,255,0.22), transparent 70%)",
-          }}
-        />
-        {/* Starfield (pure CSS dots — extremely light) */}
-        <div className="research-starfield" aria-hidden />
-      </div>
-
-      {/* Scoped keyframes & helpers */}
-      <style>{`
-        @keyframes research-drift-a {
-          0%   { transform: translate3d(-10%, -5%, 0) scale(1); }
-          50%  { transform: translate3d(10%, 8%, 0) scale(1.1); }
-          100% { transform: translate3d(-10%, -5%, 0) scale(1); }
-        }
-        @keyframes research-drift-b {
-          0%   { transform: translate3d(10%, 5%, 0) scale(1); }
-          50%  { transform: translate3d(-8%, -10%, 0) scale(1.08); }
-          100% { transform: translate3d(10%, 5%, 0) scale(1); }
-        }
-        @keyframes research-drift-c {
-          0%   { transform: translate3d(-5%, 8%, 0) scale(0.95); }
-          50%  { transform: translate3d(8%, -5%, 0) scale(1.15); }
-          100% { transform: translate3d(-5%, 8%, 0) scale(0.95); }
-        }
-        .research-orb {
-          position: absolute;
-          width: 42rem; height: 42rem;
-          filter: blur(64px);
-          opacity: 0.8;
-          will-change: transform;
-        }
-        .research-orb--cyan    { top: -10rem; left: -12rem;  animation: research-drift-a 22s ease-in-out infinite; }
-        .research-orb--magenta { top: 30vh;   right: -14rem; animation: research-drift-b 28s ease-in-out infinite; }
-        .research-orb--violet  { bottom: -12rem; left: 20vw; animation: research-drift-c 32s ease-in-out infinite; }
-
-        @keyframes research-star-twinkle {
-          0%, 100% { opacity: 0.35; }
-          50%      { opacity: 0.75; }
-        }
-        .research-starfield {
-          position: absolute; inset: 0;
-          background-image:
-            radial-gradient(1px 1px at 8%  12%, rgba(255,255,255,0.85), transparent 60%),
-            radial-gradient(1px 1px at 22% 78%, rgba(255,255,255,0.7),  transparent 60%),
-            radial-gradient(1px 1px at 34% 30%, rgba(255,255,255,0.6),  transparent 60%),
-            radial-gradient(1px 1px at 47% 62%, rgba(255,255,255,0.85), transparent 60%),
-            radial-gradient(1px 1px at 58% 18%, rgba(255,255,255,0.55), transparent 60%),
-            radial-gradient(1px 1px at 72% 45%, rgba(255,255,255,0.75), transparent 60%),
-            radial-gradient(1px 1px at 83% 72%, rgba(255,255,255,0.6),  transparent 60%),
-            radial-gradient(1px 1px at 91% 22%, rgba(255,255,255,0.8),  transparent 60%),
-            radial-gradient(1px 1px at 14% 52%, rgba(255,255,255,0.55), transparent 60%),
-            radial-gradient(1px 1px at 64% 88%, rgba(255,255,255,0.7),  transparent 60%);
-          animation: research-star-twinkle 5.5s ease-in-out infinite;
-          opacity: 0.6;
-        }
-
-        @keyframes research-rainbow-sweep {
-          0%   { background-position: 0% 50%; }
-          100% { background-position: 200% 50%; }
-        }
-        .research-rainbow-rule {
-          background: linear-gradient(90deg,
-            #FF8A00, #FF8A00, #FFE600, #FFE600, #00E5FF,
-            #006BFF, #8A2BFF, #8A2BFF, #FF2BD6,
-            #FF8A00, #FF8A00, #FFE600);
-          background-size: 200% 100%;
-          animation: research-rainbow-sweep 8s linear infinite;
-        }
-
-        @keyframes research-pulse-ring {
-          0%, 100% { box-shadow: 0 0 14px rgba(0,229,255,0.28), 0 0 0 0 rgba(0,229,255,0.45); }
-          50%      { box-shadow: 0 0 24px rgba(0,229,255,0.5),  0 0 0 6px rgba(0,229,255,0.0); }
-        }
-        .research-hero-pill { animation: research-pulse-ring 3.2s ease-in-out infinite; }
-
-        @media (prefers-reduced-motion: reduce) {
-          .research-orb, .research-starfield, .research-rainbow-rule, .research-hero-pill {
-            animation: none !important;
-          }
-        }
-      `}</style>
-
+    <div className="relative min-h-screen bg-background text-white overflow-hidden">
+      <GraffitiSplats variant="full" opacity={0.5} />
       <div className="relative z-10">
-      <PublicNav />
-      <main className="pt-14">
-        <section className="relative overflow-hidden">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-            <div
-              ref={heroAnim.ref}
-              className="text-center py-16 sm:py-20 transition-all duration-800 ease-out"
-              style={{
-                opacity: heroAnim.inView ? 1 : 0,
-                transform: heroAnim.inView ? "translateY(0)" : "translateY(32px)",
-                transitionDuration: "800ms",
-              }}
-            >
+        <PublicNav />
+        <main className="pt-14">
+          <section className="relative">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative">
               <div
-                className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-5 bg-black"
-                style={{ border: "1.5px solid #00E5FF", boxShadow: "0 0 14px rgba(0,229,255,0.28)" }}
+                ref={heroAnim.ref}
+                className="text-center py-16 sm:py-20 transition-all ease-out"
+                style={{
+                  opacity: heroAnim.inView ? 1 : 0,
+                  transform: heroAnim.inView ? "translateY(0)" : "translateY(32px)",
+                  transitionDuration: "800ms",
+                }}
               >
-                <GraduationCap className="w-3.5 h-3.5" style={{ color: "#00E5FF" }} />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: "#00E5FF" }}>
-                  {language === "af" ? "Die Wetenskap" : "The Science"}
-                </span>
-              </div>
-              <h1 className="text-3xl sm:text-5xl font-black text-white leading-tight mb-4" data-testid="text-research-title">
-                {language === "af" ? (
-                  <>Navorsing-Gebaseerde <span className="gradient-text">Leer</span></>
-                ) : (
-                  <>Research-Backed <span className="gradient-text">Learning</span></>
-                )}
-              </h1>
-              <p className="text-white max-w-2xl mx-auto leading-relaxed text-sm sm:text-base" data-testid="text-research-subtitle">
-                {c.subtitle}
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section className="pb-20 bg-black">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
-              {statsGrid.map((s, i) => (
-                <AnimatedStatCard key={i} s={s} i={i} />
-              ))}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
-              {scienceCards.map((card, i) => (
-                <ScienceCard
-                  key={i}
-                  card={card}
-                  index={i}
-                  c={c}
-                  sourceLabel={c.sourceLabel}
-                  tapToLearn={c.tapToLearn}
-                  collapse={c.collapse}
-                />
-              ))}
-            </div>
-
-            <div
-              ref={midCtaAnim.ref}
-              className="flex flex-wrap items-center justify-center gap-4 mb-14 transition-all duration-700 ease-out"
-              style={{
-                opacity: midCtaAnim.inView ? 1 : 0,
-                transform: midCtaAnim.inView ? "translateY(0)" : "translateY(24px)",
-                transitionDuration: "700ms",
-              }}
-            >
-              <RainbowCta href={ctaHref} testId="link-research-signup">
-                {ctaLabel}
-                <ArrowRight className="ml-1 w-4 h-4" />
-              </RainbowCta>
-              <GhostCta href="/features" testId="link-research-features">
-                {c.cta2}
-              </GhostCta>
-            </div>
-
-            <NeonShell color="#8A2BFF" className="mb-12" testId="card-comparison">
-              <div className="p-5 sm:p-6 text-center" style={{ borderBottom: "1px solid rgba(138,43,255,0.35)" }}>
-                <div
-                  className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black mb-3"
-                  style={{ border: "1px solid #8A2BFF", boxShadow: "0 0 12px rgba(138,43,255,0.35)" }}
+                <p
+                  className="graffiti-hand text-sm uppercase tracking-[0.24em] mb-5 inline-flex items-center gap-2"
+                  style={{ color: "#7FEFFF", ...MARKER_SHADOW }}
                 >
-                  <BarChart3 className="w-3.5 h-3.5" style={{ color: "#8A2BFF" }} />
-                  <span className="text-[10px] font-black uppercase tracking-[0.22em]" style={{ color: "#8A2BFF" }}>
-                    {language === "af" ? "Hoofkop-teen-hoofkop" : "Head-to-Head"}
-                  </span>
-                </div>
-                <h2 className="text-xl sm:text-2xl font-black text-white">
+                  <GraduationCap className="w-4 h-4" style={{ color: "#7FEFFF" }} />
+                  {language === "af" ? "Die Wetenskap" : "The Science"}
+                </p>
+                <h1
+                  className="spray-title graffiti-hand text-4xl sm:text-6xl text-white leading-[1.05] mb-6 -rotate-1"
+                  style={MARKER_SHADOW}
+                  data-testid="text-research-title"
+                >
+                  <SpraySmear color="#FF9FE5" />
                   {language === "af" ? (
-                    <><span className="gradient-text">BrainTrack</span> vs Tradisionele Studie</>
+                    <>Navorsing-Gebaseerde Leer</>
                   ) : (
-                    <><span className="gradient-text">BrainTrack</span> vs Traditional Study</>
+                    <>Research-Backed Learning</>
                   )}
-                </h2>
+                </h1>
+                <p className="text-white max-w-2xl mx-auto leading-relaxed text-sm sm:text-base" data-testid="text-research-subtitle">
+                  {c.subtitle}
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section className="pb-20">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+              {/* Stats — big pastel numbers straight on the wall */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-8 mb-14">
+                {statsGrid.map((s, i) => (
+                  <AnimatedStatCard key={i} s={s} i={i} />
+                ))}
               </div>
 
-              <div className="px-4 sm:px-6 pt-4 pb-5">
-                {/* Desktop column headers */}
-                <div className="hidden md:grid md:grid-cols-[1.1fr_auto_1.1fr] items-center gap-4 pb-3 mb-1"
-                  style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 mb-14">
+                {scienceCards.map((card, i) => (
+                  <ScienceCard
+                    key={i}
+                    card={card}
+                    index={i}
+                    c={c}
+                    sourceLabel={c.sourceLabel}
+                    tapToLearn={c.tapToLearn}
+                    collapse={c.collapse}
+                  />
+                ))}
+              </div>
+
+              <div
+                ref={midCtaAnim.ref}
+                className="flex flex-wrap items-center justify-center gap-4 mb-16 transition-all ease-out"
+                style={{
+                  opacity: midCtaAnim.inView ? 1 : 0,
+                  transform: midCtaAnim.inView ? "translateY(0)" : "translateY(24px)",
+                  transitionDuration: "700ms",
+                }}
+              >
+                <SolidCta href={ctaHref} testId="link-research-signup">
+                  {ctaLabel}
+                  <ArrowRight className="ml-1 w-4 h-4" />
+                </SolidCta>
+                <GhostCta href="/features" testId="link-research-features">
+                  {c.cta2}
+                </GhostCta>
+              </div>
+
+              {/* Head-to-head — wall-written comparison, no panel */}
+              <div className="mb-16" data-testid="card-comparison">
+                <div className="text-center mb-6">
+                  <p
+                    className="graffiti-hand text-xs uppercase tracking-[0.24em] mb-3 inline-flex items-center gap-2"
+                    style={{ color: "#C6A4FF", ...MARKER_SHADOW }}
+                  >
+                    <BarChart3 className="w-3.5 h-3.5" style={{ color: "#C6A4FF" }} />
+                    {language === "af" ? "Hoofkop-teen-hoofkop" : "Head-to-Head"}
+                  </p>
+                  <h2
+                    className="spray-title graffiti-hand text-2xl sm:text-3xl text-white -rotate-1"
+                    style={MARKER_SHADOW}
+                  >
+                    <SpraySmear color="#C6A4FF" />
+                    {language === "af" ? (
+                      <>BrainTrack vs Tradisionele Studie</>
+                    ) : (
+                      <>BrainTrack vs Traditional Study</>
+                    )}
+                  </h2>
+                </div>
+
+                {/* Desktop column headers — plain marker labels, no pills */}
+                <div className="hidden md:grid md:grid-cols-[1.1fr_auto_1.1fr] items-center gap-4 pb-3 mb-2">
                   <div className="flex md:justify-end">
-                    <span
-                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black"
-                      style={{ border: "1px solid #00E5FF", boxShadow: "0 0 10px rgba(0,229,255,0.35)" }}
-                    >
-                      <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#00E5FF", boxShadow: "0 0 6px #00E5FF" }} />
-                      <span className="text-[10px] font-black uppercase tracking-[0.22em]" style={{ color: "#00E5FF" }}>
-                        {c.comparisonBrainTrack}
-                      </span>
+                    <span className="graffiti-hand text-xs uppercase tracking-[0.22em]" style={{ color: "#7FEFFF", ...MARKER_SHADOW }}>
+                      {c.comparisonBrainTrack}
                     </span>
                   </div>
                   <span className="w-8" aria-hidden />
                   <div>
-                    <span
-                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full"
-                      style={{ background: "rgba(255,255,255,0.03)", border: "1px dashed rgba(255,255,255,0.2)" }}
-                    >
-                      <span className="w-1.5 h-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.25)" }} />
-                      <span className="text-[10px] font-black uppercase tracking-[0.22em] text-white">
-                        {c.comparisonTraditional}
-                      </span>
+                    <span className="graffiti-hand text-xs uppercase tracking-[0.22em] text-white" style={MARKER_SHADOW}>
+                      {c.comparisonTraditional}
                     </span>
                   </div>
                 </div>
 
-                <ComparisonRow label={c.comp1Label} bt={c.comp1BT} trad={c.comp1Trad} index={0} accent="#00E5FF" />
-                <ComparisonRow label={c.comp2Label} bt={c.comp2BT} trad={c.comp2Trad} index={1} accent="#8A2BFF" />
-                <ComparisonRow label={c.comp3Label} bt={c.comp3BT} trad={c.comp3Trad} index={2} accent="#FFE600" />
-                <ComparisonRow label={c.comp4Label} bt={c.comp4BT} trad={c.comp4Trad} index={3} accent="#FF8A00" />
-                <ComparisonRow label={c.comp5Label} bt={c.comp5BT} trad={c.comp5Trad} index={4} accent="#FF2BD6" />
-                <ComparisonRow label={c.comp6Label} bt={c.comp6BT} trad={c.comp6Trad} index={5} accent="#8A2BFF" />
+                <ComparisonRow label={c.comp1Label} bt={c.comp1BT} trad={c.comp1Trad} btLabel={c.comparisonBrainTrack} tradLabel={c.comparisonTraditional} index={0} accent={PASTELS[1]} />
+                <ComparisonRow label={c.comp2Label} bt={c.comp2BT} trad={c.comp2Trad} btLabel={c.comparisonBrainTrack} tradLabel={c.comparisonTraditional} index={1} accent={PASTELS[6]} />
+                <ComparisonRow label={c.comp3Label} bt={c.comp3BT} trad={c.comp3Trad} btLabel={c.comparisonBrainTrack} tradLabel={c.comparisonTraditional} index={2} accent={PASTELS[3]} />
+                <ComparisonRow label={c.comp4Label} bt={c.comp4BT} trad={c.comp4Trad} btLabel={c.comparisonBrainTrack} tradLabel={c.comparisonTraditional} index={3} accent={PASTELS[4]} />
+                <ComparisonRow label={c.comp5Label} bt={c.comp5BT} trad={c.comp5Trad} btLabel={c.comparisonBrainTrack} tradLabel={c.comparisonTraditional} index={4} accent={PASTELS[5]} />
+                <ComparisonRow label={c.comp6Label} bt={c.comp6BT} trad={c.comp6Trad} btLabel={c.comparisonBrainTrack} tradLabel={c.comparisonTraditional} index={5} accent={PASTELS[2]} />
               </div>
-            </NeonShell>
 
-            <div className="mt-12">
+              <div className="mt-12">
+                <div
+                  ref={caseStudyHeaderAnim.ref}
+                  className="transition-all ease-out"
+                  style={{
+                    opacity: caseStudyHeaderAnim.inView ? 1 : 0,
+                    transform: caseStudyHeaderAnim.inView ? "translateY(0)" : "translateY(24px)",
+                    transitionDuration: "700ms",
+                  }}
+                >
+                  <div className="text-center mb-3">
+                    <h2
+                      className="spray-title graffiti-hand text-2xl sm:text-3xl text-white -rotate-1"
+                      style={MARKER_SHADOW}
+                      data-testid="text-case-studies-title"
+                    >
+                      <SpraySmear color="#93FFB8" />
+                      {language === "af" ? (
+                        <>Betrokkenheid &amp; Konsekwentheid</>
+                      ) : (
+                        <>Engagement &amp; Consistency</>
+                      )}
+                    </h2>
+                  </div>
+                  <p className="text-center text-white font-medium mb-10 max-w-xl mx-auto text-sm">
+                    {c.caseStudiesSubtitle}
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10">
+                  {caseStudyItems.map((item, i) => (
+                    <CaseStudyCard key={item.key} item={item} index={i} c={c} />
+                  ))}
+                </div>
+              </div>
+
               <div
-                ref={caseStudyHeaderAnim.ref}
-                className="transition-all duration-700 ease-out"
+                ref={bottomCtaAnim.ref}
+                className="mt-16 text-center transition-all ease-out"
                 style={{
-                  opacity: caseStudyHeaderAnim.inView ? 1 : 0,
-                  transform: caseStudyHeaderAnim.inView ? "translateY(0)" : "translateY(24px)",
+                  opacity: bottomCtaAnim.inView ? 1 : 0,
+                  transform: bottomCtaAnim.inView ? "translateY(0)" : "translateY(24px)",
                   transitionDuration: "700ms",
                 }}
               >
-                <h2 className="text-xl sm:text-2xl font-black text-center mb-3 text-white" data-testid="text-case-studies-title">
-                  {language === "af" ? (
-                    <><span className="gradient-text">Betrokkenheid</span> &amp; Konsekwentheid</>
-                  ) : (
-                    <><span className="gradient-text">Engagement</span> &amp; Consistency</>
-                  )}
-                </h2>
-                <p className="text-center text-white font-medium mb-8 max-w-xl mx-auto text-sm">
-                  {c.caseStudiesSubtitle}
-                </p>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {caseStudyItems.map((item, i) => (
-                  <CaseStudyCard key={item.key} item={item} index={i} c={c} />
-                ))}
+                <SolidCta href={ctaHref} testId="link-research-bottom">
+                  {ctaLabel}
+                  <ArrowRight className="ml-1 w-4 h-4" />
+                </SolidCta>
               </div>
             </div>
-
-            <div
-              ref={bottomCtaAnim.ref}
-              className="mt-14 text-center transition-all duration-700 ease-out"
-              style={{
-                opacity: bottomCtaAnim.inView ? 1 : 0,
-                transform: bottomCtaAnim.inView ? "translateY(0)" : "translateY(24px)",
-                transitionDuration: "700ms",
-              }}
-            >
-              <RainbowCta href={ctaHref} testId="link-research-bottom">
-                {ctaLabel}
-                <ArrowRight className="ml-1 w-4 h-4" />
-              </RainbowCta>
-            </div>
-          </div>
-        </section>
-      </main>
+          </section>
+        </main>
       </div>
     </div>
   );

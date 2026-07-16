@@ -41,7 +41,7 @@ import {
 import type { Subject, OnboardingResult, TutorMessage, Topic, TutorFeedback } from "@shared/schema";
 import { BrainTrackLogo } from "@/components/braintrack-logo";
 import { TopicMindmap } from "@/components/topic-mindmap";
-import { GraffitiSplats } from "@/components/graffiti-splats";
+import { GraffitiSplats, SpraySmear } from "@/components/graffiti-splats";
 import brandLogo from "@assets/Logo_01_1779989960628.jpeg";
 
 const TUTOR_AVATARS: Record<string, { icon: any; color: string; bgFrom: string; bgTo: string }> = {
@@ -614,7 +614,7 @@ export default function TutorPage() {
                   <span className="max-[374px]:hidden">{t.homeLabel}</span>
                 </button>
               </Link>
-              <span className="hidden sm:inline text-sm font-black tracking-tight" style={{ color: "#8A2BFF", textShadow: "0 0 8px rgba(138,43,255,0.45)" }}>
+              <span className="hidden sm:inline text-base tracking-tight graffiti-hand" style={{ color: "#8A2BFF", textShadow: "0 0 8px rgba(138,43,255,0.45)" }}>
                 Rizz
               </span>
             </div>
@@ -728,21 +728,16 @@ export default function TutorPage() {
         {mode === "notes" ? (
           <div className="flex-1 flex flex-col">
             <div
-              className="mb-4 rounded-2xl bg-background p-4"
-              style={{ border: "1.5px solid #00E5FF", boxShadow: "0 0 0 1px rgba(0,229,255,0.25), 0 0 28px rgba(0,229,255,0.25), inset 0 0 20px rgba(0,0,0,0.6)" }}
+              className="mb-4 pb-5"
+              style={{ borderBottom: "1px solid rgba(255,255,255,0.12)" }}
             >
               <div>
                 <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
-                  <h2
-                    className="text-lg font-black tracking-tight"
-                    style={{
-                      background: "linear-gradient(90deg, #00E5FF, #8A2BFF, #FF2BD6)",
-                      WebkitBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                      backgroundClip: "text",
-                    }}
-                  >
-                    {t.generateStudyNotesHeading}
+                  <h2 className="text-xl text-white tracking-tight graffiti-hand">
+                    <span className="spray-title graffiti-hand">
+                      <SpraySmear color="#00E5FF" />
+                      {t.generateStudyNotesHeading}
+                    </span>
                   </h2>
                   {profile?.learningStyle === "visual" && (
                     <div className="flex items-center gap-1 p-1 rounded-lg bg-background" style={{ border: "1px solid rgba(138,43,255,0.4)" }}>
@@ -798,7 +793,7 @@ export default function TutorPage() {
                       />
                     ) : (
                       <div className="text-center py-8" style={{ color:"#ffffff" }}>
-                        <Network className="w-8 h-8 mx-auto mb-2" style={{ color: "#8A2BFF", opacity: 0.6 }} />
+                        <Network className="w-8 h-8 mx-auto mb-2" style={{ color: "#8A2BFF" }} />
                         <p className="text-sm">{t.selectSubjectFirst}</p>
                       </div>
                     )}
@@ -828,8 +823,8 @@ export default function TutorPage() {
                   const timeLabel = studyTime ? (isAf ? studyTimeLabel[studyTime]?.af : studyTimeLabel[studyTime]?.en) : null;
                   return (
                     <div
-                      className="flex items-start gap-3 p-3 rounded-xl mb-4 bg-background"
-                      style={{ border: "1px solid rgba(138,43,255,0.5)", boxShadow: "0 0 16px rgba(138,43,255,0.25), inset 0 0 10px rgba(0,0,0,0.5)" }}
+                      className="flex items-start gap-3 pb-3 mb-4"
+                      style={{ borderBottom: "1px solid rgba(255,255,255,0.12)" }}
                     >
                       <div
                         className="w-9 h-9 rounded-lg bg-background flex items-center justify-center flex-shrink-0 mt-0.5"
@@ -912,7 +907,7 @@ export default function TutorPage() {
                   <button 
                     onClick={handleGenerateNotes} 
                     disabled={notesMutation.isPending || !notesTopic.trim()}
-                    className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-background py-2.5 font-black text-sm transition-none disabled:opacity-40"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-background px-4 py-2 font-bold text-sm transition-none disabled:opacity-40"
                     style={{ color: "#FF2BD6", border: "1.5px solid #FF2BD6", boxShadow: "0 0 18px rgba(255,43,214,0.55), inset 0 0 10px rgba(255,43,214,0.15)" }}
                     data-testid="button-generate-notes"
                   >
@@ -932,15 +927,15 @@ export default function TutorPage() {
                   {notesMutation.isError && !notesMutation.isPending && (
                     <div
                       className="rounded-xl p-3 flex items-start gap-3 text-xs"
-                      style={{ background: "rgba(220,38,38,0.08)", border: "1.5px solid rgba(248,113,113,0.55)", color: "#fecaca" }}
+                      style={{ background: "rgba(220,38,38,0.08)", border: "1.5px solid rgba(248,113,113,0.55)", color: "#fff" }}
                       data-testid="notes-generation-error"
                     >
-                      <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-red-300" />
+                      <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "#FF8A00" }} />
                       <div className="flex-1 leading-snug">
                         <p className="font-bold">
                           {t.couldNotGenerateNotes}
                         </p>
-                        <p className="opacity-80 mt-0.5">
+                        <p className="mt-0.5">
                           {(notesMutation.error instanceof Error && notesMutation.error.message) ||
                             (isAf
                               ? "Iets het kort gegaan. Probeer asseblief weer."
@@ -951,7 +946,7 @@ export default function TutorPage() {
                         onClick={handleGenerateNotes}
                         disabled={notesMutation.isPending || !notesTopic.trim()}
                         className="flex-shrink-0 inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-bold disabled:opacity-40"
-                        style={{ background: "rgba(248,113,113,0.15)", border: "1px solid rgba(248,113,113,0.5)", color: "#fecaca" }}
+                        style={{ background: "rgba(248,113,113,0.15)", border: "1px solid rgba(248,113,113,0.5)", color: "#fff" }}
                         data-testid="button-retry-notes"
                       >
                         <RotateCcw className="w-3 h-3" />
@@ -971,16 +966,11 @@ export default function TutorPage() {
               >
                 <div className="p-4 h-full flex flex-col">
                   <div className="mb-3 flex items-center justify-between gap-2 flex-wrap">
-                    <h3
-                      className="font-black text-lg tracking-tight"
-                      style={{
-                        background: "linear-gradient(90deg, #FF2BD6, #8A2BFF, #8A2BFF)",
-                        WebkitBackgroundClip: "text",
-                        WebkitTextFillColor: "transparent",
-                        backgroundClip: "text",
-                      }}
-                    >
-                      {t.studyNotesHeading}
+                    <h3 className="text-lg text-white tracking-tight graffiti-hand">
+                      <span className="spray-title graffiti-hand">
+                        <SpraySmear color="#FF2BD6" />
+                        {t.studyNotesHeading}
+                      </span>
                     </h3>
                     <div className="flex items-center gap-2">
                       <Button
@@ -1384,17 +1374,11 @@ export default function TutorPage() {
               <Sparkles className="w-3.5 h-3.5" style={{ filter: "drop-shadow(0 0 4px #00E5FF)" }} />
               {t.tutorHeading}
             </span>
-            <h1
-              className="relative text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-[1.05] mb-3"
-              style={{
-                background: "linear-gradient(90deg, #FF8A00, #FFE600, #00E5FF, #8A2BFF, #FF2BD6)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-                filter: "drop-shadow(0 0 22px rgba(138,43,255,0.32))",
-              }}
-            >
-              {t.askMeAnything}
+            <h1 className="relative text-3xl sm:text-4xl md:text-5xl text-white tracking-tight leading-[1.05] mb-3 graffiti-hand">
+              <span className="spray-title graffiti-hand">
+                <SpraySmear color="#8A2BFF" />
+                {t.askMeAnything}
+              </span>
             </h1>
             <p className="relative text-sm sm:text-base text-foreground max-w-md mb-8">
               {t.introParagraph}
@@ -1482,7 +1466,7 @@ export default function TutorPage() {
                       <div
                         className="rounded-2xl px-4 py-3 bg-background"
                         style={msg.role === "user"
-                          ? { border: "1.5px solid #00E5FF", boxShadow: "0 0 18px rgba(0,229,255,0.35), inset 0 0 10px rgba(0,0,0,0.6)", color: "#e0fbff" }
+                          ? { border: "1.5px solid #00E5FF", boxShadow: "0 0 18px rgba(0,229,255,0.35), inset 0 0 10px rgba(0,0,0,0.6)", color: "#fff" }
                           : { border: "1.5px solid rgba(138,43,255,0.6)", boxShadow: "0 0 18px rgba(138,43,255,0.3), inset 0 0 10px rgba(0,0,0,0.6)" }
                         }
                         data-testid={`message-${msg.role}-${i}`}
@@ -1521,14 +1505,14 @@ export default function TutorPage() {
                                 <li
                                   key={ci}
                                   className="text-xs leading-snug"
-                                  style={{ color: "rgba(224,251,255,0.92)" }}
+                                  style={{ color: "#fff" }}
                                   data-testid={`citation-${i}-${ci}`}
                                 >
                                   <span className="font-semibold" style={{ color: "#FFE600" }}>{label}</span>
                                   {quoted ? (
                                     <>
                                       {": "}
-                                      <em style={{ color: "rgba(224,251,255,0.85)" }}>“{quoted}”</em>
+                                      <em style={{ color: "#fff" }}>“{quoted}”</em>
                                     </>
                                   ) : null}
                                 </li>
@@ -1570,14 +1554,14 @@ export default function TutorPage() {
                               </div>
                               <pre
                                 className="px-3 py-3 text-xs overflow-x-auto leading-snug"
-                                style={{ fontFamily: "'Courier New', Courier, monospace", color: "#e0fbff", whiteSpace: "pre", margin: 0 }}
+                                style={{ fontFamily: "'Courier New', Courier, monospace", color: "#fff", whiteSpace: "pre", margin: 0 }}
                               >
                                 {diagram.ascii}
                               </pre>
                               {diagram.caption && (
                                 <div
                                   className="px-3 py-1.5 text-[11px] leading-snug"
-                                  style={{ borderTop: "1px solid rgba(0,229,255,0.2)", color: "rgba(224,251,255,0.7)" }}
+                                  style={{ borderTop: "1px solid rgba(0,229,255,0.2)", color: "#fff" }}
                                 >
                                   {diagram.caption}
                                 </div>
