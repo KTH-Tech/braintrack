@@ -196,10 +196,10 @@ export default function AdminProductsPage() {
 
       <main className="max-w-5xl mx-auto px-4 py-6">
         <Tabs defaultValue="plans">
-          <TabsList className="mb-6 p-1.5 rounded-2xl h-auto flex-wrap bg-black border border-[#7FEFFF]/30 shadow-[0_0_14px_rgba(0,229,255,0.18)]">
-            <TabsTrigger value="plans" className="rounded-xl gap-2 text-xs px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#7FEFFF] data-[state=active]:border data-[state=active]:border-[#7FEFFF] data-[state=active]:shadow-[0_0_14px_rgba(0,229,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors"><CreditCard className="w-3.5 h-3.5" />{tr.plansTab} ({plans.length})</TabsTrigger>
-            <TabsTrigger value="products" className="rounded-xl gap-2 text-xs px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#7FEFFF] data-[state=active]:border data-[state=active]:border-[#7FEFFF] data-[state=active]:shadow-[0_0_14px_rgba(0,229,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors"><ShoppingBag className="w-3.5 h-3.5" />{tr.productsTab} ({products.length})</TabsTrigger>
-            <TabsTrigger value="settings" className="rounded-xl gap-2 text-xs px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#7FEFFF] data-[state=active]:border data-[state=active]:border-[#7FEFFF] data-[state=active]:shadow-[0_0_14px_rgba(0,229,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors"><Settings className="w-3.5 h-3.5" />{tr.settingsTab}</TabsTrigger>
+          <TabsList className="mb-6 p-1.5 rounded-2xl h-auto flex-wrap bg-black border border-[#7FEFFF]/30 shadow-[0_0_14px_rgba(127,239,255,0.18)]">
+            <TabsTrigger value="plans" className="rounded-xl gap-2 text-xs px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#7FEFFF] data-[state=active]:border data-[state=active]:border-[#7FEFFF] data-[state=active]:shadow-[0_0_14px_rgba(127,239,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors"><CreditCard className="w-3.5 h-3.5" />{tr.plansTab} ({plans.length})</TabsTrigger>
+            <TabsTrigger value="products" className="rounded-xl gap-2 text-xs px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#7FEFFF] data-[state=active]:border data-[state=active]:border-[#7FEFFF] data-[state=active]:shadow-[0_0_14px_rgba(127,239,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors"><ShoppingBag className="w-3.5 h-3.5" />{tr.productsTab} ({products.length})</TabsTrigger>
+            <TabsTrigger value="settings" className="rounded-xl gap-2 text-xs px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#7FEFFF] data-[state=active]:border data-[state=active]:border-[#7FEFFF] data-[state=active]:shadow-[0_0_14px_rgba(127,239,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors"><Settings className="w-3.5 h-3.5" />{tr.settingsTab}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="plans">
@@ -279,7 +279,7 @@ export default function AdminProductsPage() {
               <button
                 onClick={() => { setForm(blankForm); setShowCreateDialog(true); }}
                 className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-[0.12em] transition-transform hover:scale-[1.02]"
-                style={{ background: "linear-gradient(90deg,#7FEFFF,#6FA8FF)", color: "#000", boxShadow: "0 0 18px rgba(0,229,255,0.5)" }}
+                style={{ background: "linear-gradient(90deg,#7FEFFF,#6FA8FF)", color: "#000", boxShadow: "0 0 18px rgba(127,239,255,0.5)" }}
                 data-testid="button-add-product"
               >
                 <PlusCircle className="w-3.5 h-3.5" />
@@ -295,7 +295,7 @@ export default function AdminProductsPage() {
                 <button
                   onClick={() => { setForm(blankForm); setShowCreateDialog(true); }}
                   className="mt-3 inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-[0.12em]"
-                  style={{ background: "linear-gradient(90deg,#7FEFFF,#6FA8FF)", color: "#000", boxShadow: "0 0 18px rgba(0,229,255,0.5)" }}
+                  style={{ background: "linear-gradient(90deg,#7FEFFF,#6FA8FF)", color: "#000", boxShadow: "0 0 18px rgba(127,239,255,0.5)" }}
                 >
                   <PlusCircle className="w-3.5 h-3.5" />
                   {isAf ? "Skep eerste produk" : "Create first product"}
@@ -423,7 +423,7 @@ export default function AdminProductsPage() {
 
       {/* ── Create Product Dialog ─────────────────────────────── */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="max-w-lg rounded-2xl bg-black border border-[#7FEFFF]/40 shadow-[0_0_40px_rgba(0,229,255,0.25)] p-0 overflow-hidden">
+        <DialogContent className="max-w-lg rounded-2xl bg-black border border-[#7FEFFF]/40 shadow-[0_0_40px_rgba(127,239,255,0.25)] p-0 overflow-hidden">
           <div className="h-[3px] w-full" style={{ background: "linear-gradient(90deg,#7FEFFF,#6FA8FF,#C6A4FF,#FF9FE5)" }} />
           <div className="p-6">
             <DialogHeader className="mb-5">
@@ -545,7 +545,7 @@ export default function AdminProductsPage() {
                 onClick={() => createProductMutation.mutate(form)}
                 disabled={createProductMutation.isPending || !form.nameEn || !form.nameAf || !form.slug || !form.descriptionEn || !form.descriptionAf || !form.category || !form.priceRands}
                 className="inline-flex items-center gap-2 rounded-xl px-5 py-2 text-xs font-black uppercase tracking-[0.12em] disabled:opacity-40 disabled:cursor-not-allowed transition-transform hover:scale-[1.02]"
-                style={{ background: "linear-gradient(90deg,#7FEFFF,#6FA8FF)", color: "#000", boxShadow: "0 0 18px rgba(0,229,255,0.45)" }}
+                style={{ background: "linear-gradient(90deg,#7FEFFF,#6FA8FF)", color: "#000", boxShadow: "0 0 18px rgba(127,239,255,0.45)" }}
               >
                 <PlusCircle className="w-3.5 h-3.5" />
                 {createProductMutation.isPending ? (isAf ? "Skep…" : "Creating…") : (isAf ? "Skep Produk" : "Create Product")}

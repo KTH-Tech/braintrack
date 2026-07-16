@@ -158,7 +158,7 @@ function FraudFlagsPanel({ isAf }: { isAf: boolean }) {
         {unreviewedCount > 0 && (
           <span
             className="px-1.5 py-0.5 rounded-full text-[9px] font-black tabular-nums"
-            style={{ background: "rgba(255,138,0,0.18)", color: "#FFC48F", border: "1px solid rgba(255,138,0,0.45)" }}
+            style={{ background: "rgba(255,196,143,0.18)", color: "#FFC48F", border: "1px solid rgba(255,196,143,0.45)" }}
             data-testid="fraud-flags-badge"
           >
             {unreviewedCount}
@@ -170,7 +170,7 @@ function FraudFlagsPanel({ isAf }: { isAf: boolean }) {
         {haltedCount > 0 && (
           <div
             className="mb-4 flex items-start gap-2 rounded-xl px-4 py-3 text-sm"
-            style={{ background: "rgba(255,138,0,0.1)", border: "1px solid rgba(255,138,0,0.4)", color: "#FFC48F" }}
+            style={{ background: "rgba(255,196,143,0.1)", border: "1px solid rgba(255,196,143,0.4)", color: "#FFC48F" }}
             data-testid="fraud-flags-halted-banner"
           >
             <ShieldAlert className="w-4 h-4 mt-0.5 shrink-0" />
@@ -196,14 +196,14 @@ function FraudFlagsPanel({ isAf }: { isAf: boolean }) {
             style={{
               border: `1px solid ${showReviewed ? "#FFC48F" : "rgba(255,255,255,0.18)"}`,
               color: showReviewed ? "#FFC48F" : "#fff",
-              background: showReviewed ? "rgba(255,138,0,0.12)" : "transparent",
+              background: showReviewed ? "rgba(255,196,143,0.12)" : "transparent",
             }}
           >
             {isAf ? (showReviewed ? "Wys onhersien" : "Wys alles") : (showReviewed ? "Hide reviewed" : "Show all")}
           </button>
         </div>
 
-        <div className="overflow-x-auto rounded-xl" style={{ border: "1px solid rgba(255,138,0,0.28)" }}>
+        <div className="overflow-x-auto rounded-xl" style={{ border: "1px solid rgba(255,196,143,0.28)" }}>
           <table className="w-full text-xs" data-testid="fraud-flags-table">
             <thead className="bg-black/60 text-white">
               <tr className="text-left">
@@ -258,7 +258,7 @@ function FraudFlagsPanel({ isAf }: { isAf: boolean }) {
                       <td className="px-3 py-2">
                         <span
                           className="inline-block px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider"
-                          style={{ border: "1px solid rgba(255,138,0,0.5)", color: "#FFC48F" }}
+                          style={{ border: "1px solid rgba(255,196,143,0.5)", color: "#FFC48F" }}
                         >
                           {isAf ? reasonLabel?.af : reasonLabel?.en}
                         </span>
@@ -267,7 +267,7 @@ function FraudFlagsPanel({ isAf }: { isAf: boolean }) {
                         {flag.commissionHalted ? (
                           <span
                             className="inline-block px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider"
-                            style={{ border: "1px solid rgba(255,138,0,0.5)", color: "#FFC48F", background: "rgba(255,138,0,0.12)" }}
+                            style={{ border: "1px solid rgba(255,196,143,0.5)", color: "#FFC48F", background: "rgba(255,196,143,0.12)" }}
                             data-testid={`fraud-flag-halted-${flag.id}`}
                           >
                             {isAf ? "Ja" : "Yes"}
@@ -281,7 +281,7 @@ function FraudFlagsPanel({ isAf }: { isAf: boolean }) {
                         {flag.reviewed ? (
                           <span
                             className="inline-block px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider"
-                            style={{ border: "1px solid rgba(0,229,255,0.4)", color: "#7FEFFF" }}
+                            style={{ border: "1px solid rgba(127,239,255,0.4)", color: "#7FEFFF" }}
                             data-testid={`fraud-flag-reviewed-${flag.id}`}
                           >
                             {isAf ? "Hersien" : "Reviewed"}
@@ -289,7 +289,7 @@ function FraudFlagsPanel({ isAf }: { isAf: boolean }) {
                         ) : (
                           <span
                             className="inline-block px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider"
-                            style={{ border: "1px solid rgba(255,230,0,0.4)", color: "#FFF29E" }}
+                            style={{ border: "1px solid rgba(255,242,158,0.4)", color: "#FFF29E" }}
                             data-testid={`fraud-flag-pending-${flag.id}`}
                           >
                             {isAf ? "Oop" : "Open"}
@@ -305,9 +305,9 @@ function FraudFlagsPanel({ isAf }: { isAf: boolean }) {
                             data-testid={`fraud-flag-clear-${flag.id}`}
                             className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider disabled:opacity-50 transition-opacity"
                             style={{
-                              border: "1px solid rgba(0,229,255,0.5)",
+                              border: "1px solid rgba(127,239,255,0.5)",
                               color: "#7FEFFF",
-                              background: "rgba(0,229,255,0.08)",
+                              background: "rgba(127,239,255,0.08)",
                             }}
                           >
                             {isPending ? (
@@ -431,7 +431,7 @@ function DbHealthPanel({ isAf }: { isAf: boolean }) {
           <>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
               {/* Pool connections */}
-              <div className="rounded-xl p-3" style={{ background: "rgba(0,229,255,0.07)", border: "1px solid rgba(0,229,255,0.25)" }} data-testid="db-health-pool">
+              <div className="rounded-xl p-3" style={{ background: "rgba(127,239,255,0.07)", border: "1px solid rgba(127,239,255,0.25)" }} data-testid="db-health-pool">
                 <p className="text-[10px] font-black uppercase tracking-wider mb-1" style={{ color }}>
                   {isAf ? "Verbindings (Pool)" : "Pool Connections"}
                 </p>
@@ -454,7 +454,7 @@ function DbHealthPanel({ isAf }: { isAf: boolean }) {
               </div>
 
               {/* Active connections (pg_stat_activity) */}
-              <div className="rounded-xl p-3" style={{ background: "rgba(0,229,255,0.07)", border: "1px solid rgba(0,229,255,0.25)" }} data-testid="db-health-active">
+              <div className="rounded-xl p-3" style={{ background: "rgba(127,239,255,0.07)", border: "1px solid rgba(127,239,255,0.25)" }} data-testid="db-health-active">
                 <p className="text-[10px] font-black uppercase tracking-wider mb-1" style={{ color }}>
                   {isAf ? "Aktiewe Verbindings" : "Active Connections"}
                 </p>
@@ -468,7 +468,7 @@ function DbHealthPanel({ isAf }: { isAf: boolean }) {
               </div>
 
               {/* Slow queries */}
-              <div className="rounded-xl p-3" style={{ background: "rgba(0,229,255,0.07)", border: "1px solid rgba(0,229,255,0.25)" }} data-testid="db-health-slow">
+              <div className="rounded-xl p-3" style={{ background: "rgba(127,239,255,0.07)", border: "1px solid rgba(127,239,255,0.25)" }} data-testid="db-health-slow">
                 <p className="text-[10px] font-black uppercase tracking-wider mb-1" style={{ color }}>
                   {isAf ? "Stadige Navrae (>500ms)" : "Slow Queries (>500ms)"}
                 </p>
@@ -487,7 +487,7 @@ function DbHealthPanel({ isAf }: { isAf: boolean }) {
               </div>
 
               {/* DB Uptime */}
-              <div className="rounded-xl p-3" style={{ background: "rgba(0,229,255,0.07)", border: "1px solid rgba(0,229,255,0.25)" }} data-testid="db-health-uptime">
+              <div className="rounded-xl p-3" style={{ background: "rgba(127,239,255,0.07)", border: "1px solid rgba(127,239,255,0.25)" }} data-testid="db-health-uptime">
                 <p className="text-[10px] font-black uppercase tracking-wider mb-1" style={{ color }}>
                   {isAf ? "DB Beskikbaartyd" : "DB Uptime"}
                 </p>
@@ -525,7 +525,7 @@ function DbHealthPanel({ isAf }: { isAf: boolean }) {
                 disabled={isFetching}
                 data-testid="db-health-refresh"
                 className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider transition-colors disabled:opacity-40"
-                style={{ border: `1px solid rgba(0,229,255,0.4)`, color, background: "rgba(0,229,255,0.08)" }}
+                style={{ border: `1px solid rgba(127,239,255,0.4)`, color, background: "rgba(127,239,255,0.08)" }}
               >
                 {isFetching ? <Loader2 className="w-3 h-3 animate-spin" /> : <Activity className="w-3 h-3" />}
                 {isAf ? "Verfris" : "Refresh"}
@@ -1131,16 +1131,16 @@ export default function AdminDashboardPage() {
           className="relative overflow-hidden rounded-3xl bg-black p-6 sm:p-8 md:p-10"
           style={{
             border: "1.5px solid #C6A4FF",
-            boxShadow: "0 0 0 1px rgba(138,43,255,0.35), 0 0 44px rgba(138,43,255,0.35), inset 0 0 40px rgba(0,0,0,0.65)",
+            boxShadow: "0 0 0 1px rgba(198,164,255,0.35), 0 0 44px rgba(198,164,255,0.35), inset 0 0 40px rgba(0,0,0,0.65)",
           }}
           data-testid="admin-hero"
         >
           <div aria-hidden className="absolute top-0 left-0 right-0 h-[3px]"
             style={{ background: "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)" }} />
           <div aria-hidden className="absolute -top-24 -right-24 w-72 h-72 rounded-full blur-3xl pointer-events-none"
-            style={{ background: "radial-gradient(circle, rgba(138,43,255,0.3), transparent 70%)" }} />
+            style={{ background: "radial-gradient(circle, rgba(198,164,255,0.3), transparent 70%)" }} />
           <div aria-hidden className="absolute -bottom-24 -left-24 w-72 h-72 rounded-full blur-3xl pointer-events-none"
-            style={{ background: "radial-gradient(circle, rgba(0,229,255,0.22), transparent 70%)" }} />
+            style={{ background: "radial-gradient(circle, rgba(127,239,255,0.22), transparent 70%)" }} />
           <span aria-hidden className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2" style={{ borderColor: "#C6A4FF" }} />
           <span aria-hidden className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2" style={{ borderColor: "#C6A4FF" }} />
           <span aria-hidden className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2" style={{ borderColor: "#C6A4FF" }} />
@@ -1148,7 +1148,7 @@ export default function AdminDashboardPage() {
 
           <div className="relative flex flex-wrap items-center gap-3 mb-4">
             <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
-              style={{ border: "1px solid #C6A4FF", boxShadow: "0 0 12px rgba(138,43,255,0.45)" }}>
+              style={{ border: "1px solid #C6A4FF", boxShadow: "0 0 12px rgba(198,164,255,0.45)" }}>
               <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#C6A4FF", boxShadow: "0 0 6px #C6A4FF" }} />
               <span className="text-[10px] font-black uppercase tracking-[0.24em]" style={{ color: "#C6A4FF" }}>
                 {isAf ? "Administrateur" : "Administrator"}
@@ -1156,7 +1156,7 @@ export default function AdminDashboardPage() {
             </div>
             {superFlag?.isSuperAdmin && (
               <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
-                style={{ border: "1px solid #FFF29E", boxShadow: "0 0 12px rgba(255,230,0,0.45)" }}>
+                style={{ border: "1px solid #FFF29E", boxShadow: "0 0 12px rgba(255,242,158,0.45)" }}>
                 <span className="text-[10px] font-black uppercase tracking-[0.24em]" style={{ color: "#FFF29E" }}>
                   {isAf ? "Hoof" : "Super"}
                 </span>
@@ -1164,8 +1164,8 @@ export default function AdminDashboardPage() {
             )}
             <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
               style={{
-                border: emergencyActive ? "1px solid #FFC48F" : "1px solid rgba(0,229,255,0.55)",
-                boxShadow: emergencyActive ? "0 0 12px rgba(255,138,0,0.45)" : "0 0 10px rgba(0,229,255,0.35)",
+                border: emergencyActive ? "1px solid #FFC48F" : "1px solid rgba(127,239,255,0.55)",
+                boxShadow: emergencyActive ? "0 0 12px rgba(255,196,143,0.45)" : "0 0 10px rgba(127,239,255,0.35)",
               }}
               data-testid="badge-emergency"
             >
@@ -1197,7 +1197,7 @@ export default function AdminDashboardPage() {
           {disabledCount > 0 && (
             <div
               className="mt-4 inline-flex items-center gap-2 rounded-full px-3 py-1.5 bg-black"
-              style={{ border: "1px solid rgba(255,230,0,0.55)", boxShadow: "0 0 10px rgba(255,230,0,0.35)" }}
+              style={{ border: "1px solid rgba(255,242,158,0.55)", boxShadow: "0 0 10px rgba(255,242,158,0.35)" }}
             >
               <AlertTriangle className="w-3.5 h-3.5" style={{ color: "#FFF29E" }} />
               <span className="text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: "#FFF29E" }}>
@@ -1252,7 +1252,7 @@ export default function AdminDashboardPage() {
                 { label: "Rewarded",         labelAf: "Beloon",      value: referralSummary?.rewarded ?? 0,               testId: "ref-rewarded" },
                 { label: "Free Months",      labelAf: "Gratis Maande", value: referralSummary?.monthsAwarded ?? 0,        testId: "ref-months" },
               ].map(({ label, labelAf, value, testId }) => (
-                <div key={label} className="rounded-xl bg-black/40 p-3" style={{ border: "1px solid rgba(0,229,255,0.35)" }} data-testid={testId}>
+                <div key={label} className="rounded-xl bg-black/40 p-3" style={{ border: "1px solid rgba(127,239,255,0.35)" }} data-testid={testId}>
                   <div className="text-[10px] font-black uppercase tracking-[0.18em]" style={{ color: "#7FEFFF" }}>
                     {isAf ? labelAf : label}
                   </div>
@@ -1294,7 +1294,7 @@ export default function AdminDashboardPage() {
                       style={{
                         border: `1px solid ${active ? "#7FEFFF" : "rgba(255,255,255,0.18)"}`,
                         color: active ? "#7FEFFF" : "#fff",
-                        background: active ? "rgba(0,229,255,0.12)" : "transparent",
+                        background: active ? "rgba(127,239,255,0.12)" : "transparent",
                       }}
                     >
                       {isAf ? c.af : c.en}
@@ -1347,7 +1347,7 @@ export default function AdminDashboardPage() {
                 )}
               </div>
 
-              <div className="overflow-x-auto rounded-xl" style={{ border: "1px solid rgba(0,229,255,0.28)" }}>
+              <div className="overflow-x-auto rounded-xl" style={{ border: "1px solid rgba(127,239,255,0.28)" }}>
                 <table className="w-full text-xs" data-testid="ref-recent-table">
                   <thead className="bg-black/60 text-white">
                     <tr className="text-left">
@@ -1444,9 +1444,9 @@ export default function AdminDashboardPage() {
                     data-testid="ref-prev-page"
                     className="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider disabled:opacity-40"
                     style={{
-                      border: "1px solid rgba(0,229,255,0.4)",
+                      border: "1px solid rgba(127,239,255,0.4)",
                       color: "#7FEFFF",
-                      background: "rgba(0,229,255,0.08)",
+                      background: "rgba(127,239,255,0.08)",
                     }}
                   >
                     {isAf ? "Vorige" : "Previous"}
@@ -1458,9 +1458,9 @@ export default function AdminDashboardPage() {
                     data-testid="ref-next-page"
                     className="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider disabled:opacity-40"
                     style={{
-                      border: "1px solid rgba(0,229,255,0.4)",
+                      border: "1px solid rgba(127,239,255,0.4)",
                       color: "#7FEFFF",
-                      background: "rgba(0,229,255,0.08)",
+                      background: "rgba(127,239,255,0.08)",
                     }}
                   >
                     {isAf ? "Volgende" : "Next"}

@@ -3,7 +3,7 @@ import { Flame, Star, Zap, Target, Trophy, GraduationCap, Award, BookOpen, Spark
 import { Link } from "wouter";
 
 const NEON = "#FFC48F";
-const NEON_GLOW = "rgba(255,138,0,0.35)";
+const NEON_GLOW = "rgba(255,196,143,0.35)";
 
 const BADGE_ICONS: Record<string, any> = {
   streak_3: Flame, streak_7: Flame, streak_14: Flame, streak_30: Flame,

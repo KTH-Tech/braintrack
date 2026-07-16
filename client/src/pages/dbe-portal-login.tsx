@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Loader2, Database, ShieldCheck } from "lucide-react";
 import { BrainTrackLogo } from "@/components/braintrack-logo";
+import { GraffitiSplats } from "@/components/graffiti-splats";
 
 export default function DBEPortalLogin() {
   const { user, isLoading, isAuthenticated } = useAuth();
@@ -18,7 +19,7 @@ export default function DBEPortalLogin() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black">
-        <Loader2 className="w-6 h-6 animate-spin text-cyan-400" />
+        <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#7FEFFF" }} />
       </div>
     );
   }
@@ -26,7 +27,7 @@ export default function DBEPortalLogin() {
   if (isAuthenticated && user?.role === "admin") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black">
-        <Loader2 className="w-6 h-6 animate-spin text-cyan-400" />
+        <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#7FEFFF" }} />
       </div>
     );
   }
@@ -35,25 +36,26 @@ export default function DBEPortalLogin() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center p-6 bg-black"
+      className="min-h-screen flex items-center justify-center p-6 bg-black relative overflow-hidden"
       style={{
-        backgroundImage: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0,229,255,0.12) 0%, transparent 70%)",
+        backgroundImage: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(127,239,255,0.12) 0%, transparent 70%)",
       }}
     >
+      <GraffitiSplats variant="full" opacity={0.5} />
       <div
-        className="w-full max-w-sm rounded-2xl p-8 space-y-7 relative overflow-hidden"
+        className="w-full max-w-sm rounded-2xl p-8 space-y-7 relative z-10 overflow-hidden"
         style={{
           background: "#0a0b12",
-          border: "1.5px solid rgba(0,229,255,0.35)",
+          border: "1.5px solid rgba(127,239,255,0.35)",
           boxShadow:
-            "0 0 40px rgba(0,229,255,0.18), 0 0 80px rgba(0,0,0,0.8), inset 0 0 30px rgba(0,0,0,0.6)",
+            "0 0 40px rgba(127,239,255,0.18), 0 0 80px rgba(0,0,0,0.8), inset 0 0 30px rgba(0,0,0,0.6)",
         }}
       >
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              "linear-gradient(135deg, rgba(0,229,255,0.06) 0%, transparent 50%, rgba(138,43,255,0.05) 100%)",
+              "linear-gradient(135deg, rgba(127,239,255,0.06) 0%, transparent 50%, rgba(198,164,255,0.05) 100%)",
           }}
         />
 
@@ -67,8 +69,8 @@ export default function DBEPortalLogin() {
               className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.22em] px-3 py-1 rounded-full mb-3"
               style={{
                 color: "#7FEFFF",
-                border: "1px solid rgba(0,229,255,0.4)",
-                background: "rgba(0,229,255,0.08)",
+                border: "1px solid rgba(127,239,255,0.4)",
+                background: "rgba(127,239,255,0.08)",
               }}
             >
               <Database className="w-3 h-3" />
@@ -76,7 +78,7 @@ export default function DBEPortalLogin() {
             </div>
             <h1
               className="text-xl font-black text-white"
-              style={{ textShadow: "0 0 20px rgba(0,229,255,0.3)" }}
+              style={{ textShadow: "0 0 20px rgba(127,239,255,0.3)" }}
             >
               Content Console
             </h1>
@@ -114,7 +116,7 @@ export default function DBEPortalLogin() {
                 style={{
                   color: "#0a0a0a",
                   background: "linear-gradient(135deg, #7FEFFF 0%, #1aa8b4 100%)",
-                  boxShadow: "0 0 20px rgba(0,229,255,0.45), 0 4px 16px rgba(0,0,0,0.4)",
+                  boxShadow: "0 0 20px rgba(127,239,255,0.45), 0 4px 16px rgba(0,0,0,0.4)",
                 }}
                 data-testid="btn-sign-in"
               >

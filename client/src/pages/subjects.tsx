@@ -379,7 +379,7 @@ export default function SubjectsPage() {
                   size="sm"
                   data-testid="link-subjects"
                   className="flex items-center gap-2 bg-transparent border border-[#7FEFFF] text-[#7FEFFF] hover:bg-[#7FEFFF]/10"
-                  style={{ boxShadow: "0 0 12px rgba(0,229,255,0.35)" }}
+                  style={{ boxShadow: "0 0 12px rgba(127,239,255,0.35)" }}
                 >
                   <Languages className="w-4 h-4" />
                   <span className="hidden md:inline">
@@ -445,7 +445,7 @@ export default function SubjectsPage() {
             className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-background"
             style={{
               border: "1px solid #7FEFFF",
-              boxShadow: "0 0 12px rgba(0,229,255,0.45)",
+              boxShadow: "0 0 12px rgba(127,239,255,0.45)",
             }}
           >
             <GraduationCap
@@ -496,10 +496,10 @@ export default function SubjectsPage() {
                 style={
                   showBrowseAll
                     ? {
-                        background: "rgba(0,229,255,0.12)",
+                        background: "rgba(127,239,255,0.12)",
                         border: "1px solid #7FEFFF",
                         color: "#7FEFFF",
-                        boxShadow: "0 0 14px rgba(0,229,255,0.35)",
+                        boxShadow: "0 0 14px rgba(127,239,255,0.35)",
                       }
                     : {
                         background: "rgba(255,255,255,0.04)",
@@ -564,10 +564,10 @@ export default function SubjectsPage() {
               onClick={() => setShowBrowseAll(true)}
               className="shrink-0 flex items-center gap-2 px-4 py-2 rounded-xl font-black text-xs uppercase tracking-[0.18em] transition-all"
               style={{
-                background: "rgba(255,230,0,0.12)",
+                background: "rgba(255,242,158,0.12)",
                 border: "1px solid #FFF29E",
                 color: "#FFF29E",
-                boxShadow: "0 0 10px rgba(255,230,0,0.25)",
+                boxShadow: "0 0 10px rgba(255,242,158,0.25)",
               }}
             >
               <Plus className="w-3.5 h-3.5" />
@@ -581,8 +581,8 @@ export default function SubjectsPage() {
           <div
             className="relative rounded-2xl bg-background overflow-hidden mb-10"
             style={{
-              border: "1px solid rgba(0,229,255,0.35)",
-              boxShadow: "0 0 40px rgba(0,229,255,0.08)",
+              border: "1px solid rgba(127,239,255,0.35)",
+              boxShadow: "0 0 40px rgba(127,239,255,0.08)",
             }}
           >
             <div

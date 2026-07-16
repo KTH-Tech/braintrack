@@ -224,7 +224,7 @@ export function AudioLessonPlayer({ topicId, topicName, language, isAf, onPlayed
   return (
     <div
       className="rounded-2xl bg-black p-4"
-      style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 18px #C6A4FF55, inset 0 0 12px rgba(138,43,255,0.10)" }}
+      style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 18px #C6A4FF55, inset 0 0 12px rgba(198,164,255,0.10)" }}
       data-testid={`audio-lesson-${topicId}`}
     >
       <div className="flex items-center gap-2 mb-3">

@@ -28,18 +28,18 @@ const DAYS_SHORT_AF = ["Maa","Din","Woe","Don","Vry","Sat","Son"];
 
 /* Wordmark-palette neon set — every hex is a stop in the BrainTrack rainbow */
 const NEON: Record<string, { hex: string; glow: string; text: string }> = {
-  blue:   { hex: "#6FA8FF", glow: "rgba(0,107,255,0.45)",  text: "#b7d1f4" },
-  cyan:   { hex: "#7FEFFF", glow: "rgba(0,229,255,0.45)",  text: "#a8ecf3" },
-  green:  { hex: "#C6A4FF", glow: "rgba(138,43,255,0.45)", text: "#c8bff0" },
-  gold:   { hex: "#FFF29E", glow: "rgba(255,230,0,0.50)",  text: "#ffe98a" },
-  orange: { hex: "#FFC48F", glow: "rgba(255,138,0,0.50)",  text: "#ffb38a" },
+  blue:   { hex: "#6FA8FF", glow: "rgba(111,168,255,0.45)",  text: "#b7d1f4" },
+  cyan:   { hex: "#7FEFFF", glow: "rgba(127,239,255,0.45)",  text: "#a8ecf3" },
+  green:  { hex: "#C6A4FF", glow: "rgba(198,164,255,0.45)", text: "#c8bff0" },
+  gold:   { hex: "#FFF29E", glow: "rgba(255,242,158,0.50)",  text: "#ffe98a" },
+  orange: { hex: "#FFC48F", glow: "rgba(255,196,143,0.50)",  text: "#ffb38a" },
   /* legacy alias — second cyan slot kept for compile compatibility */
-  cyan2:  { hex: "#7FEFFF", glow: "rgba(0,229,255,0.45)",  text: "#bff3f8" },
-  pink:   { hex: "#FF9FE5", glow: "rgba(255,43,214,0.50)",  text: "#f5a8cc" },
-  red:    { hex: "#FFC48F", glow: "rgba(255,138,0,0.50)",  text: "#ffc59a" },
-  teal:   { hex: "#7FEFFF", glow: "rgba(0,229,255,0.40)",  text: "#9be6ee" },
-  lime:   { hex: "#FFF29E", glow: "rgba(255,230,0,0.50)",  text: "#ffd28a" },
-  violet: { hex: "#C6A4FF", glow: "rgba(138,43,255,0.50)", text: "#dcb4ee" },
+  cyan2:  { hex: "#7FEFFF", glow: "rgba(127,239,255,0.45)",  text: "#bff3f8" },
+  pink:   { hex: "#FF9FE5", glow: "rgba(255,159,229,0.50)",  text: "#f5a8cc" },
+  red:    { hex: "#FFC48F", glow: "rgba(255,196,143,0.50)",  text: "#ffc59a" },
+  teal:   { hex: "#7FEFFF", glow: "rgba(127,239,255,0.40)",  text: "#9be6ee" },
+  lime:   { hex: "#FFF29E", glow: "rgba(255,242,158,0.50)",  text: "#ffd28a" },
+  violet: { hex: "#C6A4FF", glow: "rgba(198,164,255,0.50)", text: "#dcb4ee" },
 };
 
 const SUBJECT_NEON_MAP: Record<string, keyof typeof NEON> = {
@@ -111,10 +111,10 @@ function urgencyBand(daysLeft: number): UrgencyBand {
 }
 
 const URGENCY_LABEL: Record<UrgencyBand, { en: string; af: string; color: string; glow: string }> = {
-  build:   { en: "Build Mastery",      af: "Bou Vaardigheid",     color: "#C6A4FF", glow: "rgba(138,43,255,0.55)" },
-  focused: { en: "Focused Revision",   af: "Gefokusde Herhaling", color: "#FFF29E", glow: "rgba(255,230,0,0.55)"  },
-  prep:    { en: "Exam Prep Mode",     af: "Eksamenvoorbereiding",color: "#FFC48F", glow: "rgba(255,138,0,0.55)"  },
-  sprint:  { en: "Final Sprint",       af: "Finale Sprint",       color: "#FF9FE5", glow: "rgba(255,43,214,0.55)"  },
+  build:   { en: "Build Mastery",      af: "Bou Vaardigheid",     color: "#C6A4FF", glow: "rgba(198,164,255,0.55)" },
+  focused: { en: "Focused Revision",   af: "Gefokusde Herhaling", color: "#FFF29E", glow: "rgba(255,242,158,0.55)"  },
+  prep:    { en: "Exam Prep Mode",     af: "Eksamenvoorbereiding",color: "#FFC48F", glow: "rgba(255,196,143,0.55)"  },
+  sprint:  { en: "Final Sprint",       af: "Finale Sprint",       color: "#FF9FE5", glow: "rgba(255,159,229,0.55)"  },
 };
 
 /* ─── Space background ─────────────────────────────────────────────────── */
@@ -122,10 +122,10 @@ const URGENCY_LABEL: Record<UrgencyBand, { en: string; af: string; color: string
 function SpaceBg() {
   return (
     <div className="fixed inset-0 -z-10 overflow-hidden" style={{ background: "#000000" }}>
-      <div style={{ position:"absolute",inset:0, background:"radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0,229,255,0.22) 0%, transparent 70%)" }} />
-      <div style={{ position:"absolute",inset:0, background:"radial-gradient(ellipse 55% 45% at 85% 85%, rgba(138,43,255,0.14) 0%, transparent 60%)" }} />
-      <div style={{ position:"absolute",inset:0, background:"radial-gradient(ellipse 45% 35% at 15% 90%, rgba(255,43,214,0.10) 0%, transparent 60%)" }} />
-      <div style={{ position:"absolute",inset:0, background:"radial-gradient(ellipse 40% 30% at 20% 10%, rgba(255,138,0,0.08) 0%, transparent 60%)" }} />
+      <div style={{ position:"absolute",inset:0, background:"radial-gradient(ellipse 80% 60% at 50% -10%, rgba(127,239,255,0.22) 0%, transparent 70%)" }} />
+      <div style={{ position:"absolute",inset:0, background:"radial-gradient(ellipse 55% 45% at 85% 85%, rgba(198,164,255,0.14) 0%, transparent 60%)" }} />
+      <div style={{ position:"absolute",inset:0, background:"radial-gradient(ellipse 45% 35% at 15% 90%, rgba(255,159,229,0.10) 0%, transparent 60%)" }} />
+      <div style={{ position:"absolute",inset:0, background:"radial-gradient(ellipse 40% 30% at 20% 10%, rgba(255,196,143,0.08) 0%, transparent 60%)" }} />
       <div style={{ position:"absolute",inset:0,opacity:0.025,backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")", backgroundRepeat:"repeat",backgroundSize:"128px 128px" }} />
     </div>
   );
@@ -521,7 +521,7 @@ export default function StudyCalendarPage() {
       {/* ── Sticky neon header ── */}
       <header
         className="sticky top-0 z-50 bg-black/80"
-        style={{ borderBottom: "1px solid rgba(0,229,255,0.35)" }}
+        style={{ borderBottom: "1px solid rgba(127,239,255,0.35)" }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 gap-4">
@@ -546,7 +546,7 @@ export default function StudyCalendarPage() {
                   style={{
                     color: "#7FEFFF",
                     border: "1px solid #7FEFFF",
-                    boxShadow: "0 0 10px rgba(0,229,255,0.4)",
+                    boxShadow: "0 0 10px rgba(127,239,255,0.4)",
                   }}
                   data-testid="button-dashboard"
                 >
@@ -570,10 +570,10 @@ export default function StudyCalendarPage() {
       {/* ── Sticky TODAY directive banner — surfaces the timetable engine's #1 priority ── */}
       {todayDirective && todayDirective.hasExam && (() => {
         const urgencyMap: Record<string, { color: string; glow: string }> = {
-          final_sprint:     { color: "#FF9FE5", glow: "rgba(255,43,214,0.55)" },
-          exam_prep_mode:   { color: "#FFC48F", glow: "rgba(255,138,0,0.55)" },
-          focused_revision: { color: "#FFF29E", glow: "rgba(255,230,0,0.55)" },
-          build_mastery:    { color: "#C6A4FF", glow: "rgba(138,43,255,0.55)" },
+          final_sprint:     { color: "#FF9FE5", glow: "rgba(255,159,229,0.55)" },
+          exam_prep_mode:   { color: "#FFC48F", glow: "rgba(255,196,143,0.55)" },
+          focused_revision: { color: "#FFF29E", glow: "rgba(255,242,158,0.55)" },
+          build_mastery:    { color: "#C6A4FF", glow: "rgba(198,164,255,0.55)" },
         };
         const u = urgencyMap[todayDirective.urgencyState] || urgencyMap.build_mastery;
         const days = todayDirective.daysUntil ?? 0;
@@ -628,17 +628,17 @@ export default function StudyCalendarPage() {
           <div
             aria-hidden
             className="absolute -top-24 -left-24 w-80 h-80 rounded-full blur-3xl pointer-events-none"
-            style={{ background: "radial-gradient(circle, rgba(0,229,255,0.22), transparent 70%)" }}
+            style={{ background: "radial-gradient(circle, rgba(127,239,255,0.22), transparent 70%)" }}
           />
           <div
             aria-hidden
             className="absolute -bottom-24 -right-24 w-80 h-80 rounded-full blur-3xl pointer-events-none"
-            style={{ background: "radial-gradient(circle, rgba(138,43,255,0.18), transparent 70%)" }}
+            style={{ background: "radial-gradient(circle, rgba(198,164,255,0.18), transparent 70%)" }}
           />
           <div className="relative text-center py-10 sm:py-14">
             <div
               className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-5 bg-black"
-              style={{ border: "1.5px solid #7FEFFF", boxShadow: "0 0 14px rgba(0,229,255,0.28)" }}
+              style={{ border: "1.5px solid #7FEFFF", boxShadow: "0 0 14px rgba(127,239,255,0.28)" }}
             >
               <CalendarDays className="w-3.5 h-3.5" style={{ color: "#7FEFFF" }} />
               <span className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: "#7FEFFF" }}>
@@ -766,9 +766,9 @@ export default function StudyCalendarPage() {
           <div
             className="flex items-center justify-between gap-3 px-5 py-3.5 rounded-xl cursor-pointer transition-all hover:scale-[1.01]"
             style={{
-              background: "rgba(0,229,255,0.07)",
-              border: "1px solid rgba(0,229,255,0.35)",
-              boxShadow: "0 0 16px rgba(0,229,255,0.10)",
+              background: "rgba(127,239,255,0.07)",
+              border: "1px solid rgba(127,239,255,0.35)",
+              boxShadow: "0 0 16px rgba(127,239,255,0.10)",
             }}
           >
             <div className="flex items-center gap-3">
@@ -782,7 +782,7 @@ export default function StudyCalendarPage() {
                 </p>
               </div>
             </div>
-            <ChevronRight className="w-4 h-4 shrink-0" style={{ color: "rgba(0,229,255,0.6)" }} />
+            <ChevronRight className="w-4 h-4 shrink-0" style={{ color: "rgba(127,239,255,0.6)" }} />
           </div>
         </Link>
 
@@ -826,9 +826,9 @@ export default function StudyCalendarPage() {
               <GlassCard neonColor="#C6A4FF" className="overflow-hidden">
                 <div
                   className="px-5 py-4 flex items-center gap-2 flex-wrap"
-                  style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(138,43,255,0.06)" }}
+                  style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(198,164,255,0.06)" }}
                 >
-                  <ShieldCheck className="w-4 h-4" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 6px rgba(138,43,255,0.65))" }} />
+                  <ShieldCheck className="w-4 h-4" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 6px rgba(198,164,255,0.65))" }} />
                   <p className="font-bold text-sm" style={{ color:"#ffffff" }}>
                     {isAf ? "Gereedheidstellings" : "Readiness Scores"}
                   </p>
@@ -1085,12 +1085,12 @@ export default function StudyCalendarPage() {
           return (
             <div data-testid="exam-overlay-section">
               <GlassCard neonColor="#C6A4FF" className="overflow-hidden">
-                <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom:"1px solid rgba(255,255,255,0.06)", background:"rgba(138,43,255,0.06)" }}>
-                  <GraduationCap className="w-4 h-4" style={{ color:"#C6A4FF", filter:"drop-shadow(0 0 6px rgba(138,43,255,0.65))" }} />
+                <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom:"1px solid rgba(255,255,255,0.06)", background:"rgba(198,164,255,0.06)" }}>
+                  <GraduationCap className="w-4 h-4" style={{ color:"#C6A4FF", filter:"drop-shadow(0 0 6px rgba(198,164,255,0.65))" }} />
                   <p className="font-bold text-sm" style={{ color:"#ffffff" }}>
                     {isAf ? "NSC Eksamenrooster Oorleg" : "NSC Exam Calendar Overlay"}
                   </p>
-                  <span className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background:"rgba(138,43,255,0.18)", color:"#dcb4ee", border:"1px solid rgba(138,43,255,0.45)" }}>
+                  <span className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background:"rgba(198,164,255,0.18)", color:"#dcb4ee", border:"1px solid rgba(198,164,255,0.45)" }}>
                     2026
                   </span>
                 </div>
@@ -1098,10 +1098,10 @@ export default function StudyCalendarPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 mb-4">
                     {upcoming.slice(0, 9).map((exam: any, i: number) => {
                       const urgencyMap: Record<string, { color: string; glow: string }> = {
-                        final_sprint:     { color: "#FF9FE5", glow: "rgba(255,43,214,0.50)" },
-                        exam_prep_mode:   { color: "#FFC48F", glow: "rgba(255,138,0,0.50)" },
-                        focused_revision: { color: "#FFF29E", glow: "rgba(255,230,0,0.50)" },
-                        build_mastery:    { color: "#C6A4FF", glow: "rgba(138,43,255,0.50)" },
+                        final_sprint:     { color: "#FF9FE5", glow: "rgba(255,159,229,0.50)" },
+                        exam_prep_mode:   { color: "#FFC48F", glow: "rgba(255,196,143,0.50)" },
+                        focused_revision: { color: "#FFF29E", glow: "rgba(255,242,158,0.50)" },
+                        build_mastery:    { color: "#C6A4FF", glow: "rgba(198,164,255,0.50)" },
                       };
                       const u = urgencyMap[exam.urgencyState] || urgencyMap.build_mastery;
                       return (
@@ -1133,7 +1133,7 @@ export default function StudyCalendarPage() {
                         <span
                           key={d}
                           className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold"
-                          style={{ background:"rgba(255,230,0,0.10)", border:"1px solid rgba(255,230,0,0.40)", color:"#ffe98a", boxShadow:"0 0 8px rgba(255,230,0,0.18)" }}
+                          style={{ background:"rgba(255,242,158,0.10)", border:"1px solid rgba(255,242,158,0.40)", color:"#ffe98a", boxShadow:"0 0 8px rgba(255,242,158,0.18)" }}
                         >
                           <Coffee className="w-2.5 h-2.5" />
                           {formatDate(d + "T00:00:00", language, { weekday: "short", day: "numeric", month: "short" })}
@@ -1153,7 +1153,7 @@ export default function StudyCalendarPage() {
             {weekPlan.length === 0 ? (
               subjectsLoading
                 ? [0,1,2,3,4,5,6].map(i => (
-                    <div key={i} className="flex-shrink-0 w-14 h-10 rounded-xl animate-pulse" style={{ background:"rgba(0,229,255,0.08)", border:"1px solid rgba(0,229,255,0.15)" }} />
+                    <div key={i} className="flex-shrink-0 w-14 h-10 rounded-xl animate-pulse" style={{ background:"rgba(127,239,255,0.08)", border:"1px solid rgba(127,239,255,0.15)" }} />
                   ))
                 : (
                   <div className="flex items-center gap-2 px-1 py-2 text-[11px] font-bold rounded-xl bg-black" style={{ color:"#ffffff", border:"1px solid rgba(255,255,255,0.1)", padding:"6px 14px" }}>
@@ -1170,7 +1170,7 @@ export default function StudyCalendarPage() {
                   onClick={() => setMobileDay(idx)}
                   className="flex-shrink-0 flex flex-col items-center px-3 py-2 rounded-xl transition-all bg-black"
                   style={isActive
-                    ? { border:"1.5px solid #7FEFFF", boxShadow:"0 0 14px rgba(0,229,255,0.45), inset 0 0 10px rgba(0,229,255,0.12)" }
+                    ? { border:"1.5px solid #7FEFFF", boxShadow:"0 0 14px rgba(127,239,255,0.45), inset 0 0 10px rgba(127,239,255,0.12)" }
                     : { border:"1px solid rgba(255,255,255,0.10)" }}
                   data-testid={`mobile-day-tab-${idx}`}
                 >
@@ -1206,10 +1206,10 @@ export default function StudyCalendarPage() {
                     key={day.day}
                     className="flex flex-col transition-all"
                     style={{
-                      background: isToday ? "rgba(0,229,255,0.08)" : "#0a0b12",
-                      border: isToday ? "1.5px solid rgba(0,229,255,0.55)" : "1px solid rgba(255,255,255,0.12)",
+                      background: isToday ? "rgba(127,239,255,0.08)" : "#0a0b12",
+                      border: isToday ? "1.5px solid rgba(127,239,255,0.55)" : "1px solid rgba(255,255,255,0.12)",
                       borderRadius:"14px",
-                      boxShadow: isToday ? "0 0 18px rgba(0,229,255,0.25), inset 0 1px 0 rgba(255,255,255,0.06)" : "inset 0 1px 0 rgba(255,255,255,0.04)",
+                      boxShadow: isToday ? "0 0 18px rgba(127,239,255,0.25), inset 0 1px 0 rgba(255,255,255,0.06)" : "inset 0 1px 0 rgba(255,255,255,0.04)",
                       padding:"10px 8px", minHeight:"180px",
                     }}
                     data-testid={`day-col-${idx}`}
@@ -1279,18 +1279,18 @@ export default function StudyCalendarPage() {
             <div data-testid="mobile-day-view">
               {weekPlan.length === 0 && subjectsLoading ? (
                 <div className="space-y-3" data-testid="day-view-skeleton">
-                  <div className="h-6 w-32 rounded-lg animate-pulse" style={{ background:"rgba(0,229,255,0.08)" }} />
+                  <div className="h-6 w-32 rounded-lg animate-pulse" style={{ background:"rgba(127,239,255,0.08)" }} />
                   {[0,1,2].map(i => (
-                    <div key={i} className="h-20 rounded-2xl animate-pulse" style={{ background:"rgba(0,229,255,0.06)", border:"1px solid rgba(0,229,255,0.12)" }} />
+                    <div key={i} className="h-20 rounded-2xl animate-pulse" style={{ background:"rgba(127,239,255,0.06)", border:"1px solid rgba(127,239,255,0.12)" }} />
                   ))}
                 </div>
               ) : weekPlan.length === 0 ? (
                 <div className="rounded-2xl bg-black p-8 text-center" style={{ border:"1px solid rgba(255,255,255,0.1)" }} data-testid="day-view-empty">
-                  <CalendarDays className="w-10 h-10 mx-auto mb-3" style={{ color:"rgba(0,229,255,0.4)" }} />
+                  <CalendarDays className="w-10 h-10 mx-auto mb-3" style={{ color:"rgba(127,239,255,0.4)" }} />
                   <p className="font-bold text-sm text-white mb-1">{isAf ? "Geen studieplan beskikbaar nie" : "No study plan available"}</p>
                   <p className="text-[11px] text-white mb-4">{isAf ? "Kies jou vakke om jou plan te genereer." : "Select your subjects to generate your plan."}</p>
                   <Link href="/settings">
-                    <button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-[0.16em] bg-black" style={{ color:"#7FEFFF", border:"1.5px solid #7FEFFF", boxShadow:"0 0 12px rgba(0,229,255,0.35)" }}>
+                    <button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-[0.16em] bg-black" style={{ color:"#7FEFFF", border:"1.5px solid #7FEFFF", boxShadow:"0 0 12px rgba(127,239,255,0.35)" }}>
                       <Settings className="w-3 h-3" />
                       {isAf ? "Kies Vakke" : "Select Subjects"}
                     </button>

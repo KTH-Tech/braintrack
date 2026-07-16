@@ -96,7 +96,7 @@ export default function MyNotesPage() {
 
         <div
           className="rounded-2xl bg-black p-5"
-          style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 18px #C6A4FF55, inset 0 0 12px rgba(138,43,255,0.10)" }}
+          style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 18px #C6A4FF55, inset 0 0 12px rgba(198,164,255,0.10)" }}
         >
           <div className="flex items-center gap-2 mb-2">
             <Mic className="w-5 h-5" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 4px #C6A4FF)" }} />

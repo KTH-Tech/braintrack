@@ -291,7 +291,7 @@ function CountdownBadge({ days, isAf }: { days: number; isAf: boolean }) {
   }
   if (days === 0) {
     return (
-      <span style={{ fontSize: 9, fontWeight: 900, color: "#FFC48F", background: "rgba(255,138,0,0.18)", borderRadius: 4, padding: "1px 6px", textShadow: "0 0 8px rgba(255,138,0,0.8)" }}>
+      <span style={{ fontSize: 9, fontWeight: 900, color: "#FFC48F", background: "rgba(255,196,143,0.18)", borderRadius: 4, padding: "1px 6px", textShadow: "0 0 8px rgba(255,196,143,0.8)" }}>
         {isAf ? "VANDAG" : "TODAY"}
       </span>
     );
@@ -351,9 +351,9 @@ export default function PrelimTimetablePage() {
     <div className="min-h-screen" style={{ background: "#000" }}>
       {/* Space background */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0,229,255,0.18) 0%, transparent 70%)" }} />
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 55% 45% at 85% 85%, rgba(138,43,255,0.12) 0%, transparent 60%)" }} />
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 40% 30% at 15% 90%, rgba(255,43,214,0.08) 0%, transparent 60%)" }} />
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(127,239,255,0.18) 0%, transparent 70%)" }} />
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 55% 45% at 85% 85%, rgba(198,164,255,0.12) 0%, transparent 60%)" }} />
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 40% 30% at 15% 90%, rgba(255,159,229,0.08) 0%, transparent 60%)" }} />
       </div>
 
       <main className="max-w-5xl mx-auto px-4 py-6 space-y-6">
@@ -382,7 +382,7 @@ export default function PrelimTimetablePage() {
         {/* Header */}
         <div className="text-center space-y-2 pt-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em]"
-            style={{ border: "1px solid rgba(0,229,255,0.5)", color: "#7FEFFF" }}>
+            style={{ border: "1px solid rgba(127,239,255,0.5)", color: "#7FEFFF" }}>
             <GraduationCap className="w-3.5 h-3.5" />
             {isAf ? "VOOREKSAMENSKEDULE" : "PRELIMINARY EXAM TIMETABLE"}
           </div>
@@ -411,7 +411,7 @@ export default function PrelimTimetablePage() {
                   onClick={() => setActiveWeek(i)}
                   className="relative px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all"
                   style={active
-                    ? { background: "rgba(0,229,255,0.18)", border: "1px solid rgba(0,229,255,0.6)", color: "#7FEFFF", boxShadow: "0 0 12px rgba(0,229,255,0.25)" }
+                    ? { background: "rgba(127,239,255,0.18)", border: "1px solid rgba(127,239,255,0.6)", color: "#7FEFFF", boxShadow: "0 0 12px rgba(127,239,255,0.25)" }
                     : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.55)" }
                   }
                 >
@@ -430,7 +430,7 @@ export default function PrelimTimetablePage() {
               onClick={() => setMySubjectsOnly((v) => !v)}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all"
               style={mySubjectsOnly
-                ? { background: "rgba(255,43,214,0.18)", border: "1px solid rgba(255,43,214,0.6)", color: "#FF9FE5", boxShadow: "0 0 10px rgba(255,43,214,0.2)" }
+                ? { background: "rgba(255,159,229,0.18)", border: "1px solid rgba(255,159,229,0.6)", color: "#FF9FE5", boxShadow: "0 0 10px rgba(255,159,229,0.2)" }
                 : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.55)" }
               }
             >
@@ -461,16 +461,16 @@ export default function PrelimTimetablePage() {
                 style={{
                   borderRadius: 16,
                   border: isToday
-                    ? "1.5px solid rgba(255,138,0,0.7)"
+                    ? "1.5px solid rgba(255,196,143,0.7)"
                     : isPast
                       ? "1px solid rgba(255,255,255,0.07)"
                       : "1px solid rgba(255,255,255,0.12)",
                   background: isToday
-                    ? "rgba(255,138,0,0.06)"
+                    ? "rgba(255,196,143,0.06)"
                     : isPast
                       ? "rgba(0,0,0,0.4)"
                       : "rgba(0,0,0,0.55)",
-                  boxShadow: isToday ? "0 0 20px rgba(255,138,0,0.15)" : undefined,
+                  boxShadow: isToday ? "0 0 20px rgba(255,196,143,0.15)" : undefined,
                   opacity: isPast ? 0.55 : 1,
                 }}
               >
@@ -480,8 +480,8 @@ export default function PrelimTimetablePage() {
                     <div
                       style={{
                         width: 44, height: 44, borderRadius: 10, flexShrink: 0,
-                        background: isToday ? "rgba(255,138,0,0.22)" : "rgba(255,255,255,0.06)",
-                        border: isToday ? "1px solid rgba(255,138,0,0.55)" : "1px solid rgba(255,255,255,0.10)",
+                        background: isToday ? "rgba(255,196,143,0.22)" : "rgba(255,255,255,0.06)",
+                        border: isToday ? "1px solid rgba(255,196,143,0.55)" : "1px solid rgba(255,255,255,0.10)",
                         display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
                       }}
                     >
@@ -558,12 +558,12 @@ export default function PrelimTimetablePage() {
         <div
           style={{
             borderRadius: 16,
-            border: "1px solid rgba(255,230,0,0.35)",
-            background: "rgba(255,230,0,0.04)",
-            boxShadow: "0 0 18px rgba(255,230,0,0.08)",
+            border: "1px solid rgba(255,242,158,0.35)",
+            background: "rgba(255,242,158,0.04)",
+            boxShadow: "0 0 18px rgba(255,242,158,0.08)",
           }}
         >
-          <div className="flex items-center gap-2 px-4 py-3" style={{ borderBottom: "1px solid rgba(255,230,0,0.15)" }}>
+          <div className="flex items-center gap-2 px-4 py-3" style={{ borderBottom: "1px solid rgba(255,242,158,0.15)" }}>
             <AlertCircle className="w-4 h-4" style={{ color: "#FFF29E" }} />
             <span className="text-sm font-black uppercase tracking-wider" style={{ color: "#FFF29E" }}>
               {isAf ? "Spesiale Datums & PAT" : "Special Dates & PAT"}
@@ -586,7 +586,7 @@ export default function PrelimTimetablePage() {
                       </span>
                     )}
                   </span>
-                  <span className="text-[10px] font-bold shrink-0" style={{ color: "rgba(255,230,0,0.7)" }}>
+                  <span className="text-[10px] font-bold shrink-0" style={{ color: "rgba(255,242,158,0.7)" }}>
                     {p.time}
                   </span>
                   <CountdownBadge days={daysLeft} isAf={isAf} />
@@ -605,7 +605,7 @@ export default function PrelimTimetablePage() {
 
         {/* Correction note */}
         <div className="flex items-start gap-2 px-4 py-3 rounded-xl text-xs"
-          style={{ background: "rgba(255,138,0,0.07)", border: "1px solid rgba(255,138,0,0.3)", color: "rgba(255,255,255,0.65)" }}>
+          style={{ background: "rgba(255,196,143,0.07)", border: "1px solid rgba(255,196,143,0.3)", color: "rgba(255,255,255,0.65)" }}>
           <Zap className="w-3.5 h-3.5 shrink-0 mt-0.5" style={{ color: "#FFC48F" }} />
           <span>
             {isAf
@@ -690,9 +690,9 @@ function SessionColumn({
                     <span
                       className="text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded"
                       style={{
-                        background: slot.badge === "PRACTICAL" ? "rgba(138,43,255,0.2)" : "rgba(0,229,255,0.15)",
+                        background: slot.badge === "PRACTICAL" ? "rgba(198,164,255,0.2)" : "rgba(127,239,255,0.15)",
                         color: slot.badge === "PRACTICAL" ? "#C6A4FF" : "#7FEFFF",
-                        border: `1px solid ${slot.badge === "PRACTICAL" ? "rgba(138,43,255,0.4)" : "rgba(0,229,255,0.3)"}`,
+                        border: `1px solid ${slot.badge === "PRACTICAL" ? "rgba(198,164,255,0.4)" : "rgba(127,239,255,0.3)"}`,
                       }}
                     >
                       {slot.badge}
@@ -700,7 +700,7 @@ function SessionColumn({
                   )}
                   {slot.isCorrection && (
                     <span className="text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded"
-                      style={{ background: "rgba(255,138,0,0.18)", color: "#FFC48F", border: "1px solid rgba(255,138,0,0.4)" }}>
+                      style={{ background: "rgba(255,196,143,0.18)", color: "#FFC48F", border: "1px solid rgba(255,196,143,0.4)" }}>
                       {isAf ? "KORR" : "CORR"}
                     </span>
                   )}

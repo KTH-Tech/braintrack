@@ -1055,7 +1055,7 @@ export default function SubjectDetailPage() {
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       <GraffitiSplats variant="corner" opacity={0.3} />
-      <header className="sticky top-0 z-50 bg-background/95 relative" style={{ borderBottom: "2px solid rgba(0,229,255,0.5)" }}>
+      <header className="sticky top-0 z-50 bg-background/95 relative" style={{ borderBottom: "2px solid rgba(127,239,255,0.5)" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 gap-4 flex-wrap">
             <div className="flex items-center gap-3">
@@ -1398,7 +1398,7 @@ export default function SubjectDetailPage() {
                   </div>
                 </div>
                 <div className="h-2 rounded-full bg-background overflow-hidden mt-3" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
-                  <div className="h-full rounded-full" style={{ width: `${Math.min(100, Math.max(0, currentScore))}%`, background: "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)", boxShadow: "0 0 10px rgba(0,229,255,0.6)" }} />
+                  <div className="h-full rounded-full" style={{ width: `${Math.min(100, Math.max(0, currentScore))}%`, background: "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)", boxShadow: "0 0 10px rgba(127,239,255,0.6)" }} />
                 </div>
                 <div className="flex justify-between mt-1">
                   <span className="text-[10px] text-foreground">0%</span>
@@ -1733,7 +1733,7 @@ export default function SubjectDetailPage() {
                 {masteryLoading && personalizedPlan.length === 0 ? (
                   <div className="space-y-2" data-testid="plan-loading">
                     {[0,1,2].map(i => (
-                      <div key={i} className="h-14 rounded-xl animate-pulse" style={{ background:"rgba(0,107,255,0.08)", border:"1px solid rgba(0,107,255,0.15)" }} />
+                      <div key={i} className="h-14 rounded-xl animate-pulse" style={{ background:"rgba(111,168,255,0.08)", border:"1px solid rgba(111,168,255,0.15)" }} />
                     ))}
                   </div>
                 ) : personalizedPlan.length > 0 ? (

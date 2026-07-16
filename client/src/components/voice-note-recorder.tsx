@@ -159,7 +159,7 @@ export function VoiceNoteRecorder({ topicId, isAf }: VoiceNoteRecorderProps) {
   return (
     <div
       className="rounded-2xl bg-black p-4"
-      style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 16px #C6A4FF55, inset 0 0 10px rgba(138,43,255,0.10)" }}
+      style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 16px #C6A4FF55, inset 0 0 10px rgba(198,164,255,0.10)" }}
       data-testid={`voice-recorder-${topicId}`}
     >
       <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">

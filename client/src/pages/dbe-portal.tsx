@@ -128,8 +128,8 @@ interface VerbatimQuestion {
 
 function memoCovColorFor(pct: number | null | undefined): string {
   if (pct === null || pct === undefined) return "#7FEFFF";
-  if (pct < 60) return "#ef4444";
-  if (pct < 90) return "#f59e0b";
+  if (pct < 60) return "#FFC48F";
+  if (pct < 90) return "#FFF29E";
   return "#7FEFFF";
 }
 
@@ -145,8 +145,8 @@ function StatCard({ label, value, sub, icon: Icon, onClick, valueColor }: {
       onClick={onClick}
       className={`rounded-xl bg-black p-3 ${onClick ? "cursor-pointer" : ""}`}
       style={{
-        border: "1.5px solid rgba(0,229,255,0.45)",
-        boxShadow: "0 0 12px rgba(0,229,255,0.18), inset 0 0 14px rgba(0,0,0,0.6)",
+        border: "1.5px solid rgba(127,239,255,0.45)",
+        boxShadow: "0 0 12px rgba(127,239,255,0.18), inset 0 0 14px rgba(0,0,0,0.6)",
       }}
       data-testid={`stat-${label.toLowerCase().replace(/\s/g, "-")}`}
     >
@@ -159,7 +159,7 @@ function StatCard({ label, value, sub, icon: Icon, onClick, valueColor }: {
           {sub && <div className="text-[10px] text-white mt-1 truncate">{sub}</div>}
         </div>
         {Icon && (
-          <Icon className="w-5 h-5 shrink-0" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 4px rgba(0,229,255,0.7))" }} />
+          <Icon className="w-5 h-5 shrink-0" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 4px rgba(127,239,255,0.7))" }} />
         )}
       </div>
     </div>
@@ -207,7 +207,7 @@ function YearUploadButton({ subject, year, isMemo, label, disabled }: {
       <Button
         size="sm"
         variant="outline"
-        className={`h-6 text-[10px] gap-0.5 px-1.5 ${isMemo ? "border-emerald-400/50 text-emerald-700 hover:bg-emerald-50" : "border-cyan-400/50 text-cyan-700 hover:bg-cyan-50"}`}
+        className={`h-6 text-[10px] gap-0.5 px-1.5 bg-black ${isMemo ? "border-[#93FFB8]/50 text-[#93FFB8] hover:bg-white/[0.04]" : "border-[#7FEFFF]/50 text-[#7FEFFF] hover:bg-white/[0.04]"}`}
         disabled={disabled || uploading}
         onClick={(e) => { e.stopPropagation(); inputRef.current?.click(); }}
         title={`Upload ${isMemo ? "memo" : "paper"} PDF directly`}
@@ -269,8 +269,8 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
   const pct = row.catalogPapers > 0 ? Math.min(100, Math.round((cappedPapers / row.catalogPapers) * 100)) : 0;
   const aiBlocked = openaiReady === false;
 
-  const borderColor = isPipelineRunning ? "rgba(255,230,0,0.6)" : hasQuestions ? "rgba(0,229,255,0.4)" : hasPapers ? "rgba(255,138,0,0.4)" : row.papersFailed > 0 ? "rgba(239,68,68,0.4)" : "rgba(255,255,255,0.12)";
-  const glowColor = isPipelineRunning ? "rgba(255,230,0,0.15)" : hasQuestions ? "rgba(0,229,255,0.1)" : "transparent";
+  const borderColor = isPipelineRunning ? "rgba(255,242,158,0.6)" : hasQuestions ? "rgba(127,239,255,0.4)" : hasPapers ? "rgba(255,196,143,0.4)" : row.papersFailed > 0 ? "rgba(239,68,68,0.4)" : "rgba(255,255,255,0.12)";
+  const glowColor = isPipelineRunning ? "rgba(255,242,158,0.15)" : hasQuestions ? "rgba(127,239,255,0.1)" : "transparent";
 
   const neonBtn = "h-7 text-[11px] gap-1 inline-flex items-center justify-center rounded-lg bg-black px-2.5 font-black uppercase tracking-[0.08em] transition-all hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100";
   const ghostBtn = "h-7 text-[11px] gap-1 inline-flex items-center justify-center rounded-lg bg-black px-2.5 font-bold uppercase tracking-[0.06em] transition-all hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100";
@@ -292,19 +292,19 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="font-black text-sm truncate text-white">{row.subject}</span>
             {isPipelineRunning && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.1em] rounded-md bg-black px-2 py-0.5" style={{ color: "#FFF29E", border: "1px solid rgba(255,230,0,0.7)" }}>
+              <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.1em] rounded-md bg-black px-2 py-0.5" style={{ color: "#FFF29E", border: "1px solid rgba(255,242,158,0.7)" }}>
                 <Loader2 className="w-3 h-3 animate-spin" />
                 {row.pipelinePhase === "rebuilding_mastery" ? "Mastery" : row.pipelinePhase === "filling_missing" ? "Filling" : "Ingesting"}
               </span>
             )}
             {!isPipelineRunning && hasQuestions && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.1em] rounded-md bg-black px-2 py-0.5" style={{ color: "#7FEFFF", border: "1px solid rgba(0,229,255,0.5)" }}>
+              <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.1em] rounded-md bg-black px-2 py-0.5" style={{ color: "#7FEFFF", border: "1px solid rgba(127,239,255,0.5)" }}>
                 <Sparkles className="w-3 h-3" /> {formatNumber(row.questionsExtracted, language)}Q
               </span>
             )}
             {!isPipelineRunning && hasQuestions && row.memoCoverage !== undefined && (
               <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.1em] rounded-md bg-black px-2 py-0.5"
-                style={{ color: (row.memoCoverage ?? 0) === 100 ? "#7FEFFF" : (row.memoCoverage ?? 0) >= 50 ? "#FFF29E" : "#f87171", border: `1px solid ${(row.memoCoverage ?? 0) === 100 ? "rgba(0,229,255,0.5)" : (row.memoCoverage ?? 0) >= 50 ? "rgba(255,230,0,0.5)" : "rgba(248,113,113,0.5)"}` }}
+                style={{ color: (row.memoCoverage ?? 0) === 100 ? "#7FEFFF" : (row.memoCoverage ?? 0) >= 50 ? "#FFF29E" : "#f87171", border: `1px solid ${(row.memoCoverage ?? 0) === 100 ? "rgba(127,239,255,0.5)" : (row.memoCoverage ?? 0) >= 50 ? "rgba(255,242,158,0.5)" : "rgba(248,113,113,0.5)"}` }}
                 title={`Memo: ${row.memoCoverage}% · Marks: ${row.marksCoverage ?? 0}% · Level: ${row.levelCoverage ?? 0}% · Topic: ${row.topicCoverage ?? 0}%`}>
                 {(row.memoCoverage ?? 0) === 100 ? <CheckCircle2 className="w-3 h-3" /> : <AlertTriangle className="w-3 h-3" />}
                 Memo {row.memoCoverage}%
@@ -314,7 +314,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
               <span className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.1em] rounded-md bg-black px-2 py-0.5" style={{ color: "#f87171", border: "1px solid rgba(248,113,113,0.5)" }}>Failed</span>
             )}
             {row.simulatedCount > 0 && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.1em] rounded-md bg-black px-2 py-0.5" style={{ color: "#C6A4FF", border: "1px solid rgba(138,43,255,0.5)" }}>
+              <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.1em] rounded-md bg-black px-2 py-0.5" style={{ color: "#C6A4FF", border: "1px solid rgba(198,164,255,0.5)" }}>
                 <Zap className="w-3 h-3" />{row.simulatedCount}
                 {row.simulationQuality > 0 && <span className="opacity-60">·{row.simulationQuality}%</span>}
               </span>
@@ -323,21 +323,21 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <div className="w-20 h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.1)" }}>
-            <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: ingestionComplete ? "#7FEFFF" : "#FFF29E", boxShadow: `0 0 6px ${ingestionComplete ? "rgba(0,229,255,0.5)" : "rgba(255,230,0,0.5)"}` }} />
+            <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: ingestionComplete ? "#7FEFFF" : "#FFF29E", boxShadow: `0 0 6px ${ingestionComplete ? "rgba(127,239,255,0.5)" : "rgba(255,242,158,0.5)"}` }} />
           </div>
           <span className="text-xs w-14 text-right font-black tabular-nums" style={{ color: ingestionComplete ? "#7FEFFF" : "#FFF29E" }}>{pct}%</span>
         </div>
       </div>
 
       {open && (
-        <div className="p-3 space-y-4 bg-black" style={{ borderTop: "1px solid rgba(0,229,255,0.2)" }}>
+        <div className="p-3 space-y-4 bg-black" style={{ borderTop: "1px solid rgba(127,239,255,0.2)" }}>
           {/* Action buttons */}
           <div className="space-y-2">
             <div className="text-[10px] font-black uppercase tracking-[0.18em]" style={{ color: "#7FEFFF" }}>Actions</div>
             <div className="flex flex-wrap gap-2">
               <button
                 className={neonBtn}
-                style={{ color: "#7FEFFF", border: "1.5px solid rgba(0,229,255,0.6)", boxShadow: "0 0 8px rgba(0,229,255,0.3)" }}
+                style={{ color: "#7FEFFF", border: "1.5px solid rgba(127,239,255,0.6)", boxShadow: "0 0 8px rgba(127,239,255,0.3)" }}
                 disabled={isPipelineRunning || isIngesting}
                 onClick={(e) => { e.stopPropagation(); onIngest(row.subject); }}
                 title="Download PDFs from DBE and extract questions for all years (2015–2024)"
@@ -348,8 +348,8 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
                 <button
                   className={neonBtn}
                   style={aiBlocked
-                    ? { color: "rgba(138,43,255,0.4)", border: "1px solid rgba(138,43,255,0.25)", cursor: "not-allowed" }
-                    : { color: "#C6A4FF", border: "1.5px solid rgba(138,43,255,0.7)", boxShadow: "0 0 8px rgba(138,43,255,0.3)" }}
+                    ? { color: "rgba(198,164,255,0.4)", border: "1px solid rgba(198,164,255,0.25)", cursor: "not-allowed" }
+                    : { color: "#C6A4FF", border: "1.5px solid rgba(198,164,255,0.7)", boxShadow: "0 0 8px rgba(198,164,255,0.3)" }}
                   disabled={isPipelineRunning || isSimulating || aiBlocked}
                   onClick={(e) => { e.stopPropagation(); if (!aiBlocked) onSimulate(row.subject); }}
                   title={aiBlocked ? "Requires OpenAI API key — configure AI_INTEGRATIONS_OPENAI_API_KEY to enable" : "Use OpenAI to generate 50 practice questions from ingested content (batched, mastery-aware)"}
@@ -363,8 +363,8 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
                 <button
                   className={neonBtn}
                   style={aiBlocked
-                    ? { color: "rgba(217,70,239,0.4)", border: "1px solid rgba(217,70,239,0.25)", cursor: "not-allowed" }
-                    : { color: "#d946ef", border: "1.5px solid rgba(217,70,239,0.7)", boxShadow: "0 0 8px rgba(217,70,239,0.3)" }}
+                    ? { color: "rgba(255,159,229,0.4)", border: "1px solid rgba(255,159,229,0.25)", cursor: "not-allowed" }
+                    : { color: "#FF9FE5", border: "1.5px solid rgba(255,159,229,0.7)", boxShadow: "0 0 8px rgba(255,159,229,0.3)" }}
                   disabled={isPipelineRunning || isSimulating || isAnyCrunchRunning || aiBlocked}
                   onClick={(e) => { e.stopPropagation(); if (!aiBlocked) onCrunchSubject(row.subject, 10); }}
                   title={aiBlocked ? "Requires OpenAI API key" : "Generate 10 high-quality AI practice papers in one fast batch for this subject"}
@@ -386,7 +386,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
               )}
               <button
                 className={neonBtn}
-                style={{ color: "#FFF29E", border: "1.5px solid rgba(255,230,0,0.6)", boxShadow: "0 0 8px rgba(255,230,0,0.25)" }}
+                style={{ color: "#FFF29E", border: "1.5px solid rgba(255,242,158,0.6)", boxShadow: "0 0 8px rgba(255,242,158,0.25)" }}
                 disabled={isPipelineRunning || isForceReingesting}
                 onClick={(e) => { e.stopPropagation(); if (confirm(`Force re-download ALL papers, memos & supporting docs for "${row.subject}"? This replaces any existing data.`)) { onForceReingest(row.subject); } }}
                 title="Force re-download and re-parse ALL papers, memos and supporting docs — even already-completed ones"
@@ -418,7 +418,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
               {hasQuestions && (
                 <button
                   className={ghostBtn}
-                  style={{ color: "#6FA8FF", border: "1px solid rgba(0,107,255,0.5)" }}
+                  style={{ color: "#6FA8FF", border: "1px solid rgba(111,168,255,0.5)" }}
                   disabled={isPipelineRunning || qaMutation.isPending}
                   onClick={(e) => { e.stopPropagation(); qaMutation.mutate({ subject: row.subject, type: "verbatim" }); }}
                   title="Run a quality check on a sample of ingested questions — scores memo accuracy, CAPS alignment, and structure">
@@ -446,7 +446,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
                 const hasLocalPaper = (localYr?.papers?.length ?? 0) > 0;
                 const hasLocalMemo = (localYr?.memos?.length ?? 0) > 0;
                 if (!hasAnyCatalog && !hasPaper && !hasMemo && !hasLocalPaper && !hasLocalMemo) return null;
-                const yrBorderColor = hasPaper && hasMemo ? "rgba(0,229,255,0.4)" : hasFailed ? "rgba(248,113,113,0.4)" : hasPaper ? "rgba(255,138,0,0.4)" : "rgba(255,255,255,0.1)";
+                const yrBorderColor = hasPaper && hasMemo ? "rgba(127,239,255,0.4)" : hasFailed ? "rgba(248,113,113,0.4)" : hasPaper ? "rgba(255,196,143,0.4)" : "rgba(255,255,255,0.1)";
                 return (
                   <div key={yr} className="rounded-xl bg-black p-2.5 space-y-2" style={{ border: `1px solid ${yrBorderColor}` }} data-testid={`year-card-${row.subject}-${yr}`}>
                     <div className="flex items-center justify-between">
@@ -458,7 +458,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
                       </div>
                       <div className="flex items-center gap-1.5">
                         <span className="text-[10px] font-black" style={{ color: hasPaper ? "#7FEFFF" : "rgba(255,255,255,0.3)" }}>P{hasPaper ? "✓" : "–"}</span>
-                        <span className="text-[10px] font-black" style={{ color: hasMemo ? "#4ade80" : "rgba(255,255,255,0.3)" }}>M{hasMemo ? "✓" : "–"}</span>
+                        <span className="text-[10px] font-black" style={{ color: hasMemo ? "#93FFB8" : "rgba(255,255,255,0.3)" }}>M{hasMemo ? "✓" : "–"}</span>
                       </div>
                     </div>
                     <div className="w-full h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)" }}>
@@ -467,12 +467,12 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
                     {yrUrls && (
                       <div className="flex flex-wrap gap-1">
                         {yrUrls.papers?.map((p, i) => (
-                          <a key={`paper-${i}`} href={p.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-[10px] font-bold transition-all hover:scale-[1.03]" style={{ color: "#6FA8FF", border: "1px solid rgba(0,107,255,0.5)", background: "rgba(0,107,255,0.08)" }} title={p.linkText}>
+                          <a key={`paper-${i}`} href={p.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-[10px] font-bold transition-all hover:scale-[1.03]" style={{ color: "#6FA8FF", border: "1px solid rgba(111,168,255,0.5)", background: "rgba(111,168,255,0.08)" }} title={p.linkText}>
                             <ExternalLink className="w-2.5 h-2.5" /> DBE P{p.paperNumber}
                           </a>
                         ))}
                         {yrUrls.memos?.map((m, i) => (
-                          <a key={`memo-${i}`} href={m.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-[10px] font-bold transition-all hover:scale-[1.03]" style={{ color: "#4ade80", border: "1px solid rgba(74,222,128,0.5)", background: "rgba(74,222,128,0.08)" }} title={m.linkText}>
+                          <a key={`memo-${i}`} href={m.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-[10px] font-bold transition-all hover:scale-[1.03]" style={{ color: "#93FFB8", border: "1px solid rgba(147,255,184,0.5)", background: "rgba(147,255,184,0.08)" }} title={m.linkText}>
                             <ExternalLink className="w-2.5 h-2.5" /> DBE M{m.paperNumber}
                           </a>
                         ))}
@@ -482,7 +482,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
                       {(!hasPaper || !hasMemo) ? (
                         <button
                           className="h-6 text-[10px] gap-0.5 px-1.5 flex-1 inline-flex items-center justify-center rounded-md font-bold disabled:opacity-40"
-                          style={{ color: "#7FEFFF", border: "1px solid rgba(0,229,255,0.5)" }}
+                          style={{ color: "#7FEFFF", border: "1px solid rgba(127,239,255,0.5)" }}
                           disabled={isPipelineRunning || isIngesting}
                           onClick={(e) => { e.stopPropagation(); onIngest(row.subject, yr); }}
                           title={`Download and ingest DBE paper + memo for ${row.subject} ${yr}`}
@@ -492,7 +492,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
                       ) : (
                         <button
                           className="h-6 text-[10px] gap-0.5 px-1.5 flex-1 inline-flex items-center justify-center rounded-md font-bold disabled:opacity-40"
-                          style={{ color: "#FFF29E", border: "1px solid rgba(255,230,0,0.4)" }}
+                          style={{ color: "#FFF29E", border: "1px solid rgba(255,242,158,0.4)" }}
                           disabled={isPipelineRunning || isForceReingesting}
                           onClick={(e) => { e.stopPropagation(); onForceReingest(row.subject, yr); }}
                           title={`Force re-download and re-parse paper + memo for ${row.subject} ${yr}`}
@@ -512,7 +512,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
           {/* Quality info */}
           {row.verifiedChecks && (
             <div className="grid grid-cols-2 gap-2">
-              <div className="rounded-xl bg-black p-2.5 text-[11px]" style={{ border: qualityPassed ? "1px solid rgba(0,229,255,0.4)" : "1px solid rgba(255,255,255,0.1)" }}>
+              <div className="rounded-xl bg-black p-2.5 text-[11px]" style={{ border: qualityPassed ? "1px solid rgba(127,239,255,0.4)" : "1px solid rgba(255,255,255,0.1)" }}>
                 <div className="flex items-center gap-1.5 mb-1">
                   <ShieldCheck className="w-3.5 h-3.5" style={{ color: qualityPassed ? "#7FEFFF" : "rgba(255,255,255,0.4)" }} />
                   <span className="font-black uppercase tracking-[0.1em] text-[10px]" style={{ color: qualityPassed ? "#7FEFFF" : "rgba(255,255,255,0.5)" }}>Verbatim</span>
@@ -522,7 +522,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
                   <span className="font-black" style={{ color: qualityPassed ? "#7FEFFF" : "#FFF29E" }}>{row.avgQualityScore ?? 0}%</span>
                 </div>
               </div>
-              <div className="rounded-xl bg-black p-2.5 text-[11px]" style={{ border: row.simulationQuality >= 80 ? "1px solid rgba(138,43,255,0.4)" : "1px solid rgba(255,255,255,0.1)" }}>
+              <div className="rounded-xl bg-black p-2.5 text-[11px]" style={{ border: row.simulationQuality >= 80 ? "1px solid rgba(198,164,255,0.4)" : "1px solid rgba(255,255,255,0.1)" }}>
                 <div className="flex items-center gap-1.5 mb-1">
                   <Zap className="w-3.5 h-3.5" style={{ color: row.simulatedCount > 0 ? "#C6A4FF" : "rgba(255,255,255,0.4)" }} />
                   <span className="font-black uppercase tracking-[0.1em] text-[10px]" style={{ color: row.simulatedCount > 0 ? "#C6A4FF" : "rgba(255,255,255,0.5)" }}>AI Simulated</span>
@@ -624,7 +624,7 @@ function OverviewSubjectGrid({ subjects, status, statusLoading, seedSubject, gen
               className="h-7 px-2.5 rounded-md text-xs font-bold uppercase tracking-[0.06em] transition-none"
               style={
                 sortKey === opt.value
-                  ? { color: "#7FEFFF", border: "1.5px solid #7FEFFF", background: "rgba(0,229,255,0.1)", boxShadow: "0 0 8px rgba(0,229,255,0.3)" }
+                  ? { color: "#7FEFFF", border: "1.5px solid #7FEFFF", background: "rgba(127,239,255,0.1)", boxShadow: "0 0 8px rgba(127,239,255,0.3)" }
                   : { color: "rgba(255,255,255,0.5)", border: "1px solid rgba(255,255,255,0.18)", background: "black" }
               }
             >
@@ -641,15 +641,15 @@ function OverviewSubjectGrid({ subjects, status, statusLoading, seedSubject, gen
         const hasNothing = total === 0 && !isRunning;
         const accent = ready ? "#7FEFFF" : isRunning ? "#FFF29E" : "rgba(255,255,255,0.25)";
         const cardStyle: React.CSSProperties = ready
-          ? { border: "1.5px solid #7FEFFF", boxShadow: "0 0 14px rgba(0,229,255,0.28), inset 0 0 18px rgba(0,0,0,0.6)" }
+          ? { border: "1.5px solid #7FEFFF", boxShadow: "0 0 14px rgba(127,239,255,0.28), inset 0 0 18px rgba(0,0,0,0.6)" }
           : isRunning
-          ? { border: "1.5px solid #FFF29E", boxShadow: "0 0 14px rgba(255,230,0,0.32), inset 0 0 18px rgba(0,0,0,0.6)" }
+          ? { border: "1.5px solid #FFF29E", boxShadow: "0 0 14px rgba(255,242,158,0.32), inset 0 0 18px rgba(0,0,0,0.6)" }
           : { border: "1px solid rgba(255,255,255,0.15)", boxShadow: "inset 0 0 18px rgba(0,0,0,0.6)" };
         const ghostBtn = "h-7 text-xs gap-1 inline-flex items-center justify-center rounded-md bg-black px-2.5 font-bold uppercase tracking-[0.06em] text-white hover:text-white transition-none disabled:opacity-40";
         const ghostStyle: React.CSSProperties = { border: "1px solid rgba(255,255,255,0.18)" };
         const neonBtn = "h-7 text-xs gap-1 inline-flex items-center justify-center rounded-md bg-black px-2.5 font-black uppercase tracking-[0.08em] transition-none disabled:opacity-40";
-        const cyanBtnStyle: React.CSSProperties = { color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 10px rgba(0,229,255,0.4), inset 0 0 6px rgba(0,229,255,0.15)" };
-        const purpleBtnStyle: React.CSSProperties = { color: "#C6A4FF", border: "1.5px solid rgba(138,43,255,0.7)", boxShadow: "0 0 8px rgba(138,43,255,0.35)" };
+        const cyanBtnStyle: React.CSSProperties = { color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 10px rgba(127,239,255,0.4), inset 0 0 6px rgba(127,239,255,0.15)" };
+        const purpleBtnStyle: React.CSSProperties = { color: "#C6A4FF", border: "1.5px solid rgba(198,164,255,0.7)", boxShadow: "0 0 8px rgba(198,164,255,0.35)" };
 
         const memoCovPct = memoCovBySubject[s.subject];
         const hasMemoCov = memoCovPct !== undefined;
@@ -722,7 +722,7 @@ function OverviewSubjectGrid({ subjects, status, statusLoading, seedSubject, gen
               </button>
               <button
                 className={neonBtn}
-                style={openaiReady === false ? { color: "rgba(138,43,255,0.35)", border: "1px solid rgba(138,43,255,0.2)", cursor: "not-allowed" } : purpleBtnStyle}
+                style={openaiReady === false ? { color: "rgba(198,164,255,0.35)", border: "1px solid rgba(198,164,255,0.2)", cursor: "not-allowed" } : purpleBtnStyle}
                 disabled={isRunning || generateAi.isPending || openaiReady === false}
                 onClick={() => { if (openaiReady !== false) generateAi.mutate(s.subject); }}
                 title={openaiReady === false ? "Requires OpenAI API key — configure AI_INTEGRATIONS_OPENAI_API_KEY" : "Generate AI practice questions for this subject"}
@@ -803,7 +803,7 @@ function MissingMemosPanel() {
             <div>
               <CardTitle className="text-base font-heading flex items-center gap-2">
                 Missing Memos
-                {data && <Badge variant="outline" className="text-[11px] font-bold" style={{ color: "#FFF29E", borderColor: "rgba(255,230,0,0.5)" }}>{data.groupCount} groups</Badge>}
+                {data && <Badge variant="outline" className="text-[11px] font-bold" style={{ color: "#FFF29E", borderColor: "rgba(255,242,158,0.5)" }}>{data.groupCount} groups</Badge>}
               </CardTitle>
               <p className="text-xs text-white mt-0.5">Ingested questions without memo text — use Re-ingest to retry specific papers.</p>
             </div>
@@ -848,7 +848,7 @@ function MissingMemosPanel() {
             <div className="overflow-x-auto rounded-lg border border-amber-400/20">
               <table className="w-full text-xs" data-testid="table-missing-memos">
                 <thead>
-                  <tr className="border-b border-amber-400/20" style={{ background: "rgba(255,230,0,0.06)" }}>
+                  <tr className="border-b border-amber-400/20" style={{ background: "rgba(255,242,158,0.06)" }}>
                     <th className="text-left px-3 py-2"><button onClick={() => toggleSort("subject")} className="font-semibold text-white hover:text-amber-300">Subject</button></th>
                     <th className="text-center px-3 py-2"><button onClick={() => toggleSort("year")} className="font-semibold text-white hover:text-amber-300">Year</button></th>
                     <th className="text-center px-3 py-2 font-semibold text-white">Paper</th>
@@ -1376,7 +1376,7 @@ export default function DBEPortal() {
 
       {/* Graffiti header band — the brand hero for the content studio */}
       <div className="relative overflow-hidden border-b border-white/10">
-        <GraffitiSplats variant="corner" opacity={0.42} />
+        <GraffitiSplats variant="corner" opacity={0.5} />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
           <div>
             <h1 className="text-2xl md:text-3xl font-black tracking-tight">
@@ -1432,7 +1432,7 @@ export default function DBEPortal() {
 
         {/* Pipeline running banner */}
         {anyRunning && (
-          <div className="flex items-center gap-2 text-sm rounded-xl bg-black p-3" style={{ border: "1.5px solid #7FEFFF", boxShadow: "0 0 14px rgba(0,229,255,0.32)" }}>
+          <div className="flex items-center gap-2 text-sm rounded-xl bg-black p-3" style={{ border: "1.5px solid #7FEFFF", boxShadow: "0 0 14px rgba(127,239,255,0.32)" }}>
             <Loader2 className="w-4 h-4 animate-spin shrink-0" style={{ color: "#7FEFFF" }} />
             <span className="font-black uppercase tracking-[0.1em] text-[12px]" style={{ color: "#7FEFFF" }}>Pipeline running — auto-refreshing</span>
           </div>
@@ -1452,10 +1452,10 @@ export default function DBEPortal() {
         </div>
 
         {/* Primary actions row */}
-        <div className="rounded-xl bg-black p-4 space-y-0" style={{ border: "1.5px solid rgba(0,229,255,0.35)", boxShadow: "0 0 14px rgba(0,229,255,0.15)" }}>
+        <div className="rounded-xl bg-black p-4 space-y-0" style={{ border: "1.5px solid rgba(127,239,255,0.35)", boxShadow: "0 0 14px rgba(127,239,255,0.15)" }}>
           {/* Row: Ingestion */}
           <div className="flex items-center gap-3 flex-wrap pb-3">
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] w-20 shrink-0" style={{ color: "rgba(0,229,255,0.6)" }}>Ingestion</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] w-20 shrink-0" style={{ color: "rgba(127,239,255,0.6)" }}>Ingestion</span>
             <Button size="sm" className="gap-2 bg-cyan-500 hover:bg-cyan-600 text-black font-black" onClick={() => seedAll.mutate()} disabled={seedAll.isPending}
               title="Download and parse all DBE PDFs for all subjects across 2015–2025"
               data-testid="btn-seed-all">
@@ -1465,7 +1465,7 @@ export default function DBEPortal() {
 
           {/* Row: AI & Questions */}
           <div className="flex items-center gap-3 flex-wrap py-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] w-20 shrink-0" style={{ color: openaiReady ? "rgba(138,43,255,0.7)" : "rgba(255,255,255,0.25)" }}>
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] w-20 shrink-0" style={{ color: openaiReady ? "rgba(198,164,255,0.7)" : "rgba(255,255,255,0.25)" }}>
               AI & Qs
               {!openaiReady && <span className="block normal-case tracking-normal font-bold text-[9px] mt-0.5" style={{ color: "#f87171" }}>No key</span>}
             </span>
@@ -1479,7 +1479,7 @@ export default function DBEPortal() {
             {/* Crunch Time controls */}
             <div className="inline-flex items-center gap-1.5 rounded-lg bg-black px-2.5 py-1.5" style={{ border: `1.5px solid ${openaiReady ? "#7FEFFF" : "rgba(255,255,255,0.2)"}` }}>
               <span className="text-[10px] uppercase tracking-[0.12em] font-black" style={{ color: openaiReady ? "#7FEFFF" : "rgba(255,255,255,0.3)" }}>Papers</span>
-              <input type="number" min={1} max={20} value={papersPerSubject} onChange={(e) => setPapersPerSubject(Math.max(1, Math.min(20, Number(e.target.value) || 1)))} disabled={simulateAllMutation.isPending || crunchStatus?.running || anyRunning || !openaiReady} className="h-6 w-12 rounded bg-black px-1 text-center text-xs font-black text-white focus:outline-none disabled:opacity-40" style={{ border: "1px solid rgba(0,229,255,0.5)" }} data-testid="input-papers-per-subject" />
+              <input type="number" min={1} max={20} value={papersPerSubject} onChange={(e) => setPapersPerSubject(Math.max(1, Math.min(20, Number(e.target.value) || 1)))} disabled={simulateAllMutation.isPending || crunchStatus?.running || anyRunning || !openaiReady} className="h-6 w-12 rounded bg-black px-1 text-center text-xs font-black text-white focus:outline-none disabled:opacity-40" style={{ border: "1px solid rgba(127,239,255,0.5)" }} data-testid="input-papers-per-subject" />
               <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-white">/subj</span>
             </div>
             <Button size="sm" onClick={() => simulateAllMutation.mutate(papersPerSubject)} disabled={simulateAllMutation.isPending || crunchStatus?.running || anyRunning || !openaiReady} className="gap-2 bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-black disabled:opacity-40"
@@ -1549,7 +1549,7 @@ export default function DBEPortal() {
             {seedNotesStatus?.running && seedNotesStatus.total > 0 && (
               <div className="flex items-center gap-2 flex-wrap">
                 <div className="h-1.5 w-28 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.1)" }}>
-                  <div className="h-full rounded-full transition-all" style={{ width: `${Math.min(100, Math.round(((seedNotesStatus.done + seedNotesStatus.skipped) / seedNotesStatus.total) * 100))}%`, background: "#4ade80" }} />
+                  <div className="h-full rounded-full transition-all" style={{ width: `${Math.min(100, Math.round(((seedNotesStatus.done + seedNotesStatus.skipped) / seedNotesStatus.total) * 100))}%`, background: "#93FFB8" }} />
                 </div>
                 <span className="text-[11px] font-bold text-emerald-300 tabular-nums">
                   {Math.min(100, Math.round(((seedNotesStatus.done + seedNotesStatus.skipped) / seedNotesStatus.total) * 100))}% · {seedNotesStatus.done}✓ {seedNotesStatus.skipped}skip{seedNotesStatus.failed > 0 ? <span className="text-red-400"> {seedNotesStatus.failed}fail</span> : null}
@@ -1570,7 +1570,7 @@ export default function DBEPortal() {
 
         {/* Main tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-4 p-1.5 rounded-2xl h-auto flex-wrap bg-black border border-cyan-500/30 shadow-[0_0_14px_rgba(0,229,255,0.18)]">
+          <TabsList className="mb-4 p-1.5 rounded-2xl h-auto flex-wrap bg-black border border-cyan-500/30 shadow-[0_0_14px_rgba(127,239,255,0.18)]">
             {[
               { value: "overview", label: "Overview" },
               { value: "advanced", label: `Advanced (${filtered.length})` },
@@ -1580,7 +1580,7 @@ export default function DBEPortal() {
               { value: "sync", label: "Sync & Ops" },
             ].map((tab) => (
               <TabsTrigger key={tab.value} value={tab.value} data-testid={`tab-${tab.value}`}
-                className="rounded-xl text-xs px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-cyan-300 data-[state=active]:border data-[state=active]:border-cyan-400 data-[state=active]:shadow-[0_0_14px_rgba(0,229,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors">
+                className="rounded-xl text-xs px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-cyan-300 data-[state=active]:border data-[state=active]:border-cyan-400 data-[state=active]:shadow-[0_0_14px_rgba(127,239,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors">
                 {tab.label}
               </TabsTrigger>
             ))}
@@ -1628,7 +1628,7 @@ export default function DBEPortal() {
           {/* Sync & Ops tab */}
           <TabsContent value="sync" className="space-y-4">
             {/* Sync to Production panel */}
-            <div className="rounded-xl bg-black p-4" style={{ border: "1.5px solid rgba(0,229,255,0.45)", boxShadow: "0 0 14px rgba(0,229,255,0.2)" }} data-testid="sync-production-panel">
+            <div className="rounded-xl bg-black p-4" style={{ border: "1.5px solid rgba(127,239,255,0.45)", boxShadow: "0 0 14px rgba(127,239,255,0.2)" }} data-testid="sync-production-panel">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <CloudUpload className="w-5 h-5 shrink-0" style={{ color: "#7FEFFF" }} />

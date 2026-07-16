@@ -32,7 +32,7 @@ export function AdminPreviewBanner() {
       className="fixed top-0 left-0 right-0 z-[100] bg-black px-4 py-2 flex items-center justify-between gap-3"
       style={{
         borderBottom: "1px solid #FFF29E",
-        boxShadow: "0 0 16px rgba(255,230,0,0.35)",
+        boxShadow: "0 0 16px rgba(255,242,158,0.35)",
       }}
       data-testid="admin-preview-banner"
     >
@@ -57,7 +57,7 @@ export function AdminPreviewBanner() {
         style={{
           border: "1px solid #FFF29E",
           color: "#FFF29E",
-          boxShadow: "0 0 10px rgba(255,230,0,0.3)",
+          boxShadow: "0 0 10px rgba(255,242,158,0.3)",
         }}
         data-testid="button-exit-preview"
       >

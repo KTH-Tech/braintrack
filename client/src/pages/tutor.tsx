@@ -599,7 +599,7 @@ export default function TutorPage() {
       <GraffitiSplats variant="corner" opacity={0.35} />
       <header
         className="sticky top-0 z-50 bg-background/95 relative"
-        style={{ borderBottom: "2px solid rgba(0,229,255,0.5)" }}
+        style={{ borderBottom: "2px solid rgba(127,239,255,0.5)" }}
       >
         <div className="max-w-4xl mx-auto px-2 min-[375px]:px-4">
           <div className="flex items-center justify-between h-14 gap-2 min-[375px]:gap-4">
@@ -607,14 +607,14 @@ export default function TutorPage() {
               <Link href="/dashboard">
                 <button
                   className="inline-flex items-center gap-1.5 px-2 min-[375px]:px-3 py-1.5 rounded-xl bg-background text-xs font-bold shrink-0"
-                  style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 12px rgba(0,229,255,0.4)" }}
+                  style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 12px rgba(127,239,255,0.4)" }}
                   data-testid="link-back"
                 >
                   <ArrowLeft className="h-3.5 w-3.5 shrink-0" />
                   <span className="max-[374px]:hidden">{t.homeLabel}</span>
                 </button>
               </Link>
-              <span className="hidden sm:inline text-base tracking-tight graffiti-hand" style={{ color: "#C6A4FF", textShadow: "0 0 8px rgba(138,43,255,0.45)" }}>
+              <span className="hidden sm:inline text-base tracking-tight graffiti-hand" style={{ color: "#C6A4FF", textShadow: "0 0 8px rgba(198,164,255,0.45)" }}>
                 Rizz
               </span>
             </div>
@@ -622,7 +622,7 @@ export default function TutorPage() {
               <button
                 onClick={toggleLanguage}
                 className="inline-flex items-center gap-1 min-[375px]:gap-1.5 px-2 min-[375px]:px-3 py-1.5 rounded-full bg-background text-[11px] font-black"
-                style={{ color: "#C6A4FF", border: "1px solid rgba(138,43,255,0.55)", boxShadow: "0 0 10px rgba(138,43,255,0.35)" }}
+                style={{ color: "#C6A4FF", border: "1px solid rgba(198,164,255,0.55)", boxShadow: "0 0 10px rgba(198,164,255,0.35)" }}
                 data-testid="button-language-toggle"
                 aria-label={language === "en" ? "EN" : "AF"}
               >
@@ -632,7 +632,7 @@ export default function TutorPage() {
               <button
                 onClick={() => logout()}
                 className="inline-flex items-center gap-1 min-[375px]:gap-1.5 px-2 min-[375px]:px-3 py-1.5 rounded-xl bg-background text-xs font-bold"
-                style={{ color: "#FF9FE5", border: "1.5px solid rgba(255,43,214,0.55)", boxShadow: "0 0 10px rgba(255,43,214,0.35)" }}
+                style={{ color: "#FF9FE5", border: "1.5px solid rgba(255,159,229,0.55)", boxShadow: "0 0 10px rgba(255,159,229,0.35)" }}
                 data-testid="button-logout"
                 aria-label={t.signOut}
               >
@@ -645,13 +645,13 @@ export default function TutorPage() {
       </header>
 
       <div className="max-w-4xl mx-auto w-full px-4 pt-4 flex flex-col sm:flex-row sm:items-center gap-3">
-        <div className="flex flex-wrap gap-1.5 p-1 rounded-xl bg-background w-full sm:w-auto" style={{ border: "1px solid rgba(138,43,255,0.4)", boxShadow: "inset 0 0 12px rgba(0,0,0,0.6)" }}>
+        <div className="flex flex-wrap gap-1.5 p-1 rounded-xl bg-background w-full sm:w-auto" style={{ border: "1px solid rgba(198,164,255,0.4)", boxShadow: "inset 0 0 12px rgba(0,0,0,0.6)" }}>
           <button
             onClick={() => setMode("chat")}
             className="inline-flex flex-1 sm:flex-none items-center justify-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-black transition-none"
             style={
               mode === "chat"
-                ? { color: "#C6A4FF", border: "1.5px solid #C6A4FF", boxShadow: "0 0 14px rgba(138,43,255,0.55), inset 0 0 8px rgba(138,43,255,0.25)", background: "#000" }
+                ? { color: "#C6A4FF", border: "1.5px solid #C6A4FF", boxShadow: "0 0 14px rgba(198,164,255,0.55), inset 0 0 8px rgba(198,164,255,0.25)", background: "#000" }
                 : { color:"#ffffff", border: "1.5px solid transparent", background: "#000" }
             }
             data-testid="button-mode-chat"
@@ -664,7 +664,7 @@ export default function TutorPage() {
             className="inline-flex flex-1 sm:flex-none items-center justify-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-black transition-none"
             style={
               mode === "notes"
-                ? { color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 14px rgba(0,229,255,0.55), inset 0 0 8px rgba(0,229,255,0.25)", background: "#000" }
+                ? { color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 14px rgba(127,239,255,0.55), inset 0 0 8px rgba(127,239,255,0.25)", background: "#000" }
                 : { color:"#ffffff", border: "1.5px solid transparent", background: "#000" }
             }
             data-testid="button-mode-notes"
@@ -677,7 +677,7 @@ export default function TutorPage() {
         <div className="flex items-center gap-1.5 flex-wrap sm:ml-auto">
           <div
             className="flex flex-wrap items-center gap-1 p-1 rounded-lg bg-background"
-            style={{ border: "1px solid rgba(0,229,255,0.4)" }}
+            style={{ border: "1px solid rgba(127,239,255,0.4)" }}
             title={t.voiceLabel}
           >
             <Volume2 className="w-3.5 h-3.5 ml-1" style={{ color: "#7FEFFF" }} />
@@ -685,7 +685,7 @@ export default function TutorPage() {
               onClick={() => setVoiceGender("female")}
               className="px-2.5 py-1 rounded-md text-[11px] font-bold transition-none"
               style={voiceGender === "female"
-                ? { color: "#FF9FE5", border: "1px solid #FF9FE5", boxShadow: "0 0 10px rgba(255,43,214,0.5)" }
+                ? { color: "#FF9FE5", border: "1px solid #FF9FE5", boxShadow: "0 0 10px rgba(255,159,229,0.5)" }
                 : { color:"#ffffff", border: "1px solid transparent" }}
               data-testid="button-voice-female"
             >
@@ -695,7 +695,7 @@ export default function TutorPage() {
               onClick={() => setVoiceGender("male")}
               className="px-2.5 py-1 rounded-md text-[11px] font-bold transition-none"
               style={voiceGender === "male"
-                ? { color: "#6FA8FF", border: "1px solid #6FA8FF", boxShadow: "0 0 10px rgba(0,107,255,0.5)" }
+                ? { color: "#6FA8FF", border: "1px solid #6FA8FF", boxShadow: "0 0 10px rgba(111,168,255,0.5)" }
                 : { color:"#ffffff", border: "1px solid transparent" }}
               data-testid="button-voice-male"
             >
@@ -704,7 +704,7 @@ export default function TutorPage() {
           </div>
           <div
             className="flex flex-wrap items-center gap-0.5 p-1 rounded-lg bg-background"
-            style={{ border: "1px solid rgba(255,230,0,0.4)" }}
+            style={{ border: "1px solid rgba(255,242,158,0.4)" }}
             title={t.speechSpeedLabel}
           >
             {(["slow", "normal", "fast"] as const).map(r => (
@@ -713,7 +713,7 @@ export default function TutorPage() {
                 onClick={() => setVoiceRate(r)}
                 className="px-2 py-1 rounded-md text-[11px] font-bold transition-none"
                 style={voiceRate === r
-                  ? { color: "#FFF29E", border: "1px solid #FFF29E", boxShadow: "0 0 10px rgba(255,230,0,0.5)" }
+                  ? { color: "#FFF29E", border: "1px solid #FFF29E", boxShadow: "0 0 10px rgba(255,242,158,0.5)" }
                   : { color:"#ffffff", border: "1px solid transparent" }}
                 data-testid={`button-voice-rate-${r}`}
               >
@@ -740,12 +740,12 @@ export default function TutorPage() {
                     </span>
                   </h2>
                   {profile?.learningStyle === "visual" && (
-                    <div className="flex items-center gap-1 p-1 rounded-lg bg-background" style={{ border: "1px solid rgba(138,43,255,0.4)" }}>
+                    <div className="flex items-center gap-1 p-1 rounded-lg bg-background" style={{ border: "1px solid rgba(198,164,255,0.4)" }}>
                       <button
                         onClick={() => setNotesView("notes")}
                         className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-bold transition-none"
                         style={notesView === "notes"
-                          ? { color: "#7FEFFF", border: "1px solid #7FEFFF", boxShadow: "0 0 10px rgba(0,229,255,0.5)" }
+                          ? { color: "#7FEFFF", border: "1px solid #7FEFFF", boxShadow: "0 0 10px rgba(127,239,255,0.5)" }
                           : { color:"#ffffff", border: "1px solid transparent" }}
                         data-testid="button-notes-view-notes"
                       >
@@ -755,7 +755,7 @@ export default function TutorPage() {
                         onClick={() => setNotesView("mindmap")}
                         className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-bold transition-none"
                         style={notesView === "mindmap"
-                          ? { color: "#C6A4FF", border: "1px solid #C6A4FF", boxShadow: "0 0 10px rgba(138,43,255,0.5)" }
+                          ? { color: "#C6A4FF", border: "1px solid #C6A4FF", boxShadow: "0 0 10px rgba(198,164,255,0.5)" }
                           : { color:"#ffffff", border: "1px solid transparent" }}
                         data-testid="button-notes-view-mindmap"
                       >
@@ -771,7 +771,7 @@ export default function TutorPage() {
                       <Select value={selectedSubject} onValueChange={setSelectedSubject}>
                         <SelectTrigger
                           className="bg-background"
-                          style={{ border: "1px solid rgba(138,43,255,0.5)", color: "#fff" }}
+                          style={{ border: "1px solid rgba(198,164,255,0.5)", color: "#fff" }}
                           data-testid="select-subject-mindmap"
                         >
                           <SelectValue placeholder={t.selectSubjectMindmapPlaceholder} />
@@ -828,7 +828,7 @@ export default function TutorPage() {
                     >
                       <div
                         className="w-9 h-9 rounded-lg bg-background flex items-center justify-center flex-shrink-0 mt-0.5"
-                        style={{ border: "1px solid #C6A4FF", boxShadow: "0 0 10px rgba(138,43,255,0.5)" }}
+                        style={{ border: "1px solid #C6A4FF", boxShadow: "0 0 10px rgba(198,164,255,0.5)" }}
                       >
                         <StyleIcon className="w-5 h-5" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 3px #C6A4FF)" }} />
                       </div>
@@ -851,7 +851,7 @@ export default function TutorPage() {
                   <Select value={selectedSubject} onValueChange={setSelectedSubject}>
                     <SelectTrigger
                       className="bg-background"
-                      style={{ border: "1px solid rgba(0,229,255,0.5)", color: "#fff" }}
+                      style={{ border: "1px solid rgba(127,239,255,0.5)", color: "#fff" }}
                       data-testid="select-subject-notes"
                     >
                       <SelectValue placeholder={t.selectSubjectPlaceholder} />
@@ -901,14 +901,14 @@ export default function TutorPage() {
                     onChange={(e) => setNotesTopic(e.target.value)}
                     placeholder={t.topicNotesPlaceholder}
                     className="min-h-[80px] bg-background"
-                    style={{ border: "1.5px solid rgba(0,229,255,0.5)", boxShadow: "0 0 14px rgba(0,229,255,0.2), inset 0 0 10px rgba(0,0,0,0.5)", color: "#fff" }}
+                    style={{ border: "1.5px solid rgba(127,239,255,0.5)", boxShadow: "0 0 14px rgba(127,239,255,0.2), inset 0 0 10px rgba(0,0,0,0.5)", color: "#fff" }}
                     data-testid="input-notes-topic"
                   />
                   <button 
                     onClick={handleGenerateNotes} 
                     disabled={notesMutation.isPending || !notesTopic.trim()}
                     className="inline-flex items-center justify-center gap-2 rounded-xl bg-background px-4 py-2 font-bold text-sm transition-none disabled:opacity-40"
-                    style={{ color: "#FF9FE5", border: "1.5px solid #FF9FE5", boxShadow: "0 0 18px rgba(255,43,214,0.55), inset 0 0 10px rgba(255,43,214,0.15)" }}
+                    style={{ color: "#FF9FE5", border: "1.5px solid #FF9FE5", boxShadow: "0 0 18px rgba(255,159,229,0.55), inset 0 0 10px rgba(255,159,229,0.15)" }}
                     data-testid="button-generate-notes"
                   >
                     {notesMutation.isPending ? (
@@ -962,7 +962,7 @@ export default function TutorPage() {
             {generatedNotes && (
               <div
                 className="flex-1 overflow-hidden rounded-2xl bg-background"
-                style={{ border: "1.5px solid #FF9FE5", boxShadow: "0 0 0 1px rgba(255,43,214,0.25), 0 0 28px rgba(255,43,214,0.28), inset 0 0 20px rgba(0,0,0,0.6)" }}
+                style={{ border: "1.5px solid #FF9FE5", boxShadow: "0 0 0 1px rgba(255,159,229,0.25), 0 0 28px rgba(255,159,229,0.28), inset 0 0 20px rgba(0,0,0,0.6)" }}
               >
                 <div className="p-4 h-full flex flex-col">
                   <div className="mb-3 flex items-center justify-between gap-2 flex-wrap">
@@ -1344,12 +1344,12 @@ export default function TutorPage() {
             <div
               aria-hidden
               className="pointer-events-none absolute top-0 left-0 w-[360px] h-[360px] rounded-full opacity-35 blur-3xl"
-              style={{ background: "radial-gradient(circle, rgba(138,43,255,0.45), transparent 70%)" }}
+              style={{ background: "radial-gradient(circle, rgba(198,164,255,0.45), transparent 70%)" }}
             />
             <div
               aria-hidden
               className="pointer-events-none absolute bottom-0 right-0 w-[360px] h-[360px] rounded-full opacity-35 blur-3xl"
-              style={{ background: "radial-gradient(circle, rgba(0,229,255,0.4), transparent 70%)" }}
+              style={{ background: "radial-gradient(circle, rgba(127,239,255,0.4), transparent 70%)" }}
             />
             {(() => {
               const learningStyle = profile?.learningStyle || "mixed";
@@ -1360,7 +1360,7 @@ export default function TutorPage() {
                   className="relative w-20 h-20 rounded-2xl bg-background flex items-center justify-center mb-6"
                   style={{
                     border: "1.5px solid #C6A4FF",
-                    boxShadow: "0 0 0 1px rgba(138,43,255,0.3), 0 0 28px rgba(138,43,255,0.55), inset 0 0 18px rgba(0,0,0,0.6)",
+                    boxShadow: "0 0 0 1px rgba(198,164,255,0.3), 0 0 28px rgba(198,164,255,0.55), inset 0 0 18px rgba(0,0,0,0.6)",
                   }}
                 >
                   <TutorIcon className="w-10 h-10" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 6px #C6A4FF)" }} />
@@ -1369,7 +1369,7 @@ export default function TutorPage() {
             })()}
             <span
               className="relative inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.28em] px-4 py-1.5 rounded-full bg-background mb-4"
-              style={{ color: "#7FEFFF", border: "1px solid rgba(0,229,255,0.55)", boxShadow: "0 0 14px rgba(0,229,255,0.35)" }}
+              style={{ color: "#7FEFFF", border: "1px solid rgba(127,239,255,0.55)", boxShadow: "0 0 14px rgba(127,239,255,0.35)" }}
             >
               <Sparkles className="w-3.5 h-3.5" style={{ filter: "drop-shadow(0 0 4px #7FEFFF)" }} />
               {t.tutorHeading}
@@ -1457,7 +1457,7 @@ export default function TutorPage() {
                     {msg.role === "assistant" && (
                       <div
                         className="w-8 h-8 rounded-lg bg-background flex items-center justify-center flex-shrink-0"
-                        style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 10px rgba(138,43,255,0.5)" }}
+                        style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 10px rgba(198,164,255,0.5)" }}
                       >
                         <TutorIcon className="w-4 h-4" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 3px #C6A4FF)" }} />
                       </div>
@@ -1466,8 +1466,8 @@ export default function TutorPage() {
                       <div
                         className="rounded-2xl px-4 py-3 bg-background"
                         style={msg.role === "user"
-                          ? { border: "1.5px solid #7FEFFF", boxShadow: "0 0 18px rgba(0,229,255,0.35), inset 0 0 10px rgba(0,0,0,0.6)", color: "#fff" }
-                          : { border: "1.5px solid rgba(138,43,255,0.6)", boxShadow: "0 0 18px rgba(138,43,255,0.3), inset 0 0 10px rgba(0,0,0,0.6)" }
+                          ? { border: "1.5px solid #7FEFFF", boxShadow: "0 0 18px rgba(127,239,255,0.35), inset 0 0 10px rgba(0,0,0,0.6)", color: "#fff" }
+                          : { border: "1.5px solid rgba(198,164,255,0.6)", boxShadow: "0 0 18px rgba(198,164,255,0.3), inset 0 0 10px rgba(0,0,0,0.6)" }
                         }
                         data-testid={`message-${msg.role}-${i}`}
                         onContextMenu={msg.role === "assistant" ? e => e.preventDefault() : undefined}
@@ -1481,8 +1481,8 @@ export default function TutorPage() {
                         <div
                           className="mt-2 rounded-xl bg-background px-3 py-2.5"
                           style={{
-                            border: "1px solid rgba(255,230,0,0.45)",
-                            boxShadow: "0 0 10px rgba(255,230,0,0.18), inset 0 0 8px rgba(0,0,0,0.5)",
+                            border: "1px solid rgba(255,242,158,0.45)",
+                            boxShadow: "0 0 10px rgba(255,242,158,0.18), inset 0 0 8px rgba(0,0,0,0.5)",
                           }}
                           data-testid={`citations-${i}`}
                         >
@@ -1540,12 +1540,12 @@ export default function TutorPage() {
                             <div
                               key={di}
                               className="rounded-xl overflow-hidden bg-background"
-                              style={{ border: "1px solid rgba(0,229,255,0.45)", boxShadow: "0 0 12px rgba(0,229,255,0.18), inset 0 0 8px rgba(0,0,0,0.5)" }}
+                              style={{ border: "1px solid rgba(127,239,255,0.45)", boxShadow: "0 0 12px rgba(127,239,255,0.18), inset 0 0 8px rgba(0,0,0,0.5)" }}
                               data-testid={`diagram-${i}-${di}`}
                             >
                               <div
                                 className="px-3 py-1.5 flex items-center gap-2"
-                                style={{ borderBottom: "1px solid rgba(0,229,255,0.25)", background: "rgba(0,229,255,0.07)" }}
+                                style={{ borderBottom: "1px solid rgba(127,239,255,0.25)", background: "rgba(127,239,255,0.07)" }}
                               >
                                 <BookOpen className="w-3 h-3 shrink-0" style={{ color: "#7FEFFF" }} />
                                 <span className="text-[11px] font-black uppercase tracking-widest" style={{ color: "#7FEFFF" }}>
@@ -1561,7 +1561,7 @@ export default function TutorPage() {
                               {diagram.caption && (
                                 <div
                                   className="px-3 py-1.5 text-[11px] leading-snug"
-                                  style={{ borderTop: "1px solid rgba(0,229,255,0.2)", color: "#fff" }}
+                                  style={{ borderTop: "1px solid rgba(127,239,255,0.2)", color: "#fff" }}
                                 >
                                   {diagram.caption}
                                 </div>
@@ -1627,7 +1627,7 @@ export default function TutorPage() {
                                 value={feedbackText[i] || ""}
                                 onChange={(e) => setFeedbackText(prev => ({ ...prev, [i]: e.target.value }))}
                                 className="resize-none text-xs h-16 bg-background"
-                style={{ border: "1px solid rgba(138,43,255,0.3)", color: "#fff" }}
+                style={{ border: "1px solid rgba(198,164,255,0.3)", color: "#fff" }}
                                 data-testid={`textarea-feedback-suggestion-${i}`}
                               />
                               <div className="flex items-center gap-2">
@@ -1663,7 +1663,7 @@ export default function TutorPage() {
                     {msg.role === "user" && (
                       <div
                         className="w-8 h-8 rounded-lg bg-background flex items-center justify-center flex-shrink-0"
-                        style={{ border: "1.5px solid #7FEFFF", boxShadow: "0 0 10px rgba(0,229,255,0.5)" }}
+                        style={{ border: "1.5px solid #7FEFFF", boxShadow: "0 0 10px rgba(127,239,255,0.5)" }}
                       >
                         <User className="w-4 h-4" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 3px #7FEFFF)" }} />
                       </div>
@@ -1680,7 +1680,7 @@ export default function TutorPage() {
                     return (
                       <div
                         className="w-8 h-8 rounded-lg bg-background flex items-center justify-center"
-                        style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 10px rgba(138,43,255,0.5)" }}
+                        style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 10px rgba(198,164,255,0.5)" }}
                       >
                         <TutorIcon className="w-4 h-4" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 3px #C6A4FF)" }} />
                       </div>
@@ -1688,7 +1688,7 @@ export default function TutorPage() {
                   })()}
                   <div
                     className="rounded-2xl px-4 py-3 bg-background"
-                    style={{ border: "1.5px solid rgba(138,43,255,0.6)", boxShadow: "0 0 18px rgba(138,43,255,0.3)" }}
+                    style={{ border: "1.5px solid rgba(198,164,255,0.6)", boxShadow: "0 0 18px rgba(198,164,255,0.3)" }}
                   >
                     <div className="flex items-center gap-2 text-sm" style={{ color: "#C6A4FF" }}>
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -1701,13 +1701,13 @@ export default function TutorPage() {
           </ScrollArea>
         )}
 
-        <div className="pt-4 mt-auto" style={{ borderTop: "1px solid rgba(138,43,255,0.3)" }}>
+        <div className="pt-4 mt-auto" style={{ borderTop: "1px solid rgba(198,164,255,0.3)" }}>
           <div className="flex flex-wrap items-center gap-2 mb-2">
             <BookOpen className="w-4 h-4 shrink-0" style={{ color: "#FFF29E" }} />
             <Select value={selectedSubject} onValueChange={setSelectedSubject}>
               <SelectTrigger
                 className="w-full sm:w-48 h-8 text-xs bg-background"
-                style={{ border: "1px solid rgba(255,230,0,0.4)", color: "#FFF29E" }}
+                style={{ border: "1px solid rgba(255,242,158,0.4)", color: "#FFF29E" }}
                 data-testid="select-subject"
               >
                 <SelectValue placeholder={t.selectSubjectBottomPlaceholder} />
@@ -1753,8 +1753,8 @@ export default function TutorPage() {
               placeholder={t.chatPlaceholder}
               className="min-h-[60px] max-h-32 resize-none bg-background flex-1"
               style={{
-                border: "1.5px solid rgba(0,229,255,0.5)",
-                boxShadow: "0 0 14px rgba(0,229,255,0.2), inset 0 0 10px rgba(0,0,0,0.5)",
+                border: "1.5px solid rgba(127,239,255,0.5)",
+                boxShadow: "0 0 14px rgba(127,239,255,0.2), inset 0 0 10px rgba(0,0,0,0.5)",
                 color: "#fff",
               }}
               disabled={askMutation.isPending}
@@ -1764,7 +1764,7 @@ export default function TutorPage() {
               onClick={handleSend}
               disabled={!inputValue.trim() || askMutation.isPending}
               className="shrink-0 w-12 sm:w-auto sm:px-6 rounded-xl bg-background font-black transition-none disabled:opacity-40 flex items-center justify-center"
-              style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 16px rgba(0,229,255,0.5)" }}
+              style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 16px rgba(127,239,255,0.5)" }}
               data-testid="button-send"
             >
               {askMutation.isPending ? (

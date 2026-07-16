@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Award, Trophy, TrendingUp } from "lucide-react";
 
 const NEON = "#FFF29E";
-const NEON_GLOW = "rgba(255,230,0,0.35)";
+const NEON_GLOW = "rgba(255,242,158,0.35)";
 
 /* Canonical band colours (rainbow-anchored) */
 function scoreNeon(score: number) {

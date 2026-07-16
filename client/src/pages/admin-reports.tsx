@@ -461,7 +461,7 @@ function SchoolOnboardingForm({ onClose, onSuccess }: { onClose: () => void; onS
           </div>
           {/* Value projection */}
           {parseInt(form.expectedLearnerCount || "0") > 0 && (
-            <div className="p-3 rounded-xl bg-black flex items-center justify-between gap-3" style={{ border: "1px solid rgba(255,230,0,0.3)" }}>
+            <div className="p-3 rounded-xl bg-black flex items-center justify-between gap-3" style={{ border: "1px solid rgba(255,242,158,0.3)" }}>
               <div className="flex items-center gap-2">
                 <DollarSign className="w-4 h-4 shrink-0" style={{ color: "#FFF29E" }} />
                 <span className="text-[11px] font-bold uppercase tracking-[0.12em]" style={{ color: "#FFF29E" }}>{isAf ? "Waardeprojeksie" : "Value Projection"}</span>
@@ -1175,35 +1175,35 @@ export default function AdminReportsPage() {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="mb-5 p-1.5 rounded-2xl h-auto flex-wrap bg-black border border-[#7FEFFF]/30 shadow-[0_0_14px_rgba(0,229,255,0.18)]">
-              <TabsTrigger value="overview" className="rounded-xl text-xs gap-1.5 px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#7FEFFF] data-[state=active]:border data-[state=active]:border-[#7FEFFF] data-[state=active]:shadow-[0_0_14px_rgba(0,229,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors">
+            <TabsList className="mb-5 p-1.5 rounded-2xl h-auto flex-wrap bg-black border border-[#7FEFFF]/30 shadow-[0_0_14px_rgba(127,239,255,0.18)]">
+              <TabsTrigger value="overview" className="rounded-xl text-xs gap-1.5 px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#7FEFFF] data-[state=active]:border data-[state=active]:border-[#7FEFFF] data-[state=active]:shadow-[0_0_14px_rgba(127,239,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors">
                 <BarChart3 className="w-3.5 h-3.5" /> {language === "af" ? "Oorsig" : "Overview"}
               </TabsTrigger>
-              <TabsTrigger value="learners" className="rounded-xl text-xs gap-1.5 px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#7FEFFF] data-[state=active]:border data-[state=active]:border-[#7FEFFF] data-[state=active]:shadow-[0_0_14px_rgba(0,229,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors">
+              <TabsTrigger value="learners" className="rounded-xl text-xs gap-1.5 px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#7FEFFF] data-[state=active]:border data-[state=active]:border-[#7FEFFF] data-[state=active]:shadow-[0_0_14px_rgba(127,239,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors">
                 <GraduationCap className="w-3.5 h-3.5" /> {language === "af" ? "Leerders" : "Learners"}
               </TabsTrigger>
-              <TabsTrigger value="parents" className="rounded-xl text-xs gap-1.5 px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#7FEFFF] data-[state=active]:border data-[state=active]:border-[#7FEFFF] data-[state=active]:shadow-[0_0_14px_rgba(0,229,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors">
+              <TabsTrigger value="parents" className="rounded-xl text-xs gap-1.5 px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#7FEFFF] data-[state=active]:border data-[state=active]:border-[#7FEFFF] data-[state=active]:shadow-[0_0_14px_rgba(127,239,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors">
                 <Users className="w-3.5 h-3.5" /> {language === "af" ? "Ouers" : "Parents"}
               </TabsTrigger>
-              <TabsTrigger value="schools" className="rounded-xl text-xs gap-1.5 px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#7FEFFF] data-[state=active]:border data-[state=active]:border-[#7FEFFF] data-[state=active]:shadow-[0_0_14px_rgba(0,229,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors">
+              <TabsTrigger value="schools" className="rounded-xl text-xs gap-1.5 px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#7FEFFF] data-[state=active]:border data-[state=active]:border-[#7FEFFF] data-[state=active]:shadow-[0_0_14px_rgba(127,239,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors">
                 <School className="w-3.5 h-3.5" /> {language === "af" ? "Skole" : "Schools"}
               </TabsTrigger>
-              <TabsTrigger value="partners" className="rounded-xl text-xs gap-1.5 px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#7FEFFF] data-[state=active]:border data-[state=active]:border-[#7FEFFF] data-[state=active]:shadow-[0_0_14px_rgba(0,229,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors">
+              <TabsTrigger value="partners" className="rounded-xl text-xs gap-1.5 px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#7FEFFF] data-[state=active]:border data-[state=active]:border-[#7FEFFF] data-[state=active]:shadow-[0_0_14px_rgba(127,239,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors">
                 <Handshake className="w-3.5 h-3.5" /> {language === "af" ? "Vennote" : "Partners"}
               </TabsTrigger>
-              <TabsTrigger value="clicks" className="rounded-xl text-xs gap-1.5 px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#7FEFFF] data-[state=active]:border data-[state=active]:border-[#7FEFFF] data-[state=active]:shadow-[0_0_14px_rgba(0,229,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors">
+              <TabsTrigger value="clicks" className="rounded-xl text-xs gap-1.5 px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#7FEFFF] data-[state=active]:border data-[state=active]:border-[#7FEFFF] data-[state=active]:shadow-[0_0_14px_rgba(127,239,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors">
                 <MousePointerClick className="w-3.5 h-3.5" /> {language === "af" ? "Klikke & Proeflopies" : "Clicks & Trials"}
               </TabsTrigger>
-              <TabsTrigger value="exam-pressure" className="rounded-xl text-xs gap-1.5 px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#7FEFFF] data-[state=active]:border data-[state=active]:border-[#7FEFFF] data-[state=active]:shadow-[0_0_14px_rgba(0,229,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors" data-testid="tab-exam-pressure">
+              <TabsTrigger value="exam-pressure" className="rounded-xl text-xs gap-1.5 px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#7FEFFF] data-[state=active]:border data-[state=active]:border-[#7FEFFF] data-[state=active]:shadow-[0_0_14px_rgba(127,239,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors" data-testid="tab-exam-pressure">
                 <Calendar className="w-3.5 h-3.5" /> {language === "af" ? "Eksamendruk" : "Exam Pressure"}
               </TabsTrigger>
-              <TabsTrigger value="gamification" className="rounded-xl text-xs gap-1.5 px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#7FEFFF] data-[state=active]:border data-[state=active]:border-[#7FEFFF] data-[state=active]:shadow-[0_0_14px_rgba(0,229,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors">
+              <TabsTrigger value="gamification" className="rounded-xl text-xs gap-1.5 px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#7FEFFF] data-[state=active]:border data-[state=active]:border-[#7FEFFF] data-[state=active]:shadow-[0_0_14px_rgba(127,239,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors">
                 <Zap className="w-3.5 h-3.5" /> {language === "af" ? "Spelifisering" : "Gamification"}
               </TabsTrigger>
-              <TabsTrigger value="reminders" className="rounded-xl text-xs gap-1.5 px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#7FEFFF] data-[state=active]:border data-[state=active]:border-[#7FEFFF] data-[state=active]:shadow-[0_0_14px_rgba(0,229,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors">
+              <TabsTrigger value="reminders" className="rounded-xl text-xs gap-1.5 px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#7FEFFF] data-[state=active]:border data-[state=active]:border-[#7FEFFF] data-[state=active]:shadow-[0_0_14px_rgba(127,239,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors">
                 <Bell className="w-3.5 h-3.5" /> {language === "af" ? "Herinneringe" : "Reminders"}
               </TabsTrigger>
-              <TabsTrigger value="focus-push" className="rounded-xl text-xs gap-1.5 px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#7FEFFF] data-[state=active]:border data-[state=active]:border-[#7FEFFF] data-[state=active]:shadow-[0_0_14px_rgba(0,229,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors">
+              <TabsTrigger value="focus-push" className="rounded-xl text-xs gap-1.5 px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#7FEFFF] data-[state=active]:border data-[state=active]:border-[#7FEFFF] data-[state=active]:shadow-[0_0_14px_rgba(127,239,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors">
                 <Send className="w-3.5 h-3.5" /> {language === "af" ? "Daaglikse Stoot" : "Daily Push"}
               </TabsTrigger>
             </TabsList>
@@ -1761,13 +1761,13 @@ export default function AdminReportsPage() {
       <Dialog open={showOnboarding} onOpenChange={setShowOnboarding}>
         <DialogContent
           className="w-[95vw] sm:w-auto sm:max-w-xl max-h-[90vh] overflow-y-auto bg-black text-white p-5 sm:p-6"
-          style={{ border: "1px solid rgba(0,229,255,0.6)", boxShadow: "0 18px 50px -22px rgba(0,229,255,0.5)" }}
+          style={{ border: "1px solid rgba(127,239,255,0.6)", boxShadow: "0 18px 50px -22px rgba(127,239,255,0.5)" }}
         >
           <DialogHeader className="pb-3 mb-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
             <DialogTitle className="flex items-center gap-2.5 text-base font-black tracking-tight">
               <span
                 className="inline-flex items-center justify-center w-7 h-7 rounded-md bg-black"
-                style={{ border: "1px solid #7FEFFF", boxShadow: "0 0 8px rgba(0,229,255,0.4)" }}
+                style={{ border: "1px solid #7FEFFF", boxShadow: "0 0 8px rgba(127,239,255,0.4)" }}
               >
                 <School className="w-3.5 h-3.5" style={{ color: "#7FEFFF" }} />
               </span>
@@ -1904,13 +1904,13 @@ export default function AdminReportsPage() {
       <Dialog open={showAddPartner} onOpenChange={setShowAddPartner}>
         <DialogContent
           className="w-[95vw] sm:w-auto sm:max-w-2xl max-h-[90vh] overflow-y-auto bg-black text-white p-5 sm:p-6"
-          style={{ border: "1.5px solid #FFC48F", boxShadow: "0 0 0 1px rgba(255,138,0,0.3), 0 0 32px rgba(255,138,0,0.35), inset 0 0 24px rgba(0,0,0,0.6)" }}
+          style={{ border: "1.5px solid #FFC48F", boxShadow: "0 0 0 1px rgba(255,196,143,0.3), 0 0 32px rgba(255,196,143,0.35), inset 0 0 24px rgba(0,0,0,0.6)" }}
         >
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-base font-black tracking-tight">
               <span
                 className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-black"
-                style={{ border: "1.5px solid #FFC48F", boxShadow: "0 0 12px rgba(255,138,0,0.5)" }}
+                style={{ border: "1.5px solid #FFC48F", boxShadow: "0 0 12px rgba(255,196,143,0.5)" }}
               >
                 <Handshake className="w-4 h-4" style={{ color: "#FFC48F", filter: "drop-shadow(0 0 4px #FFC48F)" }} />
               </span>
@@ -1942,7 +1942,7 @@ export default function AdminReportsPage() {
             const canSubmit = nameOk && emailOk && codeOk && phoneOk && commOk && !addPartnerMutation.isPending;
             const fieldBase = "w-full text-sm rounded-lg px-3 py-2 bg-black text-white placeholder:text-white focus:outline-none transition-none";
             const fieldStyle = (ok: boolean) => ({
-              border: ok ? "1px solid rgba(255,138,0,0.35)" : "1px solid #ef4444",
+              border: ok ? "1px solid rgba(255,196,143,0.35)" : "1px solid #ef4444",
               boxShadow: ok ? "inset 0 0 8px rgba(0,0,0,0.5)" : "0 0 10px rgba(239,68,68,0.4), inset 0 0 8px rgba(0,0,0,0.5)",
             });
             const labelCls = "text-[10px] font-black uppercase tracking-[0.1em] mb-1.5 block whitespace-nowrap";
@@ -2077,14 +2077,14 @@ export default function AdminReportsPage() {
                       onChange={e => setPartnerForm(f => ({ ...f, notes: e.target.value }))}
                       placeholder={language === "af" ? "Enige nuttige inligting oor hierdie vennoot — ooreengekome voorwaardes, intro-bron, ens." : "Anything useful about this partner — agreed terms, intro source, etc."}
                       className="text-sm min-h-[70px] bg-black text-white placeholder:text-white"
-                      style={{ border: "1px solid rgba(255,43,214,0.35)", boxShadow: "inset 0 0 8px rgba(0,0,0,0.5)" }}
+                      style={{ border: "1px solid rgba(255,159,229,0.35)", boxShadow: "inset 0 0 8px rgba(0,0,0,0.5)" }}
                     />
                   </div>
                 </div>
 
                 <div
                   className="flex items-start gap-2 p-2.5 rounded-lg bg-black"
-                  style={{ border: "1px solid rgba(0,229,255,0.35)" }}
+                  style={{ border: "1px solid rgba(127,239,255,0.35)" }}
                 >
                   <Sparkles className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 3px #7FEFFF)" }} />
                   <p className="text-[11px] text-white leading-relaxed">
@@ -2105,7 +2105,7 @@ export default function AdminReportsPage() {
                     onClick={() => addPartnerMutation.mutate()}
                     data-testid="button-create-partner"
                     className="inline-flex items-center gap-2 rounded-lg bg-black px-4 py-2 text-xs font-black uppercase tracking-[0.18em] transition-none disabled:opacity-40"
-                    style={{ color: "#FFC48F", border: "1.5px solid #FFC48F", boxShadow: "0 0 18px rgba(255,138,0,0.5), inset 0 0 8px rgba(255,138,0,0.18)" }}
+                    style={{ color: "#FFC48F", border: "1.5px solid #FFC48F", boxShadow: "0 0 18px rgba(255,196,143,0.5), inset 0 0 8px rgba(255,196,143,0.18)" }}
                   >
                     {addPartnerMutation.isPending ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> {language === "af" ? "Skep…" : "Creating…"}</> : <><Handshake className="w-3.5 h-3.5" /> {language === "af" ? "Skep vennoot" : "Create partner"}</>}
                   </button>
@@ -2981,13 +2981,13 @@ function ParentRatePromptCard() {
   return (
     <Card
       className="rounded-2xl bg-black"
-      style={{ border: "1.5px solid #FFF29E", boxShadow: "0 0 0 1px rgba(255,230,0,0.25), 0 0 28px rgba(255,230,0,0.25)" }}
+      style={{ border: "1.5px solid #FFF29E", boxShadow: "0 0 0 1px rgba(255,242,158,0.25), 0 0 28px rgba(255,242,158,0.25)" }}
     >
       <CardHeader className="pb-3">
         <CardTitle className="text-sm flex items-center gap-2">
           <span
             className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-black"
-            style={{ border: "1.5px solid #FFF29E", boxShadow: "0 0 10px rgba(255,230,0,0.5)" }}
+            style={{ border: "1.5px solid #FFF29E", boxShadow: "0 0 10px rgba(255,242,158,0.5)" }}
           >
             <Star className="w-3.5 h-3.5" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 4px #FFF29E)" }} />
           </span>
@@ -3012,7 +3012,7 @@ function ParentRatePromptCard() {
             <label className="text-[10px] font-black uppercase tracking-[0.18em] mb-1.5 block" style={{ color: "#FFF29E" }}>{language === "af" ? "Titel (EN)" : "Title (EN)"}</label>
             <input
               className="w-full text-sm rounded-lg px-3 py-2 bg-black text-white placeholder:text-white focus:outline-none"
-              style={{ border: "1px solid rgba(255,230,0,0.35)" }}
+              style={{ border: "1px solid rgba(255,242,158,0.35)" }}
               value={titleEn}
               onChange={e => setTitleEn(e.target.value)}
               maxLength={120}
@@ -3022,7 +3022,7 @@ function ParentRatePromptCard() {
             <label className="text-[10px] font-black uppercase tracking-[0.18em] mb-1.5 block" style={{ color: "#FFC48F" }}>{language === "af" ? "Titel (AF)" : "Title (AF)"}</label>
             <input
               className="w-full text-sm rounded-lg px-3 py-2 bg-black text-white placeholder:text-white focus:outline-none"
-              style={{ border: "1px solid rgba(255,138,0,0.35)" }}
+              style={{ border: "1px solid rgba(255,196,143,0.35)" }}
               value={titleAf}
               onChange={e => setTitleAf(e.target.value)}
               maxLength={120}
@@ -3034,7 +3034,7 @@ function ParentRatePromptCard() {
               value={messageEn}
               onChange={e => setMessageEn(e.target.value)}
               className="text-sm min-h-[80px] bg-black text-white"
-              style={{ border: "1px solid rgba(0,229,255,0.35)" }}
+              style={{ border: "1px solid rgba(127,239,255,0.35)" }}
               maxLength={400}
             />
           </div>
@@ -3044,7 +3044,7 @@ function ParentRatePromptCard() {
               value={messageAf}
               onChange={e => setMessageAf(e.target.value)}
               className="text-sm min-h-[80px] bg-black text-white"
-              style={{ border: "1px solid rgba(138,43,255,0.35)" }}
+              style={{ border: "1px solid rgba(198,164,255,0.35)" }}
               maxLength={400}
             />
           </div>
@@ -3052,7 +3052,7 @@ function ParentRatePromptCard() {
             <label className="text-[10px] font-black uppercase tracking-[0.18em] mb-1.5 block" style={{ color: "#FF9FE5" }}>{language === "af" ? "Graderings-URL (CTA)" : "Rate URL (CTA)"}</label>
             <input
               className="w-full text-sm rounded-lg px-3 py-2 bg-black text-white placeholder:text-white focus:outline-none font-mono"
-              style={{ border: "1px solid rgba(255,43,214,0.35)" }}
+              style={{ border: "1px solid rgba(255,159,229,0.35)" }}
               value={ctaUrl}
               onChange={e => setCtaUrl(e.target.value)}
               placeholder="https://play.google.com/store/apps/details?id=…"
@@ -3066,7 +3066,7 @@ function ParentRatePromptCard() {
             disabled={!valid || send.isPending}
             onClick={() => send.mutate()}
             className="inline-flex items-center gap-2 rounded-lg bg-black px-4 py-2 text-xs font-black uppercase tracking-[0.18em] transition-none disabled:opacity-40"
-            style={{ color: "#FFF29E", border: "1.5px solid #FFF29E", boxShadow: "0 0 18px rgba(255,230,0,0.45), inset 0 0 8px rgba(255,230,0,0.15)" }}
+            style={{ color: "#FFF29E", border: "1.5px solid #FFF29E", boxShadow: "0 0 18px rgba(255,242,158,0.45), inset 0 0 8px rgba(255,242,158,0.15)" }}
           >
             {send.isPending ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> {language === "af" ? "Stuur…" : "Sending…"}</> : <><Send className="w-3.5 h-3.5" /> {language === "af" ? "Stuur na alle ouers" : "Blast to all parents"}</>}
           </button>

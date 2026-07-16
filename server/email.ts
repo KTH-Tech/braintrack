@@ -105,10 +105,10 @@ function buildHtmlWrapper(opts: {
           <td align="center">
             <!--[if mso]>
             <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"
-              href="${ctaUrl}" style="height:52px;v-text-anchor:middle;width:240px;" arcsize="8%"
+              href="${ctaUrl}" style="height:44px;v-text-anchor:middle;width:210px;" arcsize="27%"
               stroke="t" strokecolor="#00E5FF" fillcolor="#006BFF">
               <w:anchorlock/>
-              <center style="color:#ffffff;font-family:Arial,sans-serif;font-size:16px;font-weight:bold;">
+              <center style="color:#ffffff;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;">
                 ${ctaLabel}
               </center>
             </v:roundrect>
@@ -116,7 +116,7 @@ function buildHtmlWrapper(opts: {
             <!--[if !mso]><!-->
             <a href="${ctaUrl}"
                target="_blank"
-               style="display:inline-block;background:#006BFF;color:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:700;text-decoration:none;padding:16px 40px;border-radius:12px;border:2px solid #00E5FF;letter-spacing:0.5px;box-shadow:0 4px 20px rgba(0,229,255,0.35);mso-hide:all;">
+               style="display:inline-block;background:#006BFF;color:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;text-decoration:none;padding:12px 28px;border-radius:12px;border:2px solid #00E5FF;letter-spacing:0.3px;mso-hide:all;">
               ${ctaLabel}
             </a>
             <!--<![endif]-->
@@ -224,9 +224,9 @@ function buildHtmlWrapper(opts: {
               </p>
               <p style="margin:0 0 10px;font-family:Arial,Helvetica,sans-serif;font-size:12px;
                         font-weight:600;color:#ffffff;text-align:center;letter-spacing:0.4px;">
-                <a href="https://braintrack.co.za" style="color:#006BFF;text-decoration:none;">braintrack.co.za</a>
+                <a href="https://braintrack.co.za" style="color:#00E5FF;text-decoration:none;">braintrack.co.za</a>
                 &nbsp;·&nbsp;
-                <a href="mailto:learn@kth-tech.com" style="color:#006BFF;text-decoration:none;">learn@kth-tech.com</a>
+                <a href="mailto:learn@kth-tech.com" style="color:#00E5FF;text-decoration:none;">learn@kth-tech.com</a>
               </p>
               <p style="margin:0 0 10px;font-family:Arial,Helvetica,sans-serif;font-size:11px;
                         color:#ffffff;text-align:center;letter-spacing:0.2px;">
@@ -251,7 +251,7 @@ function buildHtmlWrapper(opts: {
               <!-- KTH Tech sign-off -->
               <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:11px;
                         color:#ffffff;text-align:center;letter-spacing:0.5px;">
-                &copy; ${new Date().getFullYear()} BrainTrack &middot; Powered by <strong style="color:#006BFF;">KTH Tech</strong>
+                &copy; ${new Date().getFullYear()} BrainTrack &middot; Powered by <strong style="color:#00E5FF;">KTH Tech</strong>
               </p>
             </td>
           </tr>
@@ -346,7 +346,7 @@ function buildConsentRequestPayload(opts: {
         <p>Klik die knoppie hieronder om toestemming te bevestig:</p>
         <p style="font-size:13px;color:#ffffff;word-break:break-all;">
           Of plak hierdie skakel in jou blaaier:<br/>
-          <a href="${consentUrl}" style="color:#006BFF;">${consentUrl}</a>
+          <a href="${consentUrl}" style="color:#00E5FF;">${consentUrl}</a>
         </p>
         <p style="font-size:13px;color:#ffffff;">Hierdie skakel verval oor <strong>7 dae</strong>.</p>
       `,
@@ -362,7 +362,7 @@ function buildConsentRequestPayload(opts: {
       <p>Click the button below to confirm your consent:</p>
       <p style="font-size:13px;color:#ffffff;word-break:break-all;">
         Or paste this link into your browser:<br/>
-        <a href="${consentUrl}" style="color:#006BFF;">${consentUrl}</a>
+        <a href="${consentUrl}" style="color:#00E5FF;">${consentUrl}</a>
       </p>
       <p style="font-size:13px;color:#ffffff;">This link expires in <strong>7 days</strong>.</p>
     `,
@@ -1198,7 +1198,7 @@ function buildSchoolEnquiryConfirmationPayload(opts: {
       <ul style="padding-left:20px;margin:0 0 16px;">
         <li style="margin-bottom:8px;">A member of our schools team will review your application and get in touch within <strong>2–3 business days</strong>.</li>
         <li style="margin-bottom:8px;">We'll send details on pricing, learner access, and how to onboard your Grade 12 cohort.</li>
-        <li>If you have any urgent questions in the meantime, email us at <a href="mailto:learn@kth-tech.com" style="color:#006BFF;text-decoration:none;">learn@kth-tech.com</a> and quote your reference number.</li>
+        <li>If you have any urgent questions in the meantime, email us at <a href="mailto:learn@kth-tech.com" style="color:#00E5FF;text-decoration:none;">learn@kth-tech.com</a> and quote your reference number.</li>
       </ul>
       <p>We're excited about the possibility of supporting your learners as they prepare for their NSC exams. 🎓</p>
     `,

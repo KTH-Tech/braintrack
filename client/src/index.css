@@ -882,7 +882,7 @@ html.light .text-muted-foreground { color: hsl(var(--muted-foreground)); }
   background: #000;
   border-bottom: 3px solid;
   border-image: linear-gradient(90deg,#006BFF,#00E5FF,#22FF66,#FFE600,#FF8A00,#FF2BD6,#8A2BFF) 1;
-  box-shadow: 0 0 32px rgba(0,229,255,0.18), 0 4px 24px rgba(0,0,0,0.8);
+  box-shadow: 0 0 32px rgba(127,239,255,0.18), 0 4px 24px rgba(0,0,0,0.8);
 }
 
 html.light .nav-glass {
@@ -906,16 +906,16 @@ html.light .nav-glass {
   transition: all 0.15s ease;
 }
 .nav-link:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.05); transform: scale(1.04); }
-.nav-link-active { background: #006BFF !important; border-color: #006BFF !important; color: #fff !important; box-shadow: 0 0 16px rgba(0,107,255,0.5); }
+.nav-link-active { background: #006BFF !important; border-color: #006BFF !important; color: #fff !important; box-shadow: 0 0 16px rgba(111,168,255,0.5); }
 .nav-active-indicator { display: none; } /* replaced by sticker fill */
 
 /* Mobile panel */
 .nav-mobile-panel {
   background: #050508;
-  border-top: 2px solid rgba(255,43,214,0.35);
+  border-top: 2px solid rgba(255,159,229,0.35);
   animation: nav-panel-open 0.2s ease-out;
 }
-html.light .nav-mobile-panel { background: #f9f9ff; border-top: 2px solid rgba(0,107,255,0.25); }
+html.light .nav-mobile-panel { background: #f9f9ff; border-top: 2px solid rgba(111,168,255,0.25); }
 
 /* ---- CTA buttons — Gen Z yellow sticker by default ---- */
 .nav-cta-btn,
@@ -931,7 +931,7 @@ html.light .nav-mobile-panel { background: #f9f9ff; border-top: 2px solid rgba(0
   text-transform: uppercase !important;
   letter-spacing: 0.08em !important;
   text-shadow: none;
-  box-shadow: 0 0 18px rgba(255,230,0,0.45) !important;
+  box-shadow: 0 0 18px rgba(255,242,158,0.45) !important;
   transition: all 0.15s ease !important;
 }
 .nav-cta-btn:hover, [data-testid="button-hero-cta"]:hover, .btn-rainbow:hover {
@@ -1939,17 +1939,17 @@ h3.header-bare {
 
 /* Dark-mode section washes — pure black with a single wordmark-stop glow.
    Keeps the landing page on-brand with the cosmic-neon theme used app-wide. */
-.rainbow-wash-blue   { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(0,107,255,0.14) 0%, transparent 65%), #000; }
-.rainbow-wash-cyan   { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(0,229,255,0.16) 0%, transparent 65%), #000; }
-.rainbow-wash-purple { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(138,43,255,0.16) 0%, transparent 65%), #000; }
-.rainbow-wash-pink   { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(255,43,214,0.16) 0%, transparent 65%), #000; }
-.rainbow-wash-green  { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(138,43,255,0.14) 0%, transparent 65%), #000; }
-.rainbow-wash-amber  { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(255,230,0,0.14)  0%, transparent 65%), #000; }
+.rainbow-wash-blue   { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(111,168,255,0.14) 0%, transparent 65%), #000; }
+.rainbow-wash-cyan   { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(127,239,255,0.16) 0%, transparent 65%), #000; }
+.rainbow-wash-purple { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(198,164,255,0.16) 0%, transparent 65%), #000; }
+.rainbow-wash-pink   { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(255,159,229,0.16) 0%, transparent 65%), #000; }
+.rainbow-wash-green  { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(198,164,255,0.14) 0%, transparent 65%), #000; }
+.rainbow-wash-amber  { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(255,242,158,0.14)  0%, transparent 65%), #000; }
 .rainbow-wash-full   {
   background:
-    radial-gradient(ellipse 55% 45% at 15% 0%,  rgba(255,138,0,0.12)  0%, transparent 60%),
-    radial-gradient(ellipse 55% 45% at 85% 0%,  rgba(255,43,214,0.12)  0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 50% 100%,rgba(0,229,255,0.14)  0%, transparent 65%),
+    radial-gradient(ellipse 55% 45% at 15% 0%,  rgba(255,196,143,0.12)  0%, transparent 60%),
+    radial-gradient(ellipse 55% 45% at 85% 0%,  rgba(255,159,229,0.12)  0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 50% 100%,rgba(127,239,255,0.14)  0%, transparent 65%),
     #000;
 }
 html.light .rainbow-wash-blue,
@@ -1990,41 +1990,41 @@ html.light .rainbow-wash-full {
 /* Wordmark-stop panel tints: #006BFF / #00E5FF / #8A2BFF / #FF2BD6 / #8A2BFF / #FF8A00 / #FF8A00 */
 .rainbow-card-blue {
   background:
-    linear-gradient(160deg, rgba(0,107,255,0.30) 0%, rgba(0,107,255,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(0,107,255,0.22), 0 4px 14px rgba(0,0,0,0.60) !important;
+    linear-gradient(160deg, rgba(111,168,255,0.30) 0%, rgba(111,168,255,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(111,168,255,0.22), 0 4px 14px rgba(0,0,0,0.60) !important;
 }
 .rainbow-card-cyan {
   background:
-    linear-gradient(160deg, rgba(0,229,255,0.30) 0%, rgba(0,229,255,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(0,229,255,0.22), 0 4px 14px rgba(0,0,0,0.60) !important;
+    linear-gradient(160deg, rgba(127,239,255,0.30) 0%, rgba(127,239,255,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(127,239,255,0.22), 0 4px 14px rgba(0,0,0,0.60) !important;
 }
 .rainbow-card-purple {
   background:
-    linear-gradient(160deg, rgba(138,43,255,0.30) 0%, rgba(138,43,255,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(138,43,255,0.24), 0 4px 14px rgba(0,0,0,0.60) !important;
+    linear-gradient(160deg, rgba(198,164,255,0.30) 0%, rgba(198,164,255,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(198,164,255,0.24), 0 4px 14px rgba(0,0,0,0.60) !important;
 }
 .rainbow-card-pink {
   background:
-    linear-gradient(160deg, rgba(255,43,214,0.30) 0%, rgba(255,43,214,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(255,43,214,0.24), 0 4px 14px rgba(0,0,0,0.60) !important;
+    linear-gradient(160deg, rgba(255,159,229,0.30) 0%, rgba(255,159,229,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(255,159,229,0.24), 0 4px 14px rgba(0,0,0,0.60) !important;
 }
 .rainbow-card-green {
   /* violet stands in for green (no green in wordmark palette) */
   background:
-    linear-gradient(160deg, rgba(138,43,255,0.30) 0%, rgba(138,43,255,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(138,43,255,0.22), 0 4px 14px rgba(0,0,0,0.60) !important;
+    linear-gradient(160deg, rgba(198,164,255,0.30) 0%, rgba(198,164,255,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(198,164,255,0.22), 0 4px 14px rgba(0,0,0,0.60) !important;
 }
 .rainbow-card-amber,
 .rainbow-card-orange {
   background:
-    linear-gradient(160deg, rgba(255,138,0,0.30) 0%, rgba(255,138,0,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(255,138,0,0.24), 0 4px 14px rgba(0,0,0,0.60) !important;
+    linear-gradient(160deg, rgba(255,196,143,0.30) 0%, rgba(255,196,143,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(255,196,143,0.24), 0 4px 14px rgba(0,0,0,0.60) !important;
 }
 .rainbow-card-red {
   /* warm orange stands in for red (no red in wordmark palette) */
   background:
-    linear-gradient(160deg, rgba(255,138,0,0.32) 0%, rgba(255,138,0,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(255,138,0,0.24), 0 4px 14px rgba(0,0,0,0.60) !important;
+    linear-gradient(160deg, rgba(255,196,143,0.32) 0%, rgba(255,196,143,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(255,196,143,0.24), 0 4px 14px rgba(0,0,0,0.60) !important;
 }
 
 .rainbow-card-blue:hover,
@@ -2054,7 +2054,7 @@ html.light .rainbow-wash-full {
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  box-shadow: 0 0 18px rgba(0,107,255,0.45);
+  box-shadow: 0 0 18px rgba(111,168,255,0.45);
   text-shadow: none;
   transition: all 0.15s ease;
 }
@@ -2062,7 +2062,7 @@ html.light .rainbow-wash-full {
 .prismglass-btn:hover {
   background: #0057D6;
   border-color: #0057D6;
-  box-shadow: 0 0 28px rgba(0,107,255,0.65);
+  box-shadow: 0 0 28px rgba(111,168,255,0.65);
   transform: scale(1.04);
   filter: none;
 }
@@ -2535,9 +2535,9 @@ html.light .rainbow-wash-full {
   box-shadow:
     0 0 0 1px rgba(255,255,255,0.06),
     0 8px 24px rgba(0,0,0,0.55),
-    0 0 28px rgba(255,138,0,0.25),
-    0 0 36px rgba(0,229,255,0.20),
-    0 0 44px rgba(255,43,214,0.22);
+    0 0 28px rgba(255,196,143,0.25),
+    0 0 36px rgba(127,239,255,0.20),
+    0 0 44px rgba(255,159,229,0.22);
   animation: rizz-halo-breathe 3.6s ease-in-out infinite !important;
 }
 .rizz-flash-icon::before {
@@ -3134,7 +3134,7 @@ html.light .rainbow-wash-full {
   50%,100% { opacity: 0.12; }
 }
 @keyframes bt-pulse-ring {
-  0%, 100% { box-shadow: 0 0 0 0 var(--bt-ring, rgba(0,229,255,0.55)); }
+  0%, 100% { box-shadow: 0 0 0 0 var(--bt-ring, rgba(127,239,255,0.55)); }
   50%      { box-shadow: 0 0 0 6px rgba(0,0,0,0); }
 }
 @keyframes bt-tagline-sweep {

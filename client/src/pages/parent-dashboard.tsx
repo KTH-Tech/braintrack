@@ -117,12 +117,12 @@ function CosmicCard({ children, hex, className = "" }: { children: React.ReactNo
 }
 
 const COSMIC: Record<"cyan" | "emerald" | "amber" | "red" | "purple" | "pink", { hex: string; halo: string }> = {
-  cyan:    { hex: "#7FEFFF", halo: "rgba(0,229,255,0.35)" },
-  emerald: { hex: "#93FFB8", halo: "rgba(34,255,102,0.35)" },
-  amber:   { hex: "#FFF29E", halo: "rgba(255,230,0,0.35)" },
-  red:     { hex: "#FF9FE5", halo: "rgba(255,43,214,0.40)" },
-  purple:  { hex: "#C6A4FF", halo: "rgba(138,43,255,0.35)" },
-  pink:    { hex: "#FF9FE5", halo: "rgba(255,43,214,0.35)" },
+  cyan:    { hex: "#7FEFFF", halo: "rgba(127,239,255,0.35)" },
+  emerald: { hex: "#93FFB8", halo: "rgba(147,255,184,0.35)" },
+  amber:   { hex: "#FFF29E", halo: "rgba(255,242,158,0.35)" },
+  red:     { hex: "#FF9FE5", halo: "rgba(255,159,229,0.40)" },
+  purple:  { hex: "#C6A4FF", halo: "rgba(198,164,255,0.35)" },
+  pink:    { hex: "#FF9FE5", halo: "rgba(255,159,229,0.35)" },
 };
 
 // Wall-written highlight — no box, just a neon spray stripe on the left.
@@ -312,7 +312,7 @@ function CountdownClock({ dateStr, startTime, hex, isAf }: { dateStr: string; st
     return (
       <div
         className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black text-[11px] font-black uppercase tracking-[0.18em] bt-pulse-ring"
-        style={{ color: "#FF9FE5", border: "1.5px solid #FF9FE5", boxShadow: "0 0 14px #FF9FE599", ["--bt-ring" as any]: "rgba(255,43,214,0.7)" }}
+        style={{ color: "#FF9FE5", border: "1.5px solid #FF9FE5", boxShadow: "0 0 14px #FF9FE599", ["--bt-ring" as any]: "rgba(255,159,229,0.7)" }}
       >
         <Clock className="w-3 h-3" /> {isAf ? "Eksamen BEGIN!" : "EXAM IS ON!"}
       </div>
@@ -740,7 +740,7 @@ function MonthlySummaryPanel({ summary, isAf }: { summary: MonthlySummary; isAf:
                 <div className="flex-1">
                   <div className="flex justify-between mb-1">
                     <span className="text-xs text-white font-medium">{s.subjectName}</span>
-                    <span className="text-xs font-bold" style={{ color: "#7FEFFF", textShadow: "0 0 6px rgba(0,229,255,0.7)" }}>{s.accuracy}%</span>
+                    <span className="text-xs font-bold" style={{ color: "#7FEFFF", textShadow: "0 0 6px rgba(127,239,255,0.7)" }}>{s.accuracy}%</span>
                   </div>
                   <div className="h-1 rounded-full bg-black overflow-hidden" style={{ border: "1px solid #ffffff" }}>
                     <div className="h-full rounded-full transition-all duration-700" style={{ width: `${s.accuracy}%`, background: "#7FEFFF", boxShadow: "0 0 8px #7FEFFFaa" }} />
@@ -827,7 +827,7 @@ function SubscriptionPanel({ isAf }: { isAf: boolean }) {
           <Button
             size="sm"
             className="shrink-0 rounded-xl font-bold text-sm bg-black text-[#7FEFFF] hover:bg-[#7FEFFF]/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
-            style={{ border: "1.5px solid #7FEFFF", boxShadow: "0 0 12px rgba(0,229,255,0.35)" }}
+            style={{ border: "1.5px solid #7FEFFF", boxShadow: "0 0 12px rgba(127,239,255,0.35)" }}
             data-testid="button-manage-subscription"
           >
             {isAf ? "Bestuur Betaling" : "Manage Payment"}
@@ -1097,17 +1097,16 @@ function ReportEmailOptOutToggle({ learnerUserId, isAf }: { learnerUserId: strin
         disabled={isLoading || mutation.isPending}
         onClick={() => mutation.mutate(!optedOut)}
         data-testid="button-toggle-report-email-opt-out"
-        className="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 disabled:opacity-50"
-        style={{
-          background: optedOut ? "#C6A4FF" : "#000000",
-          border: `1.5px solid ${optedOut ? "#C6A4FF" : "#ffffff"}`,
-          boxShadow: optedOut ? "0 0 10px rgba(138,43,255,0.45)" : "none",
-        }}
+        className="shrink-0 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 disabled:opacity-50"
+        style={
+          optedOut
+            ? { background: "#C6A4FF", color: "#0a0a0a", border: "1.5px solid #C6A4FF", boxShadow: "0 0 16px rgba(198,164,255,0.3)" }
+            : { background: "#000000", color: "#C6A4FF", border: "1.5px solid #C6A4FF" }
+        }
       >
-        <span
-          className="inline-block h-4 w-4 transform rounded-full bg-white transition-transform"
-          style={{ transform: optedOut ? "translateX(22px)" : "translateX(4px)" }}
-        />
+        {optedOut
+          ? <><CheckCircle2 className="w-4 h-4" />{isAf ? "Aan" : "On"}</>
+          : <><XCircle className="w-4 h-4" />{isAf ? "Af" : "Off"}</>}
       </button>
     </section>
   );
@@ -1149,7 +1148,7 @@ function DownloadReportButton({ learnerName, isAf }: { learnerName: string; isAf
         title={hint}
         aria-label={hint}
         className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold bg-black disabled:opacity-60 disabled:cursor-wait transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
-        style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 14px rgba(0,229,255,0.45)" }}
+        style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 14px rgba(127,239,255,0.45)" }}
         data-testid="button-download-report"
       >
         {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
@@ -1232,8 +1231,8 @@ function Sparkline({ studyDays, totalQ }: { studyDays: number; totalQ: number })
       <svg width={W} height={H} className="overflow-visible" role="presentation" aria-hidden="true">
         <defs>
           <linearGradient id="spark-fill-cosmic" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="rgba(0,229,255,0.28)" />
-            <stop offset="100%" stopColor="rgba(0,229,255,0)" />
+            <stop offset="0%" stopColor="rgba(127,239,255,0.28)" />
+            <stop offset="100%" stopColor="rgba(127,239,255,0)" />
           </linearGradient>
         </defs>
         <polygon points={filled} fill="url(#spark-fill-cosmic)" />
@@ -1385,11 +1384,11 @@ export default function ParentDashboardPage() {
       <GraffitiSplats variant="full" opacity={0.5} />
       <header
         className="sticky top-0 z-50 bg-background/95"
-        style={{ borderBottom: "2px solid rgba(0,229,255,0.4)", boxShadow: "0 0 20px rgba(0,229,255,0.15)" }}
+        style={{ borderBottom: "2px solid rgba(127,239,255,0.4)", boxShadow: "0 0 20px rgba(127,239,255,0.15)" }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 gap-4">
-            <span className="graffiti-hand text-base tracking-tight" style={{ color: "#FFF29E", textShadow: "0 0 8px rgba(255,230,0,0.4)" }}>
+            <span className="graffiti-hand text-base tracking-tight" style={{ color: "#FFF29E", textShadow: "0 0 8px rgba(255,242,158,0.4)" }}>
               {isAf ? "Ouerpaneel" : "Parent Dashboard"}
             </span>
             <div className="flex items-center gap-1.5">
@@ -1397,7 +1396,7 @@ export default function ParentDashboardPage() {
               <button
                 onClick={toggleLanguage}
                 className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-black text-xs font-bold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
-                style={{ color: "#C6A4FF", border: "1.5px solid #C6A4FF", boxShadow: "0 0 10px rgba(138,43,255,0.35)" }}
+                style={{ color: "#C6A4FF", border: "1.5px solid #C6A4FF", boxShadow: "0 0 10px rgba(198,164,255,0.35)" }}
                 data-testid="button-language-toggle"
               >
                 <Globe className="h-3.5 w-3.5" />
@@ -1434,14 +1433,14 @@ export default function ParentDashboardPage() {
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-black"
-              style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 12px rgba(138,43,255,0.35)" }}
+              style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 12px rgba(198,164,255,0.35)" }}
             >
               <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#C6A4FF", boxShadow: "0 0 6px #C6A4FF" }} />
               <span className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: "#C6A4FF" }}>
                 {isAf ? "Ouerverslag" : "Parent Report"}
               </span>
             </div>
-            <h1 className="graffiti-hand text-3xl sm:text-4xl md:text-5xl text-white tracking-tight leading-[1.05]" style={{ textShadow: "0 0 12px rgba(0,229,255,0.4)" }}>
+            <h1 className="graffiti-hand text-3xl sm:text-4xl md:text-5xl text-white tracking-tight leading-[1.05]" style={{ textShadow: "0 0 12px rgba(127,239,255,0.4)" }}>
               {isAf ? `Welkom, ${user?.firstName || "Ouer"}` : `Welcome, ${user?.firstName || "Parent"}`}
             </h1>
             <p className="text-white font-medium text-base sm:text-lg max-w-2xl">
@@ -1463,7 +1462,7 @@ export default function ParentDashboardPage() {
           <CosmicCard hex="#FF9FE5">
             <div className="py-10 text-center" data-testid="parent-dashboard-error">
               <AlertTriangle className="w-10 h-10 mx-auto mb-4" style={{ color: "#FF9FE5", filter: "drop-shadow(0 0 6px #FF9FE5)" }} />
-              <h2 className="graffiti-hand text-2xl text-white mb-2" style={{ textShadow: "0 0 10px rgba(255,43,214,0.5)" }}>
+              <h2 className="graffiti-hand text-2xl text-white mb-2" style={{ textShadow: "0 0 10px rgba(255,159,229,0.5)" }}>
                 {isAf ? "Kon nie jou dashboard laai nie" : "Couldn't load your dashboard"}
               </h2>
               <p className="text-sm text-white max-w-md mx-auto mb-5">
@@ -1475,7 +1474,7 @@ export default function ParentDashboardPage() {
                 onClick={() => refetchChildProgress()}
                 disabled={isRefetchingChildProgress}
                 className="rounded-xl font-bold text-sm bg-black text-[#FF9FE5] hover:bg-[#FF9FE5]/10"
-                style={{ border: "1.5px solid #FF9FE5", boxShadow: "0 0 14px rgba(255,43,214,0.45)" }}
+                style={{ border: "1.5px solid #FF9FE5", boxShadow: "0 0 14px rgba(255,159,229,0.45)" }}
                 data-testid="button-retry-parent-dashboard"
               >
                 <RefreshCw className={`w-4 h-4 mr-2 ${isRefetchingChildProgress ? "animate-spin" : ""}`} />
@@ -1516,7 +1515,7 @@ export default function ParentDashboardPage() {
                         className="px-3 py-1.5 rounded-xl text-xs font-bold transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
                         style={
                           active
-                            ? { background: "#C6A4FF", color: "#000", border: "1.5px solid #C6A4FF", boxShadow: "0 0 12px rgba(138,43,255,0.55)" }
+                            ? { background: "#C6A4FF", color: "#000", border: "1.5px solid #C6A4FF", boxShadow: "0 0 12px rgba(198,164,255,0.55)" }
                             : { background: "#000", color: "#fff", border: "1.5px solid #ffffff" }
                         }
                       >
@@ -1542,7 +1541,7 @@ export default function ParentDashboardPage() {
                   </p>
                   {childProgress.varkPrimary && VARK_STYLES[childProgress.varkPrimary as keyof typeof VARK_STYLES] && (
                     <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black text-xs font-semibold"
-                      style={{ border: "1px solid #FFF29E", color: "#FFF29E", boxShadow: "0 0 10px rgba(255,230,0,0.35)" }}
+                      style={{ border: "1px solid #FFF29E", color: "#FFF29E", boxShadow: "0 0 10px rgba(255,242,158,0.35)" }}
                       data-testid="parent-vark-badge"
                     >
                       <span>{VARK_STYLES[childProgress.varkPrimary as keyof typeof VARK_STYLES].icon}</span>
@@ -1622,7 +1621,7 @@ export default function ParentDashboardPage() {
                 </div>
                 <span
                   className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.22em] px-2 py-0.5 rounded-full bg-black"
-                  style={{ color: "#FFC48F", border: "1px solid #FFC48F", boxShadow: "0 0 10px rgba(255,138,0,0.35)" }}
+                  style={{ color: "#FFC48F", border: "1px solid #FFC48F", boxShadow: "0 0 10px rgba(255,196,143,0.35)" }}
                 >
                   {isAf ? "Hierdie Week" : "This Week"}
                 </span>
@@ -1912,10 +1911,10 @@ export default function ParentDashboardPage() {
                     {/* Today's directive — what the learner should focus on right now */}
                     {learnerDirective && learnerDirective.hasExam && (() => {
                       const urgencyMap: Record<string, { color: string; glow: string }> = {
-                        final_sprint:     { color: "#FF9FE5", glow: "rgba(255,43,214,0.45)" },
-                        exam_prep_mode:   { color: "#FFC48F", glow: "rgba(255,138,0,0.45)" },
-                        focused_revision: { color: "#FFF29E", glow: "rgba(255,230,0,0.45)" },
-                        build_mastery:    { color: "#C6A4FF", glow: "rgba(138,43,255,0.45)" },
+                        final_sprint:     { color: "#FF9FE5", glow: "rgba(255,159,229,0.45)" },
+                        exam_prep_mode:   { color: "#FFC48F", glow: "rgba(255,196,143,0.45)" },
+                        focused_revision: { color: "#FFF29E", glow: "rgba(255,242,158,0.45)" },
+                        build_mastery:    { color: "#C6A4FF", glow: "rgba(198,164,255,0.45)" },
                       };
                       const u = urgencyMap[learnerDirective.urgencyState] || urgencyMap.build_mastery;
                       const days = learnerDirective.daysUntil ?? 0;
@@ -2054,7 +2053,7 @@ export default function ParentDashboardPage() {
                 <Button
                   size="sm"
                   className="shrink-0 relative rounded-xl font-bold text-sm bg-black text-[#93FFB8] hover:bg-[#93FFB8]/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
-                  style={{ border: "1.5px solid #93FFB8", boxShadow: "0 0 12px rgba(34,255,102,0.35)" }}
+                  style={{ border: "1.5px solid #93FFB8", boxShadow: "0 0 12px rgba(147,255,184,0.35)" }}
                 >
                   {isAf ? "Sien Reis" : "View Journey"}
                   <ChevronRight className="w-3.5 h-3.5 ml-1" />
@@ -2076,12 +2075,12 @@ export default function ParentDashboardPage() {
           <CosmicCard hex="#C6A4FF">
             <div className="py-16 text-center relative z-10">
               <BookOpen className="w-12 h-12 mx-auto mb-4" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 6px #C6A4FF)" }} />
-              <h2 className="graffiti-hand text-2xl text-white mb-2" style={{ textShadow: "0 0 10px rgba(138,43,255,0.5)" }}>{isAf ? "Nog geen kinderrekening gekoppel nie" : "No child account linked yet"}</h2>
+              <h2 className="graffiti-hand text-2xl text-white mb-2" style={{ textShadow: "0 0 10px rgba(198,164,255,0.5)" }}>{isAf ? "Nog geen kinderrekening gekoppel nie" : "No child account linked yet"}</h2>
               <p className="text-sm text-white max-w-md mx-auto">
                 {isAf ? "Vra jou kind om sy aktiveringskode in Instellings te deel — sodra dit gekoppel is, sien jy hul vordering hier." : "Ask your child to share their activation code from Settings — once linked, you'll see their progress here."}
               </p>
               <div className="mt-5">
-                <a href="/subscribe" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-black transition-all" style={{ background: "#C6A4FF", boxShadow: "0 0 18px rgba(138,43,255,0.4)" }} data-testid="link-parent-get-started">
+                <a href="/subscribe" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-black transition-all" style={{ background: "#C6A4FF", boxShadow: "0 0 18px rgba(198,164,255,0.4)" }} data-testid="link-parent-get-started">
                   {isAf ? "Begin nou — Brain Boost" : "Get Started — Brain Boost"}
                 </a>
               </div>
@@ -2113,7 +2112,7 @@ function NoActivityEmptyState({ learnerName, isAf }: { learnerName: string; isAf
         <Rocket className="w-12 h-12 mx-auto mb-5" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 6px #7FEFFF)" }} />
 
         <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-black mb-3"
-          style={{ border: "1.5px solid #7FEFFF", boxShadow: "0 0 12px rgba(0,229,255,0.35)" }}
+          style={{ border: "1.5px solid #7FEFFF", boxShadow: "0 0 12px rgba(127,239,255,0.35)" }}
         >
           <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#7FEFFF", boxShadow: "0 0 6px #7FEFFF" }} />
           <span className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: "#7FEFFF" }}>
@@ -2121,7 +2120,7 @@ function NoActivityEmptyState({ learnerName, isAf }: { learnerName: string; isAf
           </span>
         </div>
 
-        <h2 className="graffiti-hand text-2xl sm:text-3xl text-white mb-2" style={{ textShadow: "0 0 12px rgba(0,229,255,0.4)" }}>
+        <h2 className="graffiti-hand text-2xl sm:text-3xl text-white mb-2" style={{ textShadow: "0 0 12px rgba(127,239,255,0.4)" }}>
           {isAf ? `Nog geen aktiwiteit van ${learnerName} nie` : `No activity from ${learnerName} yet`}
         </h2>
         <p className="text-sm sm:text-base text-white max-w-xl mx-auto leading-relaxed">
@@ -2439,7 +2438,7 @@ function ParentTipCard({ isAf }: { isAf: boolean }) {
       <div className="relative flex items-start gap-4">
         <Lightbulb className="w-6 h-6 shrink-0 mt-0.5" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 4px #FFF29E)" }} />
         <div>
-          <h3 className="graffiti-hand text-base mb-1" style={{ color: "#FFF29E", textShadow: "0 0 8px rgba(255,230,0,0.5)" }}>{isAf ? "Ouertip van die Week" : "Parent Tip of the Week"}</h3>
+          <h3 className="graffiti-hand text-base mb-1" style={{ color: "#FFF29E", textShadow: "0 0 8px rgba(255,242,158,0.5)" }}>{isAf ? "Ouertip van die Week" : "Parent Tip of the Week"}</h3>
           <p className="text-sm text-white leading-relaxed">{tips[tipIndex]}</p>
         </div>
       </div>

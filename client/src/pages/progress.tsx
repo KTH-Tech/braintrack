@@ -68,7 +68,7 @@ export default function ProgressPage() {
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       <GraffitiSplats variant="band" opacity={0.35} />
-      <header className="border-b-2 sticky top-0 z-50 bg-background/95 relative" style={{ borderColor: "rgba(0,229,255,0.5)" }}>
+      <header className="border-b-2 sticky top-0 z-50 bg-background/95 relative" style={{ borderColor: "rgba(127,239,255,0.5)" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 gap-4">
             <div className="flex items-center gap-3">
@@ -123,9 +123,9 @@ export default function ProgressPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
         {/* Cosmic wordmark wash behind the report */}
         <div aria-hidden className="pointer-events-none absolute inset-0 -z-0 opacity-40">
-          <div className="absolute top-[5%] left-[10%] w-[420px] h-[420px] rounded-full blur-3xl" style={{ background: "radial-gradient(circle, rgba(0,229,255,0.22), transparent 70%)" }} />
-          <div className="absolute top-[40%] right-[0%] w-[380px] h-[380px] rounded-full blur-3xl" style={{ background: "radial-gradient(circle, rgba(138,43,255,0.22), transparent 70%)" }} />
-          <div className="absolute bottom-[5%] left-[30%] w-[420px] h-[420px] rounded-full blur-3xl" style={{ background: "radial-gradient(circle, rgba(255,138,0,0.18), transparent 70%)" }} />
+          <div className="absolute top-[5%] left-[10%] w-[420px] h-[420px] rounded-full blur-3xl" style={{ background: "radial-gradient(circle, rgba(127,239,255,0.22), transparent 70%)" }} />
+          <div className="absolute top-[40%] right-[0%] w-[380px] h-[380px] rounded-full blur-3xl" style={{ background: "radial-gradient(circle, rgba(198,164,255,0.22), transparent 70%)" }} />
+          <div className="absolute bottom-[5%] left-[30%] w-[420px] h-[420px] rounded-full blur-3xl" style={{ background: "radial-gradient(circle, rgba(255,196,143,0.18), transparent 70%)" }} />
         </div>
 
         <div className="space-y-8 relative z-10">
@@ -153,7 +153,7 @@ export default function ProgressPage() {
                 className="relative overflow-hidden rounded-3xl bg-background p-6 sm:p-8 md:p-10"
                 style={{
                   border: "1.5px solid #7FEFFF",
-                  boxShadow: "0 0 0 1px rgba(0,229,255,0.28), 0 0 32px rgba(0,229,255,0.35), inset 0 0 28px rgba(0,0,0,0.6)",
+                  boxShadow: "0 0 0 1px rgba(127,239,255,0.28), 0 0 32px rgba(127,239,255,0.35), inset 0 0 28px rgba(0,0,0,0.6)",
                 }}
               >
                 {/* Grid texture */}
@@ -162,7 +162,7 @@ export default function ProgressPage() {
                   className="absolute inset-0 pointer-events-none opacity-[0.08]"
                   style={{
                     backgroundImage:
-                      "linear-gradient(rgba(0,229,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,255,1) 1px, transparent 1px)",
+                      "linear-gradient(rgba(127,239,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(127,239,255,1) 1px, transparent 1px)",
                     backgroundSize: "44px 44px",
                     maskImage: "radial-gradient(ellipse at center, black 40%, transparent 80%)",
                     WebkitMaskImage: "radial-gradient(ellipse at center, black 40%, transparent 80%)",
@@ -195,7 +195,7 @@ export default function ProgressPage() {
                     <div className="flex flex-wrap items-center gap-2">
                       <div
                         className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-background"
-                        style={{ border: "1px solid rgba(0,229,255,0.55)", boxShadow: "0 0 12px rgba(0,229,255,0.4)" }}
+                        style={{ border: "1px solid rgba(127,239,255,0.55)", boxShadow: "0 0 12px rgba(127,239,255,0.4)" }}
                       >
                         <span className="w-1.5 h-1.5 rounded-full progress-hero-pulse" style={{ background: "#7FEFFF", boxShadow: "0 0 6px #7FEFFF" }} />
                         <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#7FEFFF" }}>
@@ -212,7 +212,7 @@ export default function ProgressPage() {
                       </div>
                       <div
                         className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-background"
-                        style={{ border: "1px solid rgba(255,138,0,0.55)", boxShadow: "0 0 10px rgba(255,138,0,0.4)" }}
+                        style={{ border: "1px solid rgba(255,196,143,0.55)", boxShadow: "0 0 10px rgba(255,196,143,0.4)" }}
                       >
                         <Flame className="w-3 h-3" style={{ color: "#FFC48F", filter: "drop-shadow(0 0 4px #FFC48F)" }} />
                         <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#FFC48F" }}>
@@ -229,7 +229,7 @@ export default function ProgressPage() {
                         WebkitBackgroundClip: "text",
                         WebkitTextFillColor: "transparent",
                         backgroundClip: "text",
-                        filter: "drop-shadow(0 0 18px rgba(0,229,255,0.25))",
+                        filter: "drop-shadow(0 0 18px rgba(127,239,255,0.25))",
                       }}
                     >
                       {isAf ? "Jou Vordering" : "Your Progress"}
@@ -260,7 +260,7 @@ export default function ProgressPage() {
                             width: `${readiness}%`,
                             background:
                               "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)",
-                            boxShadow: "0 0 14px rgba(0,229,255,0.7), 0 0 22px rgba(138,43,255,0.5)",
+                            boxShadow: "0 0 14px rgba(127,239,255,0.7), 0 0 22px rgba(198,164,255,0.5)",
                           }}
                         />
                       </div>
@@ -288,7 +288,7 @@ export default function ProgressPage() {
                       <Link href="/dashboard">
                         <button
                           className="px-4 py-2 rounded-xl bg-background font-bold text-xs uppercase tracking-widest"
-                          style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 14px rgba(0,229,255,0.4)" }}
+                          style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 14px rgba(127,239,255,0.4)" }}
                           data-testid="button-back"
                         >
                           <ArrowLeft className="w-3.5 h-3.5 inline mr-1.5" />
@@ -354,7 +354,7 @@ export default function ProgressPage() {
                             y1={y1}
                             x2={x2}
                             y2={y2}
-                            stroke="rgba(0,229,255,0.4)"
+                            stroke="rgba(127,239,255,0.4)"
                             strokeWidth="1"
                           />
                         );
@@ -460,14 +460,14 @@ export default function ProgressPage() {
                 {/* Subject Progress */}
                 <div
                   className="relative rounded-2xl bg-background overflow-hidden"
-                  style={{ border: "1.5px solid #6FA8FF", boxShadow: "0 0 0 1px rgba(0,107,255,0.28), 0 0 26px rgba(0,107,255,0.3), inset 0 0 22px rgba(0,0,0,0.55)" }}
+                  style={{ border: "1.5px solid #6FA8FF", boxShadow: "0 0 0 1px rgba(111,168,255,0.28), 0 0 26px rgba(111,168,255,0.3), inset 0 0 22px rgba(0,0,0,0.55)" }}
                 >
                   <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#6FA8FF" }} />
                   <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#6FA8FF" }} />
                   <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#6FA8FF" }} />
                   <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#6FA8FF" }} />
-                  <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(0,107,255,0.35)" }}>
-                    <TrendingUp className="w-5 h-5" style={{ color: "#6FA8FF", filter: "drop-shadow(0 0 6px rgba(0,107,255,0.85))" }} />
+                  <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(111,168,255,0.35)" }}>
+                    <TrendingUp className="w-5 h-5" style={{ color: "#6FA8FF", filter: "drop-shadow(0 0 6px rgba(111,168,255,0.85))" }} />
                     <h2 className="text-lg font-bold text-foreground">{isAf ? "Vakvordering" : "Subject Progress"}</h2>
                   </div>
                   <div className="p-5 space-y-3">
@@ -525,14 +525,14 @@ export default function ProgressPage() {
                 {/* Areas to Improve */}
                 <div
                   className="relative rounded-2xl bg-background overflow-hidden"
-                  style={{ border: "1.5px solid #FF9FE5", boxShadow: "0 0 0 1px rgba(255,43,214,0.28), 0 0 26px rgba(255,43,214,0.3), inset 0 0 22px rgba(0,0,0,0.55)" }}
+                  style={{ border: "1.5px solid #FF9FE5", boxShadow: "0 0 0 1px rgba(255,159,229,0.28), 0 0 26px rgba(255,159,229,0.3), inset 0 0 22px rgba(0,0,0,0.55)" }}
                 >
                   <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FF9FE5" }} />
                   <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#FF9FE5" }} />
                   <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#FF9FE5" }} />
                   <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#FF9FE5" }} />
-                  <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(255,43,214,0.35)" }}>
-                    <TrendingDown className="w-5 h-5" style={{ color: "#FF9FE5", filter: "drop-shadow(0 0 6px rgba(255,43,214,0.85))" }} />
+                  <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(255,159,229,0.35)" }}>
+                    <TrendingDown className="w-5 h-5" style={{ color: "#FF9FE5", filter: "drop-shadow(0 0 6px rgba(255,159,229,0.85))" }} />
                     <h2 className="text-lg font-bold text-foreground">{isAf ? "Areas om te Verbeter" : "Areas to Improve"}</h2>
                   </div>
                   <div className="p-5 space-y-3">
@@ -577,14 +577,14 @@ export default function ProgressPage() {
               {/* Recent Activity */}
               <div
                 className="relative rounded-2xl bg-background overflow-hidden"
-                style={{ border: "1.5px solid #FFF29E", boxShadow: "0 0 0 1px rgba(255,230,0,0.28), 0 0 26px rgba(255,230,0,0.28), inset 0 0 22px rgba(0,0,0,0.55)" }}
+                style={{ border: "1.5px solid #FFF29E", boxShadow: "0 0 0 1px rgba(255,242,158,0.28), 0 0 26px rgba(255,242,158,0.28), inset 0 0 22px rgba(0,0,0,0.55)" }}
               >
                 <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FFF29E" }} />
                 <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#FFF29E" }} />
                 <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#FFF29E" }} />
                 <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#FFF29E" }} />
-                <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(255,230,0,0.35)" }}>
-                  <Calendar className="w-5 h-5" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 6px rgba(255,230,0,0.85))" }} />
+                <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(255,242,158,0.35)" }}>
+                  <Calendar className="w-5 h-5" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 6px rgba(255,242,158,0.85))" }} />
                   <h2 className="text-lg font-bold text-foreground">{isAf ? "Onlangse Aktiwiteit" : "Recent Activity"}</h2>
                 </div>
                 <div className="p-6">

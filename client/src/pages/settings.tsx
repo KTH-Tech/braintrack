@@ -540,16 +540,16 @@ export default function SettingsPage() {
         className="pointer-events-none fixed inset-0 z-0"
         style={{
           background:
-            "radial-gradient(ellipse 55% 45% at 12% 8%,  rgba(0,229,255,0.10) 0%, transparent 60%)," +
-            "radial-gradient(ellipse 55% 45% at 88% 6%,  rgba(138,43,255,0.10) 0%, transparent 60%)," +
-            "radial-gradient(ellipse 70% 55% at 50% 100%, rgba(255,230,0,0.08) 0%, transparent 65%)," +
+            "radial-gradient(ellipse 55% 45% at 12% 8%,  rgba(127,239,255,0.10) 0%, transparent 60%)," +
+            "radial-gradient(ellipse 55% 45% at 88% 6%,  rgba(198,164,255,0.10) 0%, transparent 60%)," +
+            "radial-gradient(ellipse 70% 55% at 50% 100%, rgba(255,242,158,0.08) 0%, transparent 65%)," +
             "#000",
         }}
       />
       <div className="relative z-10">
         <header
           className="sticky top-0 z-50 bg-black/80"
-          style={{ borderBottom: "1px solid rgba(0,229,255,0.35)" }}
+          style={{ borderBottom: "1px solid rgba(127,239,255,0.35)" }}
         >
           <div className="max-w-4xl mx-auto px-4 sm:px-6">
             <div className="flex items-center justify-between h-14 gap-4">
@@ -575,7 +575,7 @@ export default function SettingsPage() {
                     style={{
                       color: "#7FEFFF",
                       border: "1px solid #7FEFFF",
-                      boxShadow: "0 0 10px rgba(0,229,255,0.4)",
+                      boxShadow: "0 0 10px rgba(127,239,255,0.4)",
                     }}
                     data-testid="button-dashboard"
                   >
@@ -595,7 +595,7 @@ export default function SettingsPage() {
             style={{
               border: "1.5px solid #7FEFFF",
               boxShadow:
-                "0 0 0 1px rgba(0,229,255,0.32), 0 0 34px rgba(0,229,255,0.4), inset 0 0 28px rgba(0,0,0,0.6)",
+                "0 0 0 1px rgba(127,239,255,0.32), 0 0 34px rgba(127,239,255,0.4), inset 0 0 28px rgba(0,0,0,0.6)",
             }}
           >
             <div
@@ -607,9 +607,9 @@ export default function SettingsPage() {
               }}
             />
             <div aria-hidden className="absolute -top-20 -right-20 w-60 h-60 rounded-full blur-3xl pointer-events-none"
-              style={{ background: "radial-gradient(circle, rgba(0,229,255,0.28), transparent 70%)" }} />
+              style={{ background: "radial-gradient(circle, rgba(127,239,255,0.28), transparent 70%)" }} />
             <div aria-hidden className="absolute -bottom-20 -left-20 w-60 h-60 rounded-full blur-3xl pointer-events-none"
-              style={{ background: "radial-gradient(circle, rgba(138,43,255,0.22), transparent 70%)" }} />
+              style={{ background: "radial-gradient(circle, rgba(198,164,255,0.22), transparent 70%)" }} />
 
             <span aria-hidden className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2" style={{ borderColor: "#7FEFFF" }} />
             <span aria-hidden className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2" style={{ borderColor: "#7FEFFF" }} />
@@ -623,21 +623,21 @@ export default function SettingsPage() {
                   className="absolute inset-0 rounded-full blur-2xl"
                   style={{
                     background:
-                      "radial-gradient(circle, rgba(0,229,255,0.55) 0%, rgba(138,43,255,0.35) 45%, transparent 75%)",
+                      "radial-gradient(circle, rgba(127,239,255,0.55) 0%, rgba(198,164,255,0.35) 45%, transparent 75%)",
                   }}
                 />
                 <img
                   src={brainLogo}
                   alt="BrainTrack"
                   className="relative w-full h-full object-contain"
-                  style={{ filter: "drop-shadow(0 0 22px rgba(0,229,255,0.5)) drop-shadow(0 0 12px rgba(255,43,214,0.45))" }}
+                  style={{ filter: "drop-shadow(0 0 22px rgba(127,239,255,0.5)) drop-shadow(0 0 12px rgba(255,159,229,0.45))" }}
                   data-testid="img-brain-logo"
                 />
               </div>
               <div className="flex flex-wrap items-center justify-center gap-2">
                 <div
                   className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
-                  style={{ border: "1px solid #7FEFFF", boxShadow: "0 0 14px rgba(0,229,255,0.5)" }}
+                  style={{ border: "1px solid #7FEFFF", boxShadow: "0 0 14px rgba(127,239,255,0.5)" }}
                 >
                   <SlidersHorizontal className="w-3 h-3" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 4px #7FEFFF)" }} />
                   <span className="text-[10px] font-black uppercase tracking-[0.24em]" style={{ color: "#7FEFFF" }}>
@@ -646,7 +646,7 @@ export default function SettingsPage() {
                 </div>
                 <div
                   className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
-                  style={{ border: "1px solid rgba(138,43,255,0.65)", boxShadow: "0 0 10px rgba(138,43,255,0.4)" }}
+                  style={{ border: "1px solid rgba(198,164,255,0.65)", boxShadow: "0 0 10px rgba(198,164,255,0.4)" }}
                 >
                   <Shield className="w-3 h-3" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 4px #C6A4FF)" }} />
                   <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#C6A4FF" }}>
@@ -663,7 +663,7 @@ export default function SettingsPage() {
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
-                  filter: "drop-shadow(0 0 22px rgba(0,229,255,0.32))",
+                  filter: "drop-shadow(0 0 22px rgba(127,239,255,0.32))",
                 }}
                 data-testid="text-settings-title"
               >
@@ -685,7 +685,7 @@ export default function SettingsPage() {
             <div className="space-y-4">
               <div
                 className="p-3 rounded-xl bg-black"
-                style={{ border: "1px solid rgba(0,229,255,0.35)" }}
+                style={{ border: "1px solid rgba(127,239,255,0.35)" }}
               >
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white">
                   {t.currentNumber}
@@ -698,10 +698,10 @@ export default function SettingsPage() {
               {user?.role === "learner" && (
                 <div
                   className="flex items-start gap-3 p-3 rounded-xl bg-black"
-                  style={{ border: "1px solid rgba(138,43,255,0.45)", boxShadow: "0 0 12px rgba(138,43,255,0.18)" }}
+                  style={{ border: "1px solid rgba(198,164,255,0.45)", boxShadow: "0 0 12px rgba(198,164,255,0.18)" }}
                   data-testid="phone-parent-lock"
                 >
-                  <Shield className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 4px rgba(138,43,255,0.7))" }} />
+                  <Shield className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 4px rgba(198,164,255,0.7))" }} />
                   <div className="text-sm">
                     <p className="font-black uppercase tracking-[0.16em] text-[11px]" style={{ color: "#C6A4FF" }}>
                       {t.managedByParent}
@@ -737,9 +737,9 @@ export default function SettingsPage() {
 
                   <div
                     className="flex items-start gap-3 p-3 rounded-xl bg-black"
-                    style={{ border: "1px solid rgba(255,230,0,0.45)", boxShadow: "0 0 12px rgba(255,230,0,0.18)" }}
+                    style={{ border: "1px solid rgba(255,242,158,0.45)", boxShadow: "0 0 12px rgba(255,242,158,0.18)" }}
                   >
-                    <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 4px rgba(255,230,0,0.7))" }} />
+                    <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 4px rgba(255,242,158,0.7))" }} />
                     <div className="text-sm">
                       <p className="font-black uppercase tracking-[0.16em] text-[11px]" style={{ color: "#FFF29E" }}>
                         {t.verificationRequired}
@@ -757,8 +757,8 @@ export default function SettingsPage() {
                     style={{
                       color: "#7FEFFF",
                       border: "1.5px solid #7FEFFF",
-                      boxShadow: "0 0 14px rgba(0,229,255,0.45)",
-                      textShadow: "0 0 6px rgba(0,229,255,0.5)",
+                      boxShadow: "0 0 14px rgba(127,239,255,0.45)",
+                      textShadow: "0 0 6px rgba(127,239,255,0.5)",
                     }}
                     data-testid="button-request-otp"
                   >
@@ -781,9 +781,9 @@ export default function SettingsPage() {
                 <div className="space-y-4">
                   <div
                     className="flex items-center gap-2 p-3 rounded-xl bg-black"
-                    style={{ border: "1px solid rgba(0,229,255,0.45)", boxShadow: "0 0 12px rgba(0,229,255,0.22)" }}
+                    style={{ border: "1px solid rgba(127,239,255,0.45)", boxShadow: "0 0 12px rgba(127,239,255,0.22)" }}
                   >
-                    <CheckCircle className="w-5 h-5" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 4px rgba(0,229,255,0.7))" }} />
+                    <CheckCircle className="w-5 h-5" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 4px rgba(127,239,255,0.7))" }} />
                     <p className="text-sm text-white">
                       {t.codeSentTo}{" "}
                       <strong style={{ color: "#7FEFFF" }}>{pendingPhone}</strong>
@@ -820,7 +820,7 @@ export default function SettingsPage() {
                         setOtpCode("");
                       }}
                       className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-black font-bold text-sm text-white hover:text-white"
-                      style={{ border: "1px solid #fff" }}
+                      style={{ border: "1.5px solid #fff" }}
                       data-testid="button-cancel-verify"
                     >
                       {t.cancel}
@@ -832,8 +832,8 @@ export default function SettingsPage() {
                       style={{
                         color: "#7FEFFF",
                         border: "1.5px solid #7FEFFF",
-                        boxShadow: "0 0 14px rgba(0,229,255,0.45)",
-                        textShadow: "0 0 6px rgba(0,229,255,0.5)",
+                        boxShadow: "0 0 14px rgba(127,239,255,0.45)",
+                        textShadow: "0 0 6px rgba(127,239,255,0.5)",
                       }}
                       data-testid="button-verify-otp"
                     >
@@ -894,7 +894,7 @@ export default function SettingsPage() {
                               className="flex items-center gap-3 p-3 rounded-xl bg-black text-left transition-all"
                               style={{
                                 border: active ? "1.5px solid #6FA8FF" : "1px solid rgba(255,255,255,0.12)",
-                                boxShadow: active ? "0 0 14px rgba(0,107,255,0.35), inset 0 0 10px rgba(0,107,255,0.12)" : "none",
+                                boxShadow: active ? "0 0 14px rgba(111,168,255,0.35), inset 0 0 10px rgba(111,168,255,0.12)" : "none",
                               }}
                               data-testid={`subject-chip-${subject.id}`}
                             >
@@ -932,19 +932,19 @@ export default function SettingsPage() {
                         type="button"
                         onClick={() => updateSubjectsMutation.mutate(selectedSubjects)}
                         disabled={!canSave}
-                        className="h-8 px-4 text-[11px] font-black uppercase tracking-[0.18em] bg-black border disabled:opacity-40"
+                        className="px-4 py-2 rounded-xl text-sm font-bold normal-case tracking-normal bg-black inline-flex items-center justify-center gap-2 disabled:opacity-40"
                         style={{
-                          color: canSave ? "#6FA8FF" : "#fff",
-                          borderColor: canSave ? "#6FA8FF" : "rgba(255,255,255,0.18)",
-                          boxShadow: canSave ? "0 0 12px rgba(0,107,255,0.4)" : "none",
+                          color: "#6FA8FF",
+                          border: "1.5px solid #6FA8FF",
+                          boxShadow: "0 0 16px rgba(111,168,255,0.3)",
                         }}
                         data-testid="button-save-subjects"
                       >
                         {updateSubjectsMutation.isPending ? (
-                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          <Loader2 className="w-4 h-4 animate-spin" />
                         ) : (
                           <>
-                            <Save className="w-3 h-3 mr-1.5" />
+                            <Save className="w-4 h-4" />
                             {t.save}
                           </>
                         )}
@@ -986,7 +986,7 @@ export default function SettingsPage() {
                   {hasSchoolPushed && (
                     <div
                       className="rounded-xl bg-black px-3 py-2 text-[11px] text-white"
-                      style={{ border: "1px solid rgba(0,229,255,0.30)" }}
+                      style={{ border: "1px solid rgba(127,239,255,0.30)" }}
                     >
                       {t.schoolPushedNotice}
                     </div>
@@ -1001,7 +1001,7 @@ export default function SettingsPage() {
                         <div
                           key={subject.id}
                           className="rounded-xl bg-black p-3"
-                          style={{ border: "1px solid rgba(0,229,255,0.20)" }}
+                          style={{ border: "1px solid rgba(127,239,255,0.20)" }}
                           data-testid={`prelim-row-${subject.id}`}
                         >
                           <p className="text-sm font-bold text-white mb-2">
@@ -1049,19 +1049,19 @@ export default function SettingsPage() {
                       type="button"
                       onClick={savePrelims}
                       disabled={!prelimDirty || updatePrelimsMutation.isPending}
-                      className="h-8 px-4 text-[11px] font-black uppercase tracking-[0.18em] bg-black border disabled:opacity-40"
+                      className="px-4 py-2 rounded-xl text-sm font-bold normal-case tracking-normal bg-black inline-flex items-center justify-center gap-2 disabled:opacity-40"
                       style={{
-                        color: prelimDirty ? "#7FEFFF" : "#fff",
-                        borderColor: prelimDirty ? "#7FEFFF" : "rgba(255,255,255,0.18)",
-                        boxShadow: prelimDirty ? "0 0 12px rgba(0,229,255,0.4)" : "none",
+                        color: "#7FEFFF",
+                        border: "1.5px solid #7FEFFF",
+                        boxShadow: "0 0 16px rgba(127,239,255,0.3)",
                       }}
                       data-testid="button-save-prelims"
                     >
                       {updatePrelimsMutation.isPending ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
                         <>
-                          <Save className="w-3 h-3 mr-1.5" />
+                          <Save className="w-4 h-4" />
                           {t.save}
                         </>
                       )}
@@ -1086,7 +1086,7 @@ export default function SettingsPage() {
                 className="relative rounded-2xl bg-black px-4 py-5 text-center overflow-hidden"
                 style={{
                   border: "1.5px solid #FF9FE5",
-                  boxShadow: "0 0 0 1px rgba(255,43,214,0.25), 0 0 22px rgba(255,43,214,0.35), inset 0 0 14px rgba(0,0,0,0.55)",
+                  boxShadow: "0 0 0 1px rgba(255,159,229,0.25), 0 0 22px rgba(255,159,229,0.35), inset 0 0 14px rgba(0,0,0,0.55)",
                 }}
               >
                 <span aria-hidden className="absolute top-1 left-1 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: "#FF9FE5" }} />
@@ -1099,7 +1099,7 @@ export default function SettingsPage() {
                 </p>
                 <p
                   className="mt-1.5 font-mono font-black text-2xl sm:text-3xl tracking-[0.18em]"
-                  style={{ color: "#FF9FE5", textShadow: "0 0 12px rgba(255,43,214,0.75)" }}
+                  style={{ color: "#FF9FE5", textShadow: "0 0 12px rgba(255,159,229,0.75)" }}
                   data-testid="text-referral-code"
                 >
                   {referral?.code ?? "········"}
@@ -1109,7 +1109,7 @@ export default function SettingsPage() {
               {/* Full link row */}
               <div
                 className="rounded-xl bg-black px-3 py-2.5"
-                style={{ border: "1px solid rgba(255,43,214,0.3)" }}
+                style={{ border: "1px solid rgba(255,159,229,0.3)" }}
               >
                 <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white mb-1">
                   {t.yourReferralLink}
@@ -1131,8 +1131,8 @@ export default function SettingsPage() {
                 style={{
                   color: "#FF9FE5",
                   border: "1.5px solid #FF9FE5",
-                  boxShadow: "0 0 14px rgba(255,43,214,0.45)",
-                  textShadow: "0 0 6px rgba(255,43,214,0.5)",
+                  boxShadow: "0 0 14px rgba(255,159,229,0.45)",
+                  textShadow: "0 0 6px rgba(255,159,229,0.5)",
                 }}
                 data-testid="button-copy-referral"
               >
@@ -1142,13 +1142,13 @@ export default function SettingsPage() {
               </button>
 
               <div className="flex items-center gap-3">
-                <div className="flex-1 h-2 rounded-full bg-black overflow-hidden" style={{ border: "1px solid rgba(255,43,214,0.3)" }}>
+                <div className="flex-1 h-2 rounded-full bg-black overflow-hidden" style={{ border: "1px solid rgba(255,159,229,0.3)" }}>
                   <div
                     className="h-full rounded-full"
                     style={{
                       width: `${((referral?.thisMonthCount ?? 0) / (referral?.maxPerMonth ?? 2)) * 100}%`,
                       background: "#FF9FE5",
-                      boxShadow: "0 0 10px rgba(255,43,214,0.6)",
+                      boxShadow: "0 0 10px rgba(255,159,229,0.6)",
                     }}
                   />
                 </div>
@@ -1158,12 +1158,12 @@ export default function SettingsPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 rounded-xl bg-black text-center" style={{ border: "1px solid rgba(255,43,214,0.3)" }}>
+                <div className="p-3 rounded-xl bg-black text-center" style={{ border: "1px solid rgba(255,159,229,0.3)" }}>
                   <Users className="w-5 h-5 mx-auto mb-1" style={{ color: "#FF9FE5" }} />
                   <p className="text-lg font-bold text-white">{referral?.thisMonthCount ?? 0}</p>
                   <p className="text-[10px] text-white">{t.thisMonth}</p>
                 </div>
-                <div className="p-3 rounded-xl bg-black text-center" style={{ border: "1px solid rgba(255,230,0,0.3)" }}>
+                <div className="p-3 rounded-xl bg-black text-center" style={{ border: "1px solid rgba(255,242,158,0.3)" }}>
                   <Gift className="w-5 h-5 mx-auto mb-1" style={{ color: "#FFF29E" }} />
                   <p className="text-lg font-bold text-white">{(referral?.maxPerMonth ?? 2) - (referral?.thisMonthCount ?? 0)}</p>
                   <p className="text-[10px] text-white">{t.slotsLeft}</p>
@@ -1186,7 +1186,7 @@ export default function SettingsPage() {
             subtitle={t.sportActivitiesSubtitle}
             testId="card-activities"
           >
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
               <Input
                 placeholder={t.activityPlaceholder}
                 value={newActivity}
@@ -1208,8 +1208,8 @@ export default function SettingsPage() {
                   }
                 }}
                 disabled={!newActivity.trim()}
-                className="shrink-0 w-10 h-10 rounded-md bg-black flex items-center justify-center disabled:opacity-50"
-                style={{ color: "#FFF29E", border: "1.5px solid #FFF29E", boxShadow: "0 0 10px rgba(255,230,0,0.28)" }}
+                className="shrink-0 w-9 h-9 rounded-xl bg-black flex items-center justify-center disabled:opacity-50"
+                style={{ color: "#FFF29E", border: "1.5px solid #FFF29E", boxShadow: "0 0 16px rgba(255,242,158,0.3)" }}
                 data-testid="button-add-activity"
               >
                 <Plus className="w-4 h-4" />
@@ -1222,7 +1222,7 @@ export default function SettingsPage() {
                   <span
                     key={idx}
                     className="flex items-center gap-1 py-1.5 px-3 text-sm rounded-full bg-black text-white"
-                    style={{ border: "1px solid rgba(255,230,0,0.5)" }}
+                    style={{ border: "1px solid rgba(255,242,158,0.5)" }}
                     data-testid={`activity-badge-${idx}`}
                   >
                     <Dumbbell className="w-3 h-3" style={{ color: "#FFF29E" }} />
@@ -1252,7 +1252,7 @@ export default function SettingsPage() {
               }}
               disabled={activities.length === 0}
               className="px-4 py-2 rounded-xl bg-black font-bold text-sm inline-flex items-center justify-center gap-2 disabled:opacity-40"
-              style={{ color: "#FFF29E", border: "1.5px solid #FFF29E", boxShadow: "0 0 12px rgba(255,230,0,0.28)" }}
+              style={{ color: "#FFF29E", border: "1.5px solid #FFF29E", boxShadow: "0 0 12px rgba(255,242,158,0.28)" }}
               data-testid="button-save-activities"
             >
               <Save className="w-4 h-4" />

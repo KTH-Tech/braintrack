@@ -583,10 +583,10 @@ export default function DashboardPage() {
   const prepStatus = getPrepStatus();
 
   const accentMap: Record<string, { hex: string; halo: string }> = {
-    cyan:   { hex: "#7FEFFF", halo: "rgba(0,229,255,0.28)" },
-    blue:   { hex: "#6FA8FF", halo: "rgba(0,107,255,0.28)" },
-    yellow: { hex: "#FFF29E", halo: "rgba(255,230,0,0.28)" },
-    pink:   { hex: "#FF9FE5", halo: "rgba(255,43,214,0.28)" },
+    cyan:   { hex: "#7FEFFF", halo: "rgba(127,239,255,0.28)" },
+    blue:   { hex: "#6FA8FF", halo: "rgba(111,168,255,0.28)" },
+    yellow: { hex: "#FFF29E", halo: "rgba(255,242,158,0.28)" },
+    pink:   { hex: "#FF9FE5", halo: "rgba(255,159,229,0.28)" },
   };
   const ac = accentMap[prepStatus.accent];
 
@@ -616,7 +616,7 @@ export default function DashboardPage() {
           background: "#000",
           borderBottom: "3px solid transparent",
           borderImage: "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5) 1",
-          boxShadow: "0 0 28px rgba(0,229,255,0.18), 0 4px 20px rgba(0,0,0,0.8)",
+          boxShadow: "0 0 28px rgba(127,239,255,0.18), 0 4px 20px rgba(0,0,0,0.8)",
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -666,7 +666,7 @@ export default function DashboardPage() {
               <button
                 onClick={() => logout()}
                 className="flex items-center justify-center w-9 h-9 rounded-xl transition-all hover:scale-105"
-                style={{ background: "rgba(255,43,214,0.1)", border: "1.5px solid #FF9FE5", color: "#FF9FE5" }}
+                style={{ background: "rgba(255,159,229,0.1)", border: "1.5px solid #FF9FE5", color: "#FF9FE5" }}
                 data-testid="button-logout"
                 title={t.signOutLabel}
               >
@@ -674,7 +674,7 @@ export default function DashboardPage() {
               </button>
               <button
                 className="md:hidden flex items-center justify-center w-9 h-9 rounded-xl transition-all hover:scale-105"
-                style={{ background: "rgba(0,229,255,0.1)", border: "1.5px solid #7FEFFF", color: "#7FEFFF" }}
+                style={{ background: "rgba(127,239,255,0.1)", border: "1.5px solid #7FEFFF", color: "#7FEFFF" }}
                 onClick={() => setMobileOpen(v => !v)}
               >
                 {mobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
@@ -686,7 +686,7 @@ export default function DashboardPage() {
         {mobileOpen && (
           <div
             className="md:hidden px-4 py-3 grid grid-cols-4 gap-2"
-            style={{ background: "#050508", borderTop: "2px solid rgba(0,229,255,0.2)" }}
+            style={{ background: "#050508", borderTop: "2px solid rgba(127,239,255,0.2)" }}
           >
             {navLinks.map(({ href, icon: Icon, label }, idx) => {
               const active = location === href;
@@ -776,9 +776,9 @@ export default function DashboardPage() {
             data-testid="subscription-lapsed-banner"
             className="flex flex-wrap items-center justify-between gap-3 rounded-2xl px-5 py-3.5"
             style={{
-              background: "linear-gradient(135deg, rgba(255,43,214,0.10) 0%, transparent 60%), #000",
-              border: "1px solid rgba(255,43,214,0.45)",
-              boxShadow: "0 0 18px rgba(255,43,214,0.15)",
+              background: "linear-gradient(135deg, rgba(255,159,229,0.10) 0%, transparent 60%), #000",
+              border: "1px solid rgba(255,159,229,0.45)",
+              boxShadow: "0 0 18px rgba(255,159,229,0.15)",
             }}
           >
             <div className="flex items-center gap-3">
@@ -793,7 +793,7 @@ export default function DashboardPage() {
                 style={{
                   background: "#FF9FE5",
                   color: "#000",
-                  boxShadow: "0 0 12px rgba(255,43,214,0.5)",
+                  boxShadow: "0 0 12px rgba(255,159,229,0.5)",
                 }}
               >
                 <RefreshCcw className="w-3 h-3 inline mr-1.5 -mt-0.5" />
@@ -1122,10 +1122,10 @@ export default function DashboardPage() {
         {subscription && (() => {
           const status = subscription.status;
           const statusConfig: Record<string, { label: string; labelAf: string; hex: string; halo: string }> = {
-            active: { label: "Active",       labelAf: "Aktief",         hex: "#7FEFFF", halo: "rgba(0,229,255,0.22)"  },
-            trial:  { label: "Free Trial",   labelAf: "Gratis Proef",   hex: "#FFF29E", halo: "rgba(255,230,0,0.22)"  },
-            grace:  { label: "Grace Period", labelAf: "Grasietydperk",  hex: "#FFC48F", halo: "rgba(255,138,0,0.22)"  },
-            lapsed: { label: "Lapsed",       labelAf: "Verval",         hex: "#FF9FE5", halo: "rgba(255,43,214,0.22)"  },
+            active: { label: "Active",       labelAf: "Aktief",         hex: "#7FEFFF", halo: "rgba(127,239,255,0.22)"  },
+            trial:  { label: "Free Trial",   labelAf: "Gratis Proef",   hex: "#FFF29E", halo: "rgba(255,242,158,0.22)"  },
+            grace:  { label: "Grace Period", labelAf: "Grasietydperk",  hex: "#FFC48F", halo: "rgba(255,196,143,0.22)"  },
+            lapsed: { label: "Lapsed",       labelAf: "Verval",         hex: "#FF9FE5", halo: "rgba(255,159,229,0.22)"  },
           };
           const sc = statusConfig[status] ?? statusConfig["lapsed"];
 
@@ -1195,10 +1195,10 @@ export default function DashboardPage() {
         {/* Stat cards — pure black with hex-neon per wordmark stop (LIVE) */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: t.studyStreak,      value: stats?.studyStreak ?? 0,       suffix: "",  sub: t.daysInARow,   Icon: Flame,         hex: "#FFC48F", halo: "rgba(255,138,0,0.32)", testid: "card-stat-streak",     statTestid: "stat-streak"     },
-            { label: t.questionsAnswered, value: stats?.questionsAnswered ?? 0, suffix: "",  sub: t.answeredLabel, Icon: Zap,           hex: "#6FA8FF", halo: "rgba(0,107,255,0.30)", testid: "card-stat-questions",  statTestid: "stat-questions"  },
-            { label: t.accuracy,          value: stats?.accuracy ?? 0,          suffix: "%", sub: t.averageLabel,  Icon: Target,        hex: "#C6A4FF", halo: "rgba(138,43,255,0.32)", testid: "card-stat-accuracy",   statTestid: "stat-accuracy"   },
-            { label: t.papersCompleted,   value: stats?.papersCompleted ?? 0,   suffix: "",  sub: t.completedLabel, Icon: CalendarCheck, hex: "#C6A4FF", halo: "rgba(138,43,255,0.30)", testid: "card-stat-papers",     statTestid: "stat-papers"     },
+            { label: t.studyStreak,      value: stats?.studyStreak ?? 0,       suffix: "",  sub: t.daysInARow,   Icon: Flame,         hex: "#FFC48F", halo: "rgba(255,196,143,0.32)", testid: "card-stat-streak",     statTestid: "stat-streak"     },
+            { label: t.questionsAnswered, value: stats?.questionsAnswered ?? 0, suffix: "",  sub: t.answeredLabel, Icon: Zap,           hex: "#6FA8FF", halo: "rgba(111,168,255,0.30)", testid: "card-stat-questions",  statTestid: "stat-questions"  },
+            { label: t.accuracy,          value: stats?.accuracy ?? 0,          suffix: "%", sub: t.averageLabel,  Icon: Target,        hex: "#C6A4FF", halo: "rgba(198,164,255,0.32)", testid: "card-stat-accuracy",   statTestid: "stat-accuracy"   },
+            { label: t.papersCompleted,   value: stats?.papersCompleted ?? 0,   suffix: "",  sub: t.completedLabel, Icon: CalendarCheck, hex: "#C6A4FF", halo: "rgba(198,164,255,0.30)", testid: "card-stat-papers",     statTestid: "stat-papers"     },
           ].map(({ label, value, suffix, sub, Icon, hex, halo, testid, statTestid }) => (
             <div
               key={label}
@@ -1259,10 +1259,10 @@ export default function DashboardPage() {
             {/* Urgency Banner — cosmic neon, wordmark palette */}
             {examWidgets.urgencyBanner && (() => {
               const urgencyColor: Record<string, { hex: string; halo: string }> = {
-                red:     { hex: "#FF9FE5", halo: "rgba(255,43,214,0.28)" }, // pink = final sprint
-                amber:   { hex: "#FFC48F", halo: "rgba(255,138,0,0.28)" }, // orange = exam prep
-                blue:    { hex: "#FFF29E", halo: "rgba(255,230,0,0.28)" }, // gold = focused
-                emerald: { hex: "#C6A4FF", halo: "rgba(138,43,255,0.28)" },// violet = build
+                red:     { hex: "#FF9FE5", halo: "rgba(255,159,229,0.28)" }, // pink = final sprint
+                amber:   { hex: "#FFC48F", halo: "rgba(255,196,143,0.28)" }, // orange = exam prep
+                blue:    { hex: "#FFF29E", halo: "rgba(255,242,158,0.28)" }, // gold = focused
+                emerald: { hex: "#C6A4FF", halo: "rgba(198,164,255,0.28)" },// violet = build
               };
               const u = urgencyColor[examWidgets.urgencyBanner.color] ?? urgencyColor.emerald;
               const Icon =
@@ -1308,16 +1308,16 @@ export default function DashboardPage() {
               {examWidgets.nextExam && (
                 <div
                   className="relative rounded-2xl bg-black overflow-hidden"
-                  style={{ border: "1.5px solid #7FEFFF", boxShadow: "0 0 0 1px rgba(0,229,255,0.22), 0 0 22px rgba(0,229,255,0.22)" }}
+                  style={{ border: "1.5px solid #7FEFFF", boxShadow: "0 0 0 1px rgba(127,239,255,0.22), 0 0 22px rgba(127,239,255,0.22)" }}
                   data-testid="next-exam-card"
                 >
                   <span aria-hidden className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: "#7FEFFF" }} />
                   <span aria-hidden className="absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2" style={{ borderColor: "#7FEFFF" }} />
                   <span aria-hidden className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2" style={{ borderColor: "#7FEFFF" }} />
                   <span aria-hidden className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: "#7FEFFF" }} />
-                  <div className="flex items-center gap-2 px-5 py-4 border-b" style={{ borderColor: "rgba(0,229,255,0.25)" }}>
-                    <GraduationCap className="w-4 h-4" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 4px rgba(0,229,255,0.6))" }} />
-                    <h3 className="font-bold text-sm" style={{ color: "#7FEFFF", textShadow: "0 0 8px rgba(0,229,255,0.4)" }}>
+                  <div className="flex items-center gap-2 px-5 py-4 border-b" style={{ borderColor: "rgba(127,239,255,0.25)" }}>
+                    <GraduationCap className="w-4 h-4" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 4px rgba(127,239,255,0.6))" }} />
+                    <h3 className="font-bold text-sm" style={{ color: "#7FEFFF", textShadow: "0 0 8px rgba(127,239,255,0.4)" }}>
                       {t.nextExam}
                     </h3>
                   </div>
@@ -1329,9 +1329,9 @@ export default function DashboardPage() {
                     <div className="flex items-center gap-3">
                       <div
                         className="flex-1 rounded-xl p-3 text-center bg-black"
-                        style={{ border: "1px solid rgba(0,229,255,0.4)", boxShadow: "inset 0 0 12px rgba(0,229,255,0.15)" }}
+                        style={{ border: "1px solid rgba(127,239,255,0.4)", boxShadow: "inset 0 0 12px rgba(127,239,255,0.15)" }}
                       >
-                        <p className="text-2xl font-bold tabular-nums" style={{ color: "#7FEFFF", textShadow: "0 0 10px rgba(0,229,255,0.5)" }} data-testid="next-exam-days">
+                        <p className="text-2xl font-bold tabular-nums" style={{ color: "#7FEFFF", textShadow: "0 0 10px rgba(127,239,255,0.5)" }} data-testid="next-exam-days">
                           {examWidgets.nextExam.daysRemaining}
                         </p>
                         <p className="text-[10px] font-semibold text-white uppercase">{t.daysUnit}</p>
@@ -1350,25 +1350,25 @@ export default function DashboardPage() {
               {/* This Week Exams — cosmic neon, orange accent */}
               <div
                 className="relative rounded-2xl bg-black overflow-hidden"
-                style={{ border: "1.5px solid #FFC48F", boxShadow: "0 0 0 1px rgba(255,138,0,0.22), 0 0 22px rgba(255,138,0,0.22)" }}
+                style={{ border: "1.5px solid #FFC48F", boxShadow: "0 0 0 1px rgba(255,196,143,0.22), 0 0 22px rgba(255,196,143,0.22)" }}
                 data-testid="this-week-exams-card"
               >
                 <span aria-hidden className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: "#FFC48F" }} />
                 <span aria-hidden className="absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2" style={{ borderColor: "#FFC48F" }} />
                 <span aria-hidden className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2" style={{ borderColor: "#FFC48F" }} />
                 <span aria-hidden className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: "#FFC48F" }} />
-                <div className="flex items-center gap-2 px-5 py-4 border-b" style={{ borderColor: "rgba(255,138,0,0.25)" }}>
-                  <CalendarDays className="w-4 h-4" style={{ color: "#FFC48F", filter: "drop-shadow(0 0 4px rgba(255,138,0,0.6))" }} />
-                  <h3 className="font-bold text-sm" style={{ color: "#FFC48F", textShadow: "0 0 8px rgba(255,138,0,0.4)" }}>{t.thisWeek}</h3>
+                <div className="flex items-center gap-2 px-5 py-4 border-b" style={{ borderColor: "rgba(255,196,143,0.25)" }}>
+                  <CalendarDays className="w-4 h-4" style={{ color: "#FFC48F", filter: "drop-shadow(0 0 4px rgba(255,196,143,0.6))" }} />
+                  <h3 className="font-bold text-sm" style={{ color: "#FFC48F", textShadow: "0 0 8px rgba(255,196,143,0.4)" }}>{t.thisWeek}</h3>
                 </div>
                 <div className="p-5">
                   {examWidgets.thisWeekExams?.length > 0 ? (
                     <div className="space-y-2">
                       {examWidgets.thisWeekExams.slice(0, 3).map((e: any, i: number) => (
-                        <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl bg-black" style={{ border: "1px solid rgba(255,138,0,0.35)" }}>
+                        <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl bg-black" style={{ border: "1px solid rgba(255,196,143,0.35)" }}>
                           <div
                             className="w-8 h-8 rounded-lg bg-black flex items-center justify-center shrink-0"
-                            style={{ border: "1px solid #FFC48F", boxShadow: "0 0 10px rgba(255,138,0,0.35)" }}
+                            style={{ border: "1px solid #FFC48F", boxShadow: "0 0 10px rgba(255,196,143,0.35)" }}
                           >
                             <span className="text-xs font-bold" style={{ color: "#FFC48F" }}>P{e.paperNumber}</span>
                           </div>
@@ -1398,17 +1398,17 @@ export default function DashboardPage() {
             {examWidgets.subjectPriorityQueue?.length > 0 && (
               <div
                 className="relative rounded-2xl bg-black overflow-hidden"
-                style={{ border: "1.5px solid #FFF29E", boxShadow: "0 0 0 1px rgba(255,230,0,0.22), 0 0 22px rgba(255,230,0,0.22)" }}
+                style={{ border: "1.5px solid #FFF29E", boxShadow: "0 0 0 1px rgba(255,242,158,0.22), 0 0 22px rgba(255,242,158,0.22)" }}
                 data-testid="subject-priority-queue"
               >
                 <span aria-hidden className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: "#FFF29E" }} />
                 <span aria-hidden className="absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2" style={{ borderColor: "#FFF29E" }} />
                 <span aria-hidden className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2" style={{ borderColor: "#FFF29E" }} />
                 <span aria-hidden className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: "#FFF29E" }} />
-                <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: "rgba(255,230,0,0.25)" }}>
+                <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: "rgba(255,242,158,0.25)" }}>
                   <div className="flex items-center gap-2">
-                    <ListOrdered className="w-4 h-4" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 4px rgba(255,230,0,0.6))" }} />
-                    <h3 className="font-bold text-sm" style={{ color: "#FFF29E", textShadow: "0 0 8px rgba(255,230,0,0.4)" }}>
+                    <ListOrdered className="w-4 h-4" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 4px rgba(255,242,158,0.6))" }} />
+                    <h3 className="font-bold text-sm" style={{ color: "#FFF29E", textShadow: "0 0 8px rgba(255,242,158,0.4)" }}>
                       {t.subjectPriority}
                     </h3>
                   </div>
@@ -1422,10 +1422,10 @@ export default function DashboardPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                     {examWidgets.subjectPriorityQueue.slice(0, 6).map((item: any, i: number) => {
                       const urgencyHex: Record<string, { c: string; h: string }> = {
-                        final_sprint:     { c: "#FF9FE5", h: "rgba(255,43,214,0.28)" },
-                        exam_prep_mode:   { c: "#FFC48F", h: "rgba(255,138,0,0.28)" },
-                        focused_revision: { c: "#FFF29E", h: "rgba(255,230,0,0.28)" },
-                        build_mastery:    { c: "#C6A4FF", h: "rgba(138,43,255,0.26)"},
+                        final_sprint:     { c: "#FF9FE5", h: "rgba(255,159,229,0.28)" },
+                        exam_prep_mode:   { c: "#FFC48F", h: "rgba(255,196,143,0.28)" },
+                        focused_revision: { c: "#FFF29E", h: "rgba(255,242,158,0.28)" },
+                        build_mastery:    { c: "#C6A4FF", h: "rgba(198,164,255,0.26)"},
                       };
                       const u = urgencyHex[item.urgencyState] ?? urgencyHex.build_mastery;
                       return (
@@ -1464,13 +1464,13 @@ export default function DashboardPage() {
         {varkStyle && (
           <div
             className="relative flex items-center gap-3 px-4 py-3 rounded-2xl bg-black w-fit overflow-hidden"
-            style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 0 1px rgba(138,43,255,0.22), 0 0 18px rgba(138,43,255,0.22)" }}
+            style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 0 1px rgba(198,164,255,0.22), 0 0 18px rgba(198,164,255,0.22)" }}
             data-testid="vark-style-badge"
           >
             <span aria-hidden className="absolute inset-y-3 left-0 w-[2px] rounded-r" style={{ background: "#C6A4FF", boxShadow: "0 0 8px #C6A4FF" }} />
             <span className="text-2xl pl-1">{varkStyle.icon}</span>
             <div>
-              <p className="text-xs uppercase font-semibold tracking-widest" style={{ color: "#C6A4FF", textShadow: "0 0 8px rgba(138,43,255,0.45)" }}>
+              <p className="text-xs uppercase font-semibold tracking-widest" style={{ color: "#C6A4FF", textShadow: "0 0 8px rgba(198,164,255,0.45)" }}>
                 {t.yourStyleLabel}
               </p>
               <p className="font-bold text-white text-sm">
@@ -1488,8 +1488,8 @@ export default function DashboardPage() {
             className="flex items-start gap-4 px-5 py-4 rounded-2xl border"
             style={{
               background: "#000",
-              borderColor: "rgba(0,229,255,0.45)",
-              boxShadow: "0 0 18px rgba(0,229,255,0.22)",
+              borderColor: "rgba(127,239,255,0.45)",
+              boxShadow: "0 0 18px rgba(127,239,255,0.22)",
             }}
           >
             <span className="text-2xl flex-shrink-0 mt-0.5">
@@ -1515,7 +1515,7 @@ export default function DashboardPage() {
             <Link href="/settings" className="flex-shrink-0">
               <button
                 className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-black"
-                style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 10px rgba(0,229,255,0.4)" }}
+                style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 10px rgba(127,239,255,0.4)" }}
               >
                 {t.viewLabel}
               </button>
@@ -1529,21 +1529,21 @@ export default function DashboardPage() {
             const allCards = [
               {
                 href: "/tutor", testid: "link-smart-tutor", varkKey: "auditory",
-                hex: "#C6A4FF", halo: "rgba(138,43,255,",
-                head: <img src={rizzAvatar} alt="Rizz" className="w-14 h-14 rounded-2xl object-cover" style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 14px rgba(138,43,255,0.45)" }} />,
+                hex: "#C6A4FF", halo: "rgba(198,164,255,",
+                head: <img src={rizzAvatar} alt="Rizz" className="w-14 h-14 rounded-2xl object-cover" style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 14px rgba(198,164,255,0.45)" }} />,
                 title: "Rizz",
                 sub: t.tutorCardSub,
                 cta: t.tutorCardCta,
               },
               {
                 href: "/exam-mode", testid: "link-exam-mode", varkKey: "kinesthetic",
-                hex: "#6FA8FF", halo: "rgba(0,107,255,",
+                hex: "#6FA8FF", halo: "rgba(111,168,255,",
                 head: (
                   <div
                     className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center"
-                    style={{ border: "1.5px solid #6FA8FF", boxShadow: "0 0 14px rgba(0,107,255,0.45), inset 0 0 10px rgba(0,107,255,0.25)" }}
+                    style={{ border: "1.5px solid #6FA8FF", boxShadow: "0 0 14px rgba(111,168,255,0.45), inset 0 0 10px rgba(111,168,255,0.25)" }}
                   >
-                    <Shield className="w-7 h-7" style={{ color: "#6FA8FF", filter: "drop-shadow(0 0 4px rgba(0,107,255,0.55))" }} />
+                    <Shield className="w-7 h-7" style={{ color: "#6FA8FF", filter: "drop-shadow(0 0 4px rgba(111,168,255,0.55))" }} />
                   </div>
                 ),
                 title: t.crunchTitle,
@@ -1552,13 +1552,13 @@ export default function DashboardPage() {
               },
               {
                 href: "/progress", testid: "link-progress-card", varkKey: "visual",
-                hex: "#C6A4FF", halo: "rgba(138,43,255,",
+                hex: "#C6A4FF", halo: "rgba(198,164,255,",
                 head: (
                   <div
                     className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center"
-                    style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 14px rgba(138,43,255,0.45), inset 0 0 10px rgba(138,43,255,0.25)" }}
+                    style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 14px rgba(198,164,255,0.45), inset 0 0 10px rgba(198,164,255,0.25)" }}
                   >
-                    <TrendingUp className="w-7 h-7" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 4px rgba(138,43,255,0.55))" }} />
+                    <TrendingUp className="w-7 h-7" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 4px rgba(198,164,255,0.55))" }} />
                   </div>
                 ),
                 title: t.progressCardTitle,
@@ -1567,13 +1567,13 @@ export default function DashboardPage() {
               },
               {
                 href: "/daily-challenge", testid: "link-daily-challenge", varkKey: "read",
-                hex: "#FFC48F", halo: "rgba(255,138,0,",
+                hex: "#FFC48F", halo: "rgba(255,196,143,",
                 head: (
                   <div
                     className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center"
-                    style={{ border: "1.5px solid #FFC48F", boxShadow: "0 0 14px rgba(255,138,0,0.45), inset 0 0 10px rgba(255,138,0,0.25)" }}
+                    style={{ border: "1.5px solid #FFC48F", boxShadow: "0 0 14px rgba(255,196,143,0.45), inset 0 0 10px rgba(255,196,143,0.25)" }}
                   >
-                    <Sparkles className="w-7 h-7" style={{ color: "#FFC48F", filter: "drop-shadow(0 0 4px rgba(255,138,0,0.55))" }} />
+                    <Sparkles className="w-7 h-7" style={{ color: "#FFC48F", filter: "drop-shadow(0 0 4px rgba(255,196,143,0.55))" }} />
                   </div>
                 ),
                 title: t.dailyChallengeTitle,
@@ -1633,8 +1633,8 @@ export default function DashboardPage() {
               href: "/exam/mini-mock",
               testid: "link-mini-mock",
               hex: "#7FEFFF",
-              halo: "rgba(0,229,255,",
-              icon: <Zap className="w-7 h-7" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 4px rgba(0,229,255,0.55))" }} />,
+              halo: "rgba(127,239,255,",
+              icon: <Zap className="w-7 h-7" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 4px rgba(127,239,255,0.55))" }} />,
               title: t.miniMockTitle,
               sub: t.miniMockSub,
               cta: t.miniMockCta,
@@ -1643,8 +1643,8 @@ export default function DashboardPage() {
               href: "/exam/full",
               testid: "link-full-exam",
               hex: "#FF9FE5",
-              halo: "rgba(255,43,214,",
-              icon: <GraduationCap className="w-7 h-7" style={{ color: "#FF9FE5", filter: "drop-shadow(0 0 4px rgba(255,43,214,0.55))" }} />,
+              halo: "rgba(255,159,229,",
+              icon: <GraduationCap className="w-7 h-7" style={{ color: "#FF9FE5", filter: "drop-shadow(0 0 4px rgba(255,159,229,0.55))" }} />,
               title: t.fullExamTitle,
               sub: t.fullExamSub,
               cta: t.fullExamCta,
@@ -1692,7 +1692,7 @@ export default function DashboardPage() {
             className="relative rounded-2xl bg-black overflow-hidden"
             style={{
               border: "1.5px solid #FFC48F",
-              boxShadow: "0 0 0 1px rgba(255,138,0,0.28), 0 0 28px rgba(255,138,0,0.28), inset 0 0 22px rgba(0,0,0,0.55)",
+              boxShadow: "0 0 0 1px rgba(255,196,143,0.28), 0 0 28px rgba(255,196,143,0.28), inset 0 0 22px rgba(0,0,0,0.55)",
             }}
             data-testid="panel-focus-areas"
           >
@@ -1703,11 +1703,11 @@ export default function DashboardPage() {
 
             <div
               className="flex items-center justify-between px-6 py-5 gap-3"
-              style={{ borderBottom: "1px solid rgba(255,138,0,0.35)" }}
+              style={{ borderBottom: "1px solid rgba(255,196,143,0.35)" }}
             >
               <div className="min-w-0">
                 <h2 className="flex items-center gap-2 text-lg font-bold text-white">
-                  <Target className="w-5 h-5" style={{ color: "#FFC48F", filter: "drop-shadow(0 0 6px rgba(255,138,0,0.8))" }} />
+                  <Target className="w-5 h-5" style={{ color: "#FFC48F", filter: "drop-shadow(0 0 6px rgba(255,196,143,0.8))" }} />
                   {t.focusAreasHeading}
                 </h2>
                 <p className="text-xs text-white mt-1">{t.focusAreasSubtitle}</p>
@@ -1717,7 +1717,7 @@ export default function DashboardPage() {
               <div className="p-6 text-center">
                 <div
                   className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-black flex items-center justify-center"
-                  style={{ border: "1.5px solid #FFC48F", boxShadow: "0 0 14px rgba(255,138,0,0.4)" }}
+                  style={{ border: "1.5px solid #FFC48F", boxShadow: "0 0 14px rgba(255,196,143,0.4)" }}
                 >
                   <Sparkles className="w-7 h-7" style={{ color: "#FFC48F", filter: "drop-shadow(0 0 5px #FFC48F)" }} />
                 </div>
@@ -1728,7 +1728,7 @@ export default function DashboardPage() {
               {focusAreasData.focusAreas.map((fa) => {
                 const isRed = fa.masteryBand === "red";
                 const hex = isRed ? "#ff5b6e" : "#FFF29E";
-                const halo = isRed ? "rgba(255,91,110,0.28)" : "rgba(255,230,0,0.28)";
+                const halo = isRed ? "rgba(255,91,110,0.28)" : "rgba(255,242,158,0.28)";
                 const bandLabel = isRed ? t.focusBandCatchUp : t.focusBandBuilding;
                 const topicName = language === "af" && fa.topicNameAfrikaans ? fa.topicNameAfrikaans : fa.topicName;
                 const subjectName = language === "af" && fa.subjectNameAfrikaans ? fa.subjectNameAfrikaans : fa.subjectName;
@@ -1773,7 +1773,7 @@ export default function DashboardPage() {
             className="lg:col-span-2 relative rounded-2xl bg-black overflow-hidden"
             style={{
               border: "1.5px solid #6FA8FF",
-              boxShadow: "0 0 0 1px rgba(0,107,255,0.28), 0 0 28px rgba(0,107,255,0.28), inset 0 0 22px rgba(0,0,0,0.55)",
+              boxShadow: "0 0 0 1px rgba(111,168,255,0.28), 0 0 28px rgba(111,168,255,0.28), inset 0 0 22px rgba(0,0,0,0.55)",
             }}
           >
             <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#6FA8FF" }} />
@@ -1783,16 +1783,16 @@ export default function DashboardPage() {
 
             <div
               className="flex items-center justify-between px-6 py-5"
-              style={{ borderBottom: "1px solid rgba(0,107,255,0.35)" }}
+              style={{ borderBottom: "1px solid rgba(111,168,255,0.35)" }}
             >
               <h2 className="flex items-center gap-2 text-lg font-bold text-white">
-                <BookOpen className="w-5 h-5" style={{ color: "#6FA8FF", filter: "drop-shadow(0 0 6px rgba(0,107,255,0.8))" }} />
+                <BookOpen className="w-5 h-5" style={{ color: "#6FA8FF", filter: "drop-shadow(0 0 6px rgba(111,168,255,0.8))" }} />
                 {t.subjectsHeading}
               </h2>
               <Link href="/settings">
                 <button
                   className="text-[11px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg bg-black"
-                  style={{ color: "#6FA8FF", border: "1px solid rgba(0,107,255,0.55)", boxShadow: "0 0 10px rgba(0,107,255,0.3)" }}
+                  style={{ color: "#6FA8FF", border: "1px solid rgba(111,168,255,0.55)", boxShadow: "0 0 10px rgba(111,168,255,0.3)" }}
                   data-testid="link-manage-subjects"
                 >
                   <Settings className="w-3.5 h-3.5 inline mr-1" />{t.manageLabel}
@@ -1849,7 +1849,7 @@ export default function DashboardPage() {
                 <div className="text-center py-10">
                   <div
                     className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-black flex items-center justify-center"
-                    style={{ border: "1.5px solid #6FA8FF", boxShadow: "0 0 14px rgba(0,107,255,0.4)" }}
+                    style={{ border: "1.5px solid #6FA8FF", boxShadow: "0 0 14px rgba(111,168,255,0.4)" }}
                   >
                     <BookOpen className="w-8 h-8" style={{ color: "#6FA8FF", filter: "drop-shadow(0 0 5px #6FA8FF)" }} />
                   </div>
@@ -1858,7 +1858,7 @@ export default function DashboardPage() {
                   <Link href="/settings">
                     <button
                       className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-black font-bold text-sm"
-                      style={{ color: "#6FA8FF", border: "1.5px solid #6FA8FF", boxShadow: "0 0 16px rgba(0,107,255,0.5)" }}
+                      style={{ color: "#6FA8FF", border: "1.5px solid #6FA8FF", boxShadow: "0 0 16px rgba(111,168,255,0.5)" }}
                       data-testid="button-select-subjects"
                     >
                       {t.selectSubjectsBtn}
@@ -1874,7 +1874,7 @@ export default function DashboardPage() {
             className="relative rounded-2xl bg-black overflow-hidden flex flex-col"
             style={{
               border: "1.5px solid #FFF29E",
-              boxShadow: "0 0 0 1px rgba(255,230,0,0.28), 0 0 28px rgba(255,230,0,0.28), inset 0 0 22px rgba(0,0,0,0.55)",
+              boxShadow: "0 0 0 1px rgba(255,242,158,0.28), 0 0 28px rgba(255,242,158,0.28), inset 0 0 22px rgba(0,0,0,0.55)",
             }}
           >
             <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FFF29E" }} />
@@ -1884,9 +1884,9 @@ export default function DashboardPage() {
 
             <div
               className="flex items-center gap-2 px-6 py-5"
-              style={{ borderBottom: "1px solid rgba(255,230,0,0.35)" }}
+              style={{ borderBottom: "1px solid rgba(255,242,158,0.35)" }}
             >
-              <Award className="w-5 h-5" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 6px rgba(255,230,0,0.85))" }} />
+              <Award className="w-5 h-5" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 6px rgba(255,242,158,0.85))" }} />
               <h2 className="text-lg font-bold text-white">{t.achievementsHeading}</h2>
             </div>
             <div className="p-5 flex-1 overflow-y-auto">
@@ -1924,7 +1924,7 @@ export default function DashboardPage() {
                 <div className="flex flex-col items-center justify-center h-full text-center py-8">
                   <div
                     className="w-16 h-16 mx-auto mb-3 rounded-2xl bg-black flex items-center justify-center"
-                    style={{ border: "1.5px solid #FFF29E", boxShadow: "0 0 14px rgba(255,230,0,0.4)" }}
+                    style={{ border: "1.5px solid #FFF29E", boxShadow: "0 0 14px rgba(255,242,158,0.4)" }}
                   >
                     <Trophy className="w-8 h-8" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 5px #FFF29E)" }} />
                   </div>
@@ -1941,15 +1941,15 @@ export default function DashboardPage() {
             className="relative rounded-2xl bg-black overflow-hidden"
             style={{
               border: "1.5px solid #7FEFFF",
-              boxShadow: "0 0 0 1px rgba(0,229,255,0.28), 0 0 28px rgba(0,229,255,0.28), inset 0 0 22px rgba(0,0,0,0.55)",
+              boxShadow: "0 0 0 1px rgba(127,239,255,0.28), 0 0 28px rgba(127,239,255,0.28), inset 0 0 22px rgba(0,0,0,0.55)",
             }}
           >
             <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#7FEFFF" }} />
             <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#7FEFFF" }} />
             <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#7FEFFF" }} />
             <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#7FEFFF" }} />
-            <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(0,229,255,0.35)" }}>
-              <Sparkles className="w-5 h-5" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 6px rgba(0,229,255,0.85))" }} />
+            <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(127,239,255,0.35)" }}>
+              <Sparkles className="w-5 h-5" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 6px rgba(127,239,255,0.85))" }} />
               <h2 className="text-lg font-bold text-white">{t.recommendedHeading}</h2>
             </div>
             <div className="p-5 space-y-3">
@@ -1985,15 +1985,15 @@ export default function DashboardPage() {
             className="relative rounded-2xl bg-black overflow-hidden"
             style={{
               border: "1.5px solid #C6A4FF",
-              boxShadow: "0 0 0 1px rgba(138,43,255,0.3), 0 0 28px rgba(138,43,255,0.3), inset 0 0 22px rgba(0,0,0,0.55)",
+              boxShadow: "0 0 0 1px rgba(198,164,255,0.3), 0 0 28px rgba(198,164,255,0.3), inset 0 0 22px rgba(0,0,0,0.55)",
             }}
           >
             <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#C6A4FF" }} />
             <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#C6A4FF" }} />
             <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#C6A4FF" }} />
             <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#C6A4FF" }} />
-            <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(138,43,255,0.35)" }}>
-              <Brain className="w-5 h-5" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 6px rgba(138,43,255,0.85))" }} />
+            <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(198,164,255,0.35)" }}>
+              <Brain className="w-5 h-5" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 6px rgba(198,164,255,0.85))" }} />
               <h2 className="text-lg font-bold text-white">{t.yourVibeHeading}</h2>
             </div>
             <div className="p-5">
@@ -2001,7 +2001,7 @@ export default function DashboardPage() {
                 <div className="grid grid-cols-2 gap-3">
                   <div
                     className="p-4 rounded-2xl bg-black"
-                    style={{ border: "1px solid rgba(138,43,255,0.55)", boxShadow: "0 0 14px rgba(138,43,255,0.3)" }}
+                    style={{ border: "1px solid rgba(198,164,255,0.55)", boxShadow: "0 0 14px rgba(198,164,255,0.3)" }}
                   >
                     <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: "#C6A4FF" }}>{t.learningStyleLabel}</p>
                     <p className="font-bold text-white text-base">
@@ -2012,7 +2012,7 @@ export default function DashboardPage() {
                   </div>
                   <div
                     className="p-4 rounded-2xl bg-black"
-                    style={{ border: "1px solid rgba(255,230,0,0.5)", boxShadow: "0 0 14px rgba(255,230,0,0.25)" }}
+                    style={{ border: "1px solid rgba(255,242,158,0.5)", boxShadow: "0 0 14px rgba(255,242,158,0.25)" }}
                   >
                     <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: "#FFF29E" }}>{t.bestTimeLabel}</p>
                     <p className="font-bold text-white text-base capitalize">{profile.studyPreference}</p>
@@ -2035,7 +2035,7 @@ export default function DashboardPage() {
             style={{
               border: "1.5px solid #FFF29E",
               boxShadow:
-                "0 0 18px rgba(255,230,0,0.35), 0 0 36px rgba(255,230,0,0.20), inset 0 0 22px rgba(255,230,0,0.10)",
+                "0 0 18px rgba(255,242,158,0.35), 0 0 36px rgba(255,242,158,0.20), inset 0 0 22px rgba(255,242,158,0.10)",
             }}
             data-testid="pro-tip-banner"
           >
@@ -2043,7 +2043,7 @@ export default function DashboardPage() {
               className="inline-flex h-12 w-12 rounded-xl items-center justify-center bg-black shrink-0"
               style={{
                 border: "1.5px solid #FFF29E",
-                boxShadow: "0 0 14px rgba(255,230,0,0.55), inset 0 0 12px rgba(255,230,0,0.25)",
+                boxShadow: "0 0 14px rgba(255,242,158,0.55), inset 0 0 12px rgba(255,242,158,0.25)",
               }}
             >
               <Lightbulb
@@ -2061,7 +2061,7 @@ export default function DashboardPage() {
                   style={{
                     color: "#FFF29E",
                     border: "1px solid #FFF29E",
-                    boxShadow: "0 0 8px rgba(255,230,0,0.45)",
+                    boxShadow: "0 0 8px rgba(255,242,158,0.45)",
                   }}
                 >
                   {profile.learningStyle}
@@ -2080,7 +2080,7 @@ export default function DashboardPage() {
                 style={{
                   color: "#000",
                   background: "#FFF29E",
-                  boxShadow: "0 0 16px rgba(255,230,0,0.65), 0 0 32px rgba(255,230,0,0.35)",
+                  boxShadow: "0 0 16px rgba(255,242,158,0.65), 0 0 32px rgba(255,242,158,0.35)",
                 }}
                 data-testid="button-pro-tip-learn-more"
               >
@@ -2151,7 +2151,7 @@ function LearnerFAQ({ isAf, faqHeading }: { isAf: boolean; faqHeading: string })
       className="relative rounded-2xl bg-black overflow-hidden"
       style={{
         border: "1.5px solid #C6A4FF",
-        boxShadow: "0 0 0 1px rgba(255,43,214,0.25), 0 0 28px rgba(138,43,255,0.3), 0 0 44px rgba(255,43,214,0.22), inset 0 0 22px rgba(0,0,0,0.55)",
+        boxShadow: "0 0 0 1px rgba(255,159,229,0.25), 0 0 28px rgba(198,164,255,0.3), 0 0 44px rgba(255,159,229,0.22), inset 0 0 22px rgba(0,0,0,0.55)",
       }}
     >
       <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FF9FE5" }} />
@@ -2161,16 +2161,16 @@ function LearnerFAQ({ isAf, faqHeading }: { isAf: boolean; faqHeading: string })
 
       <div
         className="flex items-center gap-2 px-6 py-5"
-        style={{ borderBottom: "1px solid rgba(138,43,255,0.35)" }}
+        style={{ borderBottom: "1px solid rgba(198,164,255,0.35)" }}
       >
-        <HelpCircle className="w-5 h-5" style={{ color: "#FF9FE5", filter: "drop-shadow(0 0 6px rgba(255,43,214,0.85))" }} />
+        <HelpCircle className="w-5 h-5" style={{ color: "#FF9FE5", filter: "drop-shadow(0 0 6px rgba(255,159,229,0.85))" }} />
         <h2 className="text-lg font-bold text-white">{faqHeading}</h2>
       </div>
-      <div className="divide-y" style={{ borderColor: "rgba(138,43,255,0.2)" }}>
+      <div className="divide-y" style={{ borderColor: "rgba(198,164,255,0.2)" }}>
         {items.map((item, idx) => {
           const isOpen = openIdx === idx;
           return (
-            <div key={idx} style={{ borderTop: idx === 0 ? "none" : "1px solid rgba(138,43,255,0.18)" }}>
+            <div key={idx} style={{ borderTop: idx === 0 ? "none" : "1px solid rgba(198,164,255,0.18)" }}>
               <button
                 onClick={() => setOpenIdx(isOpen ? null : idx)}
                 className="flex items-center justify-between w-full px-6 py-4 text-left text-sm font-semibold transition-colors"

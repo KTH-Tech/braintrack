@@ -202,7 +202,7 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
         background: "#000",
         borderBottom: "3px solid transparent",
         borderImage: "linear-gradient(90deg,#C6A4FF,#FF9FE5,#6FA8FF,#7FEFFF,#93FFB8,#FFF29E,#FFC48F) 1",
-        boxShadow: "0 0 28px rgba(138,43,255,0.25), 0 4px 20px rgba(0,0,0,0.8)",
+        boxShadow: "0 0 28px rgba(198,164,255,0.25), 0 4px 20px rgba(0,0,0,0.8)",
       }}
       data-testid="admin-top-nav"
     >
@@ -211,9 +211,9 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
           <div
             className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
             style={{
-              background: "rgba(138,43,255,0.15)",
+              background: "rgba(198,164,255,0.15)",
               border: "2px solid #C6A4FF",
-              boxShadow: "0 0 18px rgba(138,43,255,0.5)",
+              boxShadow: "0 0 18px rgba(198,164,255,0.5)",
             }}
           >
             <ShieldAlert className="w-4.5 h-4.5" style={{ color: "#C6A4FF" }} />
@@ -237,11 +237,11 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
               background: "#C6A4FF",
               color: "#fff",
               border: "2px solid #C6A4FF",
-              boxShadow: "0 0 16px rgba(138,43,255,0.55)",
+              boxShadow: "0 0 16px rgba(198,164,255,0.55)",
             } : {
-              background: "rgba(138,43,255,0.1)",
+              background: "rgba(198,164,255,0.1)",
               color: "#C6A4FF",
-              border: "1.5px solid rgba(138,43,255,0.4)",
+              border: "1.5px solid rgba(198,164,255,0.4)",
             }}
           >
             <LayoutDashboard className="w-3.5 h-3.5" />
@@ -256,11 +256,11 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
               background: "#FF9FE5",
               color: "#fff",
               border: "2px solid #FF9FE5",
-              boxShadow: "0 0 16px rgba(255,43,214,0.55)",
+              boxShadow: "0 0 16px rgba(255,159,229,0.55)",
             } : {
-              background: "rgba(255,43,214,0.1)",
+              background: "rgba(255,159,229,0.1)",
               color: "#FF9FE5",
-              border: "1.5px solid rgba(255,43,214,0.4)",
+              border: "1.5px solid rgba(255,159,229,0.4)",
             }}
           >
             <Mail className="w-3.5 h-3.5" />
@@ -274,9 +274,9 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
                 data-testid="admin-nav-menu-trigger"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all hover:scale-105"
                 style={{
-                  background: "rgba(0,229,255,0.1)",
+                  background: "rgba(127,239,255,0.1)",
                   color: "#7FEFFF",
-                  border: "1.5px solid rgba(0,229,255,0.4)",
+                  border: "1.5px solid rgba(127,239,255,0.4)",
                 }}
               >
                 {isAf ? "Spyskaart" : "All Tools"}
@@ -289,8 +289,8 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
               className="w-80 max-h-[80vh] overflow-y-auto"
               style={{
                 background: "#050508",
-                border: "2px solid rgba(138,43,255,0.4)",
-                boxShadow: "0 0 40px rgba(138,43,255,0.2), 0 20px 60px rgba(0,0,0,0.8)",
+                border: "2px solid rgba(198,164,255,0.4)",
+                boxShadow: "0 0 40px rgba(198,164,255,0.2), 0 20px 60px rgba(0,0,0,0.8)",
               }}
               data-testid="admin-nav-menu-content"
             >
@@ -354,7 +354,7 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
           <Link
             href="/"
             className="hidden sm:inline-flex items-center justify-center w-9 h-9 rounded-xl transition-all hover:scale-105"
-            style={{ background: "rgba(0,229,255,0.08)", border: "1.5px solid rgba(0,229,255,0.35)", color: "#7FEFFF" }}
+            style={{ background: "rgba(127,239,255,0.08)", border: "1.5px solid rgba(127,239,255,0.35)", color: "#7FEFFF" }}
             data-testid="admin-nav-home"
             title={isAf ? "Tuis" : "Home"}
           >
@@ -364,10 +364,10 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
             href="/api/auth/logout"
             className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-xl transition-all hover:scale-105"
             style={{
-              background: "rgba(255,43,214,0.1)",
+              background: "rgba(255,159,229,0.1)",
               border: "1.5px solid #FF9FE5",
               color: "#FF9FE5",
-              boxShadow: "0 0 12px rgba(255,43,214,0.2)",
+              boxShadow: "0 0 12px rgba(255,159,229,0.2)",
             }}
             data-testid="admin-nav-logout"
           >

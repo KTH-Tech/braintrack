@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { TrendingUp, TrendingDown, Minus, Calendar, Target, Zap } from "lucide-react";
 
 const NEON = "#7FEFFF";
-const NEON_GLOW = "rgba(0,229,255,0.35)";
+const NEON_GLOW = "rgba(127,239,255,0.35)";
 const DOWN = "#FF9FE5";
 
 interface WeeklyData {

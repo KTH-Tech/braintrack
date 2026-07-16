@@ -3,7 +3,6 @@ import { useLocation, Link } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -14,6 +13,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { ONBOARDING_QUESTIONS, GRADE_12_SUBJECTS } from "@/lib/constants";
 import { ArrowLeft, ArrowRight, Brain, Loader2, Globe, BookOpen, Check, Sparkles } from "lucide-react";
 import { BrainTrackLogo } from "@/components/braintrack-logo";
+import { GraffitiSplats } from "@/components/graffiti-splats";
 import { type VarkStyle, VARK_STYLES } from "@/lib/vark";
 import { useLanguage } from "@/lib/language-context";
 import { useAuth } from "@/hooks/use-auth";
@@ -733,8 +733,9 @@ export default function OnboardingPage() {
   const category = getCategory(currentStep);
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="border-b border-border py-4 bg-background/90 sticky top-0 z-50">
+    <div className="relative min-h-screen flex flex-col bg-background text-white overflow-hidden">
+      <GraffitiSplats variant="full" opacity={0.5} />
+      <header className="relative z-40 border-b border-border py-4 bg-background/90 sticky top-0">
         <div className="max-w-4xl mx-auto px-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             {phase === "questions" && (
@@ -753,7 +754,7 @@ export default function OnboardingPage() {
             <Button
               variant={language === "en" ? "default" : "ghost"}
               size="sm"
-              className={`rounded-full px-4 font-semibold ${language === "en" ? "bg-foreground text-background shadow-md" : "text-white"}`}
+              className={`rounded-full px-4 font-semibold ${language === "en" ? "bg-[#7FEFFF] text-[#0a0a0a] shadow-md" : "text-white"}`}
               onClick={() => setLanguage("en")}
               data-testid="button-lang-en"
             >
@@ -763,7 +764,7 @@ export default function OnboardingPage() {
             <Button
               variant={language === "af" ? "default" : "ghost"}
               size="sm"
-              className={`rounded-full px-4 font-semibold ${language === "af" ? "bg-foreground text-background shadow-md" : "text-white"}`}
+              className={`rounded-full px-4 font-semibold ${language === "af" ? "bg-[#7FEFFF] text-[#0a0a0a] shadow-md" : "text-white"}`}
               onClick={() => setLanguage("af")}
               data-testid="button-lang-af"
             >
@@ -773,13 +774,13 @@ export default function OnboardingPage() {
         </div>
       </header>
 
-      <main className="flex-1 flex items-center justify-center p-4">
+      <main className="relative z-10 flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-2xl space-y-6">
           <div className="text-center space-y-2">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-card shadow-xl border border-border mb-6 transform -rotate-3 hover:rotate-0 transition-transform duration-300">
-              {phase === "questions" ? <Brain className="w-10 h-10 text-primary" /> : <BookOpen className="w-10 h-10 text-primary" />}
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#0a0b12] shadow-xl mb-6 transform -rotate-3 hover:rotate-0 transition-transform duration-300" style={{ border: "1.5px solid rgba(127,239,255,0.5)", boxShadow: "0 0 14px rgba(127,239,255,0.15)" }}>
+              {phase === "questions" ? <Brain className="w-10 h-10" style={{ color: "#7FEFFF" }} /> : <BookOpen className="w-10 h-10" style={{ color: "#7FEFFF" }} />}
             </div>
-            <h1 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight" data-testid="onboarding-heading">
+            <h1 className="graffiti-hand text-2xl sm:text-3xl font-semibold text-white tracking-tight" data-testid="onboarding-heading">
               {phase === "questions"
                 ? t.pageTitle
                 : phase === "vark"
@@ -798,7 +799,7 @@ export default function OnboardingPage() {
                 : t.subjectsSubtitle}
             </p>
             {phase === "questions" && (
-              <div className="inline-block px-4 py-1.5 rounded-full bg-foreground text-background text-xs font-semibold uppercase tracking-widest mt-4 shadow-md">
+              <div className="inline-block px-4 py-1.5 rounded-full bg-[#7FEFFF] text-[#0a0a0a] text-xs font-semibold uppercase tracking-widest mt-4 shadow-md">
                 {isAf ? categoryLabels[category].af : categoryLabels[category].en}
               </div>
             )}
@@ -809,11 +810,13 @@ export default function OnboardingPage() {
               <span>{Math.round(progress)}% {t.completeLabel}</span>
               <span>{t.progressBarLabel}</span>
             </div>
-            <Progress value={progress} className="h-3 bg-muted" />
+            <div className="h-3 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)" }}>
+              <div className="h-full rounded-full transition-all" style={{ width: `${progress}%`, background: "#7FEFFF", boxShadow: "0 0 8px rgba(127,239,255,0.5)" }} />
+            </div>
           </div>
 
           {phase === "questions" && currentQuestion && (
-            <Card className="border bg-black shadow-[0_0_30px_rgba(0,229,255,0.25)] rounded-3xl overflow-hidden" data-testid="card-onboarding">
+            <Card className="border bg-black shadow-[0_0_30px_rgba(127,239,255,0.25)] rounded-3xl overflow-hidden" data-testid="card-onboarding">
               <div aria-hidden className="h-[3px]" style={{ background: "linear-gradient(90deg, #FFC48F, #FFC48F, #FFF29E, #FFF29E, #7FEFFF, #6FA8FF, #C6A4FF, #C6A4FF, #FF9FE5)" }} />
               <CardHeader className="pb-2 pt-8 px-8">
                 <CardTitle className="text-sm font-semibold text-white uppercase tracking-widest flex items-center justify-between">
@@ -835,7 +838,7 @@ export default function OnboardingPage() {
                       <div
                         key={option.value}
                         className={`flex items-center space-x-3 p-5 rounded-2xl border transition-all duration-200 cursor-pointer  shadow-[inset_0_1px_0_rgba(255,255,255,0.10)] ${
-                          answers[currentQuestion.id] === option.value ? "border-[#7FEFFF] bg-[#7FEFFF]/10 shadow-[0_0_18px_rgba(0,229,255,0.4)]" : "border-white/15 bg-black hover:border-[#7FEFFF]/60 hover:bg-white/[0.03]"
+                          answers[currentQuestion.id] === option.value ? "border-[#7FEFFF] bg-[#7FEFFF]/10 shadow-[0_0_18px_rgba(127,239,255,0.4)]" : "border-white/15 bg-black hover:border-[#7FEFFF]/60 hover:bg-white/[0.03]"
                         }`}
                         onClick={() => handleSingleSelect(option.value)}
                         data-testid={`option-${option.value}`}
@@ -844,7 +847,7 @@ export default function OnboardingPage() {
                         <Label htmlFor={option.value} className="flex-1 cursor-pointer text-lg font-semibold text-white">
                           {language === "en" ? option.labelEn : option.labelAf}
                         </Label>
-                        {answers[currentQuestion.id] === option.value && <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-white"><Check className="w-4 h-4" /></div>}
+                        {answers[currentQuestion.id] === option.value && <div className="w-6 h-6 rounded-full bg-[#7FEFFF] flex items-center justify-center text-[#0a0a0a]"><Check className="w-4 h-4" /></div>}
                       </div>
                     ))}
                   </RadioGroup>
@@ -861,7 +864,7 @@ export default function OnboardingPage() {
                         <div
                           key={option.value}
                           className={`flex items-center space-x-3 p-5 rounded-2xl border transition-all duration-200 cursor-pointer  shadow-[inset_0_1px_0_rgba(255,255,255,0.10)] ${
-                            isChecked ? "border-[#7FEFFF] bg-[#7FEFFF]/10 shadow-[0_0_18px_rgba(0,229,255,0.4)]" : "border-white/15 bg-black hover:border-[#7FEFFF]/60 hover:bg-white/[0.03]"
+                            isChecked ? "border-[#7FEFFF] bg-[#7FEFFF]/10 shadow-[0_0_18px_rgba(127,239,255,0.4)]" : "border-white/15 bg-black hover:border-[#7FEFFF]/60 hover:bg-white/[0.03]"
                           }`}
                           onClick={() => handleMultiSelect(option.value, !isChecked)}
                           data-testid={`option-${option.value}`}
@@ -875,7 +878,7 @@ export default function OnboardingPage() {
                           <Label htmlFor={option.value} className="flex-1 cursor-pointer text-lg font-semibold text-white">
                             {language === "en" ? option.labelEn : option.labelAf}
                           </Label>
-                          {isChecked && <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-white"><Check className="w-4 h-4" /></div>}
+                          {isChecked && <div className="w-6 h-6 rounded-full bg-[#7FEFFF] flex items-center justify-center text-[#0a0a0a]"><Check className="w-4 h-4" /></div>}
                         </div>
                       );
                     })}
@@ -891,7 +894,7 @@ export default function OnboardingPage() {
                             {(answers[currentQuestion.id] as number) || currentQuestion.min}
                           </span>
                         </div>
-                        <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-foreground text-background text-[10px] font-semibold uppercase tracking-widest px-3 py-1 rounded-full whitespace-nowrap shadow-lg">
+                        <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#7FEFFF] text-[#0a0a0a] text-[10px] font-semibold uppercase tracking-widest px-3 py-1 rounded-full whitespace-nowrap shadow-lg">
                           {t.minutesLabel}
                         </span>
                       </div>
@@ -915,7 +918,7 @@ export default function OnboardingPage() {
                 <div className="flex justify-between pt-8 gap-4">
                   <Button
                     variant="outline"
-                    className="h-14 px-8 text-lg font-semibold border-2 border-border hover:bg-muted rounded-2xl flex-1 md:flex-none"
+                    className="px-5 py-2.5 text-sm font-bold rounded-xl bg-black text-white border border-[#7FEFFF]/50 hover:bg-white/[0.04] flex-1 md:flex-none"
                     onClick={handleBack}
                     disabled={currentStep === 0}
                     data-testid="button-back"
@@ -924,7 +927,7 @@ export default function OnboardingPage() {
                     {t.backBtn}
                   </Button>
                   <Button
-                    className="h-14 px-10 text-lg font-semibold bg-foreground hover:bg-foreground/90 text-background rounded-2xl shadow-xl flex-1 md:flex-none"
+                    className="px-5 py-2.5 text-sm font-bold rounded-xl bg-[#7FEFFF] hover:bg-[#7FEFFF]/90 text-[#0a0a0a] shadow-md flex-1 md:flex-none"
                     onClick={handleNext}
                     disabled={!canProceed()}
                     data-testid="button-next"
@@ -938,7 +941,7 @@ export default function OnboardingPage() {
           )}
 
           {phase === "vark" && (
-            <Card className="border bg-black shadow-[0_0_30px_rgba(0,229,255,0.25)] rounded-3xl overflow-hidden" data-testid="card-vark">
+            <Card className="border bg-black shadow-[0_0_30px_rgba(127,239,255,0.25)] rounded-3xl overflow-hidden" data-testid="card-vark">
               <div aria-hidden className="h-[3px]" style={{ background: "linear-gradient(90deg, #FFC48F, #FFC48F, #FFF29E, #FFF29E, #7FEFFF, #6FA8FF, #C6A4FF, #C6A4FF, #FF9FE5)" }} />
               <CardHeader className="pb-2 pt-8 px-8">
                 <CardTitle className="text-sm font-semibold text-white uppercase tracking-widest">
@@ -965,13 +968,13 @@ export default function OnboardingPage() {
                         data-testid={`vark-primary-${key}`}
                         className={`relative p-5 rounded-2xl border-2 text-left transition-all duration-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.10)] ${
                           isPrimary
-                            ? "border-[#7FEFFF] bg-[#7FEFFF]/10 shadow-[0_0_22px_rgba(0,229,255,0.5)]"
+                            ? "border-[#7FEFFF] bg-[#7FEFFF]/10 shadow-[0_0_22px_rgba(127,239,255,0.5)]"
                             : "border-white/15 bg-black hover:border-[#7FEFFF]/60 hover:bg-white/[0.03]"
                         }`}
                       >
                         {isPrimary && (
-                          <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                            <Check className="w-3 h-3 text-white" />
+                          <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[#7FEFFF] flex items-center justify-center">
+                            <Check className="w-3 h-3 text-[#0a0a0a]" />
                           </span>
                         )}
                         <span className="text-3xl block mb-2">{style.icon}</span>
@@ -1016,7 +1019,7 @@ export default function OnboardingPage() {
                 <div className="flex justify-between pt-4 gap-4">
                   <Button
                     variant="outline"
-                    className="h-14 px-8 text-lg font-semibold border-2 border-border hover:bg-muted rounded-2xl flex-1 md:flex-none"
+                    className="px-5 py-2.5 text-sm font-bold rounded-xl bg-black text-white border border-[#7FEFFF]/50 hover:bg-white/[0.04] flex-1 md:flex-none"
                     onClick={handleBack}
                     data-testid="button-back-vark"
                   >
@@ -1024,7 +1027,7 @@ export default function OnboardingPage() {
                     {t.backBtn}
                   </Button>
                   <Button
-                    className="h-14 px-10 text-lg font-semibold bg-foreground hover:bg-foreground/90 text-background rounded-2xl shadow-xl flex-1 md:flex-none"
+                    className="px-5 py-2.5 text-sm font-bold rounded-xl bg-[#7FEFFF] hover:bg-[#7FEFFF]/90 text-[#0a0a0a] shadow-md flex-1 md:flex-none"
                     onClick={handleNext}
                     disabled={!canProceed()}
                     data-testid="button-next-vark"
@@ -1038,7 +1041,7 @@ export default function OnboardingPage() {
           )}
 
           {phase === "subjects" && (
-            <Card className="border bg-black shadow-[0_0_30px_rgba(0,229,255,0.25)] rounded-3xl overflow-hidden" data-testid="card-subjects">
+            <Card className="border bg-black shadow-[0_0_30px_rgba(127,239,255,0.25)] rounded-3xl overflow-hidden" data-testid="card-subjects">
               <div aria-hidden className="h-[3px]" style={{ background: "linear-gradient(90deg, #FFC48F, #FFC48F, #FFF29E, #FFF29E, #7FEFFF, #6FA8FF, #C6A4FF, #C6A4FF, #FF9FE5)" }} />
               <CardHeader className="pb-2 pt-8 px-8">
                 <CardTitle className="text-2xl font-semibold text-white">
@@ -1050,7 +1053,7 @@ export default function OnboardingPage() {
                   {t.selectSubjectsHint}
                 </p>
                 {subjectMarks.length > 0 && subjectMarks.length < 4 && (
-                  <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-sm text-amber-600 font-medium">
+                  <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-black border border-[#FFF29E]/40 text-sm text-[#FFF29E] font-medium">
                     <span>
                       {(() => {
                         const n = 4 - subjectMarks.length;
@@ -1070,7 +1073,7 @@ export default function OnboardingPage() {
                     return (
                       <div
                         key={subject.code}
-                        className={`p-4 rounded-2xl border transition-all duration-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]  ${isSelected ? "border-[#7FEFFF] bg-[#7FEFFF]/10 shadow-[0_0_18px_rgba(0,229,255,0.4)]" : "border-white/15 bg-black hover:border-[#7FEFFF]/60 hover:bg-white/[0.03]"}`}
+                        className={`p-4 rounded-2xl border transition-all duration-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]  ${isSelected ? "border-[#7FEFFF] bg-[#7FEFFF]/10 shadow-[0_0_18px_rgba(127,239,255,0.4)]" : "border-white/15 bg-black hover:border-[#7FEFFF]/60 hover:bg-white/[0.03]"}`}
                       >
                         <div className="flex items-center gap-4">
                           <Checkbox
@@ -1091,7 +1094,7 @@ export default function OnboardingPage() {
                                 max={100}
                                 value={mark}
                                 onChange={(e) => updateMark(subject.code, parseInt(e.target.value) || 0)}
-                                className="w-20 h-10 text-center font-semibold text-lg border-2 border-primary/20 bg-card focus-visible:ring-primary"
+                                className="w-20 h-10 text-center font-semibold text-lg border border-[#7FEFFF]/30 bg-black focus-visible:ring-[#7FEFFF]"
                                 data-testid={`mark-${subject.code}`}
                               />
                               <span className="text-lg font-semibold text-white">%</span>
@@ -1106,7 +1109,7 @@ export default function OnboardingPage() {
                 <div className="flex justify-between pt-8 gap-4">
                   <Button
                     variant="outline"
-                    className="h-14 px-8 text-lg font-semibold border-2 border-border hover:bg-muted rounded-2xl flex-1 md:flex-none"
+                    className="px-5 py-2.5 text-sm font-bold rounded-xl bg-black text-white border border-[#7FEFFF]/50 hover:bg-white/[0.04] flex-1 md:flex-none"
                     onClick={handleBack}
                     data-testid="button-back-subjects"
                   >
@@ -1114,7 +1117,7 @@ export default function OnboardingPage() {
                     {t.backBtn}
                   </Button>
                   <Button
-                    className="h-14 px-10 text-lg font-semibold bg-foreground hover:bg-foreground/90 text-background rounded-2xl shadow-xl flex-1 md:flex-none"
+                    className="px-5 py-2.5 text-sm font-bold rounded-xl bg-[#7FEFFF] hover:bg-[#7FEFFF]/90 text-[#0a0a0a] shadow-md flex-1 md:flex-none"
                     onClick={handleNext}
                     disabled={!canProceed()}
                     data-testid="button-subjects-next"
@@ -1134,7 +1137,7 @@ export default function OnboardingPage() {
           )}
 
           {phase === "school" && (
-            <Card className="border bg-black shadow-[0_0_30px_rgba(0,229,255,0.25)] rounded-3xl overflow-hidden" data-testid="card-school">
+            <Card className="border bg-black shadow-[0_0_30px_rgba(127,239,255,0.25)] rounded-3xl overflow-hidden" data-testid="card-school">
               <div aria-hidden className="h-[3px]" style={{ background: "linear-gradient(90deg, #FFC48F, #FFC48F, #FFF29E, #FFF29E, #7FEFFF, #6FA8FF, #C6A4FF, #C6A4FF, #FF9FE5)" }} />
               <CardHeader className="pb-2 pt-8 px-8">
                 <CardTitle className="text-2xl font-semibold text-white">
@@ -1174,7 +1177,7 @@ export default function OnboardingPage() {
                             setSchoolQuery(s.name);
                             setSchoolResults([]);
                           }}
-                          className={`w-full text-left px-4 py-3 hover:bg-muted ${schoolId === s.id ? "bg-primary/10" : ""}`}
+                          className={`w-full text-left px-4 py-3 hover:bg-white/[0.04] ${schoolId === s.id ? "bg-[#7FEFFF]/10" : ""}`}
                           data-testid={`school-result-${s.id}`}
                         >
                           <div className="font-semibold text-white">{s.name}</div>
@@ -1184,7 +1187,7 @@ export default function OnboardingPage() {
                     </div>
                   )}
                   {schoolId && (
-                    <p className="text-xs text-emerald-500" data-testid="text-school-linked">
+                    <p className="text-xs text-[#93FFB8]" data-testid="text-school-linked">
                       {t.schoolLinkedLabel}
                     </p>
                   )}
@@ -1203,7 +1206,7 @@ export default function OnboardingPage() {
                         key={g}
                         type="button"
                         onClick={() => setGrade(g)}
-                        className={`px-5 h-11 rounded-xl border-2 font-semibold ${grade === g ? "border-primary bg-primary/10 text-white" : "border-border text-white hover:border-primary/40"}`}
+                        className={`px-5 h-11 rounded-xl border font-semibold ${grade === g ? "border-[#7FEFFF] bg-[#7FEFFF]/10 text-white" : "border-white/15 text-white hover:border-[#7FEFFF]/40"}`}
                         data-testid={`button-grade-${g}`}
                       >
                         {t.gradeLabel} {g}
@@ -1213,12 +1216,12 @@ export default function OnboardingPage() {
                 </div>
 
                 <div className="flex justify-between pt-4 gap-4">
-                  <Button variant="outline" className="h-14 px-8 text-lg font-semibold border-2 border-border rounded-2xl flex-1 md:flex-none" onClick={handleBack} data-testid="button-back-school">
+                  <Button variant="outline" className="px-5 py-2.5 text-sm font-bold rounded-xl bg-black text-white border border-[#7FEFFF]/50 hover:bg-white/[0.04] flex-1 md:flex-none" onClick={handleBack} data-testid="button-back-school">
                     <ArrowLeft className="w-5 h-5 mr-2" />
                     {T[language].backBtn}
                   </Button>
                   <Button
-                    className="h-14 px-10 text-lg font-semibold bg-foreground hover:bg-foreground/90 text-background rounded-2xl shadow-xl flex-1 md:flex-none"
+                    className="px-5 py-2.5 text-sm font-bold rounded-xl bg-[#7FEFFF] hover:bg-[#7FEFFF]/90 text-[#0a0a0a] shadow-md flex-1 md:flex-none"
                     onClick={handleNext}
                     disabled={!canProceed()}
                     data-testid="button-next-school"
@@ -1232,7 +1235,7 @@ export default function OnboardingPage() {
           )}
 
           {phase === "parent_consent" && (
-            <Card className="border bg-black shadow-[0_0_30px_rgba(0,229,255,0.25)] rounded-3xl overflow-hidden" data-testid="card-parent-consent">
+            <Card className="border bg-black shadow-[0_0_30px_rgba(127,239,255,0.25)] rounded-3xl overflow-hidden" data-testid="card-parent-consent">
               <div aria-hidden className="h-[3px]" style={{ background: "linear-gradient(90deg, #FFC48F, #FFC48F, #FFF29E, #FFF29E, #7FEFFF, #6FA8FF, #C6A4FF, #C6A4FF, #FF9FE5)" }} />
               <CardHeader className="pb-2 pt-8 px-8">
                 <CardTitle className="text-2xl font-semibold text-white">
@@ -1258,7 +1261,7 @@ export default function OnboardingPage() {
 
                 <Button
                   variant="outline"
-                  className="h-12 px-6 font-semibold rounded-xl"
+                  className="px-5 py-2.5 text-sm font-bold rounded-xl bg-black text-white border border-[#C6A4FF]/50 hover:bg-white/[0.04]"
                   onClick={() => consentMutation.mutate()}
                   disabled={!/.+@.+\..+/.test(parentEmail.trim()) || consentMutation.isPending}
                   data-testid="button-send-consent"
@@ -1286,11 +1289,11 @@ export default function OnboardingPage() {
                 )}
 
                 {consentLink ? (
-                  <p className="text-xs text-green-400/80">
+                  <p className="text-xs text-[#93FFB8]">
                     {t.consentSkipHint}
                   </p>
                 ) : (
-                  <p className="text-xs text-amber-400/80">
+                  <p className="text-xs text-[#FFF29E]">
                     {language === "af"
                       ? "Stuur eers die toestemmings-e-pos om voort te gaan."
                       : "Please send a consent request to your parent/guardian to continue."}
@@ -1298,12 +1301,12 @@ export default function OnboardingPage() {
                 )}
 
                 <div className="flex justify-between pt-4 gap-4">
-                  <Button variant="outline" className="h-14 px-8 text-lg font-semibold border-2 border-border rounded-2xl flex-1 md:flex-none" onClick={handleBack} data-testid="button-back-parent-consent">
+                  <Button variant="outline" className="px-5 py-2.5 text-sm font-bold rounded-xl bg-black text-white border border-[#7FEFFF]/50 hover:bg-white/[0.04] flex-1 md:flex-none" onClick={handleBack} data-testid="button-back-parent-consent">
                     <ArrowLeft className="w-5 h-5 mr-2" />
                     {T[language].backBtn}
                   </Button>
                   <Button
-                    className="h-14 px-10 text-lg font-semibold bg-foreground hover:bg-foreground/90 text-background rounded-2xl shadow-xl flex-1 md:flex-none"
+                    className="px-5 py-2.5 text-sm font-bold rounded-xl bg-[#7FEFFF] hover:bg-[#7FEFFF]/90 text-[#0a0a0a] shadow-md flex-1 md:flex-none"
                     onClick={handleNext}
                     disabled={submitMutation.isPending}
                     data-testid="button-complete"
@@ -1319,7 +1322,7 @@ export default function OnboardingPage() {
           {submitMutation.isPending && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 " data-testid="onboarding-loading-overlay">
               <div className="rounded-2xl border border-border bg-card p-8 text-center max-w-sm">
-                <Loader2 className="w-10 h-10 animate-spin text-primary mx-auto mb-4" />
+                <Loader2 className="w-10 h-10 animate-spin mx-auto mb-4" style={{ color: "#7FEFFF" }} />
                 <h3 className="text-lg font-bold text-white mb-1">
                   {t.preparingClassroomTitle}
                 </h3>

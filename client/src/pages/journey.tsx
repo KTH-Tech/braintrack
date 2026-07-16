@@ -149,7 +149,7 @@ export default function JourneyPage() {
               className="w-8 h-8 rounded-xl bg-black flex items-center justify-center shrink-0"
               style={{
                 border: "1px solid #7FEFFF",
-                boxShadow: "0 0 12px rgba(0,229,255,0.4), inset 0 0 8px rgba(0,229,255,0.15)",
+                boxShadow: "0 0 12px rgba(127,239,255,0.4), inset 0 0 8px rgba(127,239,255,0.15)",
               }}
             >
               <MapPin className="w-4 h-4" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 4px #7FEFFF)" }} />
@@ -220,7 +220,7 @@ export default function JourneyPage() {
               className="w-10 h-10 rounded-2xl bg-black flex items-center justify-center"
               style={{
                 border: "1.5px solid #FFC48F",
-                boxShadow: "0 0 16px rgba(255,138,0,0.35), inset 0 0 10px rgba(255,138,0,0.15)",
+                boxShadow: "0 0 16px rgba(255,196,143,0.35), inset 0 0 10px rgba(255,196,143,0.15)",
               }}
             >
               <Rocket className="w-5 h-5" style={{ color: "#FFC48F", filter: "drop-shadow(0 0 5px #FFC48F)" }} />

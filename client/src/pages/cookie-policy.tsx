@@ -23,21 +23,21 @@ export default function CookiePolicyPage() {
       <GraffitiSplats variant="full" opacity={0.4} />
       <header
         className="sticky top-0 z-50 bg-background/95"
-        style={{ borderBottom: "2px solid rgba(0,229,255,0.4)", boxShadow: "0 0 20px rgba(0,229,255,0.15)" }}
+        style={{ borderBottom: "2px solid rgba(127,239,255,0.4)", boxShadow: "0 0 20px rgba(127,239,255,0.15)" }}
       >
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link href="/">
               <button
                 className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black text-xs font-bold"
-                style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 12px rgba(0,229,255,0.4)" }}
+                style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 12px rgba(127,239,255,0.4)" }}
                 data-testid="cookie-nav-back"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 {isAf ? "Terug" : "Back"}
               </button>
             </Link>
-            <span className="graffiti-hand text-base hidden sm:inline tracking-tight" style={{ color: "#FFF29E", textShadow: "0 0 8px rgba(255,230,0,0.4)" }}>
+            <span className="graffiti-hand text-base hidden sm:inline tracking-tight" style={{ color: "#FFF29E", textShadow: "0 0 8px rgba(255,242,158,0.4)" }}>
               {isAf ? "Koekiebeleid" : "Cookie Policy"}
             </span>
           </div>
@@ -46,7 +46,7 @@ export default function CookiePolicyPage() {
             <button
               onClick={toggleLanguage}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black text-[11px] font-black"
-              style={{ color: "#C6A4FF", border: "1px solid rgba(138,43,255,0.55)", boxShadow: "0 0 10px rgba(138,43,255,0.35)" }}
+              style={{ color: "#C6A4FF", border: "1px solid rgba(198,164,255,0.55)", boxShadow: "0 0 10px rgba(198,164,255,0.35)" }}
               data-testid="button-language-toggle"
             >
               <Globe className="h-3.5 w-3.5" />
@@ -60,11 +60,11 @@ export default function CookiePolicyPage() {
         <div className="relative text-center space-y-3 py-6">
           <div
             className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-black mx-auto"
-            style={{ border: "1.5px solid #7FEFFF", boxShadow: "0 0 20px rgba(0,229,255,0.4), inset 0 0 14px rgba(0,229,255,0.15)" }}
+            style={{ border: "1.5px solid #7FEFFF", boxShadow: "0 0 20px rgba(127,239,255,0.4), inset 0 0 14px rgba(127,239,255,0.15)" }}
           >
-            <Cookie className="w-6 h-6" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 6px rgba(0,229,255,0.7))" }} />
+            <Cookie className="w-6 h-6" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 6px rgba(127,239,255,0.7))" }} />
           </div>
-          <h1 className="graffiti-hand text-3xl" style={{ textShadow: "0 0 10px rgba(0,229,255,0.4)" }}>
+          <h1 className="graffiti-hand text-3xl" style={{ textShadow: "0 0 10px rgba(127,239,255,0.4)" }}>
             {isAf ? "Koekiebeleid" : "Cookie Policy"}
           </h1>
           <p className="text-sm text-white max-w-xl mx-auto">
