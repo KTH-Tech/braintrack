@@ -376,7 +376,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
               {hasQuestions && (row.memoCoverage === undefined || (row.memoCoverage ?? 100) < 100) && (
                 <button
                   className={neonBtn}
-                  style={{ color: "#fb923c", border: "1.5px solid rgba(251,146,60,0.6)", boxShadow: "0 0 8px rgba(251,146,60,0.25)" }}
+                  style={{ color: "#FFC48F", border: "1.5px solid rgba(255,196,143,0.6)", boxShadow: "0 0 8px rgba(255,196,143,0.25)" }}
                   disabled={isPipelineRunning || isFilling}
                   onClick={(e) => { e.stopPropagation(); onFillMissing(row.subject); }}
                   title="Re-download and re-parse memos for questions that are missing memo text"
@@ -795,11 +795,11 @@ function MissingMemosPanel() {
   const toggleSort = (field: typeof sort.field) => setSort((p) => p.field === field ? { field, dir: p.dir === "asc" ? "desc" : "asc" } : { field, dir: "desc" });
 
   return (
-    <Card className="border-amber-400/30">
+    <Card className="border-[#FFF29E]/30">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-start gap-2">
-            <div className="p-1.5 rounded-md bg-amber-400/10 mt-0.5"><FileSearch className="w-4 h-4 text-amber-400" /></div>
+            <div className="p-1.5 rounded-md bg-[#FFF29E]/10 mt-0.5"><FileSearch className="w-4 h-4 text-[#FFF29E]" /></div>
             <div>
               <CardTitle className="text-base font-heading flex items-center gap-2">
                 Missing Memos
@@ -808,7 +808,7 @@ function MissingMemosPanel() {
               <p className="text-xs text-white mt-0.5">Ingested questions without memo text — use Re-ingest to retry specific papers.</p>
             </div>
           </div>
-          <Button variant="outline" size="sm" className="gap-1.5 border-amber-400/40 text-amber-400 hover:bg-amber-400/10" onClick={() => {
+          <Button variant="outline" size="sm" className="gap-1.5 border-[#FFF29E]/40 text-[#FFF29E] hover:bg-[#FFF29E]/10" onClick={() => {
             setShow((v: boolean) => {
               const next = !v;
               try {
@@ -843,18 +843,18 @@ function MissingMemosPanel() {
           {isLoading ? (
             <div className="flex items-center justify-center py-10 text-sm text-white gap-2"><Loader2 className="w-4 h-4 animate-spin" /> Loading…</div>
           ) : filtered.length === 0 ? (
-            <div className="flex items-center justify-center py-10 text-sm text-white gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> No missing memos found.</div>
+            <div className="flex items-center justify-center py-10 text-sm text-white gap-2"><CheckCircle2 className="w-4 h-4 text-[#93FFB8]" /> No missing memos found.</div>
           ) : (
-            <div className="overflow-x-auto rounded-lg border border-amber-400/20">
+            <div className="overflow-x-auto rounded-lg border border-[#FFF29E]/20">
               <table className="w-full text-xs" data-testid="table-missing-memos">
                 <thead>
-                  <tr className="border-b border-amber-400/20" style={{ background: "rgba(255,242,158,0.06)" }}>
-                    <th className="text-left px-3 py-2"><button onClick={() => toggleSort("subject")} className="font-semibold text-white hover:text-amber-300">Subject</button></th>
-                    <th className="text-center px-3 py-2"><button onClick={() => toggleSort("year")} className="font-semibold text-white hover:text-amber-300">Year</button></th>
+                  <tr className="border-b border-[#FFF29E]/20" style={{ background: "rgba(255,242,158,0.06)" }}>
+                    <th className="text-left px-3 py-2"><button onClick={() => toggleSort("subject")} className="font-semibold text-white hover:text-[#FFF29E]">Subject</button></th>
+                    <th className="text-center px-3 py-2"><button onClick={() => toggleSort("year")} className="font-semibold text-white hover:text-[#FFF29E]">Year</button></th>
                     <th className="text-center px-3 py-2 font-semibold text-white">Paper</th>
                     <th className="text-center px-3 py-2 font-semibold text-white">Lang</th>
-                    <th className="text-center px-3 py-2"><button onClick={() => toggleSort("missing")} className="font-semibold text-white hover:text-amber-300">Missing</button></th>
-                    <th className="text-center px-3 py-2"><button onClick={() => toggleSort("memoCoveragePct")} className="font-semibold text-white hover:text-amber-300">Coverage</button></th>
+                    <th className="text-center px-3 py-2"><button onClick={() => toggleSort("missing")} className="font-semibold text-white hover:text-[#FFF29E]">Missing</button></th>
+                    <th className="text-center px-3 py-2"><button onClick={() => toggleSort("memoCoveragePct")} className="font-semibold text-white hover:text-[#FFF29E]">Coverage</button></th>
                     <th className="text-center px-3 py-2 font-semibold text-white">Action</th>
                   </tr>
                 </thead>
@@ -874,7 +874,7 @@ function MissingMemosPanel() {
                           <span className="font-bold" style={{ color: r.memoCoveragePct >= 98 ? "#7FEFFF" : r.memoCoveragePct >= 50 ? "#FFF29E" : "#f87171" }}>{r.memoCoveragePct}%</span>
                         </td>
                         <td className="px-3 py-2 text-center">
-                          <Button size="sm" variant="outline" className="h-6 text-[10px] gap-1 border-cyan-400/40 text-cyan-300" disabled={isRe} onClick={() => reingest.mutate({ subject: r.subject, year: r.year })}>
+                          <Button size="sm" variant="outline" className="h-6 text-[10px] gap-1 border-[#7FEFFF]/40 text-[#7FEFFF]" disabled={isRe} onClick={() => reingest.mutate({ subject: r.subject, year: r.year })}>
                             {isRe ? <Loader2 className="w-2.5 h-2.5 animate-spin" /> : <RefreshCw className="w-2.5 h-2.5" />} Re-ingest
                           </Button>
                         </td>
@@ -1297,7 +1297,7 @@ export default function DBEPortal() {
   return (
     <div className="dark min-h-screen bg-black text-white">
       {/* Navigation bar */}
-      <nav className="sticky top-0 z-50 bg-black/95 border-b border-cyan-500/20">
+      <nav className="sticky top-0 z-50 bg-black/95 border-b border-[#7FEFFF]/20">
         {/* brand rainbow hairline */}
         <div
           aria-hidden
@@ -1308,16 +1308,16 @@ export default function DBEPortal() {
           <div className="flex items-center gap-4">
             <a href="/learn/admin/dbe-portal" className="flex items-center gap-2">
               <BrainTrackLogo className="h-6 w-auto" />
-              <Badge className="bg-cyan-500/15 text-cyan-300 border-cyan-500/30 text-[9px] px-1.5 py-0 font-mono uppercase tracking-wider">
+              <Badge className="bg-[#7FEFFF]/15 text-[#7FEFFF] border-[#7FEFFF]/30 text-[9px] px-1.5 py-0 font-mono uppercase tracking-wider">
                 DBE Portal
               </Badge>
             </a>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={toggleLanguage} className="text-[11px] font-bold text-white px-2 py-1 rounded border border-slate-700 hover:border-cyan-500/40 transition-all" data-testid="button-language-toggle">
+            <button onClick={toggleLanguage} className="text-[11px] font-bold text-white px-2 py-1 rounded border border-white/15 hover:border-[#7FEFFF]/40 transition-all" data-testid="button-language-toggle">
               {language === "en" ? "EN" : "AF"}
             </button>
-            <a href="/" className="text-white hover:text-cyan-300 transition-colors"><Home className="w-3.5 h-3.5" /></a>
+            <a href="/" className="text-white hover:text-[#7FEFFF] transition-colors"><Home className="w-3.5 h-3.5" /></a>
             <a
               href="/api/auth/logout"
               onClick={() => {
@@ -1329,11 +1329,11 @@ export default function DBEPortal() {
           </div>
         </div>
         {/* Status strip */}
-        <div className="border-t border-cyan-500/15 bg-black">
+        <div className="border-t border-[#7FEFFF]/15 bg-black">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-7 flex items-center justify-between gap-4 text-[10px] font-mono text-white uppercase tracking-wider">
             <div className="flex items-center gap-3">
               <span className="flex items-center gap-1.5">
-                <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px] shadow-emerald-400/60 animate-pulse" />
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#93FFB8] shadow-[0_0_6px] shadow-[#93FFB8]/60 animate-pulse" />
                 pipeline online
               </span>
               <span className="text-white">|</span>
@@ -1343,28 +1343,28 @@ export default function DBEPortal() {
               <span className="text-white">|</span>
               <span>{formatNumber(totalQuestions, language)} questions</span>
             </div>
-            <span className="hidden md:block text-cyan-300/70">btk-dbe-portal v1</span>
+            <span className="hidden md:block text-[#7FEFFF]/70">btk-dbe-portal v1</span>
           </div>
         </div>
       </nav>
 
       {/* OpenAI key missing banner */}
       {!openaiReady && !openAiBannerDismissed && (
-        <div className="border-b border-amber-500/40 bg-amber-500/10" role="alert" data-testid="openai-missing-banner">
+        <div className="border-b border-[#FFF29E]/40 bg-[#FFF29E]/10" role="alert" data-testid="openai-missing-banner">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-start gap-3">
-            <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+            <AlertTriangle className="w-4 h-4 text-[#FFF29E] shrink-0 mt-0.5" />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-amber-300">OpenAI API key not configured</p>
-              <p className="text-xs text-amber-200/70 mt-0.5">
+              <p className="text-sm font-semibold text-[#FFF29E]">OpenAI API key not configured</p>
+              <p className="text-xs text-[#FFF29E]/70 mt-0.5">
                 AI-powered features are disabled — <span className="font-semibold">Build Questions</span>, <span className="font-semibold">Crunch Time</span>, <span className="font-semibold">Generate AI</span>, and <span className="font-semibold">Seed Notes</span> will not work until the key is set.
               </p>
-              <p className="text-xs text-amber-200/50 mt-1">
-                To fix: set the <span className="font-mono bg-amber-500/15 px-1 rounded">OPENAI_API_KEY</span> environment variable on the server (e.g. in the Render dashboard) with a valid OpenAI API key, then restart the app.
+              <p className="text-xs text-[#FFF29E]/50 mt-1">
+                To fix: set the <span className="font-mono bg-[#FFF29E]/15 px-1 rounded">OPENAI_API_KEY</span> environment variable on the server (e.g. in the Render dashboard) with a valid OpenAI API key, then restart the app.
               </p>
             </div>
             <button
               onClick={() => setOpenAiBannerDismissed(true)}
-              className="shrink-0 text-amber-400/60 hover:text-amber-300 transition-colors p-0.5 rounded"
+              className="shrink-0 text-[#FFF29E]/60 hover:text-[#FFF29E] transition-colors p-0.5 rounded"
               aria-label="Dismiss banner"
               data-testid="openai-banner-dismiss"
             >
@@ -1411,7 +1411,7 @@ export default function DBEPortal() {
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
             <h1 className="text-2xl font-black text-white flex items-center gap-3" data-testid="page-title">
-              <Database className="w-6 h-6 text-cyan-400" />
+              <Database className="w-6 h-6 text-[#7FEFFF]" />
               DBE Content Portal
             </h1>
             <p className="text-white text-sm mt-1">
@@ -1419,7 +1419,7 @@ export default function DBEPortal() {
             </p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <Button size="sm" variant="outline" className="gap-1.5 border-cyan-500/40 text-cyan-300 hover:bg-cyan-500/10" onClick={() => { queryClient.invalidateQueries({ queryKey: ["/api/admin/dbe-ingestion/subjects"] }); queryClient.invalidateQueries({ queryKey: ["/api/admin/dbe-ingestion/status"] }); refetchSubjects(); toast({ title: "Refreshed" }); }} data-testid="btn-refresh">
+            <Button size="sm" variant="outline" className="gap-1.5 border-[#7FEFFF]/40 text-[#7FEFFF] hover:bg-[#7FEFFF]/10" onClick={() => { queryClient.invalidateQueries({ queryKey: ["/api/admin/dbe-ingestion/subjects"] }); queryClient.invalidateQueries({ queryKey: ["/api/admin/dbe-ingestion/status"] }); refetchSubjects(); toast({ title: "Refreshed" }); }} data-testid="btn-refresh">
               <RefreshCw className="w-3.5 h-3.5" /> Refresh
             </Button>
             <Button size="sm" variant="outline" className="gap-1.5 border-red-500/40 text-red-400 hover:bg-red-500/10"
@@ -1456,7 +1456,7 @@ export default function DBEPortal() {
           {/* Row: Ingestion */}
           <div className="flex items-center gap-3 flex-wrap pb-3">
             <span className="text-[10px] font-black uppercase tracking-[0.2em] w-20 shrink-0" style={{ color: "rgba(127,239,255,0.6)" }}>Ingestion</span>
-            <Button size="sm" className="gap-2 bg-cyan-500 hover:bg-cyan-600 text-black font-black" onClick={() => seedAll.mutate()} disabled={seedAll.isPending}
+            <Button size="sm" className="gap-2 bg-[#7FEFFF] hover:bg-[#7FEFFF] text-black font-black" onClick={() => seedAll.mutate()} disabled={seedAll.isPending}
               title="Download and parse all DBE PDFs for all subjects across 2015–2025"
               data-testid="btn-seed-all">
               {seedAll.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />} Seed All Subjects (2015–2025)
@@ -1469,7 +1469,7 @@ export default function DBEPortal() {
               AI & Qs
               {!openaiReady && <span className="block normal-case tracking-normal font-bold text-[9px] mt-0.5" style={{ color: "#f87171" }}>No key</span>}
             </span>
-            <Button size="sm" variant="outline" className="gap-2 border-purple-500/40 text-purple-300 hover:bg-purple-500/10 disabled:opacity-40"
+            <Button size="sm" variant="outline" className="gap-2 border-[#C6A4FF]/40 text-[#C6A4FF] hover:bg-[#C6A4FF]/10 disabled:opacity-40"
               onClick={() => generateAi.mutate(undefined)} disabled={generateAi.isPending || !openaiReady}
               title={openaiReady ? "Generate AI practice questions for all subjects with DBE content" : "Requires OpenAI API key — configure AI_INTEGRATIONS_OPENAI_API_KEY"}
               data-testid="btn-generate-ai">
@@ -1482,7 +1482,7 @@ export default function DBEPortal() {
               <input type="number" min={1} max={20} value={papersPerSubject} onChange={(e) => setPapersPerSubject(Math.max(1, Math.min(20, Number(e.target.value) || 1)))} disabled={simulateAllMutation.isPending || crunchStatus?.running || anyRunning || !openaiReady} className="h-6 w-12 rounded bg-black px-1 text-center text-xs font-black text-white focus:outline-none disabled:opacity-40" style={{ border: "1px solid rgba(127,239,255,0.5)" }} data-testid="input-papers-per-subject" />
               <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-white">/subj</span>
             </div>
-            <Button size="sm" onClick={() => simulateAllMutation.mutate(papersPerSubject)} disabled={simulateAllMutation.isPending || crunchStatus?.running || anyRunning || !openaiReady} className="gap-2 bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-black disabled:opacity-40"
+            <Button size="sm" onClick={() => simulateAllMutation.mutate(papersPerSubject)} disabled={simulateAllMutation.isPending || crunchStatus?.running || anyRunning || !openaiReady} className="gap-2 bg-[#FF9FE5] hover:bg-[#FF9FE5] text-[#0a0a0a] font-black disabled:opacity-40"
               title={openaiReady ? "Batch-generate AI practice papers across all subjects" : "Requires OpenAI API key"}
               data-testid="btn-crunch-time">
               {simulateAllMutation.isPending || crunchStatus?.running ? <><Loader2 className="w-4 h-4 animate-spin" />{crunchStatus?.running ? "Running…" : "Starting…"}</> : <><Zap className="w-4 h-4 fill-current" />Crunch Time</>}
@@ -1495,7 +1495,7 @@ export default function DBEPortal() {
             {crunchStatus?.running && crunchStatus.total > 0 && (
               <div className="flex items-center gap-2">
                 <div className="h-1.5 w-28 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.1)" }}>
-                  <div className="h-full bg-gradient-to-r from-cyan-500 to-fuchsia-500 transition-all" style={{ width: `${Math.min(100, Math.round((crunchStatus.done / crunchStatus.total) * 100))}%` }} />
+                  <div className="h-full bg-gradient-to-r from-[#7FEFFF] to-[#FF9FE5] transition-all" style={{ width: `${Math.min(100, Math.round((crunchStatus.done / crunchStatus.total) * 100))}%` }} />
                 </div>
                 <span className="text-[11px] font-bold text-white tabular-nums">{formatNumber(crunchStatus.done, language)}/{formatNumber(crunchStatus.total, language)}</span>
               </div>
@@ -1505,18 +1505,18 @@ export default function DBEPortal() {
           {/* Row: Validation */}
           <div className="flex items-center gap-3 flex-wrap py-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
             <span className="text-[10px] font-black uppercase tracking-[0.2em] w-20 shrink-0" style={{ color: "rgba(99,148,220,0.7)" }}>Validation</span>
-            <Button size="sm" variant="outline" className="gap-2 border-indigo-500/40 text-indigo-300 hover:bg-indigo-500/10" onClick={() => rebuildMasteryMutation.mutate()} disabled={rebuildMasteryMutation.isPending}
+            <Button size="sm" variant="outline" className="gap-2 border-[#C6A4FF]/40 text-[#C6A4FF] hover:bg-[#C6A4FF]/10" onClick={() => rebuildMasteryMutation.mutate()} disabled={rebuildMasteryMutation.isPending}
               title="Recalculate mastery levels and topic coverage scores across all subjects"
               data-testid="btn-rebuild-mastery">
               {rebuildMasteryMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <GraduationCap className="w-4 h-4" />} Rebuild Mastery
             </Button>
-            <Button size="sm" variant="outline" className="gap-2 border-blue-500/40 text-blue-300 hover:bg-blue-500/10" onClick={() => validateAllMutation.mutate()} disabled={validateAllMutation.isPending || validateStatus?.running}
+            <Button size="sm" variant="outline" className="gap-2 border-[#6FA8FF]/40 text-[#6FA8FF] hover:bg-[#6FA8FF]/10" onClick={() => validateAllMutation.mutate()} disabled={validateAllMutation.isPending || validateStatus?.running}
               title="Score every ingested question for memo accuracy, CAPS alignment, and structural quality"
               data-testid="btn-validate-ingestion">
               {validateAllMutation.isPending || validateStatus?.running ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />} Validate All
             </Button>
             {validateStatus && !validateStatus.running && validateStatus.summary?.scoredTotal > 0 && (
-              <span className="text-[11px] font-bold text-blue-300" data-testid="validate-summary">
+              <span className="text-[11px] font-bold text-[#6FA8FF]" data-testid="validate-summary">
                 {validateStatus.summary.avgQuality}% avg · {validateStatus.summary.clean} clean · {validateStatus.summary.garbled} garbled
               </span>
             )}
@@ -1525,7 +1525,7 @@ export default function DBEPortal() {
           {/* Row: Nightly Jobs */}
           <div className="flex items-center gap-3 flex-wrap pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
             <span className="text-[10px] font-black uppercase tracking-[0.2em] w-20 shrink-0" style={{ color: "rgba(99,163,115,0.7)" }}>Nightly</span>
-            <Button size="sm" variant="outline" className="gap-2 border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/10 disabled:opacity-40"
+            <Button size="sm" variant="outline" className="gap-2 border-[#93FFB8]/40 text-[#93FFB8] hover:bg-[#93FFB8]/10 disabled:opacity-40"
               onClick={() => seedNotesMutation.mutate(undefined)} disabled={seedNotesMutation.isPending || seedNotesStatus?.running || !openaiReady}
               title={openaiReady ? "Generate one baseline AI study note per topic for all ingested subjects (skips topics that already have notes)" : "Requires OpenAI API key — configure AI_INTEGRATIONS_OPENAI_API_KEY"}>
               {seedNotesMutation.isPending || seedNotesStatus?.running ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5" />} Seed Notes
@@ -1535,7 +1535,7 @@ export default function DBEPortal() {
               (seedNotesStatus.total > 0 && seedNotesStatus.skipped === seedNotesStatus.total && seedNotesStatus.done === 0) ||
               (seedNotesStatus.totalTopicsInDb > 0 && seedNotesStatus.topicsWithNotesInDb === seedNotesStatus.totalTopicsInDb)
             ) && (
-              <Button size="sm" variant="outline" className="gap-2 border-amber-500/40 text-amber-300 hover:bg-amber-500/10 disabled:opacity-40"
+              <Button size="sm" variant="outline" className="gap-2 border-[#FFF29E]/40 text-[#FFF29E] hover:bg-[#FFF29E]/10 disabled:opacity-40"
                 onClick={() => { if (openaiReady) seedNotesMutation.mutate(true); }}
                 disabled={!openaiReady}
                 title={openaiReady ? "All topics already have notes — use Force Re-seed to regenerate all notes from scratch" : "Requires OpenAI API key — configure AI_INTEGRATIONS_OPENAI_API_KEY"}>
@@ -1551,7 +1551,7 @@ export default function DBEPortal() {
                 <div className="h-1.5 w-28 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.1)" }}>
                   <div className="h-full rounded-full transition-all" style={{ width: `${Math.min(100, Math.round(((seedNotesStatus.done + seedNotesStatus.skipped) / seedNotesStatus.total) * 100))}%`, background: "#93FFB8" }} />
                 </div>
-                <span className="text-[11px] font-bold text-emerald-300 tabular-nums">
+                <span className="text-[11px] font-bold text-[#93FFB8] tabular-nums">
                   {Math.min(100, Math.round(((seedNotesStatus.done + seedNotesStatus.skipped) / seedNotesStatus.total) * 100))}% · {seedNotesStatus.done}✓ {seedNotesStatus.skipped}skip{seedNotesStatus.failed > 0 ? <span className="text-red-400"> {seedNotesStatus.failed}fail</span> : null}
                 </span>
                 {seedNotesStatus.currentSubject && (
@@ -1570,7 +1570,7 @@ export default function DBEPortal() {
 
         {/* Main tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-4 p-1.5 rounded-2xl h-auto flex-wrap bg-black border border-cyan-500/30 shadow-[0_0_14px_rgba(127,239,255,0.18)]">
+          <TabsList className="mb-4 p-1.5 rounded-2xl h-auto flex-wrap bg-black border border-[#7FEFFF]/30 shadow-[0_0_14px_rgba(127,239,255,0.18)]">
             {[
               { value: "overview", label: "Overview" },
               { value: "advanced", label: `Advanced (${filtered.length})` },
@@ -1580,7 +1580,7 @@ export default function DBEPortal() {
               { value: "sync", label: "Sync & Ops" },
             ].map((tab) => (
               <TabsTrigger key={tab.value} value={tab.value} data-testid={`tab-${tab.value}`}
-                className="rounded-xl text-xs px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-cyan-300 data-[state=active]:border data-[state=active]:border-cyan-400 data-[state=active]:shadow-[0_0_14px_rgba(127,239,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors">
+                className="rounded-xl text-xs px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#7FEFFF] data-[state=active]:border data-[state=active]:border-[#7FEFFF] data-[state=active]:shadow-[0_0_14px_rgba(127,239,255,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors">
                 {tab.label}
               </TabsTrigger>
             ))}
@@ -1640,12 +1640,12 @@ export default function DBEPortal() {
                 <div className="flex items-center gap-3 flex-wrap">
                   {syncStatus && (
                     <div className="flex items-center gap-2 text-xs">
-                      {syncStatus.status === "running" && <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-black font-black uppercase tracking-[0.1em] text-[10px]" style={{ color: "#5b9dff", border: "1px solid #5b9dff" }}><Loader2 className="w-3 h-3 animate-spin" /> Running…</span>}
-                      {syncStatus.status === "success" && <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-black font-black uppercase tracking-[0.1em] text-[10px]" style={{ color: "#22c55e", border: "1px solid #22c55e" }}><CheckCircle2 className="w-3 h-3" /> Success — {syncStatus.subjectsSynced} subjects</span>}
-                      {syncStatus.status === "failed" && <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-black font-black uppercase tracking-[0.1em] text-[10px]" style={{ color: "#ef4444", border: "1px solid #ef4444" }}><XCircle className="w-3 h-3" /> Failed</span>}
+                      {syncStatus.status === "running" && <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-black font-black uppercase tracking-[0.1em] text-[10px]" style={{ color: "#6FA8FF", border: "1px solid #6FA8FF" }}><Loader2 className="w-3 h-3 animate-spin" /> Running…</span>}
+                      {syncStatus.status === "success" && <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-black font-black uppercase tracking-[0.1em] text-[10px]" style={{ color: "#93FFB8", border: "1px solid #93FFB8" }}><CheckCircle2 className="w-3 h-3" /> Success — {syncStatus.subjectsSynced} subjects</span>}
+                      {syncStatus.status === "failed" && <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-black font-black uppercase tracking-[0.1em] text-[10px]" style={{ color: "#f87171", border: "1px solid #f87171" }}><XCircle className="w-3 h-3" /> Failed</span>}
                     </div>
                   )}
-                  <Button size="sm" onClick={() => { if (confirm("Trigger Sync to Production? This may take several minutes.")) syncProductionMutation.mutate(); }} disabled={syncProductionMutation.isPending || syncStatus?.status === "running" || anyRunning} className="gap-2 bg-cyan-600 hover:bg-cyan-700 text-white" data-testid="btn-sync-production-panel">
+                  <Button size="sm" onClick={() => { if (confirm("Trigger Sync to Production? This may take several minutes.")) syncProductionMutation.mutate(); }} disabled={syncProductionMutation.isPending || syncStatus?.status === "running" || anyRunning} className="gap-2 bg-[#7FEFFF] hover:bg-[#7FEFFF] text-[#0a0a0a] font-black" data-testid="btn-sync-production-panel">
                     {syncProductionMutation.isPending || syncStatus?.status === "running" ? <><Loader2 className="w-4 h-4 animate-spin" />Syncing…</> : <><CloudUpload className="w-4 h-4" />Sync to Production</>}
                   </Button>
                 </div>
@@ -1689,7 +1689,7 @@ export default function DBEPortal() {
                             </td>
                             <td className="px-4 py-2">
                               {entry.status === "success" ? (
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold"><CheckCircle2 className="w-3 h-3" /> Success</span>
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#93FFB8]/10 border border-[#93FFB8]/30 text-[#93FFB8] font-semibold"><CheckCircle2 className="w-3 h-3" /> Success</span>
                               ) : (
                                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 font-semibold"><XCircle className="w-3 h-3" /> Failed</span>
                               )}
@@ -1697,7 +1697,7 @@ export default function DBEPortal() {
                             <td className="px-4 py-2 tabular-nums text-white">{entry.subjectsSynced ?? "—"}</td>
                             <td className="px-4 py-2 tabular-nums text-white">{entry.questionsSynced != null ? formatNumber(Number(entry.questionsSynced), language) : "—"}</td>
                             <td className="px-4 py-2 text-white max-w-xs truncate">
-                              {entry.error ? <span className="text-red-400" title={entry.error}>{entry.error}</span> : entry.status === "success" ? <span className="text-emerald-400">Completed</span> : "—"}
+                              {entry.error ? <span className="text-red-400" title={entry.error}>{entry.error}</span> : entry.status === "success" ? <span className="text-[#93FFB8]">Completed</span> : "—"}
                             </td>
                           </tr>
                         ))}
@@ -1713,7 +1713,7 @@ export default function DBEPortal() {
 
       {/* Question preview dialog */}
       <Dialog open={!!previewSubject} onOpenChange={(o) => { if (!o) { setPreviewSubject(null); setPreviewYear(null); } }}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto dark bg-black border-cyan-500/30">
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto dark bg-black border-[#7FEFFF]/30">
           <DialogHeader>
             <DialogTitle className="text-white">Question Preview — {previewSubject}</DialogTitle>
             <DialogDescription className="text-white">Sample verbatim questions from the ingested papers.</DialogDescription>
