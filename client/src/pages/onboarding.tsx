@@ -780,16 +780,18 @@ export default function OnboardingPage() {
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#0a0b12] shadow-xl mb-6 transform -rotate-3 hover:rotate-0 transition-transform duration-300" style={{ border: "1.5px solid rgba(127,239,255,0.5)", boxShadow: "0 0 14px rgba(127,239,255,0.15)" }}>
               {phase === "questions" ? <Brain className="w-10 h-10" style={{ color: "#7FEFFF" }} /> : <BookOpen className="w-10 h-10" style={{ color: "#7FEFFF" }} />}
             </div>
-            <h1 className="graffiti-hand text-2xl sm:text-3xl font-semibold text-white tracking-tight" data-testid="onboarding-heading">
-              {phase === "questions"
-                ? t.pageTitle
-                : phase === "vark"
-                ? t.varkHeading
-                : phase === "subjects"
-                ? t.selectSubjectsHeading
-                : phase === "school"
-                ? t.schoolGradeHeading
-                : t.parentConsentHeading}
+            <h1 className="graffiti-hand text-3xl sm:text-4xl tracking-tight" data-testid="onboarding-heading">
+              <span className="callout-hl">
+                {phase === "questions"
+                  ? t.pageTitle
+                  : phase === "vark"
+                  ? t.varkHeading
+                  : phase === "subjects"
+                  ? t.selectSubjectsHeading
+                  : phase === "school"
+                  ? t.schoolGradeHeading
+                  : t.parentConsentHeading}
+              </span>
             </h1>
             <p className="text-white font-medium text-lg">
               {phase === "questions"
