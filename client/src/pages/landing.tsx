@@ -15,7 +15,6 @@ import { AnimatedIcon, type AnimatedIconName } from "@/components/animated-icon"
 import { SALandmarkScene } from "@/components/sa-landmark-scene";
 import { GraffitiSplats } from "@/components/graffiti-splats";
 import novaIcon from "@assets/ChatGPT_Image_Mar_5,_2026,_10_44_55_AM_1772701049699.png";
-import heroBrain from "@assets/brain_only_transparent.png";
 import { useRolePromptNav } from "@/components/role-prompt-modal";
 
 function useInView(threshold = 0.15) {
@@ -814,28 +813,76 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="relative mx-auto aspect-square" style={{ width: "clamp(120px, 38vw, 560px)" }}>
-                <div
+              {/* Graffiti tag composition — brand board "THIS IS MATRIC." device.
+                  Replaces the old animated brain PNG whose infinite filter
+                  animations (3 stacked drop-shadows + margin-top float + spun
+                  48px blur) repainted every frame and froze the renderer. */}
+              <div
+                className="relative mx-auto w-full max-w-[560px] min-h-[300px] sm:min-h-[420px] flex items-center justify-center"
+                data-testid="hero-graffiti-tag"
+              >
+                <GraffitiSplats variant="corner" opacity={0.65} />
+
+                {/* hand-drawn white crown */}
+                <svg
                   aria-hidden
-                  className="absolute inset-0 rounded-full blur-3xl pointer-events-none"
-                  style={{
-                    background:
-                      "radial-gradient(circle at 50% 50%, rgba(255,43,214,0.40), rgba(0,229,255,0.30) 40%, transparent 70%)",
-                    animation: "hero-aura-spin 14s linear infinite",
-                  }}
-                />
-                <img
-                  src={heroBrain}
-                  alt={language === "af" ? "BrainTrack neon brein illustrasie" : "BrainTrack neon brain illustration"}
-                  className="relative w-full h-full object-contain select-none"
-                  draggable={false}
-                  style={{
-                    animation:
-                      "hero-float 6s ease-in-out infinite, hero-glow-pulse 5s ease-in-out infinite",
-                    willChange: "transform, filter",
-                  }}
-                  data-testid="img-hero-brain"
-                />
+                  viewBox="0 0 100 100"
+                  className="absolute top-0 right-4 w-16 h-16 sm:w-24 sm:h-24"
+                  style={{ color: "#fff", transform: "rotate(14deg)", filter: "drop-shadow(0 0 8px rgba(255,255,255,0.55))" }}
+                >
+                  <path d="M12 72 L20 34 L38 54 L50 22 L62 54 L80 34 L88 72" stroke="currentColor" strokeWidth={7} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M16 82 L84 82" stroke="currentColor" strokeWidth={7} fill="none" strokeLinecap="round" />
+                </svg>
+
+                {/* hand-drawn cyan arrow pointing at the tag */}
+                <svg
+                  aria-hidden
+                  viewBox="0 0 100 100"
+                  className="absolute bottom-2 left-0 w-14 h-14 sm:w-20 sm:h-20"
+                  style={{ color: "#00E5FF", transform: "rotate(-10deg)", filter: "drop-shadow(0 0 8px rgba(0,229,255,0.55))" }}
+                >
+                  <path d="M10 85 Q30 25 78 28" stroke="currentColor" strokeWidth={7} fill="none" strokeLinecap="round" />
+                  <path d="M62 14 L80 28 L60 42" stroke="currentColor" strokeWidth={7} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+
+                {/* pink star doodle */}
+                <svg
+                  aria-hidden
+                  viewBox="0 0 100 100"
+                  className="absolute top-6 left-2 w-10 h-10 sm:w-14 sm:h-14"
+                  style={{ color: "#FF2BD6", transform: "rotate(-18deg)", filter: "drop-shadow(0 0 8px rgba(255,43,214,0.55))" }}
+                >
+                  <path d="M50 10 L60 38 L90 40 L66 58 L76 88 L50 70 L24 88 L34 58 L10 40 L40 38 Z" stroke="currentColor" strokeWidth={7} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+
+                <div className="relative z-10 text-center -rotate-3 select-none px-4">
+                  <p
+                    className="graffiti-hand text-white leading-[0.95]"
+                    style={{
+                      fontSize: "clamp(2.4rem, 4.5vw + 1rem, 4.6rem)",
+                      textShadow: "0 0 18px rgba(255,255,255,0.35), 0 4px 0 rgba(0,0,0,0.65)",
+                    }}
+                  >
+                    {language === "af" ? "Dit is" : "This is"}
+                  </p>
+                  <p
+                    className="graffiti-hand text-white leading-[0.95]"
+                    style={{
+                      fontSize: "clamp(3rem, 6vw + 1rem, 6rem)",
+                      textShadow: "0 0 22px rgba(255,255,255,0.4), 0 4px 0 rgba(0,0,0,0.65)",
+                    }}
+                  >
+                    {language === "af" ? "Matriek." : "Matric."}
+                  </p>
+                  <p className="graffiti-hand mt-3 leading-tight" style={{ fontSize: "clamp(1.25rem, 2.2vw + 0.5rem, 2.1rem)" }}>
+                    <span style={{ color: "#FFE600", textShadow: "0 0 14px rgba(255,230,0,0.6)" }}>
+                      {language === "af" ? "Elke punt " : "Every mark "}
+                    </span>
+                    <span style={{ color: "#FF2BD6", textShadow: "0 0 14px rgba(255,43,214,0.6)" }}>
+                      {language === "af" ? "tel." : "counts."}
+                    </span>
+                  </p>
+                </div>
               </div>
               </div>
             </div>
