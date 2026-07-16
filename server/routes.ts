@@ -1584,12 +1584,13 @@ export async function registerRoutes(
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
-      const wantsRedirect = req.query.redirect !== undefined;
-      if (wantsRedirect) {
-        const redirectTo =
-          role === "admin" ? "/dashboard" :
-          role === "parent" ? "/parent" :
-          "/dashboard";
+      // Redirect straight into the app by default so the link "just works" in a
+      // browser (pass ?json to get the raw token blob instead).
+      const redirectTo =
+        role === "admin" ? "/learn/admin" :
+        role === "parent" ? "/parent" :
+        "/classroom";
+      if (req.query.json === undefined) {
         return res.redirect(redirectTo);
       }
 
