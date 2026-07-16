@@ -689,7 +689,7 @@ export default function ExamModePage() {
       />
       <div className="relative z-10">
         <header
-          className="sticky top-0 z-50 backdrop-blur-xl bg-black/80"
+          className="sticky top-0 z-50 bg-black/80"
           style={{ borderBottom: "1px solid rgba(255,43,214,0.35)" }}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

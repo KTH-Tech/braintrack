@@ -336,7 +336,7 @@ function RequireAdminRoute({ children }: { children: React.ReactNode }) {
         data-testid="admin-only-block"
         data-task="394"
       >
-        <div className="max-w-md text-center rounded-2xl p-8 border border-white/15 bg-black/60 backdrop-blur-xl">
+        <div className="max-w-md text-center rounded-2xl p-8 border border-white/15 bg-black/60 ">
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-rose-400">
             Admin Only
           </p>
@@ -390,7 +390,7 @@ function RequireParentRoute({ children }: { children: React.ReactNode }) {
       className="min-h-screen flex items-center justify-center p-6 bg-black text-white"
       data-testid="parent-only-block"
     >
-      <div className="max-w-md text-center rounded-2xl p-8 border border-white/15 bg-black/60 backdrop-blur-xl">
+      <div className="max-w-md text-center rounded-2xl p-8 border border-white/15 bg-black/60 ">
         <p className="text-[10px] font-black uppercase tracking-[0.22em] text-cyan-300">
           Parent Only
         </p>
@@ -436,7 +436,7 @@ function RequireSchoolAdminRoute({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-black text-white">
-      <div className="max-w-md text-center rounded-2xl p-8 border border-white/15 bg-black/60 backdrop-blur-xl">
+      <div className="max-w-md text-center rounded-2xl p-8 border border-white/15 bg-black/60 ">
         <p className="text-[10px] font-black uppercase tracking-[0.22em] text-indigo-400">
           School Admin Only
         </p>

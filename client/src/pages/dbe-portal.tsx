@@ -1297,7 +1297,7 @@ export default function DBEPortal() {
   return (
     <div className="dark min-h-screen bg-black text-white">
       {/* Navigation bar */}
-      <nav className="sticky top-0 z-50 bg-black/95 backdrop-blur-md border-b border-cyan-500/20">
+      <nav className="sticky top-0 z-50 bg-black/95 border-b border-cyan-500/20">
         {/* brand rainbow hairline */}
         <div
           aria-hidden

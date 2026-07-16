@@ -1,4 +1,4 @@
-﻿import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield, Lock, Eye, FileText, Users, Clock, Globe, ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
@@ -22,7 +22,7 @@ export default function PrivacyPolicyPage() {
     <div className="dark relative min-h-screen bg-background text-white overflow-hidden">
       <GraffitiSplats variant="full" opacity={0.4} />
       <header
-        className="sticky top-0 z-50 bg-background/95 backdrop-blur-none border-b-2"
+        className="sticky top-0 z-50 bg-background/95 border-b-2"
         style={{ borderBottom: "2px solid rgba(0,229,255,0.4)", boxShadow: "0 0 20px rgba(0,229,255,0.15)" }}
       >
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between gap-4">

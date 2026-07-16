@@ -633,7 +633,7 @@ export default function BSTExamPage() {
       <div className="min-h-screen flex flex-col" onContextMenu={e => e.preventDefault()} data-nosnippet>
         {/* Combined sticky wrapper: PageHeader + section tabs sub-bar move together so the
             sub-bar can't overlap PageHeader on narrow widths where actions wrap. */}
-        <div className="sticky top-0 z-50 bg-card/80 backdrop-blur-xl border-b border-border">
+        <div className="sticky top-0 z-50 bg-card/80 border-b border-border">
           <PageHeader
             icon={Zap}
             animatedIcon="bolt"

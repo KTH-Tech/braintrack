@@ -136,7 +136,7 @@ export function CookieConsentBanner() {
       aria-label={isAf ? "Koekietoestemmingskennisgewing" : "Cookie consent notice"}
       data-testid="cookie-consent-banner"
     >
-      <div className="max-w-3xl mx-auto rounded-xl border border-border/60 bg-background/95 backdrop-blur-xl shadow-2xl shadow-black/20">
+      <div className="max-w-3xl mx-auto rounded-xl border border-border/60 bg-background/95 shadow-2xl shadow-black/20">
         <div className="p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <div className="flex items-start gap-3 flex-1 min-w-0">
             <div className="mt-0.5 shrink-0 w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">

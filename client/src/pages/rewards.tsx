@@ -266,7 +266,7 @@ export default function RewardsPage() {
   return (
     <div className="min-h-screen bg-background text-white relative overflow-hidden">
       <GraffitiSplats variant="hero" opacity={0.4} />
-      <header className="sticky top-0 z-10 py-3 bg-background/90 backdrop-blur-md" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+      <header className="sticky top-0 z-10 py-3 bg-background/90 " style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
         <div className="max-w-4xl mx-auto px-4 flex items-center justify-between flex-wrap gap-2">
           <span
             className="text-sm font-black tracking-wide text-transparent bg-clip-text"

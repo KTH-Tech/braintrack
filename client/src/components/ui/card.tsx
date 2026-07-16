@@ -38,7 +38,7 @@ type CardTitleProps = React.HTMLAttributes<HTMLDivElement> & {
 const CardTitle = React.forwardRef<HTMLDivElement, CardTitleProps>(
   ({ className, icon, iconColor, children, ...props }, ref) => {
     const Icon = icon ?? null;
-    const tint = iconColor ?? "#06b6d4";
+    const tint = iconColor ?? "#00E5FF";
     return (
       <div
         ref={ref}
@@ -78,7 +78,7 @@ const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("text-sm text-foreground/80", className)}
+    className={cn("text-sm text-foreground", className)}
     {...props}
   />
 ));

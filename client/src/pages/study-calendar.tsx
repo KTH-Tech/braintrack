@@ -520,7 +520,7 @@ export default function StudyCalendarPage() {
 
       {/* ── Sticky neon header ── */}
       <header
-        className="sticky top-0 z-50 backdrop-blur-xl bg-black/80"
+        className="sticky top-0 z-50 bg-black/80"
         style={{ borderBottom: "1px solid rgba(0,229,255,0.35)" }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -580,7 +580,7 @@ export default function StudyCalendarPage() {
         const subjectLabel = isAf ? todayDirective.subjectNameAf : todayDirective.subjectName;
         return (
           <div
-            className="sticky z-40 backdrop-blur-xl bg-black/85"
+            className="sticky z-40 bg-black/85"
             style={{ top: 56, borderBottom: `1px solid ${u.color}55`, boxShadow: `0 4px 18px ${u.glow}33` }}
             data-testid="sticky-today-directive"
           >
@@ -1206,11 +1206,10 @@ export default function StudyCalendarPage() {
                     key={day.day}
                     className="flex flex-col transition-all"
                     style={{
-                      background: isToday ? "rgba(6, 182, 212,0.08)" : "rgba(255,255,255,0.03)",
-                      backdropFilter:"blur(16px)", WebkitBackdropFilter:"blur(16px)",
-                      border: isToday ? "1.5px solid rgba(6, 182, 212,0.55)" : "1px solid rgba(255,255,255,0.07)",
+                      background: isToday ? "rgba(0,229,255,0.08)" : "#0a0b12",
+                      border: isToday ? "1.5px solid rgba(0,229,255,0.55)" : "1px solid rgba(255,255,255,0.12)",
                       borderRadius:"14px",
-                      boxShadow: isToday ? "0 0 18px rgba(6, 182, 212,0.25), inset 0 1px 0 rgba(255,255,255,0.06)" : "inset 0 1px 0 rgba(255,255,255,0.04)",
+                      boxShadow: isToday ? "0 0 18px rgba(0,229,255,0.25), inset 0 1px 0 rgba(255,255,255,0.06)" : "inset 0 1px 0 rgba(255,255,255,0.04)",
                       padding:"10px 8px", minHeight:"180px",
                     }}
                     data-testid={`day-col-${idx}`}

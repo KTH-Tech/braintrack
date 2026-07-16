@@ -734,7 +734,7 @@ export default function OnboardingPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="border-b border-border py-4 bg-background/90 backdrop-blur-md sticky top-0 z-50">
+      <header className="border-b border-border py-4 bg-background/90 sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             {phase === "questions" && (
@@ -834,7 +834,7 @@ export default function OnboardingPage() {
                     {currentQuestion.options.map((option) => (
                       <div
                         key={option.value}
-                        className={`flex items-center space-x-3 p-5 rounded-2xl border transition-all duration-200 cursor-pointer backdrop-blur-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.10)] ${
+                        className={`flex items-center space-x-3 p-5 rounded-2xl border transition-all duration-200 cursor-pointer  shadow-[inset_0_1px_0_rgba(255,255,255,0.10)] ${
                           answers[currentQuestion.id] === option.value ? "border-[#00E5FF] bg-[#00E5FF]/10 shadow-[0_0_18px_rgba(0,229,255,0.4)]" : "border-white/15 bg-black hover:border-[#00E5FF]/60 hover:bg-white/[0.03]"
                         }`}
                         onClick={() => handleSingleSelect(option.value)}
@@ -860,7 +860,7 @@ export default function OnboardingPage() {
                       return (
                         <div
                           key={option.value}
-                          className={`flex items-center space-x-3 p-5 rounded-2xl border transition-all duration-200 cursor-pointer backdrop-blur-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.10)] ${
+                          className={`flex items-center space-x-3 p-5 rounded-2xl border transition-all duration-200 cursor-pointer  shadow-[inset_0_1px_0_rgba(255,255,255,0.10)] ${
                             isChecked ? "border-[#00E5FF] bg-[#00E5FF]/10 shadow-[0_0_18px_rgba(0,229,255,0.4)]" : "border-white/15 bg-black hover:border-[#00E5FF]/60 hover:bg-white/[0.03]"
                           }`}
                           onClick={() => handleMultiSelect(option.value, !isChecked)}
@@ -1070,7 +1070,7 @@ export default function OnboardingPage() {
                     return (
                       <div
                         key={subject.code}
-                        className={`p-4 rounded-2xl border transition-all duration-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-sm ${isSelected ? "border-[#00E5FF] bg-[#00E5FF]/10 shadow-[0_0_18px_rgba(0,229,255,0.4)]" : "border-white/15 bg-black hover:border-[#00E5FF]/60 hover:bg-white/[0.03]"}`}
+                        className={`p-4 rounded-2xl border transition-all duration-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]  ${isSelected ? "border-[#00E5FF] bg-[#00E5FF]/10 shadow-[0_0_18px_rgba(0,229,255,0.4)]" : "border-white/15 bg-black hover:border-[#00E5FF]/60 hover:bg-white/[0.03]"}`}
                       >
                         <div className="flex items-center gap-4">
                           <Checkbox
@@ -1317,7 +1317,7 @@ export default function OnboardingPage() {
           )}
 
           {submitMutation.isPending && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" data-testid="onboarding-loading-overlay">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 " data-testid="onboarding-loading-overlay">
               <div className="rounded-2xl border border-border bg-card p-8 text-center max-w-sm">
                 <Loader2 className="w-10 h-10 animate-spin text-primary mx-auto mb-4" />
                 <h3 className="text-lg font-bold text-white mb-1">

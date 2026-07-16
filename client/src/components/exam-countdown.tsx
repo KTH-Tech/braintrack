@@ -129,7 +129,7 @@ function calc(target: Date): Countdown {
 
 function Cell({ value, unit }: { value: string | number; unit: string }) {
   return (
-    <div className="flex flex-col items-center min-w-[3.25rem] px-2 py-1.5 rounded-lg bg-background/80 backdrop-blur border border-border shadow-sm">
+    <div className="flex flex-col items-center min-w-[3.25rem] px-2 py-1.5 rounded-lg bg-background/80 border border-border shadow-sm">
       <span className="text-xl sm:text-2xl font-bold tabular-nums text-foreground leading-none">{value}</span>
       <span className="text-[9px] uppercase tracking-wider text-white mt-0.5">{unit}</span>
     </div>

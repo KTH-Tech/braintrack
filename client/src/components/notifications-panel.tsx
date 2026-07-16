@@ -113,7 +113,7 @@ export function NotificationsPanel({ isAf = false }: NotificationsPanelProps) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.96 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 top-full mt-2 w-80 rounded-2xl border border-border bg-background/95 backdrop-blur-xl shadow-2xl z-[200] overflow-hidden"
+            className="absolute right-0 top-full mt-2 w-80 rounded-2xl border border-border bg-background/95 shadow-2xl z-[200] overflow-hidden"
           >
             <div className="flex items-center justify-between px-4 py-3 border-b border-border">
               <h3 className="font-semibold text-sm text-foreground">

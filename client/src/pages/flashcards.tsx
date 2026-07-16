@@ -884,7 +884,7 @@ export default function FlashcardsPage() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <header className="sticky top-0 z-50 bg-black/90 backdrop-blur-xl" style={{ borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
+      <header className="sticky top-0 z-50 bg-black/90 " style={{ borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 gap-4">
             <div className="flex items-center gap-3">

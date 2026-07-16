@@ -55,7 +55,7 @@ export function PageHeader({
   if (!sticky) return inner;
 
   return (
-    <header className="sticky top-0 z-50 bg-card/80 backdrop-blur-xl border-b border-border">
+    <header className="sticky top-0 z-50 bg-card/80 border-b border-border">
       <div className="max-w-6xl mx-auto px-4 py-3">{inner}</div>
     </header>
   );

@@ -12,11 +12,11 @@ const badgeVariants = cva(
       variant: {
         default:
           "prismglass-btn border-white/30 text-white shadow-[0_1px_6px_rgba(6, 182, 212,0.12),inset_0_1px_0_rgba(255,255,255,0.2)]",
-        secondary: "border-white/10 backdrop-blur-sm bg-white/[0.08] text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]",
+        secondary: "border-white/10  bg-white/[0.08] text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]",
         destructive:
           "prismglass-btn-destructive border-red-300/30 text-white shadow-[0_1px_6px_rgba(239,68,68,0.12),inset_0_1px_0_rgba(255,255,255,0.15)]",
 
-        outline: "backdrop-blur-sm bg-white/[0.05] border border-white/10 text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]",
+        outline: " bg-white/[0.05] border border-white/10 text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]",
       },
     },
     defaultVariants: {

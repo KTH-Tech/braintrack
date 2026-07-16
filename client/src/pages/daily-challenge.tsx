@@ -666,7 +666,7 @@ function ResultsView({
           <div className="absolute top-0 right-0 w-40 h-40 bg-white/15 blur-3xl rounded-full -mr-10 -mt-10" aria-hidden="true" />
           <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/10 blur-3xl rounded-full -ml-10 -mb-10" aria-hidden="true" />
           <div className="relative">
-            <div className="w-20 h-20 mx-auto rounded-3xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30">
+            <div className="w-20 h-20 mx-auto rounded-3xl bg-white/20 flex items-center justify-center border border-white/30">
               <GradeIcon className="w-10 h-10 text-white" />
             </div>
             <h2 className="text-4xl font-semibold text-white mt-4" data-testid="text-result-grade">
@@ -686,17 +686,17 @@ function ResultsView({
               </div>
             </div>
             <div className="flex items-center justify-center gap-2 pt-4 flex-wrap">
-              <div className="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-full">
+              <div className="inline-flex items-center gap-1.5 bg-white/20 px-3 py-1.5 rounded-full">
                 <Clock className="w-4 h-4 text-white" />
                 <span className="text-sm font-semibold text-white tabular-nums">{formatTime(timeSpent)}</span>
               </div>
-              <div className="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-full">
+              <div className="inline-flex items-center gap-1.5 bg-white/20 px-3 py-1.5 rounded-full">
                 <Flame className="w-4 h-4 text-white" />
                 <span className="text-sm font-semibold text-white">
                   {streak} {isAf ? "dae reeks" : "day streak"}
                 </span>
               </div>
-              <div className="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-full">
+              <div className="inline-flex items-center gap-1.5 bg-white/20 px-3 py-1.5 rounded-full">
                 <Sparkles className="w-4 h-4 text-white" />
                 <span className="text-sm font-semibold text-white">+{xpEarned} XP</span>
               </div>

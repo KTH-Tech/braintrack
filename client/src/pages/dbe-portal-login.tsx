@@ -43,11 +43,10 @@ export default function DBEPortalLogin() {
       <div
         className="w-full max-w-sm rounded-2xl p-8 space-y-7 relative overflow-hidden"
         style={{
-          background: "rgba(0,0,0,0.85)",
+          background: "#0a0b12",
           border: "1.5px solid rgba(0,229,255,0.35)",
           boxShadow:
             "0 0 40px rgba(0,229,255,0.18), 0 0 80px rgba(0,0,0,0.8), inset 0 0 30px rgba(0,0,0,0.6)",
-          backdropFilter: "blur(20px)",
         }}
       >
         <div

@@ -359,7 +359,7 @@ export default function SubjectsPage() {
     <div className="min-h-screen bg-background text-white relative overflow-hidden">
       <GraffitiSplats variant="corner" opacity={0.35} />
       {/* Header — pure black, no wordmark */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-lg border-b border-white/10">
+      <header className="sticky top-0 z-50 bg-background/95 border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 gap-4">
             <nav className="flex items-center gap-1">

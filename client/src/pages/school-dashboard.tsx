@@ -221,7 +221,7 @@ function SecondaryMetricCard({
   color?: string;
 }) {
   return (
-    <Card className="border-border/60 bg-card/60 backdrop-blur-sm">
+    <Card className="border-border/60 bg-card/60 ">
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
           <div className={`mt-0.5 ${color} shrink-0`}>
@@ -335,7 +335,7 @@ export default function SchoolDashboardPage() {
     const msg = (error as any)?.message || "";
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-6">
-        <div className="max-w-md text-center rounded-2xl border border-border/60 bg-card/60 backdrop-blur-xl p-8">
+        <div className="max-w-md text-center rounded-2xl border border-border/60 bg-card/60 p-8">
           <AlertCircle className="w-10 h-10 text-destructive mx-auto mb-3" />
           <h1 className="text-xl font-black text-foreground">{t.dashboardUnavailable}</h1>
           <p className="text-sm text-muted-foreground mt-2">
@@ -376,7 +376,7 @@ export default function SchoolDashboardPage() {
       />
 
       {/* Header */}
-      <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-xl border-b border-border/60 print:static print:bg-white print:border-black/20">
+      <header className="sticky top-0 z-20 bg-background/80 border-b border-border/60 print:static print:bg-white print:border-black/20">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <GraduationCap className="w-5 h-5 text-primary shrink-0" />
@@ -455,7 +455,7 @@ export default function SchoolDashboardPage() {
         </div>
 
         {/* Hero KPIs */}
-        <Card className="border-border/60 bg-card/70 backdrop-blur-sm overflow-hidden">
+        <Card className="border-border/60 bg-card/70 overflow-hidden">
           <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-border/40">
             <HeroStat
               icon={Users}
@@ -511,7 +511,7 @@ export default function SchoolDashboardPage() {
         {/* Charts row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Subject Engagement */}
-          <Card className="border-border/60 bg-card/60 backdrop-blur-sm">
+          <Card className="border-border/60 bg-card/60 ">
             <CardHeader className="pb-2 pt-4 px-4">
               <CardTitle className="text-xs font-black uppercase tracking-widest text-muted-foreground">
                 {t.subjectEngagement}
@@ -563,7 +563,7 @@ export default function SchoolDashboardPage() {
           </Card>
 
           {/* Avg Score by Subject */}
-          <Card className="border-border/60 bg-card/60 backdrop-blur-sm">
+          <Card className="border-border/60 bg-card/60 ">
             <CardHeader className="pb-2 pt-4 px-4">
               <CardTitle className="text-xs font-black uppercase tracking-widest text-muted-foreground">
                 {t.avgMastery}
@@ -627,7 +627,7 @@ export default function SchoolDashboardPage() {
         </div>
 
         {/* Streak Distribution — unified panel */}
-        <Card className="border-border/60 bg-card/60 backdrop-blur-sm">
+        <Card className="border-border/60 bg-card/60 ">
           <CardHeader className="pb-2 pt-4 px-4">
             <CardTitle className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
               <Flame className="w-4 h-4 text-orange-500 shrink-0" />

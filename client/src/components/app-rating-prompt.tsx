@@ -66,7 +66,7 @@ export function AppRatingPrompt() {
       className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] w-[calc(100%-2rem)] max-w-sm"
       data-testid="app-rating-prompt"
     >
-      <div className="rounded-2xl border border-white/20 bg-background/95 backdrop-blur-md shadow-2xl p-5 space-y-4">
+      <div className="rounded-2xl border border-white/20 bg-background/95 shadow-2xl p-5 space-y-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-500 flex items-center justify-center shrink-0">

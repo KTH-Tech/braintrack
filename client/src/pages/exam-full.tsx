@@ -264,7 +264,7 @@ export default function ExamFullPage() {
 
         <Card className="relative overflow-hidden">
           {examLoading && (
-            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-xl bg-card/80 backdrop-blur-sm">
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-xl bg-card/80 ">
               <Loader2 className="w-8 h-8 animate-spin text-primary" />
               <p className="text-sm font-medium text-foreground">
                 {isAf ? "Vraestel word gelaai…" : "Fetching paper…"}
@@ -416,7 +416,7 @@ export default function ExamFullPage() {
           </DialogContent>
         </Dialog>
 
-        <div className="sticky top-2 z-20 rounded-2xl border bg-card/95 backdrop-blur p-3 sm:p-4 flex items-center justify-between gap-3 flex-wrap shadow-sm">
+        <div className="sticky top-2 z-20 rounded-2xl border bg-card/95 p-3 sm:p-4 flex items-center justify-between gap-3 flex-wrap shadow-sm">
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"

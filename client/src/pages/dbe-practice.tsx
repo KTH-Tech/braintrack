@@ -181,7 +181,7 @@ export default function DbePracticePage() {
 
   return (
     <div className="min-h-screen">
-      <header className="border-b border-border sticky top-0 z-50 backdrop-blur-xl bg-background/90">
+      <header className="border-b border-border sticky top-0 z-50 bg-background/90">
         <div className="max-w-4xl mx-auto px-4">
           <div className="flex items-center justify-between h-16 gap-4">
             <div className="flex items-center gap-3">

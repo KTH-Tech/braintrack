@@ -88,7 +88,7 @@ export function BadgePopup({ badgeCode, isAf = false, onDismiss }: BadgePopupPro
           className="fixed inset-0 z-[999] flex items-center justify-center pointer-events-none"
         >
           <motion.div
-            className="pointer-events-auto relative rounded-3xl border border-white/20 bg-background/95 backdrop-blur-xl shadow-2xl p-8 flex flex-col items-center gap-4 max-w-sm mx-4"
+            className="pointer-events-auto relative rounded-3xl border border-white/20 bg-background/95 shadow-2xl p-8 flex flex-col items-center gap-4 max-w-sm mx-4"
             style={{
               boxShadow: `0 0 40px 8px ${info.glow}, 0 8px 32px rgba(0,0,0,0.4)`,
             }}

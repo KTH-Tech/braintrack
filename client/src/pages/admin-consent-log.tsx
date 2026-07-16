@@ -71,7 +71,7 @@ export default function AdminConsentLogPage() {
           </div>
         </div>
 
-        <Card className="border-border/60 bg-background/60 backdrop-blur-xl">
+        <Card className="border-border/60 bg-background/60 ">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
               {isAf ? "Toestemmingsgeskiedenis" : "Consent History"}
@@ -143,7 +143,7 @@ export default function AdminConsentLogPage() {
         </Card>
 
         {rows && rows.length > 0 && (
-          <Card className="border-border/60 bg-background/60 backdrop-blur-xl">
+          <Card className="border-border/60 bg-background/60 ">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                 {isAf ? "Laaste rekord metadata" : "Latest Record Metadata"}

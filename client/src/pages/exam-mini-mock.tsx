@@ -434,7 +434,7 @@ export default function ExamMiniMockPage() {
 
       <Card className="relative overflow-hidden">
         {loadingStart && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-xl bg-card/80 backdrop-blur-sm">
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-xl bg-card/80 ">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
             <p className="text-sm font-medium text-foreground">
               {isAf ? "Vrae word gelaai…" : "Fetching questions…"}

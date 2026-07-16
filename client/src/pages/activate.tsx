@@ -111,7 +111,7 @@ export default function ActivatePage() {
 
   return (
     <div className="min-h-screen">
-      <header className="border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="border-b border-border/40 bg-background/95 supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-end">
             <button onClick={toggleLanguage} className="flex items-center gap-1 px-2 py-1.5 rounded-md text-white hover:text-white transition-colors" data-testid="button-language-toggle">

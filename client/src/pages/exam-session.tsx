@@ -514,7 +514,7 @@ export default function ExamSessionPage() {
               <CardDescription>{subjectName} — {paperId.toUpperCase()}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className={`text-center p-6 rounded-2xl border backdrop-blur-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.14)] ${band.bg}`}>
+              <div className={`text-center p-6 rounded-2xl border  shadow-[inset_0_1px_0_rgba(255,255,255,0.14)] ${band.bg}`}>
                 <p className={`text-5xl font-bold ${band.color}`}>{examResult.percentage}%</p>
                 <p className="text-lg font-semibold mt-1">{examResult.score} / {examResult.total} {isAf ? "punte" : "marks"}</p>
                 <Badge className="mt-2">{band.label}</Badge>
@@ -529,7 +529,7 @@ export default function ExamSessionPage() {
                     ? q?.options?.find((o) => o.label === d.correctAnswer)
                     : undefined;
                   return (
-                    <div key={i} className={`p-3 rounded-lg border backdrop-blur-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.10)] ${d.correct ? "border-green-500/35 bg-green-500/8" : "border-red-500/35 bg-red-500/8"} space-y-2`}>
+                    <div key={i} className={`p-3 rounded-lg border  shadow-[inset_0_1px_0_rgba(255,255,255,0.10)] ${d.correct ? "border-green-500/35 bg-green-500/8" : "border-red-500/35 bg-red-500/8"} space-y-2`}>
                       <div className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-2">
                           {d.correct ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <XCircle className="w-4 h-4 text-red-500" />}

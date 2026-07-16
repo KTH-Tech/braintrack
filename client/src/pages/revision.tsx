@@ -169,7 +169,7 @@ export default function RevisionPage() {
 
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-md">
+      <header className="sticky top-0 z-50 border-b border-border bg-background/95 ">
         <div className="max-w-3xl mx-auto px-4 h-14 flex items-center gap-3">
           <Link href={`/subject/${subjectId}`}>
             <button className="flex items-center gap-1.5 text-sm font-semibold text-white hover:text-white transition-colors">
@@ -196,7 +196,7 @@ export default function RevisionPage() {
         {phase === "quiz" && totalQuestions > 0 && current && (
           <>
             {data?.hasWrongAttempts ? (
-              <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-red-300/30 bg-red-500/[0.07] backdrop-blur-sm">
+              <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-red-300/30 bg-red-500/[0.07] ">
                 <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
                 <p className="text-xs font-semibold text-white">
                   {isAf
@@ -205,7 +205,7 @@ export default function RevisionPage() {
                 </p>
               </div>
             ) : (
-              <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-cyan-300/30 bg-cyan-500/[0.07] backdrop-blur-sm">
+              <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-cyan-300/30 bg-cyan-500/[0.07] ">
                 <Target className="w-4 h-4 text-cyan-500 shrink-0" />
                 <p className="text-xs font-semibold text-white">
                   {isAf

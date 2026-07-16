@@ -312,7 +312,7 @@ export default function StorePage() {
 
   return (
     <div className="min-h-screen text-white">
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-background/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-background/80 ">
         <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-14 gap-4">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#00E5FF] via-[#006BFF] to-[#8A2BFF] flex items-center justify-center shadow-lg shadow-[#00E5FF]/30">
@@ -663,7 +663,7 @@ function PreviewSwatch({
       ) : (
         <div className={`absolute inset-0 bg-gradient-to-br ${fallback}`} />
       )}
-      <div className="absolute inset-0 bg-black/10 backdrop-blur-[1px]" />
+      <div className="absolute inset-0 bg-black/10 -[1px]" />
       <div className="absolute inset-0 flex items-center justify-center">
         <Icon className="w-10 h-10 text-white drop-shadow-lg" />
       </div>

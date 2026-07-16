@@ -1,4 +1,4 @@
-﻿import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
 import type { DailyDirective } from "@/types/daily-directive";
 import { Button } from "@/components/ui/button";
@@ -1396,7 +1396,7 @@ export default function ParentDashboardPage() {
 
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-black/95 backdrop-blur-md">
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-black/95 ">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-end h-14 gap-4">
             <div className="flex items-center gap-1.5">

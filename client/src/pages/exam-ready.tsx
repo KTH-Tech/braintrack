@@ -526,7 +526,7 @@ export default function ExamReadyPage() {
   if (examState === "violated") {
     return (
       <div ref={containerRef} className="min-h-screen">
-        <header className="bg-card/80 backdrop-blur-xl border-b border-border sticky top-0 z-50">
+        <header className="bg-card/80 border-b border-border sticky top-0 z-50">
           <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
             <div className="flex items-center gap-3">
               <BrainTrackLogo className="h-7 w-auto" />
@@ -601,7 +601,7 @@ export default function ExamReadyPage() {
   if (examState === "completed") {
     return (
       <div className="min-h-screen">
-        <header className="bg-card/80 backdrop-blur-xl border-b border-border sticky top-0 z-50">
+        <header className="bg-card/80 border-b border-border sticky top-0 z-50">
           <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
             <div className="flex items-center gap-3">
               <BrainTrackLogo className="h-7 w-auto" />
@@ -673,7 +673,7 @@ export default function ExamReadyPage() {
   if (examState === "setup") {
     return (
       <div className="min-h-screen">
-        <header className="bg-card/80 backdrop-blur-xl border-b border-border sticky top-0 z-50">
+        <header className="bg-card/80 border-b border-border sticky top-0 z-50">
           <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
             <div className="flex items-center gap-3">
               <BrainTrackLogo className="h-7 w-auto" />

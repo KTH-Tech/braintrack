@@ -242,7 +242,7 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
 
   // Shared glass-card shell used across every state of the Daily Quiz
   const glassShell =
-    "relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.06] via-white/[0.02] to-transparent backdrop-blur-xl shadow-[0_0_40px_-12px_rgba(139,92,246,0.35)]";
+    "relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.06] via-white/[0.02] to-transparent  shadow-[0_0_40px_-12px_rgba(139,92,246,0.35)]";
 
   if (quizState === "idle" && !quizStarted) {
     const DIFFICULTY_OPTIONS: {
@@ -452,7 +452,7 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
 
   if (quizState === "error") {
     return (
-      <div className="relative overflow-hidden rounded-2xl border border-rose-500/30 bg-gradient-to-br from-rose-500/10 via-white/[0.02] to-transparent backdrop-blur-xl" data-testid="boost-quiz-error">
+      <div className="relative overflow-hidden rounded-2xl border border-rose-500/30 bg-gradient-to-br from-rose-500/10 via-white/[0.02] to-transparent " data-testid="boost-quiz-error">
         <div className="pointer-events-none absolute -top-20 -right-10 h-48 w-48 rounded-full bg-rose-500/20 blur-3xl" />
         <div className="relative p-7 flex flex-col items-center gap-4 text-center">
           <div className="w-14 h-14 rounded-2xl bg-rose-500/20 border border-rose-500/30 flex items-center justify-center">
