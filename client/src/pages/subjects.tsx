@@ -469,7 +469,7 @@ export default function SubjectsPage() {
                 className="font-black leading-[0.95] tracking-tight text-3xl sm:text-4xl md:text-5xl"
                 style={{
                   backgroundImage:
-                    "linear-gradient(90deg, #FF8A00 0%, #FFE600 30%, #00E5FF 55%, #8A2BFF 80%, #FF2BD6 100%)",
+                    "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
@@ -534,7 +534,7 @@ export default function SubjectsPage() {
               className="absolute top-0 left-0 right-0 h-[2px]"
               style={{
                 background:
-                  "linear-gradient(90deg, #FF8A00, #FFE600, #00E5FF, #8A2BFF, #FF2BD6)",
+                  "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)",
               }}
             />
             <Settings
@@ -590,7 +590,7 @@ export default function SubjectsPage() {
               className="absolute top-0 left-0 right-0 h-[2px]"
               style={{
                 background:
-                  "linear-gradient(90deg, #00E5FF, #8A2BFF, #FF2BD6, #FF8A00)",
+                  "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)",
               }}
             />
             <div className="p-6">

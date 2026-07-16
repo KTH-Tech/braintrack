@@ -689,15 +689,7 @@ export default function LandingPage() {
                   }}
                 >
                   {t.hero.titleBase}{" "}
-                  <span
-                    style={{
-                      background:
-                        "linear-gradient(90deg, #FF8A00, #FF8A00, #FFE600, #FFE600, #00E5FF, #006BFF, #8A2BFF, #8A2BFF, #FF2BD6)",
-                      WebkitBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                      backgroundClip: "text",
-                    }}
-                  >
+                  <span className="callout-glow">
                     {t.hero.titleAccent}
                   </span>
                 </h1>
@@ -834,26 +826,25 @@ export default function LandingPage() {
                   <p
                     className="graffiti-hand text-white leading-[0.95]"
                     style={{
-                      fontSize: "clamp(2.4rem, 4.5vw + 1rem, 4.6rem)",
-                      textShadow: "0 0 18px rgba(255,255,255,0.35), 0 4px 0 rgba(0,0,0,0.65)",
+                      fontSize: "clamp(2.2rem, 4vw + 1rem, 4.2rem)",
+                      textShadow: "0 2px 0 rgba(0,0,0,0.65)",
                     }}
                   >
                     {language === "af" ? "Dit is" : "This is"}
                   </p>
+                  {/* Callout word — pastel neon gradient glow (the hero pop) */}
                   <p
-                    className="graffiti-hand text-white leading-[0.95]"
-                    style={{
-                      fontSize: "clamp(3rem, 6vw + 1rem, 6rem)",
-                      textShadow: "0 0 22px rgba(255,255,255,0.4), 0 4px 0 rgba(0,0,0,0.65)",
-                    }}
+                    className="graffiti-hand callout-glow leading-[0.95]"
+                    style={{ fontSize: "clamp(3.4rem, 7vw + 1rem, 6.5rem)" }}
                   >
                     {language === "af" ? "Matriek." : "Matric."}
                   </p>
-                  <p className="graffiti-hand mt-3 leading-tight" style={{ fontSize: "clamp(1.25rem, 2.2vw + 0.5rem, 2.1rem)" }}>
-                    <span style={{ color: "#FFE600", textShadow: "0 0 14px rgba(255,230,0,0.6)" }}>
+                  <p className="graffiti-hand mt-3 leading-tight" style={{ fontSize: "clamp(1.3rem, 2.4vw + 0.5rem, 2.3rem)" }}>
+                    <span className="text-white">
                       {language === "af" ? "Elke punt " : "Every mark "}
                     </span>
-                    <span style={{ color: "#FF2BD6", textShadow: "0 0 14px rgba(255,43,214,0.6)" }}>
+                    {/* Callout word */}
+                    <span className="callout-glow">
                       {language === "af" ? "tel." : "counts."}
                     </span>
                   </p>
@@ -880,7 +871,7 @@ export default function LandingPage() {
               <h2
                 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] max-w-3xl mx-auto break-words"
                 style={{
-                  background: "linear-gradient(90deg, #FF8A00, #FFE600, #00E5FF, #8A2BFF, #FF2BD6)",
+                  background: "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
@@ -1287,7 +1278,7 @@ export default function LandingPage() {
               <h2
                 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] max-w-3xl mx-auto break-words"
                 style={{
-                  background: "linear-gradient(90deg, #FF8A00, #FF8A00, #FFE600, #FFE600)",
+                  background: "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
@@ -1338,7 +1329,7 @@ export default function LandingPage() {
                 <Sparkles className="w-3 h-3" />
               </span>
               <h2 className="text-2xl sm:text-3xl md:text-5xl font-black leading-tight text-transparent bg-clip-text break-words"
-                style={{ backgroundImage: "linear-gradient(90deg,#FF8A00,#FFE600,#00E5FF,#8A2BFF,#FF2BD6)" }}
+                style={{ backgroundImage: "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)" }}
               >
                 {t.faq.title}
               </h2>

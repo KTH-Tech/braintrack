@@ -317,7 +317,7 @@ export default function RewardsPage() {
           }}
           data-testid="rewards-hero"
         >
-          <span aria-hidden className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: "linear-gradient(90deg,#FF8A00,#FFE600,#FF2BD6,#8A2BFF,#00E5FF)", boxShadow: "0 0 12px rgba(255,230,0,0.7)" }} />
+          <span aria-hidden className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)", boxShadow: "0 0 12px rgba(255,230,0,0.7)" }} />
           <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: "#FFE600" }} />
           <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2" style={{ borderColor: "#FFE600" }} />
           <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2" style={{ borderColor: "#FFE600" }} />

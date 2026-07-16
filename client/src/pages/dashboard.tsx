@@ -615,7 +615,7 @@ export default function DashboardPage() {
         style={{
           background: "#000",
           borderBottom: "3px solid transparent",
-          borderImage: "linear-gradient(90deg,#006BFF,#00E5FF,#22FF66,#FFE600,#FF8A00,#FF2BD6,#8A2BFF) 1",
+          borderImage: "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5) 1",
           boxShadow: "0 0 28px rgba(0,229,255,0.18), 0 4px 20px rgba(0,0,0,0.8)",
         }}
       >
@@ -847,7 +847,7 @@ export default function DashboardPage() {
                 <div
                   aria-hidden
                   className="absolute top-0 left-0 right-0 h-[2px]"
-                  style={{ background: "linear-gradient(90deg, #FF8A00, #FF8A00, #FFE600, #FFE600, #00E5FF, #006BFF, #8A2BFF, #8A2BFF, #FF2BD6)" }}
+                  style={{ background: "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)" }}
                 />
                 {/* Subtle tier aura */}
                 <div
@@ -908,7 +908,7 @@ export default function DashboardPage() {
                     <h1
                       className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-[1.02]"
                       style={{
-                        background: "linear-gradient(90deg, #FF8A00, #FFE600, #FFE600, #00E5FF, #8A2BFF, #FF2BD6)",
+                        background: "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)",
                         WebkitBackgroundClip: "text",
                         WebkitTextFillColor: "transparent",
                         backgroundClip: "text",

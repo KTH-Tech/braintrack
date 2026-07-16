@@ -181,7 +181,7 @@ export default function ProgressPage() {
                 <div
                   aria-hidden
                   className="absolute top-0 left-0 right-0 h-[3px]"
-                  style={{ background: "linear-gradient(90deg, #FF8A00, #FF8A00, #FFE600, #FFE600, #00E5FF, #006BFF, #8A2BFF, #8A2BFF, #FF2BD6)" }}
+                  style={{ background: "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)" }}
                 />
                 {/* Corner brackets */}
                 <span aria-hidden className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2" style={{ borderColor: "#00E5FF" }} />
@@ -225,7 +225,7 @@ export default function ProgressPage() {
                       className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-[0.98]"
                       style={{
                         background:
-                          "linear-gradient(90deg, #FF8A00, #FF8A00, #FFE600, #FFE600, #00E5FF, #006BFF, #8A2BFF, #8A2BFF, #FF2BD6)",
+                          "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)",
                         WebkitBackgroundClip: "text",
                         WebkitTextFillColor: "transparent",
                         backgroundClip: "text",
@@ -259,7 +259,7 @@ export default function ProgressPage() {
                           style={{
                             width: `${readiness}%`,
                             background:
-                              "linear-gradient(90deg, #FF8A00, #FF8A00, #FFE600, #FFE600, #00E5FF, #006BFF, #8A2BFF, #8A2BFF, #FF2BD6)",
+                              "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)",
                             boxShadow: "0 0 14px rgba(0,229,255,0.7), 0 0 22px rgba(138,43,255,0.5)",
                           }}
                         />

@@ -1398,7 +1398,7 @@ export default function SubjectDetailPage() {
                   </div>
                 </div>
                 <div className="h-2 rounded-full bg-background overflow-hidden mt-3" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
-                  <div className="h-full rounded-full" style={{ width: `${Math.min(100, Math.max(0, currentScore))}%`, background: "linear-gradient(90deg,#FF8A00,#FF8A00,#FFE600,#00E5FF,#006BFF,#8A2BFF,#FF2BD6)", boxShadow: "0 0 10px rgba(0,229,255,0.6)" }} />
+                  <div className="h-full rounded-full" style={{ width: `${Math.min(100, Math.max(0, currentScore))}%`, background: "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)", boxShadow: "0 0 10px rgba(0,229,255,0.6)" }} />
                 </div>
                 <div className="flex justify-between mt-1">
                   <span className="text-[10px] text-foreground">0%</span>
@@ -1998,7 +1998,7 @@ export default function SubjectDetailPage() {
                         : "This subject dashboard is CAPS-aligned and informed by analysis of NSC examination patterns (10-year window). All questions are original and simulated."
                       }
                     </p>
-                    <p className="text-[11px] mt-1 font-black tracking-[0.14em]" style={{ background: "linear-gradient(90deg,#FF8A00,#FFE600,#00E5FF,#8A2BFF,#FF2BD6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                    <p className="text-[11px] mt-1 font-black tracking-[0.14em]" style={{ background: "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
                       BrainTrack™
                     </p>
                   </div>

@@ -1136,7 +1136,7 @@ export default function AdminDashboardPage() {
           data-testid="admin-hero"
         >
           <div aria-hidden className="absolute top-0 left-0 right-0 h-[3px]"
-            style={{ background: "linear-gradient(90deg, #FF8A00, #FF8A00, #FFE600, #FFE600, #00E5FF, #006BFF, #8A2BFF, #8A2BFF, #FF2BD6)" }} />
+            style={{ background: "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)" }} />
           <div aria-hidden className="absolute -top-24 -right-24 w-72 h-72 rounded-full blur-3xl pointer-events-none"
             style={{ background: "radial-gradient(circle, rgba(138,43,255,0.3), transparent 70%)" }} />
           <div aria-hidden className="absolute -bottom-24 -left-24 w-72 h-72 rounded-full blur-3xl pointer-events-none"

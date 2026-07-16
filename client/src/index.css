@@ -169,20 +169,24 @@ h1 { font-size: clamp(2rem, 4.5vw, 3rem); line-height: 1.12; }
 h2 { font-size: clamp(1.4rem, 2.6vw, 1.75rem); line-height: 1.18; }
 h3 { font-size: 1.25rem; line-height: 1.25; }
 
-/* Main headings — wordmark rainbow (matches the BrainTrack hero logo exactly) */
-h1, .rainbow-text {
-  background-image: linear-gradient(
+/* Pastel neon brand gradient — used for headings + callout words across the
+   whole app. Softer than the old hard-neon rainbow (user request). */
+:root {
+  --pastel-rainbow: linear-gradient(
     90deg,
-    #FF8A00 0%,
-    #FF8A00 12%,
-    #FFE600 24%,
-    #FFE600 36%,
-    #00E5FF 50%,
-    #006BFF 66%,
-    #8A2BFF 78%,
-    #8A2BFF 88%,
-    #FF2BD6 100%
+    #FFC48F 0%,
+    #FFF29E 20%,
+    #93FFB8 38%,
+    #7FEFFF 56%,
+    #6FA8FF 72%,
+    #C6A4FF 86%,
+    #FF9FE5 100%
   );
+}
+
+/* Main headings — pastel wordmark rainbow */
+h1, .rainbow-text {
+  background-image: var(--pastel-rainbow);
   background-size: 100% 100%;
   background-repeat: no-repeat;
   -webkit-background-clip: text;
@@ -222,6 +226,22 @@ h1.no-rainbow *, .no-rainbow * {
           background-clip: border-box !important;
   color: inherit !important;
   -webkit-text-fill-color: inherit !important;
+}
+
+/* Callout words — pastel-gradient fill + soft neon glow. Wrap ONLY the words
+   you want to pop (e.g. "Matric.", "counts."), not whole sentences. */
+.callout-glow {
+  background-image: var(--pastel-rainbow);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  -webkit-box-decoration-break: clone;
+          box-decoration-break: clone;
+  filter:
+    drop-shadow(0 0 10px rgba(127, 239, 255, 0.55))
+    drop-shadow(0 0 22px rgba(255, 159, 229, 0.35));
 }
 
 /* ── Prismglass ambient rainbow layer ────────────────────── */
@@ -1612,18 +1632,7 @@ html.light .nav-mobile-panel { background: #f9f9ff; border-top: 2px solid rgba(0
 
 .gradient-text {
   @apply bg-clip-text text-transparent;
-  background-image: linear-gradient(
-    90deg,
-    #4466ff 0%,
-    #00bbff 14%,
-    #00ff55 28%,
-    #aaff00 40%,
-    #ffee00 52%,
-    #ff8800 64%,
-    #ff2266 76%,
-    #cc00ff 88%,
-    #9900ff 100%
-  ) !important;
+  background-image: var(--pastel-rainbow) !important;
   background-size: 100% 100% !important;
   /* animation disabled — only .anicon-* may animate */
   border: none !important;
@@ -1636,35 +1645,13 @@ html.light .nav-mobile-panel { background: #f9f9ff; border-top: 2px solid rgba(0
 
 .brand-gradient-text {
   @apply bg-clip-text text-transparent;
-  background-image: linear-gradient(
-    90deg,
-    #4466ff 0%,
-    #00bbff 14%,
-    #00ff55 28%,
-    #aaff00 40%,
-    #ffee00 52%,
-    #ff8800 64%,
-    #ff2266 76%,
-    #cc00ff 88%,
-    #9900ff 100%
-  );
+  background-image: var(--pastel-rainbow);
 }
 
 /* ── Cosmic-Neon utilities ─────────────────────────────────── */
 .cosmic-text {
   @apply bg-clip-text text-transparent;
-  background-image: linear-gradient(
-    90deg,
-    #FF8A00 0%,
-    #FF8A00 12%,
-    #FFE600 24%,
-    #FFE600 36%,
-    #00E5FF 50%,
-    #006BFF 66%,
-    #8A2BFF 78%,
-    #8A2BFF 88%,
-    #FF2BD6 100%
-  );
+  background-image: var(--pastel-rainbow);
   background-size: 100% 100%;
 }
 .cosmic-text-shimmer {
@@ -2299,18 +2286,18 @@ html.light .rainbow-wash-full {
 }
 
 .rizz-chat-panel {
-  /* Flat brand panel — no glass, no blur. */
+  /* Flat brand panel — no glass, no blur. Pastel edge. */
   border-radius: 1.25rem !important;
   background: #050608 !important;
-  border: 2px solid #00E5FF !important;
-  box-shadow: 0 0 30px rgba(0,229,255,0.35), 0 8px 30px rgba(0,0,0,0.6) !important;
+  border: 2px solid rgba(127,239,255,0.6) !important;
+  box-shadow: 0 0 22px rgba(127,239,255,0.22), 0 8px 30px rgba(0,0,0,0.6) !important;
   position: relative;
   overflow: hidden;
 }
 
 .rizz-chat-header {
   background: #000;
-  border-bottom: 2px solid rgba(0,229,255,0.4);
+  border-bottom: 2px solid rgba(127,239,255,0.35);
   border-radius: 1.25rem 1.25rem 0 0;
 }
 
@@ -2331,7 +2318,7 @@ html.light .rainbow-wash-full {
   border-radius: 14px;
   background: conic-gradient(
     from var(--rizz-angle, 0deg),
-    #22c55e, #eab308, #ec4899, #06b6d4, #3b82f6, #22c55e
+    #93FFB8, #FFF29E, #FF9FE5, #7FEFFF, #6FA8FF, #93FFB8
   );
   /* animation disabled — only .anicon-* may animate */
   z-index: 0;
@@ -2364,23 +2351,24 @@ html.light .rainbow-wash-full {
 
 .rizz-bubble-bot {
   background: #0a0b12;
-  border: 1.5px solid rgba(0,229,255,0.5);
+  border: 1.5px solid rgba(127,239,255,0.45);
   color: #fff;
 }
 
 .rizz-bubble-user {
-  background: #006BFF;
-  border: 1.5px solid #00E5FF;
-  box-shadow: 0 2px 12px rgba(0,229,255,0.3);
+  background: #6FA8FF;
+  border: 1.5px solid #7FEFFF;
+  color: #0a0b12;
+  box-shadow: 0 2px 12px rgba(127,239,255,0.25);
 }
 
 .rizz-user-avatar {
-  background: rgba(6,182,212,0.25);
-  border: 1px solid rgba(6,182,212,0.35);
+  background: rgba(127,239,255,0.22);
+  border: 1px solid rgba(127,239,255,0.35);
 }
 
 .rizz-typing-dot {
-  background: linear-gradient(135deg, #06b6d4, #ec4899);
+  background: linear-gradient(135deg, #7FEFFF, #FF9FE5);
   /* animation disabled — only .anicon-* may animate */
 }
 
@@ -2389,27 +2377,27 @@ html.light .rainbow-wash-full {
   font-weight: 700;
   padding: 5px 12px;
   border-radius: 9999px;
-  border: 1.5px solid #00E5FF;
+  border: 1.5px solid rgba(127,239,255,0.6);
   background: #0a0b12;
   color: #fff;
   cursor: pointer;
   transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .rizz-chip:hover {
-  background: rgba(0,229,255,0.18);
-  box-shadow: 0 0 12px rgba(0,229,255,0.4);
+  background: rgba(127,239,255,0.15);
+  box-shadow: 0 0 12px rgba(127,239,255,0.3);
   color: white;
 }
 
 .rizz-input-border-top {
-  border-top: 2px solid rgba(0,229,255,0.4);
+  border-top: 2px solid rgba(127,239,255,0.35);
   background: #000;
 }
 
 .rizz-input {
   flex: 1;
   background: #0a0b12;
-  border: 1.5px solid rgba(0,229,255,0.35);
+  border: 1.5px solid rgba(127,239,255,0.3);
   border-radius: 0.75rem;
   padding: 8px 14px;
   font-size: 13px;
@@ -2418,11 +2406,11 @@ html.light .rainbow-wash-full {
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .rizz-input::placeholder {
-  color: rgba(255,255,255,0.45);
+  color: rgba(127,239,255,0.55);
 }
 .rizz-input:focus {
-  border-color: #00E5FF;
-  box-shadow: 0 0 0 3px rgba(0,229,255,0.15), 0 0 12px rgba(0,229,255,0.25);
+  border-color: #7FEFFF;
+  box-shadow: 0 0 0 3px rgba(127,239,255,0.15), 0 0 12px rgba(127,239,255,0.22);
 }
 
 .rizz-send-btn {
@@ -2430,19 +2418,19 @@ html.light .rainbow-wash-full {
   height: 38px;
   border-radius: 0.75rem;
   border: none;
-  background: #006BFF;
-  color: white;
+  background: #6FA8FF;
+  color: #0a0b12;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 12px rgba(0,229,255,0.4);
+  box-shadow: 0 2px 12px rgba(127,239,255,0.35);
 }
 .rizz-send-btn:hover:not(:disabled) {
-  background: #0057D6;
-  box-shadow: 0 4px 18px rgba(0,229,255,0.6);
+  background: #8FBBFF;
+  box-shadow: 0 4px 18px rgba(127,239,255,0.5);
   transform: translateY(-1px);
 }
 .rizz-send-btn:active:not(:disabled) {
