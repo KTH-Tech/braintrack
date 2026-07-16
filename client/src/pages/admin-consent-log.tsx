@@ -57,7 +57,7 @@ export default function AdminConsentLogPage() {
     <div className="min-h-screen p-4 sm:p-8">
       <div className="max-w-5xl mx-auto space-y-6">
         <div className="flex items-center gap-3">
-          <Link href="/learn/admin/reports" className="text-muted-foreground hover:text-foreground transition-colors">
+          <Link href="/learn/admin/reports" className="text-white hover:text-foreground transition-colors">
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div className="flex items-center gap-2">
@@ -66,14 +66,14 @@ export default function AdminConsentLogPage() {
               <h1 className="text-xl font-bold text-foreground">
                 {isAf ? "Toestemming Ouditlys" : "Consent Audit Log"}
               </h1>
-              <p className="text-xs text-muted-foreground font-mono">{userId}</p>
+              <p className="text-xs text-white font-mono">{userId}</p>
             </div>
           </div>
         </div>
 
         <Card className="border-border/60 bg-background/60 ">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+            <CardTitle className="text-sm font-semibold text-white uppercase tracking-wide">
               {isAf ? "Toestemmingsgeskiedenis" : "Consent History"}
             </CardTitle>
           </CardHeader>
@@ -90,7 +90,7 @@ export default function AdminConsentLogPage() {
             )}
             {!isLoading && !isError && rows && rows.length === 0 && (
               <div className="py-10 text-center space-y-2">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-white">
                   {isAf
                     ? "Geen toestemmingsrekords gevind vir hierdie gebruiker nie. Rekords word slegs versamel vir aksies wat na hierdie funksie geaktiveer is."
                     : "No consent records found for this user. Records are only collected for actions taken after this feature was activated."}
@@ -101,7 +101,7 @@ export default function AdminConsentLogPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-border/60 text-muted-foreground text-xs uppercase tracking-wide">
+                    <tr className="border-b border-border/60 text-white text-xs uppercase tracking-wide">
                       <th className="pb-2 text-left pr-3">{isAf ? "Tipe" : "Type"}</th>
                       <th className="pb-2 text-left pr-3">{isAf ? "Aksie" : "Action"}</th>
                       <th className="pb-2 text-left pr-3">{isAf ? "Weergawe" : "Version"}</th>
@@ -123,14 +123,14 @@ export default function AdminConsentLogPage() {
                             {row.action}
                           </span>
                         </td>
-                        <td className="py-2.5 pr-3 text-muted-foreground font-mono text-xs">{row.version || "—"}</td>
-                        <td className="py-2.5 pr-3 text-muted-foreground whitespace-nowrap text-xs">
+                        <td className="py-2.5 pr-3 text-white font-mono text-xs">{row.version || "—"}</td>
+                        <td className="py-2.5 pr-3 text-white whitespace-nowrap text-xs">
                           {new Date(row.createdAt).toLocaleString("en-ZA", { timeZone: "Africa/Johannesburg", hour12: false })}
                         </td>
-                        <td className="py-2.5 pr-3 text-muted-foreground font-mono text-xs hidden md:table-cell">
+                        <td className="py-2.5 pr-3 text-white font-mono text-xs hidden md:table-cell">
                           {row.ipAddress ?? "—"}
                         </td>
-                        <td className="py-2.5 text-muted-foreground text-xs hidden lg:table-cell max-w-[200px] truncate" title={row.userAgent ?? ""}>
+                        <td className="py-2.5 text-white text-xs hidden lg:table-cell max-w-[200px] truncate" title={row.userAgent ?? ""}>
                           {row.userAgent ? row.userAgent.slice(0, 60) + (row.userAgent.length > 60 ? "…" : "") : "—"}
                         </td>
                       </tr>
@@ -145,12 +145,12 @@ export default function AdminConsentLogPage() {
         {rows && rows.length > 0 && (
           <Card className="border-border/60 bg-background/60 ">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+              <CardTitle className="text-sm font-semibold text-white uppercase tracking-wide">
                 {isAf ? "Laaste rekord metadata" : "Latest Record Metadata"}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <pre className="text-xs text-muted-foreground font-mono bg-muted/20 rounded-lg p-3 overflow-x-auto whitespace-pre-wrap">
+              <pre className="text-xs text-white font-mono bg-muted/20 rounded-lg p-3 overflow-x-auto whitespace-pre-wrap">
                 {JSON.stringify(rows[0].metadata, null, 2) ?? "null"}
               </pre>
             </CardContent>

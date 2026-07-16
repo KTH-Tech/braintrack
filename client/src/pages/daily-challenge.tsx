@@ -211,7 +211,7 @@ export default function DailyChallengePage() {
               <h2 className="text-xl font-semibold text-foreground">
                 {isAf ? "Uitdaging kom binnekort" : "Challenge coming soon"}
               </h2>
-              <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+              <p className="text-sm text-white max-w-sm mx-auto">
                 {isAf
                   ? "Geen vrae beskikbaar nie. Kies vakke in Instellings en probeer môre weer."
                   : "No questions available. Pick your subjects in Settings and check back tomorrow."}
@@ -249,7 +249,7 @@ export default function DailyChallengePage() {
                   <h2 className="text-xl font-semibold text-foreground">
                     {isAf ? "Vrae word nog voorberei" : "Questions aren't ready yet"}
                   </h2>
-                  <p className="text-sm text-muted-foreground max-w-md">
+                  <p className="text-sm text-white max-w-md">
                     {isAf
                       ? "Kies jou vakke in Instellings sodat ons 'n gepersonaliseerde daaglikse uitdaging vir jou kan skep."
                       : "Select your subjects in Settings so we can build a personalised Daily Challenge just for you."}
@@ -296,7 +296,7 @@ export default function DailyChallengePage() {
                 <h2 className="text-xl font-semibold text-foreground">
                   {isAf ? "Kon nie vandag se uitdaging laai nie" : "Couldn't load today's challenge"}
                 </h2>
-                <p className="text-sm text-muted-foreground max-w-md">
+                <p className="text-sm text-white max-w-md">
                   {isAf
                     ? "Ons kon nie aan die bediener koppel nie. Kyk jou internetverbinding en probeer weer."
                     : "We couldn't reach the server. Check your connection and try again."}
@@ -332,7 +332,7 @@ export default function DailyChallengePage() {
               <h2 className="text-xl font-semibold text-foreground" data-testid="text-time-up-title">
                 {isAf ? "Tyd is op!" : "Time's up!"}
               </h2>
-              <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+              <p className="text-sm text-white max-w-sm mx-auto">
                 {isAf
                   ? "Die 5 minute is verby en jy het nog nie 'n antwoord gekies nie. Geen probleem nie — probeer môre weer met 'n vars uitdaging."
                   : "The 5 minutes ran out before you picked any answers. No worries — come back tomorrow for a fresh challenge."}
@@ -494,10 +494,10 @@ export default function DailyChallengePage() {
               <span className="text-sm font-semibold text-foreground">
                 {isAf ? "Vraag" : "Question"}{" "}
                 <span className="text-primary">{currentQuestion + 1}</span>
-                <span className="text-muted-foreground">/{questions.length}</span>
+                <span className="text-white">/{questions.length}</span>
               </span>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground hidden sm:inline">
+                <span className="text-xs text-white hidden sm:inline">
                   {answeredCount}/{questions.length} {isAf ? "beantwoord" : "answered"}
                 </span>
                 <span className="text-xs font-semibold text-primary bg-primary/10 border border-primary/20 px-3 py-1 rounded-full">
@@ -544,7 +544,7 @@ export default function DailyChallengePage() {
                             className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 mt-0.5 transition-colors ${
                               isSelected
                                 ? "bg-primary text-primary-foreground"
-                                : "bg-muted text-muted-foreground group-hover:bg-primary/15 group-hover:text-primary"
+                                : "bg-muted text-white group-hover:bg-primary/15 group-hover:text-primary"
                             }`}
                           >
                             {String.fromCharCode(65 + i)}
@@ -716,7 +716,7 @@ function ResultsView({
               <p className="text-sm font-semibold text-foreground">
                 {isAf ? "Volgende uitdaging" : "Next challenge"}
               </p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-white">
                 {isAf ? "Ontsluit oor" : "Unlocks in"} <span className="font-semibold text-primary tabular-nums">{nextIn}</span>
               </p>
             </div>
@@ -774,13 +774,13 @@ function ResultsView({
                   data-testid={`history-day-${i}`}
                   title={formatDate(date, isAf ? "af" : "en", { weekday: "long", day: "numeric", month: "short" })}
                 >
-                  <span className="text-[9px] font-semibold text-muted-foreground">
+                  <span className="text-[9px] font-semibold text-white">
                     {formatDate(date, isAf ? "af" : "en", { weekday: "short" }).slice(0, 2)}
                   </span>
                   {completed ? (
                     <span className="text-base font-semibold text-foreground tabular-nums">{score}</span>
                   ) : (
-                    <span className="text-base text-muted-foreground">—</span>
+                    <span className="text-base text-white">—</span>
                   )}
                 </div>
               );
@@ -832,10 +832,10 @@ function ResultsView({
                     <p className="font-semibold text-foreground text-sm leading-snug break-words">
                       {isAf ? q.questionAf || q.question : q.question}
                     </p>
-                    <p className="text-xs text-muted-foreground mt-1">{isAf ? q.subjectAf || q.subject : q.subject}</p>
+                    <p className="text-xs text-white mt-1">{isAf ? q.subjectAf || q.subject : q.subject}</p>
                   </div>
                   <ChevronRight
-                    className={`w-4 h-4 text-muted-foreground shrink-0 transition-transform ${isExpanded ? "rotate-90" : ""}`}
+                    className={`w-4 h-4 text-white shrink-0 transition-transform ${isExpanded ? "rotate-90" : ""}`}
                   />
                 </button>
 

@@ -61,7 +61,7 @@ export function PatGuidanceBanner({
           <p className="text-xs font-bold uppercase tracking-wider text-violet-600 dark:text-violet-400">
             {isAf ? "PAT Beoordelingsleiding" : "PAT Marking Guidance"}
           </p>
-          <p className="text-[11px] text-muted-foreground mt-0.5">
+          <p className="text-[11px] text-white mt-0.5">
             {isAf
               ? "Ontwerp Vraestel 2 is 'n portefeulje-taak. Geen aparte memo word deur die DBE gepubliseer nie — gebruik hierdie rubriek om jou werk voor indiening self te assesseer."
               : "Design Paper 2 is a portfolio task. No separate memo is published by DBE — use this rubric to self-assess your work before submission."}
@@ -80,8 +80,8 @@ export function PatGuidanceBanner({
 
       <div className="rounded-lg border border-border/50 bg-muted/20 px-3 py-3 max-h-[480px] overflow-y-auto">
         <div className="flex items-center gap-1.5 mb-2">
-          <BookOpen className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">
+          <BookOpen className="w-3.5 h-3.5 text-white shrink-0" />
+          <p className="text-[11px] font-semibold text-white uppercase tracking-wide">
             {isAf ? "Rubrieksamevatting (SAG)" : "Rubric Summary (SAG)"}
           </p>
         </div>
@@ -152,7 +152,7 @@ export function CreativeWritingTipsPanel({
               <button
                 type="button"
                 onClick={() => setExpanded((v) => !v)}
-                className="inline-flex items-center justify-center w-6 h-6 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                className="inline-flex items-center justify-center w-6 h-6 rounded-md text-white hover:text-foreground hover:bg-muted/50 transition-colors"
                 aria-expanded={expanded}
                 aria-label={
                   expanded
@@ -166,7 +166,7 @@ export function CreativeWritingTipsPanel({
               <button
                 type="button"
                 onClick={onDismiss}
-                className="inline-flex items-center justify-center w-6 h-6 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                className="inline-flex items-center justify-center w-6 h-6 rounded-md text-white hover:text-foreground hover:bg-muted/50 transition-colors"
                 aria-label={isAf ? "Maak toe" : "Dismiss"}
                 data-testid="button-dismiss-writing-tips"
               >
@@ -174,7 +174,7 @@ export function CreativeWritingTipsPanel({
               </button>
             </div>
           </div>
-          <p className="text-[11px] text-muted-foreground mt-0.5">
+          <p className="text-[11px] text-white mt-0.5">
             {isAf
               ? "Vraestel 3 is 'n kreatiewe skryftaak — gebruik hierdie vinnige kontrolelys voor jy begin."
               : "Paper 3 is a creative writing task — use this quick checklist before you start."}
@@ -227,7 +227,7 @@ export function CreativeWritingGuidanceBanner({
           <p className="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">
             {isAf ? "Kreatiewe Skryfleiding" : "Creative Writing Guidance"}
           </p>
-          <p className="text-[11px] text-muted-foreground mt-0.5">
+          <p className="text-[11px] text-white mt-0.5">
             {isAf
               ? "Geen aparte memo word deur die DBE gepubliseer nie — hierdie rubriek is gebaseer op die amptelike DBE Vakassesseringsriglyne (SAG). Gebruik dit om jou skryfwerk self te assesseer."
               : "No separate memo is published by DBE — this rubric is drawn from the official DBE Subject Assessment Guidelines (SAG). Use it to self-assess your creative writing."}
@@ -246,8 +246,8 @@ export function CreativeWritingGuidanceBanner({
 
       <div className="rounded-lg border border-border/50 bg-muted/20 px-3 py-3 max-h-[480px] overflow-y-auto">
         <div className="flex items-center gap-1.5 mb-2">
-          <BookOpen className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">
+          <BookOpen className="w-3.5 h-3.5 text-white shrink-0" />
+          <p className="text-[11px] font-semibold text-white uppercase tracking-wide">
             {isAf ? "Beoordelingsrubriek (SAG)" : "Marking Rubric (SAG)"}
           </p>
         </div>

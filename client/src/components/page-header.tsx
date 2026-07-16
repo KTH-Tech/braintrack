@@ -44,7 +44,7 @@ export function PageHeader({
             {title}
           </h1>
           {subtitle ? (
-            <p className="text-sm text-muted-foreground mt-1 truncate">{subtitle}</p>
+            <p className="text-sm text-white mt-1 truncate">{subtitle}</p>
           ) : null}
         </div>
       </div>

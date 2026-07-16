@@ -337,7 +337,7 @@ export default function ExamSessionPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground mb-6">
+            <p className="text-sm text-white mb-6">
               {subjectName} — {paperId.toUpperCase()}
             </p>
             <Button onClick={() => navigate("/exam-mode")} className="w-full" data-testid="button-back-to-crunch">
@@ -431,7 +431,7 @@ export default function ExamSessionPage() {
               <span>{formatTime(timeRemaining)}</span>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-xs text-muted-foreground">{totalAnswered}/{totalQuestions}</span>
+              <span className="text-xs text-white">{totalAnswered}/{totalQuestions}</span>
               <Progress value={progressPct} className="w-24" />
               <Button
                 variant="destructive"
@@ -535,7 +535,7 @@ export default function ExamSessionPage() {
                           {d.correct ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <XCircle className="w-4 h-4 text-red-500" />}
                           <span className="text-sm font-medium">Q{d.questionNumber}</span>
                         </div>
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-xs text-white">
                           {d.userAnswer ? `${isAf ? "Jou" : "Your"}: ${d.userAnswer}` : (isAf ? "Nie beantwoord" : "Not answered")}
                         </div>
                       </div>

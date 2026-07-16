@@ -470,7 +470,7 @@ export default function PartnerSchools() {
             {t.heroTitle}
           </h1>
           <p
-            className="mx-auto mb-10 max-w-3xl text-lg text-muted-foreground sm:text-xl"
+            className="mx-auto mb-10 max-w-3xl text-lg text-white sm:text-xl"
             data-testid="hero-subtitle"
           >
             {t.heroSubtitle}
@@ -566,7 +566,7 @@ export default function PartnerSchools() {
                   {whyIcon(item.icon)}
                 </div>
                 <h3 className="mb-2 text-lg font-semibold text-foreground">{item.title}</h3>
-                <p className="text-sm leading-relaxed text-muted-foreground">{item.body}</p>
+                <p className="text-sm leading-relaxed text-white">{item.body}</p>
               </div>
             ))}
           </div>
@@ -583,14 +583,14 @@ export default function PartnerSchools() {
             >
               {t.showcaseTitle}
             </h2>
-            <p className="mx-auto max-w-2xl text-muted-foreground">{t.showcaseSubtitle}</p>
+            <p className="mx-auto max-w-2xl text-white">{t.showcaseSubtitle}</p>
           </div>
 
           {/* Filters */}
           <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="relative w-full sm:max-w-xs">
               <Search
-                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white"
                 aria-hidden="true"
               />
               <Label htmlFor="school-search" className="sr-only">
@@ -644,14 +644,14 @@ export default function PartnerSchools() {
           ) : isError ? (
             <div className="prismglass-panel flex flex-col items-center gap-4 rounded-2xl p-10 text-center">
               <AlertCircle className="h-8 w-8 text-destructive" aria-hidden="true" />
-              <p className="text-muted-foreground">{t.showcaseError}</p>
+              <p className="text-white">{t.showcaseError}</p>
               <Button onClick={() => refetch()} disabled={isFetching} data-testid="button-retry-schools">
                 {isFetching ? <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> : null}
                 {t.showcaseRetry}
               </Button>
             </div>
           ) : shown.length === 0 ? (
-            <div className="prismglass-panel rounded-2xl p-10 text-center text-muted-foreground">
+            <div className="prismglass-panel rounded-2xl p-10 text-center text-white">
               {t.showcaseEmpty}
             </div>
           ) : (
@@ -673,7 +673,7 @@ export default function PartnerSchools() {
                       <div className="min-w-0 flex-1">
                         <h3 className="truncate text-base font-semibold text-foreground">{s.name}</h3>
                         {s.province ? (
-                          <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
+                          <p className="mt-0.5 flex items-center gap-1 text-xs text-white">
                             <MapPin className="h-3 w-3" aria-hidden="true" />
                             <span className="truncate">
                               {s.district ? `${s.district}, ${s.province}` : s.province}
@@ -691,7 +691,7 @@ export default function PartnerSchools() {
                       ) : null}
                     </div>
                     {s.learnerCount ? (
-                      <p className="mt-auto flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <p className="mt-auto flex items-center gap-1.5 text-xs text-white">
                         <Users className="h-3.5 w-3.5" aria-hidden="true" />
                         {s.learnerCount.toLocaleString()} {t.learnersLabel}
                       </p>
@@ -733,7 +733,7 @@ export default function PartnerSchools() {
                 <blockquote className="mb-4 text-base leading-relaxed text-foreground">
                   &ldquo;{tm.quote}&rdquo;
                 </blockquote>
-                <figcaption className="text-sm text-muted-foreground">— {tm.name}</figcaption>
+                <figcaption className="text-sm text-white">— {tm.name}</figcaption>
               </figure>
             ))}
           </div>
@@ -756,11 +756,11 @@ export default function PartnerSchools() {
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-base font-semibold text-foreground">
                   {f.q}
                   <ChevronDown
-                    className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-open:rotate-180 motion-reduce:transition-none"
+                    className="h-5 w-5 shrink-0 text-white transition-transform group-open:rotate-180 motion-reduce:transition-none"
                     aria-hidden="true"
                   />
                 </summary>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{f.a}</p>
+                <p className="mt-3 text-sm leading-relaxed text-white">{f.a}</p>
               </details>
             ))}
           </div>
@@ -778,7 +778,7 @@ export default function PartnerSchools() {
               >
                 {t.formTitle}
               </h2>
-              <p className="text-muted-foreground">{t.formSubtitle}</p>
+              <p className="text-white">{t.formSubtitle}</p>
             </div>
 
             {submitted ? (
@@ -795,7 +795,7 @@ export default function PartnerSchools() {
                 <h3 className="mb-1 text-lg font-semibold text-foreground">
                   {t.formSuccessTitle}
                 </h3>
-                <p className="text-sm text-muted-foreground">{t.formSuccessBody}</p>
+                <p className="text-sm text-white">{t.formSuccessBody}</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4" noValidate>
@@ -903,7 +903,7 @@ export default function PartnerSchools() {
                   </div>
                 </div>
 
-                <p className="text-xs text-muted-foreground">{t.formPrivacy}</p>
+                <p className="text-xs text-white">{t.formPrivacy}</p>
 
                 <Button
                   type="submit"
@@ -937,7 +937,7 @@ export default function PartnerSchools() {
             <h2 className="mb-3 text-2xl font-bold sm:text-3xl">
               {t.footerTitle}
             </h2>
-            <p className="mx-auto mb-6 max-w-2xl text-muted-foreground">{t.footerSubtitle}</p>
+            <p className="mx-auto mb-6 max-w-2xl text-white">{t.footerSubtitle}</p>
             <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button
                 size="lg"
@@ -994,7 +994,7 @@ function StatCard({
           value.toLocaleString()
         )}
       </div>
-      <p className="mt-1 text-sm text-muted-foreground">{label}</p>
+      <p className="mt-1 text-sm text-white">{label}</p>
     </div>
   );
 }

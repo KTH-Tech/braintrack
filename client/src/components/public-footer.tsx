@@ -39,8 +39,7 @@ const COPY = {
 export function PublicFooter() {
   const { language } = useLanguage();
   const t = COPY[language];
-
-  const links = [...t.nav, ...t.legal];
+  const isAf = language === "af";
 
   return (
     <footer
@@ -50,10 +49,10 @@ export function PublicFooter() {
       style={{ background: "#000", borderTop: "1px solid rgba(255,255,255,0.10)" }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* One quiet row: links · email (no logo/wordmark) */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-4">
-          <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
-            {links.map((l) => (
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
+          {/* Legal links only (Research/Features/Pricing removed) */}
+          <nav className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            {t.legal.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
@@ -63,18 +62,26 @@ export function PublicFooter() {
                 {l.label}
               </Link>
             ))}
+          </nav>
+
+          {/* Support section */}
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-black uppercase tracking-[0.25em] text-white">
+              {isAf ? "Ondersteuning" : "Support"}
+            </span>
             <a
               href={`mailto:${SUPPORT_EMAIL}`}
               data-testid="footer-email-support"
-              className="text-[12px] font-medium text-white transition-colors hover:text-[#7FEFFF]"
+              className="text-[12px] font-bold transition-colors"
+              style={{ color: "#7FEFFF" }}
             >
               {SUPPORT_EMAIL}
             </a>
-          </nav>
+          </div>
         </div>
 
         {/* Micro line */}
-        <div className="mt-4 pt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1"
+        <div className="mt-5 pt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1"
           style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
           <span className="text-[11px] text-white">{t.copyright}</span>
           <span className="text-[11px] text-white">{t.popia}</span>

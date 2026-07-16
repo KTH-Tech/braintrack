@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -284,7 +284,7 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
                   {isAf ? "Nuut Vandag" : "New Today"}
                 </span>
               </div>
-              <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+              <p className="text-sm text-white mt-1 leading-relaxed">
                 {isAf
                   ? `10 vinnige KABV-vrae uit ${subjectName}. Bewys jou bemeestering en verdien munte.`
                   : `10 quick CAPS questions from ${subjectName}. Prove your mastery and earn coins.`}
@@ -297,24 +297,24 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
             <div className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5 flex flex-col items-center gap-1">
               <Target className="w-4 h-4 text-violet-300" />
               <p className="text-base font-bold text-foreground tabular-nums">10</p>
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{isAf ? "Vrae" : "Questions"}</p>
+              <p className="text-[10px] uppercase tracking-wider text-white">{isAf ? "Vrae" : "Questions"}</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5 flex flex-col items-center gap-1">
               <Coins className="w-4 h-4 text-yellow-400" />
               <p className="text-base font-bold text-foreground tabular-nums">+50</p>
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{isAf ? "Munte" : "Coins"}</p>
+              <p className="text-[10px] uppercase tracking-wider text-white">{isAf ? "Munte" : "Coins"}</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5 flex flex-col items-center gap-1">
               <Clock className="w-4 h-4 text-cyan-300" />
               <p className="text-base font-bold text-foreground tabular-nums">~5m</p>
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{isAf ? "Tyd" : "Time"}</p>
+              <p className="text-[10px] uppercase tracking-wider text-white">{isAf ? "Tyd" : "Time"}</p>
             </div>
           </div>
 
           {/* Difficulty picker */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+              <p className="text-xs font-semibold text-white uppercase tracking-widest">
                 {isAf ? "Moeilikheidsgraad" : "Difficulty"}
               </p>
             </div>
@@ -338,7 +338,7 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
                       {opt.key === "hard" && <Flame className="w-3.5 h-3.5" />}
                     </div>
                     <p className="text-sm font-bold text-foreground">{isAf ? opt.af : opt.en}</p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight">
+                    <p className="text-[10px] text-white mt-0.5 leading-tight">
                       {isAf ? opt.hint_af : opt.hint_en}
                     </p>
                   </button>
@@ -357,7 +357,7 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
                 <p className="text-sm font-semibold text-foreground">
                   {isAf ? "Aftelmodus" : "Countdown mode"}
                 </p>
-                <p className="text-[11px] text-muted-foreground">
+                <p className="text-[11px] text-white">
                   {isAf ? "30 sekondes per vraag" : "30 seconds per question"}
                 </p>
               </div>
@@ -405,7 +405,7 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
             <p className="text-sm font-semibold text-foreground">
               {isAf ? "Ons berei jou vasvra voor" : "Building your quiz"}
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-white">
               {isAf ? "Laai amptelike KABV-vrae..." : "Loading official CAPS questions..."}
             </p>
           </div>
@@ -426,13 +426,13 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
             <p className="text-lg font-bold text-foreground">
               {isAf ? "Binnekort beskikbaar" : "Coming soon"}
             </p>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-sm text-white leading-relaxed">
               {isAf
                 ? topicFocus
-                  ? `Ons berei nog KABV-vrae voor vir ${subjectName} — ${topicFocus}. Kyk binnekort weer.`
+                  ? `Ons berei nog KABV-vrae voor vir ${subjectName} â€” ${topicFocus}. Kyk binnekort weer.`
                   : `Ons berei nog amptelike KABV-vrae voor vir ${subjectName}. Kyk binnekort weer.`
                 : topicFocus
-                ? `We're still preparing CAPS questions for ${subjectName} — ${topicFocus}. Check back soon.`
+                ? `We're still preparing CAPS questions for ${subjectName} â€” ${topicFocus}. Check back soon.`
                 : `We're still preparing official CAPS questions for ${subjectName}. Check back soon.`}
             </p>
           </div>
@@ -462,7 +462,7 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
             <p className="text-lg font-bold text-foreground">
               {isAf ? "Kon nie vrae genereer nie" : "Couldn't generate questions"}
             </p>
-            <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
+            <p className="text-sm text-white max-w-xs leading-relaxed">
               {isAf
                 ? "Iets het kort gegaan terwyl ons jou vasvra opbou. Probeer asseblief weer."
                 : "Something went wrong while building your quiz. Please try again."}
@@ -516,7 +516,7 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
               </div>
               <div className="min-w-0">
                 <p className="text-sm font-bold text-foreground truncate">{isAf ? "Daaglikse Vasvra" : "Daily Quiz"}</p>
-                <p className="text-[11px] text-muted-foreground truncate">{subjectName}</p>
+                <p className="text-[11px] text-white truncate">{subjectName}</p>
               </div>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
@@ -532,7 +532,7 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
                   {timeLeft}s
                 </span>
               )}
-              <span className="text-xs font-semibold text-muted-foreground font-mono tabular-nums px-2 py-1 rounded-lg bg-white/[0.03] border border-white/10">
+              <span className="text-xs font-semibold text-white font-mono tabular-nums px-2 py-1 rounded-lg bg-white/[0.03] border border-white/10">
                 {currentIndex + 1}/{questions.length}
               </span>
             </div>
@@ -567,7 +567,7 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
                 <button
                   key={question.id}
                   onClick={() => handleJumpToQuestion(idx)}
-                  title={`${isAf ? "Vraag" : "Question"} ${idx + 1}${isCorrect ? ` — ${isAf ? "Korrek" : "Correct"}` : isWrong ? ` — ${isAf ? "Verkeerd" : "Incorrect"}` : ""}`}
+                  title={`${isAf ? "Vraag" : "Question"} ${idx + 1}${isCorrect ? ` â€” ${isAf ? "Korrek" : "Correct"}` : isWrong ? ` â€” ${isAf ? "Verkeerd" : "Incorrect"}` : ""}`}
                   className={`h-2 rounded-full transition-all flex-shrink-0 ${
                     isCurrent ? "w-6" : "w-2"
                   } ${
@@ -657,7 +657,7 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
                 </span>
                 <span className="font-bold text-foreground">{q.correctAnswer}</span>
                 {q.options.find(o => o.label === q.correctAnswer) && (
-                  <span className="text-muted-foreground"> — {q.options.find(o => o.label === q.correctAnswer)!.text}</span>
+                  <span className="text-white"> â€” {q.options.find(o => o.label === q.correctAnswer)!.text}</span>
                 )}
               </div>
             </div>
@@ -708,7 +708,7 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
               )}
             </div>
           ) : (
-            <p className="text-[11px] text-muted-foreground text-center pt-1">
+            <p className="text-[11px] text-white text-center pt-1">
               {isAf ? "Kies 'n antwoord om voort te gaan" : "Select an answer to continue"}
             </p>
           )}
@@ -742,7 +742,7 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
               <h3 className="text-2xl font-bold text-foreground">
                 {isAf ? grade.label_af : grade.label_en}
               </h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-white">
                 {isAf ? "Vasvra Voltooi" : "Quiz Complete"}
               </p>
             </div>
@@ -752,9 +752,9 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
           <div className="grid grid-cols-3 gap-2.5">
             <div className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-3.5 flex flex-col items-center gap-1">
               <p className="text-2xl sm:text-3xl font-bold text-foreground tabular-nums" data-testid="boost-score-display">
-                {score}<span className="text-base text-muted-foreground">/{total}</span>
+                {score}<span className="text-base text-white">/{total}</span>
               </p>
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{isAf ? "Korrek" : "Correct"}</p>
+              <p className="text-[10px] uppercase tracking-wider text-white">{isAf ? "Korrek" : "Correct"}</p>
             </div>
             <div className={`rounded-xl border bg-gradient-to-br ${grade.from} ${grade.to} bg-opacity-20 border-white/15 px-3 py-3.5 flex flex-col items-center gap-1 relative overflow-hidden`}>
               <div className="absolute inset-0 bg-black/40" />
@@ -767,13 +767,13 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
               <p className="text-2xl sm:text-3xl font-bold text-yellow-300 tabular-nums flex items-center gap-1" data-testid="boost-coins-display">
                 <Coins className="w-5 h-5" />+{coinsEarned}
               </p>
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{isAf ? "Munte" : "Coins"}</p>
+              <p className="text-[10px] uppercase tracking-wider text-white">{isAf ? "Munte" : "Coins"}</p>
             </div>
           </div>
 
           {/* Review */}
           <div>
-            <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">
+            <p className="text-[11px] font-semibold text-white uppercase tracking-widest mb-2">
               {isAf ? "Hersien Antwoorde" : "Review Answers"}
             </p>
             <div className="space-y-2 max-h-72 overflow-y-auto pr-1 -mr-1">
@@ -795,16 +795,16 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium leading-snug text-foreground">
-                        <span className="text-muted-foreground">{i + 1}.</span> {r.question}
+                        <span className="text-white">{i + 1}.</span> {r.question}
                       </p>
                       {!r.correct && (
-                        <p className="text-xs text-muted-foreground mt-1.5">
+                        <p className="text-xs text-white mt-1.5">
                           {isAf ? "Korrek: " : "Correct: "}
                           <span className="font-semibold text-emerald-300">{r.correctAnswer}</span>
                         </p>
                       )}
                       {r.explanation && (
-                        <p className="text-xs text-muted-foreground/90 mt-1.5 italic leading-relaxed">{r.explanation}</p>
+                        <p className="text-xs text-white mt-1.5 italic leading-relaxed">{r.explanation}</p>
                       )}
                     </div>
                   </div>
@@ -819,7 +819,7 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
             data-testid="boost-button-try-again"
           >
             <RotateCcw className="w-4 h-4 mr-2" />
-            {isAf ? "Probeer môre weer" : "Try Again Tomorrow"}
+            {isAf ? "Probeer mÃ´re weer" : "Try Again Tomorrow"}
           </Button>
         </div>
       </div>
@@ -830,7 +830,7 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
     <div className={glassShell}>
       <div className="relative py-8 px-6 flex flex-col items-center gap-3">
         <Zap className="w-7 h-7 text-violet-300" />
-        <p className="text-sm text-muted-foreground text-center">
+        <p className="text-sm text-white text-center">
           {isAf ? "Iets het skeefgeloop. Probeer weer." : "Something went wrong. Please try again."}
         </p>
         <Button size="sm" variant="outline" onClick={handleReset} className="rounded-xl border-white/15 bg-white/[0.03] hover:bg-white/[0.07]">
@@ -863,7 +863,7 @@ export function RescuePackAlert({ isAf }: { isAf: boolean }) {
                   {isAf ? "Rescue Pack is Geaktiveer" : "Rescue Pack Activated"}
                 </CardTitle>
                 <CardDescription className="text-foreground font-medium">
-                  {isAf ? "Jy het ekstra ondersteuning nodig — ons is hier" : "Critical progress support triggered"}
+                  {isAf ? "Jy het ekstra ondersteuning nodig â€” ons is hier" : "Critical progress support triggered"}
                 </CardDescription>
               </div>
             </div>

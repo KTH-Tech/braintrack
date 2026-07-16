@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+﻿import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/language-context";
 import { BrandThemeToggle } from "@/components/theme-toggle";
@@ -71,7 +71,7 @@ const T = {
         data, to prevent re-identification.
       </span>
     ),
-    privacyShort: "Aggregated & anonymised — no individual learner data",
+    privacyShort: "Aggregated & anonymised â€” no individual learner data",
     totalLearners: "Total Learners",
     activeLearners: "Active This Week",
     overallAccuracy: "Overall Accuracy",
@@ -91,7 +91,7 @@ const T = {
     sessions: "Sessions",
     avgScore: "Avg score (%)",
     learners: "learners",
-    colorLegend: "Colour: green ≥75%, amber ≥50%, red <50%",
+    colorLegend: "Colour: green â‰¥75%, amber â‰¥50%, red <50%",
     printFooter: "BrainTrack School Dashboard",
     generated: "Generated",
     printAnon: "All data is anonymised and aggregated. No individual learner data is included.",
@@ -117,7 +117,7 @@ const T = {
         data het, om heridentifikasie te voorkom.
       </span>
     ),
-    privacyShort: "Saamgevoeg en geanonimiseer — geen individuele leerderdata",
+    privacyShort: "Saamgevoeg en geanonimiseer â€” geen individuele leerderdata",
     totalLearners: "Totale Leerders",
     activeLearners: "Aktief Hierdie Week",
     overallAccuracy: "Algehele Akkuraatheid",
@@ -137,7 +137,7 @@ const T = {
     sessions: "Sessies",
     avgScore: "Gem. telling (%)",
     learners: "leerders",
-    colorLegend: "Kleur: groen ≥75%, amber ≥50%, rooi <50%",
+    colorLegend: "Kleur: groen â‰¥75%, amber â‰¥50%, rooi <50%",
     printFooter: "BrainTrack Skool-dashboard",
     generated: "Gegenereer",
     printAnon: "Alle data is geanonimiseer en saamgevoeg. Geen individuele leerderdata is ingesluit nie.",
@@ -201,8 +201,8 @@ function HeroStat({
       <p className="text-3xl sm:text-4xl font-black text-foreground leading-none tabular-nums">
         {value}
       </p>
-      <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{label}</p>
-      {sub && <p className="text-[10px] text-muted-foreground/60">{sub}</p>}
+      <p className="text-xs font-semibold uppercase tracking-widest text-white">{label}</p>
+      {sub && <p className="text-[10px] text-white">{sub}</p>}
     </div>
   );
 }
@@ -228,9 +228,9 @@ function SecondaryMetricCard({
             <Icon className="w-4 h-4" />
           </div>
           <div className="min-w-0">
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold leading-tight">{label}</p>
+            <p className="text-[10px] text-white uppercase tracking-wider font-semibold leading-tight">{label}</p>
             <p className="text-xl font-black text-foreground mt-0.5 leading-none tabular-nums">{value}</p>
-            {sub && <p className="text-[10px] text-muted-foreground/60 mt-0.5">{sub}</p>}
+            {sub && <p className="text-[10px] text-white mt-0.5">{sub}</p>}
           </div>
         </div>
       </CardContent>
@@ -338,7 +338,7 @@ export default function SchoolDashboardPage() {
         <div className="max-w-md text-center rounded-2xl border border-border/60 bg-card/60 p-8">
           <AlertCircle className="w-10 h-10 text-destructive mx-auto mb-3" />
           <h1 className="text-xl font-black text-foreground">{t.dashboardUnavailable}</h1>
-          <p className="text-sm text-muted-foreground mt-2">
+          <p className="text-sm text-white mt-2">
             {msg || t.couldNotLoad}
           </p>
           <Button className="mt-5" onClick={() => refetch()}>
@@ -365,7 +365,7 @@ export default function SchoolDashboardPage() {
   return (
     <div className="min-h-screen bg-background text-foreground print:bg-white print:text-black">
 
-      {/* Aurora gradient background — non-print only */}
+      {/* Aurora gradient background â€” non-print only */}
       <div
         className="fixed inset-0 pointer-events-none print:hidden"
         style={{
@@ -392,7 +392,7 @@ export default function SchoolDashboardPage() {
             <Button
               size="sm"
               variant="ghost"
-              className="gap-1.5 text-xs text-muted-foreground hover:text-foreground h-8 px-2.5"
+              className="gap-1.5 text-xs text-white hover:text-foreground h-8 px-2.5"
               onClick={toggleLanguage}
               aria-label={af ? "Switch to English" : "Skakel na Afrikaans"}
               data-testid="button-language-toggle"
@@ -403,7 +403,7 @@ export default function SchoolDashboardPage() {
             <Button
               size="sm"
               variant="ghost"
-              className="gap-1.5 text-xs text-muted-foreground hover:text-foreground h-8 px-2.5"
+              className="gap-1.5 text-xs text-white hover:text-foreground h-8 px-2.5"
               onClick={() => refetch()}
               disabled={isFetching}
             >
@@ -413,7 +413,7 @@ export default function SchoolDashboardPage() {
             <Button
               size="sm"
               variant="ghost"
-              className="gap-1.5 text-xs text-muted-foreground hover:text-foreground h-8 px-2.5"
+              className="gap-1.5 text-xs text-white hover:text-foreground h-8 px-2.5"
               onClick={handleExport}
             >
               <Download className="w-3.5 h-3.5" />
@@ -422,7 +422,7 @@ export default function SchoolDashboardPage() {
             <Button
               size="sm"
               variant="ghost"
-              className="gap-1.5 text-xs text-muted-foreground hover:text-foreground h-8 px-2.5"
+              className="gap-1.5 text-xs text-white hover:text-foreground h-8 px-2.5"
               onClick={handlePrint}
             >
               <Printer className="w-3.5 h-3.5" />
@@ -435,14 +435,14 @@ export default function SchoolDashboardPage() {
       <main className="relative z-10 max-w-6xl mx-auto px-4 py-6 space-y-6">
 
         {/* School meta row */}
-        <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-3 text-xs text-white">
           {school.province && (
             <span className="flex items-center gap-1">
               <MapPin className="w-3.5 h-3.5 shrink-0" />
               {school.province}{school.district ? `, ${school.district}` : ""}
             </span>
           )}
-          <span className="text-muted-foreground/60">
+          <span className="text-white">
             {t.dataGenerated}: {generatedDate}
           </span>
           <span className="text-primary/60 ml-auto print:hidden">{t.refreshesDaily}</span>
@@ -483,7 +483,7 @@ export default function SchoolDashboardPage() {
 
         {/* Secondary metric cards */}
         <section>
-          <h2 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-3">
+          <h2 className="text-[10px] font-black uppercase tracking-widest text-white mb-3">
             {t.keyMetrics}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -513,14 +513,14 @@ export default function SchoolDashboardPage() {
           {/* Subject Engagement */}
           <Card className="border-border/60 bg-card/60 ">
             <CardHeader className="pb-2 pt-4 px-4">
-              <CardTitle className="text-xs font-black uppercase tracking-widest text-muted-foreground">
+              <CardTitle className="text-xs font-black uppercase tracking-widest text-white">
                 {t.subjectEngagement}
               </CardTitle>
-              <p className="text-[10px] text-muted-foreground/60 mt-0.5">{t.subjectEngagementSub}</p>
+              <p className="text-[10px] text-white mt-0.5">{t.subjectEngagementSub}</p>
             </CardHeader>
             <CardContent className="px-4 pb-4">
               {subjectEngagement.length === 0 ? (
-                <div className="flex items-center justify-center h-[280px] text-sm text-muted-foreground">
+                <div className="flex items-center justify-center h-[280px] text-sm text-white">
                   {t.noSessions}
                 </div>
               ) : (
@@ -565,14 +565,14 @@ export default function SchoolDashboardPage() {
           {/* Avg Score by Subject */}
           <Card className="border-border/60 bg-card/60 ">
             <CardHeader className="pb-2 pt-4 px-4">
-              <CardTitle className="text-xs font-black uppercase tracking-widest text-muted-foreground">
+              <CardTitle className="text-xs font-black uppercase tracking-widest text-white">
                 {t.avgMastery}
               </CardTitle>
-              <p className="text-[10px] text-muted-foreground/60 mt-0.5">{t.avgMasterySub}</p>
+              <p className="text-[10px] text-white mt-0.5">{t.avgMasterySub}</p>
             </CardHeader>
             <CardContent className="px-4 pb-4">
               {avgScoreBySubject.length === 0 ? (
-                <div className="flex items-center justify-center h-[280px] text-sm text-muted-foreground text-center px-4">
+                <div className="flex items-center justify-center h-[280px] text-sm text-white text-center px-4">
                   {t.noMastery}
                 </div>
               ) : (
@@ -616,7 +616,7 @@ export default function SchoolDashboardPage() {
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
-                    <p className="text-[10px] text-muted-foreground/50 mt-1 text-right">
+                    <p className="text-[10px] text-white mt-1 text-right">
                       {t.colorLegend}
                     </p>
                   </div>
@@ -626,10 +626,10 @@ export default function SchoolDashboardPage() {
           </Card>
         </div>
 
-        {/* Streak Distribution — unified panel */}
+        {/* Streak Distribution â€” unified panel */}
         <Card className="border-border/60 bg-card/60 ">
           <CardHeader className="pb-2 pt-4 px-4">
-            <CardTitle className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+            <CardTitle className="text-xs font-black uppercase tracking-widest text-white flex items-center gap-1.5">
               <Flame className="w-4 h-4 text-orange-500 shrink-0" />
               {t.streakActivity}
             </CardTitle>
@@ -675,7 +675,7 @@ export default function SchoolDashboardPage() {
                     <div key={i}>
                       <div className="flex justify-between text-xs mb-1.5">
                         <span className="font-semibold text-foreground/80">{bucket.label}</span>
-                        <span className="text-muted-foreground tabular-nums">
+                        <span className="text-white tabular-nums">
                           {bucket.count} {t.learners} ({pct}%)
                         </span>
                       </div>
@@ -691,7 +691,7 @@ export default function SchoolDashboardPage() {
                     </div>
                   );
                 })}
-                <p className="text-[10px] text-muted-foreground/50 mt-1">{t.streakCaption}</p>
+                <p className="text-[10px] text-white mt-1">{t.streakCaption}</p>
               </div>
             </div>
           </CardContent>
@@ -699,9 +699,9 @@ export default function SchoolDashboardPage() {
 
         {/* Print footer */}
         <div className="hidden print:block mt-8 pt-6 border-t border-black/20 text-xs text-black/50 text-center space-y-1">
-          <p>{t.printFooter} — {school.name}</p>
+          <p>{t.printFooter} â€” {school.name}</p>
           <p>
-            {t.generated}: {generatedDate} · {t.printAnon}
+            {t.generated}: {generatedDate} Â· {t.printAnon}
           </p>
           <p>braintrack.co.za</p>
         </div>

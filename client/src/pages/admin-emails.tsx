@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+﻿import { useState, useMemo } from "react";
 import { Link, useLocation } from "wouter";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLanguage } from "@/lib/language-context";
@@ -55,11 +55,11 @@ const EMAIL_TYPES: {
     desc: "Sent to learners after their parent confirms consent",
     descAf: "Gestuur aan leerders nadat hul ouer toestemming bevestig",
     icon: CheckCircle, category: "lifecycle" },
-  { value: "day-13", label: "Trial Expiry — Day 13", labelAf: "Proeftydperk — Dag 13",
+  { value: "day-13", label: "Trial Expiry â€” Day 13", labelAf: "Proeftydperk â€” Dag 13",
     desc: "Nudge sent on day 13 of trial: ending soon, keep momentum",
     descAf: "Stoot gestuur op dag 13 van proeftydperk: eindig binnekort",
     icon: AlertCircle, category: "lifecycle" },
-  { value: "day-14", label: "Trial Expiry — Day 14", labelAf: "Proeftydperk — Dag 14",
+  { value: "day-14", label: "Trial Expiry â€” Day 14", labelAf: "Proeftydperk â€” Dag 14",
     desc: "Urgent last-day notice: trial expires today, subscribe now",
     descAf: "Dringende laaste-dag kennisgewing: proeftydperk verloop vandag",
     icon: AlertCircle, category: "lifecycle" },
@@ -68,8 +68,8 @@ const EMAIL_TYPES: {
     descAf: "Gestuur na 'n suksesvolle eerste betaling of hernuwing",
     icon: CheckCircle, category: "billing" },
   { value: "payment-failed", label: "Payment Failed", labelAf: "Betaling Misluk",
-    desc: "Sent when a recurring debit fails — 3-day grace period warning",
-    descAf: "Gestuur wanneer 'n hernuwing misluk — 3-dae grasieperiode",
+    desc: "Sent when a recurring debit fails â€” 3-day grace period warning",
+    descAf: "Gestuur wanneer 'n hernuwing misluk â€” 3-dae grasieperiode",
     icon: CreditCard, category: "billing" },
   { value: "subscription-cancelled", label: "Subscription Cancelled", labelAf: "Intekening Gekanselleer",
     desc: "Confirmation that the subscription has been cancelled",
@@ -267,7 +267,7 @@ export default function AdminEmailsPage() {
           data-testid="tab-templates"
           aria-pressed={activeTab === "templates"}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-            activeTab === "templates" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+            activeTab === "templates" ? "bg-primary text-primary-foreground shadow-sm" : "text-white hover:text-foreground"
           }`}
         >
           <Mail className="w-3.5 h-3.5" />
@@ -279,7 +279,7 @@ export default function AdminEmailsPage() {
           data-testid="tab-settings"
           aria-pressed={activeTab === "settings"}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-            activeTab === "settings" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+            activeTab === "settings" ? "bg-primary text-primary-foreground shadow-sm" : "text-white hover:text-foreground"
           }`}
         >
           <Settings className="w-3.5 h-3.5" />
@@ -297,7 +297,7 @@ export default function AdminEmailsPage() {
               data-testid={`button-lang-${l}`}
               aria-pressed={previewLang === l}
               className={`px-2.5 py-1 rounded-full text-xs font-semibold transition ${
-                previewLang === l ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                previewLang === l ? "bg-primary text-primary-foreground" : "text-white hover:text-foreground"
               }`}
             >
               {l === "en" ? "EN" : "AF"}
@@ -308,7 +308,7 @@ export default function AdminEmailsPage() {
 
       <Link
         href="/learn/admin/reports"
-        className="flex items-center justify-center w-9 h-9 rounded-xl border border-border bg-card text-muted-foreground hover:text-foreground transition"
+        className="flex items-center justify-center w-9 h-9 rounded-xl border border-border bg-card text-white hover:text-foreground transition"
         aria-label={isAf ? "Terug na Admin" : "Back to Admin"}
         data-testid="link-admin"
       >
@@ -316,7 +316,7 @@ export default function AdminEmailsPage() {
       </Link>
       <button
         onClick={() => navigate("/dashboard")}
-        className="flex items-center justify-center w-9 h-9 rounded-xl border border-border bg-card text-muted-foreground hover:text-foreground transition"
+        className="flex items-center justify-center w-9 h-9 rounded-xl border border-border bg-card text-white hover:text-foreground transition"
         aria-label={isAf ? "Kontroleskerm" : "Dashboard"}
         data-testid="button-home"
       >
@@ -337,7 +337,7 @@ export default function AdminEmailsPage() {
         actions={headerActions}
       />
 
-      {/* ── SETTINGS TAB ── */}
+      {/* â”€â”€ SETTINGS TAB â”€â”€ */}
       {activeTab === "settings" && (
         <div className="max-w-2xl mx-auto px-4 py-8">
           {!isConfigLoading && emailConfig && (
@@ -354,18 +354,18 @@ export default function AdminEmailsPage() {
                 : <AlertCircle className="w-4 h-4 shrink-0" />}
               {emailConfig.isConfigured
                 ? (isAf ? "SendGrid is gekonfigureer en aktief" : "SendGrid is configured and active")
-                : (isAf ? "Geen API-sleutel gekonfigureer nie — e-posse sal nie gestuur word nie" : "No API key configured — emails will not be sent")}
+                : (isAf ? "Geen API-sleutel gekonfigureer nie â€” e-posse sal nie gestuur word nie" : "No API key configured â€” emails will not be sent")}
             </div>
           )}
 
           <Card className="p-6 space-y-5">
             <div className="space-y-1.5">
-              <label className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+              <label className="flex items-center gap-1.5 text-xs font-semibold text-white uppercase tracking-widest">
                 <Key className="w-3.5 h-3.5" />
                 {isAf ? "SendGrid API-sleutel" : "SendGrid API Key"}
               </label>
               {!isConfigLoading && emailConfig?.apiKeyDisplay && (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-white">
                   {isAf ? "Huidig: " : "Current: "}
                   <span className="font-mono text-primary">{emailConfig.apiKeyDisplay}</span>
                 </p>
@@ -377,19 +377,19 @@ export default function AdminEmailsPage() {
                   onChange={(e) => setApiKeyInput(e.target.value)}
                   placeholder={isAf ? "Nuwe sleutel (laat leeg om te behou)" : "New key (leave blank to keep current)"}
                   data-testid="api-key-input"
-                  className="w-full px-3 py-2.5 pr-10 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary font-mono"
+                  className="w-full px-3 py-2.5 pr-10 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-white focus:outline-none focus:border-primary font-mono"
                 />
                 <button
                   type="button"
                   onClick={() => setShowApiKey((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white hover:text-foreground transition"
                   aria-label={showApiKey ? "Hide API key" : "Show API key"}
                   tabIndex={-1}
                 >
                   {showApiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-              <p className="text-xs text-muted-foreground/70 leading-relaxed">
+              <p className="text-xs text-white leading-relaxed">
                 {isAf
                   ? "Die sleutel word gevalideer teen die SendGrid API voor dit gestoor word. Die rou waarde word nooit aan die voorkant gewys nie."
                   : "The key is validated against the SendGrid API before saving. The raw value is never shown to the frontend after saving."}
@@ -399,7 +399,7 @@ export default function AdminEmailsPage() {
             <div className="h-px bg-border" />
 
             <div className="space-y-1.5">
-              <label className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+              <label className="flex items-center gap-1.5 text-xs font-semibold text-white uppercase tracking-widest">
                 <AtSign className="w-3.5 h-3.5" />
                 {isAf ? "Van E-posadres" : "From Email Address"}
               </label>
@@ -409,12 +409,12 @@ export default function AdminEmailsPage() {
                 onChange={(e) => setFromEmailInput(e.target.value)}
                 placeholder="learn@kth-tech.com"
                 data-testid="from-email-input"
-                className="w-full px-3 py-2.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary"
+                className="w-full px-3 py-2.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-white focus:outline-none focus:border-primary"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+              <label className="flex items-center gap-1.5 text-xs font-semibold text-white uppercase tracking-widest">
                 <UserIcon className="w-3.5 h-3.5" />
                 {isAf ? "Vertoonnaam" : "From Display Name"}
               </label>
@@ -424,15 +424,15 @@ export default function AdminEmailsPage() {
                 onChange={(e) => setFromNameInput(e.target.value)}
                 placeholder="BrainTrack"
                 data-testid="from-name-input"
-                className="w-full px-3 py-2.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary"
+                className="w-full px-3 py-2.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-white focus:outline-none focus:border-primary"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+              <label className="flex items-center gap-1.5 text-xs font-semibold text-white uppercase tracking-widest">
                 <CornerDownLeft className="w-3.5 h-3.5" />
                 {isAf ? "Antwoord-aan Adres" : "Reply-To Address"}
-                <span className="text-muted-foreground/60 font-normal normal-case tracking-normal">
+                <span className="text-white font-normal normal-case tracking-normal">
                   {isAf ? "(opsioneel)" : "(optional)"}
                 </span>
               </label>
@@ -442,7 +442,7 @@ export default function AdminEmailsPage() {
                 onChange={(e) => setReplyToInput(e.target.value)}
                 placeholder={isAf ? "learn@kth-tech.com" : "learn@kth-tech.com"}
                 data-testid="reply-to-input"
-                className="w-full px-3 py-2.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary"
+                className="w-full px-3 py-2.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-white focus:outline-none focus:border-primary"
               />
             </div>
 
@@ -463,7 +463,7 @@ export default function AdminEmailsPage() {
               <Send className="w-4 h-4 text-primary" />
               {isAf ? "Stuur Toets-E-pos" : "Send Test Email"}
             </h2>
-            <p className="text-xs text-muted-foreground leading-relaxed">
+            <p className="text-xs text-white leading-relaxed">
               {isAf
                 ? "Stuur 'n welkom-sjabloonepos na jou eie admin-adres om te bevestig dat aflewering werk met die gestoorde konfigurasie."
                 : "Send a welcome template email to your own admin address to confirm delivery works with the saved configuration."}
@@ -497,7 +497,7 @@ export default function AdminEmailsPage() {
                   {settingsTestResult.delivery === "sent"
                     ? isAf ? "E-pos suksesvol gestuur!" : "Email sent successfully!"
                     : settingsTestResult.delivery === "not_configured"
-                    ? isAf ? "Nie gekonfigureer — stel die API-sleutel hierbo in." : "Not configured — set the API key above."
+                    ? isAf ? "Nie gekonfigureer â€” stel die API-sleutel hierbo in." : "Not configured â€” set the API key above."
                     : settingsTestResult.error ?? (isAf ? "Stuur misluk" : "Send failed")}
                 </span>
               </div>
@@ -506,14 +506,14 @@ export default function AdminEmailsPage() {
         </div>
       )}
 
-      {/* ── TEMPLATES TAB ── */}
+      {/* â”€â”€ TEMPLATES TAB â”€â”€ */}
       {activeTab === "templates" && (
         <div className="max-w-7xl mx-auto px-4 py-6 flex flex-col lg:flex-row gap-6">
-          {/* Sidebar — grouped email type list */}
+          {/* Sidebar â€” grouped email type list */}
           <aside className="lg:w-80 shrink-0 space-y-5">
             {(Object.keys(groupedTypes) as Category[]).map((cat) => (
               <div key={cat}>
-                <h2 className="text-[10px] font-semibold text-muted-foreground/70 uppercase tracking-widest mb-2 px-1 flex items-center gap-2">
+                <h2 className="text-[10px] font-semibold text-white uppercase tracking-widest mb-2 px-1 flex items-center gap-2">
                   {isAf ? CATEGORY_META[cat].af : CATEGORY_META[cat].en}
                   <Badge variant="outline" className="text-[9px] h-4 px-1.5">{groupedTypes[cat].length}</Badge>
                 </h2>
@@ -531,17 +531,17 @@ export default function AdminEmailsPage() {
                         className={`w-full text-left p-3 rounded-xl border transition flex items-start gap-3 ${
                           active
                             ? "bg-primary/10 border-primary/40 text-foreground shadow-[0_0_20px_-8px_hsl(var(--primary)/0.5)]"
-                            : "bg-card border-border text-muted-foreground hover:text-foreground hover:border-primary/30"
+                            : "bg-card border-border text-white hover:text-foreground hover:border-primary/30"
                         }`}
                       >
-                        <div className={`flex items-center justify-center w-8 h-8 rounded-lg shrink-0 border ${active ? "bg-primary/15 border-primary/40 text-primary" : "bg-background border-border text-muted-foreground"}`}>
+                        <div className={`flex items-center justify-center w-8 h-8 rounded-lg shrink-0 border ${active ? "bg-primary/15 border-primary/40 text-primary" : "bg-background border-border text-white"}`}>
                           <Icon className="w-4 h-4" />
                         </div>
                         <div className="min-w-0">
                           <div className="font-semibold text-sm text-foreground mb-0.5">
                             {isAf ? et.labelAf : et.label}
                           </div>
-                          <div className="text-xs text-muted-foreground leading-snug">
+                          <div className="text-xs text-white leading-snug">
                             {isAf ? et.descAf : et.desc}
                           </div>
                         </div>
@@ -554,11 +554,11 @@ export default function AdminEmailsPage() {
 
             {/* Test send panel */}
             <Card className="p-4 space-y-3">
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
+              <h3 className="text-xs font-semibold text-white uppercase tracking-widest flex items-center gap-1.5">
                 <Send className="w-3 h-3" />
                 {isAf ? "Toets Stuur" : "Test Send"}
               </h3>
-              <p className="text-xs text-muted-foreground leading-snug">
+              <p className="text-xs text-white leading-snug">
                 {isAf
                   ? "Stuur die gekose sjabloon na enige e-posadres."
                   : "Send the selected template to any email address."}
@@ -569,7 +569,7 @@ export default function AdminEmailsPage() {
                 onChange={(e) => setTestEmail(e.target.value)}
                 placeholder={isAf ? "jou@epos.com" : "you@email.com"}
                 data-testid="test-email-input"
-                className="w-full px-3 py-2 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary"
+                className="w-full px-3 py-2 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-white focus:outline-none focus:border-primary"
               />
               <Button
                 type="button"
@@ -599,7 +599,7 @@ export default function AdminEmailsPage() {
                     {lastSendResult.delivery === "sent"
                       ? isAf ? "E-pos gestuur!" : "Email sent!"
                       : lastSendResult.delivery === "not_configured"
-                      ? isAf ? "E-pos nie gekonfigureer nie — gebruik Instellings" : "Email not configured — use Settings tab"
+                      ? isAf ? "E-pos nie gekonfigureer nie â€” gebruik Instellings" : "Email not configured â€” use Settings tab"
                       : lastSendResult.error ?? (isAf ? "Stuur misluk" : "Send failed")}
                   </span>
                 </div>
@@ -607,7 +607,7 @@ export default function AdminEmailsPage() {
             </Card>
           </aside>
 
-          {/* Main — preview area */}
+          {/* Main â€” preview area */}
           <main className="flex-1 min-w-0">
             <Card className="p-5 mb-4">
               <div className="flex items-start justify-between gap-4 flex-wrap">
@@ -620,7 +620,7 @@ export default function AdminEmailsPage() {
                       {isAf ? selectedMeta.labelAf : selectedMeta.label}
                     </h1>
                   </div>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-white">
                     {isAf ? selectedMeta.descAf : selectedMeta.desc}
                   </p>
                   {previewSubject && (
@@ -650,7 +650,7 @@ export default function AdminEmailsPage() {
                 </div>
               )}
               {!isFetchingPreview && !previewHtml && (
-                <div className="flex flex-col items-center justify-center h-96 bg-card text-muted-foreground" data-testid="preview-empty">
+                <div className="flex flex-col items-center justify-center h-96 bg-card text-white" data-testid="preview-empty">
                   <Mail className="w-12 h-12 mb-3 opacity-30" />
                   <p className="text-sm">
                     {isAf
@@ -671,7 +671,7 @@ export default function AdminEmailsPage() {
               )}
             </Card>
 
-            <p className="text-xs text-muted-foreground/70 mt-3 text-center">
+            <p className="text-xs text-white mt-3 text-center">
               {isAf
                 ? "Voorskou gebruik voorbeelddata. Werklike e-posse gebruik die leerder se naam en datums."
                 : "Preview uses sample data. Real emails use the learner's name and actual dates."}

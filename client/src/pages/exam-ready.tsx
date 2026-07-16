@@ -558,13 +558,13 @@ export default function ExamReadyPage() {
                 <XCircle className="w-8 h-8 text-destructive" />
               </div>
               <CardTitle className="text-destructive">{isAfrikaans ? "Eksamen Gekanselleer" : "Exam Cancelled"}</CardTitle>
-              <CardDescription className="text-base mt-2 text-muted-foreground">
+              <CardDescription className="text-base mt-2 text-white">
                 {violationMessage}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="p-4 bg-destructive/10 rounded-lg">
-                <p className="text-sm text-center text-muted-foreground">
+                <p className="text-sm text-center text-white">
                   {isAfrikaans
                     ? "Jou eksamen is gekanselleer weens 'n reëloortreding. Al jou antwoorde is verwyder."
                     : "Your exam has been cancelled due to a rule violation. All your answers have been discarded."}
@@ -633,7 +633,7 @@ export default function ExamReadyPage() {
                 <CheckCircle2 className="w-8 h-8 text-primary" />
               </div>
               <CardTitle className="text-foreground">{isAfrikaans ? "Eksamen Voltooi" : "Exam Completed"}</CardTitle>
-              <CardDescription className="text-base mt-2 text-muted-foreground">
+              <CardDescription className="text-base mt-2 text-white">
                 {isAfrikaans ? "Goed gedaan! Jou eksamen is ingedien." : "Well done! Your exam has been submitted."}
               </CardDescription>
             </CardHeader>
@@ -641,11 +641,11 @@ export default function ExamReadyPage() {
               <div className="grid grid-cols-2 gap-4 text-center">
                 <div className="p-4 bg-muted/30 border border-border rounded-lg">
                   <p className="text-2xl font-semibold text-foreground">{answeredCount}</p>
-                  <p className="text-sm text-muted-foreground">{isAfrikaans ? "Vrae Beantwoord" : "Questions Answered"}</p>
+                  <p className="text-sm text-white">{isAfrikaans ? "Vrae Beantwoord" : "Questions Answered"}</p>
                 </div>
                 <div className="p-4 bg-muted/30 border border-border rounded-lg">
                   <p className="text-2xl font-semibold text-foreground">{formatTime(timeUsed)}</p>
-                  <p className="text-sm text-muted-foreground">{isAfrikaans ? "Tyd Gebruik" : "Time Used"}</p>
+                  <p className="text-sm text-white">{isAfrikaans ? "Tyd Gebruik" : "Time Used"}</p>
                 </div>
               </div>
               <Button 

@@ -297,7 +297,7 @@ export default function ExamFullPage() {
                   <p className="font-semibold text-foreground">
                     {isAf ? "Kon nie vraestelle laai nie" : "Couldn't load papers"}
                   </p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-white">
                     {isAf
                       ? "Kyk jou internetverbinding en probeer weer."
                       : "Check your connection and try again."}
@@ -422,7 +422,7 @@ export default function ExamFullPage() {
               variant="ghost"
               size="sm"
               onClick={() => setShowExitDialog(true)}
-              className="text-muted-foreground hover:text-foreground"
+              className="text-white hover:text-foreground"
               title={isAf ? "Verlaat eksamen" : "Leave exam"}
             >
               <LogOut className="w-4 h-4" />
@@ -436,7 +436,7 @@ export default function ExamFullPage() {
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">{paper.subject} {paper.year} P{paper.paperNumber}</span>
+            <span className="text-xs text-white">{paper.subject} {paper.year} P{paper.paperNumber}</span>
             <Button
               size="sm"
               onClick={() => submitMutation.mutate()}
@@ -462,7 +462,7 @@ export default function ExamFullPage() {
                 <div className="flex items-start justify-between gap-3 flex-wrap">
                   <p className="text-sm font-bold">
                     {isAf ? "Vraag" : "Question"} {q.questionNumber}
-                    {q.topic && <span className="ml-2 text-xs text-muted-foreground font-normal">· {q.topic}</span>}
+                    {q.topic && <span className="ml-2 text-xs text-white font-normal">· {q.topic}</span>}
                   </p>
                   <span className="text-xs font-semibold bg-muted px-2 py-1 rounded-full">
                     {q.marks} {isAf ? "merke" : "marks"}
@@ -562,7 +562,7 @@ export default function ExamFullPage() {
             </div>
             <div className="text-2xl text-foreground">{result.percentage}%</div>
             <Progress value={result.percentage} className="h-3" />
-            <p className="text-xs uppercase tracking-wider font-bold text-muted-foreground">
+            <p className="text-xs uppercase tracking-wider font-bold text-white">
               {isAf ? "Memo-gedryf merk" : "Memo-driven marking"}
             </p>
           </CardContent>

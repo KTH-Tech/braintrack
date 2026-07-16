@@ -183,7 +183,7 @@ export default function PrintableCalendar() {
             key={i}
             className="border-b border-dotted border-border h-8 flex items-end"
           >
-            <span className="text-muted-foreground text-sm mr-2">{i}.</span>
+            <span className="text-white text-sm mr-2">{i}.</span>
           </div>
         ))}
       </div>
@@ -242,7 +242,7 @@ export default function PrintableCalendar() {
               <span className="font-mono text-xs w-20">
                 {date.getDate()}/{date.getMonth() + 1} {dayName}
               </span>
-              <span className="text-xs text-muted-foreground w-12">{exam.time}</span>
+              <span className="text-xs text-white w-12">{exam.time}</span>
               <span className="font-medium">{exam.subject}</span>
             </div>
           );
@@ -324,7 +324,7 @@ export default function PrintableCalendar() {
             style={{ printColorAdjust: "exact", WebkitPrintColorAdjust: "exact" }}
           />
           <h1 className="text-2xl font-semibold">{text.title}</h1>
-          <p className="text-muted-foreground">{text.subtitle}</p>
+          <p className="text-white">{text.subtitle}</p>
           <p className="text-sm mt-1">www.braintrack.co.za</p>
         </div>
 

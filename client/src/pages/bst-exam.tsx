@@ -326,7 +326,7 @@ export default function BSTExamPage() {
           aria-pressed={!isAf}
           aria-label="English"
           className={`min-h-0 inline-flex items-center gap-1 px-2 py-1 rounded text-[11px] font-semibold transition-colors ${
-            !isAf ? "bg-primary/15 text-primary" : "text-muted-foreground hover:text-foreground"
+            !isAf ? "bg-primary/15 text-primary" : "text-white hover:text-foreground"
           }`}
           data-testid="button-lang-en"
         >
@@ -338,7 +338,7 @@ export default function BSTExamPage() {
           aria-pressed={isAf}
           aria-label="Afrikaans"
           className={`min-h-0 inline-flex items-center gap-1 px-2 py-1 rounded text-[11px] font-semibold transition-colors ${
-            isAf ? "bg-primary/15 text-primary" : "text-muted-foreground hover:text-foreground"
+            isAf ? "bg-primary/15 text-primary" : "text-white hover:text-foreground"
           }`}
           data-testid="button-lang-af"
         >
@@ -385,7 +385,7 @@ export default function BSTExamPage() {
         />
 
         <main className="max-w-5xl mx-auto px-4 py-6">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-5">
+          <p className="text-xs uppercase tracking-widest text-white mb-5">
             {isAf ? "Kies jou vraestel" : "Select your paper"}
           </p>
 
@@ -412,7 +412,7 @@ export default function BSTExamPage() {
               <h3 className="text-base font-semibold text-foreground mb-2">
                 {isAf ? "Meld aan om vraestelle te sien" : "Sign in to load papers"}
               </h3>
-              <p className="text-sm text-muted-foreground max-w-sm">
+              <p className="text-sm text-white max-w-sm">
                 {isAf
                   ? "Crunch Time vraestelle is beskikbaar nadat jy ingeteken het."
                   : "Crunch Time papers are available once you're signed in to your BrainTrack account."}
@@ -433,7 +433,7 @@ export default function BSTExamPage() {
               <h3 className="text-base font-semibold text-foreground mb-2">
                 {isAf ? "Kon nie vraestelle laai nie" : "Couldn't load papers"}
               </h3>
-              <p className="text-sm text-muted-foreground max-w-sm">
+              <p className="text-sm text-white max-w-sm">
                 {isAf
                   ? "Iets het verkeerd geloop. Probeer asseblief weer."
                   : "Something went wrong fetching the paper list. Please try again."}
@@ -455,7 +455,7 @@ export default function BSTExamPage() {
               <h3 className="text-base font-semibold text-foreground mb-2">
                 {isAf ? "Geen vraestelle beskikbaar nie" : "No papers available yet"}
               </h3>
-              <p className="text-sm text-muted-foreground max-w-sm">
+              <p className="text-sm text-white max-w-sm">
                 {isAf
                   ? "Vraestelle word tans voorberei. Kom later terug."
                   : "Papers are being prepared. Check back soon or contact your admin."}
@@ -484,28 +484,28 @@ export default function BSTExamPage() {
                     </div>
                     <div className="min-w-0">
                       <p className="font-semibold text-sm text-foreground">{t.paper} {p.paperNumber}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5 leading-snug truncate">{p.name}</p>
+                      <p className="text-xs text-white mt-0.5 leading-snug truncate">{p.name}</p>
                     </div>
                   </div>
                   <div className="space-y-1.5 text-xs mb-4">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">{isAf ? "Totaal" : "Total marks"}</span>
+                      <span className="text-white">{isAf ? "Totaal" : "Total marks"}</span>
                       <span className="text-primary font-medium">{p.totalMarks} {t.marks}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">{isAf ? "Tyd" : "Duration"}</span>
+                      <span className="text-white">{isAf ? "Tyd" : "Duration"}</span>
                       <span className="text-foreground">{p.duration} min</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Sec A</span>
+                      <span className="text-white">Sec A</span>
                       <span className="text-foreground">{p.sectionA} MCQ</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Sec B</span>
+                      <span className="text-white">Sec B</span>
                       <span className="text-foreground">{p.sectionB} {isAf ? "Gevalle" : "Cases"}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Sec C</span>
+                      <span className="text-white">Sec C</span>
                       <span className="text-foreground">{p.sectionC} {isAf ? "Opstelle" : "Essays"}</span>
                     </div>
                   </div>
@@ -554,7 +554,7 @@ export default function BSTExamPage() {
                 </li>
               ))}
             </ul>
-            <p className="text-xs text-muted-foreground border-t border-border pt-3">
+            <p className="text-xs text-white border-t border-border pt-3">
               {t.disclaimer}
             </p>
             <div className="flex gap-3 pt-1">
@@ -612,7 +612,7 @@ export default function BSTExamPage() {
           <span data-testid="text-timer">{formatTime(timeRemaining)}</span>
         </div>
         <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-card text-xs">
-          <span className="text-muted-foreground">{isAf ? "Vooruitgang" : "Progress"}</span>
+          <span className="text-white">{isAf ? "Vooruitgang" : "Progress"}</span>
           <span className="text-foreground font-semibold tabular-nums">{totalAnswered}/{totalQuestions}</span>
         </div>
         <Button
@@ -656,11 +656,11 @@ export default function BSTExamPage() {
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
                       isActive
                         ? "bg-primary/15 text-primary border border-primary/40"
-                        : "text-muted-foreground hover:text-foreground border border-transparent"
+                        : "text-white hover:text-foreground border border-transparent"
                     }`}
                   >
                     <span>{tab.label}</span>
-                    <span className={`tabular-nums ${isActive ? "text-primary/80" : "text-muted-foreground"}`}>
+                    <span className={`tabular-nums ${isActive ? "text-primary/80" : "text-white"}`}>
                       {tab.answered}/{tab.count}
                     </span>
                     {complete && <CheckCircle2 className="w-3 h-3 text-emerald-400" />}
@@ -703,7 +703,7 @@ export default function BSTExamPage() {
                               }`}
                             >
                               <span className={`inline-flex items-center justify-center w-7 h-7 rounded-md text-xs font-bold flex-shrink-0 ${
-                                selected ? "bg-primary text-primary-foreground" : "bg-muted/40 text-muted-foreground"
+                                selected ? "bg-primary text-primary-foreground" : "bg-muted/40 text-white"
                               }`}>
                                 {opt.label}
                               </span>
@@ -735,7 +735,7 @@ export default function BSTExamPage() {
                         className="p-4 rounded-lg bg-muted/30 border border-border text-sm text-foreground"
                         data-testid={`text-scenario-${cs.id}`}
                       >
-                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">{t.readScenario}</p>
+                        <p className="text-xs font-semibold text-white uppercase tracking-wide mb-2">{t.readScenario}</p>
                         <div className="whitespace-pre-wrap">{cs.scenario}</div>
                       </div>
                       {cs.subQuestions.map((sq, si) => (
@@ -764,7 +764,7 @@ export default function BSTExamPage() {
             {currentSection === "C" && (
               <div className="space-y-4">
                 <h2 className="text-xl font-semibold text-foreground" data-testid="text-section-title">{t.sectionC} (30 {t.marks})</h2>
-                <p className="text-sm text-muted-foreground">{t.chooseOne}</p>
+                <p className="text-sm text-white">{t.chooseOne}</p>
                 {paper.sectionC.map(eq => {
                   const isSelected = selectedEssay === eq.id;
                   return (
@@ -855,13 +855,13 @@ export default function BSTExamPage() {
                 >
                   {examResult.percentage}%
                 </div>
-                <div className="text-lg text-muted-foreground">
+                <div className="text-lg text-white">
                   <span data-testid="text-score-fraction">{examResult.totalScore} / {examResult.totalMarks}</span> {t.marks}
                 </div>
                 <Badge className={`text-sm ${bandColor}`} variant="outline" data-testid="text-mastery-band">
                   {bandLabel}
                 </Badge>
-                <div className="text-xs text-muted-foreground pt-2">
+                <div className="text-xs text-white pt-2">
                   {isAf ? "Tyd gebruik" : "Time used"}: <span className="tabular-nums text-foreground">{formatTime(examResult.timeUsedSeconds)}</span>
                 </div>
               </div>
@@ -882,7 +882,7 @@ export default function BSTExamPage() {
                     <div className="flex items-center justify-between gap-4">
                       <span className="text-sm font-medium text-foreground">{tb.topic}</span>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground tabular-nums">{tb.earned}/{tb.available}</span>
+                        <span className="text-sm text-white tabular-nums">{tb.earned}/{tb.available}</span>
                         <Badge variant="outline" className={BAND_COLORS[tb.band]}>
                           {tb.percentage}% · {BAND_LABELS[tb.band]?.[language] || ""}
                         </Badge>
@@ -919,7 +919,7 @@ export default function BSTExamPage() {
                       <span className="text-foreground">{isAf ? "Vraag" : "Q"} {idx + 1}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-muted-foreground">
+                      <span className="text-white">
                         {isAf ? "Jou" : "Your"}: <span className="text-foreground font-medium">{r.userAnswer || "—"}</span>
                       </span>
                       {!r.correct && <Badge variant="outline" className="text-emerald-400 border-emerald-500/40">{r.correctAnswer}</Badge>}
@@ -942,7 +942,7 @@ export default function BSTExamPage() {
               <CardContent>
                 <div className="space-y-1">
                   {examResult.integrityLog.map((log, i) => (
-                    <p key={i} className="text-xs text-muted-foreground font-mono">{log}</p>
+                    <p key={i} className="text-xs text-white font-mono">{log}</p>
                   ))}
                 </div>
               </CardContent>

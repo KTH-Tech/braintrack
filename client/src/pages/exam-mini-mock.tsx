@@ -247,7 +247,7 @@ export default function ExamMiniMockPage() {
             </div>
             <div className="text-2xl text-foreground">{pct}%</div>
             <Progress value={pct} className="h-3" />
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-white">
               {isAf
                 ? `${questions.length} vrae gemerk volgens DBE memo`
                 : `${questions.length} questions marked from the DBE memo`}
@@ -312,14 +312,14 @@ export default function ExamMiniMockPage() {
             <div className="flex items-start justify-between gap-3 flex-wrap">
               <p className="text-xs font-bold uppercase tracking-wider text-foreground">
                 {isAf ? "Vraag" : "Question"} {currentQ.questionNumber}
-                {currentQ.topic && <span className="ml-2 text-muted-foreground">· {currentQ.topic}</span>}
+                {currentQ.topic && <span className="ml-2 text-white">· {currentQ.topic}</span>}
               </p>
               <span className="text-xs font-semibold bg-muted px-2 py-1 rounded-full">
                 {currentQ.marks} {isAf ? "merke" : "marks"}
               </span>
             </div>
             <ExamQuestionText text={currentQ.questionText} className="text-base text-foreground" />
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-white">
               {isAf ? "Bron: DBE" : "Source: DBE"} {currentQ.year} · {isAf ? "Vraestel" : "Paper"} {currentQ.paperNumber}
             </p>
 
@@ -467,7 +467,7 @@ export default function ExamMiniMockPage() {
                 <p className="font-semibold text-foreground">
                   {isAf ? "Kon nie vakke laai nie" : "Couldn't load subjects"}
                 </p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-white">
                   {isAf
                     ? "Kyk jou internetverbinding en probeer weer."
                     : "Check your connection and try again."}
@@ -503,7 +503,7 @@ export default function ExamMiniMockPage() {
                 </SelectContent>
               </Select>
               {!subjectsLoading && (subjects?.length ?? 0) === 0 && (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-white">
                   {isAf
                     ? "Geen vakke met vrygestelde vrae beskikbaar nie. Probeer later weer."
                     : "No subjects with released questions are available yet. Please check back later."}

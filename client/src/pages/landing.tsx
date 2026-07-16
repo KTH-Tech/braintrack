@@ -662,7 +662,7 @@ export default function LandingPage() {
                 </div>
 
                 {/* One quiet eyebrow line — no button chips */}
-                <p className="bt-rise bt-rise-2 text-[11px] font-black uppercase tracking-[0.28em] text-white/95">
+                <p className="bt-rise bt-rise-2 text-[11px] font-black uppercase tracking-[0.28em] text-white">
                   {language === "af" ? "Graad 12 · KABV · R169/maand" : "Grade 12 · CAPS · R169/mo"}
                 </p>
 

@@ -335,7 +335,7 @@ export default function PastPapersPage() {
                   <CardContent className="space-y-1 max-h-[500px] overflow-y-auto">
                     {hasNoEnrollment ? (
                       <div className="py-6 text-center space-y-3">
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-white">
                           {language === "af"
                             ? "Voltooi jou vakkeuse om jou vraestelle te sien."
                             : "Complete your subject selection to see your past papers."}
