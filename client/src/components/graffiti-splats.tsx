@@ -13,9 +13,11 @@ const SPECKLES: Array<[number, number, number]> = [
   [2, 50, 1.5], [4, 32, 2.3], [34, 10, 1.0], [70, 90, 1.0], [12, 26, 1.2], [86, 66, 1.1],
 ];
 
-// Jagged spray-paint burst with mist + drips — the brand board splash.
-function SprayBurst({ color, size, x, y, rotate, delay, drip = true }: {
-  color: string; size: number; x: string; y: string; rotate: number; delay: number; drip?: boolean;
+// Jagged spray-paint burst with mist speckles — the brand board splash.
+// NOTE: no drips here — bursts render rotated, so baked-in drips would hang
+// sideways (gravity-wrong). Drips belong only on unrotated surfaces.
+function SprayBurst({ color, size, x, y, rotate, delay }: {
+  color: string; size: number; x: string; y: string; rotate: number; delay: number;
 }) {
   return (
     <span
@@ -34,13 +36,6 @@ function SprayBurst({ color, size, x, y, rotate, delay, drip = true }: {
         {SPECKLES.map(([cx, cy, r], i) => (
           <circle key={i} cx={cx} cy={cy} r={r} opacity={0.9 - (i % 4) * 0.15} />
         ))}
-        {drip && (
-          <>
-            <path d="M41 82c0 0 1.5 12 1.5 19 0 4-1.2 6-3 6s-3-2-3-6c0-7 1.5-19 1.5-19z" />
-            <path d="M56 86c0 0 1.2 9 1.2 14 0 3-1 4.5-2.4 4.5s-2.4-1.5-2.4-4.5c0-5 1.2-14 1.2-14z" />
-            <path d="M70 78c0 0 1 7 1 11 0 2.6-.8 4-2 4s-2-1.4-2-4c0-4 1-11 1-11z" />
-          </>
-        )}
       </svg>
     </span>
   );
@@ -128,7 +123,7 @@ export function SpraySmear({ color = "#FF2BD6" }: { color?: string }) {
   );
 }
 
-type BurstSpec = { c: number; size: number; x: string; y: string; r: number; d: number; drip?: boolean };
+type BurstSpec = { c: number; size: number; x: string; y: string; r: number; d: number };
 type DoodleSpec = { kind: DoodleKind; c: number; size: number; x: string; y: string; r: number; d: number };
 
 export function GraffitiSplats({
@@ -212,7 +207,6 @@ export function GraffitiSplats({
           size={s.size}
           x={s.x} y={s.y}
           rotate={s.r} delay={s.d}
-          drip={s.drip !== false}
         />
       ))}
       {(doodles[variant] ?? doodles.hero).map((s, i) => (

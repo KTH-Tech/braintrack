@@ -4,7 +4,6 @@ import { Globe, Menu, X, LogOut, FlaskConical, Sparkles, BookOpen } from "lucide
 import { useLanguage } from "@/lib/language-context";
 import { useAuth } from "@/hooks/use-auth";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { BrainTrackLogo } from "@/components/braintrack-logo";
 import { BadgeDollarSign } from "lucide-react";
 
 const BRAND = ["#006BFF","#00E5FF","#22FF66","#FFE600","#FF8A00","#FF2BD6","#8A2BFF"];
@@ -37,11 +36,17 @@ function PaintDrips() {
     >
       <svg viewBox="0 0 1000 34" preserveAspectRatio="none" style={{ width: "100%", height: 34, overflow: "visible", display: "block" }}>
         {drips.map((d, i) => {
-          const cx = d.x + d.w / 2;
+          const midX = d.x + d.w / 2;
+          const tipW = d.w * 0.42;
+          const tipY = d.h - tipW / 2;
           return (
             <g key={i}>
-              <rect x={d.x} y={0} width={d.w} height={d.h} fill={d.color} rx={d.w / 2} />
-              <circle cx={cx} cy={d.h} r={d.w / 2 + 2} fill={d.color} />
+              {/* tapering body from the nav edge down to a rounded bead */}
+              <path
+                d={`M${d.x} 0 L${d.x + d.w} 0 L${midX + tipW / 2} ${tipY} L${midX - tipW / 2} ${tipY} Z`}
+                fill={d.color}
+              />
+              <circle cx={midX} cy={tipY} r={tipW / 2 + 0.5} fill={d.color} />
             </g>
           );
         })}
@@ -74,22 +79,8 @@ export function PublicNav() {
 
           {/* ── Desktop layout ─────────────────────────────── */}
           <div className="hidden md:flex items-center gap-3">
-            <Link href="/" className="shrink-0 flex items-center gap-2" data-testid="link-brand">
-              <span
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: 40,
-                  height: 40,
-                  borderRadius: 12,
-                  background: "rgba(0,229,255,0.12)",
-                  border: "2px solid #00E5FF",
-                  boxShadow: "0 0 18px rgba(0,229,255,0.45), 0 0 36px rgba(0,229,255,0.15)",
-                }}
-              >
-                <BrainTrackLogo className="h-6 w-6" />
-              </span>
+            <Link href="/" className="shrink-0 flex items-center" data-testid="link-brand">
+              <span className="graffiti-hand rainbow-text text-2xl leading-none">BrainTrack</span>
             </Link>
 
             <div className="flex items-center gap-1">
@@ -169,17 +160,8 @@ export function PublicNav() {
 
           {/* ── Mobile layout ──────────────────────────────── */}
           <div className="md:hidden flex items-center justify-between w-full h-16">
-            <Link href="/" className="shrink-0 flex items-center gap-2" data-testid="link-mobile-brand">
-              <span
-                style={{
-                  display: "inline-flex", alignItems: "center", justifyContent: "center",
-                  width: 36, height: 36, borderRadius: 10,
-                  background: "rgba(0,229,255,0.12)", border: "2px solid #00E5FF",
-                  boxShadow: "0 0 14px rgba(0,229,255,0.4)",
-                }}
-              >
-                <BrainTrackLogo className="h-5 w-5" />
-              </span>
+            <Link href="/" className="shrink-0 flex items-center" data-testid="link-mobile-brand">
+              <span className="graffiti-hand rainbow-text text-xl leading-none">BrainTrack</span>
             </Link>
             <div className="flex items-center gap-2">
               <button

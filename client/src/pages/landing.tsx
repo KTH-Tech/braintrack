@@ -1,4 +1,4 @@
-﻿import { PublicNav } from "@/components/public-nav";
+import { PublicNav } from "@/components/public-nav";
 import { useSEO } from "@/hooks/use-seo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -705,7 +705,7 @@ export default function LandingPage() {
 
                 <h1
                   data-testid="hero-title"
-                  className="font-black tracking-tight leading-[0.95] max-w-4xl text-white text-[clamp(1.75rem,5vw+1rem,4.5rem)] max-[479px]:text-[1.55rem]"
+                  className="font-black tracking-tight leading-[0.95] max-w-4xl text-white text-[clamp(2rem,5.5vw+1rem,5.25rem)] max-[479px]:text-[1.55rem]"
                   style={{
                     filter: "drop-shadow(0 0 28px rgba(0,229,255,0.38))",
                   }}
@@ -903,7 +903,7 @@ export default function LandingPage() {
                 </span>
               </div>
               <h2
-                className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-[1.1] max-w-3xl mx-auto break-words"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] max-w-3xl mx-auto break-words"
                 style={{
                   background: "linear-gradient(90deg, #FF8A00, #FFE600, #00E5FF, #8A2BFF, #FF2BD6)",
                   WebkitBackgroundClip: "text",
@@ -975,7 +975,7 @@ export default function LandingPage() {
                 </span>
               </div>
               <h2
-                className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-[1.1] max-w-3xl mx-auto break-words"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] max-w-3xl mx-auto break-words"
                 style={{
                   background: "linear-gradient(90deg, #FFE600, #00E5FF, #8A2BFF, #FF2BD6)",
                   WebkitBackgroundClip: "text",
@@ -1308,7 +1308,7 @@ export default function LandingPage() {
                 </span>
               </div>
               <h2
-                className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-[1.1] max-w-3xl mx-auto break-words"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] max-w-3xl mx-auto break-words"
                 style={{
                   background: "linear-gradient(90deg, #8A2BFF, #8A2BFF, #FF2BD6)",
                   WebkitBackgroundClip: "text",
@@ -1369,7 +1369,7 @@ export default function LandingPage() {
                 </span>
               </div>
               <h2
-                className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-[1.1] max-w-3xl mx-auto break-words"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] max-w-3xl mx-auto break-words"
                 style={{
                   background: "linear-gradient(90deg, #FF8A00, #FF8A00, #FFE600, #FFE600)",
                   WebkitBackgroundClip: "text",

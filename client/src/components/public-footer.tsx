@@ -1,4 +1,5 @@
 import { Link } from "wouter";
+import { BrainTrackLogo } from "@/components/braintrack-logo";
 import { useLanguage } from "@/lib/language-context";
 
 const SUPPORT_EMAIL = "learn@kth-tech.com";
@@ -37,33 +38,38 @@ const COPY = {
 } as const;
 
 function FooterDrips() {
+  // Paint running DOWN from the footer's top edge: each drip starts full-width
+  // at the rule, tapers as it falls, and ends in a rounded bead. No floating
+  // lollipop heads.
   const drips = [
-    { color: "#8A2BFF", x: 30,   w: 10, h: 38 },
-    { color: "#FF2BD6", x: 110,  w: 7,  h: 24 },
-    { color: "#006BFF", x: 210,  w: 8,  h: 42 },
-    { color: "#00E5FF", x: 330,  w: 6,  h: 20 },
-    { color: "#22FF66", x: 440,  w: 11, h: 50 },
-    { color: "#FFE600", x: 570,  w: 7,  h: 30 },
-    { color: "#FF8A00", x: 680,  w: 9,  h: 44 },
-    { color: "#FF2BD6", x: 790,  w: 6,  h: 22 },
-    { color: "#8A2BFF", x: 880,  w: 8,  h: 36 },
-    { color: "#006BFF", x: 960,  w: 5,  h: 16 },
-    { color: "#22FF66", x: 150,  w: 4,  h: 14 },
-    { color: "#FFE600", x: 500,  w: 5,  h: 18 },
-    { color: "#00E5FF", x: 750,  w: 4,  h: 12 },
+    { color: "#8A2BFF", x: 40,  w: 12, h: 34 },
+    { color: "#006BFF", x: 190, w: 14, h: 44 },
+    { color: "#00E5FF", x: 330, w: 9,  h: 22 },
+    { color: "#22FF66", x: 450, w: 16, h: 52 },
+    { color: "#FFE600", x: 580, w: 10, h: 28 },
+    { color: "#FF8A00", x: 690, w: 13, h: 46 },
+    { color: "#FF2BD6", x: 810, w: 9,  h: 24 },
+    { color: "#8A2BFF", x: 920, w: 11, h: 38 },
   ];
   return (
     <div
       aria-hidden
-      style={{ position: "absolute", top: 0, transform: "translateY(-100%)", left: 0, right: 0, height: 52, pointerEvents: "none", overflow: "visible" }}
+      style={{ position: "absolute", top: 0, left: 0, right: 0, height: 56, pointerEvents: "none", overflow: "visible" }}
     >
-      <svg viewBox="0 0 1000 52" preserveAspectRatio="none" style={{ width: "100%", height: 52, overflow: "visible", display: "block" }}>
+      <svg viewBox="0 0 1000 56" preserveAspectRatio="none" style={{ width: "100%", height: 56, overflow: "visible", display: "block" }}>
         {drips.map((d, i) => {
-          const cx = d.x + d.w / 2;
+          const midX = d.x + d.w / 2;
+          const tipW = d.w * 0.42;
+          const tipY = d.h - tipW / 2;
           return (
             <g key={i}>
-              <rect x={d.x} y={52 - d.h} width={d.w} height={d.h} fill={d.color} rx={d.w / 2} />
-              <circle cx={cx} cy={52 - d.h} r={d.w / 2 + 2} fill={d.color} />
+              {/* tapering body: full width at the top rule, narrowing downward */}
+              <path
+                d={`M${d.x} 0 L${d.x + d.w} 0 L${midX + tipW / 2} ${tipY} L${midX - tipW / 2} ${tipY} Z`}
+                fill={d.color}
+              />
+              {/* rounded bead at the tip */}
+              <circle cx={midX} cy={tipY} r={tipW / 2 + 0.5} fill={d.color} />
             </g>
           );
         })}
@@ -99,15 +105,18 @@ export function PublicFooter() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-2">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 pb-8">
 
-          {/* Brand column */}
+          {/* Brand column — the logo lives here now, not in the header */}
           <div>
             <Link
               href="/"
               data-testid="footer-logo"
-              className="inline-block font-black text-2xl tracking-tight leading-none mb-2 rainbow-text"
+              className="inline-flex items-center gap-3 mb-2"
               style={{ textDecoration: "none" }}
             >
-              BrainTrack
+              <BrainTrackLogo className="h-10 w-10" />
+              <span className="font-black text-2xl tracking-tight leading-none rainbow-text">
+                BrainTrack
+              </span>
             </Link>
             <p className="text-white text-sm font-semibold mt-1">{t.tagline}</p>
             <a
