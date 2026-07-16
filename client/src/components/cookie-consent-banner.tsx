@@ -4,6 +4,7 @@ import { Cookie, X, ChevronDown, ChevronUp, Lock } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useLanguage } from "@/lib/language-context";
 import { useAuth } from "@/hooks/use-auth";
+import { GraffitiSplats } from "@/components/graffiti-splats";
 
 const STORAGE_KEY = "btk_cookie_consent";
 const PREF_KEY = "cookieConsent";
@@ -136,24 +137,27 @@ export function CookieConsentBanner() {
       data-testid="cookie-consent-banner"
     >
       <div
-        className="max-w-3xl mx-auto rounded-xl text-white"
+        className="relative max-w-3xl mx-auto rounded-xl text-white overflow-hidden"
         style={{
           background: "#0a0b12",
           border: "2px solid #7FEFFF",
           fontFamily: "'Poppins', sans-serif",
         }}
       >
-        <div className="p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        {/* graffiti accent — soft splats in the corner, behind content */}
+        <GraffitiSplats variant="corner" opacity={0.28} />
+        <div className="relative z-10 p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <div className="flex items-start gap-3 flex-1 min-w-0">
             <div
               className="mt-0.5 shrink-0 w-8 h-8 rounded-lg flex items-center justify-center"
               style={{ background: "#000", border: "1px solid #7FEFFF" }}
             >
-              <Cookie className="w-4 h-4" style={{ color: "#7FEFFF" }} />
+              <Cookie className="w-4 h-4 icon-neon" style={{ color: "#7FEFFF" }} />
             </div>
             <div className="space-y-1 min-w-0">
-              <p className="text-sm font-bold leading-snug text-white">
-                {isAf ? "Ons gebruik koekies" : "We use cookies"}
+              <p className="graffiti-hand text-lg leading-snug">
+                {isAf ? "Ons gebruik " : "We use "}
+                <span className="callout-hl">{isAf ? "koekies" : "cookies"}</span>
               </p>
               <p className="text-xs text-white leading-relaxed">
                 {isAf
