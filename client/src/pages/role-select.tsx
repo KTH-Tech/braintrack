@@ -61,8 +61,8 @@ export default function RoleSelectPage() {
         <div className="flex justify-end mb-2">
           <button
             onClick={toggleLanguage}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black text-[11px] font-black focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-black focus-visible:ring-[#8A2BFF]"
-            style={{ color: "#8A2BFF", border: "1px solid rgba(138,43,255,0.55)", boxShadow: "0 0 10px rgba(138,43,255,0.35)" }}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black text-[11px] font-black focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-black focus-visible:ring-[#C6A4FF]"
+            style={{ color: "#C6A4FF", border: "1px solid rgba(138,43,255,0.55)", boxShadow: "0 0 10px rgba(138,43,255,0.35)" }}
             data-testid="button-language-toggle"
           >
             <Globe className="h-3.5 w-3.5" />
@@ -73,14 +73,14 @@ export default function RoleSelectPage() {
         <div className="text-center space-y-3">
           <p
             className="text-[11px] font-black uppercase tracking-[0.24em]"
-            style={{ color: "#00E5FF", textShadow: "0 0 8px rgba(0,229,255,0.5)" }}
+            style={{ color: "#7FEFFF", textShadow: "0 0 8px rgba(0,229,255,0.5)" }}
           >
             {isAf ? "Stap 1 van 3" : "Step 1 of 3"}
           </p>
           <h1
             className="text-3xl sm:text-4xl font-black tracking-tight leading-[1.05]"
             style={{
-              background: "linear-gradient(90deg, #FF8A00, #FFE600, #00E5FF, #006BFF, #8A2BFF, #FF2BD6)",
+              background: "linear-gradient(90deg, #FFC48F, #FFF29E, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
@@ -101,9 +101,9 @@ export default function RoleSelectPage() {
           <button
             onClick={() => handleSelect("learner")}
             disabled={roleMutation.isPending}
-            className="relative flex flex-col items-center gap-4 p-7 rounded-2xl bg-black text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-black focus-visible:ring-[#00E5FF] transition-transform min-h-[12rem] disabled:opacity-60"
+            className="relative flex flex-col items-center gap-4 p-7 rounded-2xl bg-black text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-black focus-visible:ring-[#7FEFFF] transition-transform min-h-[12rem] disabled:opacity-60"
             style={{
-              border: selected === "learner" ? "1.75px solid #00E5FF" : "1.5px solid rgba(0,229,255,0.45)",
+              border: selected === "learner" ? "1.75px solid #7FEFFF" : "1.5px solid rgba(0,229,255,0.45)",
               boxShadow:
                 selected === "learner"
                   ? "0 0 28px rgba(0,229,255,0.55), inset 0 0 16px rgba(0,229,255,0.2)"
@@ -114,9 +114,9 @@ export default function RoleSelectPage() {
           >
             <div
               className="w-16 h-16 rounded-2xl bg-black flex items-center justify-center"
-              style={{ border: "1.5px solid #00E5FF", boxShadow: "0 0 16px rgba(0,229,255,0.45), inset 0 0 12px rgba(0,229,255,0.18)" }}
+              style={{ border: "1.5px solid #7FEFFF", boxShadow: "0 0 16px rgba(0,229,255,0.45), inset 0 0 12px rgba(0,229,255,0.18)" }}
             >
-              <GraduationCap className="w-8 h-8" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 6px rgba(0,229,255,0.7))" }} />
+              <GraduationCap className="w-8 h-8" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 6px rgba(0,229,255,0.7))" }} />
             </div>
             <div className="text-center">
               <p className="text-lg font-black text-white mb-1" style={{ textShadow: "0 0 10px rgba(0,229,255,0.4)" }}>
@@ -131,22 +131,22 @@ export default function RoleSelectPage() {
             {selected === "learner" && (
               <span
                 className="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-black flex items-center justify-center"
-                style={{ border: "1.5px solid #00E5FF", boxShadow: "0 0 10px rgba(0,229,255,0.6)" }}
+                style={{ border: "1.5px solid #7FEFFF", boxShadow: "0 0 10px rgba(0,229,255,0.6)" }}
               >
-                <CheckCircle2 className="w-3.5 h-3.5" style={{ color: "#00E5FF" }} />
+                <CheckCircle2 className="w-3.5 h-3.5" style={{ color: "#7FEFFF" }} />
               </span>
             )}
-            <span aria-hidden className="absolute top-2 left-2 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: "#00E5FF" }} />
-            <span aria-hidden className="absolute bottom-2 right-2 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: "#00E5FF" }} />
+            <span aria-hidden className="absolute top-2 left-2 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: "#7FEFFF" }} />
+            <span aria-hidden className="absolute bottom-2 right-2 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: "#7FEFFF" }} />
           </button>
 
           {/* PARENT — purple neon */}
           <button
             onClick={() => handleSelect("parent")}
             disabled={roleMutation.isPending}
-            className="relative flex flex-col items-center gap-4 p-7 rounded-2xl bg-black text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-black focus-visible:ring-[#8A2BFF] transition-transform min-h-[12rem] disabled:opacity-60"
+            className="relative flex flex-col items-center gap-4 p-7 rounded-2xl bg-black text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-black focus-visible:ring-[#C6A4FF] transition-transform min-h-[12rem] disabled:opacity-60"
             style={{
-              border: selected === "parent" ? "1.75px solid #8A2BFF" : "1.5px solid rgba(138,43,255,0.45)",
+              border: selected === "parent" ? "1.75px solid #C6A4FF" : "1.5px solid rgba(138,43,255,0.45)",
               boxShadow:
                 selected === "parent"
                   ? "0 0 28px rgba(138,43,255,0.55), inset 0 0 16px rgba(138,43,255,0.2)"
@@ -157,9 +157,9 @@ export default function RoleSelectPage() {
           >
             <div
               className="w-16 h-16 rounded-2xl bg-black flex items-center justify-center"
-              style={{ border: "1.5px solid #8A2BFF", boxShadow: "0 0 16px rgba(138,43,255,0.45), inset 0 0 12px rgba(138,43,255,0.18)" }}
+              style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 16px rgba(138,43,255,0.45), inset 0 0 12px rgba(138,43,255,0.18)" }}
             >
-              <Users className="w-8 h-8" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 6px rgba(138,43,255,0.7))" }} />
+              <Users className="w-8 h-8" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 6px rgba(138,43,255,0.7))" }} />
             </div>
             <div className="text-center">
               <p className="text-lg font-black text-white mb-1" style={{ textShadow: "0 0 10px rgba(138,43,255,0.4)" }}>
@@ -174,13 +174,13 @@ export default function RoleSelectPage() {
             {selected === "parent" && (
               <span
                 className="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-black flex items-center justify-center"
-                style={{ border: "1.5px solid #8A2BFF", boxShadow: "0 0 10px rgba(138,43,255,0.6)" }}
+                style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 10px rgba(138,43,255,0.6)" }}
               >
-                <CheckCircle2 className="w-3.5 h-3.5" style={{ color: "#8A2BFF" }} />
+                <CheckCircle2 className="w-3.5 h-3.5" style={{ color: "#C6A4FF" }} />
               </span>
             )}
-            <span aria-hidden className="absolute top-2 left-2 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: "#8A2BFF" }} />
-            <span aria-hidden className="absolute bottom-2 right-2 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: "#8A2BFF" }} />
+            <span aria-hidden className="absolute top-2 left-2 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: "#C6A4FF" }} />
+            <span aria-hidden className="absolute bottom-2 right-2 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: "#C6A4FF" }} />
           </button>
         </div>
 
@@ -189,8 +189,8 @@ export default function RoleSelectPage() {
           disabled={!selected || roleMutation.isPending}
           className="w-full h-14 rounded-2xl bg-black font-black uppercase tracking-[0.14em] text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-black focus-visible:ring-white"
           style={{
-            color: selected === "parent" ? "#8A2BFF" : "#00E5FF",
-            border: `1.75px solid ${selected === "parent" ? "#8A2BFF" : "#00E5FF"}`,
+            color: selected === "parent" ? "#C6A4FF" : "#7FEFFF",
+            border: `1.75px solid ${selected === "parent" ? "#C6A4FF" : "#7FEFFF"}`,
             boxShadow: selected
               ? `0 0 18px ${selected === "parent" ? "rgba(138,43,255,0.5)" : "rgba(0,229,255,0.5)"}, inset 0 0 12px ${selected === "parent" ? "rgba(138,43,255,0.15)" : "rgba(0,229,255,0.15)"}`
               : "0 0 8px rgba(255,255,255,0.05)",

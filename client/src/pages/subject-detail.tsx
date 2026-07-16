@@ -102,14 +102,14 @@ interface SubjectMastery {
 }
 
 const BAND_HEX: Record<string, string> = {
-  star: "#FFE600",
+  star: "#FFF29E",
   green: "#4ADE80",
-  amber: "#FF8A00",
-  red: "#FF2BD6",
+  amber: "#FFC48F",
+  red: "#FF9FE5",
 };
 
 function getBandHex(band: string): string {
-  return BAND_HEX[band] ?? "#8A2BFF";
+  return BAND_HEX[band] ?? "#C6A4FF";
 }
 
 function getBandColor(_band: string) {
@@ -123,15 +123,15 @@ function getBandBg(band: string) {
 
 type CosmicColor = "cyan" | "emerald" | "amber" | "red" | "yellow" | "blue" | "purple" | "pink" | "orange";
 const COSMIC_HEX: Record<CosmicColor, string> = {
-  cyan: "#00E5FF",
+  cyan: "#7FEFFF",
   emerald: "#4ADE80",
-  amber: "#FF8A00",
-  red: "#FF2BD6",
-  yellow: "#FFE600",
-  blue: "#006BFF",
-  purple: "#8A2BFF",
-  pink: "#FF2BD6",
-  orange: "#FF8A00",
+  amber: "#FFC48F",
+  red: "#FF9FE5",
+  yellow: "#FFF29E",
+  blue: "#6FA8FF",
+  purple: "#C6A4FF",
+  pink: "#FF9FE5",
+  orange: "#FFC48F",
 };
 
 function CosmicCard({ children, color = "cyan", className = "" }: { children: React.ReactNode; color?: CosmicColor; className?: string }) {
@@ -365,7 +365,7 @@ function TopicContentDrawer({
       <DialogContent className="max-w-2xl bg-background border-cyan-400/40 text-foreground" data-testid={`topic-content-dialog-${topicId}`}>
         <DialogHeader>
           <DialogTitle className="text-foreground flex items-center gap-2">
-            <BookOpen className="w-5 h-5" style={{ color: "#00E5FF" }} />
+            <BookOpen className="w-5 h-5" style={{ color: "#7FEFFF" }} />
             {topicName}
           </DialogTitle>
           <DialogDescription className="text-foreground text-xs">
@@ -512,7 +512,7 @@ function TopicContentDrawer({
                   type="button"
                   onClick={() => setFlipped(f => !f)}
                   className="w-full min-h-[180px] rounded-2xl bg-background border border-cyan-400/40 p-5 text-left transition-all hover:border-cyan-400/80"
-                  style={{ boxShadow: "inset 0 0 18px #00E5FF22" }}
+                  style={{ boxShadow: "inset 0 0 18px #7FEFFF22" }}
                   data-testid="topic-flashcard-face"
                 >
                   <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-300 mb-2">
@@ -561,7 +561,7 @@ function TopicContentDrawer({
                 <Link href={deepLinkHref}>
                   <button
                     className="w-full py-2.5 rounded-xl bg-background text-xs font-black uppercase tracking-[0.18em] transition-all hover:scale-[1.02]"
-                    style={{ color: "#00E5FF", border: "1.5px solid #00E5FF", boxShadow: "0 0 14px #00E5FF55" }}
+                    style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 14px #7FEFFF55" }}
                     data-testid="button-open-flashcards-page"
                   >
                     {isAf ? "Begin volle hersieningssessie →" : "Start full review session →"}
@@ -619,7 +619,7 @@ function LiteratureWorkDialog({
       <DialogContent className="max-w-2xl bg-background border-cyan-400/40 text-foreground" data-testid={`literature-dialog-${workId}`}>
         <DialogHeader>
           <DialogTitle className="text-foreground flex items-center gap-2">
-            <BookMarked className="w-5 h-5" style={{ color: "#00E5FF" }} />
+            <BookMarked className="w-5 h-5" style={{ color: "#7FEFFF" }} />
             {workTitle}
           </DialogTitle>
           <DialogDescription className="text-foreground text-xs">
@@ -712,19 +712,19 @@ function getBandLabel(band: string, isAf: boolean) {
 
 function getBandIcon(band: string) {
   switch (band) {
-    case "star":  return <Trophy className="w-4 h-4" style={{ color: "#FFE600" }} />;
+    case "star":  return <Trophy className="w-4 h-4" style={{ color: "#FFF29E" }} />;
     case "green": return <ShieldCheck className="w-4 h-4" style={{ color: "#4ADE80" }} />;
-    case "amber": return <BarChart2 className="w-4 h-4" style={{ color: "#FF8A00" }} />;
-    default:      return <BookOpen className="w-4 h-4" style={{ color: "#FF2BD6" }} />;
+    case "amber": return <BarChart2 className="w-4 h-4" style={{ color: "#FFC48F" }} />;
+    default:      return <BookOpen className="w-4 h-4" style={{ color: "#FF9FE5" }} />;
   }
 }
 
 function getProgressColor(band: string) {
   switch (band) {
-    case "star":  return "[&>div]:bg-[#FFE600]";
+    case "star":  return "[&>div]:bg-[#FFF29E]";
     case "green": return "[&>div]:bg-[#4ADE80]";
-    case "amber": return "[&>div]:bg-[#FF8A00]";
-    default:      return "[&>div]:bg-[#FF2BD6]";
+    case "amber": return "[&>div]:bg-[#FFC48F]";
+    default:      return "[&>div]:bg-[#FF9FE5]";
   }
 }
 
@@ -824,12 +824,12 @@ function TopicQuizDrawer({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-xl bg-background border-[#00E5FF]/40 text-foreground overflow-y-auto max-h-[90vh]"
+        className="max-w-xl bg-background border-[#7FEFFF]/40 text-foreground overflow-y-auto max-h-[90vh]"
         data-testid="topic-quiz-drawer"
       >
         <DialogHeader>
           <DialogTitle className="text-foreground flex items-center gap-2">
-            <Zap className="w-5 h-5" style={{ color: "#00E5FF" }} />
+            <Zap className="w-5 h-5" style={{ color: "#7FEFFF" }} />
             {isAf ? "Kwis" : "Quiz"}: {topicName}
           </DialogTitle>
           <DialogDescription className="text-foreground text-xs">
@@ -1223,11 +1223,11 @@ export default function SubjectDetailPage() {
               <Link href={miniMockHref}>
                 <button
                   className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-background text-left transition-all hover:scale-[1.01]"
-                  style={{ border: "1.5px solid #FFE600", boxShadow: "0 0 14px #FFE60044, inset 0 0 12px #FFE60012" }}
+                  style={{ border: "1.5px solid #FFF29E", boxShadow: "0 0 14px #FFF29E44, inset 0 0 12px #FFF29E12" }}
                   data-testid="button-mini-mock-shortcut"
                 >
                   <div className="flex items-center gap-3">
-                    <Zap className="w-5 h-5" style={{ color: "#FFE600", filter: "drop-shadow(0 0 4px #FFE600)" }} />
+                    <Zap className="w-5 h-5" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 4px #FFF29E)" }} />
                     <div>
                       <p className="font-black text-sm text-foreground uppercase tracking-[0.14em]">
                         {isAf ? "Mini Mock" : "Mini Mock"}
@@ -1241,17 +1241,17 @@ export default function SubjectDetailPage() {
                       </p>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5" style={{ color: "#FFE600" }} />
+                  <ChevronRight className="w-5 h-5" style={{ color: "#FFF29E" }} />
                 </button>
               </Link>
               <Link href={`/exam/full?subject=${encodeURIComponent(subject.name)}`}>
                 <button
                   className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-background text-left transition-all hover:scale-[1.01]"
-                  style={{ border: "1.5px solid #8A2BFF", boxShadow: "0 0 14px #8A2BFF44, inset 0 0 12px #8A2BFF12" }}
+                  style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 14px #C6A4FF44, inset 0 0 12px #C6A4FF12" }}
                   data-testid="button-full-exam-shortcut"
                 >
                   <div className="flex items-center gap-3">
-                    <GraduationCap className="w-5 h-5" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 4px #8A2BFF)" }} />
+                    <GraduationCap className="w-5 h-5" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 4px #C6A4FF)" }} />
                     <div>
                       <p className="font-black text-sm text-foreground uppercase tracking-[0.14em]">
                         {isAf ? "Volle Eksamen" : "Full Exam"}
@@ -1261,7 +1261,7 @@ export default function SubjectDetailPage() {
                       </p>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5" style={{ color: "#8A2BFF" }} />
+                  <ChevronRight className="w-5 h-5" style={{ color: "#C6A4FF" }} />
                 </button>
               </Link>
             </div>
@@ -1291,7 +1291,7 @@ export default function SubjectDetailPage() {
             );
             return (
               <div data-testid="ready-to-study-strip">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] mb-2" style={{ color: "#00E5FF" }}>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] mb-2" style={{ color: "#7FEFFF" }}>
                   {isAf ? "Gereed om te studeer" : "Ready to Study"}
                 </p>
                 <div
@@ -1346,7 +1346,7 @@ export default function SubjectDetailPage() {
                         {resumeLabel && (
                           <span
                             className="mt-0.5 inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-full"
-                            style={{ background: "#00E5FF22", color: "#00E5FF", border: "1px solid #00E5FF55" }}
+                            style={{ background: "#7FEFFF22", color: "#7FEFFF", border: "1px solid #7FEFFF55" }}
                             data-testid={`chip-resume-badge-${topic.id}`}
                             title={isAf ? "Hervat waar jy laas opgehou het" : "Resume where you left off"}
                           >
@@ -1365,16 +1365,16 @@ export default function SubjectDetailPage() {
           {mastery && (
             <>
               <div className="grid gap-4 grid-cols-2 sm:grid-cols-4" data-testid="stat-grid">
-                <div data-testid="stat-papers"><NeonStat hex="#FF8A00"  icon={Shield}   value={mastery.progress.papersCompleted}   label={isAf ? "Eksamens" : "Exams"} /></div>
-                <div data-testid="stat-questions"><NeonStat hex="#FF8A00" icon={Brain}    value={mastery.progress.questionsAttempted} label={isAf ? "Vrae" : "Questions"} /></div>
-                <div data-testid="stat-accuracy"><NeonStat hex="#FFE600" icon={Target}   value={`${mastery.progress.accuracy}%`}     label={isAf ? "Akkuraatheid" : "Accuracy"} /></div>
-                <div data-testid="stat-readiness"><NeonStat hex="#8A2BFF" icon={Zap}      value={`${readinessScore}%`}                 label={isAf ? "Gereedheid" : "Readiness"} /></div>
+                <div data-testid="stat-papers"><NeonStat hex="#FFC48F"  icon={Shield}   value={mastery.progress.papersCompleted}   label={isAf ? "Eksamens" : "Exams"} /></div>
+                <div data-testid="stat-questions"><NeonStat hex="#FFC48F" icon={Brain}    value={mastery.progress.questionsAttempted} label={isAf ? "Vrae" : "Questions"} /></div>
+                <div data-testid="stat-accuracy"><NeonStat hex="#FFF29E" icon={Target}   value={`${mastery.progress.accuracy}%`}     label={isAf ? "Akkuraatheid" : "Accuracy"} /></div>
+                <div data-testid="stat-readiness"><NeonStat hex="#C6A4FF" icon={Zap}      value={`${readinessScore}%`}                 label={isAf ? "Gereedheid" : "Readiness"} /></div>
               </div>
 
               <CosmicCard color="cyan" className="p-5" data-testid="current-vs-target">
                 <div className="flex items-center justify-between gap-4 flex-wrap mb-3">
                   <div className="flex items-center gap-2">
-                    <Target className="w-5 h-5" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
+                    <Target className="w-5 h-5" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 4px #7FEFFF)" }} />
                     <h3 className="font-bold text-base text-foreground">{isAf ? "Huidige vs Teiken Telling" : "Current vs Target Score"}</h3>
                   </div>
                   <NeonBadge color={scoreDiff >= 0 ? "emerald" : "pink"}>
@@ -1388,12 +1388,12 @@ export default function SubjectDetailPage() {
                   </div>
                   <div className="flex items-center justify-center">
                     <div className="flex flex-col items-center gap-1">
-                      <ChevronRight className="w-8 h-8" style={{ color: scoreDiff >= 0 ? "#4ADE80" : "#FF2BD6", filter: `drop-shadow(0 0 6px ${scoreDiff >= 0 ? "#4ADE80" : "#FF2BD6"})` }} />
+                      <ChevronRight className="w-8 h-8" style={{ color: scoreDiff >= 0 ? "#4ADE80" : "#FF9FE5", filter: `drop-shadow(0 0 6px ${scoreDiff >= 0 ? "#4ADE80" : "#FF9FE5"})` }} />
                       <p className="text-[10px] text-foreground">{scoreDiff >= 0 ? (isAf ? 'Op Koers' : 'On Track') : (isAf ? 'Moet Verbeter' : 'Needs Work')}</p>
                     </div>
                   </div>
-                  <div className="text-center p-3 rounded-xl bg-background" style={{ border: "1px solid #00E5FF55", boxShadow: "inset 0 0 10px #00E5FF20" }}>
-                    <p className="text-3xl font-black text-foreground tabular-nums" style={{ textShadow: "0 0 10px #00E5FFaa" }}>{targetScore}%</p>
+                  <div className="text-center p-3 rounded-xl bg-background" style={{ border: "1px solid #7FEFFF55", boxShadow: "inset 0 0 10px #7FEFFF20" }}>
+                    <p className="text-3xl font-black text-foreground tabular-nums" style={{ textShadow: "0 0 10px #7FEFFFaa" }}>{targetScore}%</p>
                     <p className="text-[10px] text-foreground uppercase tracking-[0.14em] mt-1">{isAf ? "Teiken" : "Target"}</p>
                   </div>
                 </div>
@@ -1402,7 +1402,7 @@ export default function SubjectDetailPage() {
                 </div>
                 <div className="flex justify-between mt-1">
                   <span className="text-[10px] text-foreground">0%</span>
-                  <span className="text-[10px] font-semibold" style={{ color: "#00E5FF" }}>{isAf ? 'Teiken' : 'Target'}: {targetScore}%</span>
+                  <span className="text-[10px] font-semibold" style={{ color: "#7FEFFF" }}>{isAf ? 'Teiken' : 'Target'}: {targetScore}%</span>
                   <span className="text-[10px] text-foreground">100%</span>
                 </div>
               </CosmicCard>
@@ -1416,10 +1416,10 @@ export default function SubjectDetailPage() {
               style={{ background: "rgba(0,0,0,0.7)", border: "1px solid rgba(255,255,255,0.09)" }}
             >
               {([
-                { value: "practice", en: "Practice", af: "Oefen",      Icon: Zap,      hex: "#FFE600" },
-                { value: "topics",   en: "Topics",   af: "Onderwerpe", Icon: Brain,    hex: "#00E5FF" },
-                { value: "plan",     en: "Plan",      af: "Plan",       Icon: Calendar, hex: "#006BFF" },
-                { value: "sources",  en: "Sources",   af: "Bronne",     Icon: BookOpen, hex: "#8A2BFF" },
+                { value: "practice", en: "Practice", af: "Oefen",      Icon: Zap,      hex: "#FFF29E" },
+                { value: "topics",   en: "Topics",   af: "Onderwerpe", Icon: Brain,    hex: "#7FEFFF" },
+                { value: "plan",     en: "Plan",      af: "Plan",       Icon: Calendar, hex: "#6FA8FF" },
+                { value: "sources",  en: "Sources",   af: "Bronne",     Icon: BookOpen, hex: "#C6A4FF" },
               ] as const).map(tab => (
                 <TabsTrigger
                   key={tab.value}
@@ -1441,7 +1441,7 @@ export default function SubjectDetailPage() {
                     <Link href="/bst-exam">
                       <button
                         className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-background text-xs font-bold transition-all hover:scale-[1.02]"
-                        style={{ border: "1.5px solid #FF8A00", boxShadow: "0 0 10px #FF8A0044", color: "#FF8A00" }}
+                        style={{ border: "1.5px solid #FFC48F", boxShadow: "0 0 10px #FFC48F44", color: "#FFC48F" }}
                         data-testid="button-crunch-time"
                       >
                         <Shield className="w-3.5 h-3.5" /> Crunch Time
@@ -1451,7 +1451,7 @@ export default function SubjectDetailPage() {
                   <Link href="/exam-mode">
                     <button
                       className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-background text-xs font-bold transition-all hover:scale-[1.02]"
-                      style={{ border: "1.5px solid #FF8A00", boxShadow: "0 0 10px #FF8A0044", color: "#FF8A00" }}
+                      style={{ border: "1.5px solid #FFC48F", boxShadow: "0 0 10px #FFC48F44", color: "#FFC48F" }}
                       data-testid="button-exam-mode"
                     >
                       <GraduationCap className="w-3.5 h-3.5" />
@@ -1461,7 +1461,7 @@ export default function SubjectDetailPage() {
                   <Link href={`/tutor?subject=${id}`}>
                     <button
                       className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-background text-xs font-bold transition-all hover:scale-[1.02]"
-                      style={{ border: "1.5px solid #8A2BFF", boxShadow: "0 0 10px #8A2BFF44", color: "#8A2BFF" }}
+                      style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 10px #C6A4FF44", color: "#C6A4FF" }}
                       data-testid="button-smart-tutor"
                     >
                       <Brain className="w-3.5 h-3.5" /> Rizz
@@ -1478,7 +1478,7 @@ export default function SubjectDetailPage() {
                   <div className="grid sm:grid-cols-2 gap-4">
                     <CosmicCard color="yellow" className="p-5 space-y-3" data-testid="recommended-quiz-card">
                       <div className="flex items-center gap-2">
-                        <Zap className="w-5 h-5" style={{ color: "#FFE600", filter: "drop-shadow(0 0 4px #FFE600)" }} />
+                        <Zap className="w-5 h-5" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 4px #FFF29E)" }} />
                         <span className="font-black text-sm text-foreground uppercase tracking-[0.14em]">
                           {isAf ? "Aanbevole Vasvraag" : "Recommended Quiz"}
                         </span>
@@ -1490,7 +1490,7 @@ export default function SubjectDetailPage() {
                       </p>
                       <button
                         className="w-full py-2 rounded-xl bg-background text-xs font-black uppercase tracking-[0.18em] transition-all hover:scale-[1.02]"
-                        style={{ color: "#FFE600", border: "1.5px solid #FFE600", boxShadow: "0 0 14px #FFE60055" }}
+                        style={{ color: "#FFF29E", border: "1.5px solid #FFF29E", boxShadow: "0 0 14px #FFF29E55" }}
                         onClick={() => {
                           setRecommendedTopicFocus(weakestTopic.name);
                           const el = document.getElementById("boost-quiz-section");
@@ -1504,7 +1504,7 @@ export default function SubjectDetailPage() {
 
                     <CosmicCard color="purple" className="p-5 space-y-3" data-testid="revision-mode-card">
                       <div className="flex items-center gap-2">
-                        <BookOpen className="w-5 h-5" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 4px #8A2BFF)" }} />
+                        <BookOpen className="w-5 h-5" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 4px #C6A4FF)" }} />
                         <span className="font-black text-sm text-foreground uppercase tracking-[0.14em]">
                           {isAf ? "Hersien Verkeerde Antwoorde" : "Revise Wrong Answers"}
                         </span>
@@ -1519,7 +1519,7 @@ export default function SubjectDetailPage() {
                       <Link href={`/revision/${subject.id}`}>
                         <button
                           className="w-full py-2 rounded-xl bg-background text-xs font-black uppercase tracking-[0.18em] transition-all hover:scale-[1.02]"
-                          style={{ color: "#8A2BFF", border: "1.5px solid #8A2BFF", boxShadow: "0 0 14px #8A2BFF55" }}
+                          style={{ color: "#C6A4FF", border: "1.5px solid #C6A4FF", boxShadow: "0 0 14px #C6A4FF55" }}
                           data-testid="button-revision-mode"
                         >
                           {isAf ? "Begin Hersiening" : "Start Revision"} →
@@ -1550,7 +1550,7 @@ export default function SubjectDetailPage() {
               <div id="audio" />
               <CosmicCard color="cyan" className="p-5">
                 <div className="flex items-center gap-2 mb-4">
-                  <Target className="w-5 h-5" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
+                  <Target className="w-5 h-5" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 4px #7FEFFF)" }} />
                   <h3 className="font-bold text-base text-foreground">{isAf ? "Onderwerp Bemeestering" : "Topic Mastery"}</h3>
                   {mastery && mastery.topics.length > 0 && <NeonBadge color="cyan">{mastery.topics.length}</NeonBadge>}
                 </div>
@@ -1582,7 +1582,7 @@ export default function SubjectDetailPage() {
                                 {topic.hasNotes && (
                                   <span
                                     className="text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-[0.14em]"
-                                    style={{ color: "#00E5FF", border: "1px solid #00E5FF55", background: "#00E5FF10" }}
+                                    style={{ color: "#7FEFFF", border: "1px solid #7FEFFF55", background: "#7FEFFF10" }}
                                     data-testid={`badge-curated-${topic.id}`}
                                   >
                                     {isAf ? "Gekureer" : "Curated"}
@@ -1595,7 +1595,7 @@ export default function SubjectDetailPage() {
                                   : `${topic.questionsAttempted} attempted · ${topic.questionsCorrect} correct`
                                 }
                                 {topic.consecutiveCorrect > 0 && (
-                                  <span className="ml-2" style={{ color: "#FF8A00" }}>
+                                  <span className="ml-2" style={{ color: "#FFC48F" }}>
                                     🔥 {topic.consecutiveCorrect}x {isAf ? "reeks" : "streak"}
                                   </span>
                                 )}
@@ -1615,7 +1615,7 @@ export default function SubjectDetailPage() {
                           </div>
                           {topic.confidenceLevel > 0 && (
                             <div className="flex items-center gap-1 mt-2">
-                              <Zap className="w-3 h-3" style={{ color: "#00E5FF" }} />
+                              <Zap className="w-3 h-3" style={{ color: "#7FEFFF" }} />
                               <span className="text-[10px] text-foreground">
                                 {isAf ? "Vertroue" : "Confidence"}: {topic.confidenceLevel}%
                               </span>
@@ -1699,10 +1699,10 @@ export default function SubjectDetailPage() {
                       <p className="text-[10px] font-bold mb-2 uppercase tracking-[0.18em] text-foreground">{isAf ? "Bemeestering Bande" : "Mastery Bands"}</p>
                       <div className="flex items-center gap-4 flex-wrap">
                         {[
-                          { hex: "#FF2BD6", label: isAf ? "Inhaal" : "Catch Up", range: "0-59%" },
-                          { hex: "#FF8A00", label: isAf ? "Bou" : "Building", range: "60-74%" },
+                          { hex: "#FF9FE5", label: isAf ? "Inhaal" : "Catch Up", range: "0-59%" },
+                          { hex: "#FFC48F", label: isAf ? "Bou" : "Building", range: "60-74%" },
                           { hex: "#4ADE80", label: isAf ? "Op Koers" : "Locked In", range: "75-84%" },
-                          { hex: "#FFE600", label: isAf ? "Ster" : "Star", range: "85-100%" },
+                          { hex: "#FFF29E", label: isAf ? "Ster" : "Star", range: "85-100%" },
                         ].map(b => (
                           <div key={b.label} className="flex items-center gap-1.5">
                             <span className="w-2 h-2 rounded-full" style={{ background: b.hex, boxShadow: `0 0 6px ${b.hex}` }} />
@@ -1726,7 +1726,7 @@ export default function SubjectDetailPage() {
             <TabsContent value="plan" className="space-y-6 mt-6">
               <CosmicCard color="blue" className="p-5">
                 <div className="flex items-center gap-2 mb-4">
-                  <Calendar className="w-5 h-5" style={{ color: "#006BFF", filter: "drop-shadow(0 0 4px #006BFF)" }} />
+                  <Calendar className="w-5 h-5" style={{ color: "#6FA8FF", filter: "drop-shadow(0 0 4px #6FA8FF)" }} />
                   <h3 className="font-bold text-base text-foreground">{isAf ? "Persoonlike Studieplan" : "Personalized Study Plan"}</h3>
                   <NeonBadge color="blue">{isAf ? "7 Dae" : "7 Day"}</NeonBadge>
                 </div>
@@ -1739,7 +1739,7 @@ export default function SubjectDetailPage() {
                 ) : personalizedPlan.length > 0 ? (
                   <div className="space-y-2">
                     {personalizedPlan.map((item, idx) => {
-                      const pHex = item.priority === "high" ? "#FF2BD6" : item.priority === "low" ? "#4ADE80" : "#006BFF";
+                      const pHex = item.priority === "high" ? "#FF9FE5" : item.priority === "low" ? "#4ADE80" : "#6FA8FF";
                       return (
                         <div
                           key={idx}
@@ -1758,7 +1758,7 @@ export default function SubjectDetailPage() {
                             </div>
                           </div>
                           <div className="flex items-center gap-2 shrink-0">
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-background inline-flex items-center gap-1" style={{ color: "#00E5FF", border: "1px solid #00E5FF55" }}>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-background inline-flex items-center gap-1" style={{ color: "#7FEFFF", border: "1px solid #7FEFFF55" }}>
                               <Clock className="w-3 h-3" /> {item.duration}min
                             </span>
                             {item.priority === "high" && <NeonBadge color="pink">{isAf ? "Prioriteit" : "Priority"}</NeonBadge>}
@@ -1784,7 +1784,7 @@ export default function SubjectDetailPage() {
               {badges && badges.length > 0 && (
                 <CosmicCard color="yellow" className="p-5">
                   <div className="flex items-center gap-2 mb-4">
-                    <Award className="w-5 h-5" style={{ color: "#FFE600", filter: "drop-shadow(0 0 4px #FFE600)" }} />
+                    <Award className="w-5 h-5" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 4px #FFF29E)" }} />
                     <h3 className="font-bold text-base text-foreground">{isAf ? "Prestasies" : "Achievements"}</h3>
                     <NeonBadge color="yellow">{badges.length}</NeonBadge>
                   </div>
@@ -1797,10 +1797,10 @@ export default function SubjectDetailPage() {
                         <div
                           key={badge.id}
                           className="flex items-center gap-2 px-3 py-2 rounded-xl bg-background"
-                          style={{ border: "1px solid #FFE60044", boxShadow: "inset 0 0 8px #FFE60015" }}
+                          style={{ border: "1px solid #FFF29E44", boxShadow: "inset 0 0 8px #FFF29E15" }}
                           data-testid={`badge-${badge.badgeCode}`}
                         >
-                          <IconComp className="w-4 h-4" style={{ color: "#FFE600", filter: "drop-shadow(0 0 3px #FFE600)" }} />
+                          <IconComp className="w-4 h-4" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 3px #FFF29E)" }} />
                           <span className="text-sm font-semibold text-foreground">
                             {isAf ? info.nameAfrikaans : info.name}
                           </span>
@@ -1821,7 +1821,7 @@ export default function SubjectDetailPage() {
                   <CosmicCard color="cyan" className="p-5" data-testid="card-literature-selection">
                     <div className="flex items-center justify-between gap-3 flex-wrap mb-2">
                       <h3 className="flex items-center gap-2 font-bold text-base text-foreground">
-                        <BookMarked className="w-5 h-5" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
+                        <BookMarked className="w-5 h-5" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 4px #7FEFFF)" }} />
                         {isAf ? "Jou Voorgeskryfde Werke" : "Your Prescribed Works"}
                       </h3>
                       <button
@@ -1829,7 +1829,7 @@ export default function SubjectDetailPage() {
                         disabled={saveLitMutation.isPending}
                         data-testid="button-save-literature"
                         className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-background text-xs font-black uppercase tracking-[0.14em] transition-all hover:scale-[1.02] disabled:opacity-60"
-                        style={{ color: "#00E5FF", border: "1.5px solid #00E5FF", boxShadow: "0 0 12px #00E5FF55" }}
+                        style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 12px #7FEFFF55" }}
                       >
                         {litSaved ? (
                           <><Check className="w-3.5 h-3.5" /> {isAf ? "Gestoor" : "Saved"}</>
@@ -1863,7 +1863,7 @@ export default function SubjectDetailPage() {
                                 <div
                                   key={w.id}
                                   className="flex items-start justify-between gap-2 rounded-xl bg-background p-3"
-                                  style={{ border: "1px solid #00E5FF33" }}
+                                  style={{ border: "1px solid #7FEFFF33" }}
                                   data-testid={`lit-work-card-${w.id}`}
                                 >
                                   <div className="min-w-0 flex-1">
@@ -1877,7 +1877,7 @@ export default function SubjectDetailPage() {
                                       type="button"
                                       onClick={() => setLitWorkDialog({ id: dbWork.id, title: dbWork.title })}
                                       className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-background text-[10px] font-black uppercase tracking-[0.14em] transition-all hover:scale-[1.02]"
-                                      style={{ color: "#00E5FF", border: "1.5px solid #00E5FF", boxShadow: "0 0 10px #00E5FF55" }}
+                                      style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 10px #7FEFFF55" }}
                                       data-testid={`button-notes-${w.id}`}
                                     >
                                       <FileText className="w-3 h-3" />
@@ -1938,7 +1938,7 @@ export default function SubjectDetailPage() {
                                         type="button"
                                         onClick={() => setLitWorkDialog({ id: dbWork.id, title: dbWork.title })}
                                         className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-background text-[10px] font-black uppercase tracking-[0.14em] transition-all hover:scale-[1.02]"
-                                        style={{ color: "#00E5FF", border: "1.5px solid #00E5FF", boxShadow: "0 0 10px #00E5FF55" }}
+                                        style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 10px #7FEFFF55" }}
                                         data-testid={`button-view-lit-${cat.type}`}
                                       >
                                         <FileText className="w-3 h-3" />
@@ -1953,9 +1953,9 @@ export default function SubjectDetailPage() {
                         })}
                       </div>
                       {hasAnySelection && (
-                        <div className="mt-4 p-3 rounded-xl bg-background" style={{ border: "1px solid #00E5FF55", boxShadow: "inset 0 0 8px #00E5FF15" }}>
+                        <div className="mt-4 p-3 rounded-xl bg-background" style={{ border: "1px solid #7FEFFF55", boxShadow: "inset 0 0 8px #7FEFFF15" }}>
                           <p className="text-xs text-foreground flex items-center gap-2">
-                            <BookMarked className="w-4 h-4 shrink-0" style={{ color: "#00E5FF" }} />
+                            <BookMarked className="w-4 h-4 shrink-0" style={{ color: "#7FEFFF" }} />
                             {isAf
                               ? "Rizz sal jou vrae, opsommings en ontledings rig rondom hierdie werke."
                               : "Rizz will direct your questions, summaries and analysis around these prescribed works."}
@@ -1969,7 +1969,7 @@ export default function SubjectDetailPage() {
 
               <CosmicCard color="blue" className="p-5">
                 <div className="flex items-center gap-2 mb-4">
-                  <ExternalLink className="w-5 h-5" style={{ color: "#006BFF", filter: "drop-shadow(0 0 4px #006BFF)" }} />
+                  <ExternalLink className="w-5 h-5" style={{ color: "#6FA8FF", filter: "drop-shadow(0 0 4px #6FA8FF)" }} />
                   <h3 className="font-bold text-base text-foreground">{isAf ? "Amptelike Bronne" : "Official Sources"}</h3>
                 </div>
                 <div className="space-y-2">
@@ -1984,10 +1984,10 @@ export default function SubjectDetailPage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 p-2.5 rounded-xl bg-background text-sm font-semibold text-foreground hover:text-foreground transition-all hover:-translate-y-px"
-                      style={{ border: "1px solid #006BFF55", boxShadow: "inset 0 0 8px #006BFF15" }}
+                      style={{ border: "1px solid #6FA8FF55", boxShadow: "inset 0 0 8px #6FA8FF15" }}
                       data-testid={lnk.tid}
                     >
-                      <ExternalLink className="w-3 h-3 shrink-0" style={{ color: "#006BFF" }} />
+                      <ExternalLink className="w-3 h-3 shrink-0" style={{ color: "#6FA8FF" }} />
                       <span>{lnk.label}</span>
                     </a>
                   ))}

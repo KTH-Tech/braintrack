@@ -56,21 +56,21 @@ export default function PrivacyPolicyPage() {
             <Link href="/">
               <button
                 className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black text-xs font-semibold"
-                style={{ color: "#00E5FF", border: "1.5px solid #00E5FF", boxShadow: "0 0 10px rgba(0,229,255,0.3)" }}
+                style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 10px rgba(0,229,255,0.3)" }}
                 data-testid="privacy-nav-back"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 {isAf ? "Terug" : "Back"}
               </button>
             </Link>
-            <span className="graffiti-hand text-base hidden sm:inline tracking-tight" style={{ color: "#FFE600", textShadow: "0 0 8px rgba(255,230,0,0.4)" }}>{isAf ? "Privaatheidsbeleid" : "Privacy Policy"}</span>
+            <span className="graffiti-hand text-base hidden sm:inline tracking-tight" style={{ color: "#FFF29E", textShadow: "0 0 8px rgba(255,230,0,0.4)" }}>{isAf ? "Privaatheidsbeleid" : "Privacy Policy"}</span>
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <button
               onClick={toggleLanguage}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black text-[11px] font-black"
-              style={{ color: "#8A2BFF", border: "1px solid rgba(138,43,255,0.55)", boxShadow: "0 0 10px rgba(138,43,255,0.35)" }}
+              style={{ color: "#C6A4FF", border: "1px solid rgba(138,43,255,0.55)", boxShadow: "0 0 10px rgba(138,43,255,0.35)" }}
               data-testid="button-language-toggle"
             >
               <Globe className="h-3.5 w-3.5" />
@@ -84,9 +84,9 @@ export default function PrivacyPolicyPage() {
         <div className="relative text-center space-y-3 py-6">
           <div
             className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-black mx-auto"
-            style={{ border: "1.5px solid #00E5FF", boxShadow: "0 0 20px rgba(0,229,255,0.4), inset 0 0 14px rgba(0,229,255,0.15)" }}
+            style={{ border: "1.5px solid #7FEFFF", boxShadow: "0 0 20px rgba(0,229,255,0.4), inset 0 0 14px rgba(0,229,255,0.15)" }}
           >
-            <Shield className="w-6 h-6" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 6px rgba(0,229,255,0.7))" }} />
+            <Shield className="w-6 h-6" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 6px rgba(0,229,255,0.7))" }} />
           </div>
           <h1 className="graffiti-hand text-3xl" style={{ textShadow: "0 0 10px rgba(0,229,255,0.4)" }}>{isAf ? "Privaatheidsbeleid & POPIA-Nakoming" : "Privacy Policy & POPIA Compliance"}</h1>
           <p className="text-sm text-white">
@@ -97,7 +97,7 @@ export default function PrivacyPolicyPage() {
           <p className="text-sm text-white">{isAf ? "Laas opgedateer: 16 Julie 2026" : "Last updated: 16 July 2026"}</p>
         </div>
 
-        <WallSection icon={FileText} color="#006BFF" title={isAf ? "1. Inleiding" : "1. Introduction"}>
+        <WallSection icon={FileText} color="#6FA8FF" title={isAf ? "1. Inleiding" : "1. Introduction"}>
             <p>
               {isAf
                 ? "BrainTrack (\"ons\" of \"ons s'n\") bedryf die BrainTrack opvoedkundige platform. Hierdie Privaatheidsbeleid verduidelik hoe ons jou persoonlike inligting versamel, gebruik, openbaar en beskerm wanneer jy ons diens gebruik."
@@ -110,7 +110,7 @@ export default function PrivacyPolicyPage() {
             </p>
         </WallSection>
 
-        <WallSection icon={Lock} color="#00E5FF" title={isAf ? "2. Inligting Wat Ons Versamel" : "2. Information We Collect"}>
+        <WallSection icon={Lock} color="#7FEFFF" title={isAf ? "2. Inligting Wat Ons Versamel" : "2. Information We Collect"}>
             <div>
               <h4 className="font-semibold text-sm mb-1">{isAf ? "Persoonlike Inligting van Ouers/Voogde:" : "Personal Information from Parents/Guardians:"}</h4>
               <ul className="list-disc list-inside space-y-1 text-sm text-white">
@@ -118,7 +118,7 @@ export default function PrivacyPolicyPage() {
                 <li>{isAf ? "E-posadres" : "Email address"}</li>
                 <li>{isAf ? "Telefoonnommer" : "Phone number"}</li>
               </ul>
-              <div className="mt-3 pl-3 py-1" style={{ borderLeft: "3px solid #22FF66" }}>
+              <div className="mt-3 pl-3 py-1" style={{ borderLeft: "3px solid #93FFB8" }}>
                 <p className="text-sm font-medium text-white">
                   {isAf ? "Betalingsekuriteit: Ons stoor GEEN betaling- of bankinligting nie." : "Payment Security: We do NOT store any payment or banking information."}
                 </p>
@@ -151,7 +151,7 @@ export default function PrivacyPolicyPage() {
             </div>
         </WallSection>
 
-        <WallSection icon={Eye} color="#22FF66" title={isAf ? "3. Hoe Ons Jou Inligting Gebruik" : "3. How We Use Your Information"}>
+        <WallSection icon={Eye} color="#93FFB8" title={isAf ? "3. Hoe Ons Jou Inligting Gebruik" : "3. How We Use Your Information"}>
             <p className="text-sm text-white">{isAf ? "Ons gebruik persoonlike inligting vir die volgende doeleindes:" : "We use personal information for the following purposes:"}</p>
             <ul className="list-disc list-inside space-y-2 text-sm text-white">
               <li><strong>{isAf ? "Dienslewering:" : "Service Delivery:"}</strong> {isAf ? "Om toegang te bied tot vorige vraestelle, Rizz-bystand en eksamenvoorbereidingshulpmiddels." : "To provide access to past papers, Rizz assistance, and exam preparation tools."}</li>
@@ -164,7 +164,7 @@ export default function PrivacyPolicyPage() {
             </ul>
         </WallSection>
 
-        <WallSection icon={Users} color="#FFE600" title={isAf ? "4. Kinders se Privaatheid (Onder 18)" : "4. Children's Privacy (Under 18)"}>
+        <WallSection icon={Users} color="#FFF29E" title={isAf ? "4. Kinders se Privaatheid (Onder 18)" : "4. Children's Privacy (Under 18)"}>
             <p className="text-sm text-white">
               {isAf
                 ? "BrainTrack is ontwerp vir Graad 12-leerders in Suid-Afrika. Ons neem spesiale sorg om die privaatheid van kinders te beskerm:"
@@ -179,7 +179,7 @@ export default function PrivacyPolicyPage() {
             </ul>
         </WallSection>
 
-        <WallSection icon={Shield} color="#FF8A00" title={isAf ? "5. Databeskerming" : "5. Data Security"}>
+        <WallSection icon={Shield} color="#FFC48F" title={isAf ? "5. Databeskerming" : "5. Data Security"}>
             <p className="text-sm text-white">
               {isAf
                 ? "Ons implementeer toepaslike tegniese en organisatoriese maatreëls om jou persoonlike inligting te beskerm:"
@@ -195,7 +195,7 @@ export default function PrivacyPolicyPage() {
             </ul>
         </WallSection>
 
-        <WallSection icon={Clock} color="#FF2BD6" title={isAf ? "6. Dataretensie" : "6. Data Retention"}>
+        <WallSection icon={Clock} color="#FF9FE5" title={isAf ? "6. Dataretensie" : "6. Data Retention"}>
             <p className="text-sm text-white">
               {isAf
                 ? "Ons behou persoonlike inligting so lank as wat nodig is om ons dienste te lewer:"
@@ -209,7 +209,7 @@ export default function PrivacyPolicyPage() {
             </ul>
         </WallSection>
 
-        <WallSection icon={FileText} color="#8A2BFF" title={isAf ? "7. Jou POPIA-Regte" : "7. Your POPIA Rights"}>
+        <WallSection icon={FileText} color="#C6A4FF" title={isAf ? "7. Jou POPIA-Regte" : "7. Your POPIA Rights"}>
             <p className="text-sm text-white">
               {isAf
                 ? "Onder POPIA het jy die volgende regte rakende jou persoonlike inligting:"
@@ -230,8 +230,8 @@ export default function PrivacyPolicyPage() {
             </p>
         </WallSection>
 
-        <WallSection icon={Lock} color="#22FF66" title={isAf ? "8. Betalingsverwerking & Bankinligting" : "8. Payment Processing & Banking Information"}>
-            <div className="pl-3 py-1" style={{ borderLeft: "3px solid #22FF66" }}>
+        <WallSection icon={Lock} color="#93FFB8" title={isAf ? "8. Betalingsverwerking & Bankinligting" : "8. Payment Processing & Banking Information"}>
+            <div className="pl-3 py-1" style={{ borderLeft: "3px solid #93FFB8" }}>
               <p className="font-semibold text-white">
                 {isAf
                   ? "BrainTrack versamel, stoor of verwerk GEEN betaalkaart- of bankinligting nie."
@@ -256,7 +256,7 @@ export default function PrivacyPolicyPage() {
             </ul>
         </WallSection>
 
-        <WallSection icon={Users} color="#006BFF" title={isAf ? "9. Derdeparty-deling" : "9. Third-Party Sharing"}>
+        <WallSection icon={Users} color="#6FA8FF" title={isAf ? "9. Derdeparty-deling" : "9. Third-Party Sharing"}>
             <p className="text-sm text-white">
               {isAf
                 ? "Ons mag jou inligting met vertroude derde partye deel slegs soos nodig:"
@@ -277,13 +277,13 @@ export default function PrivacyPolicyPage() {
             </p>
         </WallSection>
 
-        <WallSection color="#FF2BD6" title={isAf ? "10. Kontakbesonderhede" : "10. Contact Information"}>
+        <WallSection color="#FF9FE5" title={isAf ? "10. Kontakbesonderhede" : "10. Contact Information"}>
             <p className="text-sm text-white">
               {isAf
                 ? "Vir enige privaatheidsverwante vrae of om jou regte uit te oefen:"
                 : "For any privacy-related questions or to exercise your rights:"}
             </p>
-            <div className="pl-3 py-1 space-y-2" style={{ borderLeft: "3px solid #FF2BD6" }}>
+            <div className="pl-3 py-1 space-y-2" style={{ borderLeft: "3px solid #FF9FE5" }}>
               <p><strong>{isAf ? "Inligtingsbeampte:" : "Information Officer:"}</strong> KTH Tech</p>
               <p><strong>{isAf ? "E-pos:" : "Email:"}</strong> learn@kth-tech.com</p>
               <p><strong>{isAf ? "Adres:" : "Address:"}</strong> {isAf ? "Suid-Afrika" : "South Africa"}</p>

@@ -58,10 +58,10 @@ type BulkJobStatus = {
   items: BulkJobItem[];
 };
 
-const NEON = "#00E5FF";
-const PINK = "#FF2BD6";
-const GOLD = "#FFE600";
-const PURPLE = "#8A2BFF";
+const NEON = "#7FEFFF";
+const PINK = "#FF9FE5";
+const GOLD = "#FFF29E";
+const PURPLE = "#C6A4FF";
 const GREEN = "#22c55e";
 
 function fmtDate(s: string | null, isAf: boolean): string {

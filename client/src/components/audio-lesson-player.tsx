@@ -224,11 +224,11 @@ export function AudioLessonPlayer({ topicId, topicName, language, isAf, onPlayed
   return (
     <div
       className="rounded-2xl bg-black p-4"
-      style={{ border: "1.5px solid #8A2BFF", boxShadow: "0 0 18px #8A2BFF55, inset 0 0 12px rgba(138,43,255,0.10)" }}
+      style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 18px #C6A4FF55, inset 0 0 12px rgba(138,43,255,0.10)" }}
       data-testid={`audio-lesson-${topicId}`}
     >
       <div className="flex items-center gap-2 mb-3">
-        <Headphones className="w-5 h-5" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 4px #8A2BFF)" }} />
+        <Headphones className="w-5 h-5" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 4px #C6A4FF)" }} />
         <span className="font-bold text-sm text-white uppercase tracking-[0.14em]">
           {isAf ? "My Stemles" : "My Voice Lesson"}
         </span>
@@ -259,11 +259,11 @@ export function AudioLessonPlayer({ topicId, topicName, language, isAf, onPlayed
               onClick={togglePlay}
               disabled={isRecording}
               className="w-10 h-10 rounded-full bg-black flex items-center justify-center transition-all hover:scale-105 disabled:opacity-50"
-              style={{ border: "1.5px solid #8A2BFF", boxShadow: "0 0 12px #8A2BFF55" }}
+              style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 12px #C6A4FF55" }}
               data-testid={`button-toggle-audio-${topicId}`}
               aria-label={isPlaying ? "Pause" : "Play"}
             >
-              {isPlaying ? <Pause className="w-4 h-4" style={{ color: "#8A2BFF" }} /> : <Play className="w-4 h-4 ml-0.5" style={{ color: "#8A2BFF" }} />}
+              {isPlaying ? <Pause className="w-4 h-4" style={{ color: "#C6A4FF" }} /> : <Play className="w-4 h-4 ml-0.5" style={{ color: "#C6A4FF" }} />}
             </button>
             <div className="flex-1 min-w-0">
               <div
@@ -273,7 +273,7 @@ export function AudioLessonPlayer({ topicId, topicName, language, isAf, onPlayed
               >
                 <div
                   className="h-full rounded-full transition-all"
-                  style={{ width: `${duration ? (progress / duration) * 100 : 0}%`, background: "#8A2BFF", boxShadow: "0 0 8px #8A2BFFaa" }}
+                  style={{ width: `${duration ? (progress / duration) * 100 : 0}%`, background: "#C6A4FF", boxShadow: "0 0 8px #C6A4FFaa" }}
                 />
               </div>
               <div className="flex items-center justify-between mt-1 text-[10px] text-white tabular-nums">
@@ -284,7 +284,7 @@ export function AudioLessonPlayer({ topicId, topicName, language, isAf, onPlayed
             <button
               onClick={changeSpeed}
               className="text-[10px] font-black px-2 py-1 rounded-md bg-black uppercase tracking-[0.14em]"
-              style={{ color: "#8A2BFF", border: "1px solid #8A2BFF55" }}
+              style={{ color: "#C6A4FF", border: "1px solid #C6A4FF55" }}
               data-testid={`button-audio-speed-${topicId}`}
               aria-label="Playback speed"
             >
@@ -293,11 +293,11 @@ export function AudioLessonPlayer({ topicId, topicName, language, isAf, onPlayed
             <button
               onClick={() => { if (audioRef.current) { audioRef.current.currentTime = 0; setProgress(0); } }}
               className="w-8 h-8 rounded-md bg-black flex items-center justify-center"
-              style={{ border: "1px solid #8A2BFF55" }}
+              style={{ border: "1px solid #C6A4FF55" }}
               aria-label="Restart"
               data-testid={`button-audio-restart-${topicId}`}
             >
-              <RotateCcw className="w-3.5 h-3.5" style={{ color: "#8A2BFF" }} />
+              <RotateCcw className="w-3.5 h-3.5" style={{ color: "#C6A4FF" }} />
             </button>
           </div>
         </>
@@ -320,7 +320,7 @@ export function AudioLessonPlayer({ topicId, topicName, language, isAf, onPlayed
                 <button
                   onClick={stopRecording}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black text-[11px] font-black uppercase tracking-[0.14em] transition-all hover:scale-[1.02]"
-                  style={{ color: "#FF2BD6", border: "1.5px solid #FF2BD6", boxShadow: "0 0 12px #FF2BD655" }}
+                  style={{ color: "#FF9FE5", border: "1.5px solid #FF9FE5", boxShadow: "0 0 12px #FF9FE555" }}
                   data-testid={`button-stop-lesson-recording-${topicId}`}
                 >
                   <Square className="w-3 h-3" />
@@ -329,7 +329,7 @@ export function AudioLessonPlayer({ topicId, topicName, language, isAf, onPlayed
                 <div className="flex-1 min-w-[80px] h-1.5 rounded-full bg-white/10 overflow-hidden">
                   <div
                     className="h-full transition-all duration-1000 linear"
-                    style={{ width: `${(recElapsed / MAX_RECORDING_SECS) * 100}%`, background: "#FF2BD6", boxShadow: "0 0 6px #FF2BD6" }}
+                    style={{ width: `${(recElapsed / MAX_RECORDING_SECS) * 100}%`, background: "#FF9FE5", boxShadow: "0 0 6px #FF9FE5" }}
                   />
                 </div>
                 <span className="text-[10px] text-white tabular-nums">{formatTime(MAX_RECORDING_SECS)}</span>
@@ -340,7 +340,7 @@ export function AudioLessonPlayer({ topicId, topicName, language, isAf, onPlayed
                   onClick={startRecording}
                   disabled={uploading || deleting}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black text-[11px] font-black uppercase tracking-[0.14em] transition-all hover:scale-[1.02] disabled:opacity-60"
-                  style={{ color: "#8A2BFF", border: "1.5px solid #8A2BFF", boxShadow: "0 0 12px #8A2BFF55" }}
+                  style={{ color: "#C6A4FF", border: "1.5px solid #C6A4FF", boxShadow: "0 0 12px #C6A4FF55" }}
                   data-testid={`button-record-lesson-${topicId}`}
                 >
                   {uploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Mic className="w-3 h-3" />}

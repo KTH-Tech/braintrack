@@ -6,8 +6,8 @@ import { useLanguage } from "@/lib/language-context";
 import { useSEO } from "@/hooks/use-seo";
 
 const NEON_PALETTE = [
-  "#FF8A00", "#FF8A00", "#FFE600", "#FFE600",
-  "#00E5FF", "#006BFF", "#8A2BFF", "#8A2BFF", "#FF2BD6"
+  "#FFC48F", "#FFC48F", "#FFF29E", "#FFF29E",
+  "#7FEFFF", "#6FA8FF", "#C6A4FF", "#C6A4FF", "#FF9FE5"
 ];
 
 function hexToRgba(hex: string, alpha: number) {
@@ -356,21 +356,21 @@ export default function TermsOfServicePage() {
             <Link href="/">
               <button
                 className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black text-xs font-bold"
-                style={{ color: "#00E5FF", border: "1.5px solid #00E5FF", boxShadow: "0 0 12px rgba(0,229,255,0.4)" }}
+                style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 12px rgba(0,229,255,0.4)" }}
                 data-testid="terms-nav-back"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 {isAf ? "Terug" : "Back"}
               </button>
             </Link>
-            <span className="graffiti-hand text-base hidden sm:inline tracking-tight" style={{ color: "#FFE600", textShadow: "0 0 8px rgba(255,230,0,0.4)" }}>
+            <span className="graffiti-hand text-base hidden sm:inline tracking-tight" style={{ color: "#FFF29E", textShadow: "0 0 8px rgba(255,230,0,0.4)" }}>
               {isAf ? "Diensvoorwaardes" : "Terms & Conditions"}
             </span>
           </div>
           <button
             onClick={toggleLanguage}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black text-[11px] font-black"
-            style={{ color: "#8A2BFF", border: "1px solid rgba(138,43,255,0.55)", boxShadow: "0 0 10px rgba(138,43,255,0.35)" }}
+            style={{ color: "#C6A4FF", border: "1px solid rgba(138,43,255,0.55)", boxShadow: "0 0 10px rgba(138,43,255,0.35)" }}
             data-testid="button-language-toggle"
           >
             <Globe className="h-3.5 w-3.5" />
@@ -384,16 +384,16 @@ export default function TermsOfServicePage() {
         <div className="relative text-center space-y-4 py-6">
           <span
             className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.28em] px-4 py-1.5 rounded-full bg-black"
-            style={{ color: "#00E5FF", border: "1px solid rgba(0,229,255,0.55)", boxShadow: "0 0 14px rgba(0,229,255,0.35)" }}
+            style={{ color: "#7FEFFF", border: "1px solid rgba(0,229,255,0.55)", boxShadow: "0 0 14px rgba(0,229,255,0.35)" }}
           >
-            <Scale className="w-3.5 h-3.5" style={{ filter: "drop-shadow(0 0 4px #00E5FF)" }} />
+            <Scale className="w-3.5 h-3.5" style={{ filter: "drop-shadow(0 0 4px #7FEFFF)" }} />
             {isAf ? "Die Kleingedrukte" : "The Fine Print"}
           </span>
           <h1
             className="graffiti-hand text-3xl sm:text-4xl md:text-5xl tracking-tight leading-[1.05]"
             data-testid="text-terms-title"
             style={{
-              background: "linear-gradient(90deg, #FF8A00, #FFE600, #00E5FF, #8A2BFF, #FF2BD6)",
+              background: "linear-gradient(90deg, #FFC48F, #FFF29E, #7FEFFF, #C6A4FF, #FF9FE5)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
@@ -407,7 +407,7 @@ export default function TermsOfServicePage() {
               ? "Alles wat jy moet weet voor jy BrainTrack™ gebruik — reguit en sonder raaisels."
               : "Everything you need to know before using BrainTrack™ — straight up, no small print games."}
           </p>
-          <p className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "#FFE600" }}>
+          <p className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "#FFF29E" }}>
             {isAf ? "Laas opgedateer: 16 Julie 2026" : "Last updated: 16 July 2026"}
           </p>
         </div>
@@ -480,16 +480,16 @@ export default function TermsOfServicePage() {
         <div
           className="relative rounded-2xl bg-black p-6 text-center space-y-2 mt-8"
           style={{
-            border: "1.5px solid #FFE600",
+            border: "1.5px solid #FFF29E",
             boxShadow: "0 0 0 1px rgba(255,230,0,0.25), 0 0 32px rgba(255,230,0,0.35), inset 0 0 24px rgba(0,0,0,0.6)",
           }}
         >
           <div className="flex items-center justify-center gap-2 mb-1">
-            <Sparkles className="w-4 h-4" style={{ color: "#FFE600", filter: "drop-shadow(0 0 4px #FFE600)" }} />
-            <p className="text-base font-black tracking-tight" style={{ color: "#FFE600", textShadow: "0 0 10px rgba(255,230,0,0.45)" }}>
+            <Sparkles className="w-4 h-4" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 4px #FFF29E)" }} />
+            <p className="text-base font-black tracking-tight" style={{ color: "#FFF29E", textShadow: "0 0 10px rgba(255,230,0,0.45)" }}>
               BrainTrack™
             </p>
-            <Sparkles className="w-4 h-4" style={{ color: "#FFE600", filter: "drop-shadow(0 0 4px #FFE600)" }} />
+            <Sparkles className="w-4 h-4" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 4px #FFF29E)" }} />
           </div>
           <p className="text-sm text-white">
             {isAf ? "Alle regte voorbehou. Suid-Afrika." : "All rights reserved. South Africa."}

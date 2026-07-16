@@ -103,8 +103,8 @@ function Doodle({ kind, color, size, x, y, rotate, delay }: {
 }
 
 // Rough paint smear to sit BEHIND a heading (brand-board section titles).
-// Usage: <span className="spray-title"><SpraySmear color="#FF2BD6" />Heading</span>
-export function SpraySmear({ color = "#FF2BD6" }: { color?: string }) {
+// Usage: <span className="spray-title"><SpraySmear color="#FF9FE5" />Heading</span>
+export function SpraySmear({ color = "#FF9FE5" }: { color?: string }) {
   return (
     <svg
       aria-hidden

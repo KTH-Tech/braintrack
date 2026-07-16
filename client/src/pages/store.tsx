@@ -315,7 +315,7 @@ export default function StorePage() {
       <header className="sticky top-0 z-50 border-b border-white/10 bg-background/80 ">
         <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-14 gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#00E5FF] via-[#006BFF] to-[#8A2BFF] flex items-center justify-center shadow-lg shadow-[#00E5FF]/30">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#7FEFFF] via-[#6FA8FF] to-[#C6A4FF] flex items-center justify-center shadow-lg shadow-[#7FEFFF]/30">
               <ShoppingBag className="w-4 h-4 text-white" />
             </div>
             <span className="font-bold text-sm text-white">
@@ -324,7 +324,7 @@ export default function StorePage() {
           </div>
           <div className="flex items-center gap-2">
             <div
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#FFE600]/10 border border-[#FFE600]/40 text-xs font-bold text-[#FFE600]"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#FFF29E]/10 border border-[#FFF29E]/40 text-xs font-bold text-[#FFF29E]"
               data-testid="coin-balance-header"
             >
               <Coins className="w-3.5 h-3.5" />
@@ -601,12 +601,12 @@ function ItemCard({
 
         <div className="flex items-center justify-between gap-2">
           {requiresSub ? (
-            <Badge variant="outline" className="text-[10px] gap-1 border-[#8A2BFF]/40 text-[#8A2BFF]">
+            <Badge variant="outline" className="text-[10px] gap-1 border-[#C6A4FF]/40 text-[#C6A4FF]">
               <Crown className="w-3 h-3" />
               {t.premiumLabel}
             </Badge>
           ) : item.coinCost > 0 ? (
-            <Badge variant="outline" className="text-[10px] gap-1 border-[#FFE600]/40 text-[#FFE600]">
+            <Badge variant="outline" className="text-[10px] gap-1 border-[#FFF29E]/40 text-[#FFF29E]">
               <Coins className="w-3 h-3" />
               {item.coinCost}
             </Badge>
@@ -649,7 +649,7 @@ function PreviewSwatch({
   requiresSub: boolean;
   t: typeof T["en"] | typeof T["af"];
 }) {
-  const fallback = PRODUCT_GRADIENTS[item.key] ?? "from-[#00E5FF] via-[#006BFF] to-[#8A2BFF]";
+  const fallback = PRODUCT_GRADIENTS[item.key] ?? "from-[#7FEFFF] via-[#6FA8FF] to-[#C6A4FF]";
 
   return (
     <div className="h-28 relative overflow-hidden">
@@ -679,7 +679,7 @@ function PreviewSwatch({
         </div>
       )}
       {requiresSub && !owned && (
-        <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/60 text-[10px] font-bold text-[#FFE600]">
+        <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/60 text-[10px] font-bold text-[#FFF29E]">
           <Crown className="w-3 h-3" />
           {t.premiumLabel}
         </div>
@@ -700,7 +700,7 @@ function TierPill({ tier, isAf }: { tier: StoreItem["tier"]; isAf: boolean }) {
   const lbl = TIER_LABEL[tier];
   if (!lbl) return null;
   const cls =
-    tier === "premium" ? "border-[#8A2BFF]/40 text-[#8A2BFF]" :
+    tier === "premium" ? "border-[#C6A4FF]/40 text-[#C6A4FF]" :
     tier === "free"    ? "border-emerald-500/40 text-emerald-500" :
                          "border-white/15 text-white";
   return (

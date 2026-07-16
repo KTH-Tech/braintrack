@@ -81,7 +81,7 @@ export function TrialEndingBanner({ trialEndsAt }: TrialEndingBannerProps) {
     label = t.hoursLeft(Math.floor(hoursLeft));
   }
 
-  const hex = "#FF2BD6";
+  const hex = "#FF9FE5";
 
   function handleDismiss() {
     try {

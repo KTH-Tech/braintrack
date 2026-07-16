@@ -583,10 +583,10 @@ export default function DashboardPage() {
   const prepStatus = getPrepStatus();
 
   const accentMap: Record<string, { hex: string; halo: string }> = {
-    cyan:   { hex: "#00E5FF", halo: "rgba(0,229,255,0.28)" },
-    blue:   { hex: "#006BFF", halo: "rgba(0,107,255,0.28)" },
-    yellow: { hex: "#FFE600", halo: "rgba(255,230,0,0.28)" },
-    pink:   { hex: "#FF2BD6", halo: "rgba(255,43,214,0.28)" },
+    cyan:   { hex: "#7FEFFF", halo: "rgba(0,229,255,0.28)" },
+    blue:   { hex: "#6FA8FF", halo: "rgba(0,107,255,0.28)" },
+    yellow: { hex: "#FFF29E", halo: "rgba(255,230,0,0.28)" },
+    pink:   { hex: "#FF9FE5", halo: "rgba(255,43,214,0.28)" },
   };
   const ac = accentMap[prepStatus.accent];
 
@@ -625,7 +625,7 @@ export default function DashboardPage() {
               <nav className="hidden md:flex items-center gap-1.5">
                 {navLinks.map(({ href, icon: Icon, label }, idx) => {
                   const active = location === href;
-                  const NEONS = ["#006BFF","#00E5FF","#22FF66","#FFE600","#FF8A00","#FF2BD6","#8A2BFF"];
+                  const NEONS = ["#6FA8FF","#7FEFFF","#93FFB8","#FFF29E","#FFC48F","#FF9FE5","#C6A4FF"];
                   const col = NEONS[idx % NEONS.length];
                   return (
                     <Link key={href} href={href}>
@@ -666,7 +666,7 @@ export default function DashboardPage() {
               <button
                 onClick={() => logout()}
                 className="flex items-center justify-center w-9 h-9 rounded-xl transition-all hover:scale-105"
-                style={{ background: "rgba(255,43,214,0.1)", border: "1.5px solid #FF2BD6", color: "#FF2BD6" }}
+                style={{ background: "rgba(255,43,214,0.1)", border: "1.5px solid #FF9FE5", color: "#FF9FE5" }}
                 data-testid="button-logout"
                 title={t.signOutLabel}
               >
@@ -674,7 +674,7 @@ export default function DashboardPage() {
               </button>
               <button
                 className="md:hidden flex items-center justify-center w-9 h-9 rounded-xl transition-all hover:scale-105"
-                style={{ background: "rgba(0,229,255,0.1)", border: "1.5px solid #00E5FF", color: "#00E5FF" }}
+                style={{ background: "rgba(0,229,255,0.1)", border: "1.5px solid #7FEFFF", color: "#7FEFFF" }}
                 onClick={() => setMobileOpen(v => !v)}
               >
                 {mobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
@@ -690,7 +690,7 @@ export default function DashboardPage() {
           >
             {navLinks.map(({ href, icon: Icon, label }, idx) => {
               const active = location === href;
-              const NEONS = ["#006BFF","#00E5FF","#22FF66","#FFE600","#FF8A00","#FF2BD6","#8A2BFF"];
+              const NEONS = ["#6FA8FF","#7FEFFF","#93FFB8","#FFF29E","#FFC48F","#FF9FE5","#C6A4FF"];
               const col = NEONS[idx % NEONS.length];
               return (
                 <Link key={href} href={href}>
@@ -736,7 +736,7 @@ export default function DashboardPage() {
             : null;
           const dayWord = daysLeft === 1 ? t.trialBannerDay : t.trialBannerDays;
           const urgent = daysLeft !== null && daysLeft <= 3;
-          const hex = urgent ? "#FF2BD6" : "#FFE600";
+          const hex = urgent ? "#FF9FE5" : "#FFF29E";
           return (
             <div
               data-testid="subscription-trial-banner"
@@ -791,7 +791,7 @@ export default function DashboardPage() {
               <button
                 className="rounded-lg px-4 py-1.5 text-xs font-black uppercase tracking-widest transition-all"
                 style={{
-                  background: "#FF2BD6",
+                  background: "#FF9FE5",
                   color: "#000",
                   boxShadow: "0 0 12px rgba(255,43,214,0.5)",
                 }}
@@ -811,10 +811,10 @@ export default function DashboardPage() {
           const papers = stats?.papersCompleted ?? 0;
           const readiness = calcReadiness({ accuracy: acc, studyStreak: streak, questionsAnswered: qAnswered });
           const tier =
-            readiness >= 85 ? { label: t.tierPlatinum, hex: "#00E5FF" } :
-            readiness >= 65 ? { label: t.tierGold,     hex: "#FFE600" } :
-            readiness >= 40 ? { label: t.tierSilver,   hex: "#8A2BFF" } :
-                              { label: t.tierBronze,   hex: "#FF8A00" };
+            readiness >= 85 ? { label: t.tierPlatinum, hex: "#7FEFFF" } :
+            readiness >= 65 ? { label: t.tierGold,     hex: "#FFF29E" } :
+            readiness >= 40 ? { label: t.tierSilver,   hex: "#C6A4FF" } :
+                              { label: t.tierBronze,   hex: "#FFC48F" };
           const R = 48;
           const C = 2 * Math.PI * R;
           const offset = C - (readiness / 100) * C;
@@ -870,10 +870,10 @@ export default function DashboardPage() {
                     </div>
                     {streak > 0 && (() => {
                       const sHex =
-                        streak >= 30 ? "#FF2BD6" :
-                        streak >= 14 ? "#FF8A00" :
-                        streak >= 7  ? "#FF8A00" :
-                        streak >= 3  ? "#FFE600" : "#FFE600";
+                        streak >= 30 ? "#FF9FE5" :
+                        streak >= 14 ? "#FFC48F" :
+                        streak >= 7  ? "#FFC48F" :
+                        streak >= 3  ? "#FFF29E" : "#FFF29E";
                       return (
                         <div
                           className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
@@ -892,7 +892,7 @@ export default function DashboardPage() {
                     })()}
                   </div>
                   <div className="inline-flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full progress-hero-pulse" style={{ background: "#00E5FF", boxShadow: "0 0 6px #00E5FF" }} />
+                    <span className="w-1.5 h-1.5 rounded-full progress-hero-pulse" style={{ background: "#7FEFFF", boxShadow: "0 0 6px #7FEFFF" }} />
                     <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-white">
                       {t.liveSession}
                     </span>
@@ -943,11 +943,11 @@ export default function DashboardPage() {
                         <svg width="132" height="132" viewBox="0 0 132 132" role="presentation" aria-hidden="true">
                           <defs>
                             <linearGradient id="dashReadinessStrokeMini" x1="0%" y1="0%" x2="100%" y2="100%">
-                              <stop offset="0%"   stopColor="#FF8A00" />
-                              <stop offset="25%"  stopColor="#FFE600" />
-                              <stop offset="55%"  stopColor="#00E5FF" />
-                              <stop offset="80%"  stopColor="#8A2BFF" />
-                              <stop offset="100%" stopColor="#FF2BD6" />
+                              <stop offset="0%"   stopColor="#FFC48F" />
+                              <stop offset="25%"  stopColor="#FFF29E" />
+                              <stop offset="55%"  stopColor="#7FEFFF" />
+                              <stop offset="80%"  stopColor="#C6A4FF" />
+                              <stop offset="100%" stopColor="#FF9FE5" />
                             </linearGradient>
                             <filter id="dashReadinessGlowMini" x="-50%" y="-50%" width="200%" height="200%">
                               <feGaussianBlur stdDeviation="2.5" result="b" />
@@ -999,7 +999,7 @@ export default function DashboardPage() {
                         : hasAnyPrelimData
                         ? (isAf ? "Vooreksamens voltooi" : "Prelims complete")
                         : t.prelimsFallback,
-                      hex: "#00E5FF",
+                      hex: "#7FEFFF",
                       target: PRELIMS_DATE,
                       testid: "countdown-prelims",
                       // Only show the Settings CTA when there is genuinely no prelim data.
@@ -1007,7 +1007,7 @@ export default function DashboardPage() {
                       // (not null) so CountdownDigits shows 0 days — no Settings prompt.
                       empty: !hasAnyPrelimData && !PRELIMS_DATE,
                     },
-                    { label: t.finalsLabel, sub: FINALS_DATE.toLocaleDateString(isAf ? "af-ZA" : "en-ZA", { day: "numeric", month: "short", year: "numeric" }), hex: "#FF8A00", target: FINALS_DATE, testid: "countdown-finals", empty: false },
+                    { label: t.finalsLabel, sub: FINALS_DATE.toLocaleDateString(isAf ? "af-ZA" : "en-ZA", { day: "numeric", month: "short", year: "numeric" }), hex: "#FFC48F", target: FINALS_DATE, testid: "countdown-finals", empty: false },
                   ] as const).map(({ label, sub, hex, target, testid, empty }) => {
                     if (empty || !target) {
                       return (
@@ -1122,10 +1122,10 @@ export default function DashboardPage() {
         {subscription && (() => {
           const status = subscription.status;
           const statusConfig: Record<string, { label: string; labelAf: string; hex: string; halo: string }> = {
-            active: { label: "Active",       labelAf: "Aktief",         hex: "#00E5FF", halo: "rgba(0,229,255,0.22)"  },
-            trial:  { label: "Free Trial",   labelAf: "Gratis Proef",   hex: "#FFE600", halo: "rgba(255,230,0,0.22)"  },
-            grace:  { label: "Grace Period", labelAf: "Grasietydperk",  hex: "#FF8A00", halo: "rgba(255,138,0,0.22)"  },
-            lapsed: { label: "Lapsed",       labelAf: "Verval",         hex: "#FF2BD6", halo: "rgba(255,43,214,0.22)"  },
+            active: { label: "Active",       labelAf: "Aktief",         hex: "#7FEFFF", halo: "rgba(0,229,255,0.22)"  },
+            trial:  { label: "Free Trial",   labelAf: "Gratis Proef",   hex: "#FFF29E", halo: "rgba(255,230,0,0.22)"  },
+            grace:  { label: "Grace Period", labelAf: "Grasietydperk",  hex: "#FFC48F", halo: "rgba(255,138,0,0.22)"  },
+            lapsed: { label: "Lapsed",       labelAf: "Verval",         hex: "#FF9FE5", halo: "rgba(255,43,214,0.22)"  },
           };
           const sc = statusConfig[status] ?? statusConfig["lapsed"];
 
@@ -1173,7 +1173,7 @@ export default function DashboardPage() {
                   </span>
                   {trialDaysLeft !== null && (
                     <span className="text-[11px] text-white flex items-center gap-1">
-                      <Clock className="w-3 h-3" style={{ color: "#FFE600" }} />
+                      <Clock className="w-3 h-3" style={{ color: "#FFF29E" }} />
                       {trialDaysLeft} {trialDaysLeft === 1 ? t.dayLeft : t.daysLeft}
                     </span>
                   )}
@@ -1195,10 +1195,10 @@ export default function DashboardPage() {
         {/* Stat cards — pure black with hex-neon per wordmark stop (LIVE) */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: t.studyStreak,      value: stats?.studyStreak ?? 0,       suffix: "",  sub: t.daysInARow,   Icon: Flame,         hex: "#FF8A00", halo: "rgba(255,138,0,0.32)", testid: "card-stat-streak",     statTestid: "stat-streak"     },
-            { label: t.questionsAnswered, value: stats?.questionsAnswered ?? 0, suffix: "",  sub: t.answeredLabel, Icon: Zap,           hex: "#006BFF", halo: "rgba(0,107,255,0.30)", testid: "card-stat-questions",  statTestid: "stat-questions"  },
-            { label: t.accuracy,          value: stats?.accuracy ?? 0,          suffix: "%", sub: t.averageLabel,  Icon: Target,        hex: "#8A2BFF", halo: "rgba(138,43,255,0.32)", testid: "card-stat-accuracy",   statTestid: "stat-accuracy"   },
-            { label: t.papersCompleted,   value: stats?.papersCompleted ?? 0,   suffix: "",  sub: t.completedLabel, Icon: CalendarCheck, hex: "#8A2BFF", halo: "rgba(138,43,255,0.30)", testid: "card-stat-papers",     statTestid: "stat-papers"     },
+            { label: t.studyStreak,      value: stats?.studyStreak ?? 0,       suffix: "",  sub: t.daysInARow,   Icon: Flame,         hex: "#FFC48F", halo: "rgba(255,138,0,0.32)", testid: "card-stat-streak",     statTestid: "stat-streak"     },
+            { label: t.questionsAnswered, value: stats?.questionsAnswered ?? 0, suffix: "",  sub: t.answeredLabel, Icon: Zap,           hex: "#6FA8FF", halo: "rgba(0,107,255,0.30)", testid: "card-stat-questions",  statTestid: "stat-questions"  },
+            { label: t.accuracy,          value: stats?.accuracy ?? 0,          suffix: "%", sub: t.averageLabel,  Icon: Target,        hex: "#C6A4FF", halo: "rgba(138,43,255,0.32)", testid: "card-stat-accuracy",   statTestid: "stat-accuracy"   },
+            { label: t.papersCompleted,   value: stats?.papersCompleted ?? 0,   suffix: "",  sub: t.completedLabel, Icon: CalendarCheck, hex: "#C6A4FF", halo: "rgba(138,43,255,0.30)", testid: "card-stat-papers",     statTestid: "stat-papers"     },
           ].map(({ label, value, suffix, sub, Icon, hex, halo, testid, statTestid }) => (
             <div
               key={label}
@@ -1259,10 +1259,10 @@ export default function DashboardPage() {
             {/* Urgency Banner — cosmic neon, wordmark palette */}
             {examWidgets.urgencyBanner && (() => {
               const urgencyColor: Record<string, { hex: string; halo: string }> = {
-                red:     { hex: "#FF2BD6", halo: "rgba(255,43,214,0.28)" }, // pink = final sprint
-                amber:   { hex: "#FF8A00", halo: "rgba(255,138,0,0.28)" }, // orange = exam prep
-                blue:    { hex: "#FFE600", halo: "rgba(255,230,0,0.28)" }, // gold = focused
-                emerald: { hex: "#8A2BFF", halo: "rgba(138,43,255,0.28)" },// violet = build
+                red:     { hex: "#FF9FE5", halo: "rgba(255,43,214,0.28)" }, // pink = final sprint
+                amber:   { hex: "#FFC48F", halo: "rgba(255,138,0,0.28)" }, // orange = exam prep
+                blue:    { hex: "#FFF29E", halo: "rgba(255,230,0,0.28)" }, // gold = focused
+                emerald: { hex: "#C6A4FF", halo: "rgba(138,43,255,0.28)" },// violet = build
               };
               const u = urgencyColor[examWidgets.urgencyBanner.color] ?? urgencyColor.emerald;
               const Icon =
@@ -1308,16 +1308,16 @@ export default function DashboardPage() {
               {examWidgets.nextExam && (
                 <div
                   className="relative rounded-2xl bg-black overflow-hidden"
-                  style={{ border: "1.5px solid #00E5FF", boxShadow: "0 0 0 1px rgba(0,229,255,0.22), 0 0 22px rgba(0,229,255,0.22)" }}
+                  style={{ border: "1.5px solid #7FEFFF", boxShadow: "0 0 0 1px rgba(0,229,255,0.22), 0 0 22px rgba(0,229,255,0.22)" }}
                   data-testid="next-exam-card"
                 >
-                  <span aria-hidden className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: "#00E5FF" }} />
-                  <span aria-hidden className="absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2" style={{ borderColor: "#00E5FF" }} />
-                  <span aria-hidden className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2" style={{ borderColor: "#00E5FF" }} />
-                  <span aria-hidden className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: "#00E5FF" }} />
+                  <span aria-hidden className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: "#7FEFFF" }} />
+                  <span aria-hidden className="absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2" style={{ borderColor: "#7FEFFF" }} />
+                  <span aria-hidden className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2" style={{ borderColor: "#7FEFFF" }} />
+                  <span aria-hidden className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: "#7FEFFF" }} />
                   <div className="flex items-center gap-2 px-5 py-4 border-b" style={{ borderColor: "rgba(0,229,255,0.25)" }}>
-                    <GraduationCap className="w-4 h-4" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px rgba(0,229,255,0.6))" }} />
-                    <h3 className="font-bold text-sm" style={{ color: "#00E5FF", textShadow: "0 0 8px rgba(0,229,255,0.4)" }}>
+                    <GraduationCap className="w-4 h-4" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 4px rgba(0,229,255,0.6))" }} />
+                    <h3 className="font-bold text-sm" style={{ color: "#7FEFFF", textShadow: "0 0 8px rgba(0,229,255,0.4)" }}>
                       {t.nextExam}
                     </h3>
                   </div>
@@ -1331,7 +1331,7 @@ export default function DashboardPage() {
                         className="flex-1 rounded-xl p-3 text-center bg-black"
                         style={{ border: "1px solid rgba(0,229,255,0.4)", boxShadow: "inset 0 0 12px rgba(0,229,255,0.15)" }}
                       >
-                        <p className="text-2xl font-bold tabular-nums" style={{ color: "#00E5FF", textShadow: "0 0 10px rgba(0,229,255,0.5)" }} data-testid="next-exam-days">
+                        <p className="text-2xl font-bold tabular-nums" style={{ color: "#7FEFFF", textShadow: "0 0 10px rgba(0,229,255,0.5)" }} data-testid="next-exam-days">
                           {examWidgets.nextExam.daysRemaining}
                         </p>
                         <p className="text-[10px] font-semibold text-white uppercase">{t.daysUnit}</p>
@@ -1350,16 +1350,16 @@ export default function DashboardPage() {
               {/* This Week Exams — cosmic neon, orange accent */}
               <div
                 className="relative rounded-2xl bg-black overflow-hidden"
-                style={{ border: "1.5px solid #FF8A00", boxShadow: "0 0 0 1px rgba(255,138,0,0.22), 0 0 22px rgba(255,138,0,0.22)" }}
+                style={{ border: "1.5px solid #FFC48F", boxShadow: "0 0 0 1px rgba(255,138,0,0.22), 0 0 22px rgba(255,138,0,0.22)" }}
                 data-testid="this-week-exams-card"
               >
-                <span aria-hidden className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: "#FF8A00" }} />
-                <span aria-hidden className="absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2" style={{ borderColor: "#FF8A00" }} />
-                <span aria-hidden className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2" style={{ borderColor: "#FF8A00" }} />
-                <span aria-hidden className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: "#FF8A00" }} />
+                <span aria-hidden className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: "#FFC48F" }} />
+                <span aria-hidden className="absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2" style={{ borderColor: "#FFC48F" }} />
+                <span aria-hidden className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2" style={{ borderColor: "#FFC48F" }} />
+                <span aria-hidden className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: "#FFC48F" }} />
                 <div className="flex items-center gap-2 px-5 py-4 border-b" style={{ borderColor: "rgba(255,138,0,0.25)" }}>
-                  <CalendarDays className="w-4 h-4" style={{ color: "#FF8A00", filter: "drop-shadow(0 0 4px rgba(255,138,0,0.6))" }} />
-                  <h3 className="font-bold text-sm" style={{ color: "#FF8A00", textShadow: "0 0 8px rgba(255,138,0,0.4)" }}>{t.thisWeek}</h3>
+                  <CalendarDays className="w-4 h-4" style={{ color: "#FFC48F", filter: "drop-shadow(0 0 4px rgba(255,138,0,0.6))" }} />
+                  <h3 className="font-bold text-sm" style={{ color: "#FFC48F", textShadow: "0 0 8px rgba(255,138,0,0.4)" }}>{t.thisWeek}</h3>
                 </div>
                 <div className="p-5">
                   {examWidgets.thisWeekExams?.length > 0 ? (
@@ -1368,9 +1368,9 @@ export default function DashboardPage() {
                         <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl bg-black" style={{ border: "1px solid rgba(255,138,0,0.35)" }}>
                           <div
                             className="w-8 h-8 rounded-lg bg-black flex items-center justify-center shrink-0"
-                            style={{ border: "1px solid #FF8A00", boxShadow: "0 0 10px rgba(255,138,0,0.35)" }}
+                            style={{ border: "1px solid #FFC48F", boxShadow: "0 0 10px rgba(255,138,0,0.35)" }}
                           >
-                            <span className="text-xs font-bold" style={{ color: "#FF8A00" }}>P{e.paperNumber}</span>
+                            <span className="text-xs font-bold" style={{ color: "#FFC48F" }}>P{e.paperNumber}</span>
                           </div>
                           <div className="min-w-0 flex-1">
                             <p className="text-xs font-semibold text-white truncate">{e.subjectName}</p>
@@ -1378,7 +1378,7 @@ export default function DashboardPage() {
                               {formatDate(e.examDate + "T00:00:00", language, { weekday: "short", day: "numeric", month: "short" })}
                             </p>
                           </div>
-                          <span className="text-[10px] font-bold shrink-0" style={{ color: "#FF8A00" }}>
+                          <span className="text-[10px] font-bold shrink-0" style={{ color: "#FFC48F" }}>
                             {e.daysRemaining}{t.daysShort}
                           </span>
                         </div>
@@ -1398,17 +1398,17 @@ export default function DashboardPage() {
             {examWidgets.subjectPriorityQueue?.length > 0 && (
               <div
                 className="relative rounded-2xl bg-black overflow-hidden"
-                style={{ border: "1.5px solid #FFE600", boxShadow: "0 0 0 1px rgba(255,230,0,0.22), 0 0 22px rgba(255,230,0,0.22)" }}
+                style={{ border: "1.5px solid #FFF29E", boxShadow: "0 0 0 1px rgba(255,230,0,0.22), 0 0 22px rgba(255,230,0,0.22)" }}
                 data-testid="subject-priority-queue"
               >
-                <span aria-hidden className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: "#FFE600" }} />
-                <span aria-hidden className="absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2" style={{ borderColor: "#FFE600" }} />
-                <span aria-hidden className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2" style={{ borderColor: "#FFE600" }} />
-                <span aria-hidden className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: "#FFE600" }} />
+                <span aria-hidden className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: "#FFF29E" }} />
+                <span aria-hidden className="absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2" style={{ borderColor: "#FFF29E" }} />
+                <span aria-hidden className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2" style={{ borderColor: "#FFF29E" }} />
+                <span aria-hidden className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: "#FFF29E" }} />
                 <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: "rgba(255,230,0,0.25)" }}>
                   <div className="flex items-center gap-2">
-                    <ListOrdered className="w-4 h-4" style={{ color: "#FFE600", filter: "drop-shadow(0 0 4px rgba(255,230,0,0.6))" }} />
-                    <h3 className="font-bold text-sm" style={{ color: "#FFE600", textShadow: "0 0 8px rgba(255,230,0,0.4)" }}>
+                    <ListOrdered className="w-4 h-4" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 4px rgba(255,230,0,0.6))" }} />
+                    <h3 className="font-bold text-sm" style={{ color: "#FFF29E", textShadow: "0 0 8px rgba(255,230,0,0.4)" }}>
                       {t.subjectPriority}
                     </h3>
                   </div>
@@ -1422,10 +1422,10 @@ export default function DashboardPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                     {examWidgets.subjectPriorityQueue.slice(0, 6).map((item: any, i: number) => {
                       const urgencyHex: Record<string, { c: string; h: string }> = {
-                        final_sprint:     { c: "#FF2BD6", h: "rgba(255,43,214,0.28)" },
-                        exam_prep_mode:   { c: "#FF8A00", h: "rgba(255,138,0,0.28)" },
-                        focused_revision: { c: "#FFE600", h: "rgba(255,230,0,0.28)" },
-                        build_mastery:    { c: "#8A2BFF", h: "rgba(138,43,255,0.26)"},
+                        final_sprint:     { c: "#FF9FE5", h: "rgba(255,43,214,0.28)" },
+                        exam_prep_mode:   { c: "#FFC48F", h: "rgba(255,138,0,0.28)" },
+                        focused_revision: { c: "#FFF29E", h: "rgba(255,230,0,0.28)" },
+                        build_mastery:    { c: "#C6A4FF", h: "rgba(138,43,255,0.26)"},
                       };
                       const u = urgencyHex[item.urgencyState] ?? urgencyHex.build_mastery;
                       return (
@@ -1464,13 +1464,13 @@ export default function DashboardPage() {
         {varkStyle && (
           <div
             className="relative flex items-center gap-3 px-4 py-3 rounded-2xl bg-black w-fit overflow-hidden"
-            style={{ border: "1.5px solid #8A2BFF", boxShadow: "0 0 0 1px rgba(138,43,255,0.22), 0 0 18px rgba(138,43,255,0.22)" }}
+            style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 0 1px rgba(138,43,255,0.22), 0 0 18px rgba(138,43,255,0.22)" }}
             data-testid="vark-style-badge"
           >
-            <span aria-hidden className="absolute inset-y-3 left-0 w-[2px] rounded-r" style={{ background: "#8A2BFF", boxShadow: "0 0 8px #8A2BFF" }} />
+            <span aria-hidden className="absolute inset-y-3 left-0 w-[2px] rounded-r" style={{ background: "#C6A4FF", boxShadow: "0 0 8px #C6A4FF" }} />
             <span className="text-2xl pl-1">{varkStyle.icon}</span>
             <div>
-              <p className="text-xs uppercase font-semibold tracking-widest" style={{ color: "#8A2BFF", textShadow: "0 0 8px rgba(138,43,255,0.45)" }}>
+              <p className="text-xs uppercase font-semibold tracking-widest" style={{ color: "#C6A4FF", textShadow: "0 0 8px rgba(138,43,255,0.45)" }}>
                 {t.yourStyleLabel}
               </p>
               <p className="font-bold text-white text-sm">
@@ -1507,7 +1507,7 @@ export default function DashboardPage() {
                     : `Your study history shows you perform best with ${varkInsights.dominantStyle} content.`}
               </p>
               {varkInsights.autoUpdated && (
-                <p className="text-xs font-semibold mt-1.5" style={{ color: "#00E5FF" }}>
+                <p className="text-xs font-semibold mt-1.5" style={{ color: "#7FEFFF" }}>
                   {t.profileAutoUpdated}
                 </p>
               )}
@@ -1515,7 +1515,7 @@ export default function DashboardPage() {
             <Link href="/settings" className="flex-shrink-0">
               <button
                 className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-black"
-                style={{ color: "#00E5FF", border: "1.5px solid #00E5FF", boxShadow: "0 0 10px rgba(0,229,255,0.4)" }}
+                style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 10px rgba(0,229,255,0.4)" }}
               >
                 {t.viewLabel}
               </button>
@@ -1529,21 +1529,21 @@ export default function DashboardPage() {
             const allCards = [
               {
                 href: "/tutor", testid: "link-smart-tutor", varkKey: "auditory",
-                hex: "#8A2BFF", halo: "rgba(138,43,255,",
-                head: <img src={rizzAvatar} alt="Rizz" className="w-14 h-14 rounded-2xl object-cover" style={{ border: "1.5px solid #8A2BFF", boxShadow: "0 0 14px rgba(138,43,255,0.45)" }} />,
+                hex: "#C6A4FF", halo: "rgba(138,43,255,",
+                head: <img src={rizzAvatar} alt="Rizz" className="w-14 h-14 rounded-2xl object-cover" style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 14px rgba(138,43,255,0.45)" }} />,
                 title: "Rizz",
                 sub: t.tutorCardSub,
                 cta: t.tutorCardCta,
               },
               {
                 href: "/exam-mode", testid: "link-exam-mode", varkKey: "kinesthetic",
-                hex: "#006BFF", halo: "rgba(0,107,255,",
+                hex: "#6FA8FF", halo: "rgba(0,107,255,",
                 head: (
                   <div
                     className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center"
-                    style={{ border: "1.5px solid #006BFF", boxShadow: "0 0 14px rgba(0,107,255,0.45), inset 0 0 10px rgba(0,107,255,0.25)" }}
+                    style={{ border: "1.5px solid #6FA8FF", boxShadow: "0 0 14px rgba(0,107,255,0.45), inset 0 0 10px rgba(0,107,255,0.25)" }}
                   >
-                    <Shield className="w-7 h-7" style={{ color: "#006BFF", filter: "drop-shadow(0 0 4px rgba(0,107,255,0.55))" }} />
+                    <Shield className="w-7 h-7" style={{ color: "#6FA8FF", filter: "drop-shadow(0 0 4px rgba(0,107,255,0.55))" }} />
                   </div>
                 ),
                 title: t.crunchTitle,
@@ -1552,13 +1552,13 @@ export default function DashboardPage() {
               },
               {
                 href: "/progress", testid: "link-progress-card", varkKey: "visual",
-                hex: "#8A2BFF", halo: "rgba(138,43,255,",
+                hex: "#C6A4FF", halo: "rgba(138,43,255,",
                 head: (
                   <div
                     className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center"
-                    style={{ border: "1.5px solid #8A2BFF", boxShadow: "0 0 14px rgba(138,43,255,0.45), inset 0 0 10px rgba(138,43,255,0.25)" }}
+                    style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 14px rgba(138,43,255,0.45), inset 0 0 10px rgba(138,43,255,0.25)" }}
                   >
-                    <TrendingUp className="w-7 h-7" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 4px rgba(138,43,255,0.55))" }} />
+                    <TrendingUp className="w-7 h-7" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 4px rgba(138,43,255,0.55))" }} />
                   </div>
                 ),
                 title: t.progressCardTitle,
@@ -1567,13 +1567,13 @@ export default function DashboardPage() {
               },
               {
                 href: "/daily-challenge", testid: "link-daily-challenge", varkKey: "read",
-                hex: "#FF8A00", halo: "rgba(255,138,0,",
+                hex: "#FFC48F", halo: "rgba(255,138,0,",
                 head: (
                   <div
                     className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center"
-                    style={{ border: "1.5px solid #FF8A00", boxShadow: "0 0 14px rgba(255,138,0,0.45), inset 0 0 10px rgba(255,138,0,0.25)" }}
+                    style={{ border: "1.5px solid #FFC48F", boxShadow: "0 0 14px rgba(255,138,0,0.45), inset 0 0 10px rgba(255,138,0,0.25)" }}
                   >
-                    <Sparkles className="w-7 h-7" style={{ color: "#FF8A00", filter: "drop-shadow(0 0 4px rgba(255,138,0,0.55))" }} />
+                    <Sparkles className="w-7 h-7" style={{ color: "#FFC48F", filter: "drop-shadow(0 0 4px rgba(255,138,0,0.55))" }} />
                   </div>
                 ),
                 title: t.dailyChallengeTitle,
@@ -1632,9 +1632,9 @@ export default function DashboardPage() {
             {
               href: "/exam/mini-mock",
               testid: "link-mini-mock",
-              hex: "#00E5FF",
+              hex: "#7FEFFF",
               halo: "rgba(0,229,255,",
-              icon: <Zap className="w-7 h-7" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px rgba(0,229,255,0.55))" }} />,
+              icon: <Zap className="w-7 h-7" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 4px rgba(0,229,255,0.55))" }} />,
               title: t.miniMockTitle,
               sub: t.miniMockSub,
               cta: t.miniMockCta,
@@ -1642,9 +1642,9 @@ export default function DashboardPage() {
             {
               href: "/exam/full",
               testid: "link-full-exam",
-              hex: "#FF2BD6",
+              hex: "#FF9FE5",
               halo: "rgba(255,43,214,",
-              icon: <GraduationCap className="w-7 h-7" style={{ color: "#FF2BD6", filter: "drop-shadow(0 0 4px rgba(255,43,214,0.55))" }} />,
+              icon: <GraduationCap className="w-7 h-7" style={{ color: "#FF9FE5", filter: "drop-shadow(0 0 4px rgba(255,43,214,0.55))" }} />,
               title: t.fullExamTitle,
               sub: t.fullExamSub,
               cta: t.fullExamCta,
@@ -1691,15 +1691,15 @@ export default function DashboardPage() {
           <div
             className="relative rounded-2xl bg-black overflow-hidden"
             style={{
-              border: "1.5px solid #FF8A00",
+              border: "1.5px solid #FFC48F",
               boxShadow: "0 0 0 1px rgba(255,138,0,0.28), 0 0 28px rgba(255,138,0,0.28), inset 0 0 22px rgba(0,0,0,0.55)",
             }}
             data-testid="panel-focus-areas"
           >
-            <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FF8A00" }} />
-            <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#FF8A00" }} />
-            <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#FF8A00" }} />
-            <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#FF8A00" }} />
+            <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FFC48F" }} />
+            <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#FFC48F" }} />
+            <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#FFC48F" }} />
+            <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#FFC48F" }} />
 
             <div
               className="flex items-center justify-between px-6 py-5 gap-3"
@@ -1707,7 +1707,7 @@ export default function DashboardPage() {
             >
               <div className="min-w-0">
                 <h2 className="flex items-center gap-2 text-lg font-bold text-white">
-                  <Target className="w-5 h-5" style={{ color: "#FF8A00", filter: "drop-shadow(0 0 6px rgba(255,138,0,0.8))" }} />
+                  <Target className="w-5 h-5" style={{ color: "#FFC48F", filter: "drop-shadow(0 0 6px rgba(255,138,0,0.8))" }} />
                   {t.focusAreasHeading}
                 </h2>
                 <p className="text-xs text-white mt-1">{t.focusAreasSubtitle}</p>
@@ -1717,9 +1717,9 @@ export default function DashboardPage() {
               <div className="p-6 text-center">
                 <div
                   className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-black flex items-center justify-center"
-                  style={{ border: "1.5px solid #FF8A00", boxShadow: "0 0 14px rgba(255,138,0,0.4)" }}
+                  style={{ border: "1.5px solid #FFC48F", boxShadow: "0 0 14px rgba(255,138,0,0.4)" }}
                 >
-                  <Sparkles className="w-7 h-7" style={{ color: "#FF8A00", filter: "drop-shadow(0 0 5px #FF8A00)" }} />
+                  <Sparkles className="w-7 h-7" style={{ color: "#FFC48F", filter: "drop-shadow(0 0 5px #FFC48F)" }} />
                 </div>
                 <p className="text-sm text-white" data-testid="text-focus-areas-empty">{t.focusAreasEmpty}</p>
               </div>
@@ -1727,7 +1727,7 @@ export default function DashboardPage() {
             <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {focusAreasData.focusAreas.map((fa) => {
                 const isRed = fa.masteryBand === "red";
-                const hex = isRed ? "#ff5b6e" : "#FFE600";
+                const hex = isRed ? "#ff5b6e" : "#FFF29E";
                 const halo = isRed ? "rgba(255,91,110,0.28)" : "rgba(255,230,0,0.28)";
                 const bandLabel = isRed ? t.focusBandCatchUp : t.focusBandBuilding;
                 const topicName = language === "af" && fa.topicNameAfrikaans ? fa.topicNameAfrikaans : fa.topicName;
@@ -1772,27 +1772,27 @@ export default function DashboardPage() {
           <div
             className="lg:col-span-2 relative rounded-2xl bg-black overflow-hidden"
             style={{
-              border: "1.5px solid #006BFF",
+              border: "1.5px solid #6FA8FF",
               boxShadow: "0 0 0 1px rgba(0,107,255,0.28), 0 0 28px rgba(0,107,255,0.28), inset 0 0 22px rgba(0,0,0,0.55)",
             }}
           >
-            <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#006BFF" }} />
-            <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#006BFF" }} />
-            <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#006BFF" }} />
-            <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#006BFF" }} />
+            <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#6FA8FF" }} />
+            <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#6FA8FF" }} />
+            <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#6FA8FF" }} />
+            <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#6FA8FF" }} />
 
             <div
               className="flex items-center justify-between px-6 py-5"
               style={{ borderBottom: "1px solid rgba(0,107,255,0.35)" }}
             >
               <h2 className="flex items-center gap-2 text-lg font-bold text-white">
-                <BookOpen className="w-5 h-5" style={{ color: "#006BFF", filter: "drop-shadow(0 0 6px rgba(0,107,255,0.8))" }} />
+                <BookOpen className="w-5 h-5" style={{ color: "#6FA8FF", filter: "drop-shadow(0 0 6px rgba(0,107,255,0.8))" }} />
                 {t.subjectsHeading}
               </h2>
               <Link href="/settings">
                 <button
                   className="text-[11px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg bg-black"
-                  style={{ color: "#006BFF", border: "1px solid rgba(0,107,255,0.55)", boxShadow: "0 0 10px rgba(0,107,255,0.3)" }}
+                  style={{ color: "#6FA8FF", border: "1px solid rgba(0,107,255,0.55)", boxShadow: "0 0 10px rgba(0,107,255,0.3)" }}
                   data-testid="link-manage-subjects"
                 >
                   <Settings className="w-3.5 h-3.5 inline mr-1" />{t.manageLabel}
@@ -1807,7 +1807,7 @@ export default function DashboardPage() {
               ) : filteredSubjects && filteredSubjects.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {(() => {
-                    const stops = ["#FF8A00", "#FFE600", "#00E5FF", "#006BFF", "#8A2BFF", "#8A2BFF", "#FF2BD6"];
+                    const stops = ["#FFC48F", "#FFF29E", "#7FEFFF", "#6FA8FF", "#C6A4FF", "#C6A4FF", "#FF9FE5"];
                     return filteredSubjects.map((subject: any, idx: number) => {
                       const hex = stops[idx % stops.length];
                       const haloHex = `${hex}55`;
@@ -1849,16 +1849,16 @@ export default function DashboardPage() {
                 <div className="text-center py-10">
                   <div
                     className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-black flex items-center justify-center"
-                    style={{ border: "1.5px solid #006BFF", boxShadow: "0 0 14px rgba(0,107,255,0.4)" }}
+                    style={{ border: "1.5px solid #6FA8FF", boxShadow: "0 0 14px rgba(0,107,255,0.4)" }}
                   >
-                    <BookOpen className="w-8 h-8" style={{ color: "#006BFF", filter: "drop-shadow(0 0 5px #006BFF)" }} />
+                    <BookOpen className="w-8 h-8" style={{ color: "#6FA8FF", filter: "drop-shadow(0 0 5px #6FA8FF)" }} />
                   </div>
                   <h3 className="font-bold text-white text-lg mb-1">{t.selectSubjectsHeading}</h3>
                   <p className="text-white text-sm mb-6">{t.selectSubjectsDesc}</p>
                   <Link href="/settings">
                     <button
                       className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-black font-bold text-sm"
-                      style={{ color: "#006BFF", border: "1.5px solid #006BFF", boxShadow: "0 0 16px rgba(0,107,255,0.5)" }}
+                      style={{ color: "#6FA8FF", border: "1.5px solid #6FA8FF", boxShadow: "0 0 16px rgba(0,107,255,0.5)" }}
                       data-testid="button-select-subjects"
                     >
                       {t.selectSubjectsBtn}
@@ -1873,27 +1873,27 @@ export default function DashboardPage() {
           <div
             className="relative rounded-2xl bg-black overflow-hidden flex flex-col"
             style={{
-              border: "1.5px solid #FFE600",
+              border: "1.5px solid #FFF29E",
               boxShadow: "0 0 0 1px rgba(255,230,0,0.28), 0 0 28px rgba(255,230,0,0.28), inset 0 0 22px rgba(0,0,0,0.55)",
             }}
           >
-            <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FFE600" }} />
-            <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#FFE600" }} />
-            <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#FFE600" }} />
-            <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#FFE600" }} />
+            <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FFF29E" }} />
+            <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#FFF29E" }} />
+            <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#FFF29E" }} />
+            <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#FFF29E" }} />
 
             <div
               className="flex items-center gap-2 px-6 py-5"
               style={{ borderBottom: "1px solid rgba(255,230,0,0.35)" }}
             >
-              <Award className="w-5 h-5" style={{ color: "#FFE600", filter: "drop-shadow(0 0 6px rgba(255,230,0,0.85))" }} />
+              <Award className="w-5 h-5" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 6px rgba(255,230,0,0.85))" }} />
               <h2 className="text-lg font-bold text-white">{t.achievementsHeading}</h2>
             </div>
             <div className="p-5 flex-1 overflow-y-auto">
               {badges && badges.length > 0 ? (
                 <div className="grid grid-cols-2 gap-3">
                   {(() => {
-                    const stops = ["#FF8A00", "#FFE600", "#00E5FF", "#006BFF", "#8A2BFF", "#8A2BFF", "#FF2BD6", "#FF8A00"];
+                    const stops = ["#FFC48F", "#FFF29E", "#7FEFFF", "#6FA8FF", "#C6A4FF", "#C6A4FF", "#FF9FE5", "#FFC48F"];
                     return badges.slice(0, 8).map((badge: any, idx: number) => {
                       const info = BADGE_INFO[badge.badgeCode];
                       if (!info) return null;
@@ -1924,9 +1924,9 @@ export default function DashboardPage() {
                 <div className="flex flex-col items-center justify-center h-full text-center py-8">
                   <div
                     className="w-16 h-16 mx-auto mb-3 rounded-2xl bg-black flex items-center justify-center"
-                    style={{ border: "1.5px solid #FFE600", boxShadow: "0 0 14px rgba(255,230,0,0.4)" }}
+                    style={{ border: "1.5px solid #FFF29E", boxShadow: "0 0 14px rgba(255,230,0,0.4)" }}
                   >
-                    <Trophy className="w-8 h-8" style={{ color: "#FFE600", filter: "drop-shadow(0 0 5px #FFE600)" }} />
+                    <Trophy className="w-8 h-8" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 5px #FFF29E)" }} />
                   </div>
                   <p className="text-white font-semibold text-sm">{t.startLearningToUnlock}</p>
                 </div>
@@ -1940,23 +1940,23 @@ export default function DashboardPage() {
           <div
             className="relative rounded-2xl bg-black overflow-hidden"
             style={{
-              border: "1.5px solid #00E5FF",
+              border: "1.5px solid #7FEFFF",
               boxShadow: "0 0 0 1px rgba(0,229,255,0.28), 0 0 28px rgba(0,229,255,0.28), inset 0 0 22px rgba(0,0,0,0.55)",
             }}
           >
-            <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#00E5FF" }} />
-            <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#00E5FF" }} />
-            <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#00E5FF" }} />
-            <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#00E5FF" }} />
+            <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#7FEFFF" }} />
+            <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#7FEFFF" }} />
+            <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#7FEFFF" }} />
+            <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#7FEFFF" }} />
             <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(0,229,255,0.35)" }}>
-              <Sparkles className="w-5 h-5" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 6px rgba(0,229,255,0.85))" }} />
+              <Sparkles className="w-5 h-5" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 6px rgba(0,229,255,0.85))" }} />
               <h2 className="text-lg font-bold text-white">{t.recommendedHeading}</h2>
             </div>
             <div className="p-5 space-y-3">
               {(() => {
                 const items = [
-                  { href: "/tutor", num: 1, hex: "#00E5FF", label: t.tryRizz },
-                  { href: "/subjects",    num: 2, hex: "#8A2BFF", label: t.completePractice },
+                  { href: "/tutor", num: 1, hex: "#7FEFFF", label: t.tryRizz },
+                  { href: "/subjects",    num: 2, hex: "#C6A4FF", label: t.completePractice },
                 ];
                 return items.map(({ href, num, hex, label }) => (
                   <Link key={href} href={href}>
@@ -1984,16 +1984,16 @@ export default function DashboardPage() {
           <div
             className="relative rounded-2xl bg-black overflow-hidden"
             style={{
-              border: "1.5px solid #8A2BFF",
+              border: "1.5px solid #C6A4FF",
               boxShadow: "0 0 0 1px rgba(138,43,255,0.3), 0 0 28px rgba(138,43,255,0.3), inset 0 0 22px rgba(0,0,0,0.55)",
             }}
           >
-            <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#8A2BFF" }} />
-            <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#8A2BFF" }} />
-            <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#8A2BFF" }} />
-            <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#8A2BFF" }} />
+            <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#C6A4FF" }} />
+            <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#C6A4FF" }} />
+            <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#C6A4FF" }} />
+            <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#C6A4FF" }} />
             <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(138,43,255,0.35)" }}>
-              <Brain className="w-5 h-5" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 6px rgba(138,43,255,0.85))" }} />
+              <Brain className="w-5 h-5" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 6px rgba(138,43,255,0.85))" }} />
               <h2 className="text-lg font-bold text-white">{t.yourVibeHeading}</h2>
             </div>
             <div className="p-5">
@@ -2003,7 +2003,7 @@ export default function DashboardPage() {
                     className="p-4 rounded-2xl bg-black"
                     style={{ border: "1px solid rgba(138,43,255,0.55)", boxShadow: "0 0 14px rgba(138,43,255,0.3)" }}
                   >
-                    <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: "#8A2BFF" }}>{t.learningStyleLabel}</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: "#C6A4FF" }}>{t.learningStyleLabel}</p>
                     <p className="font-bold text-white text-base">
                       {isAf
                         ? LEARNING_STYLE_INFO[profile.learningStyle as LearningStyle]?.nameAfrikaans
@@ -2014,7 +2014,7 @@ export default function DashboardPage() {
                     className="p-4 rounded-2xl bg-black"
                     style={{ border: "1px solid rgba(255,230,0,0.5)", boxShadow: "0 0 14px rgba(255,230,0,0.25)" }}
                   >
-                    <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: "#FFE600" }}>{t.bestTimeLabel}</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: "#FFF29E" }}>{t.bestTimeLabel}</p>
                     <p className="font-bold text-white text-base capitalize">{profile.studyPreference}</p>
                   </div>
                 </div>
@@ -2033,7 +2033,7 @@ export default function DashboardPage() {
           <div
             className="relative rounded-2xl bg-black p-6 sm:p-7 flex flex-col md:flex-row items-start md:items-center gap-5"
             style={{
-              border: "1.5px solid #FFE600",
+              border: "1.5px solid #FFF29E",
               boxShadow:
                 "0 0 18px rgba(255,230,0,0.35), 0 0 36px rgba(255,230,0,0.20), inset 0 0 22px rgba(255,230,0,0.10)",
             }}
@@ -2042,13 +2042,13 @@ export default function DashboardPage() {
             <span
               className="inline-flex h-12 w-12 rounded-xl items-center justify-center bg-black shrink-0"
               style={{
-                border: "1.5px solid #FFE600",
+                border: "1.5px solid #FFF29E",
                 boxShadow: "0 0 14px rgba(255,230,0,0.55), inset 0 0 12px rgba(255,230,0,0.25)",
               }}
             >
               <Lightbulb
                 className="w-6 h-6"
-                style={{ color: "#FFE600", filter: "drop-shadow(0 0 6px #FFE600)" }}
+                style={{ color: "#FFF29E", filter: "drop-shadow(0 0 6px #FFF29E)" }}
               />
             </span>
             <div className="flex-1 space-y-1.5">
@@ -2059,8 +2059,8 @@ export default function DashboardPage() {
                 <span
                   className="text-[10px] font-bold tracking-[0.12em] uppercase px-2 py-0.5 rounded-full bg-black"
                   style={{
-                    color: "#FFE600",
-                    border: "1px solid #FFE600",
+                    color: "#FFF29E",
+                    border: "1px solid #FFF29E",
                     boxShadow: "0 0 8px rgba(255,230,0,0.45)",
                   }}
                 >
@@ -2079,7 +2079,7 @@ export default function DashboardPage() {
                 className="shrink-0 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold"
                 style={{
                   color: "#000",
-                  background: "#FFE600",
+                  background: "#FFF29E",
                   boxShadow: "0 0 16px rgba(255,230,0,0.65), 0 0 32px rgba(255,230,0,0.35)",
                 }}
                 data-testid="button-pro-tip-learn-more"
@@ -2094,9 +2094,9 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
           {(() => {
             const sections = [
-              { title: t.nextMilestoneTitle, hex: "#FF8A00", Widget: NextMilestoneWidget },
-              { title: t.thisWeek,          hex: "#00E5FF", Widget: YouVsYouChart },
-              { title: t.personalBestsTitle, hex: "#FFE600", Widget: PersonalBestsWidget },
+              { title: t.nextMilestoneTitle, hex: "#FFC48F", Widget: NextMilestoneWidget },
+              { title: t.thisWeek,          hex: "#7FEFFF", Widget: YouVsYouChart },
+              { title: t.personalBestsTitle, hex: "#FFF29E", Widget: PersonalBestsWidget },
             ];
             return sections.map(({ title, hex, Widget }) => (
               <div key={title} className="flex flex-col gap-4 h-full">
@@ -2150,20 +2150,20 @@ function LearnerFAQ({ isAf, faqHeading }: { isAf: boolean; faqHeading: string })
     <div
       className="relative rounded-2xl bg-black overflow-hidden"
       style={{
-        border: "1.5px solid #8A2BFF",
+        border: "1.5px solid #C6A4FF",
         boxShadow: "0 0 0 1px rgba(255,43,214,0.25), 0 0 28px rgba(138,43,255,0.3), 0 0 44px rgba(255,43,214,0.22), inset 0 0 22px rgba(0,0,0,0.55)",
       }}
     >
-      <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FF2BD6" }} />
-      <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#8A2BFF" }} />
-      <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#8A2BFF" }} />
-      <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#FF2BD6" }} />
+      <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FF9FE5" }} />
+      <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#C6A4FF" }} />
+      <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#C6A4FF" }} />
+      <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#FF9FE5" }} />
 
       <div
         className="flex items-center gap-2 px-6 py-5"
         style={{ borderBottom: "1px solid rgba(138,43,255,0.35)" }}
       >
-        <HelpCircle className="w-5 h-5" style={{ color: "#FF2BD6", filter: "drop-shadow(0 0 6px rgba(255,43,214,0.85))" }} />
+        <HelpCircle className="w-5 h-5" style={{ color: "#FF9FE5", filter: "drop-shadow(0 0 6px rgba(255,43,214,0.85))" }} />
         <h2 className="text-lg font-bold text-white">{faqHeading}</h2>
       </div>
       <div className="divide-y" style={{ borderColor: "rgba(138,43,255,0.2)" }}>
@@ -2174,16 +2174,16 @@ function LearnerFAQ({ isAf, faqHeading }: { isAf: boolean; faqHeading: string })
               <button
                 onClick={() => setOpenIdx(isOpen ? null : idx)}
                 className="flex items-center justify-between w-full px-6 py-4 text-left text-sm font-semibold transition-colors"
-                style={{ color: isOpen ? "#8A2BFF" : "rgb(var(--foreground) / 1)" }}
+                style={{ color: isOpen ? "#C6A4FF" : "rgb(var(--foreground) / 1)" }}
                 data-testid={`faq-q-${idx}`}
               >
                 <span className={isOpen ? "" : "text-white"}>{item.q}</span>
                 <ChevronDown
                   className="w-4 h-4 shrink-0 transition-transform duration-200 ml-3"
                   style={{
-                    color: isOpen ? "#8A2BFF" : "rgba(255,255,255,0.45)",
+                    color: isOpen ? "#C6A4FF" : "rgba(255,255,255,0.45)",
                     transform: isOpen ? "rotate(180deg)" : undefined,
-                    filter: isOpen ? "drop-shadow(0 0 4px #8A2BFF)" : undefined,
+                    filter: isOpen ? "drop-shadow(0 0 4px #C6A4FF)" : undefined,
                   }}
                 />
               </button>

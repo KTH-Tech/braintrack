@@ -501,7 +501,7 @@ function SolidCta({ children, href, testId }: { children: React.ReactNode; href:
     <Link href={href} data-testid={testId}>
       <button
         className="px-5 py-2.5 text-sm font-bold rounded-xl inline-flex items-center gap-2"
-        style={{ background: "#FF2BD6", color: "#000" }}
+        style={{ background: "#FF9FE5", color: "#000" }}
       >
         {children}
       </button>

@@ -142,8 +142,8 @@ export default function ProgressPage() {
               acc >= 55 ? (isAf ? "Op Koers"    : "On Track") :
               acc >= 40 ? (isAf ? "Bou Momentum": "Building Momentum") :
                           (isAf ? "Ontluik"     : "Emerging");
-            const rankHex = acc >= 70 ? "#00E5FF" : acc >= 55 ? "#FFE600" : acc >= 40 ? "#FF8A00" : "#FF2BD6";
-            const readinessHex = readiness >= 75 ? "#00E5FF" : readiness >= 55 ? "#FFE600" : readiness >= 40 ? "#FF8A00" : "#FF2BD6";
+            const rankHex = acc >= 70 ? "#7FEFFF" : acc >= 55 ? "#FFF29E" : acc >= 40 ? "#FFC48F" : "#FF9FE5";
+            const readinessHex = readiness >= 75 ? "#7FEFFF" : readiness >= 55 ? "#FFF29E" : readiness >= 40 ? "#FFC48F" : "#FF9FE5";
             const R = 52;
             const C = 2 * Math.PI * R;
             const offset = C - (Math.min(100, Math.max(0, acc)) / 100) * C;
@@ -152,7 +152,7 @@ export default function ProgressPage() {
               <div
                 className="relative overflow-hidden rounded-3xl bg-background p-6 sm:p-8 md:p-10"
                 style={{
-                  border: "1.5px solid #00E5FF",
+                  border: "1.5px solid #7FEFFF",
                   boxShadow: "0 0 0 1px rgba(0,229,255,0.28), 0 0 32px rgba(0,229,255,0.35), inset 0 0 28px rgba(0,0,0,0.6)",
                 }}
               >
@@ -173,8 +173,8 @@ export default function ProgressPage() {
                   aria-hidden
                   className="absolute left-0 right-0 h-px pointer-events-none progress-hero-scan"
                   style={{
-                    background: "linear-gradient(90deg, transparent, #00E5FF 20%, #8A2BFF 50%, #FF2BD6 80%, transparent)",
-                    boxShadow: "0 0 14px #00E5FF, 0 0 28px #8A2BFF",
+                    background: "linear-gradient(90deg, transparent, #7FEFFF 20%, #C6A4FF 50%, #FF9FE5 80%, transparent)",
+                    boxShadow: "0 0 14px #7FEFFF, 0 0 28px #C6A4FF",
                   }}
                 />
                 {/* Rainbow top bar */}
@@ -184,10 +184,10 @@ export default function ProgressPage() {
                   style={{ background: "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)" }}
                 />
                 {/* Corner brackets */}
-                <span aria-hidden className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2" style={{ borderColor: "#00E5FF" }} />
-                <span aria-hidden className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2" style={{ borderColor: "#00E5FF" }} />
-                <span aria-hidden className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2" style={{ borderColor: "#00E5FF" }} />
-                <span aria-hidden className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2" style={{ borderColor: "#00E5FF" }} />
+                <span aria-hidden className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2" style={{ borderColor: "#7FEFFF" }} />
+                <span aria-hidden className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2" style={{ borderColor: "#7FEFFF" }} />
+                <span aria-hidden className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2" style={{ borderColor: "#7FEFFF" }} />
+                <span aria-hidden className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2" style={{ borderColor: "#7FEFFF" }} />
 
                 <div className="relative flex flex-col lg:flex-row lg:items-center gap-8">
                   {/* Left: copy + ticker */}
@@ -197,8 +197,8 @@ export default function ProgressPage() {
                         className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-background"
                         style={{ border: "1px solid rgba(0,229,255,0.55)", boxShadow: "0 0 12px rgba(0,229,255,0.4)" }}
                       >
-                        <span className="w-1.5 h-1.5 rounded-full progress-hero-pulse" style={{ background: "#00E5FF", boxShadow: "0 0 6px #00E5FF" }} />
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#00E5FF" }}>
+                        <span className="w-1.5 h-1.5 rounded-full progress-hero-pulse" style={{ background: "#7FEFFF", boxShadow: "0 0 6px #7FEFFF" }} />
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#7FEFFF" }}>
                           {isAf ? "Prestasieverslag" : "Performance Report"}
                         </span>
                       </div>
@@ -214,8 +214,8 @@ export default function ProgressPage() {
                         className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-background"
                         style={{ border: "1px solid rgba(255,138,0,0.55)", boxShadow: "0 0 10px rgba(255,138,0,0.4)" }}
                       >
-                        <Flame className="w-3 h-3" style={{ color: "#FF8A00", filter: "drop-shadow(0 0 4px #FF8A00)" }} />
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#FF8A00" }}>
+                        <Flame className="w-3 h-3" style={{ color: "#FFC48F", filter: "drop-shadow(0 0 4px #FFC48F)" }} />
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#FFC48F" }}>
                           {streak} {isAf ? (streak === 1 ? "dag" : "dae") : (streak === 1 ? "day" : "days")}
                         </span>
                       </div>
@@ -269,9 +269,9 @@ export default function ProgressPage() {
                     {/* Mini ticker */}
                     <div className="grid grid-cols-3 gap-2 pt-1">
                       {[
-                        { k: isAf ? "Vraestelle" : "Papers",  v: papers,    hex: "#8A2BFF" },
-                        { k: isAf ? "Vrae"       : "Questions", v: questions, hex: "#FFE600" },
-                        { k: isAf ? "Streep"     : "Streak",  v: streak,    hex: "#FF8A00" },
+                        { k: isAf ? "Vraestelle" : "Papers",  v: papers,    hex: "#C6A4FF" },
+                        { k: isAf ? "Vrae"       : "Questions", v: questions, hex: "#FFF29E" },
+                        { k: isAf ? "Streep"     : "Streak",  v: streak,    hex: "#FFC48F" },
                       ].map(({ k, v, hex }) => (
                         <div
                           key={k}
@@ -288,7 +288,7 @@ export default function ProgressPage() {
                       <Link href="/dashboard">
                         <button
                           className="px-4 py-2 rounded-xl bg-background font-bold text-xs uppercase tracking-widest"
-                          style={{ color: "#00E5FF", border: "1.5px solid #00E5FF", boxShadow: "0 0 14px rgba(0,229,255,0.4)" }}
+                          style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 14px rgba(0,229,255,0.4)" }}
                           data-testid="button-back"
                         >
                           <ArrowLeft className="w-3.5 h-3.5 inline mr-1.5" />
@@ -308,11 +308,11 @@ export default function ProgressPage() {
                     <svg width="160" height="160" viewBox="0 0 140 140" className="relative">
                       <defs>
                         <linearGradient id="accDialStroke" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" stopColor="#FF8A00" />
-                          <stop offset="25%" stopColor="#FFE600" />
-                          <stop offset="50%" stopColor="#00E5FF" />
-                          <stop offset="75%" stopColor="#8A2BFF" />
-                          <stop offset="100%" stopColor="#FF2BD6" />
+                          <stop offset="0%" stopColor="#FFC48F" />
+                          <stop offset="25%" stopColor="#FFF29E" />
+                          <stop offset="50%" stopColor="#7FEFFF" />
+                          <stop offset="75%" stopColor="#C6A4FF" />
+                          <stop offset="100%" stopColor="#FF9FE5" />
                         </linearGradient>
                         <filter id="accDialGlow" x="-50%" y="-50%" width="200%" height="200%">
                           <feGaussianBlur stdDeviation="2.6" result="b" />
@@ -421,10 +421,10 @@ export default function ProgressPage() {
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 {(() => {
                   const heroStats = [
-                    { label: isAf ? "Studie-reeks" : "Study Streak", value: stats.studyStreak, unit: isAf ? "dae" : "days", icon: Flame,       hex: "#FF8A00", testid: "stat-streak" },
-                    { label: isAf ? "Akkuraatheid" : "Accuracy",     value: stats.overallAccuracy, unit: "%",                icon: Target,      hex: "#00E5FF", testid: "stat-accuracy" },
-                    { label: isAf ? "Vraestelle"   : "Papers Done",  value: stats.totalPapersCompleted, unit: "",            icon: BookOpen,    hex: "#8A2BFF", testid: "stat-papers" },
-                    { label: isAf ? "Vrae"         : "Questions",    value: stats.totalQuestionsAttempted, unit: "",         icon: CheckCircle, hex: "#FFE600", testid: "stat-questions" },
+                    { label: isAf ? "Studie-reeks" : "Study Streak", value: stats.studyStreak, unit: isAf ? "dae" : "days", icon: Flame,       hex: "#FFC48F", testid: "stat-streak" },
+                    { label: isAf ? "Akkuraatheid" : "Accuracy",     value: stats.overallAccuracy, unit: "%",                icon: Target,      hex: "#7FEFFF", testid: "stat-accuracy" },
+                    { label: isAf ? "Vraestelle"   : "Papers Done",  value: stats.totalPapersCompleted, unit: "",            icon: BookOpen,    hex: "#C6A4FF", testid: "stat-papers" },
+                    { label: isAf ? "Vrae"         : "Questions",    value: stats.totalQuestionsAttempted, unit: "",         icon: CheckCircle, hex: "#FFF29E", testid: "stat-questions" },
                   ];
                   return heroStats.map(({ label, value, unit, icon: Icon, hex, testid }) => (
                     <div
@@ -460,22 +460,22 @@ export default function ProgressPage() {
                 {/* Subject Progress */}
                 <div
                   className="relative rounded-2xl bg-background overflow-hidden"
-                  style={{ border: "1.5px solid #006BFF", boxShadow: "0 0 0 1px rgba(0,107,255,0.28), 0 0 26px rgba(0,107,255,0.3), inset 0 0 22px rgba(0,0,0,0.55)" }}
+                  style={{ border: "1.5px solid #6FA8FF", boxShadow: "0 0 0 1px rgba(0,107,255,0.28), 0 0 26px rgba(0,107,255,0.3), inset 0 0 22px rgba(0,0,0,0.55)" }}
                 >
-                  <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#006BFF" }} />
-                  <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#006BFF" }} />
-                  <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#006BFF" }} />
-                  <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#006BFF" }} />
+                  <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#6FA8FF" }} />
+                  <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#6FA8FF" }} />
+                  <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#6FA8FF" }} />
+                  <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#6FA8FF" }} />
                   <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(0,107,255,0.35)" }}>
-                    <TrendingUp className="w-5 h-5" style={{ color: "#006BFF", filter: "drop-shadow(0 0 6px rgba(0,107,255,0.85))" }} />
+                    <TrendingUp className="w-5 h-5" style={{ color: "#6FA8FF", filter: "drop-shadow(0 0 6px rgba(0,107,255,0.85))" }} />
                     <h2 className="text-lg font-bold text-foreground">{isAf ? "Vakvordering" : "Subject Progress"}</h2>
                   </div>
                   <div className="p-5 space-y-3">
                     {stats.subjectProgress.length > 0 ? (
                       stats.subjectProgress.map((subject, idx) => {
-                        const stops = ["#FF8A00", "#FFE600", "#00E5FF", "#006BFF", "#8A2BFF", "#8A2BFF", "#FF2BD6"];
+                        const stops = ["#FFC48F", "#FFF29E", "#7FEFFF", "#6FA8FF", "#C6A4FF", "#C6A4FF", "#FF9FE5"];
                         const hex = stops[idx % stops.length];
-                        const barColor = subject.accuracy >= 70 ? "#00E5FF" : subject.accuracy >= 50 ? "#FFE600" : "#FF2BD6";
+                        const barColor = subject.accuracy >= 70 ? "#7FEFFF" : subject.accuracy >= 50 ? "#FFF29E" : "#FF9FE5";
                         return (
                           <Link key={subject.subjectId} href={`/subject/${subject.subjectId}`}>
                             <div
@@ -525,20 +525,20 @@ export default function ProgressPage() {
                 {/* Areas to Improve */}
                 <div
                   className="relative rounded-2xl bg-background overflow-hidden"
-                  style={{ border: "1.5px solid #FF2BD6", boxShadow: "0 0 0 1px rgba(255,43,214,0.28), 0 0 26px rgba(255,43,214,0.3), inset 0 0 22px rgba(0,0,0,0.55)" }}
+                  style={{ border: "1.5px solid #FF9FE5", boxShadow: "0 0 0 1px rgba(255,43,214,0.28), 0 0 26px rgba(255,43,214,0.3), inset 0 0 22px rgba(0,0,0,0.55)" }}
                 >
-                  <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FF2BD6" }} />
-                  <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#FF2BD6" }} />
-                  <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#FF2BD6" }} />
-                  <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#FF2BD6" }} />
+                  <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FF9FE5" }} />
+                  <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#FF9FE5" }} />
+                  <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#FF9FE5" }} />
+                  <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#FF9FE5" }} />
                   <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(255,43,214,0.35)" }}>
-                    <TrendingDown className="w-5 h-5" style={{ color: "#FF2BD6", filter: "drop-shadow(0 0 6px rgba(255,43,214,0.85))" }} />
+                    <TrendingDown className="w-5 h-5" style={{ color: "#FF9FE5", filter: "drop-shadow(0 0 6px rgba(255,43,214,0.85))" }} />
                     <h2 className="text-lg font-bold text-foreground">{isAf ? "Areas om te Verbeter" : "Areas to Improve"}</h2>
                   </div>
                   <div className="p-5 space-y-3">
                     {stats.weakTopics.length > 0 ? (
                       stats.weakTopics.slice(0, 5).map((topic) => {
-                        const hex = topic.accuracy >= 50 ? "#FFE600" : "#FF2BD6";
+                        const hex = topic.accuracy >= 50 ? "#FFF29E" : "#FF9FE5";
                         return (
                           <div
                             key={topic.topicId}
@@ -577,14 +577,14 @@ export default function ProgressPage() {
               {/* Recent Activity */}
               <div
                 className="relative rounded-2xl bg-background overflow-hidden"
-                style={{ border: "1.5px solid #FFE600", boxShadow: "0 0 0 1px rgba(255,230,0,0.28), 0 0 26px rgba(255,230,0,0.28), inset 0 0 22px rgba(0,0,0,0.55)" }}
+                style={{ border: "1.5px solid #FFF29E", boxShadow: "0 0 0 1px rgba(255,230,0,0.28), 0 0 26px rgba(255,230,0,0.28), inset 0 0 22px rgba(0,0,0,0.55)" }}
               >
-                <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FFE600" }} />
-                <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#FFE600" }} />
-                <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#FFE600" }} />
-                <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#FFE600" }} />
+                <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FFF29E" }} />
+                <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#FFF29E" }} />
+                <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#FFF29E" }} />
+                <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#FFF29E" }} />
                 <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(255,230,0,0.35)" }}>
-                  <Calendar className="w-5 h-5" style={{ color: "#FFE600", filter: "drop-shadow(0 0 6px rgba(255,230,0,0.85))" }} />
+                  <Calendar className="w-5 h-5" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 6px rgba(255,230,0,0.85))" }} />
                   <h2 className="text-lg font-bold text-foreground">{isAf ? "Onlangse Aktiwiteit" : "Recent Activity"}</h2>
                 </div>
                 <div className="p-6">
@@ -594,7 +594,7 @@ export default function ProgressPage() {
                         const accuracy = day.questionsAnswered > 0
                           ? Math.round((day.correctAnswers / day.questionsAnswered) * 100)
                           : 0;
-                        const hex = accuracy >= 70 ? "#00E5FF" : accuracy >= 50 ? "#FFE600" : day.questionsAnswered > 0 ? "#FF2BD6" : "#006BFF";
+                        const hex = accuracy >= 70 ? "#7FEFFF" : accuracy >= 50 ? "#FFF29E" : day.questionsAnswered > 0 ? "#FF9FE5" : "#6FA8FF";
                         const intensity = Math.min(1, day.questionsAnswered / 20);
                         return (
                           <div

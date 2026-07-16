@@ -43,7 +43,7 @@ type OptOutLogEntry = {
   createdAt: string | null;
 };
 
-function NeonShell({ children, color = "#8A2BFF", className = "" }: { children: React.ReactNode; color?: string; className?: string }) {
+function NeonShell({ children, color = "#C6A4FF", className = "" }: { children: React.ReactNode; color?: string; className?: string }) {
   return (
     <div
       className={`relative rounded-2xl bg-black overflow-hidden ${className}`}
@@ -296,16 +296,16 @@ export default function AdminPartnerBrandingPage() {
 
           {isLoading ? (
             <div className="flex items-center justify-center py-20">
-              <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#8A2BFF" }} />
+              <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#C6A4FF" }} />
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Left: Form */}
-              <NeonShell color="#8A2BFF">
+              <NeonShell color="#C6A4FF">
                 <div className="p-6 space-y-6">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center" style={{ border: "1.5px solid #8A2BFF", boxShadow: "0 0 12px rgba(138,43,255,0.4)" }}>
-                      <Building2 className="w-5 h-5" style={{ color: "#8A2BFF" }} />
+                    <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center" style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 12px rgba(138,43,255,0.4)" }}>
+                      <Building2 className="w-5 h-5" style={{ color: "#C6A4FF" }} />
                     </div>
                     <h2 className="text-base font-black text-white">{isAf ? "Vennootnaam" : "Partner Name"}</h2>
                   </div>
@@ -340,18 +340,18 @@ export default function AdminPartnerBrandingPage() {
                           <img src={currentLogoSrc!} alt={isAf ? "Vennootlogo-voorskou" : "Partner logo preview"} className="max-h-full max-w-full object-contain p-2" />
                         </div>
                         <div className="flex gap-2">
-                          <button type="button" onClick={() => fileInputRef.current?.click()} className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition" style={{ border: "1px solid rgba(138,43,255,0.5)", color: "#8A2BFF" }} data-testid="btn-replace-logo">
+                          <button type="button" onClick={() => fileInputRef.current?.click()} className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition" style={{ border: "1px solid rgba(138,43,255,0.5)", color: "#C6A4FF" }} data-testid="btn-replace-logo">
                             <Upload className="w-3.5 h-3.5" />
                             {isAf ? "Vervang" : "Replace"}
                           </button>
-                          <button type="button" onClick={handleClearLogo} className="flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition" style={{ border: "1px solid rgba(255,43,214,0.5)", color: "#FF2BD6" }} data-testid="btn-clear-logo">
+                          <button type="button" onClick={handleClearLogo} className="flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition" style={{ border: "1px solid rgba(255,43,214,0.5)", color: "#FF9FE5" }} data-testid="btn-clear-logo">
                             <Trash2 className="w-3.5 h-3.5" />
                             {isAf ? "Verwyder" : "Remove"}
                           </button>
                         </div>
                       </div>
                     ) : (
-                      <button type="button" onClick={() => fileInputRef.current?.click()} className="w-full flex flex-col items-center justify-center gap-2 rounded-xl py-6 text-sm font-semibold transition-all hover:bg-white/5" style={{ border: "2px dashed rgba(138,43,255,0.4)", color: "#8A2BFF" }} data-testid="btn-upload-logo">
+                      <button type="button" onClick={() => fileInputRef.current?.click()} className="w-full flex flex-col items-center justify-center gap-2 rounded-xl py-6 text-sm font-semibold transition-all hover:bg-white/5" style={{ border: "2px dashed rgba(138,43,255,0.4)", color: "#C6A4FF" }} data-testid="btn-upload-logo">
                         <ImageIcon className="w-8 h-8 opacity-60" />
                         <span>{isAf ? "Klik om logo op te laai" : "Click to upload logo"}</span>
                         <span className="text-[11px] text-white font-normal">{isAf ? "PNG, JPG of SVG · maks 2 MB" : "PNG, JPG or SVG · max 2 MB"}</span>
@@ -367,7 +367,7 @@ export default function AdminPartnerBrandingPage() {
                     disabled={saveBrandingMutation.isPending || !isBrandingDirty}
                     data-testid="btn-save-branding"
                     className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-black text-sm uppercase tracking-wider transition disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{ background: "#8A2BFF", color: "#000", boxShadow: "0 0 20px rgba(138,43,255,0.5)" }}
+                    style={{ background: "#C6A4FF", color: "#000", boxShadow: "0 0 20px rgba(138,43,255,0.5)" }}
                   >
                     {saveBrandingMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
                     {saveBrandingMutation.isPending ? (isAf ? "Stoor…" : "Saving…") : (isAf ? "Stoor Veranderinge" : "Save Changes")}
@@ -376,11 +376,11 @@ export default function AdminPartnerBrandingPage() {
               </NeonShell>
 
               {/* Right: Live preview */}
-              <NeonShell color="#00E5FF">
+              <NeonShell color="#7FEFFF">
                 <div className="p-6 space-y-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center" style={{ border: "1.5px solid #00E5FF", boxShadow: "0 0 12px rgba(0,229,255,0.4)" }}>
-                      <ImageIcon className="w-5 h-5" style={{ color: "#00E5FF" }} />
+                    <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center" style={{ border: "1.5px solid #7FEFFF", boxShadow: "0 0 12px rgba(0,229,255,0.4)" }}>
+                      <ImageIcon className="w-5 h-5" style={{ color: "#7FEFFF" }} />
                     </div>
                     <h2 className="text-base font-black text-white">{isAf ? "Verslag-kopstuk-voorskou" : "Report Header Preview"}</h2>
                   </div>
@@ -408,7 +408,7 @@ export default function AdminPartnerBrandingPage() {
                   </div>
 
                   <div className="rounded-xl p-4 space-y-2" style={{ background: "rgba(0,229,255,0.06)", border: "1px solid rgba(0,229,255,0.18)" }}>
-                    <p className="text-[11px] font-bold text-white" style={{ color: "#00E5FF" }}>{isAf ? "Wenke" : "Tips"}</p>
+                    <p className="text-[11px] font-bold text-white" style={{ color: "#7FEFFF" }}>{isAf ? "Wenke" : "Tips"}</p>
                     <ul className="text-[11px] text-white space-y-1 list-disc list-inside">
                       <li>{isAf ? "Gebruik 'n logo met deurskynende agtergrond (PNG) vir beste resultate." : "Use a logo with transparent background (PNG) for best results."}</li>
                       <li>{isAf ? "Horisontale logo's werk die beste in die koptekst." : "Horizontal logos work best in the header."}</li>

@@ -33,7 +33,7 @@ import type { Subject, OnboardingResult } from "@shared/schema";
 import { SpraySmear } from "@/components/graffiti-splats";
 import brainLogo from "@/assets/brain-logo.png";
 
-type NeonHex = "#00E5FF" | "#006BFF" | "#FFE600" | "#FF2BD6" | "#8A2BFF";
+type NeonHex = "#7FEFFF" | "#6FA8FF" | "#FFF29E" | "#FF9FE5" | "#C6A4FF";
 function NeonCard({ color, icon: Icon, title, subtitle, children, testId }: {
   color: NeonHex;
   icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
@@ -554,8 +554,8 @@ export default function SettingsPage() {
           <div className="max-w-4xl mx-auto px-4 sm:px-6">
             <div className="flex items-center justify-between h-14 gap-4">
               <div className="flex items-center gap-2">
-                <SlidersHorizontal className="w-4 h-4" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
-                <span className="text-sm font-black uppercase tracking-[0.2em]" style={{ color: "#00E5FF" }}>
+                <SlidersHorizontal className="w-4 h-4" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 4px #7FEFFF)" }} />
+                <span className="text-sm font-black uppercase tracking-[0.2em]" style={{ color: "#7FEFFF" }}>
                   {t.pageTitle}
                 </span>
               </div>
@@ -573,8 +573,8 @@ export default function SettingsPage() {
                   <button
                     className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black font-black text-[10px] uppercase tracking-[0.2em]"
                     style={{
-                      color: "#00E5FF",
-                      border: "1px solid #00E5FF",
+                      color: "#7FEFFF",
+                      border: "1px solid #7FEFFF",
                       boxShadow: "0 0 10px rgba(0,229,255,0.4)",
                     }}
                     data-testid="button-dashboard"
@@ -593,7 +593,7 @@ export default function SettingsPage() {
           <section
             className="relative overflow-hidden rounded-3xl bg-black p-6 sm:p-8"
             style={{
-              border: "1.5px solid #00E5FF",
+              border: "1.5px solid #7FEFFF",
               boxShadow:
                 "0 0 0 1px rgba(0,229,255,0.32), 0 0 34px rgba(0,229,255,0.4), inset 0 0 28px rgba(0,0,0,0.6)",
             }}
@@ -603,7 +603,7 @@ export default function SettingsPage() {
               className="absolute top-0 left-0 right-0 h-[3px]"
               style={{
                 background:
-                  "linear-gradient(90deg, #FF8A00, #FF8A00, #FFE600, #FFE600, #00E5FF, #006BFF, #8A2BFF, #8A2BFF, #FF2BD6)",
+                  "linear-gradient(90deg, #FFC48F, #FFC48F, #FFF29E, #FFF29E, #7FEFFF, #6FA8FF, #C6A4FF, #C6A4FF, #FF9FE5)",
               }}
             />
             <div aria-hidden className="absolute -top-20 -right-20 w-60 h-60 rounded-full blur-3xl pointer-events-none"
@@ -611,10 +611,10 @@ export default function SettingsPage() {
             <div aria-hidden className="absolute -bottom-20 -left-20 w-60 h-60 rounded-full blur-3xl pointer-events-none"
               style={{ background: "radial-gradient(circle, rgba(138,43,255,0.22), transparent 70%)" }} />
 
-            <span aria-hidden className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2" style={{ borderColor: "#00E5FF" }} />
-            <span aria-hidden className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2" style={{ borderColor: "#00E5FF" }} />
-            <span aria-hidden className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2" style={{ borderColor: "#00E5FF" }} />
-            <span aria-hidden className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2" style={{ borderColor: "#00E5FF" }} />
+            <span aria-hidden className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2" style={{ borderColor: "#7FEFFF" }} />
+            <span aria-hidden className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2" style={{ borderColor: "#7FEFFF" }} />
+            <span aria-hidden className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2" style={{ borderColor: "#7FEFFF" }} />
+            <span aria-hidden className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2" style={{ borderColor: "#7FEFFF" }} />
 
             <div className="relative text-center space-y-4">
               <div className="relative mx-auto w-32 sm:w-40 aspect-square">
@@ -637,10 +637,10 @@ export default function SettingsPage() {
               <div className="flex flex-wrap items-center justify-center gap-2">
                 <div
                   className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
-                  style={{ border: "1px solid #00E5FF", boxShadow: "0 0 14px rgba(0,229,255,0.5)" }}
+                  style={{ border: "1px solid #7FEFFF", boxShadow: "0 0 14px rgba(0,229,255,0.5)" }}
                 >
-                  <SlidersHorizontal className="w-3 h-3" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px #00E5FF)" }} />
-                  <span className="text-[10px] font-black uppercase tracking-[0.24em]" style={{ color: "#00E5FF" }}>
+                  <SlidersHorizontal className="w-3 h-3" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 4px #7FEFFF)" }} />
+                  <span className="text-[10px] font-black uppercase tracking-[0.24em]" style={{ color: "#7FEFFF" }}>
                     {t.yourAccount}
                   </span>
                 </div>
@@ -648,8 +648,8 @@ export default function SettingsPage() {
                   className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
                   style={{ border: "1px solid rgba(138,43,255,0.65)", boxShadow: "0 0 10px rgba(138,43,255,0.4)" }}
                 >
-                  <Shield className="w-3 h-3" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 4px #8A2BFF)" }} />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#8A2BFF" }}>
+                  <Shield className="w-3 h-3" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 4px #C6A4FF)" }} />
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#C6A4FF" }}>
                     {t.secure}
                   </span>
                 </div>
@@ -659,7 +659,7 @@ export default function SettingsPage() {
                 className="text-4xl sm:text-5xl font-black tracking-tight leading-[0.98]"
                 style={{
                   background:
-                    "linear-gradient(90deg, #FF8A00, #FFE600, #00E5FF, #006BFF, #8A2BFF, #FF2BD6)",
+                    "linear-gradient(90deg, #FFC48F, #FFF29E, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
@@ -677,7 +677,7 @@ export default function SettingsPage() {
 
         <div className="space-y-6">
           <NeonCard
-            color="#00E5FF"
+            color="#7FEFFF"
             icon={Phone}
             title={t.phoneNumber}
             subtitle={user?.role === "learner" ? t.phoneLearnerSub : t.phoneParentSub}
@@ -701,9 +701,9 @@ export default function SettingsPage() {
                   style={{ border: "1px solid rgba(138,43,255,0.45)", boxShadow: "0 0 12px rgba(138,43,255,0.18)" }}
                   data-testid="phone-parent-lock"
                 >
-                  <Shield className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#8A2BFF", filter: "drop-shadow(0 0 4px rgba(138,43,255,0.7))" }} />
+                  <Shield className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 4px rgba(138,43,255,0.7))" }} />
                   <div className="text-sm">
-                    <p className="font-black uppercase tracking-[0.16em] text-[11px]" style={{ color: "#8A2BFF" }}>
+                    <p className="font-black uppercase tracking-[0.16em] text-[11px]" style={{ color: "#C6A4FF" }}>
                       {t.managedByParent}
                     </p>
                     <p className="text-white mt-0.5 leading-snug">
@@ -727,7 +727,7 @@ export default function SettingsPage() {
                       inputMode="tel"
                       autoComplete="tel"
                       maxLength={17}
-                      className="bg-black text-white placeholder:text-white border-[#00E5FF]/40 focus-visible:ring-[#00E5FF]/50"
+                      className="bg-black text-white placeholder:text-white border-[#7FEFFF]/40 focus-visible:ring-[#7FEFFF]/50"
                       data-testid="input-new-phone"
                     />
                     <p className="text-[11px] text-white">
@@ -739,9 +739,9 @@ export default function SettingsPage() {
                     className="flex items-start gap-3 p-3 rounded-xl bg-black"
                     style={{ border: "1px solid rgba(255,230,0,0.45)", boxShadow: "0 0 12px rgba(255,230,0,0.18)" }}
                   >
-                    <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#FFE600", filter: "drop-shadow(0 0 4px rgba(255,230,0,0.7))" }} />
+                    <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 4px rgba(255,230,0,0.7))" }} />
                     <div className="text-sm">
-                      <p className="font-black uppercase tracking-[0.16em] text-[11px]" style={{ color: "#FFE600" }}>
+                      <p className="font-black uppercase tracking-[0.16em] text-[11px]" style={{ color: "#FFF29E" }}>
                         {t.verificationRequired}
                       </p>
                       <p className="text-white mt-0.5 leading-snug">
@@ -755,8 +755,8 @@ export default function SettingsPage() {
                     disabled={!newPhone || requestOtpMutation.isPending}
                     className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-black font-bold text-sm disabled:opacity-40"
                     style={{
-                      color: "#00E5FF",
-                      border: "1.5px solid #00E5FF",
+                      color: "#7FEFFF",
+                      border: "1.5px solid #7FEFFF",
                       boxShadow: "0 0 14px rgba(0,229,255,0.45)",
                       textShadow: "0 0 6px rgba(0,229,255,0.5)",
                     }}
@@ -783,10 +783,10 @@ export default function SettingsPage() {
                     className="flex items-center gap-2 p-3 rounded-xl bg-black"
                     style={{ border: "1px solid rgba(0,229,255,0.45)", boxShadow: "0 0 12px rgba(0,229,255,0.22)" }}
                   >
-                    <CheckCircle className="w-5 h-5" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 4px rgba(0,229,255,0.7))" }} />
+                    <CheckCircle className="w-5 h-5" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 4px rgba(0,229,255,0.7))" }} />
                     <p className="text-sm text-white">
                       {t.codeSentTo}{" "}
-                      <strong style={{ color: "#00E5FF" }}>{pendingPhone}</strong>
+                      <strong style={{ color: "#7FEFFF" }}>{pendingPhone}</strong>
                     </p>
                   </div>
 
@@ -803,7 +803,7 @@ export default function SettingsPage() {
                         if (verifyError) setVerifyError("");
                       }}
                       maxLength={6}
-                      className={`text-center text-2xl tracking-[0.4em] bg-black text-white placeholder:text-white font-black focus-visible:ring-[#00E5FF]/50 ${verifyError ? "border-red-500/70" : "border-[#00E5FF]/50"}`}
+                      className={`text-center text-2xl tracking-[0.4em] bg-black text-white placeholder:text-white font-black focus-visible:ring-[#7FEFFF]/50 ${verifyError ? "border-red-500/70" : "border-[#7FEFFF]/50"}`}
                       data-testid="input-otp-code"
                     />
                     {verifyError && (
@@ -830,8 +830,8 @@ export default function SettingsPage() {
                       disabled={otpCode.length !== 6 || verifyOtpMutation.isPending}
                       className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-black font-bold text-sm disabled:opacity-40"
                       style={{
-                        color: "#00E5FF",
-                        border: "1.5px solid #00E5FF",
+                        color: "#7FEFFF",
+                        border: "1.5px solid #7FEFFF",
                         boxShadow: "0 0 14px rgba(0,229,255,0.45)",
                         textShadow: "0 0 6px rgba(0,229,255,0.5)",
                       }}
@@ -865,7 +865,7 @@ export default function SettingsPage() {
           </NeonCard>
 
           <NeonCard
-            color="#006BFF"
+            color="#6FA8FF"
             icon={BookOpen}
             title={t.yourSubjects}
             subtitle={t.yourSubjectsSubtitle}
@@ -877,7 +877,7 @@ export default function SettingsPage() {
                   <div className="space-y-3">
                     {(subjects || []).length === 0 ? (
                       <div className="text-center py-6">
-                        <BookOpen className="w-8 h-8 mx-auto mb-2" style={{ color: "#006BFF" }} />
+                        <BookOpen className="w-8 h-8 mx-auto mb-2" style={{ color: "#6FA8FF" }} />
                         <p className="text-sm text-white">
                           {t.loadingSubjects}
                         </p>
@@ -893,17 +893,17 @@ export default function SettingsPage() {
                               onClick={() => toggleSubject(subject.id)}
                               className="flex items-center gap-3 p-3 rounded-xl bg-black text-left transition-all"
                               style={{
-                                border: active ? "1.5px solid #006BFF" : "1px solid rgba(255,255,255,0.12)",
+                                border: active ? "1.5px solid #6FA8FF" : "1px solid rgba(255,255,255,0.12)",
                                 boxShadow: active ? "0 0 14px rgba(0,107,255,0.35), inset 0 0 10px rgba(0,107,255,0.12)" : "none",
                               }}
                               data-testid={`subject-chip-${subject.id}`}
                             >
                               <div
                                 className="w-7 h-7 rounded-lg bg-black flex items-center justify-center shrink-0"
-                                style={{ border: active ? "1.5px solid #006BFF" : "1px solid rgba(255,255,255,0.18)" }}
+                                style={{ border: active ? "1.5px solid #6FA8FF" : "1px solid rgba(255,255,255,0.18)" }}
                               >
                                 {active ? (
-                                  <Check className="w-3.5 h-3.5" style={{ color: "#006BFF" }} />
+                                  <Check className="w-3.5 h-3.5" style={{ color: "#6FA8FF" }} />
                                 ) : (
                                   <span className="text-[11px] font-black text-white">
                                     {(isAf ? subject.nameAfrikaans : subject.name).charAt(0)}
@@ -934,8 +934,8 @@ export default function SettingsPage() {
                         disabled={!canSave}
                         className="h-8 px-4 text-[11px] font-black uppercase tracking-[0.18em] bg-black border disabled:opacity-40"
                         style={{
-                          color: canSave ? "#006BFF" : "#fff",
-                          borderColor: canSave ? "#006BFF" : "rgba(255,255,255,0.18)",
+                          color: canSave ? "#6FA8FF" : "#fff",
+                          borderColor: canSave ? "#6FA8FF" : "rgba(255,255,255,0.18)",
                           boxShadow: canSave ? "0 0 12px rgba(0,107,255,0.4)" : "none",
                         }}
                         data-testid="button-save-subjects"
@@ -957,7 +957,7 @@ export default function SettingsPage() {
 
           {/* Preliminary Exam Dates — Task #359 */}
           <NeonCard
-            color="#00E5FF"
+            color="#7FEFFF"
             icon={CalendarDays}
             title={t.prelimDates}
             subtitle={t.prelimDatesSubtitle}
@@ -971,7 +971,7 @@ export default function SettingsPage() {
               if (selectedSubjectsList.length === 0) {
                 return (
                   <div className="text-center py-6">
-                    <CalendarDays className="w-8 h-8 mx-auto mb-2" style={{ color: "#00E5FF" }} />
+                    <CalendarDays className="w-8 h-8 mx-auto mb-2" style={{ color: "#7FEFFF" }} />
                     <p className="text-sm text-white">
                       {t.selectSubjectsFirst}
                     </p>
@@ -1051,8 +1051,8 @@ export default function SettingsPage() {
                       disabled={!prelimDirty || updatePrelimsMutation.isPending}
                       className="h-8 px-4 text-[11px] font-black uppercase tracking-[0.18em] bg-black border disabled:opacity-40"
                       style={{
-                        color: prelimDirty ? "#00E5FF" : "#fff",
-                        borderColor: prelimDirty ? "#00E5FF" : "rgba(255,255,255,0.18)",
+                        color: prelimDirty ? "#7FEFFF" : "#fff",
+                        borderColor: prelimDirty ? "#7FEFFF" : "rgba(255,255,255,0.18)",
                         boxShadow: prelimDirty ? "0 0 12px rgba(0,229,255,0.4)" : "none",
                       }}
                       data-testid="button-save-prelims"
@@ -1075,7 +1075,7 @@ export default function SettingsPage() {
           {/* Referral Link Card — learner only */}
           {user?.role === "learner" && (
             <NeonCard
-              color="#FF2BD6"
+              color="#FF9FE5"
               icon={Gift}
               title={t.referAFriend}
               subtitle={t.referAFriendSubtitle}
@@ -1085,21 +1085,21 @@ export default function SettingsPage() {
               <div
                 className="relative rounded-2xl bg-black px-4 py-5 text-center overflow-hidden"
                 style={{
-                  border: "1.5px solid #FF2BD6",
+                  border: "1.5px solid #FF9FE5",
                   boxShadow: "0 0 0 1px rgba(255,43,214,0.25), 0 0 22px rgba(255,43,214,0.35), inset 0 0 14px rgba(0,0,0,0.55)",
                 }}
               >
-                <span aria-hidden className="absolute top-1 left-1 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: "#FF2BD6" }} />
-                <span aria-hidden className="absolute top-1 right-1 w-2.5 h-2.5 border-t-2 border-r-2" style={{ borderColor: "#FF2BD6" }} />
-                <span aria-hidden className="absolute bottom-1 left-1 w-2.5 h-2.5 border-b-2 border-l-2" style={{ borderColor: "#FF2BD6" }} />
-                <span aria-hidden className="absolute bottom-1 right-1 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: "#FF2BD6" }} />
+                <span aria-hidden className="absolute top-1 left-1 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: "#FF9FE5" }} />
+                <span aria-hidden className="absolute top-1 right-1 w-2.5 h-2.5 border-t-2 border-r-2" style={{ borderColor: "#FF9FE5" }} />
+                <span aria-hidden className="absolute bottom-1 left-1 w-2.5 h-2.5 border-b-2 border-l-2" style={{ borderColor: "#FF9FE5" }} />
+                <span aria-hidden className="absolute bottom-1 right-1 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: "#FF9FE5" }} />
 
                 <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white">
                   {t.yourReferralCode}
                 </p>
                 <p
                   className="mt-1.5 font-mono font-black text-2xl sm:text-3xl tracking-[0.18em]"
-                  style={{ color: "#FF2BD6", textShadow: "0 0 12px rgba(255,43,214,0.75)" }}
+                  style={{ color: "#FF9FE5", textShadow: "0 0 12px rgba(255,43,214,0.75)" }}
                   data-testid="text-referral-code"
                 >
                   {referral?.code ?? "········"}
@@ -1129,8 +1129,8 @@ export default function SettingsPage() {
                 disabled={!referral}
                 className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-black font-bold text-sm disabled:opacity-40"
                 style={{
-                  color: "#FF2BD6",
-                  border: "1.5px solid #FF2BD6",
+                  color: "#FF9FE5",
+                  border: "1.5px solid #FF9FE5",
                   boxShadow: "0 0 14px rgba(255,43,214,0.45)",
                   textShadow: "0 0 6px rgba(255,43,214,0.5)",
                 }}
@@ -1147,7 +1147,7 @@ export default function SettingsPage() {
                     className="h-full rounded-full"
                     style={{
                       width: `${((referral?.thisMonthCount ?? 0) / (referral?.maxPerMonth ?? 2)) * 100}%`,
-                      background: "#FF2BD6",
+                      background: "#FF9FE5",
                       boxShadow: "0 0 10px rgba(255,43,214,0.6)",
                     }}
                   />
@@ -1159,12 +1159,12 @@ export default function SettingsPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-3 rounded-xl bg-black text-center" style={{ border: "1px solid rgba(255,43,214,0.3)" }}>
-                  <Users className="w-5 h-5 mx-auto mb-1" style={{ color: "#FF2BD6" }} />
+                  <Users className="w-5 h-5 mx-auto mb-1" style={{ color: "#FF9FE5" }} />
                   <p className="text-lg font-bold text-white">{referral?.thisMonthCount ?? 0}</p>
                   <p className="text-[10px] text-white">{t.thisMonth}</p>
                 </div>
                 <div className="p-3 rounded-xl bg-black text-center" style={{ border: "1px solid rgba(255,230,0,0.3)" }}>
-                  <Gift className="w-5 h-5 mx-auto mb-1" style={{ color: "#FFE600" }} />
+                  <Gift className="w-5 h-5 mx-auto mb-1" style={{ color: "#FFF29E" }} />
                   <p className="text-lg font-bold text-white">{(referral?.maxPerMonth ?? 2) - (referral?.thisMonthCount ?? 0)}</p>
                   <p className="text-[10px] text-white">{t.slotsLeft}</p>
                 </div>
@@ -1180,7 +1180,7 @@ export default function SettingsPage() {
           )}
 
           <NeonCard
-            color="#FFE600"
+            color="#FFF29E"
             icon={Dumbbell}
             title={t.sportActivities}
             subtitle={t.sportActivitiesSubtitle}
@@ -1197,7 +1197,7 @@ export default function SettingsPage() {
                     setNewActivity("");
                   }
                 }}
-                className="bg-black border-[#FFE600]/40 text-white placeholder:text-white focus-visible:ring-[#FFE600]/50"
+                className="bg-black border-[#FFF29E]/40 text-white placeholder:text-white focus-visible:ring-[#FFF29E]/50"
                 data-testid="input-new-activity"
               />
               <button
@@ -1209,7 +1209,7 @@ export default function SettingsPage() {
                 }}
                 disabled={!newActivity.trim()}
                 className="shrink-0 w-10 h-10 rounded-md bg-black flex items-center justify-center disabled:opacity-50"
-                style={{ color: "#FFE600", border: "1.5px solid #FFE600", boxShadow: "0 0 10px rgba(255,230,0,0.28)" }}
+                style={{ color: "#FFF29E", border: "1.5px solid #FFF29E", boxShadow: "0 0 10px rgba(255,230,0,0.28)" }}
                 data-testid="button-add-activity"
               >
                 <Plus className="w-4 h-4" />
@@ -1225,7 +1225,7 @@ export default function SettingsPage() {
                     style={{ border: "1px solid rgba(255,230,0,0.5)" }}
                     data-testid={`activity-badge-${idx}`}
                   >
-                    <Dumbbell className="w-3 h-3" style={{ color: "#FFE600" }} />
+                    <Dumbbell className="w-3 h-3" style={{ color: "#FFF29E" }} />
                     {activity}
                     <button
                       onClick={() => setActivities(activities.filter((_, i) => i !== idx))}
@@ -1241,7 +1241,7 @@ export default function SettingsPage() {
 
             {activities.length === 0 && (
               <div className="text-center py-4 text-white">
-                <Dumbbell className="w-8 h-8 mx-auto mb-2" style={{ color: "#FFE600" }} />
+                <Dumbbell className="w-8 h-8 mx-auto mb-2" style={{ color: "#FFF29E" }} />
                 <p className="text-sm">{t.noActivities}</p>
               </div>
             )}
@@ -1252,7 +1252,7 @@ export default function SettingsPage() {
               }}
               disabled={activities.length === 0}
               className="px-4 py-2 rounded-xl bg-black font-bold text-sm inline-flex items-center justify-center gap-2 disabled:opacity-40"
-              style={{ color: "#FFE600", border: "1.5px solid #FFE600", boxShadow: "0 0 12px rgba(255,230,0,0.28)" }}
+              style={{ color: "#FFF29E", border: "1.5px solid #FFF29E", boxShadow: "0 0 12px rgba(255,230,0,0.28)" }}
               data-testid="button-save-activities"
             >
               <Save className="w-4 h-4" />

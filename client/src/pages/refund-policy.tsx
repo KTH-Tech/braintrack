@@ -5,8 +5,8 @@ import { useLanguage } from "@/lib/language-context";
 import { useSEO } from "@/hooks/use-seo";
 
 const NEON_PALETTE = [
-  "#00E5FF", "#006BFF", "#8A2BFF", "#8A2BFF", "#FF2BD6",
-  "#FF8A00", "#FFE600", "#FF8A00", "#00E5FF",
+  "#7FEFFF", "#6FA8FF", "#C6A4FF", "#C6A4FF", "#FF9FE5",
+  "#FFC48F", "#FFF29E", "#FFC48F", "#7FEFFF",
 ];
 
 function hexToRgba(hex: string, alpha: number) {
@@ -193,21 +193,21 @@ export default function RefundPolicyPage() {
             <Link href="/">
               <button
                 className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black text-xs font-bold"
-                style={{ color: "#00E5FF", border: "1.5px solid #00E5FF", boxShadow: "0 0 12px rgba(0,229,255,0.4)" }}
+                style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 12px rgba(0,229,255,0.4)" }}
                 data-testid="refund-nav-back"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 {isAf ? "Terug" : "Back"}
               </button>
             </Link>
-            <span className="graffiti-hand text-base hidden sm:inline tracking-tight" style={{ color: "#FFE600", textShadow: "0 0 8px rgba(255,230,0,0.4)" }}>
+            <span className="graffiti-hand text-base hidden sm:inline tracking-tight" style={{ color: "#FFF29E", textShadow: "0 0 8px rgba(255,230,0,0.4)" }}>
               {isAf ? "Terugbetalingsbeleid" : "Refund Policy"}
             </span>
           </div>
           <button
             onClick={toggleLanguage}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black text-[11px] font-black"
-            style={{ color: "#8A2BFF", border: "1px solid rgba(138,43,255,0.55)", boxShadow: "0 0 10px rgba(138,43,255,0.35)" }}
+            style={{ color: "#C6A4FF", border: "1px solid rgba(138,43,255,0.55)", boxShadow: "0 0 10px rgba(138,43,255,0.35)" }}
             data-testid="button-language-toggle"
           >
             <Globe className="h-3.5 w-3.5" />
@@ -221,16 +221,16 @@ export default function RefundPolicyPage() {
         <div className="relative text-center space-y-4 py-6">
           <span
             className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.28em] px-4 py-1.5 rounded-full bg-black"
-            style={{ color: "#00E5FF", border: "1px solid rgba(0,229,255,0.55)", boxShadow: "0 0 14px rgba(0,229,255,0.35)" }}
+            style={{ color: "#7FEFFF", border: "1px solid rgba(0,229,255,0.55)", boxShadow: "0 0 14px rgba(0,229,255,0.35)" }}
           >
-            <Undo2 className="w-3.5 h-3.5" style={{ filter: "drop-shadow(0 0 4px #00E5FF)" }} />
+            <Undo2 className="w-3.5 h-3.5" style={{ filter: "drop-shadow(0 0 4px #7FEFFF)" }} />
             {isAf ? "Terugbetalings en Kansellasies" : "Refunds & Cancellations"}
           </span>
           <h1
             className="graffiti-hand text-3xl sm:text-4xl md:text-5xl tracking-tight leading-[1.05]"
             data-testid="text-refund-title"
             style={{
-              background: "linear-gradient(90deg, #00E5FF, #8A2BFF, #FF2BD6, #FFE600)",
+              background: "linear-gradient(90deg, #7FEFFF, #C6A4FF, #FF9FE5, #FFF29E)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
@@ -244,7 +244,7 @@ export default function RefundPolicyPage() {
               ? "Ons is deursigtig oor hoe fakturering, kansellasies en terugbetalings werk."
               : "We're transparent about how billing, cancellations, and refunds work."}
           </p>
-          <p className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "#FFE600" }}>
+          <p className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "#FFF29E" }}>
             {isAf ? "Laas opgedateer: 16 Julie 2026" : "Last updated: 16 July 2026"}
           </p>
         </div>
@@ -324,7 +324,7 @@ export default function RefundPolicyPage() {
 
         <div className="text-center pt-4">
           <Link href="/terms-of-service">
-            <button className="text-xs text-white hover:text-[#00E5FF] transition-colors underline underline-offset-2">
+            <button className="text-xs text-white hover:text-[#7FEFFF] transition-colors underline underline-offset-2">
               {isAf ? "Volledige Diensbepalings bekyk" : "View full Terms of Service"}
             </button>
           </Link>

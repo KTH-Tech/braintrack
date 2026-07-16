@@ -6,12 +6,12 @@ import { useAuth } from "@/hooks/use-auth";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { BadgeDollarSign } from "lucide-react";
 
-const BRAND = ["#006BFF","#00E5FF","#22FF66","#FFE600","#FF8A00","#FF2BD6","#8A2BFF"];
+const BRAND = ["#6FA8FF","#7FEFFF","#93FFB8","#FFF29E","#FFC48F","#FF9FE5","#C6A4FF"];
 
 const navLinks = [
-  { href: "/research",  en: "Research", af: "Navorsing", icon: FlaskConical,    color: "#006BFF", dark: true },
-  { href: "/features",  en: "Features", af: "Kenmerke",  icon: Sparkles,        color: "#22FF66", dark: true },
-  { href: "/subscribe", en: "Pricing",  af: "Pryse",     icon: BadgeDollarSign, color: "#FF2BD6", dark: false },
+  { href: "/research",  en: "Research", af: "Navorsing", icon: FlaskConical,    color: "#6FA8FF", dark: true },
+  { href: "/features",  en: "Features", af: "Kenmerke",  icon: Sparkles,        color: "#93FFB8", dark: true },
+  { href: "/subscribe", en: "Pricing",  af: "Pryse",     icon: BadgeDollarSign, color: "#FF9FE5", dark: false },
 ];
 
 export function PublicNav() {
@@ -26,7 +26,7 @@ export function PublicNav() {
       style={{
         background: "#000",
         borderBottom: "3px solid transparent",
-        borderImage: "linear-gradient(90deg,#006BFF,#00E5FF,#22FF66,#FFE600,#FF8A00,#FF2BD6,#8A2BFF) 1",
+        borderImage: "linear-gradient(90deg,#6FA8FF,#7FEFFF,#93FFB8,#FFF29E,#FFC48F,#FF9FE5,#C6A4FF) 1",
         boxShadow: "0 0 32px rgba(0,229,255,0.2), 0 4px 24px rgba(0,0,0,0.8)",
       }}
       data-testid="nav-public"
@@ -82,7 +82,7 @@ export function PublicNav() {
                   <button
                     data-testid="button-my-classroom"
                     className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-[12px] font-black uppercase tracking-wide text-black transition-all hover:scale-105 active:scale-95"
-                    style={{ background: "#22FF66", border: "2px solid #22FF66", boxShadow: "0 0 18px rgba(34,255,102,0.5)" }}
+                    style={{ background: "#93FFB8", border: "2px solid #93FFB8", boxShadow: "0 0 18px rgba(34,255,102,0.5)" }}
                   >
                     <BookOpen className="h-3.5 w-3.5" />
                     {language === "en" ? "My Classroom" : "My Klaskamer"}
@@ -92,9 +92,9 @@ export function PublicNav() {
                   <button
                     data-testid="button-sign-out"
                     className="inline-flex items-center justify-center w-9 h-9 rounded-xl text-white transition-all hover:scale-105"
-                    style={{ background: "rgba(255,43,214,0.12)", border: "1.5px solid #FF2BD6" }}
+                    style={{ background: "rgba(255,43,214,0.12)", border: "1.5px solid #FF9FE5" }}
                   >
-                    <LogOut className="h-3.5 w-3.5" style={{ color: "#FF2BD6" }} />
+                    <LogOut className="h-3.5 w-3.5" style={{ color: "#FF9FE5" }} />
                   </button>
                 </a>
               </div>
@@ -103,7 +103,7 @@ export function PublicNav() {
                 <button
                   data-testid="button-sign-in"
                   className="inline-flex items-center px-5 py-2 rounded-xl text-[12px] font-black uppercase tracking-wider text-black transition-all hover:scale-105 active:scale-95"
-                  style={{ background: "#FFE600", border: "2px solid #FFE600", boxShadow: "0 0 18px rgba(255,230,0,0.5)" }}
+                  style={{ background: "#FFF29E", border: "2px solid #FFF29E", boxShadow: "0 0 18px rgba(255,230,0,0.5)" }}
                 >
                   {language === "en" ? "Sign In" : "Kom In"}
                 </button>
@@ -131,9 +131,9 @@ export function PublicNav() {
                 onClick={() => setMobileOpen(!mobileOpen)}
                 data-testid="button-mobile-menu"
                 className="inline-flex items-center justify-center w-9 h-9 rounded-xl text-white transition-all hover:scale-105"
-                style={{ background: mobileOpen ? "#FF2BD6" : "rgba(255,43,214,0.12)", border: "1.5px solid #FF2BD6" }}
+                style={{ background: mobileOpen ? "#FF9FE5" : "rgba(255,43,214,0.12)", border: "1.5px solid #FF9FE5" }}
               >
-                {mobileOpen ? <X className="h-5 w-5" style={{ color: mobileOpen ? "#000" : "#FF2BD6" }} /> : <Menu className="h-5 w-5" style={{ color: "#FF2BD6" }} />}
+                {mobileOpen ? <X className="h-5 w-5" style={{ color: mobileOpen ? "#000" : "#FF9FE5" }} /> : <Menu className="h-5 w-5" style={{ color: "#FF9FE5" }} />}
               </button>
             </div>
           </div>
@@ -188,7 +188,7 @@ export function PublicNav() {
                   data-testid="link-mobile-my-classroom"
                   onClick={() => setMobileOpen(false)}
                   className="nav-mobile-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-black uppercase tracking-wide text-black"
-                  style={{ background: "#22FF66", border: "2px solid #22FF66", boxShadow: "0 0 16px rgba(34,255,102,0.45)", animationDelay: `${navLinks.length * 50}ms` }}
+                  style={{ background: "#93FFB8", border: "2px solid #93FFB8", boxShadow: "0 0 16px rgba(34,255,102,0.45)", animationDelay: `${navLinks.length * 50}ms` }}
                 >
                   <BookOpen className="w-4 h-4" />
                   {language === "en" ? "My Classroom" : "My Klaskamer"}
@@ -197,7 +197,7 @@ export function PublicNav() {
                   href="/api/auth/logout"
                   data-testid="link-mobile-sign-out"
                   className="nav-mobile-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-black uppercase tracking-wide"
-                  style={{ background: "rgba(255,43,214,0.1)", color: "#FF2BD6", border: "1.5px solid #FF2BD6", animationDelay: `${(navLinks.length + 1) * 50}ms` }}
+                  style={{ background: "rgba(255,43,214,0.1)", color: "#FF9FE5", border: "1.5px solid #FF9FE5", animationDelay: `${(navLinks.length + 1) * 50}ms` }}
                 >
                   <LogOut className="h-4 w-4" />
                   {language === "en" ? "Sign Out" : "Uitteken"}
@@ -211,7 +211,7 @@ export function PublicNav() {
               >
                 <button
                   className="w-full py-3 rounded-xl text-sm font-black uppercase tracking-wider text-black"
-                  style={{ background: "#FFE600", border: "2px solid #FFE600", boxShadow: "0 0 16px rgba(255,230,0,0.45)" }}
+                  style={{ background: "#FFF29E", border: "2px solid #FFF29E", boxShadow: "0 0 16px rgba(255,230,0,0.45)" }}
                 >
                   {language === "en" ? "Sign In" : "Kom In"}
                 </button>

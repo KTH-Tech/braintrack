@@ -66,7 +66,7 @@ export default function DBEPortalLogin() {
             <div
               className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.22em] px-3 py-1 rounded-full mb-3"
               style={{
-                color: "#00E5FF",
+                color: "#7FEFFF",
                 border: "1px solid rgba(0,229,255,0.4)",
                 background: "rgba(0,229,255,0.08)",
               }}
@@ -101,7 +101,7 @@ export default function DBEPortalLogin() {
               <a
                 href="/dashboard"
                 className="inline-block mt-1 text-xs font-bold underline"
-                style={{ color: "#00E5FF" }}
+                style={{ color: "#7FEFFF" }}
               >
                 Back to dashboard
               </a>
@@ -113,7 +113,7 @@ export default function DBEPortalLogin() {
                 className="flex items-center justify-center gap-2 w-full rounded-xl py-3 text-sm font-black uppercase tracking-[0.1em] transition-all"
                 style={{
                   color: "#0a0a0a",
-                  background: "linear-gradient(135deg, #00E5FF 0%, #1aa8b4 100%)",
+                  background: "linear-gradient(135deg, #7FEFFF 0%, #1aa8b4 100%)",
                   boxShadow: "0 0 20px rgba(0,229,255,0.45), 0 4px 16px rgba(0,0,0,0.4)",
                 }}
                 data-testid="btn-sign-in"

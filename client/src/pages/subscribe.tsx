@@ -356,7 +356,7 @@ export default function SubscribePage() {
         <Button
           onClick={handleStartTrial}
           className={CTA_CLASSES}
-          style={{ background: "#FF2BD6", color: "#000" }}
+          style={{ background: "#FF9FE5", color: "#000" }}
           data-testid="button-subscribe-cta"
         >
           {isAf ? "Begin Gratis Proef" : "Start Free Trial"}
@@ -846,7 +846,7 @@ function SuccessScreen({
                 onClick={handleResend}
                 disabled={resendLoading || cooldownSecs > 0}
                 className={CTA_CLASSES}
-                style={{ background: "#FFE600", color: "#000" }}
+                style={{ background: "#FFF29E", color: "#000" }}
               >
                 {resendLoading ? (
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
@@ -905,7 +905,7 @@ function SuccessScreen({
           <Button
             onClick={() => navigate("/dashboard")}
             className={CTA_CLASSES}
-            style={{ background: "#FF2BD6", color: "#000" }}
+            style={{ background: "#FF9FE5", color: "#000" }}
           >
             {isAf ? "Gaan na Dashboard" : "Go to Dashboard"}
           </Button>
@@ -996,7 +996,7 @@ function PaymentSuccessScreen({
           <Button
             onClick={() => navigate("/dashboard")}
             className={CTA_CLASSES}
-            style={{ background: "#FF2BD6", color: "#000" }}
+            style={{ background: "#FF9FE5", color: "#000" }}
             data-testid="button-payment-success-dashboard"
           >
             {isAf ? "Gaan na Dashboard" : "Go to Dashboard"}

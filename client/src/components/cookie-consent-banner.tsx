@@ -139,7 +139,7 @@ export function CookieConsentBanner() {
         className="max-w-3xl mx-auto rounded-xl text-white"
         style={{
           background: "#0a0b12",
-          border: "2px solid #00E5FF",
+          border: "2px solid #7FEFFF",
           fontFamily: "'Poppins', sans-serif",
         }}
       >
@@ -147,9 +147,9 @@ export function CookieConsentBanner() {
           <div className="flex items-start gap-3 flex-1 min-w-0">
             <div
               className="mt-0.5 shrink-0 w-8 h-8 rounded-lg flex items-center justify-center"
-              style={{ background: "#000", border: "1px solid #00E5FF" }}
+              style={{ background: "#000", border: "1px solid #7FEFFF" }}
             >
-              <Cookie className="w-4 h-4" style={{ color: "#00E5FF" }} />
+              <Cookie className="w-4 h-4" style={{ color: "#7FEFFF" }} />
             </div>
             <div className="space-y-1 min-w-0">
               <p className="text-sm font-bold leading-snug text-white">
@@ -162,7 +162,7 @@ export function CookieConsentBanner() {
                 <Link
                   href="/cookie-policy"
                   className="underline underline-offset-2 font-bold"
-                  style={{ color: "#00E5FF" }}
+                  style={{ color: "#7FEFFF" }}
                   data-testid="link-cookie-policy-banner"
                 >
                   {isAf ? "Koekiebeleid" : "Cookie Policy"}
@@ -193,7 +193,7 @@ export function CookieConsentBanner() {
             <button
               onClick={handleAcceptAll}
               className="px-4 py-2 text-sm font-bold rounded-xl"
-              style={{ background: "#22FF66", color: "#000" }}
+              style={{ background: "#93FFB8", color: "#000" }}
               data-testid="button-cookie-accept"
             >
               {isAf ? "Aanvaar alles" : "Accept all"}
@@ -228,7 +228,7 @@ export function CookieConsentBanner() {
                     <p className="text-xs font-bold text-white">
                       {isAf ? "Noodsaaklike koekies" : "Essential cookies"}
                     </p>
-                    <Lock className="w-3 h-3" style={{ color: "#22FF66" }} />
+                    <Lock className="w-3 h-3" style={{ color: "#93FFB8" }} />
                   </div>
                   <p className="text-xs text-white">
                     {isAf
@@ -287,7 +287,7 @@ export function CookieConsentBanner() {
               <button
                 onClick={handleSavePreferences}
                 className="px-4 py-2 text-sm font-bold rounded-xl"
-                style={{ background: "#22FF66", color: "#000" }}
+                style={{ background: "#93FFB8", color: "#000" }}
                 data-testid="button-cookie-save-preferences"
               >
                 {isAf ? "Stoor voorkeure" : "Save preferences"}

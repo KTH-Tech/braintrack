@@ -15,18 +15,18 @@ import {
 } from "lucide-react";
 
 type NeonHex =
-  | "#FF8A00" | "#FFE600"
-  | "#00E5FF" | "#006BFF" | "#8A2BFF" | "#FF2BD6";
+  | "#FFC48F" | "#FFF29E"
+  | "#7FEFFF" | "#6FA8FF" | "#C6A4FF" | "#FF9FE5";
 
 function halo(color: NeonHex, a = 0.28) {
   // Brand-hex rgb triplets (matching the 7-colour brand palette).
   const rgb: Record<NeonHex, string> = {
-    "#FF8A00": "255,138,0",
-    "#FFE600": "255,230,0",
-    "#00E5FF": "0,229,255",
-    "#006BFF": "0,107,255",
-    "#8A2BFF": "138,43,255",
-    "#FF2BD6": "255,43,214",
+    "#FFC48F": "255,138,0",
+    "#FFF29E": "255,230,0",
+    "#7FEFFF": "0,229,255",
+    "#6FA8FF": "0,107,255",
+    "#C6A4FF": "138,43,255",
+    "#FF9FE5": "255,43,214",
   };
   return `rgba(${rgb[color]},${a})`;
 }
@@ -84,10 +84,10 @@ type SchoolEnquiry = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  new: "#FFE600",
-  contacted: "#00E5FF",
-  converted: "#006BFF",
-  dismissed: "#8A2BFF",
+  new: "#FFF29E",
+  contacted: "#7FEFFF",
+  converted: "#6FA8FF",
+  dismissed: "#C6A4FF",
 };
 
 type ReferralFlag = {
@@ -153,24 +153,24 @@ function FraudFlagsPanel({ isAf }: { isAf: boolean }) {
   return (
     <section data-testid="fraud-flags-section">
       <h2 className="text-[10px] font-black uppercase tracking-[0.24em] text-white mb-3 flex items-center gap-2">
-        <Flag className="w-3 h-3" style={{ color: "#FF8A00" }} />
+        <Flag className="w-3 h-3" style={{ color: "#FFC48F" }} />
         {isAf ? "Bedrogvlae" : "Fraud Flags"}
         {unreviewedCount > 0 && (
           <span
             className="px-1.5 py-0.5 rounded-full text-[9px] font-black tabular-nums"
-            style={{ background: "rgba(255,138,0,0.18)", color: "#FF8A00", border: "1px solid rgba(255,138,0,0.45)" }}
+            style={{ background: "rgba(255,138,0,0.18)", color: "#FFC48F", border: "1px solid rgba(255,138,0,0.45)" }}
             data-testid="fraud-flags-badge"
           >
             {unreviewedCount}
           </span>
         )}
       </h2>
-      <NeonShell color="#FF8A00" className="p-5" testId="fraud-flags-panel">
+      <NeonShell color="#FFC48F" className="p-5" testId="fraud-flags-panel">
 
         {haltedCount > 0 && (
           <div
             className="mb-4 flex items-start gap-2 rounded-xl px-4 py-3 text-sm"
-            style={{ background: "rgba(255,138,0,0.1)", border: "1px solid rgba(255,138,0,0.4)", color: "#FF8A00" }}
+            style={{ background: "rgba(255,138,0,0.1)", border: "1px solid rgba(255,138,0,0.4)", color: "#FFC48F" }}
             data-testid="fraud-flags-halted-banner"
           >
             <ShieldAlert className="w-4 h-4 mt-0.5 shrink-0" />
@@ -194,8 +194,8 @@ function FraudFlagsPanel({ isAf }: { isAf: boolean }) {
             data-testid="fraud-flags-toggle-reviewed"
             className="shrink-0 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider transition-colors"
             style={{
-              border: `1px solid ${showReviewed ? "#FF8A00" : "rgba(255,255,255,0.18)"}`,
-              color: showReviewed ? "#FF8A00" : "#fff",
+              border: `1px solid ${showReviewed ? "#FFC48F" : "rgba(255,255,255,0.18)"}`,
+              color: showReviewed ? "#FFC48F" : "#fff",
               background: showReviewed ? "rgba(255,138,0,0.12)" : "transparent",
             }}
           >
@@ -221,13 +221,13 @@ function FraudFlagsPanel({ isAf }: { isAf: boolean }) {
               {isLoading ? (
                 <tr>
                   <td colSpan={8} className="px-3 py-6 text-center text-white" data-testid="fraud-flags-loading">
-                    <Loader2 className="w-4 h-4 animate-spin inline-block mr-2" style={{ color: "#FF8A00" }} />
+                    <Loader2 className="w-4 h-4 animate-spin inline-block mr-2" style={{ color: "#FFC48F" }} />
                     {isAf ? "Laai vlae…" : "Loading flags…"}
                   </td>
                 </tr>
               ) : isError ? (
                 <tr>
-                  <td colSpan={8} className="px-3 py-6 text-center" style={{ color: "#FF8A00" }} data-testid="fraud-flags-error">
+                  <td colSpan={8} className="px-3 py-6 text-center" style={{ color: "#FFC48F" }} data-testid="fraud-flags-error">
                     {isAf ? "Kon nie vlae laai nie." : "Could not load flags."}
                   </td>
                 </tr>
@@ -258,7 +258,7 @@ function FraudFlagsPanel({ isAf }: { isAf: boolean }) {
                       <td className="px-3 py-2">
                         <span
                           className="inline-block px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider"
-                          style={{ border: "1px solid rgba(255,138,0,0.5)", color: "#FF8A00" }}
+                          style={{ border: "1px solid rgba(255,138,0,0.5)", color: "#FFC48F" }}
                         >
                           {isAf ? reasonLabel?.af : reasonLabel?.en}
                         </span>
@@ -267,7 +267,7 @@ function FraudFlagsPanel({ isAf }: { isAf: boolean }) {
                         {flag.commissionHalted ? (
                           <span
                             className="inline-block px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider"
-                            style={{ border: "1px solid rgba(255,138,0,0.5)", color: "#FF8A00", background: "rgba(255,138,0,0.12)" }}
+                            style={{ border: "1px solid rgba(255,138,0,0.5)", color: "#FFC48F", background: "rgba(255,138,0,0.12)" }}
                             data-testid={`fraud-flag-halted-${flag.id}`}
                           >
                             {isAf ? "Ja" : "Yes"}
@@ -281,7 +281,7 @@ function FraudFlagsPanel({ isAf }: { isAf: boolean }) {
                         {flag.reviewed ? (
                           <span
                             className="inline-block px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider"
-                            style={{ border: "1px solid rgba(0,229,255,0.4)", color: "#00E5FF" }}
+                            style={{ border: "1px solid rgba(0,229,255,0.4)", color: "#7FEFFF" }}
                             data-testid={`fraud-flag-reviewed-${flag.id}`}
                           >
                             {isAf ? "Hersien" : "Reviewed"}
@@ -289,7 +289,7 @@ function FraudFlagsPanel({ isAf }: { isAf: boolean }) {
                         ) : (
                           <span
                             className="inline-block px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider"
-                            style={{ border: "1px solid rgba(255,230,0,0.4)", color: "#FFE600" }}
+                            style={{ border: "1px solid rgba(255,230,0,0.4)", color: "#FFF29E" }}
                             data-testid={`fraud-flag-pending-${flag.id}`}
                           >
                             {isAf ? "Oop" : "Open"}
@@ -306,7 +306,7 @@ function FraudFlagsPanel({ isAf }: { isAf: boolean }) {
                             className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider disabled:opacity-50 transition-opacity"
                             style={{
                               border: "1px solid rgba(0,229,255,0.5)",
-                              color: "#00E5FF",
+                              color: "#7FEFFF",
                               background: "rgba(0,229,255,0.08)",
                             }}
                           >
@@ -356,9 +356,9 @@ type PartnerSchoolInquiry = {
 };
 
 const INQUIRY_ACTION_COLORS: Record<string, string> = {
-  contacted: "#00E5FF",
-  approved: "#006BFF",
-  dismissed: "#8A2BFF",
+  contacted: "#7FEFFF",
+  approved: "#6FA8FF",
+  dismissed: "#C6A4FF",
 };
 
 type DbHealth = {
@@ -396,7 +396,7 @@ function DbHealthPanel({ isAf }: { isAf: boolean }) {
     return parts.join(" ");
   }
 
-  const color: NeonHex = "#00E5FF";
+  const color: NeonHex = "#7FEFFF";
   const poolPct = data ? Math.round((data.poolStats.total / data.poolStats.max) * 100) : 0;
   const lastMig = data?.lastMigrationAt
     ? new Date(data.lastMigrationAt).toLocaleDateString(isAf ? "af-ZA" : "en-ZA", { day: "2-digit", month: "short", year: "numeric" })
@@ -423,7 +423,7 @@ function DbHealthPanel({ isAf }: { isAf: boolean }) {
             {isAf ? "Laai databasis data…" : "Loading database data…"}
           </div>
         ) : isError ? (
-          <div className="flex items-center gap-2 py-6 justify-center text-sm" style={{ color: "#FF8A00" }} data-testid="db-health-error">
+          <div className="flex items-center gap-2 py-6 justify-center text-sm" style={{ color: "#FFC48F" }} data-testid="db-health-error">
             <AlertTriangle className="w-4 h-4" />
             {isAf ? "Kon nie databasis data laai nie." : "Could not load database health data."}
           </div>
@@ -447,7 +447,7 @@ function DbHealthPanel({ isAf }: { isAf: boolean }) {
                     className="h-full rounded-full transition-all"
                     style={{
                       width: `${Math.min(poolPct, 100)}%`,
-                      background: poolPct >= 80 ? "#FF8A00" : color,
+                      background: poolPct >= 80 ? "#FFC48F" : color,
                     }}
                   />
                 </div>
@@ -472,7 +472,7 @@ function DbHealthPanel({ isAf }: { isAf: boolean }) {
                 <p className="text-[10px] font-black uppercase tracking-wider mb-1" style={{ color }}>
                   {isAf ? "Stadige Navrae (>500ms)" : "Slow Queries (>500ms)"}
                 </p>
-                <p className="text-2xl font-black tabular-nums" style={{ color: data!.slowQueryCount > 0 ? "#FFE600" : "white" }}>
+                <p className="text-2xl font-black tabular-nums" style={{ color: data!.slowQueryCount > 0 ? "#FFF29E" : "white" }}>
                   {data!.slowQueryCount}
                 </p>
                 <p className="text-[10px] mt-1" style={{ color: "#fff" }}>
@@ -567,7 +567,7 @@ function PartnerSchoolInquiriesPanel({ isAf }: { isAf: boolean }) {
     },
   });
 
-  const color: NeonHex = "#FF8A00";
+  const color: NeonHex = "#FFC48F";
 
   return (
     <section>
@@ -736,7 +736,7 @@ function SchoolEnquiriesPanel({ isAf }: { isAf: boolean }) {
   });
 
   const newCount = enquiries.filter((e) => e.status === "new").length;
-  const color: NeonHex = "#FFE600";
+  const color: NeonHex = "#FFF29E";
 
   return (
     <section>
@@ -763,7 +763,7 @@ function SchoolEnquiriesPanel({ isAf }: { isAf: boolean }) {
         ) : (
           <div className="space-y-2">
             {enquiries.map((enq) => {
-              const sc = STATUS_COLORS[enq.status] ?? "#8A2BFF";
+              const sc = STATUS_COLORS[enq.status] ?? "#C6A4FF";
               const isOpen = expanded === enq.id;
               const fmt = (s: string) => new Date(s).toLocaleDateString(isAf ? "af-ZA" : "en-ZA");
               return (
@@ -998,56 +998,56 @@ export default function AdminDashboardPage() {
     desc: string; descAf: string; Icon: any; testId: string;
   }[] = [
     {
-      href: "/classroom", color: "#FFE600",
+      href: "/classroom", color: "#FFF29E",
       title: "Open Learner Classroom", titleAf: "Maak Klaskamer Oop",
       desc: "Jump straight to the learner classroom without entering an impersonation session.",
       descAf: "Gaan direk na die leerder klaskamer sonder om 'n nabootsingsessie te begin.",
       Icon: GraduationCap, testId: "quick-preview-classroom",
     },
     {
-      href: "/learn/admin/reports", color: "#8A2BFF",
+      href: "/learn/admin/reports", color: "#C6A4FF",
       title: "Reports", titleAf: "Verslae",
       desc: "User, parent, learner and school analytics.",
       descAf: "Gebruiker-, ouer-, leerder- en skoolontleding.",
       Icon: BarChart3, testId: "quick-reports",
     },
     {
-      href: "/learn/admin/products", color: "#8A2BFF",
+      href: "/learn/admin/products", color: "#C6A4FF",
       title: "Products", titleAf: "Produkte",
       desc: "Pricing, plans, and availability controls.",
       descAf: "Pryse, planne en beskikbaarheid.",
       Icon: Package, testId: "quick-products",
     },
     {
-      href: "/learn/admin/topic-audio", color: "#00E5FF",
+      href: "/learn/admin/topic-audio", color: "#7FEFFF",
       title: "Topic Audio", titleAf: "Onderwerp Klank",
       desc: "Preview, regenerate or upload replacement MP3s before students hear them.",
       descAf: "Voorskou, hergenereer of laai vervangings-MP3's op voor leerders dit hoor.",
       Icon: Headphones, testId: "quick-topic-audio",
     },
     {
-      href: "/partner-schools", color: "#FFE600",
+      href: "/partner-schools", color: "#FFF29E",
       title: "Partner Schools", titleAf: "Vennootskole",
       desc: "Manage channels, pipelines, and contacts.",
       descAf: "Bestuur kanale, pyplyne en kontakte.",
       Icon: Store, testId: "quick-schools",
     },
     {
-      href: "/learn/admin/school-qr", color: "#00E5FF",
+      href: "/learn/admin/school-qr", color: "#7FEFFF",
       title: "School QR Codes", titleAf: "Skool QR-kodes",
       desc: "Download or print unique QR codes for each partner school.",
       descAf: "Laai af of druk unieke QR-kodes vir elke vennootskool.",
       Icon: QrCode, testId: "quick-school-qr",
     },
     {
-      href: "/learn/admin/reports?tab=referrals", color: "#FF2BD6",
+      href: "/learn/admin/reports?tab=referrals", color: "#FF9FE5",
       title: "Referral Flags", titleAf: "Verwysingsvlae",
       desc: "Review suspicious referral activity.",
       descAf: "Hersien verdagte verwysings.",
       Icon: ShieldAlert, testId: "quick-referrals",
     },
     {
-      href: "/learn/admin/billing", color: "#FF8A00",
+      href: "/learn/admin/billing", color: "#FFC48F",
       title: "Billing", titleAf: "Fakturering",
       desc: "Trials ending, recurring failures, lapsed subscribers (Netcash).",
       descAf: "Proewe wat eindig, herhalende mislukkings, vervalde intekeninge (Netcash).",
@@ -1072,7 +1072,7 @@ export default function AdminDashboardPage() {
           : `Skedule: af (${freqAf})`
         : "Skedule: laai…";
       return {
-        href: "/learn/admin/partner-branding", color: "#00E5FF" as NeonHex,
+        href: "/learn/admin/partner-branding", color: "#7FEFFF" as NeonHex,
         title: "Partner Branding & Reports", titleAf: "Vennoothandel & Verslae",
         desc: `${statusEn} · Set partner name, logo and report send schedule.`,
         descAf: `${statusAf} · Stel vennootnaam, logo en verslagskedule.`,
@@ -1080,21 +1080,21 @@ export default function AdminDashboardPage() {
       };
     })(),
     {
-      href: "/learn/admin/content", color: "#FF2BD6",
+      href: "/learn/admin/content", color: "#FF9FE5",
       title: "Content Editor", titleAf: "Inhoudsredigeerder",
       desc: "Edit topic notes, flashcards and literature notes without reseeding.",
       descAf: "Wysig onderwerpnotas, flitskaarte en literatuurnotas sonder om oor te saai.",
       Icon: FileEdit, testId: "quick-content-editor",
     },
     {
-      href: "/learn/admin/emails", color: "#FF8A00",
+      href: "/learn/admin/emails", color: "#FFC48F",
       title: "Email Templates", titleAf: "E-pos Sjablone",
       desc: "Preview & test-send transactional emails.",
       descAf: "Voorskou en toets-stuur transaksionele e-posse.",
       Icon: Mail, testId: "quick-email-templates",
     },
     {
-      href: "/learn/admin/dbe-portal", color: "#00E5FF",
+      href: "/learn/admin/dbe-portal", color: "#7FEFFF",
       title: "DBE Portal", titleAf: "DBE Portaal",
       desc: "Manage DBE past-paper ingestion, catalog and release-gate controls.",
       descAf: "Bestuur DBE vorige vraestelle, katalogus en vrystellingbeheer.",
@@ -1103,7 +1103,7 @@ export default function AdminDashboardPage() {
   ];
 
   const previewCard = {
-    color: "#FFE600" as NeonHex,
+    color: "#FFF29E" as NeonHex,
     title: "Preview Learner Journey",
     titleAf: "Voorskou Leerderreis",
     desc: "Step into a fresh learner's shoes — role select, onboarding, paywall, dashboard.",
@@ -1112,12 +1112,12 @@ export default function AdminDashboardPage() {
   };
 
   const statCards: { label: string; labelAf: string; value: number; color: NeonHex; Icon: any; testId: string }[] = [
-    { label: "Total Users",  labelAf: "Totaal Gebruikers", value: stats?.totalUsers  ?? 0, color: "#00E5FF", Icon: Users,         testId: "stat-total"     },
-    { label: "Learners",     labelAf: "Leerders",          value: stats?.learners    ?? 0, color: "#006BFF", Icon: GraduationCap, testId: "stat-learners"  },
-    { label: "Parents",      labelAf: "Ouers",             value: stats?.parents     ?? 0, color: "#8A2BFF", Icon: Users,         testId: "stat-parents"   },
-    { label: "Subscribed",   labelAf: "Geabonneer",        value: stats?.subscribedUsers ?? 0, color: "#FF2BD6", Icon: Zap,       testId: "stat-subs"      },
-    { label: "Trial",        labelAf: "Proef",             value: stats?.trialUsers  ?? 0, color: "#FFE600", Icon: Activity,      testId: "stat-trial"     },
-    { label: "Admins",       labelAf: "Admins",            value: stats?.admins      ?? 0, color: "#FF8A00", Icon: Layers,        testId: "stat-admins"    },
+    { label: "Total Users",  labelAf: "Totaal Gebruikers", value: stats?.totalUsers  ?? 0, color: "#7FEFFF", Icon: Users,         testId: "stat-total"     },
+    { label: "Learners",     labelAf: "Leerders",          value: stats?.learners    ?? 0, color: "#6FA8FF", Icon: GraduationCap, testId: "stat-learners"  },
+    { label: "Parents",      labelAf: "Ouers",             value: stats?.parents     ?? 0, color: "#C6A4FF", Icon: Users,         testId: "stat-parents"   },
+    { label: "Subscribed",   labelAf: "Geabonneer",        value: stats?.subscribedUsers ?? 0, color: "#FF9FE5", Icon: Zap,       testId: "stat-subs"      },
+    { label: "Trial",        labelAf: "Proef",             value: stats?.trialUsers  ?? 0, color: "#FFF29E", Icon: Activity,      testId: "stat-trial"     },
+    { label: "Admins",       labelAf: "Admins",            value: stats?.admins      ?? 0, color: "#FFC48F", Icon: Layers,        testId: "stat-admins"    },
   ];
 
   return (
@@ -1130,7 +1130,7 @@ export default function AdminDashboardPage() {
         <section
           className="relative overflow-hidden rounded-3xl bg-black p-6 sm:p-8 md:p-10"
           style={{
-            border: "1.5px solid #8A2BFF",
+            border: "1.5px solid #C6A4FF",
             boxShadow: "0 0 0 1px rgba(138,43,255,0.35), 0 0 44px rgba(138,43,255,0.35), inset 0 0 40px rgba(0,0,0,0.65)",
           }}
           data-testid="admin-hero"
@@ -1141,39 +1141,39 @@ export default function AdminDashboardPage() {
             style={{ background: "radial-gradient(circle, rgba(138,43,255,0.3), transparent 70%)" }} />
           <div aria-hidden className="absolute -bottom-24 -left-24 w-72 h-72 rounded-full blur-3xl pointer-events-none"
             style={{ background: "radial-gradient(circle, rgba(0,229,255,0.22), transparent 70%)" }} />
-          <span aria-hidden className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2" style={{ borderColor: "#8A2BFF" }} />
-          <span aria-hidden className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2" style={{ borderColor: "#8A2BFF" }} />
-          <span aria-hidden className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2" style={{ borderColor: "#8A2BFF" }} />
-          <span aria-hidden className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2" style={{ borderColor: "#8A2BFF" }} />
+          <span aria-hidden className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2" style={{ borderColor: "#C6A4FF" }} />
+          <span aria-hidden className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2" style={{ borderColor: "#C6A4FF" }} />
+          <span aria-hidden className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2" style={{ borderColor: "#C6A4FF" }} />
+          <span aria-hidden className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2" style={{ borderColor: "#C6A4FF" }} />
 
           <div className="relative flex flex-wrap items-center gap-3 mb-4">
             <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
-              style={{ border: "1px solid #8A2BFF", boxShadow: "0 0 12px rgba(138,43,255,0.45)" }}>
-              <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#8A2BFF", boxShadow: "0 0 6px #8A2BFF" }} />
-              <span className="text-[10px] font-black uppercase tracking-[0.24em]" style={{ color: "#8A2BFF" }}>
+              style={{ border: "1px solid #C6A4FF", boxShadow: "0 0 12px rgba(138,43,255,0.45)" }}>
+              <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#C6A4FF", boxShadow: "0 0 6px #C6A4FF" }} />
+              <span className="text-[10px] font-black uppercase tracking-[0.24em]" style={{ color: "#C6A4FF" }}>
                 {isAf ? "Administrateur" : "Administrator"}
               </span>
             </div>
             {superFlag?.isSuperAdmin && (
               <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
-                style={{ border: "1px solid #FFE600", boxShadow: "0 0 12px rgba(255,230,0,0.45)" }}>
-                <span className="text-[10px] font-black uppercase tracking-[0.24em]" style={{ color: "#FFE600" }}>
+                style={{ border: "1px solid #FFF29E", boxShadow: "0 0 12px rgba(255,230,0,0.45)" }}>
+                <span className="text-[10px] font-black uppercase tracking-[0.24em]" style={{ color: "#FFF29E" }}>
                   {isAf ? "Hoof" : "Super"}
                 </span>
               </div>
             )}
             <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
               style={{
-                border: emergencyActive ? "1px solid #FF8A00" : "1px solid rgba(0,229,255,0.55)",
+                border: emergencyActive ? "1px solid #FFC48F" : "1px solid rgba(0,229,255,0.55)",
                 boxShadow: emergencyActive ? "0 0 12px rgba(255,138,0,0.45)" : "0 0 10px rgba(0,229,255,0.35)",
               }}
               data-testid="badge-emergency"
             >
               {emergencyActive
-                ? <AlertTriangle className="w-3 h-3" style={{ color: "#FF8A00" }} />
-                : <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#00E5FF", boxShadow: "0 0 6px #00E5FF" }} />}
+                ? <AlertTriangle className="w-3 h-3" style={{ color: "#FFC48F" }} />
+                : <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#7FEFFF", boxShadow: "0 0 6px #7FEFFF" }} />}
               <span className="text-[10px] font-bold uppercase tracking-[0.2em]"
-                style={{ color: emergencyActive ? "#FF8A00" : "#00E5FF" }}>
+                style={{ color: emergencyActive ? "#FFC48F" : "#7FEFFF" }}>
                 {emergencyActive
                   ? (isAf ? "Noodgeval Aktief" : "Emergency Active")
                   : (isAf ? "Stelsel Gesond" : "System Nominal")}
@@ -1184,7 +1184,7 @@ export default function AdminDashboardPage() {
           <p className="text-white font-semibold text-sm mb-1">{isAf ? "Welkom terug," : "Welcome back,"}</p>
           <h1 className="text-4xl sm:text-5xl md:text-6xl text-white tracking-tight leading-[0.98] graffiti-hand">
             <span className="spray-title graffiti-hand">
-              <SpraySmear color="#8A2BFF" />
+              <SpraySmear color="#C6A4FF" />
               {firstName}.
             </span>
           </h1>
@@ -1199,8 +1199,8 @@ export default function AdminDashboardPage() {
               className="mt-4 inline-flex items-center gap-2 rounded-full px-3 py-1.5 bg-black"
               style={{ border: "1px solid rgba(255,230,0,0.55)", boxShadow: "0 0 10px rgba(255,230,0,0.35)" }}
             >
-              <AlertTriangle className="w-3.5 h-3.5" style={{ color: "#FFE600" }} />
-              <span className="text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: "#FFE600" }}>
+              <AlertTriangle className="w-3.5 h-3.5" style={{ color: "#FFF29E" }} />
+              <span className="text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: "#FFF29E" }}>
                 {disabledCount} {isAf ? "gedeaktiveer" : "disabled"}
               </span>
             </div>
@@ -1239,10 +1239,10 @@ export default function AdminDashboardPage() {
         {/* Learner Referral Programme */}
         <section>
           <h2 className="text-[10px] font-black uppercase tracking-[0.24em] text-white mb-3 flex items-center gap-2">
-            <Gift className="w-3 h-3" style={{ color: "#00E5FF" }} />
+            <Gift className="w-3 h-3" style={{ color: "#7FEFFF" }} />
             {isAf ? "Verwysingsprogram" : "Referral Programme"}
           </h2>
-          <NeonShell color="#00E5FF" className="p-5" testId="admin-referral-summary">
+          <NeonShell color="#7FEFFF" className="p-5" testId="admin-referral-summary">
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
               {[
                 { label: "Links",            labelAf: "Skakels",     value: referralSummary?.linksGenerated ?? 0,         testId: "ref-links" },
@@ -1253,7 +1253,7 @@ export default function AdminDashboardPage() {
                 { label: "Free Months",      labelAf: "Gratis Maande", value: referralSummary?.monthsAwarded ?? 0,        testId: "ref-months" },
               ].map(({ label, labelAf, value, testId }) => (
                 <div key={label} className="rounded-xl bg-black/40 p-3" style={{ border: "1px solid rgba(0,229,255,0.35)" }} data-testid={testId}>
-                  <div className="text-[10px] font-black uppercase tracking-[0.18em]" style={{ color: "#00E5FF" }}>
+                  <div className="text-[10px] font-black uppercase tracking-[0.18em]" style={{ color: "#7FEFFF" }}>
                     {isAf ? labelAf : label}
                   </div>
                   <div className="text-2xl font-black tabular-nums text-white mt-1">
@@ -1292,8 +1292,8 @@ export default function AdminDashboardPage() {
                       aria-pressed={active}
                       className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider transition-colors"
                       style={{
-                        border: `1px solid ${active ? "#00E5FF" : "rgba(255,255,255,0.18)"}`,
-                        color: active ? "#00E5FF" : "#fff",
+                        border: `1px solid ${active ? "#7FEFFF" : "rgba(255,255,255,0.18)"}`,
+                        color: active ? "#7FEFFF" : "#fff",
                         background: active ? "rgba(0,229,255,0.12)" : "transparent",
                       }}
                     >
@@ -1363,13 +1363,13 @@ export default function AdminDashboardPage() {
                     {referralRecentLoading ? (
                       <tr>
                         <td colSpan={6} className="px-3 py-6 text-center text-white" data-testid="ref-recent-loading">
-                          <Loader2 className="w-4 h-4 animate-spin inline-block mr-2" style={{ color: "#00E5FF" }} />
+                          <Loader2 className="w-4 h-4 animate-spin inline-block mr-2" style={{ color: "#7FEFFF" }} />
                           {isAf ? "Laai verwysings…" : "Loading referrals…"}
                         </td>
                       </tr>
                     ) : referralRecentError ? (
                       <tr>
-                        <td colSpan={6} className="px-3 py-6 text-center" style={{ color: "#FF8A00" }} data-testid="ref-recent-error">
+                        <td colSpan={6} className="px-3 py-6 text-center" style={{ color: "#FFC48F" }} data-testid="ref-recent-error">
                           {isAf
                             ? "Kon nie verwysings laai nie. Probeer asseblief weer."
                             : "Couldn't load referrals. Please try again."}
@@ -1387,9 +1387,9 @@ export default function AdminDashboardPage() {
                         const refereeName = [r.refereeFirstName, r.refereeLastName].filter(Boolean).join(" ").trim();
                         const fmt = (s: string | null) => (s ? new Date(s).toLocaleDateString(isAf ? "af-ZA" : "en-ZA") : "—");
                         const statusColor =
-                          r.status === "rewarded" ? "#FFE600" :
-                          r.status === "converted" ? "#00E5FF" :
-                          "#8A2BFF";
+                          r.status === "rewarded" ? "#FFF29E" :
+                          r.status === "converted" ? "#7FEFFF" :
+                          "#C6A4FF";
                         return (
                           <tr key={r.id} className="border-t border-white/5" data-testid={`ref-row-${r.id}`}>
                             <td className="px-3 py-2 text-white">
@@ -1445,7 +1445,7 @@ export default function AdminDashboardPage() {
                     className="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider disabled:opacity-40"
                     style={{
                       border: "1px solid rgba(0,229,255,0.4)",
-                      color: "#00E5FF",
+                      color: "#7FEFFF",
                       background: "rgba(0,229,255,0.08)",
                     }}
                   >
@@ -1459,7 +1459,7 @@ export default function AdminDashboardPage() {
                     className="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider disabled:opacity-40"
                     style={{
                       border: "1px solid rgba(0,229,255,0.4)",
-                      color: "#00E5FF",
+                      color: "#7FEFFF",
                       background: "rgba(0,229,255,0.08)",
                     }}
                   >

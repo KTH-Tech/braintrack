@@ -270,7 +270,7 @@ export default function RewardsPage() {
         <div className="max-w-4xl mx-auto px-4 flex items-center justify-between flex-wrap gap-2">
           <span
             className="text-sm font-black tracking-wide text-transparent bg-clip-text"
-            style={{ backgroundImage: "linear-gradient(90deg,#FFE600,#FF8A00,#FF2BD6,#8A2BFF,#00E5FF)" }}
+            style={{ backgroundImage: "linear-gradient(90deg,#FFF29E,#FFC48F,#FF9FE5,#C6A4FF,#7FEFFF)" }}
           >
             {t.pageTitle}
           </span>
@@ -312,24 +312,24 @@ export default function RewardsPage() {
         <div
           className="relative rounded-2xl bg-background overflow-hidden p-6 sm:p-8"
           style={{
-            border: "1.5px solid #FFE600",
+            border: "1.5px solid #FFF29E",
             boxShadow: "0 0 0 1px rgba(255,230,0,0.22), 0 0 28px rgba(255,230,0,0.22), inset 0 0 22px rgba(0,0,0,0.55)",
           }}
           data-testid="rewards-hero"
         >
           <span aria-hidden className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)", boxShadow: "0 0 12px rgba(255,230,0,0.7)" }} />
-          <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: "#FFE600" }} />
-          <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2" style={{ borderColor: "#FFE600" }} />
-          <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2" style={{ borderColor: "#FFE600" }} />
-          <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: "#FFE600" }} />
-          <div aria-hidden className="absolute -top-20 -right-16 w-64 h-64 rounded-full blur-3xl opacity-40 pointer-events-none" style={{ background: "radial-gradient(circle, #FFE600, transparent 70%)" }} />
-          <div aria-hidden className="absolute -bottom-20 -left-16 w-64 h-64 rounded-full blur-3xl opacity-30 pointer-events-none" style={{ background: "radial-gradient(circle, #FF2BD6, transparent 70%)" }} />
+          <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: "#FFF29E" }} />
+          <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2" style={{ borderColor: "#FFF29E" }} />
+          <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2" style={{ borderColor: "#FFF29E" }} />
+          <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: "#FFF29E" }} />
+          <div aria-hidden className="absolute -top-20 -right-16 w-64 h-64 rounded-full blur-3xl opacity-40 pointer-events-none" style={{ background: "radial-gradient(circle, #FFF29E, transparent 70%)" }} />
+          <div aria-hidden className="absolute -bottom-20 -left-16 w-64 h-64 rounded-full blur-3xl opacity-30 pointer-events-none" style={{ background: "radial-gradient(circle, #FF9FE5, transparent 70%)" }} />
           <div className="relative flex items-center gap-4">
             <div
               className="w-14 h-14 rounded-2xl bg-background flex items-center justify-center shrink-0"
-              style={{ border: "1.5px solid #FFE600", boxShadow: "0 0 18px rgba(255,230,0,0.5), inset 0 0 12px rgba(255,230,0,0.25)" }}
+              style={{ border: "1.5px solid #FFF29E", boxShadow: "0 0 18px rgba(255,230,0,0.5), inset 0 0 12px rgba(255,230,0,0.25)" }}
             >
-              <Trophy className="w-7 h-7" style={{ color: "#FFE600", filter: "drop-shadow(0 0 6px #FFE600)" }} />
+              <Trophy className="w-7 h-7" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 6px #FFF29E)" }} />
             </div>
             <div className="flex-1 min-w-0">
               <h1 className="text-2xl sm:text-3xl font-black text-white leading-tight">
@@ -344,28 +344,28 @@ export default function RewardsPage() {
 
         {isLoading ? (
           <div className="flex justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#FFE600" }} />
+            <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#FFF29E" }} />
           </div>
         ) : (
           <>
             {/* Coin Balance + Study Streak */}
             <div className="grid sm:grid-cols-3 gap-4">
-              <CosmicCard hex="#FFE600" halo="rgba(255,230,0," className="sm:col-span-2" testId="card-coin-balance">
-                <CosmicCardTitle hex="#FFE600" halo="rgba(255,230,0," icon={Coins}>
+              <CosmicCard hex="#FFF29E" halo="rgba(255,230,0," className="sm:col-span-2" testId="card-coin-balance">
+                <CosmicCardTitle hex="#FFF29E" halo="rgba(255,230,0," icon={Coins}>
                   {t.coinBalance}
                 </CosmicCardTitle>
                 <div className="p-5 pt-3">
                   <div className="flex items-end gap-4 mb-4">
                     <span
                       className="text-5xl tabular-nums"
-                      style={{ color: "#FFE600", textShadow: "0 0 20px rgba(255,230,0,0.6)", fontWeight: 900 }}
+                      style={{ color: "#FFF29E", textShadow: "0 0 20px rgba(255,230,0,0.6)", fontWeight: 900 }}
                       data-testid="coin-balance"
                     >
                       {coins?.balance ?? 0}
                     </span>
                     <div className="flex flex-col text-xs text-white mb-1 gap-0.5">
-                      <span><span style={{ color: "#00E5FF" }}>↑</span> {coins?.totalEarned ?? 0} {t.earned}</span>
-                      <span><span style={{ color: "#FF2BD6" }}>↓</span> {coins?.totalSpent ?? 0} {t.spent}</span>
+                      <span><span style={{ color: "#7FEFFF" }}>↑</span> {coins?.totalEarned ?? 0} {t.earned}</span>
+                      <span><span style={{ color: "#FF9FE5" }}>↓</span> {coins?.totalSpent ?? 0} {t.spent}</span>
                     </div>
                   </div>
                   {!txLoading && transactions && transactions.length > 0 && (
@@ -379,7 +379,7 @@ export default function RewardsPage() {
                         return (
                           <div key={i} className="flex justify-between items-center text-sm py-1 border-b last:border-0" style={{ borderColor: "rgba(255,255,255,0.06)" }} data-testid={`tx-row-${i}`}>
                             <span className="text-white truncate max-w-[180px]">{tx.description || tx.reason || ""}</span>
-                            <span className="font-bold tabular-nums" style={{ color: positive ? "#00E5FF" : "#FF2BD6" }}>
+                            <span className="font-bold tabular-nums" style={{ color: positive ? "#7FEFFF" : "#FF9FE5" }}>
                               {positive ? "+" : ""}{tx.amount ?? 0}
                             </span>
                           </div>
@@ -393,14 +393,14 @@ export default function RewardsPage() {
                 </div>
               </CosmicCard>
 
-              <CosmicCard hex="#FF8A00" halo="rgba(255,138,0," testId="card-streak">
-                <CosmicCardTitle hex="#FF8A00" halo="rgba(255,138,0," icon={Flame}>
+              <CosmicCard hex="#FFC48F" halo="rgba(255,138,0," testId="card-streak">
+                <CosmicCardTitle hex="#FFC48F" halo="rgba(255,138,0," icon={Flame}>
                   {t.studyStreak}
                 </CosmicCardTitle>
                 <div className="p-5 pt-3">
                   <div
                     className="text-5xl font-black tabular-nums mb-1 text-transparent bg-clip-text"
-                    style={{ backgroundImage: "linear-gradient(135deg,#FF8A00,#FFE600)" }}
+                    style={{ backgroundImage: "linear-gradient(135deg,#FFC48F,#FFF29E)" }}
                     data-testid="streak-count"
                   >
                     {streak}
@@ -416,13 +416,13 @@ export default function RewardsPage() {
                           key={m}
                           className="flex flex-col items-center flex-1 rounded-xl py-2 bg-background transition-all"
                           style={{
-                            border: hit ? "1.5px solid #FF8A00" : "1px solid rgba(255,255,255,0.1)",
+                            border: hit ? "1.5px solid #FFC48F" : "1px solid rgba(255,255,255,0.1)",
                             boxShadow: hit ? "0 0 12px rgba(255,138,0,0.4), inset 0 0 8px rgba(255,138,0,0.15)" : undefined,
                           }}
                           data-testid={`milestone-${m}`}
                         >
-                          <Flame className="w-4 h-4" style={{ color: hit ? "#FF8A00" : "rgba(255,255,255,0.3)", filter: hit ? "drop-shadow(0 0 4px #FF8A00)" : undefined }} />
-                          <span className="text-xs font-bold mt-0.5" style={{ color: hit ? "#FF8A00" : "rgba(255,255,255,0.4)" }}>{m}</span>
+                          <Flame className="w-4 h-4" style={{ color: hit ? "#FFC48F" : "rgba(255,255,255,0.3)", filter: hit ? "drop-shadow(0 0 4px #FFC48F)" : undefined }} />
+                          <span className="text-xs font-bold mt-0.5" style={{ color: hit ? "#FFC48F" : "rgba(255,255,255,0.4)" }}>{m}</span>
                         </div>
                       );
                     })}
@@ -439,8 +439,8 @@ export default function RewardsPage() {
             </div>
 
             {/* Earned badges */}
-            <CosmicCard hex="#FFE600" halo="rgba(255,230,0," testId="card-earned-badges">
-              <CosmicCardTitle hex="#FFE600" halo="rgba(255,230,0," icon={Trophy} count={earnedBadges.length}>
+            <CosmicCard hex="#FFF29E" halo="rgba(255,230,0," testId="card-earned-badges">
+              <CosmicCardTitle hex="#FFF29E" halo="rgba(255,230,0," icon={Trophy} count={earnedBadges.length}>
                 {t.yourBadges}
               </CosmicCardTitle>
               <div className="p-5 pt-3">
@@ -459,16 +459,16 @@ export default function RewardsPage() {
                           key={badge.id}
                           className="relative flex flex-col items-center gap-2 p-3 rounded-xl bg-background text-center transition-all duration-300 hover:-translate-y-0.5"
                           style={{
-                            border: "1.5px solid #FFE600",
+                            border: "1.5px solid #FFF29E",
                             boxShadow: "0 0 0 1px rgba(255,230,0,0.18), 0 0 16px rgba(255,230,0,0.2), inset 0 0 10px rgba(0,0,0,0.5)",
                           }}
                           data-testid={`earned-badge-${badge.badgeCode}`}
                         >
                           <div
                             className="w-11 h-11 rounded-full bg-background flex items-center justify-center"
-                            style={{ border: "1.5px solid #FFE600", boxShadow: "0 0 12px rgba(255,230,0,0.4), inset 0 0 8px rgba(255,230,0,0.2)" }}
+                            style={{ border: "1.5px solid #FFF29E", boxShadow: "0 0 12px rgba(255,230,0,0.4), inset 0 0 8px rgba(255,230,0,0.2)" }}
                           >
-                            <Icon className="w-5 h-5" style={{ color: "#FFE600", filter: "drop-shadow(0 0 4px #FFE600)" }} />
+                            <Icon className="w-5 h-5" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 4px #FFF29E)" }} />
                           </div>
                           <span className="text-xs font-bold text-white leading-tight">{isAf ? info.nameAf : info.name}</span>
                           {badge.earnedAt && (
@@ -483,8 +483,8 @@ export default function RewardsPage() {
             </CosmicCard>
 
             {/* Locked badges */}
-            <CosmicCard hex="#8A2BFF" halo="rgba(138,43,255," testId="card-locked-badges">
-              <CosmicCardTitle hex="#8A2BFF" halo="rgba(138,43,255," icon={Lock} count={lockedBadges.length}>
+            <CosmicCard hex="#C6A4FF" halo="rgba(138,43,255," testId="card-locked-badges">
+              <CosmicCardTitle hex="#C6A4FF" halo="rgba(138,43,255," icon={Lock} count={lockedBadges.length}>
                 {t.stillToUnlock}
               </CosmicCardTitle>
               <div className="p-5 pt-3">
@@ -517,8 +517,8 @@ export default function RewardsPage() {
             </CosmicCard>
 
             {/* Refer a Friend */}
-            <CosmicCard hex="#00E5FF" halo="rgba(0,229,255," testId="card-refer-friend">
-              <CosmicCardTitle hex="#00E5FF" halo="rgba(0,229,255," icon={Users}>
+            <CosmicCard hex="#7FEFFF" halo="rgba(0,229,255," testId="card-refer-friend">
+              <CosmicCardTitle hex="#7FEFFF" halo="rgba(0,229,255," icon={Users}>
                 {t.referHeading}
               </CosmicCardTitle>
               <div className="p-5 pt-3 space-y-4">
@@ -529,7 +529,7 @@ export default function RewardsPage() {
                       className="w-14 h-14 rounded-2xl bg-background flex items-center justify-center"
                       style={{ border: "1.5px solid rgba(0,229,255,0.4)", boxShadow: "0 0 18px rgba(0,229,255,0.2)" }}
                     >
-                      <Sparkles className="w-7 h-7" style={{ color: "#00E5FF", filter: "drop-shadow(0 0 6px #00E5FF)" }} />
+                      <Sparkles className="w-7 h-7" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 6px #7FEFFF)" }} />
                     </div>
                     <div>
                       <p className="font-bold text-sm text-white mb-1">{t.upgradeToRefer}</p>
@@ -537,7 +537,7 @@ export default function RewardsPage() {
                     </div>
                     <button
                       onClick={() => setLocation("/subscribe")}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-black bg-gradient-to-r from-[#00E5FF] to-[#006BFF] hover:opacity-90 transition-opacity shadow-lg shadow-[#00E5FF]/30"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-black bg-gradient-to-r from-[#7FEFFF] to-[#6FA8FF] hover:opacity-90 transition-opacity shadow-lg shadow-[#7FEFFF]/30"
                       data-testid="button-upgrade-to-refer"
                     >
                       <Sparkles className="w-4 h-4" />
@@ -563,7 +563,7 @@ export default function RewardsPage() {
                       >
                         <code
                           className="flex-1 text-base sm:text-lg font-black font-mono tracking-wide"
-                          style={{ color: "#00E5FF", textShadow: "0 0 12px rgba(0,229,255,0.5)" }}
+                          style={{ color: "#7FEFFF", textShadow: "0 0 12px rgba(0,229,255,0.5)" }}
                           data-testid="referral-code"
                         >
                           {referralCode?.code ?? referral?.code ?? "—"}
@@ -572,8 +572,8 @@ export default function RewardsPage() {
                           onClick={handleCopyCode}
                           disabled={!(referralCode?.code ?? referral?.code)}
                           title={t.copyLinkTitle}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold bg-background text-[#00E5FF] hover:bg-[#00E5FF]/10 transition-colors disabled:opacity-50"
-                          style={{ border: "1px solid #00E5FF" }}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold bg-background text-[#7FEFFF] hover:bg-[#7FEFFF]/10 transition-colors disabled:opacity-50"
+                          style={{ border: "1px solid #7FEFFF" }}
                           data-testid="button-copy-referral"
                         >
                           {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
@@ -595,7 +595,7 @@ export default function RewardsPage() {
                           onClick={handleCopyLink}
                           disabled={!(referralCode?.link ?? referral?.link)}
                           title={t.copyLinkTitle}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-background text-[#00E5FF] hover:bg-[#00E5FF]/10 transition-colors disabled:opacity-50 shrink-0"
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-background text-[#7FEFFF] hover:bg-[#7FEFFF]/10 transition-colors disabled:opacity-50 shrink-0"
                           style={{ border: "1px solid rgba(0,229,255,0.5)" }}
                           data-testid="button-copy-referral-link"
                         >
@@ -621,7 +621,7 @@ export default function RewardsPage() {
                           {t.progressToReward}
                         </p>
                         <p className="text-sm text-white" data-testid="referral-progress-text">
-                          <span className="font-black text-lg" style={{ color: "#00E5FF" }}>
+                          <span className="font-black text-lg" style={{ color: "#7FEFFF" }}>
                             {referral?.towardNextReward ?? 0}
                           </span>
                           <span className="text-white"> / {referral?.threshold ?? 2} </span>
@@ -632,7 +632,7 @@ export default function RewardsPage() {
                             className="h-full rounded-full transition-all"
                             style={{
                               width: `${Math.min(100, ((referral?.towardNextReward ?? 0) / (referral?.threshold ?? 2)) * 100)}%`,
-                              background: "linear-gradient(90deg,#00E5FF,#006BFF)",
+                              background: "linear-gradient(90deg,#7FEFFF,#6FA8FF)",
                               boxShadow: "0 0 12px rgba(0,229,255,0.5)",
                             }}
                           />
@@ -642,7 +642,7 @@ export default function RewardsPage() {
                         <p className="text-[11px] uppercase tracking-[0.2em] text-white font-bold mb-1">
                           {t.earnedLabel}
                         </p>
-                        <p className="text-2xl font-black tabular-nums" style={{ color: "#00E5FF" }} data-testid="referral-months-earned">
+                        <p className="text-2xl font-black tabular-nums" style={{ color: "#7FEFFF" }} data-testid="referral-months-earned">
                           {referral?.monthsEarned ?? 0}
                         </p>
                         <p className="text-[10px] text-white leading-tight">
@@ -668,8 +668,8 @@ export default function RewardsPage() {
             </CosmicCard>
 
             {/* Referral Leaderboard */}
-            <CosmicCard hex="#FFE600" halo="rgba(255,230,0," testId="card-referral-leaderboard">
-              <CosmicCardTitle hex="#FFE600" halo="rgba(255,230,0," icon={Medal}>
+            <CosmicCard hex="#FFF29E" halo="rgba(255,230,0," testId="card-referral-leaderboard">
+              <CosmicCardTitle hex="#FFF29E" halo="rgba(255,230,0," icon={Medal}>
                 {t.leaderboardHeading}
               </CosmicCardTitle>
               <div className="p-5 pt-3 space-y-3">
@@ -688,7 +688,7 @@ export default function RewardsPage() {
                     <ul className="space-y-1.5" data-testid="leaderboard-list">
                       {leaderboard.top.map((row) => {
                         const isMe = row.isCurrentUser;
-                        const medal = row.rank === 1 ? "#FFE600" : row.rank === 2 ? "#c0c8d4" : row.rank === 3 ? "#d88b4a" : null;
+                        const medal = row.rank === 1 ? "#FFF29E" : row.rank === 2 ? "#c0c8d4" : row.rank === 3 ? "#d88b4a" : null;
                         return (
                           <li
                             key={`${row.rank}-${row.displayName}`}
@@ -702,7 +702,7 @@ export default function RewardsPage() {
                           >
                             <span
                               className="font-black text-sm tabular-nums min-w-[1.75rem] text-center"
-                              style={{ color: medal ?? (isMe ? "#00E5FF" : "rgba(255,255,255,0.85)"), textShadow: medal ? `0 0 10px ${medal}` : undefined }}
+                              style={{ color: medal ?? (isMe ? "#7FEFFF" : "rgba(255,255,255,0.85)"), textShadow: medal ? `0 0 10px ${medal}` : undefined }}
                             >
                               {row.rank}
                             </span>
@@ -711,13 +711,13 @@ export default function RewardsPage() {
                               {isMe && (
                                 <span
                                   className="text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider"
-                                  style={{ background: "rgba(0,229,255,0.2)", color: "#00E5FF", border: "1px solid rgba(0,229,255,0.5)" }}
+                                  style={{ background: "rgba(0,229,255,0.2)", color: "#7FEFFF", border: "1px solid rgba(0,229,255,0.5)" }}
                                 >
                                   {t.leaderboardYou}
                                 </span>
                               )}
                             </span>
-                            <span className="font-bold text-sm tabular-nums" style={{ color: isMe ? "#00E5FF" : "#FFE600" }}>
+                            <span className="font-bold text-sm tabular-nums" style={{ color: isMe ? "#7FEFFF" : "#FFF29E" }}>
                               {row.conversions}
                             </span>
                           </li>
@@ -737,7 +737,7 @@ export default function RewardsPage() {
                           </span>
                         </span>
                         <span className="text-xs text-white">
-                          <span className="font-bold tabular-nums" style={{ color: "#00E5FF" }}>
+                          <span className="font-bold tabular-nums" style={{ color: "#7FEFFF" }}>
                             {leaderboard.me.conversions}
                           </span>{" "}
                           <span className="text-white">{t.paidReferrals}</span>
@@ -755,8 +755,8 @@ export default function RewardsPage() {
             </CosmicCard>
 
             {/* Store CTA */}
-            <CosmicCard hex="#00E5FF" halo="rgba(0,229,255," testId="card-store-cta">
-              <CosmicCardTitle hex="#00E5FF" halo="rgba(0,229,255," icon={ShoppingBag}>
+            <CosmicCard hex="#7FEFFF" halo="rgba(0,229,255," testId="card-store-cta">
+              <CosmicCardTitle hex="#7FEFFF" halo="rgba(0,229,255," icon={ShoppingBag}>
                 {t.spendCoins}
               </CosmicCardTitle>
               <div className="p-5 pt-3 flex flex-col sm:flex-row sm:items-center gap-4">
@@ -765,7 +765,7 @@ export default function RewardsPage() {
                 </p>
                 <button
                   onClick={() => setLocation("/store")}
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-black bg-gradient-to-r from-[#00E5FF] to-[#006BFF] hover:opacity-90 transition-opacity shadow-lg shadow-[#00E5FF]/30 shrink-0"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-black bg-gradient-to-r from-[#7FEFFF] to-[#6FA8FF] hover:opacity-90 transition-opacity shadow-lg shadow-[#7FEFFF]/30 shrink-0"
                   data-testid="button-go-to-store"
                 >
                   <ShoppingBag className="w-4 h-4" />

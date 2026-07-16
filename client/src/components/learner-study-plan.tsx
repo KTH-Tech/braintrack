@@ -5,10 +5,10 @@ import { calcReadiness, readinessBand } from "@/lib/readiness";
 import type { DailyDirective } from "@/types/daily-directive";
 
 const URGENCY_HEX: Record<string, { hex: string; halo: string }> = {
-  final_sprint:     { hex: "#FF2BD6", halo: "rgba(255,43,214,0.45)" },
-  exam_prep_mode:   { hex: "#FF8A00", halo: "rgba(255,138,0,0.45)" },
-  focused_revision: { hex: "#FFE600", halo: "rgba(255,230,0,0.45)" },
-  build_mastery:    { hex: "#8A2BFF", halo: "rgba(138,43,255,0.45)" },
+  final_sprint:     { hex: "#FF9FE5", halo: "rgba(255,43,214,0.45)" },
+  exam_prep_mode:   { hex: "#FFC48F", halo: "rgba(255,138,0,0.45)" },
+  focused_revision: { hex: "#FFF29E", halo: "rgba(255,230,0,0.45)" },
+  build_mastery:    { hex: "#C6A4FF", halo: "rgba(138,43,255,0.45)" },
 };
 
 interface WeakTopic {
@@ -38,9 +38,9 @@ interface StudyPlanProps {
 }
 
 const BAND_NEON: Record<string, { hex: string; glow: string; text: string }> = {
-  red:   { hex: "#FF2BD6", glow: "rgba(255,43,214,0.55)", text: "#f5a8cc" },
-  amber: { hex: "#FFE600", glow: "rgba(255,230,0,0.55)", text: "#ffe98a" },
-  green: { hex: "#00E5FF", glow: "rgba(0,229,255,0.55)", text: "#a8ecf3" },
+  red:   { hex: "#FF9FE5", glow: "rgba(255,43,214,0.55)", text: "#f5a8cc" },
+  amber: { hex: "#FFF29E", glow: "rgba(255,230,0,0.55)", text: "#ffe98a" },
+  green: { hex: "#7FEFFF", glow: "rgba(0,229,255,0.55)", text: "#a8ecf3" },
 };
 
 function bandNeon(band: string) {
@@ -114,7 +114,7 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
     .sort(([, a], [, b]) => a - b)
     .slice(0, 3);
 
-  const NEON_CYAN = "#00E5FF";
+  const NEON_CYAN = "#7FEFFF";
 
   return (
     <div
@@ -134,7 +134,7 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
       <div
         aria-hidden
         className="absolute top-0 left-0 right-0 h-[2px]"
-        style={{ background: "linear-gradient(90deg,#FF8A00,#FF8A00,#FFE600,#FFE600,#00E5FF,#006BFF,#8A2BFF,#8A2BFF,#FF2BD6)" }}
+        style={{ background: "linear-gradient(90deg,#FFC48F,#FFC48F,#FFF29E,#FFF29E,#7FEFFF,#6FA8FF,#C6A4FF,#C6A4FF,#FF9FE5)" }}
       />
 
       <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid rgba(0,229,255,0.25)" }}>

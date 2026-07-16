@@ -71,7 +71,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "User, parent, learner & school analytics",
         descAf: "Gebruiker-, ouer-, leerder- en skoolontleding",
         Icon: BarChart3,
-        color: "#00E5FF",
+        color: "#7FEFFF",
       },
       {
         key: "billing",
@@ -81,7 +81,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "Trials, recurring failures, lapsed subscribers",
         descAf: "Proewe, mislukkings en vervalde intekeninge",
         Icon: CreditCard,
-        color: "#22FF66",
+        color: "#93FFB8",
       },
     ],
   },
@@ -97,7 +97,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "Plans, products and availability",
         descAf: "Planne, produkte en beskikbaarheid",
         Icon: Package,
-        color: "#FF8A00",
+        color: "#FFC48F",
       },
       {
         key: "content-editor",
@@ -107,7 +107,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "Edit topic notes, flashcards, literature",
         descAf: "Wysig notas, flitskaarte en literatuur",
         Icon: FileEdit,
-        color: "#FFE600",
+        color: "#FFF29E",
       },
       {
         key: "content-studio",
@@ -117,7 +117,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "DBE pipeline: papers, memos and ingestion",
         descAf: "DBE-pyplyn: vraestelle, memo's en ingestie",
         Icon: Database,
-        color: "#006BFF",
+        color: "#6FA8FF",
       },
       {
         key: "topic-audio",
@@ -127,7 +127,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "Preview, regenerate and replace MP3s",
         descAf: "Voorskou, hergenereer en vervang MP3's",
         Icon: Headphones,
-        color: "#8A2BFF",
+        color: "#C6A4FF",
       },
     ],
   },
@@ -143,7 +143,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "Preview and test-send transactional emails",
         descAf: "Voorskou en toets-stuur e-posse",
         Icon: Mail,
-        color: "#FF2BD6",
+        color: "#FF9FE5",
       },
       {
         key: "partner-branding",
@@ -153,7 +153,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "Partner name, logo and report schedule",
         descAf: "Vennootnaam, logo en verslagskedule",
         Icon: Handshake,
-        color: "#00E5FF",
+        color: "#7FEFFF",
       },
     ],
   },
@@ -169,7 +169,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "Open the learner-facing classroom view",
         descAf: "Maak die leerder-klaskamer oop",
         Icon: GraduationCap,
-        color: "#FFE600",
+        color: "#FFF29E",
       },
       {
         key: "parent",
@@ -179,7 +179,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "Jump to the parent dashboard",
         descAf: "Gaan na die ouerpaneel",
         Icon: Users,
-        color: "#FF8A00",
+        color: "#FFC48F",
       },
     ],
   },
@@ -201,7 +201,7 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
       style={{
         background: "#000",
         borderBottom: "3px solid transparent",
-        borderImage: "linear-gradient(90deg,#8A2BFF,#FF2BD6,#006BFF,#00E5FF,#22FF66,#FFE600,#FF8A00) 1",
+        borderImage: "linear-gradient(90deg,#C6A4FF,#FF9FE5,#6FA8FF,#7FEFFF,#93FFB8,#FFF29E,#FFC48F) 1",
         boxShadow: "0 0 28px rgba(138,43,255,0.25), 0 4px 20px rgba(0,0,0,0.8)",
       }}
       data-testid="admin-top-nav"
@@ -212,14 +212,14 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
             className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
             style={{
               background: "rgba(138,43,255,0.15)",
-              border: "2px solid #8A2BFF",
+              border: "2px solid #C6A4FF",
               boxShadow: "0 0 18px rgba(138,43,255,0.5)",
             }}
           >
-            <ShieldAlert className="w-4.5 h-4.5" style={{ color: "#8A2BFF" }} />
+            <ShieldAlert className="w-4.5 h-4.5" style={{ color: "#C6A4FF" }} />
           </div>
           <div className="min-w-0 hidden sm:block">
-            <p className="text-[9px] font-black uppercase tracking-[0.3em]" style={{ color: "#8A2BFF" }}>
+            <p className="text-[9px] font-black uppercase tracking-[0.3em]" style={{ color: "#C6A4FF" }}>
               BrainTrack
             </p>
             <p className="text-[15px] font-black text-white leading-none tracking-tight">
@@ -234,13 +234,13 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
             data-testid="admin-nav-dashboard"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all hover:scale-105"
             style={dashboardActive ? {
-              background: "#8A2BFF",
+              background: "#C6A4FF",
               color: "#fff",
-              border: "2px solid #8A2BFF",
+              border: "2px solid #C6A4FF",
               boxShadow: "0 0 16px rgba(138,43,255,0.55)",
             } : {
               background: "rgba(138,43,255,0.1)",
-              color: "#8A2BFF",
+              color: "#C6A4FF",
               border: "1.5px solid rgba(138,43,255,0.4)",
             }}
           >
@@ -253,13 +253,13 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
             data-testid="admin-nav-emails-top"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all hover:scale-105"
             style={current === "emails" ? {
-              background: "#FF2BD6",
+              background: "#FF9FE5",
               color: "#fff",
-              border: "2px solid #FF2BD6",
+              border: "2px solid #FF9FE5",
               boxShadow: "0 0 16px rgba(255,43,214,0.55)",
             } : {
               background: "rgba(255,43,214,0.1)",
-              color: "#FF2BD6",
+              color: "#FF9FE5",
               border: "1.5px solid rgba(255,43,214,0.4)",
             }}
           >
@@ -275,7 +275,7 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all hover:scale-105"
                 style={{
                   background: "rgba(0,229,255,0.1)",
-                  color: "#00E5FF",
+                  color: "#7FEFFF",
                   border: "1.5px solid rgba(0,229,255,0.4)",
                 }}
               >
@@ -354,7 +354,7 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
           <Link
             href="/"
             className="hidden sm:inline-flex items-center justify-center w-9 h-9 rounded-xl transition-all hover:scale-105"
-            style={{ background: "rgba(0,229,255,0.08)", border: "1.5px solid rgba(0,229,255,0.35)", color: "#00E5FF" }}
+            style={{ background: "rgba(0,229,255,0.08)", border: "1.5px solid rgba(0,229,255,0.35)", color: "#7FEFFF" }}
             data-testid="admin-nav-home"
             title={isAf ? "Tuis" : "Home"}
           >
@@ -365,8 +365,8 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
             className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-xl transition-all hover:scale-105"
             style={{
               background: "rgba(255,43,214,0.1)",
-              border: "1.5px solid #FF2BD6",
-              color: "#FF2BD6",
+              border: "1.5px solid #FF9FE5",
+              color: "#FF9FE5",
               boxShadow: "0 0 12px rgba(255,43,214,0.2)",
             }}
             data-testid="admin-nav-logout"

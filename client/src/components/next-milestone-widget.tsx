@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Flame, Star, Zap, Target, Trophy, GraduationCap, Award, BookOpen, Sparkles, ChevronRight } from "lucide-react";
 import { Link } from "wouter";
 
-const NEON = "#FF8A00";
+const NEON = "#FFC48F";
 const NEON_GLOW = "rgba(255,138,0,0.35)";
 
 const BADGE_ICONS: Record<string, any> = {
@@ -100,7 +100,7 @@ export function NextMilestoneWidget({ isAf = false }: NextMilestoneWidgetProps) 
               className="h-full rounded-full transition-[width] duration-700 ease-out"
               style={{
                 width: `${milestone.progressPct}%`,
-                background: "linear-gradient(90deg, #FF8A00, #FF8A00, #FFE600, #FFE600)",
+                background: "linear-gradient(90deg, #FFC48F, #FFC48F, #FFF29E, #FFF29E)",
                 boxShadow: `0 0 10px ${NEON}`,
               }}
             />

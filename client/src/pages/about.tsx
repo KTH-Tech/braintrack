@@ -138,7 +138,7 @@ export default function AboutPage() {
         <section className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
           <div className="text-center mb-10">
-            <p className="text-[11px] font-black uppercase tracking-[0.2em] mb-3" style={{ color: "#00E5FF", textShadow: "0 0 8px rgba(0,229,255,0.5)" }} data-testid="text-about-tagline">
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] mb-3" style={{ color: "#7FEFFF", textShadow: "0 0 8px rgba(0,229,255,0.5)" }} data-testid="text-about-tagline">
               {c.tagline}
             </p>
             <h1 className="font-black text-3xl sm:text-4xl leading-tight text-white mb-4" data-testid="text-about-title">
