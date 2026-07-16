@@ -649,106 +649,50 @@ export default function LandingPage() {
                 the graffiti wall. */}
             <div className="relative p-2 sm:p-6 md:p-8">
               <div className="relative grid md:grid-cols-[0.95fr_1.05fr] gap-8 md:gap-10 items-center">
-              <div className="flex flex-col items-center text-center md:items-start md:text-left gap-6 sm:gap-7 min-w-0">
+              <div className="flex flex-col items-center text-center md:items-start md:text-left gap-5 sm:gap-6 min-w-0">
 
-                <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
-                  <div
-                    className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
-                    style={{ border: "1px solid #7FEFFF", boxShadow: "0 0 14px rgba(0,229,255,0.55)" }}
-                  >
-                    <Sparkles className="w-3 h-3" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 4px #7FEFFF)" }} />
-                    <span className="text-[10px] font-black uppercase tracking-[0.24em]" style={{ color: "#7FEFFF" }}>
-                      {language === "af" ? "Graad 12 · KABV" : "Grade 12 · CAPS"}
-                    </span>
-                  </div>
-                  <div
-                    className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
-                    style={{ border: "1px solid rgba(255,230,0,0.65)", boxShadow: "0 0 12px rgba(255,230,0,0.4)" }}
-                  >
-                    <Flame className="w-3 h-3" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 4px #FFF29E)" }} />
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#FFF29E" }}>
-                      {language === "af" ? "Proewe Kom Nader" : "Prelims Around the Corner"}
-                    </span>
-                  </div>
-                  <div
-                    className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
-                    style={{ border: "1px solid rgba(255,43,214,0.6)", boxShadow: "0 0 10px rgba(255,43,214,0.4)" }}
-                  >
-                    <Star className="w-3 h-3" style={{ color: "#FF9FE5", filter: "drop-shadow(0 0 4px #FF9FE5)" }} />
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#FF9FE5" }}>
-                      R169/mo
-                    </span>
-                  </div>
+                {/* Enlarged pastel logo lockup — brand identity on the hero */}
+                <div className="bt-rise bt-rise-1 flex items-center gap-3">
+                  <BrainTrackLogo className="h-14 w-14 sm:h-16 sm:w-16" />
+                  <span className="rainbow-text graffiti-hand text-4xl sm:text-5xl leading-none">BrainTrack</span>
                 </div>
+
+                {/* One quiet eyebrow line — no button chips */}
+                <p className="bt-rise bt-rise-2 text-[11px] font-black uppercase tracking-[0.28em] text-white/95">
+                  {language === "af" ? "Graad 12 · KABV · R169/maand" : "Grade 12 · CAPS · R169/mo"}
+                </p>
 
                 <h1
                   data-testid="hero-title"
-                  className="font-black tracking-tight leading-[0.95] max-w-4xl text-white text-[clamp(2rem,5.5vw+1rem,5.25rem)] max-[479px]:text-[1.55rem]"
-                  style={{
-                    filter: "drop-shadow(0 0 28px rgba(0,229,255,0.38))",
-                  }}
+                  className="bt-rise bt-rise-2 font-black tracking-tight leading-[1.02] max-w-4xl text-white text-[clamp(2.4rem,6vw+1rem,6rem)] max-[479px]:text-[2rem]"
                 >
                   {t.hero.titleBase}{" "}
-                  <span className="callout-glow">
+                  <span className="callout-hl">
                     {t.hero.titleAccent}
                   </span>
                 </h1>
 
-                <p className="text-white leading-relaxed max-w-2xl md:mx-0 mx-auto" style={{ fontSize: "clamp(1rem, 1.2vw + 0.6rem, 1.25rem)" }}>
+                <p className="bt-rise bt-rise-3 text-white leading-relaxed max-w-2xl md:mx-0 mx-auto" style={{ fontSize: "clamp(1rem, 1.2vw + 0.6rem, 1.25rem)" }}>
                   {t.hero.subtitle}
                 </p>
 
-                <div className="flex flex-wrap justify-center md:justify-start gap-2 overflow-x-hidden">
-                  {t.hero.pills.map((pill, idx) => {
-                    const pillHexes = ["#FFC48F", "#7FEFFF", "#FF9FE5"];
-                    const hex = pillHexes[idx % pillHexes.length];
-                    return (
-                      <span
-                        key={idx}
-                        className="inline-flex items-center rounded-full px-3 max-[479px]:px-2 py-1 bg-black text-xs font-black uppercase tracking-[0.18em] max-[479px]:tracking-[0.1em]"
-                        style={{ color: hex, border: `1.5px solid ${hex}`, boxShadow: `0 0 12px ${hex}55` }}
-                        data-testid={`pill-tagline-${idx}`}
-                      >
-                        {pill}
-                      </span>
-                    );
-                  })}
-                </div>
-
-                <div className="flex flex-wrap justify-center md:justify-start gap-2 overflow-x-hidden">
-                  {t.hero.trustBadges.map((badge, idx) => {
-                    const hexes = ["#7FEFFF", "#FFF29E", "#C6A4FF", "#FF9FE5", "#6FA8FF"];
-                    const hex = hexes[idx % hexes.length];
-                    return (
-                      <span
-                        key={idx}
-                        className="inline-flex items-center gap-1 rounded-full px-2.5 max-[479px]:px-2 py-1 bg-black text-[9px] max-[479px]:text-[8px] font-bold uppercase tracking-[0.14em] max-[479px]:tracking-[0.1em]"
-                        style={{ color: hex, border: `1px solid ${hex}66`, boxShadow: `0 0 8px ${hex}33` }}
-                      >
-                        <CheckCircle className="w-3 h-3 shrink-0" />
-                        {badge}
-                      </span>
-                    );
-                  })}
-                </div>
-
                 {/* Urgency line — written straight on the wall, no box */}
                 <p
-                  className="graffiti-hand w-full max-w-xl text-base sm:text-lg text-center md:text-left -rotate-1"
-                  style={{ color: "#FFF29E", textShadow: "0 0 12px rgba(255,230,0,0.55), 0 2px 0 rgba(0,0,0,0.6)" }}
+                  className="bt-rise bt-rise-3 graffiti-hand w-full max-w-xl text-base sm:text-lg text-center md:text-left -rotate-1"
+                  style={{ color: "#FFF29E", textShadow: "0 0 12px rgba(255,242,158,0.5), 0 2px 0 rgba(0,0,0,0.6)" }}
                 >
                   {t.hero.urgency}
                 </p>
 
-                <div className="flex flex-col items-center md:items-start gap-3 pt-2">
+                <div className="bt-rise bt-rise-4 flex flex-col items-center md:items-start gap-3 pt-1">
                   <button
                     onClick={handleCta}
                     data-testid="button-hero-cta"
-                    className="group relative inline-flex items-center gap-2 rounded-xl bg-black text-sm font-bold transition-transform hover:scale-[1.03] px-5 py-2.5"
+                    className="group relative inline-flex items-center gap-2 rounded-xl text-sm font-black uppercase tracking-wide transition-transform hover:scale-[1.04] px-6 py-3"
                     style={{
-                      color: "#7FEFFF",
-                      border: "1.5px solid #7FEFFF",
-                      boxShadow: "0 0 16px rgba(0,229,255,0.4)",
+                      background: "var(--pastel-rainbow)",
+                      color: "#0a0a0a",
+                      boxShadow: "0 0 26px rgba(127,239,255,0.35), 0 0 48px rgba(255,159,229,0.2)",
                     }}
                   >
                     {t.hero.cta}
@@ -761,7 +705,7 @@ export default function LandingPage() {
                   )}
                 </div>
 
-                <div data-testid="stats-strip" className="grid grid-cols-3 gap-1.5 sm:gap-3 w-full max-w-lg pt-2">
+                <div data-testid="stats-strip" className="bt-rise bt-rise-5 grid grid-cols-3 gap-1.5 sm:gap-3 w-full max-w-lg pt-2">
                   {[
                     { k: language === "af" ? "Vakke" : "Subjects", v: "24+", hex: "#7FEFFF" },
                     { k: language === "af" ? "Vraestelle" : "Papers", v: "10y", hex: "#FFF29E" },
@@ -822,29 +766,31 @@ export default function LandingPage() {
                   <path d="M50 10 L60 38 L90 40 L66 58 L76 88 L50 70 L24 88 L34 58 L10 40 L40 38 Z" stroke="currentColor" strokeWidth={7} fill="none" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
 
-                <div className="relative z-10 text-center -rotate-3 select-none px-4">
+                <div className="bt-rise bt-rise-3 relative z-10 text-center -rotate-3 select-none px-4">
                   <p
                     className="graffiti-hand text-white leading-[0.95]"
                     style={{
-                      fontSize: "clamp(2.2rem, 4vw + 1rem, 4.2rem)",
+                      fontSize: "clamp(2.4rem, 4.5vw + 1rem, 4.8rem)",
                       textShadow: "0 2px 0 rgba(0,0,0,0.65)",
                     }}
                   >
                     {language === "af" ? "Dit is" : "This is"}
                   </p>
-                  {/* Callout word — pastel neon gradient glow (the hero pop) */}
-                  <p
-                    className="graffiti-hand callout-glow leading-[0.95]"
-                    style={{ fontSize: "clamp(3.4rem, 7vw + 1rem, 6.5rem)" }}
-                  >
-                    {language === "af" ? "Matriek." : "Matric."}
+                  {/* Callout word — BLACK on pastel highlight (the hero pop) */}
+                  <p className="graffiti-hand leading-[1.15] mt-1">
+                    <span
+                      className="callout-hl"
+                      style={{ fontSize: "clamp(3.6rem, 7.5vw + 1rem, 7rem)" }}
+                    >
+                      {language === "af" ? "Matriek." : "Matric."}
+                    </span>
                   </p>
-                  <p className="graffiti-hand mt-3 leading-tight" style={{ fontSize: "clamp(1.3rem, 2.4vw + 0.5rem, 2.3rem)" }}>
+                  <p className="graffiti-hand mt-4 leading-[1.5]" style={{ fontSize: "clamp(1.4rem, 2.6vw + 0.5rem, 2.5rem)" }}>
                     <span className="text-white">
                       {language === "af" ? "Elke punt " : "Every mark "}
                     </span>
-                    {/* Callout word */}
-                    <span className="callout-glow">
+                    {/* Callout word — black on pastel */}
+                    <span className="callout-hl">
                       {language === "af" ? "tel." : "counts."}
                     </span>
                   </p>

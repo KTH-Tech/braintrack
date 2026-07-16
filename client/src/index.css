@@ -244,6 +244,48 @@ h1.no-rainbow *, .no-rainbow * {
     drop-shadow(0 0 22px rgba(255, 159, 229, 0.35));
 }
 
+/* Callout highlight — BLACK text on a pastel block (marker-highlighter look).
+   Wrap ONLY the words to pop. box-decoration-break keeps the pill across
+   line-wraps. */
+.callout-hl {
+  background-image: var(--pastel-rainbow) !important;
+  background-size: 200% 100%;
+  -webkit-background-clip: border-box !important;
+          background-clip: border-box !important;
+  color: #0a0a0a !important;
+  -webkit-text-fill-color: #0a0a0a !important;
+  padding: 0.04em 0.28em;
+  border-radius: 0.18em;
+  -webkit-box-decoration-break: clone;
+          box-decoration-break: clone;
+  box-shadow: 0 0 24px rgba(127, 239, 255, 0.35), 0 0 44px rgba(255, 159, 229, 0.22);
+}
+
+/* ── Landing entrance animation (staggered rise-in) ─────────────────── */
+@keyframes bt-rise {
+  0%   { opacity: 0; transform: translateY(22px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.bt-rise {
+  opacity: 0;
+  animation: bt-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.bt-rise-1 { animation-delay: 0.05s; }
+.bt-rise-2 { animation-delay: 0.15s; }
+.bt-rise-3 { animation-delay: 0.28s; }
+.bt-rise-4 { animation-delay: 0.42s; }
+.bt-rise-5 { animation-delay: 0.56s; }
+/* Slow ambient sway for the hero tag — GPU-cheap transform only. */
+@keyframes bt-sway {
+  0%, 100% { transform: rotate(-3deg) translateY(0); }
+  50%      { transform: rotate(-1.5deg) translateY(-8px); }
+}
+.bt-sway { animation: bt-sway 6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .bt-rise { opacity: 1; animation: none; }
+  .bt-sway { animation: none; }
+}
+
 /* ── Prismglass ambient rainbow layer ────────────────────── */
 @keyframes prismshift {
   0%   { background-position: 0% 50%; }
