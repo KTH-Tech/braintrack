@@ -638,13 +638,17 @@ export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative bg-background overflow-x-hidden">
+      {/* Graffiti filters through the ENTIRE page — one fixed layer behind all
+          content, so paint flows continuously as you scroll (no per-section gaps). */}
+      <div aria-hidden className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
+        <GraffitiSplats variant="full" opacity={0.55} />
+      </div>
       <PublicNav />
-      <main className="pt-14 overflow-x-hidden">
+      <main className="relative z-10 pt-14 overflow-x-hidden">
 
-        <section className="relative overflow-hidden py-8 sm:py-12 md:py-16 bg-background">
-          <GraffitiSplats variant="hero" opacity={0.9} />
-          <div ref={heroAnim.ref} className={`relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-700 ${heroAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+        <section className="relative overflow-hidden py-8 sm:py-12 md:py-16">
+          <div ref={heroAnim.ref} className={`relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-700 ${heroAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
             {/* Wall-written hero — no card box; everything sits straight on
                 the graffiti wall. */}
             <div className="relative p-2 sm:p-6 md:p-8">
@@ -801,7 +805,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="everything" ref={featuresAnim.ref} className={`relative overflow-hidden py-20 bg-background transition-all duration-700 ${featuresAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+        <section id="everything" ref={featuresAnim.ref} className={`relative overflow-hidden py-20 transition-all duration-700 ${featuresAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
           {featuresAnim.inView && <GraffitiSplats variant="band" opacity={0.8} />}
           <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
@@ -860,7 +864,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section ref={pricingAnim.ref} className={`relative overflow-hidden py-20 bg-background transition-all duration-700 ${pricingAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`} id="pricing">
+        <section ref={pricingAnim.ref} className={`relative overflow-hidden py-20 transition-all duration-700 ${pricingAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`} id="pricing">
           {pricingAnim.inView && <GraffitiSplats variant="corner" opacity={0.8} />}
           <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
@@ -1141,7 +1145,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section ref={parentsAnim.ref} className={`py-20 bg-black transition-all duration-700 ${parentsAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+        <section ref={parentsAnim.ref} className={`py-20 transition-all duration-700 ${parentsAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <div
@@ -1182,7 +1186,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section ref={schoolsAnim.ref} className={`py-20 bg-black transition-all duration-700 ${schoolsAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+        <section ref={schoolsAnim.ref} className={`py-20 transition-all duration-700 ${schoolsAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <div
@@ -1223,7 +1227,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section ref={faqAnim.ref} className={`relative py-20 bg-black overflow-x-hidden transition-all duration-700 ${faqAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`} id="faq-section">
+        <section ref={faqAnim.ref} className={`relative py-20 overflow-x-hidden transition-all duration-700 ${faqAnim.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`} id="faq-section">
           {/* funky floating blobs */}
           <div aria-hidden className="absolute top-16 -left-16 w-72 h-72 rounded-full blur-3xl opacity-30 pointer-events-none" style={{ background: "radial-gradient(circle, #FF9FE5, transparent 70%)" }} />
           <div aria-hidden className="absolute bottom-10 -right-20 w-80 h-80 rounded-full blur-3xl opacity-25 pointer-events-none" style={{ background: "radial-gradient(circle, #7FEFFF, transparent 70%)" }} />
