@@ -655,10 +655,19 @@ export default function LandingPage() {
               <div className="relative grid md:grid-cols-[0.95fr_1.05fr] gap-8 md:gap-10 items-center">
               <div className="flex flex-col items-center text-center md:items-start md:text-left gap-5 sm:gap-6 min-w-0">
 
-                {/* Enlarged pastel logo lockup — brand identity on the hero */}
-                <div className="bt-rise bt-rise-1 flex items-center gap-3">
-                  <BrainTrackLogo className="h-14 w-14 sm:h-16 sm:w-16" />
-                  <span className="rainbow-text graffiti-hand text-4xl sm:text-5xl leading-none">BrainTrack</span>
+                {/* Huge graffiti wordmark — the hero centerpiece */}
+                <div className="bt-rise bt-rise-1 relative">
+                  <span
+                    className="rainbow-text graffiti-hand leading-[0.85] block"
+                    style={{ fontSize: "clamp(3.5rem, 10vw + 1rem, 8.5rem)", textShadow: "0 4px 0 rgba(0,0,0,0.55)" }}
+                  >
+                    BrainTrack
+                  </span>
+                  {/* hand-drawn white crown over the wordmark */}
+                  <svg aria-hidden viewBox="0 0 100 100" className="absolute -top-6 right-2 w-12 h-12 sm:w-16 sm:h-16" style={{ color: "#fff", transform: "rotate(12deg)" }}>
+                    <path d="M14 70 L22 34 L40 54 L50 24 L60 54 L78 34 L86 70" stroke="currentColor" strokeWidth={7} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M18 80 L82 80" stroke="currentColor" strokeWidth={7} fill="none" strokeLinecap="round" />
+                  </svg>
                 </div>
 
                 {/* One quiet eyebrow line — no button chips */}
