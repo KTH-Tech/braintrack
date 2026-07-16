@@ -1,13 +1,39 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, Lock, Eye, FileText, Users, Clock, Globe, ArrowLeft } from "lucide-react";
+import type { ReactNode } from "react";
+import { Shield, Lock, Eye, FileText, Users, Clock, Globe, ArrowLeft, type LucideIcon } from "lucide-react";
 import { Link } from "wouter";
-import { BrainTrackLogo } from "@/components/braintrack-logo";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { FooterPageNav, FooterPageHomeButton } from "@/components/footer-page-nav";
-import { GraffitiSplats } from "@/components/graffiti-splats";
+import { FooterPageHomeButton } from "@/components/footer-page-nav";
+import { GraffitiSplats, SpraySmear } from "@/components/graffiti-splats";
 import { useLanguage } from "@/lib/language-context";
 import { useSEO } from "@/hooks/use-seo";
+
+// Wall-written section — no card box. The heading is marker lettering over a
+// spray smear; the body sits directly on the wall (brand-board style).
+function WallSection({ icon: Icon, color, title, children }: {
+  icon?: LucideIcon;
+  color: string;
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="relative">
+      <h2
+        className="spray-title graffiti-hand text-lg sm:text-xl mb-4 text-white"
+        style={{ textShadow: "0 2px 0 rgba(0,0,0,0.85), 0 0 12px rgba(0,0,0,0.6)" }}
+      >
+        <SpraySmear color={color} />
+        {Icon && (
+          <Icon
+            className="inline w-4 h-4 mr-2 align-[-2px]"
+            style={{ color: "#fff", filter: `drop-shadow(0 0 6px ${color})` }}
+          />
+        )}
+        {title}
+      </h2>
+      <div className="space-y-3 text-sm text-white max-w-3xl">{children}</div>
+    </section>
+  );
+}
 
 export default function PrivacyPolicyPage() {
   const { language, toggleLanguage } = useLanguage();
@@ -54,7 +80,7 @@ export default function PrivacyPolicyPage() {
         </div>
       </header>
 
-      <main className="relative z-10 max-w-4xl mx-auto px-4 py-10 space-y-6">
+      <main className="relative z-10 max-w-4xl mx-auto px-4 py-10 space-y-12">
         <div className="relative text-center space-y-3 py-6">
           <div
             className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-black mx-auto"
@@ -71,14 +97,7 @@ export default function PrivacyPolicyPage() {
           <p className="text-sm text-white">{isAf ? "Laas opgedateer: 29 Junie 2026" : "Last updated: 29 June 2026"}</p>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <FileText className="w-4 h-4 text-primary" />
-              {isAf ? "1. Inleiding" : "1. Introduction"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="prose prose-xs dark:prose-invert max-w-none space-y-3 text-sm">
+        <WallSection icon={FileText} color="#006BFF" title={isAf ? "1. Inleiding" : "1. Introduction"}>
             <p>
               {isAf
                 ? "BrainTrack (\"ons\" of \"ons s'n\") bedryf die BrainTrack opvoedkundige platform. Hierdie Privaatheidsbeleid verduidelik hoe ons jou persoonlike inligting versamel, gebruik, openbaar en beskerm wanneer jy ons diens gebruik."
@@ -89,17 +108,9 @@ export default function PrivacyPolicyPage() {
                 ? "Ons voldoen aan die Wet op die Beskerming van Persoonlike Inligting 4 van 2013 (POPIA) en is daartoe verbind om te verseker dat jou privaatheid beskerm word. Hierdie beleid is van toepassing op alle gebruikers van ons platform, insluitend leerders (kinders onder 18) en hul ouers of voogde."
                 : "We comply with the Protection of Personal Information Act 4 of 2013 (POPIA) and are committed to ensuring that your privacy is protected. This policy applies to all users of our platform, including learners (children under 18) and their parents or guardians."}
             </p>
-          </CardContent>
-        </Card>
+        </WallSection>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <Lock className="w-4 h-4 text-primary" />
-              {isAf ? "2. Inligting Wat Ons Versamel" : "2. Information We Collect"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
+        <WallSection icon={Lock} color="#00E5FF" title={isAf ? "2. Inligting Wat Ons Versamel" : "2. Information We Collect"}>
             <div>
               <h4 className="font-semibold text-sm mb-1">{isAf ? "Persoonlike Inligting van Ouers/Voogde:" : "Personal Information from Parents/Guardians:"}</h4>
               <ul className="list-disc list-inside space-y-1 text-sm text-white">
@@ -107,7 +118,7 @@ export default function PrivacyPolicyPage() {
                 <li>{isAf ? "E-posadres" : "Email address"}</li>
                 <li>{isAf ? "Telefoonnommer" : "Phone number"}</li>
               </ul>
-              <div className="mt-3 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+              <div className="mt-3 pl-3 py-1" style={{ borderLeft: "3px solid #22FF66" }}>
                 <p className="text-sm font-medium text-white">
                   {isAf ? "Betalingsekuriteit: Ons stoor GEEN betaling- of bankinligting nie." : "Payment Security: We do NOT store any payment or banking information."}
                 </p>
@@ -138,17 +149,9 @@ export default function PrivacyPolicyPage() {
                 <li>{isAf ? "Platformgebruikpatrone en sessieduur" : "Platform usage patterns and session duration"}</li>
               </ul>
             </div>
-          </CardContent>
-        </Card>
+        </WallSection>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <Eye className="w-4 h-4 text-primary" />
-              {isAf ? "3. Hoe Ons Jou Inligting Gebruik" : "3. How We Use Your Information"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
+        <WallSection icon={Eye} color="#22FF66" title={isAf ? "3. Hoe Ons Jou Inligting Gebruik" : "3. How We Use Your Information"}>
             <p className="text-sm text-white">{isAf ? "Ons gebruik persoonlike inligting vir die volgende doeleindes:" : "We use personal information for the following purposes:"}</p>
             <ul className="list-disc list-inside space-y-2 text-sm text-white">
               <li><strong>{isAf ? "Dienslewering:" : "Service Delivery:"}</strong> {isAf ? "Om toegang te bied tot vorige vraestelle, Rizz-bystand en eksamenvoorbereidingshulpmiddels." : "To provide access to past papers, Rizz assistance, and exam preparation tools."}</li>
@@ -159,17 +162,9 @@ export default function PrivacyPolicyPage() {
               <li><strong>{isAf ? "Platformverbetering:" : "Platform Improvement:"}</strong> {isAf ? "Om gebruikpatrone te ontleed en ons opvoedkundige inhoud en funksies te verbeter." : "To analyze usage patterns and improve our educational content and features."}</li>
               <li><strong>{isAf ? "Wetlike Nakoming:" : "Legal Compliance:"}</strong> {isAf ? "Om aan toepaslike wette en regulasies te voldoen." : "To comply with applicable laws and regulations."}</li>
             </ul>
-          </CardContent>
-        </Card>
+        </WallSection>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <Users className="w-4 h-4 text-primary" />
-              {isAf ? "4. Kinders se Privaatheid (Onder 18)" : "4. Children's Privacy (Under 18)"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
+        <WallSection icon={Users} color="#FFE600" title={isAf ? "4. Kinders se Privaatheid (Onder 18)" : "4. Children's Privacy (Under 18)"}>
             <p className="text-sm text-white">
               {isAf
                 ? "BrainTrack is ontwerp vir Graad 12-leerders in Suid-Afrika. Ons neem spesiale sorg om die privaatheid van kinders te beskerm:"
@@ -182,17 +177,9 @@ export default function PrivacyPolicyPage() {
               <li><strong>{isAf ? "Ouerlike Toegang:" : "Parental Access:"}</strong> {isAf ? "Ouers kan te eniger tyd versoek om toegang tot, regstelling van of skrapping van hul kind se inligting." : "Parents can request access to, correction of, or deletion of their child's information at any time."}</li>
               <li><strong>{isAf ? "Veilige Omgewing:" : "Safe Environment:"}</strong> {isAf ? "Ons platform bevat slegs opvoedkundige inhoud van amptelike Departement van Basiese Onderwys bronne." : "Our platform contains only educational content from official Department of Basic Education sources."}</li>
             </ul>
-          </CardContent>
-        </Card>
+        </WallSection>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <Shield className="w-4 h-4 text-primary" />
-              {isAf ? "5. Databeskerming" : "5. Data Security"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
+        <WallSection icon={Shield} color="#FF8A00" title={isAf ? "5. Databeskerming" : "5. Data Security"}>
             <p className="text-sm text-white">
               {isAf
                 ? "Ons implementeer toepaslike tegniese en organisatoriese maatreëls om jou persoonlike inligting te beskerm:"
@@ -206,17 +193,9 @@ export default function PrivacyPolicyPage() {
               <li>{isAf ? "Toegang tot persoonlike inligting is beperk tot gemagtigde personeel alleen" : "Access to personal information is restricted to authorized personnel only"}</li>
               <li>{isAf ? "Data word gestoor op veilige wolkbedieners in die EU (Frankfurt) en VSA via Supabase en Render — beide volledig GDPR-nakoming en aanvaarbare derdeland vir POPIA-oordragte" : "Data is stored on secure cloud servers in the EU (Frankfurt) and USA via Supabase and Render — both fully GDPR-compliant and acceptable third countries for POPIA transfers"}</li>
             </ul>
-          </CardContent>
-        </Card>
+        </WallSection>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <Clock className="w-4 h-4 text-primary" />
-              {isAf ? "6. Dataretensie" : "6. Data Retention"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
+        <WallSection icon={Clock} color="#FF2BD6" title={isAf ? "6. Dataretensie" : "6. Data Retention"}>
             <p className="text-sm text-white">
               {isAf
                 ? "Ons behou persoonlike inligting so lank as wat nodig is om ons dienste te lewer:"
@@ -228,17 +207,9 @@ export default function PrivacyPolicyPage() {
               <li><strong>{isAf ? "Skrappingsversoeke:" : "Deletion Requests:"}</strong> {isAf ? "Op versoek sal ons persoonlike inligting binne 30 dae uitvee, behalwe waar dit deur die wet vereis word." : "Upon request, we will delete personal information within 30 days, except where required by law."}</li>
               <li><strong>{isAf ? "Geanonimiseerde Data:" : "Anonymized Data:"}</strong> {isAf ? "Ons mag geanonimiseerde, saamgestelde data vir navorsings- en verbeteringsdoeleindes behou." : "We may retain anonymized, aggregated data for research and improvement purposes."}</li>
             </ul>
-          </CardContent>
-        </Card>
+        </WallSection>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <FileText className="w-4 h-4 text-primary" />
-              {isAf ? "7. Jou POPIA-Regte" : "7. Your POPIA Rights"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
+        <WallSection icon={FileText} color="#8A2BFF" title={isAf ? "7. Jou POPIA-Regte" : "7. Your POPIA Rights"}>
             <p className="text-sm text-white">
               {isAf
                 ? "Onder POPIA het jy die volgende regte rakende jou persoonlike inligting:"
@@ -257,18 +228,10 @@ export default function PrivacyPolicyPage() {
                 : "To exercise these rights, contact our Information Officer at: "}
               <strong>learn@kth-tech.com</strong>
             </p>
-          </CardContent>
-        </Card>
+        </WallSection>
 
-        <Card className="border-green-500/30">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <Lock className="w-4 h-4 text-green-500" />
-              {isAf ? "8. Betalingsverwerking & Bankinligting" : "8. Payment Processing & Banking Information"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
+        <WallSection icon={Lock} color="#22FF66" title={isAf ? "8. Betalingsverwerking & Bankinligting" : "8. Payment Processing & Banking Information"}>
+            <div className="pl-3 py-1" style={{ borderLeft: "3px solid #22FF66" }}>
               <p className="font-semibold text-white">
                 {isAf
                   ? "BrainTrack versamel, stoor of verwerk GEEN betaalkaart- of bankinligting nie."
@@ -291,17 +254,9 @@ export default function PrivacyPolicyPage() {
               <li>{isAf ? "Netcash handhaaf bankvlak-sekuriteit en PCI-DSS-enkripsie vir alle transaksies" : "Netcash maintains bank-level security and PCI-DSS encryption for all transactions"}</li>
               <li>{isAf ? "Vir terugbetalings of betalingsgeskille, kontak ons by learn@kth-tech.com" : "For refunds or payment disputes, contact us at learn@kth-tech.com"}</li>
             </ul>
-          </CardContent>
-        </Card>
+        </WallSection>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <Users className="w-4 h-4 text-primary" />
-              {isAf ? "9. Derdeparty-deling" : "9. Third-Party Sharing"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
+        <WallSection icon={Users} color="#006BFF" title={isAf ? "9. Derdeparty-deling" : "9. Third-Party Sharing"}>
             <p className="text-sm text-white">
               {isAf
                 ? "Ons mag jou inligting met vertroude derde partye deel slegs soos nodig:"
@@ -320,26 +275,20 @@ export default function PrivacyPolicyPage() {
                 ? "Ons verkoop, verhuur of verhandel nie jou persoonlike inligting aan derde partye vir bemarkingsdoeleindes nie."
                 : "We do not sell, rent, or trade your personal information to third parties for marketing purposes."}
             </p>
-          </CardContent>
-        </Card>
+        </WallSection>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm">{isAf ? "10. Kontakbesonderhede" : "10. Contact Information"}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
+        <WallSection color="#FF2BD6" title={isAf ? "10. Kontakbesonderhede" : "10. Contact Information"}>
             <p className="text-sm text-white">
               {isAf
                 ? "Vir enige privaatheidsverwante vrae of om jou regte uit te oefen:"
                 : "For any privacy-related questions or to exercise your rights:"}
             </p>
-            <div className="bg-white/5 p-4 rounded-lg space-y-2">
+            <div className="pl-3 py-1 space-y-2" style={{ borderLeft: "3px solid #FF2BD6" }}>
               <p><strong>{isAf ? "Inligtingsbeampte:" : "Information Officer:"}</strong> KTH Tech</p>
               <p><strong>{isAf ? "E-pos:" : "Email:"}</strong> learn@kth-tech.com</p>
               <p><strong>{isAf ? "Adres:" : "Address:"}</strong> {isAf ? "Suid-Afrika" : "South Africa"}</p>
             </div>
-          </CardContent>
-        </Card>
+        </WallSection>
 
         <FooterPageHomeButton />
       </main>
