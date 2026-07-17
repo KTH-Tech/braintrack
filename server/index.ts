@@ -111,6 +111,25 @@ app.set("trust proxy", 1);
 // stub), so any redirect to /api/login would dead-end at Replit's
 // "invalid client" error. Intercept it before the auth routes register and
 // offer the seeded test roles instead. Never active in production.
+// Dev-only: serve a self-destructing service worker. Browsers re-fetch
+// /sw.js on every navigation (spec bypasses HTTP cache), so any client stuck
+// with an OLD cached SW picks this up, which clears all caches, unregisters
+// itself, and reloads open tabs — breaking the stale-bundle trap without the
+// user having to dig through DevTools. Production still serves the real sw.js
+// from client/public.
+if (process.env.NODE_ENV !== "production") {
+  app.get("/sw.js", (_req, res) => {
+    res.status(200).type("application/javascript").set("Cache-Control", "no-store").send(
+      `self.addEventListener('install',()=>self.skipWaiting());
+self.addEventListener('activate',(e)=>{e.waitUntil((async()=>{
+  try{const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)));}catch{}
+  try{await self.registration.unregister();}catch{}
+  try{const cs=await self.clients.matchAll({type:'window'});cs.forEach(c=>c.navigate(c.url));}catch{}
+})());});`
+    );
+  });
+}
+
 if (process.env.NODE_ENV !== "production" && (!process.env.REPL_ID || process.env.REPL_ID === "local-preview")) {
   app.get("/api/login", (_req, res) => {
     // Only learner + parent are offered here. Admin and DBE portal are NEVER
