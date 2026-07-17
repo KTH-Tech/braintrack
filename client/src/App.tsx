@@ -142,6 +142,7 @@ const AdminContentStudioPage = lazy(() => import("@/pages/admin-content-studio")
 const AdminTopicAudioPage = lazy(() => import("@/pages/admin-topic-audio"));
 const AdminPartnerBrandingPage = lazy(() => import("@/pages/admin-partner-branding"));
 const AdminSchoolQRPage = lazy(() => import("@/pages/admin-school-qr"));
+const AdminQrGeneratorPage = lazy(() => import("@/pages/admin-qr-generator"));
 const JoinPage = lazy(() => import("@/pages/join"));
 const AdminEmailsPage = lazy(() => import("@/pages/admin-emails"));
 const AdminSignInPage = lazy(() => import("@/pages/admin-signin"));
@@ -871,6 +872,12 @@ function Router() {
         <Route path="/learn/admin/school-qr">
           <RequireAdminRoute>
             <AdminSchoolQRPage />
+          </RequireAdminRoute>
+        </Route>
+
+        <Route path="/learn/admin/qr">
+          <RequireAdminRoute>
+            <AdminQrGeneratorPage />
           </RequireAdminRoute>
         </Route>
 

@@ -16,6 +16,7 @@ import {
   ChevronDown,
   LogOut,
   Home,
+  QrCode,
 } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
 import {
@@ -38,6 +39,7 @@ export type AdminNavKey =
   | "content-editor"
   | "content-studio"
   | "schools"
+  | "qr"
   | "classroom"
   | "parent";
 
@@ -154,6 +156,16 @@ const NAV_GROUPS: NavGroup[] = [
         descAf: "Vennootnaam, logo en verslagskedule",
         Icon: Handshake,
         color: "#7FEFFF",
+      },
+      {
+        key: "qr",
+        href: "/learn/admin/qr",
+        labelEn: "QR Generator",
+        labelAf: "QR-Generator",
+        descEn: "Turn any link into a branded, downloadable QR code",
+        descAf: "Maak enige skakel 'n QR-kode om af te laai",
+        Icon: QrCode,
+        color: "#93FFB8",
       },
     ],
   },
