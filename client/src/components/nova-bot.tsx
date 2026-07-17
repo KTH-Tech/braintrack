@@ -881,17 +881,21 @@ export function NovaBot({ userType = "visitor" }: { userType?: "learner" | "pare
     <>
       {!isOpen && (
         <div
-          className="fixed bottom-3 right-3 sm:bottom-5 sm:right-5 z-[120] pointer-events-none"
+          className="fixed top-[72px] right-3 sm:right-5 z-[120] pointer-events-none"
           data-testid="rizz-float-trigger-wrap"
         >
+          {/* Header rectangle trigger — compact, brand-spec button (was a
+              floating 64px circle bottom-right). */}
           <button
             type="button"
-            className="pointer-events-auto rizz-flash-icon relative w-16 h-16 rounded-full hover:scale-[1.05] active:scale-[0.96] transition-transform"
+            className="pointer-events-auto inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-bold hover:scale-[1.04] active:scale-[0.97] transition-transform"
+            style={{ background: "#000", border: "1.5px solid #7FEFFF", color: "#7FEFFF" }}
             onClick={() => setIsOpen(true)}
             data-testid="button-rizz-float-trigger"
             aria-label="Chat with Rizz"
           >
-            <img src={rizzAvatar} alt="Rizz" />
+            <img src={rizzAvatar} alt="" className="w-6 h-6 rounded-md object-cover" />
+            <span className="graffiti-hand text-base leading-none">Rizz</span>
           </button>
         </div>
       )}
