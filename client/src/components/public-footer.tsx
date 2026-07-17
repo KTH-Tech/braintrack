@@ -64,19 +64,39 @@ export function PublicFooter() {
             ))}
           </nav>
 
-          {/* Support section */}
-          <div className="flex flex-col gap-1">
+          {/* Support section — no raw email shown; Contact Us mailto instead */}
+          <div className="flex flex-col gap-1.5">
             <span className="text-[10px] font-black uppercase tracking-[0.25em] text-white">
               {isAf ? "Ondersteuning" : "Support"}
             </span>
-            <a
-              href={`mailto:${SUPPORT_EMAIL}`}
-              data-testid="footer-email-support"
-              className="text-[12px] font-bold transition-colors"
-              style={{ color: "#7FEFFF" }}
-            >
-              {SUPPORT_EMAIL}
-            </a>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+              <a
+                href={`mailto:${SUPPORT_EMAIL}`}
+                data-testid="footer-email-support"
+                className="text-[12px] font-bold transition-colors hover:text-white"
+                style={{ color: "#7FEFFF" }}
+              >
+                {isAf ? "Kontak Ons" : "Contact Us"}
+              </a>
+              <a
+                href="https://www.linkedin.com/company/kth-tech"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-testid="footer-linkedin"
+                className="text-[12px] font-bold transition-colors hover:text-white"
+                style={{ color: "#6FA8FF" }}
+              >
+                LinkedIn
+              </a>
+              <Link
+                href="/partner-schools"
+                data-testid="footer-partners"
+                className="text-[12px] font-bold transition-colors hover:text-white"
+                style={{ color: "#93FFB8" }}
+              >
+                {isAf ? "Vennote" : "Partners"}
+              </Link>
+            </div>
           </div>
         </div>
 
