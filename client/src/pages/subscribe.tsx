@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { GraffitiSplats, SpraySmear } from "@/components/graffiti-splats";
+import { GraffitiSplats } from "@/components/graffiti-splats";
 import {
   Sparkles,
   ArrowLeft,
@@ -48,11 +48,14 @@ const MARKER_SHADOW = { textShadow: "0 2px 0 rgba(0,0,0,0.6)" } as const;
 // Compact CTA sizing — brand max is px-5 py-2.5 text-sm font-bold rounded-xl.
 const CTA_CLASSES = "px-5 py-2.5 text-sm font-bold rounded-xl h-auto";
 
-/** Dark graffiti wall screen — splats behind, content written on the wall. */
+/** Dark graffiti wall screen — ONE fixed full-page splat layer behind,
+ * content written straight on the wall. */
 function WallScreen({ children, testId }: { children: ReactNode; testId?: string }) {
   return (
     <div className="relative min-h-screen bg-background text-white overflow-hidden">
-      <GraffitiSplats variant="full" opacity={0.5} />
+      <div aria-hidden className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
+        <GraffitiSplats variant="full" opacity={0.9} />
+      </div>
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-16">
         <div className="max-w-lg w-full" data-testid={testId}>{children}</div>
       </div>
@@ -288,25 +291,58 @@ export default function SubscribePage() {
   return (
     <WallScreen testId="subscribe-plan-panel">
       <div className="text-center mb-10">
-        <Sparkles
-          className="w-9 h-9 mx-auto mb-5"
-          style={{ color: "#FFF29E", filter: "drop-shadow(0 0 8px #FFF29E)" }}
-        />
-        {/* Plan name — marker heading over a spray smear */}
+        <Sparkles className="w-9 h-9 mx-auto mb-5" style={{ color: "#FFF29E" }} />
+        {/* Plan name — BLACK text on pastel highlight (callout-hl) */}
         <h1
-          className="spray-title graffiti-hand text-3xl text-white mb-5 -rotate-1"
-          style={MARKER_SHADOW}
+          className="text-3xl sm:text-4xl font-black tracking-tight leading-[1.1] text-center mb-6"
           data-testid="subscribe-heading"
         >
-          <SpraySmear color="#FF9FE5" />
-          {isAf ? "Brain Boost: 14-dae Gratis Proef" : "Brain Boost: 14-day Free Trial"}
+          <span className="callout-hl">
+            {isAf ? "Brain Boost: 14-dae Gratis Proef" : "Brain Boost: 14-day Free Trial"}
+          </span>
         </h1>
+        {/* Big price — pastel marker lettering, no box */}
+        <p
+          className="graffiti-hand text-5xl sm:text-6xl leading-none -rotate-1 mb-4"
+          style={{ color: "#7FEFFF", ...MARKER_SHADOW }}
+          data-testid="text-subscribe-price"
+        >
+          {isAf ? "R169/maand" : "R169/month"}
+        </p>
         <p className="text-white text-lg">
           {isAf
             ? "Kry volle toegang tot alle kenmerke. R169/maand daarna. Kanselleer enige tyd."
             : "Get full access to all features. R169/month thereafter. Cancel anytime."}
         </p>
       </div>
+
+      {/* What's inside — white list, pastel check marks, no panel */}
+      <ul className="space-y-2.5 mb-10 max-w-sm mx-auto">
+        {(isAf
+          ? [
+              "KABV-belynde studieplan, elke dag herbou",
+              "10 jaar se NSS-vraestelle met memo's",
+              "Dadelike nasien & swakpunt-opsporing",
+              "Rizz slim ondersteuning in EN/AF",
+              "Spel-agtige vordering + ouerverslae",
+            ]
+          : [
+              "CAPS-aligned study plan, rebuilt daily",
+              "10 years of NSC past papers with memos",
+              "Instant marking & weak-spot detection",
+              "Rizz smart support in EN/AF",
+              "Gamified progress + parent reports",
+            ]
+        ).map((item, i) => (
+          <li key={i} className="flex items-start gap-2.5 text-sm text-white text-left">
+            <CheckCircle2
+              className="w-4 h-4 mt-0.5 shrink-0"
+              style={{ color: ["#7FEFFF", "#93FFB8", "#FFF29E", "#FF9FE5", "#C6A4FF"][i % 5] }}
+            />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
 
       {errorMsg && (
         <WallCallout color="#FFC48F" className="mb-8 flex items-start gap-3">
@@ -356,7 +392,7 @@ export default function SubscribePage() {
         <Button
           onClick={handleStartTrial}
           className={CTA_CLASSES}
-          style={{ background: "#FF9FE5", color: "#000" }}
+          style={{ background: "#7FEFFF", color: "#0a0a0a" }}
           data-testid="button-subscribe-cta"
         >
           {isAf ? "Begin Gratis Proef" : "Start Free Trial"}
@@ -476,16 +512,9 @@ function PaymentPickerScreen({
   return (
     <WallScreen>
       <div className="text-center mb-8">
-        <CreditCard
-          className="w-9 h-9 mx-auto mb-5"
-          style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 8px #7FEFFF)" }}
-        />
-        <h1
-          className="spray-title graffiti-hand text-2xl sm:text-3xl text-white mb-4 -rotate-1"
-          style={MARKER_SHADOW}
-        >
-          <SpraySmear color="#7FEFFF" />
-          {t.headline}
+        <CreditCard className="w-9 h-9 mx-auto mb-5" style={{ color: "#7FEFFF" }} />
+        <h1 className="text-2xl sm:text-3xl font-black tracking-tight leading-[1.1] text-center mb-4">
+          <span className="callout-hl">{t.headline}</span>
         </h1>
         <p className="text-white">{t.subheadline}</p>
       </div>
@@ -534,7 +563,7 @@ function PaymentPickerScreen({
               {loadingMethod === "debicheck" ? (
                 <Loader2 className="w-5 h-5 animate-spin" style={{ color: "#93FFB8" }} />
               ) : (
-                <Landmark className="w-5 h-5" style={{ color: "#93FFB8", filter: "drop-shadow(0 0 6px #93FFB8)" }} />
+                <Landmark className="w-5 h-5" style={{ color: "#93FFB8" }} />
               )}
             </div>
             <div className="flex-1 min-w-0">
@@ -565,7 +594,7 @@ function PaymentPickerScreen({
               {loadingMethod === "card" ? (
                 <Loader2 className="w-5 h-5 animate-spin" style={{ color: "#6FA8FF" }} />
               ) : (
-                <CreditCard className="w-5 h-5" style={{ color: "#6FA8FF", filter: "drop-shadow(0 0 6px #6FA8FF)" }} />
+                <CreditCard className="w-5 h-5" style={{ color: "#6FA8FF" }} />
               )}
             </div>
             <div className="flex-1 min-w-0">
@@ -748,16 +777,11 @@ function SuccessScreen({
   return (
     <WallScreen>
       <div className="text-center">
-        <CheckCircle2
-          className="w-14 h-14 mx-auto mb-6"
-          style={{ color: "#93FFB8", filter: "drop-shadow(0 0 10px #93FFB8)" }}
-        />
-        <h1
-          className="spray-title graffiti-hand text-3xl text-white mb-6 -rotate-1"
-          style={MARKER_SHADOW}
-        >
-          <SpraySmear color="#93FFB8" />
-          {isAf ? "Welkom by Brain Boost!" : "Welcome to Brain Boost!"}
+        <CheckCircle2 className="w-14 h-14 mx-auto mb-6" style={{ color: "#93FFB8" }} />
+        <h1 className="text-3xl sm:text-4xl font-black tracking-tight leading-[1.1] text-center mb-6">
+          <span className="callout-hl">
+            {isAf ? "Welkom by Brain Boost!" : "Welcome to Brain Boost!"}
+          </span>
         </h1>
         <p className="text-white text-lg mb-6">
           {isAf
@@ -846,7 +870,7 @@ function SuccessScreen({
                 onClick={handleResend}
                 disabled={resendLoading || cooldownSecs > 0}
                 className={CTA_CLASSES}
-                style={{ background: "#FFF29E", color: "#000" }}
+                style={{ background: "#7FEFFF", color: "#0a0a0a" }}
               >
                 {resendLoading ? (
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
@@ -887,8 +911,8 @@ function SuccessScreen({
           <Button
             onClick={handleResend}
             disabled={resendLoading || cooldownSecs > 0}
-            className={`${CTA_CLASSES} mb-6 bg-transparent text-white`}
-            style={{ border: "2px solid #7FEFFF", background: "transparent", color: "#fff" }}
+            className={`${CTA_CLASSES} mb-6`}
+            style={{ border: "1.5px solid #7FEFFF", background: "#0a0a0a", color: "#7FEFFF" }}
           >
             {resendLoading ? (
               <Loader2 className="w-4 h-4 animate-spin mr-2" />
@@ -905,7 +929,7 @@ function SuccessScreen({
           <Button
             onClick={() => navigate("/dashboard")}
             className={CTA_CLASSES}
-            style={{ background: "#FF9FE5", color: "#000" }}
+            style={{ background: "#7FEFFF", color: "#0a0a0a" }}
           >
             {isAf ? "Gaan na Dashboard" : "Go to Dashboard"}
           </Button>
@@ -939,18 +963,15 @@ function PaymentSuccessScreen({
   return (
     <WallScreen testId="payment-success-panel">
       <div className="text-center">
-        <CheckCircle2
-          className="w-14 h-14 mx-auto mb-6"
-          style={{ color: "#93FFB8", filter: "drop-shadow(0 0 10px #93FFB8)" }}
-        />
+        <CheckCircle2 className="w-14 h-14 mx-auto mb-6" style={{ color: "#93FFB8" }} />
 
         <h1
-          className="spray-title graffiti-hand text-3xl text-white mb-5 -rotate-1"
-          style={MARKER_SHADOW}
+          className="text-3xl sm:text-4xl font-black tracking-tight leading-[1.1] text-center mb-5"
           data-testid="payment-success-heading"
         >
-          <SpraySmear color="#93FFB8" />
-          {isAf ? "Betaling suksesvol" : "Payment successful"}
+          <span className="callout-hl">
+            {isAf ? "Betaling suksesvol" : "Payment successful"}
+          </span>
         </h1>
         <p className="text-white text-lg mb-8">
           {isAf
@@ -962,9 +983,9 @@ function PaymentSuccessScreen({
         <WallCallout color="#6FA8FF" className="mb-6">
           <div className="flex items-start gap-3 mb-2">
             {isDebicheck ? (
-              <Landmark className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#6FA8FF", filter: "drop-shadow(0 0 6px #6FA8FF)" }} />
+              <Landmark className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#6FA8FF" }} />
             ) : (
-              <CreditCard className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#6FA8FF", filter: "drop-shadow(0 0 6px #6FA8FF)" }} />
+              <CreditCard className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#6FA8FF" }} />
             )}
             <div className="flex-1 min-w-0">
               <p className="graffiti-hand text-xs uppercase tracking-[0.22em] mb-0.5" style={{ color: "#6FA8FF", ...MARKER_SHADOW }}>
@@ -996,7 +1017,7 @@ function PaymentSuccessScreen({
           <Button
             onClick={() => navigate("/dashboard")}
             className={CTA_CLASSES}
-            style={{ background: "#FF9FE5", color: "#000" }}
+            style={{ background: "#7FEFFF", color: "#0a0a0a" }}
             data-testid="button-payment-success-dashboard"
           >
             {isAf ? "Gaan na Dashboard" : "Go to Dashboard"}
@@ -1011,16 +1032,11 @@ function NotConfiguredScreen({ isAf, homeHref }: { isAf: boolean, homeHref: stri
   return (
     <WallScreen>
       <div className="text-center">
-        <AlertCircle
-          className="w-14 h-14 mx-auto mb-6"
-          style={{ color: "#FFC48F", filter: "drop-shadow(0 0 10px #FFC48F)" }}
-        />
-        <h1
-          className="spray-title graffiti-hand text-2xl sm:text-3xl text-white mb-5 -rotate-1"
-          style={MARKER_SHADOW}
-        >
-          <SpraySmear color="#FFC48F" />
-          {isAf ? "Betalings nie opgestel nie" : "Payments not configured"}
+        <AlertCircle className="w-14 h-14 mx-auto mb-6" style={{ color: "#FFC48F" }} />
+        <h1 className="text-2xl sm:text-3xl font-black tracking-tight leading-[1.1] text-center mb-5">
+          <span className="callout-hl">
+            {isAf ? "Betalings nie opgestel nie" : "Payments not configured"}
+          </span>
         </h1>
         <p className="text-white mb-10">
           {isAf
@@ -1029,8 +1045,8 @@ function NotConfiguredScreen({ isAf, homeHref }: { isAf: boolean, homeHref: stri
         </p>
         <a
           href={homeHref}
-          className="inline-flex items-center justify-center px-5 py-2.5 text-sm font-bold rounded-xl text-white"
-          style={{ border: "2px solid #7FEFFF" }}
+          className="inline-flex items-center justify-center px-5 py-2.5 text-sm font-bold rounded-xl"
+          style={{ border: "1.5px solid #7FEFFF", background: "#0a0a0a", color: "#7FEFFF" }}
         >
           {isAf ? "Terug" : "Back"}
         </a>

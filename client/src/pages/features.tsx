@@ -1,6 +1,8 @@
+import { Link } from "wouter";
 import { PublicNav } from "@/components/public-nav";
-import { GraffitiSplats, SpraySmear } from "@/components/graffiti-splats";
+import { GraffitiSplats } from "@/components/graffiti-splats";
 import { useLanguage } from "@/lib/language-context";
+import { useAuth } from "@/hooks/use-auth";
 import { useSEO } from "@/hooks/use-seo";
 import {
   BookOpen,
@@ -175,7 +177,7 @@ const t = {
   },
 };
 
-// Soft pastel wall palette — borders, highlights and marker accents only.
+// Soft pastel wall palette — icons, marker accents and highlights only.
 const PASTELS = ["#6FA8FF", "#7FEFFF", "#93FFB8", "#FFF29E", "#FFC48F", "#FF9FE5", "#C6A4FF"];
 
 const coreFeatures = [
@@ -218,43 +220,42 @@ const featuresBreadcrumb = {
 
 const MARKER_SHADOW = { textShadow: "0 2px 0 rgba(0,0,0,0.6)" } as const;
 
-/** Wall-written section heading — marker lettering over a spray smear,
- * with an optional marker eyebrow and plain white subtitle. No boxes. */
-function WallHeading({
-  smear,
+/** Section heading — BLACK text on a pastel-gradient highlight (callout-hl),
+ * with an optional pastel marker eyebrow and plain white subtitle. No boxes. */
+function SectionHeading({
+  accent,
   eyebrow,
   title,
   subtitle,
 }: {
-  smear: string;
+  accent: string;
   eyebrow?: string;
   title: React.ReactNode;
   subtitle?: string;
 }) {
   return (
-    <div className="space-y-3">
+    <div className="text-center space-y-4">
       {eyebrow && (
         <p
-          className="graffiti-hand text-xs uppercase tracking-[0.24em]"
-          style={{ color: smear, ...MARKER_SHADOW }}
+          className="graffiti-hand text-sm uppercase tracking-[0.24em]"
+          style={{ color: accent, ...MARKER_SHADOW }}
         >
           {eyebrow}
         </p>
       )}
-      <h2
-        className="spray-title graffiti-hand text-3xl sm:text-4xl md:text-5xl text-white -rotate-1"
-        style={MARKER_SHADOW}
-      >
-        <SpraySmear color={smear} />
-        {title}
+      <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] text-center">
+        <span className="callout-hl">{title}</span>
       </h2>
-      {subtitle && <p className="text-white max-w-2xl leading-relaxed">{subtitle}</p>}
+      {subtitle && (
+        <p className="text-white max-w-2xl mx-auto leading-relaxed">{subtitle}</p>
+      )}
     </div>
   );
 }
 
 export default function FeaturesPage() {
   const { language } = useLanguage();
+  const { isAuthenticated } = useAuth();
   useSEO({
     title: "Features | BrainTrack™ CAPS Study Plan & NSC Past Papers",
     description:
@@ -271,14 +272,18 @@ export default function FeaturesPage() {
 
   return (
     <div className="relative min-h-screen bg-background text-white overflow-hidden">
-      <GraffitiSplats variant="full" opacity={0.5} />
+      {/* Graffiti filters through the ENTIRE page — one fixed layer behind all
+          content, so paint flows continuously as you scroll (no per-section gaps). */}
+      <div aria-hidden className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
+        <GraffitiSplats variant="full" opacity={0.9} />
+      </div>
       <div className="relative z-10">
         <PublicNav />
         <main className="pt-14">
           {/* ═══ Hero — written straight on the wall ═══ */}
-          <section className="px-4 sm:px-6 lg:px-8 pt-12 pb-16">
-            <div className="max-w-5xl mx-auto">
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-6">
+          <section className="px-4 sm:px-6 lg:px-8 pt-14 pb-20">
+            <div className="max-w-5xl mx-auto text-center">
+              <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 mb-6">
                 <span
                   className="graffiti-hand text-sm uppercase tracking-[0.24em]"
                   style={{ color: "#7FEFFF", ...MARKER_SHADOW }}
@@ -291,20 +296,21 @@ export default function FeaturesPage() {
               </div>
 
               <h1
-                className="spray-title graffiti-hand text-4xl sm:text-5xl md:text-6xl leading-[1.05] text-white -rotate-1 max-w-4xl"
-                style={MARKER_SHADOW}
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] text-center max-w-4xl mx-auto"
                 data-testid="text-features-title"
               >
-                <SpraySmear color="#6FA8FF" />
-                {c.heroTitle}
+                <span className="callout-hl">{c.heroTitle}</span>
               </h1>
 
-              <p className="text-white max-w-2xl leading-relaxed text-lg mt-7" data-testid="text-features-subtitle">
+              <p
+                className="text-white max-w-2xl mx-auto leading-relaxed text-lg mt-7"
+                data-testid="text-features-subtitle"
+              >
                 {c.heroSubtitle}
               </p>
 
               {/* Count marks — plain wall text with coloured dots, no pills */}
-              <div className="flex flex-wrap gap-x-6 gap-y-2 mt-7">
+              <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-7">
                 {[
                   { label: c.heroChip1, hex: "#7FEFFF" },
                   { label: c.heroChip2, hex: "#C6A4FF" },
@@ -313,7 +319,7 @@ export default function FeaturesPage() {
                   <span key={label} className="inline-flex items-center gap-2 text-sm font-bold text-white">
                     <span
                       className="w-2 h-2 rounded-full shrink-0"
-                      style={{ background: hex, boxShadow: `0 0 8px ${hex}` }}
+                      style={{ background: hex }}
                       aria-hidden
                     />
                     {label}
@@ -324,41 +330,38 @@ export default function FeaturesPage() {
           </section>
 
           {/* ═══ Core Features — Brain Boost ═══ */}
-          <section className="px-4 sm:px-6 lg:px-8 pb-16">
+          <section className="px-4 sm:px-6 lg:px-8 pb-20">
             <div className="max-w-5xl mx-auto">
-              <WallHeading
-                smear="#7FEFFF"
+              <SectionHeading
+                accent="#7FEFFF"
                 eyebrow={isAf ? "Kerninhoud" : "What's Included"}
                 title={c.sectionCore}
                 subtitle={c.coreDesc}
               />
 
               {/* Price — big pastel marker, small white label. No box. */}
-              <div className="mt-6 mb-10">
+              <div className="mt-8 mb-12 text-center">
                 <p
-                  className="graffiti-hand text-3xl sm:text-4xl"
+                  className="graffiti-hand text-4xl sm:text-5xl -rotate-1"
                   style={{ color: "#FFF29E", ...MARKER_SHADOW }}
                   data-testid="text-core-price"
                 >
                   {c.corePriceLabel}
                 </p>
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-white mt-1.5">
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-white mt-2">
                   {c.corePriceSub}
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-10 gap-y-9">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-10 gap-y-10">
                 {coreFeatures.map((f, i) => {
                   const hex = PASTELS[i % PASTELS.length];
                   const Icon = f.icon;
                   return (
                     <div key={i} className="flex items-start gap-3" data-testid={`card-feature-${i}`}>
-                      <Icon
-                        className="w-5 h-5 mt-1.5 shrink-0"
-                        style={{ color: hex, filter: `drop-shadow(0 0 6px ${hex})` }}
-                      />
+                      <Icon className="w-5 h-5 mt-0.5 shrink-0" style={{ color: hex }} />
                       <div className="min-w-0">
-                        <h3 className="graffiti-hand text-lg text-white leading-snug" style={MARKER_SHADOW}>
+                        <h3 className="text-base font-bold text-white leading-snug">
                           {c[f.titleKey as keyof typeof c] as string}
                         </h3>
                         <p className="text-sm text-white leading-relaxed mt-1.5">
@@ -373,23 +376,23 @@ export default function FeaturesPage() {
           </section>
 
           {/* ═══ Power-Ups — big pastel numerals on the wall ═══ */}
-          <section className="px-4 sm:px-6 lg:px-8 pb-16">
+          <section className="px-4 sm:px-6 lg:px-8 pb-20">
             <div className="max-w-5xl mx-auto">
-              <WallHeading
-                smear="#C6A4FF"
+              <SectionHeading
+                accent="#C6A4FF"
                 eyebrow={isAf ? "Opsioneel" : "Optional"}
                 title={c.sectionPowerUps}
                 subtitle={c.powerUpDesc}
               />
 
-              <div className="mt-10 space-y-9">
+              <div className="mt-12 space-y-10 max-w-3xl mx-auto">
                 {powerUps.map((f, i) => {
                   const hex = PASTELS[(i + 2) % PASTELS.length];
                   const Icon = f.icon;
                   return (
                     <div key={i} className="flex items-start gap-5" data-testid={`card-powerup-${i}`}>
                       <span
-                        className="graffiti-hand text-4xl md:text-5xl leading-none shrink-0 w-14 md:w-16"
+                        className="graffiti-hand text-4xl md:text-5xl leading-none shrink-0 w-14 md:w-16 -rotate-2"
                         style={{ color: hex, ...MARKER_SHADOW }}
                         aria-hidden
                       >
@@ -397,10 +400,7 @@ export default function FeaturesPage() {
                       </span>
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-1.5">
-                          <Icon
-                            className="w-4 h-4 shrink-0"
-                            style={{ color: hex, filter: `drop-shadow(0 0 6px ${hex})` }}
-                          />
+                          <Icon className="w-4 h-4 shrink-0" style={{ color: hex }} />
                           <h3 className="text-lg md:text-xl font-bold text-white leading-tight">
                             {c[f.titleKey as keyof typeof c] as string}
                           </h3>
@@ -422,43 +422,37 @@ export default function FeaturesPage() {
             </div>
           </section>
 
-          {/* ═══ Rescue Packs — pastel left-border callouts ═══ */}
-          <section className="px-4 sm:px-6 lg:px-8 pb-16">
+          {/* ═══ Rescue Packs — SOS tags written on the wall ═══ */}
+          <section className="px-4 sm:px-6 lg:px-8 pb-20">
             <div className="max-w-5xl mx-auto">
-              <WallHeading
-                smear="#FF9FE5"
+              <SectionHeading
+                accent="#FF9FE5"
                 eyebrow={c.rescuePill}
                 title={c.sectionRescue}
                 subtitle={c.rescueDesc}
               />
 
-              <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
+              <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
                 {rescuePacks.map((f, i) => {
                   const hex = PASTELS[(i + 4) % PASTELS.length];
                   const Icon = f.icon;
                   return (
-                    <div
-                      key={i}
-                      className="pl-4 py-1"
-                      style={{ borderLeft: `3px solid ${hex}` }}
-                      data-testid={`card-rescue-${i}`}
-                    >
-                      <p
-                        className="graffiti-hand text-xs uppercase tracking-[0.22em] mb-1.5"
-                        style={{ color: hex, ...MARKER_SHADOW }}
-                      >
-                        SOS · {String(i + 1).padStart(2, "0")}
-                      </p>
-                      <h3 className="flex items-center gap-2 text-base font-bold text-white leading-snug mb-1.5">
-                        <Icon
-                          className="w-4 h-4 shrink-0"
-                          style={{ color: hex, filter: `drop-shadow(0 0 6px ${hex})` }}
-                        />
-                        {c[f.titleKey as keyof typeof c] as string}
-                      </h3>
-                      <p className="text-sm text-white leading-relaxed">
-                        {c[f.descKey as keyof typeof c] as string}
-                      </p>
+                    <div key={i} className="flex items-start gap-3" data-testid={`card-rescue-${i}`}>
+                      <Icon className="w-5 h-5 mt-0.5 shrink-0" style={{ color: hex }} />
+                      <div className="min-w-0">
+                        <p
+                          className="graffiti-hand text-xs uppercase tracking-[0.22em] mb-1 -rotate-1"
+                          style={{ color: hex, ...MARKER_SHADOW }}
+                        >
+                          SOS · {String(i + 1).padStart(2, "0")}
+                        </p>
+                        <h3 className="text-base font-bold text-white leading-snug mb-1.5">
+                          {c[f.titleKey as keyof typeof c] as string}
+                        </h3>
+                        <p className="text-sm text-white leading-relaxed">
+                          {c[f.descKey as keyof typeof c] as string}
+                        </p>
+                      </div>
                     </div>
                   );
                 })}
@@ -469,15 +463,15 @@ export default function FeaturesPage() {
           {/* ═══ Why BrainTrack Works — stats + checklist ═══ */}
           <section className="px-4 sm:px-6 lg:px-8 pb-20">
             <div className="max-w-5xl mx-auto">
-              <WallHeading
-                smear="#93FFB8"
+              <SectionHeading
+                accent="#93FFB8"
                 eyebrow={isAf ? "Strategie" : "Strategy"}
                 title={c.sectionDiff}
                 subtitle={c.diffSubtitle}
               />
 
               {/* Stats — big pastel numbers, small white labels. No boxes. */}
-              <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8">
+              <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8 text-center">
                 {[
                   { label: c.stat1L, value: c.stat1V, hex: "#7FEFFF" },
                   { label: c.stat2L, value: c.stat2V, hex: "#FFF29E" },
@@ -486,7 +480,7 @@ export default function FeaturesPage() {
                 ].map(({ label, value, hex }) => (
                   <div key={label}>
                     <div
-                      className="graffiti-hand text-4xl md:text-5xl leading-none"
+                      className="graffiti-hand text-4xl md:text-5xl leading-none -rotate-1"
                       style={{ color: hex, ...MARKER_SHADOW }}
                     >
                       {value}
@@ -499,19 +493,28 @@ export default function FeaturesPage() {
               </div>
 
               {/* Differentiator checklist — small pastel checks, plain white text */}
-              <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
+              <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 max-w-3xl mx-auto">
                 {diffPoints.map((key, i) => (
                   <div key={i} className="flex items-center gap-3" data-testid={`text-diff-point-${i}`}>
                     <CheckCircle
                       className="w-4 h-4 shrink-0"
-                      style={{
-                        color: PASTELS[i % PASTELS.length],
-                        filter: `drop-shadow(0 0 5px ${PASTELS[i % PASTELS.length]})`,
-                      }}
+                      style={{ color: PASTELS[i % PASTELS.length] }}
                     />
                     <span className="text-white font-medium leading-snug">{c[key as keyof typeof c] as string}</span>
                   </div>
                 ))}
+              </div>
+
+              {/* ONE compact primary CTA — solid pastel fill, black text, no glow */}
+              <div className="mt-14 flex justify-center">
+                <Link
+                  href={isAuthenticated ? "/dashboard" : "/subscribe"}
+                  className="inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-bold"
+                  style={{ background: "#7FEFFF", color: "#0a0a0a" }}
+                  data-testid="button-features-cta"
+                >
+                  {isAuthenticated ? c.ctaLoggedIn : c.cta}
+                </Link>
               </div>
             </div>
           </section>
