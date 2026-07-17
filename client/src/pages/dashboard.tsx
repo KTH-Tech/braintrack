@@ -636,12 +636,11 @@ export default function DashboardPage() {
                         className="flex items-center justify-center w-9 h-9 rounded-xl transition-all hover:scale-110"
                         style={active ? {
                           background: col,
-                          border: `2px solid ${col}`,
-                          color: idx === 3 || idx === 4 ? "#000" : "#fff",
-                          boxShadow: `0 0 14px ${col}88`,
+                          border: `1.5px solid ${col}`,
+                          color: "#0a0a0a",
                         } : {
-                          background: `${col}15`,
-                          border: `1.5px solid ${col}55`,
+                          background: "#000",
+                          border: `1.5px solid ${col}`,
                           color: col,
                         }}
                       >
@@ -657,8 +656,8 @@ export default function DashboardPage() {
               <NotificationsPanel isAf={isAf} />
               <button
                 onClick={toggleLanguage}
-                className="text-[10px] font-black uppercase tracking-[0.2em] px-2.5 py-1.5 rounded-xl transition-all hover:scale-105"
-                style={{ background: "rgba(255,255,255,0.05)", border: "1.5px solid rgba(255,255,255,0.15)", color: "#fff" }}
+                className="text-sm font-bold px-4 py-2 rounded-xl transition-all hover:scale-105"
+                style={{ background: "#000", border: "1.5px solid #C6A4FF", color: "#C6A4FF" }}
                 data-testid="button-language-toggle"
               >
                 {language === "en" ? "EN" : "AF"}
@@ -666,7 +665,7 @@ export default function DashboardPage() {
               <button
                 onClick={() => logout()}
                 className="flex items-center justify-center w-9 h-9 rounded-xl transition-all hover:scale-105"
-                style={{ background: "rgba(255,159,229,0.1)", border: "1.5px solid #FF9FE5", color: "#FF9FE5" }}
+                style={{ background: "#000", border: "1.5px solid #FF9FE5", color: "#FF9FE5" }}
                 data-testid="button-logout"
                 title={t.signOutLabel}
               >
@@ -674,7 +673,7 @@ export default function DashboardPage() {
               </button>
               <button
                 className="md:hidden flex items-center justify-center w-9 h-9 rounded-xl transition-all hover:scale-105"
-                style={{ background: "rgba(127,239,255,0.1)", border: "1.5px solid #7FEFFF", color: "#7FEFFF" }}
+                style={{ background: "#000", border: "1.5px solid #7FEFFF", color: "#7FEFFF" }}
                 onClick={() => setMobileOpen(v => !v)}
               >
                 {mobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
@@ -699,13 +698,12 @@ export default function DashboardPage() {
                     className="flex flex-col items-center gap-1 w-full py-2 px-1 rounded-xl text-[10px] font-black uppercase tracking-wide transition-all"
                     style={active ? {
                       background: col,
-                      color: idx === 3 || idx === 4 ? "#000" : "#fff",
-                      border: `2px solid ${col}`,
-                      boxShadow: `0 0 12px ${col}66`,
+                      color: "#0a0a0a",
+                      border: `1.5px solid ${col}`,
                     } : {
-                      background: `${col}10`,
+                      background: "#000",
                       color: col,
-                      border: `1.5px solid ${col}40`,
+                      border: `1.5px solid ${col}`,
                     }}
                   >
                     <Icon className="w-4 h-4" />
@@ -757,11 +755,10 @@ export default function DashboardPage() {
               </div>
               <Link href="/subscribe">
                 <button
-                  className="rounded-lg px-4 py-1.5 text-xs font-black uppercase tracking-widest transition-all"
+                  className="rounded-xl px-4 py-2 text-sm font-bold transition-all"
                   style={{
-                    background: hex,
-                    color: "#000",
-                    boxShadow: `0 0 12px ${hex}66`,
+                    background: "#7FEFFF",
+                    color: "#0a0a0a",
                   }}
                 >
                   {t.trialBannerUpgrade}
@@ -789,11 +786,10 @@ export default function DashboardPage() {
             </div>
             <Link href="/subscribe">
               <button
-                className="rounded-lg px-4 py-1.5 text-xs font-black uppercase tracking-widest transition-all"
+                className="rounded-xl px-4 py-2 text-sm font-bold transition-all"
                 style={{
-                  background: "#FF9FE5",
-                  color: "#000",
-                  boxShadow: "0 0 12px rgba(255,159,229,0.5)",
+                  background: "#7FEFFF",
+                  color: "#0a0a0a",
                 }}
               >
                 <RefreshCcw className="w-3 h-3 inline mr-1.5 -mt-0.5" />
@@ -1105,11 +1101,10 @@ export default function DashboardPage() {
           </p>
           <Link href="/progress" className="relative">
             <button
-              className="shrink-0 px-5 py-2.5 rounded-xl bg-black font-bold text-sm transition-none"
+              className="shrink-0 px-4 py-2 rounded-xl bg-black font-bold text-sm transition-none"
               style={{
                 color: ac.hex,
                 border: `1.5px solid ${ac.hex}`,
-                boxShadow: `0 0 14px ${ac.halo}`,
               }}
               data-testid="button-view-details"
             >
@@ -1293,8 +1288,8 @@ export default function DashboardPage() {
                   </div>
                   <Link href="/study-calendar">
                     <button
-                      className="shrink-0 px-3 py-1.5 rounded-lg bg-black font-bold text-xs"
-                      style={{ color: u.hex, border: `1.5px solid ${u.hex}`, boxShadow: `0 0 12px ${u.halo}` }}
+                      className="shrink-0 px-4 py-2 rounded-xl bg-black font-bold text-sm"
+                      style={{ color: u.hex, border: `1.5px solid ${u.hex}` }}
                     >
                       {t.calendarLabel} <ChevronRight className="w-3 h-3 ml-1 inline" />
                     </button>
@@ -1413,7 +1408,10 @@ export default function DashboardPage() {
                     </h3>
                   </div>
                   <Link href="/study-calendar">
-                    <button className="text-[10px] font-semibold text-white hover:text-white transition-colors">
+                    <button
+                      className="px-4 py-2 rounded-xl bg-black text-sm font-bold transition-colors"
+                      style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF" }}
+                    >
                       {t.fullPlan} →
                     </button>
                   </Link>
@@ -1514,8 +1512,8 @@ export default function DashboardPage() {
             </div>
             <Link href="/settings" className="flex-shrink-0">
               <button
-                className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-black"
-                style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 10px rgba(127,239,255,0.4)" }}
+                className="text-sm font-bold px-4 py-2 rounded-xl bg-black"
+                style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF" }}
               >
                 {t.viewLabel}
               </button>
@@ -1791,8 +1789,8 @@ export default function DashboardPage() {
               </h2>
               <Link href="/settings">
                 <button
-                  className="text-[11px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg bg-black"
-                  style={{ color: "#6FA8FF", border: "1px solid rgba(111,168,255,0.55)", boxShadow: "0 0 10px rgba(111,168,255,0.3)" }}
+                  className="text-sm font-bold px-4 py-2 rounded-xl bg-black"
+                  style={{ color: "#6FA8FF", border: "1.5px solid #6FA8FF" }}
                   data-testid="link-manage-subjects"
                 >
                   <Settings className="w-3.5 h-3.5 inline mr-1" />{t.manageLabel}
@@ -1857,8 +1855,8 @@ export default function DashboardPage() {
                   <p className="text-white text-sm mb-6">{t.selectSubjectsDesc}</p>
                   <Link href="/settings">
                     <button
-                      className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-black font-bold text-sm"
-                      style={{ color: "#6FA8FF", border: "1.5px solid #6FA8FF", boxShadow: "0 0 16px rgba(111,168,255,0.5)" }}
+                      className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl font-bold text-sm"
+                      style={{ background: "#7FEFFF", color: "#0a0a0a" }}
                       data-testid="button-select-subjects"
                     >
                       {t.selectSubjectsBtn}
@@ -2076,11 +2074,10 @@ export default function DashboardPage() {
             </div>
             <Link href="/study-calendar">
               <button
-                className="shrink-0 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold"
+                className="shrink-0 inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold"
                 style={{
-                  color: "#000",
-                  background: "#FFF29E",
-                  boxShadow: "0 0 16px rgba(255,242,158,0.65), 0 0 32px rgba(255,242,158,0.35)",
+                  color: "#0a0a0a",
+                  background: "#7FEFFF",
                 }}
                 data-testid="button-pro-tip-learn-more"
               >

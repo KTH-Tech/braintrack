@@ -362,65 +362,60 @@ export default function SubjectsPage() {
       <header className="sticky top-0 z-50 bg-background/95 border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 gap-4">
-            <nav className="flex items-center gap-1">
+            <nav className="flex items-center gap-1.5">
               <Link href="/dashboard">
-                <Button
-                  variant="ghost"
-                  size="sm"
+                <button
                   data-testid="link-home"
-                  className="flex items-center gap-2 text-white hover:text-white hover:bg-white/5"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black text-sm font-bold hover:bg-white/5"
+                  style={{ color: "#6FA8FF", border: "1.5px solid #6FA8FF" }}
                 >
                   <BookOpen className="w-4 h-4" />
                   <span className="hidden md:inline">{t.homeLabel}</span>
-                </Button>
+                </button>
               </Link>
               <Link href="/subjects">
-                <Button
-                  size="sm"
+                <button
                   data-testid="link-subjects"
-                  className="flex items-center gap-2 bg-transparent border border-[#7FEFFF] text-[#7FEFFF] hover:bg-[#7FEFFF]/10"
-                  style={{ boxShadow: "0 0 12px rgba(127,239,255,0.35)" }}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold"
+                  style={{ background: "#7FEFFF", color: "#0a0a0a" }}
                 >
                   <Languages className="w-4 h-4" />
                   <span className="hidden md:inline">
                     {t.subjectsLabel}
                   </span>
-                </Button>
+                </button>
               </Link>
               <Link href="/flashcards">
-                <Button
-                  variant="ghost"
-                  size="sm"
+                <button
                   data-testid="link-flashcards"
-                  className="flex items-center gap-2 text-white hover:text-white hover:bg-white/5"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black text-sm font-bold hover:bg-white/5"
+                  style={{ color: "#93FFB8", border: "1.5px solid #93FFB8" }}
                 >
                   <Layers className="w-4 h-4" />
                   <span className="hidden md:inline">
                     {t.flashcardsLabel}
                   </span>
-                </Button>
+                </button>
               </Link>
             </nav>
             <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
+              <button
                 onClick={() => toggleLanguage()}
-                className="text-white font-semibold hover:text-white hover:bg-white/5"
+                className="px-4 py-2 rounded-xl bg-black text-sm font-bold hover:bg-white/5"
+                style={{ color: "#C6A4FF", border: "1.5px solid #C6A4FF" }}
                 data-testid="button-language-toggle"
               >
                 {isAf ? "AF" : "EN"}
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
+              </button>
+              <button
                 onClick={() => logout()}
                 data-testid="button-logout"
-                className="text-white font-semibold hover:text-[#FF9FE5] hover:bg-[#FF9FE5]/5"
+                className="inline-flex items-center px-4 py-2 rounded-xl bg-black text-sm font-bold hover:bg-white/5"
+                style={{ color: "#FF9FE5", border: "1.5px solid #FF9FE5" }}
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 {t.signOut}
-              </Button>
+              </button>
             </div>
           </div>
         </div>
@@ -492,19 +487,17 @@ export default function SubjectsPage() {
                   setShowBrowseAll((v) => !v);
                   setBrowseSearch("");
                 }}
-                className="shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-[0.18em] transition-all"
+                className="shrink-0 flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all"
                 style={
                   showBrowseAll
                     ? {
-                        background: "rgba(127,239,255,0.12)",
-                        border: "1px solid #7FEFFF",
-                        color: "#7FEFFF",
-                        boxShadow: "0 0 14px rgba(127,239,255,0.35)",
+                        background: "#7FEFFF",
+                        color: "#0a0a0a",
                       }
                     : {
-                        background: "rgba(255,255,255,0.04)",
-                        border: "1px solid rgba(255,255,255,0.18)",
-                        color: "rgba(255,255,255,0.8)",
+                        background: "#000",
+                        border: "1.5px solid #7FEFFF",
+                        color: "#7FEFFF",
                       }
                 }
               >
@@ -562,12 +555,11 @@ export default function SubjectsPage() {
             <button
               type="button"
               onClick={() => setShowBrowseAll(true)}
-              className="shrink-0 flex items-center gap-2 px-4 py-2 rounded-xl font-black text-xs uppercase tracking-[0.18em] transition-all"
+              className="shrink-0 flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all"
               style={{
-                background: "rgba(255,242,158,0.12)",
-                border: "1px solid #FFF29E",
+                background: "#000",
+                border: "1.5px solid #FFF29E",
                 color: "#FFF29E",
-                boxShadow: "0 0 10px rgba(255,242,158,0.25)",
               }}
             >
               <Plus className="w-3.5 h-3.5" />
@@ -606,8 +598,8 @@ export default function SubjectsPage() {
                 <button
                   type="button"
                   onClick={() => setShowBrowseAll(false)}
-                  className="p-2 rounded-lg hover:bg-white/5 transition-colors"
-                  style={{ color: "rgba(255,255,255,0.5)" }}
+                  className="w-9 h-9 flex items-center justify-center rounded-xl bg-black hover:bg-white/5 transition-colors"
+                  style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF" }}
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -945,12 +937,11 @@ function SortChip({
       type="button"
       onClick={onClick}
       data-testid={testId}
-      className="px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-[0.2em] transition-colors"
+      className="px-4 py-2 rounded-xl text-sm font-bold transition-colors"
       style={{
-        color: active ? hex : "rgba(255,255,255,0.6)",
-        background: active ? "rgba(255,255,255,0.04)" : "transparent",
-        border: `1px solid ${active ? hex : "transparent"}`,
-        boxShadow: active ? `0 0 10px ${hex}55` : "none",
+        color: active ? "#0a0a0a" : hex,
+        background: active ? hex : "#000",
+        border: `1.5px solid ${hex}`,
       }}
     >
       {label}
@@ -978,19 +969,19 @@ function CategoryPill({
       type="button"
       onClick={onClick}
       data-testid={testId}
-      className="px-3.5 py-2 rounded-full text-xs font-black uppercase tracking-[0.18em] bg-background transition-colors flex items-center gap-2"
+      className="px-4 py-2 rounded-xl text-sm font-bold bg-black transition-colors flex items-center gap-2"
       style={{
-        border: `1px solid ${active ? hex : "rgba(255,255,255,0.15)"}`,
-        color: active ? hex : "rgba(255,255,255,0.65)",
-        boxShadow: active ? `0 0 14px ${hex}55` : "none",
+        border: `1.5px solid ${hex}`,
+        background: active ? hex : "#000",
+        color: active ? "#0a0a0a" : hex,
       }}
     >
       <span>{label}</span>
       <span
         className="text-[9px] px-1.5 py-0.5 rounded-full tabular-nums"
         style={{
-          background: active ? `${hex}22` : "rgba(255,255,255,0.06)",
-          color: active ? hex : "rgba(255,255,255,0.6)",
+          background: active ? "rgba(0,0,0,0.15)" : `${hex}22`,
+          color: active ? "#0a0a0a" : hex,
         }}
       >
         {count}

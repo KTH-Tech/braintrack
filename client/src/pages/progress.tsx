@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -76,45 +75,43 @@ export default function ProgressPage() {
             </div>
             <nav className="flex items-center gap-2">
               <Link href="/dashboard">
-                <Button variant="ghost" size="sm" data-testid="link-home" className="flex items-center gap-2 text-foreground hover:text-foreground hover:bg-foreground/10">
+                <button data-testid="link-home" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black text-sm font-bold" style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF" }}>
                   <BookOpen className="w-4 h-4" />
                   <span className="hidden md:inline">{isAf ? "Tuis" : "Home"}</span>
-                </Button>
+                </button>
               </Link>
               <Link href="/subjects">
-                <Button variant="ghost" size="sm" data-testid="link-subjects" className="flex items-center gap-2 text-foreground hover:text-foreground hover:bg-foreground/10">
+                <button data-testid="link-subjects" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black text-sm font-bold" style={{ color: "#93FFB8", border: "1.5px solid #93FFB8" }}>
                   <Languages className="w-4 h-4" />
                   <span className="hidden md:inline">{isAf ? "Vakke" : "Subjects"}</span>
-                </Button>
+                </button>
               </Link>
               <Link href="/progress">
-                <Button variant="default" size="sm" data-testid="link-progress" className="flex items-center gap-2">
+                <button data-testid="link-progress" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold" style={{ background: "#7FEFFF", color: "#0a0a0a" }}>
                   <TrendingUp className="w-4 h-4" />
                   <span className="hidden md:inline">{isAf ? "Vordering" : "Progress"}</span>
-                </Button>
+                </button>
               </Link>
             </nav>
             <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
+              <button
                 onClick={() => toggleLanguage()}
-                className="text-foreground font-semibold hover:text-foreground hover:bg-foreground/10 rounded-2xl"
+                className="px-4 py-2 rounded-xl bg-black text-sm font-bold"
+                style={{ color: "#C6A4FF", border: "1.5px solid #C6A4FF" }}
                 data-testid="button-language-toggle"
               >
                 {isAf ? "AF" : "EN"}
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              </button>
+              <button
                 onClick={() => logout()}
                 data-testid="button-logout"
                 aria-label={isAf ? "Uitteken" : "Sign Out"}
-                className="text-foreground font-semibold hover:text-foreground hover:bg-foreground/10"
+                className="inline-flex items-center px-4 py-2 rounded-xl bg-black text-sm font-bold"
+                style={{ color: "#FF9FE5", border: "1.5px solid #FF9FE5" }}
               >
                 <LogOut className="w-4 h-4 sm:mr-2" />
                 <span className="hidden sm:inline">{isAf ? "Uitteken" : "Sign Out"}</span>
-              </Button>
+              </button>
             </div>
           </div>
         </div>
@@ -287,8 +284,8 @@ export default function ProgressPage() {
                     <div className="pt-1">
                       <Link href="/dashboard">
                         <button
-                          className="px-4 py-2 rounded-xl bg-background font-bold text-xs uppercase tracking-widest"
-                          style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 14px rgba(127,239,255,0.4)" }}
+                          className="px-4 py-2 rounded-xl bg-black font-bold text-sm"
+                          style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF" }}
                           data-testid="button-back"
                         >
                           <ArrowLeft className="w-3.5 h-3.5 inline mr-1.5" />

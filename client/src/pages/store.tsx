@@ -4,7 +4,6 @@ import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/language-context";
 import { useLocation, Link } from "wouter";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -332,18 +331,27 @@ export default function StorePage() {
             </div>
             <button
               onClick={toggleLanguage}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-white transition-colors text-xs font-semibold border border-white/10 hover:bg-white/5"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-black transition-colors text-sm font-bold hover:bg-white/5"
+              style={{ color: "#C6A4FF", border: "1.5px solid #C6A4FF" }}
               data-testid="button-language-toggle"
             >
               <Globe className="h-3.5 w-3.5" />
               {language === "en" ? "EN" : "AF"}
             </button>
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate("/dashboard")} title={t.homeTitle} data-testid="button-home">
+            <button
+              className="w-9 h-9 flex items-center justify-center rounded-xl bg-black"
+              style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF" }}
+              onClick={() => navigate("/dashboard")} title={t.homeTitle} data-testid="button-home"
+            >
               <Home className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => logout()} title={t.signOutTitle} data-testid="button-logout">
+            </button>
+            <button
+              className="w-9 h-9 flex items-center justify-center rounded-xl bg-black"
+              style={{ color: "#FF9FE5", border: "1.5px solid #FF9FE5" }}
+              onClick={() => logout()} title={t.signOutTitle} data-testid="button-logout"
+            >
               <LogOut className="h-4 w-4" />
-            </Button>
+            </button>
           </div>
         </div>
       </header>
@@ -364,11 +372,12 @@ export default function StorePage() {
               <button
                 key={t.key}
                 onClick={() => setActiveTab(t.key)}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold transition-all border ${
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-all"
+                style={
                   isActive
-                    ? "bg-primary/15 border-primary/40 text-primary"
-                    : "border-white/10 text-white hover:border-white/20 hover:bg-white/5"
-                }`}
+                    ? { background: "#7FEFFF", color: "#0a0a0a" }
+                    : { background: "#000", color: "#7FEFFF", border: "1.5px solid #7FEFFF" }
+                }
                 data-testid={`tab-${t.key}`}
               >
                 <Icon className="w-3.5 h-3.5" />
@@ -391,11 +400,12 @@ export default function StorePage() {
                 <button
                   key={o.v}
                   onClick={() => setOwnership(o.v)}
-                  className={`px-2.5 py-1 rounded-lg font-semibold transition-colors ${
+                  className="px-4 py-2 rounded-xl text-sm font-bold transition-colors"
+                  style={
                     ownership === o.v
-                      ? "bg-primary/20 text-primary"
-                      : "text-white hover:bg-white/5"
-                  }`}
+                      ? { background: "#93FFB8", color: "#0a0a0a" }
+                      : { background: "#000", color: "#93FFB8", border: "1.5px solid #93FFB8" }
+                  }
                   data-testid={`filter-ownership-${o.v}`}
                 >
                   {isAf ? o.af : o.en}
@@ -411,11 +421,12 @@ export default function StorePage() {
                 <button
                   key={o.v}
                   onClick={() => setSortBy(o.v)}
-                  className={`px-2.5 py-1 rounded-lg font-semibold transition-colors ${
+                  className="px-4 py-2 rounded-xl text-sm font-bold transition-colors"
+                  style={
                     sortBy === o.v
-                      ? "bg-primary/20 text-primary"
-                      : "text-white hover:bg-white/5"
-                  }`}
+                      ? { background: "#7FEFFF", color: "#0a0a0a" }
+                      : { background: "#000", color: "#7FEFFF", border: "1.5px solid #7FEFFF" }
+                  }
                   data-testid={`sort-${o.v}`}
                 >
                   {isAf ? o.af : o.en}
@@ -487,7 +498,11 @@ export default function StorePage() {
             {t.earnCoins}
           </p>
           <Link href="/rewards">
-            <button className="mt-2 text-xs font-semibold text-primary hover:text-primary/80 underline underline-offset-2 transition-colors" data-testid="link-to-rewards">
+            <button
+              className="mt-2 px-4 py-2 rounded-xl bg-black text-sm font-bold transition-colors"
+              style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF" }}
+              data-testid="link-to-rewards"
+            >
               {t.viewRewards}
             </button>
           </Link>
@@ -736,15 +751,16 @@ function ActionButton({
         );
       }
       return (
-        <Button
-          size="sm"
-          className="h-7 text-[10px] bg-primary/80 hover:bg-primary"
+        <button
+          type="button"
+          className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold"
+          style={{ background: "#7FEFFF", color: "#0a0a0a" }}
           onClick={() => onApply(item)}
           data-testid={`btn-apply-${item.key}`}
         >
           <Palette className="w-3 h-3 mr-1" />
           {t.applyLabel}
-        </Button>
+        </button>
       );
     }
     return (
@@ -757,22 +773,23 @@ function ActionButton({
 
   if (requiresSub) {
     return (
-      <Button
-        size="sm"
-        variant="outline"
-        className="h-7 text-[10px] border-amber-500/30 hover:bg-amber-500/10"
+      <button
+        type="button"
+        className="px-4 py-2 rounded-xl bg-black text-sm font-bold"
+        style={{ color: "#FFC48F", border: "1.5px solid #FFC48F" }}
         onClick={onSubscribe}
         data-testid={`btn-subscribe-${item.key}`}
       >
         {t.subscribeLabel}
-      </Button>
+      </button>
     );
   }
 
   return (
-    <Button
-      size="sm"
-      className="h-7 text-[10px] bg-primary/80 hover:bg-primary"
+    <button
+      type="button"
+      className="px-4 py-2 rounded-xl text-sm font-bold disabled:opacity-40"
+      style={{ background: "#93FFB8", color: "#0a0a0a" }}
       disabled={!affordable || isUnlocking}
       onClick={() => onUnlock(item)}
       data-testid={`btn-unlock-${item.key}`}
@@ -787,7 +804,7 @@ function ActionButton({
       ) : (
         t.unlockLabel
       )}
-    </Button>
+    </button>
   );
 }
 

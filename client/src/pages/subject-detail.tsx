@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link, useParams, useSearch } from "wouter";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -179,11 +178,10 @@ function TopicMediaPanel({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="w-full inline-flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-background text-[11px] font-black uppercase tracking-[0.18em] transition-all hover:scale-[1.005]"
+        className="w-full inline-flex items-center justify-between gap-2 px-4 py-2 rounded-xl bg-background text-sm font-bold transition-all hover:scale-[1.005]"
         style={{
           color: accentHex,
-          border: `1.5px solid ${accentHex}55`,
-          boxShadow: `0 0 10px ${accentHex}33`,
+          border: `1.5px solid ${accentHex}`,
         }}
         data-testid={`button-topic-media-${topicId}`}
         aria-expanded={open}
@@ -512,7 +510,6 @@ function TopicContentDrawer({
                   type="button"
                   onClick={() => setFlipped(f => !f)}
                   className="w-full min-h-[180px] rounded-2xl bg-background border border-cyan-400/40 p-5 text-left transition-all hover:border-cyan-400/80"
-                  style={{ boxShadow: "inset 0 0 18px #7FEFFF22" }}
                   data-testid="topic-flashcard-face"
                 >
                   <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-300 mb-2">
@@ -525,14 +522,18 @@ function TopicContentDrawer({
                   </p>
                 </button>
                 <div className="flex items-center justify-between gap-2">
-                  <Button
-                    variant="outline" size="sm"
+                  <button
+                    type="button"
+                    className="px-4 py-2 rounded-xl bg-background text-sm font-bold disabled:opacity-40"
+                    style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF" }}
                     onClick={() => { setCardIdx(i => Math.max(0, i - 1)); setFlipped(false); }}
                     disabled={cardIdx === 0}
                     data-testid="button-card-prev"
-                  >← {isAf ? "Vorige" : "Prev"}</Button>
-                  <Button
-                    variant="outline" size="sm"
+                  >← {isAf ? "Vorige" : "Prev"}</button>
+                  <button
+                    type="button"
+                    className="inline-flex items-center px-4 py-2 rounded-xl bg-background text-sm font-bold"
+                    style={{ color: "#C6A4FF", border: "1.5px solid #C6A4FF" }}
                     onClick={() => {
                       try { localStorage.removeItem(lsKey); } catch {}
                       // Suppress the next debounced POST so the reset state
@@ -550,18 +551,20 @@ function TopicContentDrawer({
                       setFlipped(false);
                     }}
                     data-testid="button-card-reset"
-                  ><RotateCcw className="w-3 h-3 mr-1" />{isAf ? "Van Voor Af" : "Start Over"}</Button>
-                  <Button
-                    variant="outline" size="sm"
+                  ><RotateCcw className="w-3 h-3 mr-1" />{isAf ? "Van Voor Af" : "Start Over"}</button>
+                  <button
+                    type="button"
+                    className="px-4 py-2 rounded-xl bg-background text-sm font-bold disabled:opacity-40"
+                    style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF" }}
                     onClick={() => { setCardIdx(i => Math.min(cards.length - 1, i + 1)); setFlipped(false); }}
                     disabled={cardIdx >= cards.length - 1}
                     data-testid="button-card-next"
-                  >{isAf ? "Volgende" : "Next"} →</Button>
+                  >{isAf ? "Volgende" : "Next"} →</button>
                 </div>
                 <Link href={deepLinkHref}>
                   <button
-                    className="w-full py-2.5 rounded-xl bg-background text-xs font-black uppercase tracking-[0.18em] transition-all hover:scale-[1.02]"
-                    style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 14px #7FEFFF55" }}
+                    className="w-full px-4 py-2 rounded-xl bg-background text-sm font-bold transition-all hover:scale-[1.02]"
+                    style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF" }}
                     data-testid="button-open-flashcards-page"
                   >
                     {isAf ? "Begin volle hersieningssessie →" : "Start full review session →"}
@@ -1061,28 +1064,28 @@ export default function SubjectDetailPage() {
             <div className="flex items-center gap-3">
               <span className="font-semibold text-xl gradient-text hidden sm:inline">{isAf ? "Klaskamer" : "Classroom"}</span>
             </div>
-            <nav className="flex items-center gap-1 flex-wrap">
+            <nav className="flex items-center gap-1.5 flex-wrap">
               <Link href="/dashboard">
-                <Button variant="ghost" size="sm" className="text-foreground" data-testid="link-home">
+                <button className="px-4 py-2 rounded-xl bg-background text-sm font-bold" style={{ color: "#6FA8FF", border: "1.5px solid #6FA8FF" }} data-testid="link-home">
                   {isAf ? "Dashboard" : "Dashboard"}
-                </Button>
+                </button>
               </Link>
               <Link href="/exam-mode">
-                <Button variant="ghost" size="sm" className="text-foreground" data-testid="link-crunch-time">{isAf ? "Eksamentyd" : "Crunch Time"}</Button>
+                <button className="px-4 py-2 rounded-xl bg-background text-sm font-bold" style={{ color: "#FFC48F", border: "1.5px solid #FFC48F" }} data-testid="link-crunch-time">{isAf ? "Eksamentyd" : "Crunch Time"}</button>
               </Link>
               <Link href="/flashcards">
-                <Button variant="ghost" size="sm" className="text-foreground" data-testid="link-flashcards">
+                <button className="px-4 py-2 rounded-xl bg-background text-sm font-bold" style={{ color: "#93FFB8", border: "1.5px solid #93FFB8" }} data-testid="link-flashcards">
                   {isAf ? "Flitskaarte" : "Flashcards"}
-                </Button>
+                </button>
               </Link>
-              <button onClick={toggleLanguage} className="flex items-center gap-1 px-2 py-1.5 rounded-md text-foreground hover:text-foreground transition-colors" data-testid="button-language-toggle">
+              <button onClick={toggleLanguage} className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-background text-sm font-bold transition-colors" style={{ color: "#C6A4FF", border: "1.5px solid #C6A4FF" }} data-testid="button-language-toggle">
                 <Globe className="h-4 w-4" />
-                <span className="text-xs font-semibold">{language === "en" ? "EN" : "AF"}</span>
+                <span>{language === "en" ? "EN" : "AF"}</span>
               </button>
-              <Button variant="ghost" size="sm" onClick={() => logout()} data-testid="button-logout" className="text-foreground">
+              <button onClick={() => logout()} data-testid="button-logout" className="inline-flex items-center px-4 py-2 rounded-xl bg-background text-sm font-bold" style={{ color: "#FF9FE5", border: "1.5px solid #FF9FE5" }}>
                 <LogOut className="w-4 h-4 mr-1" />
                 {isAf ? "Uitteken" : "Sign Out"}
-              </Button>
+              </button>
             </nav>
           </div>
         </div>
@@ -1091,10 +1094,10 @@ export default function SubjectDetailPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 overflow-x-hidden">
         <div className="space-y-6">
           <Link href="/subjects">
-            <Button variant="ghost" size="sm" data-testid="button-back" className="text-foreground hover:text-foreground -ml-2">
+            <button data-testid="button-back" className="inline-flex items-center px-4 py-2 rounded-xl bg-background text-sm font-bold" style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF" }}>
               <ArrowLeft className="w-4 h-4 mr-1" />
               {isAf ? "Alle Vakke" : "All Subjects"}
-            </Button>
+            </button>
           </Link>
 
           {loading ? (
@@ -1222,8 +1225,8 @@ export default function SubjectDetailPage() {
             <div className="grid gap-3 sm:grid-cols-2" data-testid="exam-shortcuts">
               <Link href={miniMockHref}>
                 <button
-                  className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-background text-left transition-all hover:scale-[1.01]"
-                  style={{ border: "1.5px solid #FFF29E", boxShadow: "0 0 14px #FFF29E44, inset 0 0 12px #FFF29E12" }}
+                  className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-background text-left transition-all hover:scale-[1.01]"
+                  style={{ border: "1.5px solid #FFF29E" }}
                   data-testid="button-mini-mock-shortcut"
                 >
                   <div className="flex items-center gap-3">
@@ -1246,8 +1249,8 @@ export default function SubjectDetailPage() {
               </Link>
               <Link href={`/exam/full?subject=${encodeURIComponent(subject.name)}`}>
                 <button
-                  className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-background text-left transition-all hover:scale-[1.01]"
-                  style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 14px #C6A4FF44, inset 0 0 12px #C6A4FF12" }}
+                  className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-background text-left transition-all hover:scale-[1.01]"
+                  style={{ border: "1.5px solid #C6A4FF" }}
                   data-testid="button-full-exam-shortcut"
                 >
                   <div className="flex items-center gap-3">
@@ -1329,7 +1332,7 @@ export default function SubjectDetailPage() {
                           capsCode: topic.capsCode,
                         })}
                         className="shrink-0 flex flex-col items-start gap-0.5 px-3 py-2 rounded-xl bg-background transition-all hover:scale-[1.02] active:scale-[0.98] text-left relative"
-                        style={{ border: `1.5px solid ${bandHex}88`, boxShadow: `0 0 10px ${bandHex}33` }}
+                        style={{ border: `1.5px solid ${bandHex}` }}
                         data-testid={`chip-ready-topic-${topic.id}`}
                       >
                         {isPriority && (
@@ -1440,8 +1443,8 @@ export default function SubjectDetailPage() {
                   {isBST && (
                     <Link href="/bst-exam">
                       <button
-                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-background text-xs font-bold transition-all hover:scale-[1.02]"
-                        style={{ border: "1.5px solid #FFC48F", boxShadow: "0 0 10px #FFC48F44", color: "#FFC48F" }}
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-background text-sm font-bold transition-all hover:scale-[1.02]"
+                        style={{ border: "1.5px solid #FFC48F", color: "#FFC48F" }}
                         data-testid="button-crunch-time"
                       >
                         <Shield className="w-3.5 h-3.5" /> Crunch Time
@@ -1450,8 +1453,8 @@ export default function SubjectDetailPage() {
                   )}
                   <Link href="/exam-mode">
                     <button
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-background text-xs font-bold transition-all hover:scale-[1.02]"
-                      style={{ border: "1.5px solid #FFC48F", boxShadow: "0 0 10px #FFC48F44", color: "#FFC48F" }}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-background text-sm font-bold transition-all hover:scale-[1.02]"
+                      style={{ border: "1.5px solid #FFC48F", color: "#FFC48F" }}
                       data-testid="button-exam-mode"
                     >
                       <GraduationCap className="w-3.5 h-3.5" />
@@ -1460,8 +1463,8 @@ export default function SubjectDetailPage() {
                   </Link>
                   <Link href={`/tutor?subject=${id}`}>
                     <button
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-background text-xs font-bold transition-all hover:scale-[1.02]"
-                      style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 10px #C6A4FF44", color: "#C6A4FF" }}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-background text-sm font-bold transition-all hover:scale-[1.02]"
+                      style={{ border: "1.5px solid #C6A4FF", color: "#C6A4FF" }}
                       data-testid="button-smart-tutor"
                     >
                       <Brain className="w-3.5 h-3.5" /> Rizz
@@ -1489,8 +1492,8 @@ export default function SubjectDetailPage() {
                           : `Focus on your weakest topic: ${weakestTopic.name} (${weakestTopic.masteryScore}%)`}
                       </p>
                       <button
-                        className="w-full py-2 rounded-xl bg-background text-xs font-black uppercase tracking-[0.18em] transition-all hover:scale-[1.02]"
-                        style={{ color: "#FFF29E", border: "1.5px solid #FFF29E", boxShadow: "0 0 14px #FFF29E55" }}
+                        className="w-full px-4 py-2 rounded-xl bg-background text-sm font-bold transition-all hover:scale-[1.02]"
+                        style={{ color: "#FFF29E", border: "1.5px solid #FFF29E" }}
                         onClick={() => {
                           setRecommendedTopicFocus(weakestTopic.name);
                           const el = document.getElementById("boost-quiz-section");
@@ -1518,8 +1521,8 @@ export default function SubjectDetailPage() {
                       </p>
                       <Link href={`/revision/${subject.id}`}>
                         <button
-                          className="w-full py-2 rounded-xl bg-background text-xs font-black uppercase tracking-[0.18em] transition-all hover:scale-[1.02]"
-                          style={{ color: "#C6A4FF", border: "1.5px solid #C6A4FF", boxShadow: "0 0 14px #C6A4FF55" }}
+                          className="w-full px-4 py-2 rounded-xl bg-background text-sm font-bold transition-all hover:scale-[1.02]"
+                          style={{ color: "#C6A4FF", border: "1.5px solid #C6A4FF" }}
                           data-testid="button-revision-mode"
                         >
                           {isAf ? "Begin Hersiening" : "Start Revision"} →
@@ -1647,7 +1650,7 @@ export default function SubjectDetailPage() {
                                 })}
                                 disabled={!hasContent}
                                 className={`mt-3 w-full inline-flex flex-col items-center justify-center gap-0.5 py-2 rounded-xl bg-background text-[11px] font-black uppercase tracking-[0.18em] transition-all ${hasContent ? "hover:scale-[1.01] cursor-pointer" : "opacity-40 cursor-not-allowed"}`}
-                                style={{ color: tHex, border: `1.5px solid ${tHex}55`, boxShadow: hasContent ? `0 0 10px ${tHex}33` : "none" }}
+                                style={{ color: tHex, border: `1.5px solid ${tHex}` }}
                                 data-testid={`button-topic-content-${topic.id}`}
                               >
                                 <span className="flex items-center gap-2">
@@ -1678,7 +1681,7 @@ export default function SubjectDetailPage() {
                                   });
                                 }}
                                 className="mt-2 w-full inline-flex flex-col items-center justify-center gap-0.5 py-2 rounded-xl bg-background text-[11px] font-black uppercase tracking-[0.18em] transition-all hover:scale-[1.01] cursor-pointer"
-                                style={{ color: tHex, border: `1.5px solid ${tHex}55`, boxShadow: `0 0 10px ${tHex}33` }}
+                                style={{ color: tHex, border: `1.5px solid ${tHex}` }}
                                 data-testid={`button-quiz-topic-${topic.id}`}
                               >
                                 <span className="flex items-center gap-2">
@@ -1828,8 +1831,8 @@ export default function SubjectDetailPage() {
                         onClick={() => saveLitMutation.mutate(litSelections)}
                         disabled={saveLitMutation.isPending}
                         data-testid="button-save-literature"
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-background text-xs font-black uppercase tracking-[0.14em] transition-all hover:scale-[1.02] disabled:opacity-60"
-                        style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 12px #7FEFFF55" }}
+                        className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-background text-sm font-bold transition-all hover:scale-[1.02] disabled:opacity-60"
+                        style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF" }}
                       >
                         {litSaved ? (
                           <><Check className="w-3.5 h-3.5" /> {isAf ? "Gestoor" : "Saved"}</>
@@ -1876,8 +1879,8 @@ export default function SubjectDetailPage() {
                                     <button
                                       type="button"
                                       onClick={() => setLitWorkDialog({ id: dbWork.id, title: dbWork.title })}
-                                      className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-background text-[10px] font-black uppercase tracking-[0.14em] transition-all hover:scale-[1.02]"
-                                      style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 10px #7FEFFF55" }}
+                                      className="shrink-0 inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-background text-sm font-bold transition-all hover:scale-[1.02]"
+                                      style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF" }}
                                       data-testid={`button-notes-${w.id}`}
                                     >
                                       <FileText className="w-3 h-3" />
@@ -1937,8 +1940,8 @@ export default function SubjectDetailPage() {
                                       <button
                                         type="button"
                                         onClick={() => setLitWorkDialog({ id: dbWork.id, title: dbWork.title })}
-                                        className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-background text-[10px] font-black uppercase tracking-[0.14em] transition-all hover:scale-[1.02]"
-                                        style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 10px #7FEFFF55" }}
+                                        className="shrink-0 inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-background text-sm font-bold transition-all hover:scale-[1.02]"
+                                        style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF" }}
                                         data-testid={`button-view-lit-${cat.type}`}
                                       >
                                         <FileText className="w-3 h-3" />

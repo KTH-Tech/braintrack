@@ -768,50 +768,94 @@ function buildWeeklyProgressPayload(opts: {
         cta: "See full progress",
       };
 
-  const bodyHtml = `
-      <p style="margin:0 0 20px;">${t.intro}</p>
+  const FONT = "Arial,Helvetica,sans-serif";
+  const RAINBOW_RULE =
+    "linear-gradient(90deg,#006BFF 0%,#00E5FF 17%,#22FF66 34%,#FFE600 50%,#FF8A00 67%,#FF2BD6 83%,#8A2BFF 100%)";
 
-      <!-- Headline stat -->
-      <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:0 0 18px;">
+  /** One metric cell: a #050608 panel with a big neon number and a white label.
+      Rendered as its own table so the panel keeps its padding + radius in
+      Outlook, with spacer <td>s between cells instead of unreliable margins. */
+  const metricCell = (value: string | number, label: string, colour: string, size: number) => `
+            <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+              <tr>
+                <td align="center" valign="middle"
+                    style="background:#050608;border:1px solid ${colour};border-radius:12px;padding:18px 6px;">
+                  <div style="font-family:${FONT};font-size:${size}px;font-weight:800;color:${colour};line-height:1.2;">${value}</div>
+                  <div style="font-family:${FONT};font-size:11px;font-weight:700;color:#ffffff;margin-top:6px;line-height:1.3;">${label}</div>
+                </td>
+              </tr>
+            </table>`;
+
+  /** A focus line: 3px neon left border, white copy. */
+  const focusRow = (colour: string, text: string, gap: number) => `
+      <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:0 0 ${gap}px;">
         <tr>
-          <td align="center" style="background:#050608;border:1.5px solid rgba(0,229,255,0.4);border-radius:14px;padding:24px 16px 20px;">
-            <div style="font-family:Arial,Helvetica,sans-serif;font-size:48px;line-height:1;font-weight:800;color:#00E5FF;">${questionsAnswered}</div>
-            <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:700;color:#ffffff;margin-top:8px;letter-spacing:1.5px;text-transform:uppercase;">${t.heroLabel}</div>
+          <td width="3" style="background:${colour};font-size:0;line-height:0;">&nbsp;</td>
+          <td style="padding:2px 0 2px 14px;font-family:${FONT};font-size:14px;line-height:1.6;color:#ffffff;">${text}</td>
+        </tr>
+      </table>`;
+
+  const bodyHtml = `
+      <p style="margin:0 0 22px;">${t.intro}</p>
+
+      <!-- Headline stat: the one number that carries the week -->
+      <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:0 0 14px;">
+        <tr>
+          <td style="background:#050608;border:2px solid #00E5FF;border-radius:16px;padding:0;">
+            <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+              <tr>
+                <td style="height:4px;background:${RAINBOW_RULE};font-size:0;line-height:0;border-radius:14px 14px 0 0;">&nbsp;</td>
+              </tr>
+              <tr>
+                <td align="center" style="padding:26px 16px 22px;">
+                  <div style="font-family:${FONT};font-size:52px;line-height:1;font-weight:800;color:#00E5FF;">${questionsAnswered}</div>
+                  <div style="font-family:${FONT};font-size:12px;font-weight:700;color:#ffffff;margin-top:10px;letter-spacing:1.5px;text-transform:uppercase;">${t.heroLabel}</div>
+                </td>
+              </tr>
+            </table>
           </td>
         </tr>
       </table>
 
       <!-- This-week metrics: 3-column neon number row -->
-      <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:0 0 28px;">
+      <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:0 0 30px;">
         <tr>
-          <td align="center" width="33%" valign="top" style="padding:10px 4px;">
-            <div style="font-family:Arial,Helvetica,sans-serif;font-size:28px;font-weight:800;color:#22FF66;line-height:1.15;">${topicsCovered}</div>
-            <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:600;color:#ffffff;margin-top:5px;">${t.topicsLabel}</div>
+          <td width="32%" valign="top">${metricCell(topicsCovered, t.topicsLabel, "#22FF66", 28)}
           </td>
-          <td align="center" width="34%" valign="top" style="padding:10px 4px;border-left:1px solid rgba(0,229,255,0.3);border-right:1px solid rgba(0,229,255,0.3);">
-            <div style="font-family:Arial,Helvetica,sans-serif;font-size:28px;font-weight:800;color:#FFE600;line-height:1.15;">${timeStr}</div>
-            <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:600;color:#ffffff;margin-top:5px;">${t.timeLabel}</div>
+          <td width="2%" style="font-size:0;line-height:0;">&nbsp;</td>
+          <td width="32%" valign="top">${metricCell(timeStr, t.timeLabel, "#FFE600", 28)}
           </td>
-          <td align="center" width="33%" valign="top" style="padding:10px 4px;">
-            <div style="font-family:Arial,Helvetica,sans-serif;font-size:19px;font-weight:800;color:#FF2BD6;line-height:1.3;">${subjectEsc}</div>
-            <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:600;color:#ffffff;margin-top:6px;">${t.subjectLabel}</div>
+          <td width="2%" style="font-size:0;line-height:0;">&nbsp;</td>
+          <td width="32%" valign="top">${metricCell(subjectEsc, t.subjectLabel, "#FF2BD6", 17)}
           </td>
         </tr>
       </table>
 
-      <!-- Focus list: neon left-border lines -->
-      <div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:800;color:#ffffff;letter-spacing:1.2px;text-transform:uppercase;margin:0 0 12px;">${t.focusHeading}</div>
-      <div style="border-left:3px solid #FF8A00;padding-left:14px;margin:0 0 10px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#ffffff;">${t.focus1}</div>
-      <div style="border-left:3px solid #8A2BFF;padding-left:14px;margin:0 0 28px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#ffffff;">${t.focus2}</div>
+      <!-- Focus list: 3px neon left-border rows -->
+      <div style="font-family:${FONT};font-size:13px;font-weight:800;color:#ffffff;letter-spacing:1.2px;text-transform:uppercase;margin:0 0 14px;">${t.focusHeading}</div>
+${focusRow("#FF8A00", t.focus1, 10)}
+${focusRow("#8A2BFF", t.focus2, 30)}
 
-      <!-- Compact CTA -->
+      <!-- Single compact CTA -->
       <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:0 0 8px;">
         <tr>
           <td align="center">
+            <!--[if mso]>
+            <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"
+              href="${dashboardUrl}" style="height:44px;v-text-anchor:middle;width:210px;" arcsize="27%"
+              stroke="t" strokecolor="#00E5FF" fillcolor="#006BFF">
+              <w:anchorlock/>
+              <center style="color:#ffffff;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;">
+                ${t.cta}
+              </center>
+            </v:roundrect>
+            <![endif]-->
+            <!--[if !mso]><!-->
             <a href="${dashboardUrl}" target="_blank"
-               style="display:inline-block;background:#006BFF;color:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;text-decoration:none;padding:12px 28px;border-radius:12px;border:2px solid #00E5FF;">
+               style="display:inline-block;background:#006BFF;color:#ffffff;font-family:${FONT};font-size:14px;font-weight:700;text-decoration:none;padding:12px 28px;border-radius:12px;border:2px solid #00E5FF;letter-spacing:0.3px;mso-hide:all;">
               ${t.cta}
             </a>
+            <!--<![endif]-->
           </td>
         </tr>
       </table>

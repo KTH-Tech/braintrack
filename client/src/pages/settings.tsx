@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
@@ -562,24 +561,23 @@ export default function SettingsPage() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={toggleLanguage}
-                  className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 bg-black text-white hover:text-white"
-                  style={{ border: "1px solid rgba(255,255,255,0.18)" }}
+                  className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 bg-black text-sm font-bold"
+                  style={{ color: "#C6A4FF", border: "1.5px solid #C6A4FF" }}
                   data-testid="button-language-toggle"
                 >
                   <Globe className="h-3.5 w-3.5" />
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em]">{language === "en" ? "EN" : "AF"}</span>
+                  <span>{language === "en" ? "EN" : "AF"}</span>
                 </button>
                 <Link href="/dashboard">
                   <button
-                    className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black font-black text-[10px] uppercase tracking-[0.2em]"
+                    className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 bg-black font-bold text-sm"
                     style={{
                       color: "#7FEFFF",
-                      border: "1px solid #7FEFFF",
-                      boxShadow: "0 0 10px rgba(127,239,255,0.4)",
+                      border: "1.5px solid #7FEFFF",
                     }}
                     data-testid="button-dashboard"
                   >
-                    <ArrowLeft className="w-3 h-3" />
+                    <ArrowLeft className="w-4 h-4" />
                     {t.dashboardBtn}
                   </button>
                 </Link>
@@ -753,12 +751,10 @@ export default function SettingsPage() {
                   <button
                     onClick={handleRequestOtp}
                     disabled={!newPhone || requestOtpMutation.isPending}
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-black font-bold text-sm disabled:opacity-40"
+                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm disabled:opacity-40"
                     style={{
-                      color: "#7FEFFF",
-                      border: "1.5px solid #7FEFFF",
-                      boxShadow: "0 0 14px rgba(127,239,255,0.45)",
-                      textShadow: "0 0 6px rgba(127,239,255,0.5)",
+                      background: "#7FEFFF",
+                      color: "#0a0a0a",
                     }}
                     data-testid="button-request-otp"
                   >
@@ -819,8 +815,8 @@ export default function SettingsPage() {
                         setStep("input");
                         setOtpCode("");
                       }}
-                      className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-black font-bold text-sm text-white hover:text-white"
-                      style={{ border: "1.5px solid #fff" }}
+                      className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-black font-bold text-sm"
+                      style={{ color: "#C6A4FF", border: "1.5px solid #C6A4FF" }}
                       data-testid="button-cancel-verify"
                     >
                       {t.cancel}
@@ -828,12 +824,10 @@ export default function SettingsPage() {
                     <button
                       onClick={handleVerifyOtp}
                       disabled={otpCode.length !== 6 || verifyOtpMutation.isPending}
-                      className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-black font-bold text-sm disabled:opacity-40"
+                      className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm disabled:opacity-40"
                       style={{
-                        color: "#7FEFFF",
-                        border: "1.5px solid #7FEFFF",
-                        boxShadow: "0 0 14px rgba(127,239,255,0.45)",
-                        textShadow: "0 0 6px rgba(127,239,255,0.5)",
+                        background: "#7FEFFF",
+                        color: "#0a0a0a",
                       }}
                       data-testid="button-verify-otp"
                     >
@@ -854,7 +848,8 @@ export default function SettingsPage() {
                   <button
                     onClick={() => requestOtpMutation.mutate(pendingPhone)}
                     disabled={requestOtpMutation.isPending}
-                    className="w-full text-xs font-bold text-white hover:text-white py-2 disabled:opacity-40 underline underline-offset-2"
+                    className="w-full inline-flex items-center justify-center px-4 py-2 rounded-xl bg-black font-bold text-sm disabled:opacity-40"
+                    style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF" }}
                     data-testid="button-resend-otp"
                   >
                     {t.resendCode}
@@ -894,7 +889,6 @@ export default function SettingsPage() {
                               className="flex items-center gap-3 p-3 rounded-xl bg-black text-left transition-all"
                               style={{
                                 border: active ? "1.5px solid #6FA8FF" : "1px solid rgba(255,255,255,0.12)",
-                                boxShadow: active ? "0 0 14px rgba(111,168,255,0.35), inset 0 0 10px rgba(111,168,255,0.12)" : "none",
                               }}
                               data-testid={`subject-chip-${subject.id}`}
                             >
@@ -928,15 +922,14 @@ export default function SettingsPage() {
                           ? `${t.selectAtLeast4} (${selectedSubjects.length}/4)`
                           : `${selectedSubjects.length} ${t.subjectsSelectedLabel}`}
                       </p>
-                      <Button
+                      <button
                         type="button"
                         onClick={() => updateSubjectsMutation.mutate(selectedSubjects)}
                         disabled={!canSave}
-                        className="px-4 py-2 rounded-xl text-sm font-bold normal-case tracking-normal bg-black inline-flex items-center justify-center gap-2 disabled:opacity-40"
+                        className="px-5 py-2.5 rounded-xl text-sm font-bold normal-case tracking-normal inline-flex items-center justify-center gap-2 disabled:opacity-40"
                         style={{
-                          color: "#6FA8FF",
-                          border: "1.5px solid #6FA8FF",
-                          boxShadow: "0 0 16px rgba(111,168,255,0.3)",
+                          background: "#7FEFFF",
+                          color: "#0a0a0a",
                         }}
                         data-testid="button-save-subjects"
                       >
@@ -948,7 +941,7 @@ export default function SettingsPage() {
                             {t.save}
                           </>
                         )}
-                      </Button>
+                      </button>
                     </div>
                   </div>
                 );
@@ -1045,15 +1038,14 @@ export default function SettingsPage() {
                     <p className="text-[11px] text-white">
                       {Object.values(prelimDates).filter(Boolean).length} {t.datesSet}
                     </p>
-                    <Button
+                    <button
                       type="button"
                       onClick={savePrelims}
                       disabled={!prelimDirty || updatePrelimsMutation.isPending}
-                      className="px-4 py-2 rounded-xl text-sm font-bold normal-case tracking-normal bg-black inline-flex items-center justify-center gap-2 disabled:opacity-40"
+                      className="px-5 py-2.5 rounded-xl text-sm font-bold normal-case tracking-normal inline-flex items-center justify-center gap-2 disabled:opacity-40"
                       style={{
-                        color: "#7FEFFF",
-                        border: "1.5px solid #7FEFFF",
-                        boxShadow: "0 0 16px rgba(127,239,255,0.3)",
+                        background: "#7FEFFF",
+                        color: "#0a0a0a",
                       }}
                       data-testid="button-save-prelims"
                     >
@@ -1065,7 +1057,7 @@ export default function SettingsPage() {
                           {t.save}
                         </>
                       )}
-                    </Button>
+                    </button>
                   </div>
                 </div>
               );
@@ -1131,8 +1123,6 @@ export default function SettingsPage() {
                 style={{
                   color: "#FF9FE5",
                   border: "1.5px solid #FF9FE5",
-                  boxShadow: "0 0 14px rgba(255,159,229,0.45)",
-                  textShadow: "0 0 6px rgba(255,159,229,0.5)",
                 }}
                 data-testid="button-copy-referral"
               >
@@ -1209,7 +1199,7 @@ export default function SettingsPage() {
                 }}
                 disabled={!newActivity.trim()}
                 className="shrink-0 w-9 h-9 rounded-xl bg-black flex items-center justify-center disabled:opacity-50"
-                style={{ color: "#FFF29E", border: "1.5px solid #FFF29E", boxShadow: "0 0 16px rgba(255,242,158,0.3)" }}
+                style={{ color: "#FFF29E", border: "1.5px solid #FFF29E" }}
                 data-testid="button-add-activity"
               >
                 <Plus className="w-4 h-4" />
@@ -1251,8 +1241,8 @@ export default function SettingsPage() {
                 toast({ title: t.activitiesSaved, description: `${activities.length} ${t.activitiesSavedDesc}` });
               }}
               disabled={activities.length === 0}
-              className="px-4 py-2 rounded-xl bg-black font-bold text-sm inline-flex items-center justify-center gap-2 disabled:opacity-40"
-              style={{ color: "#FFF29E", border: "1.5px solid #FFF29E", boxShadow: "0 0 12px rgba(255,242,158,0.28)" }}
+              className="px-5 py-2.5 rounded-xl font-bold text-sm inline-flex items-center justify-center gap-2 disabled:opacity-40"
+              style={{ background: "#7FEFFF", color: "#0a0a0a" }}
               data-testid="button-save-activities"
             >
               <Save className="w-4 h-4" />
