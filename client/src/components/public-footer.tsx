@@ -100,11 +100,24 @@ export function PublicFooter() {
           </div>
         </div>
 
-        {/* Micro line */}
-        <div className="mt-5 pt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1"
+        {/* Micro line + Powered by KTH Tech */}
+        <div className="mt-5 pt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
           style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
           <span className="text-[11px] text-white">{t.copyright}</span>
-          <span className="text-[11px] text-white">{t.popia}</span>
+          <div className="flex items-center gap-3">
+            <span className="text-[11px] text-white">{t.popia}</span>
+            <a
+              href="https://kth-tech.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-testid="footer-kth-logo"
+              className="inline-flex items-center gap-1.5 text-[11px] font-bold text-white hover:text-white transition-opacity opacity-90 hover:opacity-100"
+              aria-label="Powered by KTH Tech"
+            >
+              <img src="/kth-tech-logo.svg" alt="" className="w-4 h-4" />
+              <span>{isAf ? "Aangedryf deur KTH Tech" : "Powered by KTH Tech"}</span>
+            </a>
+          </div>
         </div>
       </div>
     </footer>
