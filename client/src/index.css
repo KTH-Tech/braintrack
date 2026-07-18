@@ -273,8 +273,10 @@ h1.no-rainbow *, .no-rainbow * {
   100% { opacity: 1; transform: translateY(0); }
 }
 .bt-rise {
-  opacity: 0;
-  animation: bt-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  /* Resting state ALWAYS visible — if the animation is blocked/skipped the
+     content must never stay invisible (this bug blanked the landing hero). */
+  opacity: 1;
+  animation: bt-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
 .bt-rise-1 { animation-delay: 0.05s; }
 .bt-rise-2 { animation-delay: 0.15s; }
