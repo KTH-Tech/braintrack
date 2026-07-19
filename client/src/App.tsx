@@ -165,6 +165,8 @@ const StorePage = lazy(() => import("@/pages/store"));
 const JourneyPage = lazy(() => import("@/pages/journey"));
 const SchoolOnboardingPage = lazy(() => import("@/pages/school-onboarding"));
 const SchoolDashboardPage = lazy(() => import("@/pages/school-dashboard"));
+// Minor learners land here until their parent grants consent + adds a card.
+const WaitingForParentPage = lazy(() => import("@/pages/waiting-for-parent"));
 
 function PageLoader() {
   return (
@@ -262,11 +264,14 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   // Fetching is suppressed until the user is authenticated, non-admin, and
   // has completed onboarding so we never hit the endpoint prematurely.
   const isLearner = isAuthenticated && user?.role !== "admin" && user?.role !== "parent";
-  const { data: subscriptionStatus, isLoading: subLoading } = useQuery<{ active: boolean; status: string | null; trialEndsAt: string | null }>({
+  const { data: subscriptionStatus, isLoading: subLoading } = useQuery<{ active: boolean; status: string | null; trialEndsAt: string | null; parentFlow?: { isMinor: boolean; consentGranted: boolean; cardCaptured: boolean; pending: boolean } | null }>({
     queryKey: ["/api/user/subscription-status"],
     enabled: isLearner && onboardingComplete === true,
   });
   const subscriptionActive = subscriptionStatus?.active;
+  // Minor learners with consent/card still pending never see /subscribe —
+  // they wait on the parent gate instead (consent + card starts the trial).
+  const parentGatePending = Boolean(subscriptionStatus?.parentFlow?.pending);
 
   if (authLoading || (isAuthenticated && onboardingLoading)) {
     return <PageLoader />;
@@ -299,7 +304,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (subLoading) return <PageLoader />;
 
   if (!subscriptionActive) {
-    window.location.href = "/subscribe";
+    window.location.href = parentGatePending ? "/waiting-for-parent" : "/subscribe";
     return null;
   }
 
@@ -559,7 +564,7 @@ function SubscribeRoute({ children }: { children: React.ReactNode }) {
     enabled: isAuthenticated,
   });
 
-  const { data: subscriptionStatus, isLoading: subLoading } = useQuery<{ active: boolean; status: string | null; trialEndsAt: string | null }>({
+  const { data: subscriptionStatus, isLoading: subLoading } = useQuery<{ active: boolean; status: string | null; trialEndsAt: string | null; parentFlow?: { isMinor: boolean; consentGranted: boolean; cardCaptured: boolean; pending: boolean } | null }>({
     queryKey: ["/api/user/subscription-status"],
     enabled: isAuthenticated && onboardingComplete === true,
   });
@@ -572,6 +577,12 @@ function SubscribeRoute({ children }: { children: React.ReactNode }) {
   // Already fully subscribed learners have nothing to do on /subscribe.
   if (isAuthenticated && user?.role !== "admin" && onboardingComplete && subscriptionActive) {
     window.location.href = "/dashboard";
+    return null;
+  }
+
+  // Minors may not self-activate a trial — the parent gate owns activation.
+  if (isAuthenticated && user?.role !== "admin" && onboardingComplete && subscriptionStatus?.parentFlow?.pending) {
+    window.location.href = "/waiting-for-parent";
     return null;
   }
 
@@ -967,6 +978,13 @@ function Router() {
           </ParentOnboardingRoute>
         </Route>
         <Route path="/parent-consent" component={ParentConsentPage} />
+
+        {/* Minor learners wait here until parent consent + card capture. */}
+        <Route path="/waiting-for-parent">
+          <LearnerOnlyRoute>
+            <WaitingForParentPage />
+          </LearnerOnlyRoute>
+        </Route>
 
         <Route path="/school/dashboard">
           <RequireSchoolAdminRoute>

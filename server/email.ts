@@ -344,7 +344,7 @@ function buildConsentRequestPayload(opts: {
       bodyHtml: `
         <p>Hallo,</p>
         <p><strong style="color:#9FF5E8;">${learnerName}</strong> het by BrainTrack aangemeld — 'n leerstudieplatform vir Graad 12 NSC-eksamen — en het jou toestemming as ouer/voog nodig om volle toegang te aktiveer.</p>
-        <p>Klik die knoppie hieronder om toestemming te bevestig:</p>
+        <p>Klik die knoppie hieronder om toestemming te bevestig. As deel van die goedkeuring voeg jy 'n kaart by (ons hef 'n eenmalige <strong>R1.00</strong> verifikasie). Die <strong>14-dae gratis proeftydperk</strong> begin dadelik daarna, en eers ná die 14 dae word <strong>R169/maand</strong> gehef — kanselleer enige tyd in die app.</p>
         <p style="font-size:13px;color:#ffffff;word-break:break-all;">
           Of plak hierdie skakel in jou blaaier:<br/>
           <a href="${consentUrl}" style="color:#9FD8FF;">${consentUrl}</a>
@@ -360,7 +360,7 @@ function buildConsentRequestPayload(opts: {
     bodyHtml: `
       <p>Hi there,</p>
       <p><strong style="color:#9FF5E8;">${learnerName}</strong> has signed up for BrainTrack — a Grade 12 NSC exam preparation platform — and needs your consent as their parent/guardian to activate full access.</p>
-      <p>Click the button below to confirm your consent:</p>
+      <p>Click the button below to confirm your consent. As part of approving, you'll add a card (we run a once-off <strong>R1.00</strong> verification). The <strong>14-day free trial</strong> starts immediately afterwards, and only after those 14 days is <strong>R169/month</strong> billed — cancel anytime in the app.</p>
       <p style="font-size:13px;color:#ffffff;word-break:break-all;">
         Or paste this link into your browser:<br/>
         <a href="${consentUrl}" style="color:#9FD8FF;">${consentUrl}</a>

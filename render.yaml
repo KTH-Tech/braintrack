@@ -122,6 +122,27 @@ services:
       - key: CRON_SECRET
         sync: false
 
+  # ── Cron: Day-14 Trial Autocharge — runs daily at 05:00 UTC (07:00 SAST) ──
+  # Charges expired trials (consent + card captured via Paystack) R169 and
+  # moves them onto the recurring Paystack plan. Idempotent server-side.
+  - type: cron
+    name: braintrack-charge-trials
+    runtime: node
+    region: frankfurt
+    schedule: "0 5 * * *"
+    buildCommand: echo "skip build"
+    startCommand: >
+      curl -sf -X POST
+      -H "Authorization: Bearer $CRON_SECRET"
+      -H "Content-Type: application/json"
+      "${APP_URL}/api/cron/charge-trials"
+      | node -e "process.stdin.resume(); process.stdin.on('data', d => console.log(d.toString()));"
+    envVars:
+      - key: APP_URL
+        sync: false
+      - key: CRON_SECRET
+        sync: false
+
   # ── Cron: SMS Retries — runs every hour ────────────────────────────────────
   - type: cron
     name: braintrack-sms-retries

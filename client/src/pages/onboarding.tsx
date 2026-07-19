@@ -387,6 +387,14 @@ const T = {
     termsAnd: "and",
     termsLink: "Terms of Service",
     privacyLink: "Privacy Policy",
+    dobEyebrow: "when did you land? 🛬",
+    dobLabel: "Date of birth",
+    dobDayPh: "DD",
+    dobMonthPh: "MM",
+    dobYearPh: "YYYY",
+    dobHint: "Day / month / year — we only store a scrambled fingerprint of this, never the raw date.",
+    dobInvalid: "Hmm, that date doesn't look right 🤔",
+    dobMismatch: "That doesn't match the first 6 digits of your ID number 👀 — double-check both.",
   },
   af: {
     pageTitle: "Studieprofiel",
@@ -478,8 +486,59 @@ const T = {
     termsAnd: "en",
     termsLink: "Bepalings",
     privacyLink: "Privaatheidsbeleid",
+    dobEyebrow: "wanneer het jy geland? 🛬",
+    dobLabel: "Geboortedatum",
+    dobDayPh: "DD",
+    dobMonthPh: "MM",
+    dobYearPh: "JJJJ",
+    dobHint: "Dag / maand / jaar — ons stoor net 'n geskommelde vingerafdruk hiervan, nooit die rou datum nie.",
+    dobInvalid: "Hmm, daai datum lyk nie reg nie 🤔",
+    dobMismatch: "Dit pas nie by die eerste 6 syfers van jou ID-nommer nie 👀 — kontroleer albei.",
   },
 } as const;
+
+// ── Fun bits: step-completion cheers + DOB helpers ──────────────────────────
+const CHEERS = {
+  en: ["nice one 🔥", "you're cooking ⚡", "big brain move 🧠", "smooth 😎", "keep it rolling 🛹"],
+  af: ["mooi so 🔥", "jy's aan die brand ⚡", "groot brein-skuif 🧠", "glad gedoen 😎", "hou die pas 🛹"],
+} as const;
+const PHASE_CHEERS = {
+  en: { vark: "level up 🎮", subjects: "almost there ⚡", school: "home stretch 🏁", parent_consent: "last one, promise 🤞" },
+  af: { vark: "volgende vlak 🎮", subjects: "amper daar ⚡", school: "pylvak 🏁", parent_consent: "laaste een, belowe 🤞" },
+} as const;
+const CONFETTI_COLORS = ["#9FF5E8", "#9FD8FF", "#FFB7E5", "#C5B3FF", "#FFE29A"];
+
+/** Build yyyy-mm-dd from the 3 DOB fields; null if incomplete/not a real date. */
+function buildIsoDob(dd: string, mm: string, yyyy: string): string | null {
+  if (dd.length < 1 || mm.length < 1 || yyyy.length !== 4) return null;
+  const d = parseInt(dd, 10);
+  const m = parseInt(mm, 10);
+  const y = parseInt(yyyy, 10);
+  if (!Number.isFinite(d) || !Number.isFinite(m) || !Number.isFinite(y)) return null;
+  if (y < 1900 || y > new Date().getFullYear()) return null;
+  const date = new Date(Date.UTC(y, m - 1, d));
+  if (date.getUTCFullYear() !== y || date.getUTCMonth() !== m - 1 || date.getUTCDate() !== d) return null;
+  return `${String(y).padStart(4, "0")}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+}
+
+/** Does the DOB agree with the SA ID number's YYMMDD prefix? */
+function dobMatchesIdNumber(isoDob: string, idNumber: string): boolean {
+  if (!/^\d{13}$/.test(idNumber)) return true; // ID validated separately
+  const yymmdd = isoDob.slice(2, 4) + isoDob.slice(5, 7) + isoDob.slice(8, 10);
+  return idNumber.slice(0, 6) === yymmdd;
+}
+
+/** Age in whole years as of today. */
+function ageFromIsoDob(isoDob: string): number {
+  const dob = new Date(`${isoDob}T00:00:00Z`);
+  const now = new Date();
+  let age = now.getUTCFullYear() - dob.getUTCFullYear();
+  const before =
+    now.getUTCMonth() < dob.getUTCMonth() ||
+    (now.getUTCMonth() === dob.getUTCMonth() && now.getUTCDate() < dob.getUTCDate());
+  if (before) age -= 1;
+  return age;
+}
 
 export default function OnboardingPage() {
   const [, setLocation] = useLocation();
@@ -497,6 +556,23 @@ export default function OnboardingPage() {
   const [firstName, setFirstName] = useState<string>(persisted?.firstName ?? "");
   const [lastName, setLastName] = useState<string>(persisted?.lastName ?? "");
   const [idNumber, setIdNumber] = useState<string>(persisted?.idNumber ?? "");
+  // Date of birth — deliberately NOT persisted to localStorage (privacy): the
+  // raw date only ever lives in memory and in the single submit request. The
+  // server stores a salted hash + isMinor flag, never the plaintext date.
+  const [dobDay, setDobDay] = useState("");
+  const [dobMonth, setDobMonth] = useState("");
+  const [dobYear, setDobYear] = useState("");
+  const dobMonthRef = useRef<HTMLInputElement>(null);
+  const dobYearRef = useRef<HTMLInputElement>(null);
+  // Step-completion micro-celebration (marker-font cheer + confetti burst).
+  const [cheer, setCheer] = useState<string | null>(null);
+  const cheerTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const celebrate = (text: string) => {
+    if (cheerTimer.current) clearTimeout(cheerTimer.current);
+    setCheer(text);
+    cheerTimer.current = setTimeout(() => setCheer(null), 1500);
+  };
+  useEffect(() => () => { if (cheerTimer.current) clearTimeout(cheerTimer.current); }, []);
   const [schoolQuery, setSchoolQuery] = useState<string>(persisted?.schoolName ?? "");
   const [schoolResults, setSchoolResults] = useState<Array<{ id: number; name: string; province: string | null }>>([]);
   const [schoolSearching, setSchoolSearching] = useState(false);
@@ -643,17 +719,28 @@ export default function OnboardingPage() {
         ...(firstName.trim() ? { firstName: firstName.trim() } : {}),
         ...(lastName.trim() ? { lastName: lastName.trim() } : {}),
         ...(idNumber.trim() ? { idNumber: idNumber.trim() } : {}),
+        // DOB is transmitted once and hashed server-side — it is intentionally
+        // NOT part of rawAnswersJson and never persisted in plaintext.
+        ...((() => {
+          const isoDob = buildIsoDob(dobDay, dobMonth, dobYear);
+          return isoDob ? { dateOfBirth: isoDob } : {};
+        })()),
       });
     },
     onSuccess: () => {
       try { window.localStorage.removeItem(ONBOARDING_STORAGE_KEY); } catch { /* ignore */ }
       queryClient.invalidateQueries({ queryKey: ["/api/user/onboarding"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user/subscription-status"] });
       const tStr = T[language];
       toast({
         title: tStr.profileCreated,
         description: tStr.profileCreatedDesc,
       });
-      setLocation("/subscribe");
+      // Minors can't self-activate a trial — they wait for the parent to
+      // approve + add a card; adults go on to /subscribe as before.
+      const isoDob = buildIsoDob(dobDay, dobMonth, dobYear);
+      const minor = isoDob ? ageFromIsoDob(isoDob) < 18 : false;
+      setLocation(minor ? "/waiting-for-parent" : "/subscribe");
     },
     onError: () => {
       const tStr = T[language];
@@ -709,11 +796,14 @@ export default function OnboardingPage() {
       return varkPrimary !== null;
     }
     if (phase === "school") {
+      const isoDob = buildIsoDob(dobDay, dobMonth, dobYear);
       return (
         schoolName.trim().length >= 2 &&
         firstName.trim().length >= 1 &&
         lastName.trim().length >= 1 &&
-        isValidSaIdNumber(idNumber)
+        isValidSaIdNumber(idNumber) &&
+        isoDob !== null &&
+        dobMatchesIdNumber(isoDob, idNumber)
       );
     }
     if (phase === "parent_consent") {
@@ -736,15 +826,24 @@ export default function OnboardingPage() {
   const handleNext = () => {
     if (phase === "questions") {
       if (currentStep < ONBOARDING_QUESTIONS.length - 1) {
+        // Cheer at the end of each question category (every 4th step).
+        if ((currentStep + 1) % 4 === 0) {
+          const cheers = CHEERS[language];
+          celebrate(cheers[Math.floor(currentStep / 4) % cheers.length]);
+        }
         setCurrentStep((prev) => prev + 1);
       } else {
+        celebrate(PHASE_CHEERS[language].vark);
         setPhase("vark");
       }
     } else if (phase === "vark") {
+      celebrate(PHASE_CHEERS[language].subjects);
       setPhase("subjects");
     } else if (phase === "subjects") {
+      celebrate(PHASE_CHEERS[language].school);
       setPhase("school");
     } else if (phase === "school") {
+      celebrate(PHASE_CHEERS[language].parent_consent);
       setPhase("parent_consent");
     } else {
       submitMutation.mutate();
@@ -896,7 +995,37 @@ export default function OnboardingPage() {
               <span>{t.progressBarLabel}</span>
             </div>
             <div className="h-3 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)" }}>
-              <div className="h-full rounded-full transition-all" style={{ width: `${progress}%`, background: "#6EE7F9", boxShadow: "0 0 8px rgba(110,231,249,0.5)" }} />
+              <div className="h-full rounded-full transition-all" style={{ width: `${progress}%`, background: "linear-gradient(90deg,#9FF5E8,#9FD8FF,#C5B3FF)", boxShadow: "0 0 10px rgba(159,245,232,0.55)" }} />
+            </div>
+            {/* Phase dots — pastel glow marks where you are in the journey. */}
+            <div className="flex items-center justify-center gap-2 pt-1" data-testid="onboarding-phase-dots" aria-hidden>
+              {(["questions", "vark", "subjects", "school", "parent_consent"] as Phase[]).map((p, i) => {
+                const order: Phase[] = ["questions", "vark", "subjects", "school", "parent_consent"];
+                const idx = order.indexOf(phase);
+                const dotDone = i < idx;
+                const dotActive = i === idx;
+                return (
+                  <span
+                    key={p}
+                    style={{
+                      width: dotActive ? 22 : 8,
+                      height: 8,
+                      borderRadius: 999,
+                      transition: "all .3s cubic-bezier(.22,1,.36,1)",
+                      background: dotDone
+                        ? CONFETTI_COLORS[i]
+                        : dotActive
+                        ? "linear-gradient(90deg,#9FF5E8,#C5B3FF)"
+                        : "rgba(255,255,255,.15)",
+                      boxShadow: dotActive
+                        ? "0 0 10px rgba(159,245,232,.6)"
+                        : dotDone
+                        ? `0 0 6px ${CONFETTI_COLORS[i]}66`
+                        : "none",
+                    }}
+                  />
+                );
+              })}
             </div>
           </div>
 
@@ -1333,6 +1462,74 @@ export default function OnboardingPage() {
                       <p className="text-xs text-white">{t.idNumberHint}</p>
                     )}
                   </div>
+
+                  {/* Date of birth — playful DD/MM/YYYY entry with auto-advance. */}
+                  <div className="space-y-2" data-testid="dob-block">
+                    <p style={{ fontFamily: "'Permanent Marker',cursive", color: "#FFE29A", fontSize: 16, transform: "rotate(-2deg)", margin: 0 }}>
+                      {t.dobEyebrow}
+                    </p>
+                    <Label className="text-sm font-semibold" htmlFor="onboarding-dob-day">{t.dobLabel}</Label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        id="onboarding-dob-day"
+                        value={dobDay}
+                        onChange={(e) => {
+                          const v = e.target.value.replace(/\D/g, "").slice(0, 2);
+                          setDobDay(v);
+                          if (v.length === 2) dobMonthRef.current?.focus();
+                        }}
+                        placeholder={t.dobDayPh}
+                        inputMode="numeric"
+                        maxLength={2}
+                        autoComplete="bday-day"
+                        className="h-12 w-16 text-center text-lg font-semibold bg-background"
+                        data-testid="input-dob-day"
+                      />
+                      <span className="text-xl font-black" style={{ color: "#C5B3FF" }}>/</span>
+                      <Input
+                        id="onboarding-dob-month"
+                        ref={dobMonthRef}
+                        value={dobMonth}
+                        onChange={(e) => {
+                          const v = e.target.value.replace(/\D/g, "").slice(0, 2);
+                          setDobMonth(v);
+                          if (v.length === 2) dobYearRef.current?.focus();
+                        }}
+                        placeholder={t.dobMonthPh}
+                        inputMode="numeric"
+                        maxLength={2}
+                        autoComplete="bday-month"
+                        className="h-12 w-16 text-center text-lg font-semibold bg-background"
+                        data-testid="input-dob-month"
+                      />
+                      <span className="text-xl font-black" style={{ color: "#C5B3FF" }}>/</span>
+                      <Input
+                        id="onboarding-dob-year"
+                        ref={dobYearRef}
+                        value={dobYear}
+                        onChange={(e) => setDobYear(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                        placeholder={t.dobYearPh}
+                        inputMode="numeric"
+                        maxLength={4}
+                        autoComplete="bday-year"
+                        className="h-12 w-24 text-center text-lg font-semibold bg-background"
+                        data-testid="input-dob-year"
+                      />
+                      <span className="text-2xl" aria-hidden>🎂</span>
+                    </div>
+                    {(() => {
+                      const complete = dobDay.length >= 1 && dobMonth.length >= 1 && dobYear.length === 4;
+                      if (!complete) return <p className="text-xs text-white">{t.dobHint}</p>;
+                      const isoDob = buildIsoDob(dobDay, dobMonth, dobYear);
+                      if (!isoDob) {
+                        return <p className="text-xs text-[#FFB7E5]" data-testid="text-dob-error">{t.dobInvalid}</p>;
+                      }
+                      if (isValidSaIdNumber(idNumber) && !dobMatchesIdNumber(isoDob, idNumber)) {
+                        return <p className="text-xs text-[#FFB7E5]" data-testid="text-dob-mismatch">{t.dobMismatch}</p>;
+                      }
+                      return <p className="text-xs text-[#94F7C5]" data-testid="text-dob-ok">✓ {t.dobLabel}</p>;
+                    })()}
+                  </div>
                 </div>
 
                 <div className="flex justify-between pt-4 gap-4">
@@ -1439,6 +1636,41 @@ export default function OnboardingPage() {
             </Card>
           )}
 
+          {/* Step-completion micro-celebration — marker cheer + confetti burst.
+              NOTE: the global animation kill-switch in index.css exempts only
+              elements whose INLINE style contains "bt-" — keep these inline. */}
+          {cheer && (
+            <div className="fixed inset-x-0 top-24 z-50 flex justify-center pointer-events-none" data-testid="onboarding-cheer">
+              <div
+                style={{
+                  fontFamily: "'Permanent Marker',cursive",
+                  fontSize: 28,
+                  color: "#FFE29A",
+                  textShadow: "0 0 18px rgba(255,226,154,.45)",
+                  animation: "bt-pop .5s cubic-bezier(.22,1,.36,1) both",
+                }}
+              >
+                {cheer}
+              </div>
+              {CONFETTI_COLORS.map((c, i) => (
+                <span
+                  key={i}
+                  aria-hidden
+                  style={{
+                    position: "absolute",
+                    top: -6,
+                    left: `${36 + i * 7}%`,
+                    width: 8,
+                    height: 8,
+                    borderRadius: i % 2 ? 999 : 2,
+                    background: c,
+                    animation: `bt-confetti ${0.9 + i * 0.14}s ease-in ${i * 0.06}s both`,
+                  }}
+                />
+              ))}
+            </div>
+          )}
+
           {submitMutation.isPending && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 " data-testid="onboarding-loading-overlay">
               <div className="rounded-2xl border border-border bg-card p-8 text-center max-w-sm">
@@ -1454,6 +1686,23 @@ export default function OnboardingPage() {
           )}
         </div>
       </main>
+
+      {/* Keyframes for the "bt-" inline animations above (kill-switch safe). */}
+      <style>{`
+        @keyframes bt-pop {
+          0% { opacity: 0; transform: rotate(-2deg) scale(.6) translateY(10px); }
+          60% { opacity: 1; transform: rotate(-2deg) scale(1.08); }
+          100% { opacity: 1; transform: rotate(-2deg) scale(1); }
+        }
+        @keyframes bt-confetti {
+          0% { opacity: 1; transform: translateY(0) rotate(0deg); }
+          100% { opacity: 0; transform: translateY(130px) rotate(260deg); }
+        }
+        @keyframes bt-fadeup {
+          from { opacity: 0; transform: translateY(14px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 }

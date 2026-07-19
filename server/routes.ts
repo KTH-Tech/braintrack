@@ -16,7 +16,7 @@ import { eq, sql, and, desc, asc, isNull, isNotNull, or, gte, lt, lte, count, in
 import { alias } from "drizzle-orm/pg-core";
 import { setupAuth, registerAuthRoutes, isAuthenticated, rotateSigningKey, generateAccessToken, generateRefreshToken } from "./replit_integrations/auth";
 import { registerLocalAuthRoutes } from "./local-auth";
-import { registerPaystackRoutes } from "./paystack";
+import { registerPaystackRoutes, isPaystackConfigured, paystackFetch, recordEventOnce, applyCardCaptureSuccess } from "./paystack";
 import { authStorage } from "./replit_integrations/auth/storage";
 import OpenAI from "openai";
 import type { TranscriptionVerbose } from "openai/resources/audio/transcriptions";
@@ -1129,6 +1129,20 @@ const onboardingSchema = z.object({
     .refine((v) => v === undefined || isValidSaIdNumber(v), {
       message: "Invalid South African ID number",
     }),
+  // Date of birth (yyyy-mm-dd). NEVER persisted in plaintext — a salted
+  // SHA-256 (dobHash) + derived isMinor flag are stored on the users row and
+  // the raw value is discarded. Cross-checked against the ID number's YYMMDD
+  // prefix in the handler.
+  dateOfBirth: z
+    .string()
+    .trim()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Date of birth must be yyyy-mm-dd")
+    .optional()
+    .refine((v) => {
+      if (v === undefined) return true;
+      const d = new Date(`${v}T00:00:00Z`);
+      return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === v;
+    }, { message: "Invalid date of birth" }),
 }).strip();
 
 const tutorRequestSchema = z.object({
@@ -1739,14 +1753,28 @@ export async function registerRoutes(
       // Admin in preview-as-learner mode: return false so the admin can walk
       // the full subscriber-gated journey without a real subscription.
       if (u?.role === "admin" && (req as any).session?.previewAsLearner) {
-        return res.json({ active: false, status: null, trialEndsAt: null });
+        return res.json({ active: false, status: null, trialEndsAt: null, parentFlow: null });
       }
       const sub = await storage.getSubscription(userId);
       const active = await storage.hasActiveSubscription(userId);
+      // Parent consent + card-capture gate (minors only). Booleans only —
+      // authorization/customer codes NEVER leave the server.
+      const isMinor = Boolean((u as any)?.isMinor);
+      const consentGranted = Boolean((u as any)?.parentConsentGranted);
+      const cardCaptured = Boolean((sub as any)?.paystackAuthorizationCode);
       res.json({
         active,
         status: sub?.status ?? null,
         trialEndsAt: sub?.trialEndsAt ? sub.trialEndsAt.toISOString() : null,
+        parentFlow: {
+          isMinor,
+          consentRequested: Boolean((u as any)?.parentConsentRequestedAt),
+          consentGranted,
+          cardCaptured,
+          // A minor may not enter the app until their parent has granted
+          // consent AND captured a card (which is what starts the trial).
+          pending: isMinor && !active && !(consentGranted && cardCaptured),
+        },
       });
     } catch (error) {
       console.error("Error checking subscription status:", error);
@@ -2495,11 +2523,26 @@ export async function registerRoutes(
     }
   });
 
+  // Payment-credential columns that must NEVER be serialised to a client —
+  // Paystack authorization/customer codes are reusable charge tokens.
+  const SENSITIVE_SUBSCRIPTION_FIELDS = [
+    "paystackAuthorizationCode",
+    "paystackCustomerCode",
+    "netcashCardToken",
+    "netcashMandateId",
+  ] as const;
+  function toPublicSubscription<T extends Record<string, unknown> | null | undefined>(sub: T): T {
+    if (!sub) return sub;
+    const rest: Record<string, unknown> = { ...(sub as Record<string, unknown>) };
+    for (const f of SENSITIVE_SUBSCRIPTION_FIELDS) delete rest[f];
+    return rest as T;
+  }
+
   app.get("/api/user/subscription", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const subscription = await storage.getSubscription(userId);
-      res.json(subscription || null);
+      res.json(toPublicSubscription(subscription as any) || null);
     } catch (error) {
       console.error("Error fetching subscription:", error);
       res.status(500).json({ error: "Failed to fetch subscription" });
@@ -2510,8 +2553,29 @@ export async function registerRoutes(
   app.post("/api/onboarding", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const data = onboardingSchema.parse(req.body);
-      
+      const parsedOnboarding = onboardingSchema.parse(req.body);
+      // PRIVACY: the raw date of birth never reaches storage. It is consumed
+      // here (hash + isMinor) and dropped from everything that is persisted.
+      const { dateOfBirth, ...data } = parsedOnboarding;
+
+      // Cross-check DOB against the SA ID number's YYMMDD prefix.
+      if (dateOfBirth && data.idNumber) {
+        const dobYYMMDD = dateOfBirth.slice(2, 4) + dateOfBirth.slice(5, 7) + dateOfBirth.slice(8, 10);
+        if (data.idNumber.slice(0, 6) !== dobYYMMDD) {
+          return res.status(400).json({
+            error: "dob_id_mismatch",
+            message: "Date of birth does not match the ID number.",
+          });
+        }
+      }
+
+      // Defensive: never let a DOB-ish key ride along inside rawAnswersJson.
+      if (data.rawAnswersJson && typeof data.rawAnswersJson === "object") {
+        for (const k of ["dateOfBirth", "dob", "birthDate", "dobDay", "dobMonth", "dobYear"]) {
+          delete (data.rawAnswersJson as any)[k];
+        }
+      }
+
       // Extract selected subject IDs from subjectMarks in rawAnswersJson
       let selectedSubjects: number[] = [];
       if (data.rawAnswersJson && typeof data.rawAnswersJson === 'object') {
@@ -2550,6 +2614,21 @@ export async function registerRoutes(
         // SENSITIVE: stored on users.idNumber, never returned to any client
         // (stripped by toPublicUser / SENSITIVE_USER_FIELDS).
         if (data.idNumber) userPatch.idNumber = data.idNumber;
+        // DOB privacy: only the salted hash + the derived isMinor flag are
+        // persisted. The plaintext date is discarded after this block.
+        if (dateOfBirth) {
+          userPatch.dobHash = createHash("sha256")
+            .update(`${process.env.SESSION_SECRET ?? ""}:${dateOfBirth}`)
+            .digest("hex");
+          const dob = new Date(`${dateOfBirth}T00:00:00Z`);
+          const now = new Date();
+          let age = now.getUTCFullYear() - dob.getUTCFullYear();
+          const beforeBirthday =
+            now.getUTCMonth() < dob.getUTCMonth() ||
+            (now.getUTCMonth() === dob.getUTCMonth() && now.getUTCDate() < dob.getUTCDate());
+          if (beforeBirthday) age -= 1;
+          userPatch.isMinor = age < 18;
+        }
         if (data.schoolName) userPatch.schoolName = data.schoolName;
         if (typeof data.schoolId === "number") userPatch.schoolId = data.schoolId;
         if (typeof data.grade === "number") userPatch.grade = data.grade;
@@ -2804,7 +2883,17 @@ export async function registerRoutes(
 
       const existing = await storage.getSubscription(userId);
       if (existing && (existing.status === "active" || existing.status === "trial")) {
-        return res.json({ alreadyActive: true, subscription: existing });
+        return res.json({ alreadyActive: true, subscription: toPublicSubscription(existing as any) });
+      }
+      // Minors may NOT self-activate a trial. Their trial starts only when
+      // the parent grants consent AND captures a card on the parent-consent
+      // page (see /api/parent-consent/card-capture/*).
+      const trialUser = await authStorage.getUser(userId);
+      if ((trialUser as any)?.isMinor) {
+        return res.status(403).json({
+          error: "parent_consent_required",
+          message: "A parent or guardian must approve and add a card before the trial can start.",
+        });
       }
       // One-time trial eligibility: if a subscription already exists in any
       // post-trial state (lapsed / failed / pending / cancelled), the user
@@ -2814,7 +2903,7 @@ export async function registerRoutes(
         return res.status(409).json({
           error: "trial_already_used",
           message: "Your free trial has already been used. Please choose a payment method to reactivate your subscription.",
-          subscription: existing,
+          subscription: toPublicSubscription(existing as any),
         });
       }
 
@@ -4288,6 +4377,119 @@ export async function registerRoutes(
     } catch (err) {
       console.error("Error fetching parent consent status:", err);
       res.status(500).json({ error: "Failed to fetch consent status" });
+    }
+  });
+
+  // ── Parent consent + card capture (Paystack) ──────────────────────────────
+  // The consent email's JWT is the bearer of trust for both endpoints (same
+  // trust model as /api/onboarding/parent-consent/confirm). Card capture is a
+  // R1.00 card-only Paystack transaction (metadata purpose:"card_capture")
+  // whose authorization_code is stored for the day-14 trial conversion charge.
+  // Consent + card together are what start the learner's 14-day trial.
+  app.post("/api/parent-consent/card-capture/initialize", paymentLimiter, async (req, res) => {
+    try {
+      const body = z.object({ token: z.string().min(10).max(2000) }).parse(req.body);
+      const { verifyParentConsentToken } = await import("./parent-consent");
+      const result = verifyParentConsentToken(body.token);
+      if (!result.ok) return res.status(400).json({ error: result.reason });
+      if (!isPaystackConfigured()) {
+        return res.status(503).json({ error: "payments_unavailable", message: "Card capture is not available in this environment." });
+      }
+
+      const learnerUserId = result.learnerUserId;
+      const existingSub = await storage.getSubscription(learnerUserId);
+      const learner = await authStorage.getUser(learnerUserId);
+      if (!learner) return res.status(404).json({ error: "learner_not_found" });
+      if ((existingSub as any)?.paystackAuthorizationCode && (learner as any)?.parentConsentGranted) {
+        return res.json({ alreadyCaptured: true });
+      }
+
+      const appUrl = (process.env.APP_URL || publicBaseUrl(req)).replace(/\/+$/, "");
+      const callbackUrl = `${appUrl}/parent-consent?token=${encodeURIComponent(body.token)}&paystack=return`;
+      const data = await paystackFetch("/transaction/initialize", {
+        method: "POST",
+        body: JSON.stringify({
+          email: result.parentEmail,
+          // R1.00 verification charge — minor units. Yields a reusable
+          // authorization_code on charge.success.
+          amount: 100,
+          currency: "ZAR",
+          channels: ["card"],
+          callback_url: callbackUrl,
+          metadata: {
+            userId: learnerUserId,
+            parentEmail: result.parentEmail,
+            purpose: "card_capture",
+            product: "BrainTrack Premium — card verification",
+          },
+        }),
+      });
+
+      return res.json({ authorizationUrl: data.authorization_url, reference: data.reference });
+    } catch (err: any) {
+      if (err instanceof z.ZodError) return res.status(400).json(formatZodError(err));
+      console.error("[paystack] card-capture initialize failed:", err?.message ?? err);
+      return res.status(502).json({ error: "initialize_failed", message: "Could not start card verification. Please try again." });
+    }
+  });
+
+  app.get("/api/parent-consent/card-capture/verify", async (req, res) => {
+    try {
+      const token = String(req.query.token ?? "");
+      const reference = String(req.query.reference ?? "").slice(0, 100);
+      if (!token || !reference) return res.status(400).json({ error: "missing_params" });
+      const { verifyParentConsentToken } = await import("./parent-consent");
+      const result = verifyParentConsentToken(token);
+      if (!result.ok) return res.status(400).json({ error: result.reason });
+      if (!isPaystackConfigured()) return res.status(503).json({ error: "payments_unavailable" });
+
+      const data = await paystackFetch(`/transaction/verify/${encodeURIComponent(reference)}`);
+      const paid = data?.status === "success";
+      const purposeOk = data?.metadata?.purpose === "card_capture";
+      const userOk = String(data?.metadata?.userId ?? "") === result.learnerUserId;
+      if (!paid || !purposeOk || !userOk) {
+        return res.json({ ok: false, captured: false, status: data?.status ?? "unknown" });
+      }
+
+      const capture = await applyCardCaptureSuccess({
+        userId: result.learnerUserId,
+        parentEmail: result.parentEmail,
+        authorizationCode: data?.authorization?.authorization_code ?? null,
+        customerCode: data?.customer?.customer_code ?? null,
+      });
+
+      // POPIA audit: parental consent granted together with billing consent
+      // (card captured for the R169/month subscription after the trial).
+      const ccIp = (req.headers["x-forwarded-for"] as string | undefined)?.split(",")[0]?.trim() ?? req.socket?.remoteAddress ?? null;
+      const ccUa = req.headers["user-agent"] ?? null;
+      await storage.insertConsentLog({ userId: result.learnerUserId, consentType: "parental", action: "granted", version: "1.0", ipAddress: ccIp, userAgent: ccUa, metadata: { parentEmail: result.parentEmail, cardCaptured: true } });
+      await storage.insertConsentLog({ userId: result.learnerUserId, consentType: "billing", action: "granted", version: "1.0", ipAddress: ccIp, userAgent: ccUa, metadata: { plan: "brain_boost", priceRands: 169, billingMethod: "paystack", event: "parent_card_captured" } });
+
+      const learner = await authStorage.getUser(result.learnerUserId);
+      const learnerName = [learner?.firstName, learner?.lastName].filter(Boolean).join(" ").trim() || null;
+
+      // Task #460 — notify the learner that their parent has confirmed.
+      if (learner?.email) {
+        const { sendConsentConfirmedEmail } = await import("./email");
+        const lang: "en" | "af" = learner.preferredLanguage === "af" ? "af" : "en";
+        sendConsentConfirmedEmail({
+          to: learner.email,
+          learnerName: learnerName ?? "",
+          language: lang,
+          dashboardUrl: `${publicBaseUrl(req)}/dashboard`,
+        }).catch((err: unknown) => console.error("[card-capture] sendConsentConfirmedEmail threw:", err instanceof Error ? err.message : String(err)));
+      }
+
+      return res.json({
+        ok: true,
+        captured: true,
+        learnerName,
+        trialStarted: capture.trialStarted,
+        trialEndsAt: capture.trialEndsAt ? capture.trialEndsAt.toISOString() : null,
+      });
+    } catch (err: any) {
+      console.error("[paystack] card-capture verify failed:", err?.message ?? err);
+      return res.status(502).json({ error: "verify_failed" });
     }
   });
 
@@ -16555,6 +16757,155 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
     } catch (err: any) {
       console.error("[DailyFocusPush] error:", err);
       res.status(500).json({ error: "Failed to send daily focus notifications", details: err?.message });
+    }
+  });
+
+  // ─── Day-14 Trial Autocharge (Paystack) ─────────────────────────────
+  // Cron-protected (same Bearer CRON_SECRET pattern as the /api/push/* crons;
+  // see render.yaml braintrack-charge-trials). Finds trials whose 14 days are
+  // up AND that have a stored card authorization (captured by the parent on
+  // the consent page), then charges R169 via Paystack charge_authorization.
+  //
+  // Idempotency: (1) recordEventOnce with the deterministic event id
+  // `trial_conversion:{subscriptionId}:{yyyy-mm-dd}` claims the charge before
+  // any Paystack call — replays and concurrent runs are no-ops; (2) the
+  // status query only matches trial-state rows, so a converted ("active") or
+  // failed ("past_due") row can never be charged again.
+  app.post("/api/cron/charge-trials", async (req, res) => {
+    const cronSecret = process.env.CRON_SECRET;
+    if (!cronSecret) {
+      console.error("[ChargeTrials] refusing request — CRON_SECRET not configured");
+      return res.status(503).json({ error: "Cron secret not configured" });
+    }
+    if (req.headers.authorization !== `Bearer ${cronSecret}`) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    if (!isPaystackConfigured()) {
+      return res.status(503).json({ error: "Paystack not configured" });
+    }
+
+    const now = new Date();
+    const today = now.toISOString().slice(0, 10);
+    let charged = 0;
+    let failed = 0;
+    let skipped = 0;
+
+    try {
+      const due = await db.select()
+        .from(subscriptions)
+        .where(and(
+          inArray(subscriptions.status, ["trial", "trialing"]),
+          lte(subscriptions.trialEndsAt, now),
+          isNotNull((subscriptions as any).paystackAuthorizationCode),
+        ));
+
+      for (const sub of due) {
+        const authCode = (sub as any).paystackAuthorizationCode as string | null;
+        if (!authCode) { skipped++; continue; }
+
+        const [learner] = await db.select({ id: users.id, email: users.email, parentEmail: users.parentEmail, preferredLanguage: users.preferredLanguage, firstName: users.firstName })
+          .from(users).where(eq(users.id, sub.userId));
+        // Charge against the card owner's (parent's) email when we have it —
+        // that's the email the authorization was created under.
+        const chargeEmail = sub.parentEmail || learner?.parentEmail || learner?.email;
+        if (!chargeEmail) {
+          console.warn(`[ChargeTrials] subscription ${sub.id} has no billable email — skipped`);
+          skipped++;
+          continue;
+        }
+
+        // Deterministic idempotency claim BEFORE calling Paystack.
+        const eventId = `trial_conversion:${sub.id}:${today}`;
+        const fresh = await recordEventOnce(eventId, "trial_conversion", {
+          subscriptionId: sub.id,
+          userId: sub.userId,
+          amount: 16900,
+          date: today,
+        });
+        if (!fresh) { skipped++; continue; }
+
+        try {
+          const charge = await paystackFetch("/transaction/charge_authorization", {
+            method: "POST",
+            body: JSON.stringify({
+              authorization_code: authCode,
+              email: chargeEmail,
+              amount: 16900, // R169.00 in minor units
+              currency: "ZAR",
+              metadata: { userId: sub.userId, purpose: "trial_conversion" },
+            }),
+          });
+
+          if (charge?.status === "success") {
+            const nextRenewalAt = new Date(now.getTime());
+            nextRenewalAt.setMonth(nextRenewalAt.getMonth() + 1);
+            await db.update(subscriptions).set({
+              status: "active",
+              billingMethod: "paystack",
+              paymentProvider: "paystack",
+              priceRands: 169,
+              lastPaymentStatus: "paid",
+              lastPaymentAt: now,
+              nextRenewalAt,
+              endDate: nextRenewalAt,
+              gracePeriodEndsAt: null,
+              updatedAt: now,
+            } as any).where(eq(subscriptions.id, sub.id));
+            charged++;
+
+            // Put future months on the Paystack plan so renewals run on-plan.
+            // Best-effort: a failure here never rolls back the charge — the
+            // subscription.create webhook / next cron pass can still recover.
+            try {
+              const planCode = process.env.PAYSTACK_PLAN_CODE;
+              if (planCode) {
+                const created = await paystackFetch("/subscription", {
+                  method: "POST",
+                  body: JSON.stringify({
+                    customer: (sub as any).paystackCustomerCode || charge?.customer?.customer_code || chargeEmail,
+                    plan: planCode,
+                    authorization: authCode,
+                    start_date: nextRenewalAt.toISOString(),
+                  }),
+                });
+                if (created?.subscription_code) {
+                  await db.update(subscriptions).set({
+                    paystackSubscriptionCode: created.subscription_code,
+                    updatedAt: new Date(),
+                  } as any).where(eq(subscriptions.id, sub.id));
+                }
+              } else {
+                console.warn("[ChargeTrials] PAYSTACK_PLAN_CODE not set — recurring plan subscription not created");
+              }
+            } catch (subErr: any) {
+              console.error(`[ChargeTrials] plan subscription create failed for subscription ${sub.id}:`, subErr?.message ?? subErr);
+            }
+          } else {
+            await db.update(subscriptions).set({
+              status: "past_due",
+              lastPaymentStatus: "failed",
+              gracePeriodEndsAt: new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000),
+              updatedAt: now,
+            } as any).where(eq(subscriptions.id, sub.id));
+            failed++;
+          }
+        } catch (chargeErr: any) {
+          // Declines surface as thrown errors from paystackFetch too.
+          console.error(`[ChargeTrials] charge failed for subscription ${sub.id}:`, chargeErr?.message ?? chargeErr);
+          await db.update(subscriptions).set({
+            status: "past_due",
+            lastPaymentStatus: "failed",
+            gracePeriodEndsAt: new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000),
+            updatedAt: now,
+          } as any).where(eq(subscriptions.id, sub.id));
+          failed++;
+        }
+      }
+
+      res.json({ success: true, due: due.length, charged, failed, skipped });
+    } catch (err: any) {
+      console.error("[ChargeTrials] run failed:", err?.message ?? err);
+      res.status(500).json({ error: "Failed to charge trials" });
     }
   });
 

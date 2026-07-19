@@ -38,7 +38,7 @@ export function isPaystackConfigured(): boolean {
   return Boolean(secretKey() && planCode());
 }
 
-async function paystackFetch(path: string, init?: RequestInit): Promise<any> {
+export async function paystackFetch(path: string, init?: RequestInit): Promise<any> {
   const key = secretKey();
   if (!key) throw new Error("PAYSTACK_SECRET_KEY not configured");
   const res = await fetch(`${PAYSTACK_API}${path}`, {
@@ -73,7 +73,7 @@ export function verifyWebhookSignature(rawBody: Buffer | string, signature: stri
 }
 
 /** Record an event once. Returns false if this event id was already applied. */
-async function recordEventOnce(eventId: string, eventType: string, payload: unknown): Promise<boolean> {
+export async function recordEventOnce(eventId: string, eventType: string, payload: unknown): Promise<boolean> {
   try {
     const existing = await db.select({ id: paymentEvents.id })
       .from(paymentEvents)
@@ -127,6 +127,87 @@ async function activateSubscription(opts: {
   } else {
     await db.insert(subscriptions).values(values);
   }
+}
+
+/**
+ * Parent card-capture success (R1.00 verification charge with
+ * metadata.purpose === "card_capture"). Stores the reusable Paystack
+ * authorization + customer codes on the learner's subscription row, marks
+ * parental consent granted, and starts the 14-day trial. The trial only ever
+ * starts here — a minor can never self-activate it.
+ *
+ * Idempotent: safe to run from both the return-URL verify endpoint and the
+ * webhook. An already-active subscription is never downgraded back to trial;
+ * an existing running trial keeps its original trialEndsAt.
+ */
+export async function applyCardCaptureSuccess(opts: {
+  userId: string;
+  parentEmail?: string | null;
+  authorizationCode?: string | null;
+  customerCode?: string | null;
+}): Promise<{ trialStarted: boolean; trialEndsAt: Date | null }> {
+  const { userId, parentEmail, authorizationCode, customerCode } = opts;
+
+  const [existing] = await db.select()
+    .from(subscriptions)
+    .where(eq(subscriptions.userId, userId));
+
+  const now = new Date();
+  const trialEndsAt = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
+
+  // Never demote an active/paid subscription; just make sure the codes stick.
+  const keepExistingTrial = existing &&
+    (existing.status === "trial" || existing.status === "trialing") &&
+    existing.trialEndsAt && existing.trialEndsAt.getTime() > now.getTime() &&
+    Boolean((existing as any).paystackAuthorizationCode);
+  const alreadyActive = existing && existing.status === "active";
+
+  const values: any = {
+    updatedAt: now,
+  };
+  if (authorizationCode) values.paystackAuthorizationCode = authorizationCode;
+  if (customerCode) values.paystackCustomerCode = customerCode;
+  if (parentEmail) values.parentEmail = parentEmail;
+  values.parentConsent = true;
+  values.parentConsentDate = existing?.parentConsentDate ?? now;
+
+  let trialStarted = false;
+  if (!alreadyActive && !keepExistingTrial) {
+    // Consent + card are both in hand → the 14-day trial starts NOW.
+    values.status = "trial"; // "trial" is the app-wide trialing status (see storage.hasActiveSubscription)
+    values.plan = existing?.plan ?? "brain_boost";
+    values.priceRands = 169;
+    values.billingMethod = "paystack";
+    values.paymentProvider = "paystack";
+    values.startDate = existing?.startDate ?? now;
+    values.trialEndsAt = trialEndsAt;
+    values.endDate = trialEndsAt;
+    trialStarted = true;
+  }
+
+  if (existing) {
+    await db.update(subscriptions).set(values).where(eq(subscriptions.id, existing.id));
+  } else {
+    await db.insert(subscriptions).values({
+      userId,
+      userRole: "learner",
+      ...values,
+    });
+  }
+
+  // Consent flags on the learner row — the source of truth for consent gates.
+  const userPatch: any = {
+    parentConsentGranted: true,
+    parentConsentGrantedAt: now,
+    updatedAt: now,
+  };
+  if (parentEmail) userPatch.parentEmail = parentEmail.toLowerCase();
+  await db.update(users).set(userPatch).where(eq(users.id, userId));
+
+  return {
+    trialStarted,
+    trialEndsAt: trialStarted ? trialEndsAt : (existing?.trialEndsAt ?? null),
+  };
 }
 
 async function markSubscriptionStatus(subscriptionCode: string, status: string): Promise<void> {
@@ -232,6 +313,26 @@ export function registerPaystackRoutes(app: Express, isAuthenticated: any) {
       switch (event?.event) {
         case "charge.success": {
           const userId = d?.metadata?.userId;
+          const purpose = d?.metadata?.purpose;
+          if (purpose === "card_capture") {
+            // R1.00 parent card verification — store the authorization and
+            // start the 14-day trial. NEVER treat this as a paid activation.
+            if (userId) {
+              await applyCardCaptureSuccess({
+                userId,
+                parentEmail: d?.metadata?.parentEmail ?? d?.customer?.email ?? null,
+                authorizationCode: d?.authorization?.authorization_code ?? null,
+                customerCode: d?.customer?.customer_code ?? null,
+              });
+            }
+            break;
+          }
+          if (purpose === "trial_conversion") {
+            // Day-14 autocharge — applied synchronously by /api/cron/charge-trials
+            // (guarded by recordEventOnce there). The webhook is a no-op so the
+            // same charge is never double-applied.
+            break;
+          }
           if (userId) {
             await activateSubscription({
               userId,

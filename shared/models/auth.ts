@@ -57,6 +57,14 @@ export const users = pgTable("users", {
   parentConsentGrantedAt: timestamp("parent_consent_granted_at"),
   schoolName: text("school_name"),
   grade: integer("grade"),
+  // Date of birth is NEVER stored in plaintext. Only a salted SHA-256 of the
+  // ISO date — sha256(SESSION_SECRET + ":" + "yyyy-mm-dd") — computed
+  // server-side at onboarding. Used for identity checks without holding the
+  // raw DOB (POPIA data minimisation).
+  dobHash: varchar("dob_hash"),
+  // Operational flag derived from DOB at onboarding submission: age < 18.
+  // Drives the parent-consent + card-capture gate for trial activation.
+  isMinor: boolean("is_minor"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 }, (table) => [
@@ -73,10 +81,12 @@ export type User = typeof users.$inferSelect;
  *  - idNumber: South African ID number — sensitive personal information
  *    under POPIA. Captured at onboarding for NSC/DBE identity matching and
  *    read server-side only.
+ *  - dobHash: salted SHA-256 of the learner's date of birth. Never useful to
+ *    a client and never returned — server-side identity checks only.
  * Add any new sensitive column here AND it is stripped everywhere
  * `toPublicUser()` is used.
  */
-export const SENSITIVE_USER_FIELDS = ["passwordHash", "idNumber"] as const;
+export const SENSITIVE_USER_FIELDS = ["passwordHash", "idNumber", "dobHash"] as const;
 
 /** A `User` with all sensitive columns removed. */
 export type PublicUser = Omit<User, typeof SENSITIVE_USER_FIELDS[number]>;

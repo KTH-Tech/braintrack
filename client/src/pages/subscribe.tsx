@@ -257,11 +257,21 @@ export default function SubscribePage() {
         setPageState("trial_used");
         return;
       }
+      if (data.error === "parent_consent_required") {
+        // Minors can't self-activate — the parent gate owns trial activation.
+        navigate("/waiting-for-parent");
+        return;
+      }
       setPageState("plan");
       setErrorMsg(data.message ?? (isAf ? "Kon nie proeftydperk begin nie." : "Could not start trial. Please try again."));
     } catch (err: any) {
       const msg: string = err?.message ?? "";
       const status = parseInt(msg.split(":")[0] ?? "", 10);
+      if (status === 403) {
+        // parent_consent_required — minors wait on the parent gate.
+        navigate("/waiting-for-parent");
+        return;
+      }
       if (status === 409) {
         setPageState("trial_used");
       } else if (status === 503) {
