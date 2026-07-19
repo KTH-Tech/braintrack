@@ -41,25 +41,70 @@ const COPY = {
     errorAuth:
       "That one needs a signed-in account 🔐 Start your free 14-day trial and I can help with everything — CAPS topics, past papers, the works. 🔥",
     presets: [
-      { label: "Explain a topic 🧠", q: "Explain differentiation from first principles simply, with a quick example." },
-      { label: "Exam tips ⚡", q: "Give me 3 quick tips for the Maths P1 exam." },
-      { label: "How does BrainTrack work? 👋", q: "How does BrainTrack help me get matric-ready?" },
+      { label: "Explain photosynthesis 🌱", q: "Explain photosynthesis for Grade 12 Life Sciences, with the equation and both phases." },
+      { label: "Solve a quadratic ➗", q: "Show me step by step how to solve the quadratic equation x² − 5x + 6 = 0." },
+      { label: "What is inflation? 💰", q: "Explain inflation for Grade 12 Economics, with how it is measured in South Africa." },
+      { label: "Explain osmosis 🔬", q: "Explain osmosis for Grade 12 Life Sciences, with an example." },
     ],
     fallbackPresets: [
       {
-        label: "How much does it cost? 💸",
-        q: "How much does BrainTrack cost?",
-        a: "BrainTrack is R169 per learner per month — and every plan starts with a 14-day free trial, so you can test-drive everything first. 🔥 Billing is parent-owned and you can cancel anytime in the app.",
+        label: "Explain photosynthesis 🌱",
+        q: "Explain photosynthesis 🌱",
+        a: `PHOTOSYNTHESIS — Life Sciences Gr 12 🌱
+
+Definition: the process in which green plants use light energy, trapped by chlorophyll in the chloroplasts, to convert carbon dioxide and water into glucose and oxygen.
+
+Balanced equation:
+6CO₂ + 12H₂O --light / chlorophyll--> C₆H₁₂O₆ + 6O₂ + 6H₂O
+
+Stage 1 — Light phase (in the grana): chlorophyll absorbs light → water is split by photolysis → O₂ is released, and ATP + NADPH are formed.
+Stage 2 — Dark phase / Calvin cycle (in the stroma): CO₂ is fixed and reduced using that ATP + NADPH → glucose.
+
+Exam tip: markers look for "photolysis" and the correct site of each phase (grana vs stroma). Never write "plants make energy" — they convert light energy into chemical energy. 🔥`,
       },
       {
-        label: "What do I get? ⚡",
-        q: "What features does BrainTrack have?",
-        a: "The full toolkit: 10 years of real NSC past papers + memos, CAPS-aligned study plans that rebuild around your weak spots, me (your AI tutor, 24/7 in English + Afrikaans), timed Exam Mode, parent reports, and XP, streaks & rewards. 🧠⚡",
+        label: "Solve a quadratic ➗",
+        q: "Solve a quadratic ➗",
+        a: `SOLVING A QUADRATIC — Mathematics Gr 12 ➗
+
+Worked example: solve x² − 5x + 6 = 0
+
+Step 1: Make the equation equal to 0 ✔ (it already is).
+Step 2: Factorise — find two numbers that multiply to +6 and add to −5 → −2 and −3, so (x − 2)(x − 3) = 0.
+Step 3: Zero-product rule — if a product is 0, one factor is 0: x − 2 = 0 or x − 3 = 0.
+Step 4: x = 2 or x = 3.
+
+If it won't factorise, use the formula: x = [−b ± √(b² − 4ac)] ÷ 2a
+
+Exam tip: always get everything on one side (= 0) before you factorise, and substitute your roots back in to check. Only round to 2 decimals if the question asks for it. 🔥`,
       },
       {
-        label: "How does it work? 👋",
-        q: "How does BrainTrack work?",
-        a: "Easy: sign up, pick your subjects, and BrainTrack diagnoses your weak spots using 10 years of DBE exam data. Then you get a weekly study plan, real past papers with memos, and me to explain anything until it clicks. 👑",
+        label: "What is inflation? 💰",
+        q: "What is inflation? 💰",
+        a: `INFLATION — Economics Gr 12 💰
+
+Definition: a sustained and considerable rise in the general price level of goods and services over time, which means money loses purchasing power — each rand buys less.
+
+How SA measures it: Stats SA prices a fixed "basket" of goods each month to build the Consumer Price Index (CPI). The inflation rate is the % change in CPI year on year.
+Quick example: the basket costs R1 000 this year and R1 060 next year → (60 ÷ 1 000) × 100 = 6% inflation.
+
+Two main causes: demand-pull (too much spending chasing too few goods) and cost-push (rising input costs like fuel or wages).
+Control: the SA Reserve Bank raises the repo rate to cool spending — its target band is 3–6%.
+
+Exam tip: the words "sustained" and "general price level" earn the definition mark. One product getting more expensive is NOT inflation. 🔥`,
+      },
+      {
+        label: "Explain osmosis 🔬",
+        q: "Explain osmosis 🔬",
+        a: `OSMOSIS — Life Sciences Gr 12 🔬
+
+Definition: the movement of water molecules from a region of high water potential (a dilute solution) to a region of low water potential (a concentrated solution), through a selectively permeable membrane. It is passive — no energy is used.
+
+Worked example: place a potato strip in strong salt water. The salt solution has a lower water potential than the cell sap, so water moves out of the cells → they become flaccid and eventually plasmolysed, and the strip goes limp and loses mass. In pure water the reverse happens: water moves in and the cells become turgid.
+
+Diffusion vs osmosis: diffusion is any particle moving down its concentration gradient; osmosis is water only, and it needs a membrane.
+
+Exam tip: use the phrases "water potential" and "selectively permeable membrane" — those are the mark-earning words. 🔥`,
       },
     ],
     fallbackFreeform:
@@ -79,25 +124,70 @@ const COPY = {
     errorAuth:
       "Daarvoor moet jy ingeteken wees 🔐 Begin jou gratis 14-dae proeftydperk en ek help met alles — KABV-onderwerpe, vraestelle, die hele pakket. 🔥",
     presets: [
-      { label: "Verduidelik 'n onderwerp 🧠", q: "Verduidelik differensiasie vanuit eerste beginsels eenvoudig, met 'n vinnige voorbeeld." },
-      { label: "Eksamenwenke ⚡", q: "Gee my 3 vinnige wenke vir die Wiskunde V1-eksamen." },
-      { label: "Hoe werk BrainTrack? 👋", q: "Hoe help BrainTrack my om matriekgereed te word?" },
+      { label: "Verduidelik fotosintese 🌱", q: "Verduidelik fotosintese vir Graad 12 Lewenswetenskappe, met die vergelyking en albei fases." },
+      { label: "Los 'n kwadratiese op ➗", q: "Wys my stap vir stap hoe om die kwadratiese vergelyking x² − 5x + 6 = 0 op te los." },
+      { label: "Wat is inflasie? 💰", q: "Verduidelik inflasie vir Graad 12 Ekonomie, en hoe dit in Suid-Afrika gemeet word." },
+      { label: "Verduidelik osmose 🔬", q: "Verduidelik osmose vir Graad 12 Lewenswetenskappe, met 'n voorbeeld." },
     ],
     fallbackPresets: [
       {
-        label: "Wat kos dit? 💸",
-        q: "Hoeveel kos BrainTrack?",
-        a: "BrainTrack is R169 per leerder per maand — en elke plan begin met 'n gratis 14-dae proeftydperk sodat jy eers alles kan toets. 🔥 Betaling is ouer-besit en jy kan enige tyd in die app kanselleer.",
+        label: "Verduidelik fotosintese 🌱",
+        q: "Verduidelik fotosintese 🌱",
+        a: `FOTOSINTESE — Lewenswetenskappe Gr 12 🌱
+
+Definisie: die proses waarin groen plante ligenergie, wat deur chlorofil in die chloroplaste opgevang word, gebruik om koolstofdioksied en water om te skakel na glukose en suurstof.
+
+Gebalanseerde vergelyking:
+6CO₂ + 12H₂O --lig / chlorofil--> C₆H₁₂O₆ + 6O₂ + 6H₂O
+
+Fase 1 — Ligfase (in die grana): chlorofil absorbeer lig → water word deur fotolise gesplits → O₂ word vrygestel en ATP + NADPH word gevorm.
+Fase 2 — Donkerfase / Calvin-siklus (in die stroma): CO₂ word vasgelê en gereduseer met daardie ATP + NADPH → glukose.
+
+Eksamenwenk: nasieners soek die woord "fotolise" en die korrekte plek van elke fase (grana vs stroma). Moenie skryf "plante maak energie" nie — hulle skakel ligenergie om na chemiese energie. 🔥`,
       },
       {
-        label: "Wat kry ek? ⚡",
-        q: "Watter funksies het BrainTrack?",
-        a: "Die volle gereedskapstel: 10 jaar se regte NSS-vraestelle + memo's, KABV-belynde studieplanne wat rondom jou swakplekke herbou, ek (jou KI-tutor, 24/7 in Afrikaans + Engels), getyde Eksamenmode, ouerverslae, en XP, reekse & belonings. 🧠⚡",
+        label: "Los 'n kwadratiese op ➗",
+        q: "Los 'n kwadratiese op ➗",
+        a: `KWADRATIESE VERGELYKINGS — Wiskunde Gr 12 ➗
+
+Uitgewerkte voorbeeld: los op x² − 5x + 6 = 0
+
+Stap 1: Maak die vergelyking gelyk aan 0 ✔ (dit is reeds so).
+Stap 2: Faktoriseer — soek twee getalle wat +6 gee as jy hulle vermenigvuldig en −5 as jy hulle optel → −2 en −3, dus (x − 2)(x − 3) = 0.
+Stap 3: Nul-produk-reël — as 'n produk 0 is, is een faktor 0: x − 2 = 0 of x − 3 = 0.
+Stap 4: x = 2 of x = 3.
+
+As dit nie faktoriseer nie, gebruik die formule: x = [−b ± √(b² − 4ac)] ÷ 2a
+
+Eksamenwenk: kry altyd alles aan een kant (= 0) voordat jy faktoriseer, en vervang jou wortels terug om te toets. Rond net af tot 2 desimale as die vraag dit vra. 🔥`,
       },
       {
-        label: "Hoe werk dit? 👋",
-        q: "Hoe werk BrainTrack?",
-        a: "Maklik: teken in, kies jou vakke, en BrainTrack diagnoseer jou swakplekke met 10 jaar se DBE-eksamendata. Dan kry jy 'n weeklikse studieplan, regte vraestelle met memo's, en my om enigiets te verduidelik totdat dit klik. 👑",
+        label: "Wat is inflasie? 💰",
+        q: "Wat is inflasie? 💰",
+        a: `INFLASIE — Ekonomie Gr 12 💰
+
+Definisie: 'n volgehoue en aansienlike styging in die algemene prysvlak van goedere en dienste oor tyd, wat beteken geld verloor koopkrag — elke rand koop minder.
+
+Hoe SA dit meet: Stats SA bepaal elke maand die prys van 'n vaste "mandjie" goedere om die Verbruikersprysindeks (VPI) op te stel. Die inflasiekoers is die % verandering in die VPI van jaar tot jaar.
+Vinnige voorbeeld: die mandjie kos vanjaar R1 000 en volgende jaar R1 060 → (60 ÷ 1 000) × 100 = 6% inflasie.
+
+Twee hoofoorsake: vraagaangedrewe (te veel besteding jaag te min goedere) en koste-gedrewe (stygende insetkoste soos brandstof of lone).
+Beheer: die SA Reserwebank verhoog die repokoers om besteding af te koel — die teikenband is 3–6%.
+
+Eksamenwenk: die woorde "volgehoue" en "algemene prysvlak" verdien die definisiepunt. Een produk wat duurder word, is NIE inflasie nie. 🔥`,
+      },
+      {
+        label: "Verduidelik osmose 🔬",
+        q: "Verduidelik osmose 🔬",
+        a: `OSMOSE — Lewenswetenskappe Gr 12 🔬
+
+Definisie: die beweging van watermolekules vanaf 'n gebied met 'n hoë waterpotensiaal ('n verdunde oplossing) na 'n gebied met 'n lae waterpotensiaal ('n gekonsentreerde oplossing), deur 'n selektief deurlaatbare membraan. Dit is passief — geen energie word gebruik nie.
+
+Uitgewerkte voorbeeld: sit 'n aartappelstrokie in sterk soutwater. Die soutoplossing het 'n laer waterpotensiaal as die selsap, dus beweeg water uit die selle → hulle word slap en uiteindelik geplasmoliseer, en die strokie word pap en verloor massa. In suiwer water gebeur die teenoorgestelde: water beweeg in en die selle word turgied.
+
+Diffusie vs osmose: diffusie is enige deeltjie wat teen sy konsentrasiegradiënt afbeweeg; osmose is net water, en dit het 'n membraan nodig.
+
+Eksamenwenk: gebruik die terme "waterpotensiaal" en "selektief deurlaatbare membraan" — dít is die woorde wat punte verdien. 🔥`,
       },
     ],
     fallbackFreeform:
@@ -206,8 +296,8 @@ export function RizzSupportBot() {
         .btr-input:focus { border-color: #9FF5E8 !important; box-shadow: 0 0 0 2px rgba(159,245,232,.25); }
         .btr-preset { transition: background .2s; }
         .btr-preset:hover { background: rgba(159,245,232,.12); }
-        .btr-close { opacity: .9; }
-        .btr-close:hover { opacity: 1; border-color: #FF8DA1 !important; color: #FF8DA1 !important; transform: scale(1.08); }
+        .btr-close { opacity: 1; }
+        .btr-close:hover { border-color: #FF8DA1 !important; color: #FF8DA1 !important; transform: scale(1.08); }
         .btr-cta { transition: transform .2s; }
         .btr-cta:hover { transform: translateY(-2px); }
         @media (prefers-reduced-motion: reduce) { .btr-launcher { animation: none; } }
@@ -273,22 +363,25 @@ export function RizzSupportBot() {
             >
               {isAf ? "AF ✓" : "AF"}
             </span>
-            <span
+            <button
+              type="button"
               onClick={() => setOpen(false)}
               className="btr-close"
               data-testid="button-rizz-close"
-              role="button"
+              title={isAf ? "Maak toe" : "Close"}
               aria-label="Close Rizz chat"
               style={{
-                cursor: "pointer", fontSize: 20, lineHeight: 1, color: "#fff",
-                width: 30, height: 30, display: "flex", alignItems: "center",
+                cursor: "pointer", fontSize: 24, lineHeight: 1, color: "#fff",
+                width: 34, height: 34, display: "flex", alignItems: "center",
                 justifyContent: "center", borderRadius: "50%", flex: "none",
-                border: "1.5px solid rgba(255,255,255,.35)",
+                padding: 0, fontWeight: 700, fontFamily: "'Poppins',sans-serif",
+                background: "rgba(255,255,255,.12)",
+                border: "1.5px solid rgba(255,255,255,.55)",
                 transition: "all .15s",
               }}
             >
               ×
-            </span>
+            </button>
           </div>
 
           {/* ── Messages ───────────────────────────────────── */}

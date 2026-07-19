@@ -596,6 +596,9 @@ export default function TutorPage() {
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground overflow-x-hidden relative">
       <GraffitiSplats variant="corner" opacity={0.35} />
+      <style>{`
+        .tutor-close-btn:hover { border-color: #FF8DA1 !important; color: #FF8DA1 !important; transform: scale(1.08); }
+      `}</style>
       <header
         className="sticky top-0 z-50 bg-background/95 relative"
         style={{ borderBottom: "2px solid rgba(110,231,249,0.5)" }}
@@ -638,6 +641,27 @@ export default function TutorPage() {
                 <LogOut className="w-3.5 h-3.5 shrink-0" />
                 <span className="max-[374px]:hidden">{t.signOut}</span>
               </button>
+              {/* Explicit close — always-visible exit back to the dashboard. */}
+              <Link href="/dashboard">
+                <button
+                  type="button"
+                  className="tutor-close-btn inline-flex items-center justify-center rounded-full bg-background text-xl font-bold leading-none shrink-0"
+                  style={{
+                    width: 36,
+                    height: 36,
+                    padding: 0,
+                    color: "#fff",
+                    background: "rgba(255,255,255,0.12)",
+                    border: "1.5px solid rgba(255,255,255,0.55)",
+                    transition: "all .15s",
+                  }}
+                  data-testid="button-tutor-close"
+                  title={t.homeLabel}
+                  aria-label={isAf ? "Maak Rizz toe" : "Close Rizz tutor"}
+                >
+                  ×
+                </button>
+              </Link>
             </div>
           </div>
         </div>
