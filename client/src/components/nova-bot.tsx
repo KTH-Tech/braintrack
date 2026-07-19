@@ -662,7 +662,7 @@ export function NovaBot({ userType = "visitor" }: { userType?: "learner" | "pare
           titleAf: TS_LABELS.signInCta.af,
           description: "",
           descriptionAf: "",
-          href: "/api/login",
+          href: "/signin",
         },
       };
       setMessages((prev) => [...prev, userMsg, gateMsg]);

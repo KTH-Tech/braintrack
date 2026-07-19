@@ -70,7 +70,7 @@ export default function AdminSignInPage() {
             <Button
               className="w-full mt-2"
               onClick={() => {
-                window.location.href = "/api/login?returnTo=/admin-signin";
+                window.location.href = "/signin?returnTo=/admin-signin";
               }}
               data-testid="button-admin-signin"
             >

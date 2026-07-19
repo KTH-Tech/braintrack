@@ -346,7 +346,7 @@ export default function JoinPage() {
         {step === "details" && (
           <p className="text-center text-xs text-white">
             {t.alreadyHave}{" "}
-            <a href="/api/login" className="underline" style={{ color: hexRgba(NEON, 0.8) }}>{t.signIn}</a>
+            <a href="/signin" className="underline" style={{ color: hexRgba(NEON, 0.8) }}>{t.signIn}</a>
           </p>
         )}
 

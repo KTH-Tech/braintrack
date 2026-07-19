@@ -80,7 +80,7 @@ export default function ParentPurchasePage() {
             </Button>
           </Link>
           {!isAuthenticated && (
-            <a href="/api/login">
+            <a href="/signin">
               <Button variant="outline" className="w-full sm:w-auto" data-testid="button-sign-in">
                 {isAf ? "Meld aan" : "Sign in"}
               </Button>

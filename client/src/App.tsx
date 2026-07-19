@@ -273,7 +273,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (!isAuthenticated) {
-    window.location.href = "/api/login";
+    window.location.href = "/signin";
     return null;
   }
 
@@ -324,10 +324,10 @@ function RequireAdminRoute({ children }: { children: React.ReactNode }) {
     // SAFE: `returnTo` is derived exclusively from the browser's own
     // window.location (same-origin, never user-supplied text) and is
     // encodeURIComponent-encoded before being appended to the hardcoded
-    // `/api/login?returnTo=` base URL.  The destination of the href
+    // `/signin?returnTo=` base URL.  The destination of the href
     // itself (`/api/login`) is a hardcoded internal path.
     const returnTo = encodeURIComponent(window.location.pathname + window.location.search);
-    window.location.href = `/api/login?returnTo=${returnTo}`; // nosemgrep: no-raw-window-location-href-variable
+    window.location.href = `/signin?returnTo=${returnTo}`; // nosemgrep: no-raw-window-location-href-variable
     return null;
   }
 
@@ -377,9 +377,9 @@ function RequireParentRoute({ children }: { children: React.ReactNode }) {
     // SAFE: `returnTo` is derived exclusively from the browser's own
     // window.location (same-origin, never user-supplied text) and is
     // encodeURIComponent-encoded before being appended to the hardcoded
-    // `/api/login?returnTo=` base URL.  See RequireAdminRoute for details.
+    // `/signin?returnTo=` base URL.  See RequireAdminRoute for details.
     const returnTo = encodeURIComponent(window.location.pathname + window.location.search);
-    window.location.href = `/api/login?returnTo=${returnTo}`; // nosemgrep: no-raw-window-location-href-variable
+    window.location.href = `/signin?returnTo=${returnTo}`; // nosemgrep: no-raw-window-location-href-variable
     return null;
   }
 
@@ -426,9 +426,9 @@ function RequireSchoolAdminRoute({ children }: { children: React.ReactNode }) {
     // SAFE: `returnTo` is derived exclusively from the browser's own
     // window.location (same-origin, never user-supplied text) and is
     // encodeURIComponent-encoded before being appended to the hardcoded
-    // `/api/login?returnTo=` base URL.  See RequireAdminRoute for details.
+    // `/signin?returnTo=` base URL.  See RequireAdminRoute for details.
     const returnTo = encodeURIComponent(window.location.pathname + window.location.search);
-    window.location.href = `/api/login?returnTo=${returnTo}`; // nosemgrep: no-raw-window-location-href-variable
+    window.location.href = `/signin?returnTo=${returnTo}`; // nosemgrep: no-raw-window-location-href-variable
     return null;
   }
 
@@ -485,7 +485,7 @@ function LearnerOnlyRoute({ children }: { children: React.ReactNode }) {
   if (isLoading) return <PageLoader />;
 
   if (!isAuthenticated) {
-    window.location.href = "/api/login";
+    window.location.href = "/signin";
     return null;
   }
 
@@ -504,7 +504,7 @@ function ParentOnboardingRoute({ children }: { children: React.ReactNode }) {
   const { isLoading, isAuthenticated } = useAuth();
   if (isLoading) return <PageLoader />;
   if (!isAuthenticated) {
-    window.location.href = "/api/login";
+    window.location.href = "/signin";
     return null;
   }
   return <>{children}</>;
@@ -516,7 +516,7 @@ function RoleSelectRoute({ children }: { children: React.ReactNode }) {
   if (isLoading) return <PageLoader />;
 
   if (!isAuthenticated) {
-    window.location.href = "/api/login";
+    window.location.href = "/signin";
     return null;
   }
 
@@ -539,7 +539,7 @@ function OnboardingRoute({ children }: { children: React.ReactNode }) {
   if (isLoading || onboardingLoading) return <PageLoader />;
 
   if (!isAuthenticated) {
-    window.location.href = "/api/login";
+    window.location.href = "/signin";
     return null;
   }
 

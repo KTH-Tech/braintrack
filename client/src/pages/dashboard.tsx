@@ -78,9 +78,12 @@ const BADGE_INFO: Record<string, { name: string; nameAfrikaans: string; icon: an
   first_paper:   { name: "First Paper",     nameAfrikaans: "Eerste Vraestel",icon: BookOpen,     color: "text-cyan-500"   },
 };
 
-const NAV_LINKS = (labels: { navHome: string; navSubjects: string; navFlashcards: string; navProgress: string; navStudyPlan: string; navRewards: string; navStore: string; navJourney: string; navSettings: string }) => [
+const NAV_LINKS = (labels: { navHome: string; navSubjects: string; navTutor: string; navFlashcards: string; navProgress: string; navStudyPlan: string; navRewards: string; navStore: string; navJourney: string; navSettings: string }) => [
   { href: "/dashboard",      icon: BookOpen,    label: labels.navHome         },
   { href: "/subjects",       icon: Languages,   label: labels.navSubjects     },
+  // Rizz, the AI tutor. Was reachable only from a dashboard card, so learners
+  // had no way to find it from the sidebar.
+  { href: "/tutor",          icon: Brain,       label: labels.navTutor        },
   { href: "/flashcards",     icon: Layers,      label: labels.navFlashcards   },
   { href: "/progress",       icon: TrendingUp,  label: labels.navProgress     },
   { href: "/study-calendar", icon: CalendarDays,label: labels.navStudyPlan    },
@@ -320,6 +323,7 @@ const T = {
     manageLabel: "Manage",
     navHome: "Home",
     navSubjects: "Subjects",
+    navTutor: "Rizz Tutor",
     navFlashcards: "Flashcards",
     navProgress: "Progress",
     navStudyPlan: "Study Plan",
@@ -468,6 +472,7 @@ const T = {
     manageLabel: "Verander",
     navHome: "Tuis",
     navSubjects: "Vakke",
+    navTutor: "Rizz Tutor",
     navFlashcards: "Flitskaarte",
     navProgress: "Vordering",
     navStudyPlan: "Studieplan",

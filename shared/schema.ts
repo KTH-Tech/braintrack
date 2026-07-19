@@ -20,6 +20,11 @@ import { z } from "zod";
 // Re-export auth models
 export * from "./models/auth";
 export * from "./models/chat";
+// Simulated-content pipeline (examiner profiles -> generated questions ->
+// assembled papers -> per-learner allocations). These MUST be part of the
+// schema: drizzle-kit push drops tables it doesn't know about, which is how an
+// earlier raw-SQL version of them was silently deleted from production.
+export * from "./models/simulated";
 
 // Grade 12 Subjects - NSC Curriculum
 export const subjects = pgTable("subjects", {

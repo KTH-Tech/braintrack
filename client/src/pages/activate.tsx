@@ -76,7 +76,7 @@ export default function ActivatePage() {
           description: isAf ? "Welkom by BrainTrack™! Jy word aangestuur na inteken..." : "Welcome to BrainTrack™. Redirecting to login...",
         });
         setTimeout(() => {
-          window.location.href = "/api/login";
+          window.location.href = "/signin";
         }, 2000);
       } else {
         toast({
@@ -150,7 +150,7 @@ export default function ActivatePage() {
                     <span>{isAf ? "Spoor jou vordering na" : "Track your progress"}</span>
                   </div>
                 </div>
-                <Button variant="gradient" className="w-full" onClick={() => window.location.href = "/api/login"}>
+                <Button variant="gradient" className="w-full" onClick={() => window.location.href = "/signin"}>
                   <Sparkles className="w-4 h-4 mr-2" />
                   {isAf ? "Kom ons begin!" : "Start Learning"}
                 </Button>

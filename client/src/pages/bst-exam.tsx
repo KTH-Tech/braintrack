@@ -418,7 +418,7 @@ export default function BSTExamPage() {
                   : "Crunch Time papers are available once you're signed in to your BrainTrack account."}
               </p>
               <Button
-                onClick={() => { window.location.href = "/api/login"; }}
+                onClick={() => { window.location.href = "/signin"; }}
                 className="mt-6"
                 data-testid="button-bst-signin"
               >

@@ -17,7 +17,7 @@ export function useRolePromptNav() {
       return;
     }
     if (stored === "parent") {
-      window.location.href = "/api/login";
+      window.location.href = "/signin";
       return;
     }
     e.preventDefault();
@@ -38,7 +38,7 @@ export function RolePromptModal({ open, onClose }: { open: boolean; onClose: () 
     localStorage.setItem(STORAGE_KEY, role);
     onClose();
     if (role === "parent") {
-      window.location.href = "/api/login";
+      window.location.href = "/signin";
     } else {
       window.location.href = "/subscribe";
     }

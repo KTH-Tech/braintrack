@@ -111,7 +111,7 @@ export default function DBEPortalLogin() {
           ) : (
             <>
               <a
-                href={`/api/login?returnTo=${returnTo}`}
+                href={`/signin?returnTo=${returnTo}`}
                 className="flex items-center justify-center gap-2 w-full rounded-xl py-3 text-sm font-black uppercase tracking-[0.1em] transition-all"
                 style={{
                   color: "#0a0a0a",

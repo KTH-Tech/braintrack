@@ -220,7 +220,7 @@ export default function SubscribePage() {
 
   async function handleStartTrial() {
     if (!isAuthenticated) {
-      window.location.href = "/api/login";
+      window.location.href = "/signin";
       return;
     }
     const pCell = parentCell.trim();
