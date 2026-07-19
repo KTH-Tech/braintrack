@@ -1,7 +1,11 @@
 // BrainTrack features — rebuilt to pixel-match the Claude Design handoff
-// "Luxury Street Graffiti EdTech" comp (BrainTrack.dc.html, FEATURES section).
-// Sticky blur nav, marker eyebrow, 52px headline with gradient accent,
-// subject chip wall, 3-col neon feature grid, rainbow trial CTA. Bilingual EN/AF.
+// "Luxury Street Graffiti EdTech" comp (BrainTrack.dc.html, FEATURES section),
+// then elevated per docs/design-guidelines.md (owner "wow" pass): scroll
+// reveals (landing's Reveal pattern), floating pastel orbs (research.tsx
+// signature), richer card hover blooms, bolder animated headline, marker
+// underline swash, chip pops. Structure, copy and testids unchanged.
+// Bilingual EN/AF.
+import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { useSEO } from "@/hooks/use-seo";
 import { useLanguage } from "@/lib/language-context";
@@ -11,7 +15,9 @@ import iconTransparent from "@/assets/handoff/icon-transparent.png";
 const CTA_GRADIENT =
   "linear-gradient(100deg,#FFB7E5,#FFE29A,#9FF5E8,#C5B3FF,#FFB7E5)";
 const HEADLINE_GRADIENT =
-  "linear-gradient(95deg,#9FD8FF,#9FF5E8,#C5B3FF,#FFB7E5)";
+  "linear-gradient(95deg,#9FD8FF,#9FF5E8,#C5B3FF,#FFB7E5,#9FD8FF)";
+const RAINBOW =
+  "linear-gradient(95deg,#FFB7E5,#FFE29A,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)";
 
 // Pastel accent cycle for the subject chips.
 const CHIP_COLORS = ["#9FF5E8", "#9FD8FF", "#FFB7E5", "#C5B3FF", "#FFE29A", "#94F7C5"];
@@ -76,6 +82,74 @@ const featuresBreadcrumb = {
   ],
 };
 
+function prefersReducedMotion() {
+  return (
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+}
+
+/** Fires once when the element first enters the viewport (landing.tsx pattern). */
+function useInView<T extends HTMLElement>(): [React.RefObject<T>, boolean] {
+  const ref = useRef<T>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (prefersReducedMotion() || typeof IntersectionObserver === "undefined") {
+      setInView(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setInView(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.01, rootMargin: "0px 0px 25% 0px" },
+    );
+    io.observe(el);
+    // Fail-safe: nothing may ever stay invisible.
+    const failSafe = window.setTimeout(() => setInView(true), 4000);
+    return () => { io.disconnect(); window.clearTimeout(failSafe); };
+  }, []);
+  return [ref, inView];
+}
+
+/**
+ * Scroll-reveal wrapper. Inline `animation: bt-fadeup …` so it survives the
+ * global animation kill-switch in index.css; prefers-reduced-motion users get
+ * the finished state immediately.
+ */
+function Reveal({
+  delay = 0,
+  style,
+  className,
+  children,
+}: {
+  delay?: number;
+  style?: React.CSSProperties;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  const [ref, inView] = useInView<HTMLDivElement>();
+  return (
+    <div
+      ref={ref}
+      className={className}
+      style={
+        inView
+          ? { ...style, animation: `bt-fadeup .85s cubic-bezier(.22,.75,.3,1) ${delay}ms both` }
+          : { ...style, opacity: 0 }
+      }
+    >
+      {children}
+    </div>
+  );
+}
+
 export default function FeaturesPage() {
   const { language, toggleLanguage } = useLanguage();
   const { isAuthenticated } = useAuth();
@@ -101,10 +175,38 @@ export default function FeaturesPage() {
         .btf-nav-link:hover { color:#9FD8FF; }
         .btf-nav-cta { transition: transform .2s; }
         .btf-nav-cta:hover { transform: translateY(-2px); }
-        .btf-cta { transition: transform .2s; }
-        .btf-cta:hover { transform: translateY(-3px); }
-        .btf-feature { transition: transform .25s, box-shadow .25s, border-color .25s; }
-        .btf-feature:hover { transform: translateY(-8px) rotate(var(--tilt, 0deg)); box-shadow: 0 20px 50px var(--glow); border-color: var(--c) !important; }
+        .btf-cta { transition: transform .2s, box-shadow .2s; }
+        .btf-cta:hover { transform: translateY(-3px) rotate(-1deg); box-shadow: 0 0 44px rgba(255,183,229,.55) !important; }
+        .btf-feature {
+          position: relative; overflow: hidden; height: 100%; box-sizing: border-box;
+          transition: transform .38s cubic-bezier(.22,.75,.3,1), box-shadow .38s ease,
+                      border-color .38s ease, background .38s ease;
+        }
+        /* accent top-edge highlight */
+        .btf-feature::before {
+          content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1.5px;
+          background: linear-gradient(90deg, transparent, var(--c), transparent);
+          opacity: .4; transition: opacity .38s ease;
+        }
+        /* accent bloom that swells from the top-left on hover */
+        .btf-feature::after {
+          content: ""; position: absolute; top: -55%; left: -20%; width: 90%; height: 90%;
+          background: radial-gradient(closest-side, var(--glow), transparent 72%);
+          opacity: 0; transition: opacity .45s ease; pointer-events: none; z-index: 0;
+        }
+        .btf-feature > * { position: relative; z-index: 1; }
+        .btf-feature:hover {
+          transform: translateY(-10px) rotate(var(--tilt, 0deg)) scale(1.012);
+          box-shadow: 0 26px 64px var(--glow);
+          border-color: var(--c) !important;
+          background: linear-gradient(160deg,rgba(255,255,255,.085),rgba(255,255,255,.02)) !important;
+        }
+        .btf-feature:hover::before { opacity: 1; }
+        .btf-feature:hover::after { opacity: 1; }
+        .btf-fchip { transition: transform .38s cubic-bezier(.22,.75,.3,1), box-shadow .38s ease; }
+        .btf-feature:hover .btf-fchip { transform: translateY(-3px) scale(1.07); }
+        .btf-chip { transition: transform .25s, box-shadow .25s; }
+        .btf-chip:hover { transform: translateY(-3px) rotate(-1deg); box-shadow: 0 0 18px var(--cg); }
         .btf-logo-img { transition: transform .25s; }
         .btf-logo-img:hover { transform: scale(1.15) rotate(-4deg); }
         @media (max-width: 860px) {
@@ -164,89 +266,113 @@ export default function FeaturesPage() {
       </div>
 
       {/* ── Content ─────────────────────────────────────────── */}
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "64px 32px 100px", textAlign: "center" }}>
-        <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#9FF5E8", fontSize: 18, transform: "rotate(-2deg)" }}>
-          {t.eyebrow}
-        </div>
-        <div
-          role="heading"
-          aria-level={1}
-          className="btf-head"
-          data-testid="text-features-title"
-          style={{ fontSize: 52, fontWeight: 900, letterSpacing: "-2px", margin: "8px 0 14px", fontFamily: "'Poppins',sans-serif", color: "#fff" }}
-        >
-          {t.head1}
-          <span
-            style={{
-              background: HEADLINE_GRADIENT,
-              WebkitBackgroundClip: "text", backgroundClip: "text",
-              color: "transparent", WebkitTextFillColor: "transparent",
-            }}
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "64px 32px 100px", textAlign: "center", position: "relative" }}>
+        {/* Floating pastel orbs — signature moment (research.tsx pattern). */}
+        <div aria-hidden style={{ position: "absolute", top: -40, left: "8%", width: 340, height: 340, borderRadius: "50%", background: "radial-gradient(circle,rgba(159,216,255,.35),transparent 70%)", filter: "blur(50px)", pointerEvents: "none", animation: "bt-float 9s ease-in-out infinite" }} />
+        <div aria-hidden style={{ position: "absolute", top: 120, right: "4%", width: 300, height: 300, borderRadius: "50%", background: "radial-gradient(circle,rgba(255,183,229,.3),transparent 70%)", filter: "blur(55px)", pointerEvents: "none", animation: "bt-float 11s ease-in-out infinite reverse" }} />
+        <div aria-hidden style={{ position: "absolute", top: 60, left: "44%", width: 260, height: 260, borderRadius: "50%", background: "radial-gradient(circle,rgba(197,179,255,.28),transparent 70%)", filter: "blur(50px)", pointerEvents: "none", animation: "bt-glowpulse 6s ease-in-out infinite" }} />
+
+        <Reveal style={{ position: "relative", zIndex: 2 }}>
+          <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#9FF5E8", fontSize: 18, transform: "rotate(-2deg)" }}>
+            {t.eyebrow}
+          </div>
+          <div
+            role="heading"
+            aria-level={1}
+            className="btf-head"
+            data-testid="text-features-title"
+            style={{ fontSize: 56, fontWeight: 900, letterSpacing: "-2.2px", lineHeight: 1.08, margin: "10px 0 0", fontFamily: "'Poppins',sans-serif", color: "#fff" }}
           >
-            {t.headAccent}
-          </span>
-        </div>
-        <div
-          data-testid="text-features-subtitle"
-          style={{ fontSize: 17, color: "#fff", opacity: 0.942, maxWidth: 640, margin: "0 auto 20px", lineHeight: 1.6 }}
-        >
-          {t.sub}
-        </div>
+            {t.head1}
+            <span
+              style={{
+                background: HEADLINE_GRADIENT, backgroundSize: "200% 100%",
+                animation: "bt-rainbow 7s linear infinite",
+                WebkitBackgroundClip: "text", backgroundClip: "text",
+                color: "transparent", WebkitTextFillColor: "transparent",
+              }}
+            >
+              {t.headAccent}
+            </span>
+          </div>
+          {/* Marker underline swash beneath the headline. */}
+          <div
+            aria-hidden
+            style={{
+              width: 190, height: 5, margin: "16px auto 0", borderRadius: 999,
+              background: RAINBOW, backgroundSize: "200% 100%",
+              animation: "bt-rainbow 7s linear infinite", opacity: 0.85,
+              transform: "rotate(-1.2deg)",
+            }}
+          />
+          <div
+            data-testid="text-features-subtitle"
+            style={{ fontSize: 17, color: "#fff", opacity: 0.942, maxWidth: 640, margin: "18px auto 20px", lineHeight: 1.6 }}
+          >
+            {t.sub}
+          </div>
+        </Reveal>
 
         {/* Subject chips */}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center", marginBottom: 52 }}>
-          {t.subjects.map((name, i) => {
-            const c = CHIP_COLORS[i % CHIP_COLORS.length];
-            return (
-              <span
-                key={name}
-                style={{ fontSize: 13.5, fontWeight: 700, color: c, border: `1.5px solid ${c}`, borderRadius: 999, padding: "8px 16px" }}
-              >
-                {name}
-              </span>
-            );
-          })}
-        </div>
+        <Reveal delay={120} style={{ position: "relative", zIndex: 2 }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center", marginBottom: 52 }}>
+            {t.subjects.map((name, i) => {
+              const c = CHIP_COLORS[i % CHIP_COLORS.length];
+              return (
+                <span
+                  key={name}
+                  className="btf-chip"
+                  style={{ fontSize: 13.5, fontWeight: 700, color: c, border: `1.5px solid ${c}`, borderRadius: 999, padding: "8px 16px", "--cg": `${c}55` } as React.CSSProperties}
+                >
+                  {name}
+                </span>
+              );
+            })}
+          </div>
+        </Reveal>
 
         {/* Feature cards */}
-        <div className="btf-grid3" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24, textAlign: "left" }}>
+        <div className="btf-grid3" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24, textAlign: "left", position: "relative", zIndex: 2 }}>
           {t.features.map((f, i) => (
-            <div
-              key={f.title}
-              className="btf-feature"
-              data-testid={`card-feature-${i}`}
-              style={{
-                "--tilt": `${f.tilt}deg`, "--glow": f.glow, "--c": f.color,
-                background: "linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015))",
-                border: "1px solid rgba(255,255,255,.09)", borderRadius: 22,
-                padding: 28, cursor: "default",
-              } as React.CSSProperties}
-            >
-              <div style={{ width: 54, height: 54, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", background: f.chipBg, boxShadow: `0 0 22px ${f.glow}`, marginBottom: 18, fontSize: 24 }}>
-                {f.icon}
+            <Reveal key={f.title} delay={i * 90} style={{ display: "flex" }}>
+              <div
+                className="btf-feature"
+                data-testid={`card-feature-${i}`}
+                style={{
+                  "--tilt": `${f.tilt}deg`, "--glow": f.glow, "--c": f.color,
+                  background: "linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015))",
+                  border: "1px solid rgba(255,255,255,.09)", borderRadius: 22,
+                  padding: 28, cursor: "default", width: "100%",
+                } as React.CSSProperties}
+              >
+                <div className="btf-fchip" style={{ width: 54, height: 54, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", background: f.chipBg, boxShadow: `0 0 22px ${f.glow}`, marginBottom: 18, fontSize: 24 }}>
+                  {f.icon}
+                </div>
+                <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 8, color: "#fff" }}>{f.title}</div>
+                <div style={{ fontSize: 13.5, lineHeight: 1.6, color: "#fff", opacity: 0.942 }}>{f.body}</div>
               </div>
-              <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 8, color: "#fff" }}>{f.title}</div>
-              <div style={{ fontSize: 13.5, lineHeight: 1.6, color: "#fff", opacity: 0.942 }}>{f.body}</div>
-            </div>
+            </Reveal>
           ))}
         </div>
 
         {/* Final CTA */}
-        <Link href={isAuthenticated ? "/dashboard" : "/subscribe"}>
-          <button
-            className="btf-cta"
-            data-testid="button-features-cta"
-            style={{
-              marginTop: 52, fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 16,
-              color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
-              animation: "bt-rainbow 5s linear infinite", border: "none",
-              borderRadius: 10, padding: "16px 40px", whiteSpace: "nowrap",
-              cursor: "pointer", boxShadow: "0 0 30px rgba(255,183,229,.4)",
-            }}
-          >
-            {isAuthenticated ? t.ctaLoggedIn : t.cta}
-          </button>
-        </Link>
+        <Reveal delay={140} style={{ position: "relative", zIndex: 2 }}>
+          <Link href={isAuthenticated ? "/dashboard" : "/subscribe"}>
+            <button
+              className="btf-cta"
+              data-testid="button-features-cta"
+              style={{
+                marginTop: 52, fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 16,
+                color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
+                animation: "bt-rainbow 5s linear infinite", border: "none",
+                borderRadius: 10, padding: "16px 40px", whiteSpace: "nowrap",
+                cursor: "pointer", boxShadow: "0 0 30px rgba(255,183,229,.4)",
+              }}
+            >
+              {isAuthenticated ? t.ctaLoggedIn : t.cta}
+            </button>
+          </Link>
+        </Reveal>
       </div>
     </div>
   );

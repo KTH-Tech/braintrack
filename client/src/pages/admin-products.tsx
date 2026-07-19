@@ -47,8 +47,8 @@ interface Product {
 
 const tierLabel: Record<number, { en: string; af: string; color: string }> = {
   0: { en: "Free", af: "Gratis", color: "bg-muted text-white" },
-  1: { en: "Brain Boost", af: "Brein-aansporing", color: "bg-cyan-500/10 border border-cyan-500/30 text-cyan-700" },
-  2: { en: "Pro", af: "Pro", color: "bg-cyan-500/10 border border-cyan-500/30 text-cyan-700" },
+  1: { en: "Brain Boost", af: "Brein-aansporing", color: "bg-[#9FD8FF]/10 border border-[#9FD8FF]/40 text-[#9FD8FF]" },
+  2: { en: "Pro", af: "Pro", color: "bg-[#9FD8FF]/10 border border-[#9FD8FF]/40 text-[#9FD8FF]" },
   3: { en: "Elite", af: "Elite", color: "bg-amber-500/10 border border-amber-500/30 text-amber-700" },
 };
 
@@ -191,15 +191,15 @@ export default function AdminProductsPage() {
   const categories = Array.from(new Set(products.map(p => p.category))).sort();
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen text-white" style={{ background: "#050508", fontFamily: "'Poppins', system-ui, sans-serif" }}>
       <AdminTopNav current="products" />
 
       <main className="max-w-5xl mx-auto px-4 py-6">
         <Tabs defaultValue="plans">
-          <TabsList className="mb-6 p-1.5 rounded-2xl h-auto flex-wrap bg-black border border-[#6EE7F9]/30 shadow-[0_0_14px_rgba(110,231,249,0.18)]">
-            <TabsTrigger value="plans" className="rounded-xl gap-2 text-xs px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#6EE7F9] data-[state=active]:border data-[state=active]:border-[#6EE7F9] data-[state=active]:shadow-[0_0_14px_rgba(110,231,249,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors"><CreditCard className="w-3.5 h-3.5" />{tr.plansTab} ({plans.length})</TabsTrigger>
-            <TabsTrigger value="products" className="rounded-xl gap-2 text-xs px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#6EE7F9] data-[state=active]:border data-[state=active]:border-[#6EE7F9] data-[state=active]:shadow-[0_0_14px_rgba(110,231,249,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors"><ShoppingBag className="w-3.5 h-3.5" />{tr.productsTab} ({products.length})</TabsTrigger>
-            <TabsTrigger value="settings" className="rounded-xl gap-2 text-xs px-4 py-2 data-[state=active]:bg-black data-[state=active]:text-[#6EE7F9] data-[state=active]:border data-[state=active]:border-[#6EE7F9] data-[state=active]:shadow-[0_0_14px_rgba(110,231,249,0.45)] data-[state=active]:font-black text-white hover:text-white transition-colors"><Settings className="w-3.5 h-3.5" />{tr.settingsTab}</TabsTrigger>
+          <TabsList className="mb-6 p-1.5 rounded-full h-auto flex-wrap bg-white/[0.035] border border-white/10">
+            <TabsTrigger value="plans" className="rounded-full gap-2 text-xs px-4 py-2 border border-transparent data-[state=active]:bg-[#9FF5E8] data-[state=active]:text-[#050508] data-[state=active]:font-black text-white hover:text-white transition-colors"><CreditCard className="w-3.5 h-3.5" />{tr.plansTab} ({plans.length})</TabsTrigger>
+            <TabsTrigger value="products" className="rounded-full gap-2 text-xs px-4 py-2 border border-transparent data-[state=active]:bg-[#9FF5E8] data-[state=active]:text-[#050508] data-[state=active]:font-black text-white hover:text-white transition-colors"><ShoppingBag className="w-3.5 h-3.5" />{tr.productsTab} ({products.length})</TabsTrigger>
+            <TabsTrigger value="settings" className="rounded-full gap-2 text-xs px-4 py-2 border border-transparent data-[state=active]:bg-[#9FF5E8] data-[state=active]:text-[#050508] data-[state=active]:font-black text-white hover:text-white transition-colors"><Settings className="w-3.5 h-3.5" />{tr.settingsTab}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="plans">
@@ -218,7 +218,7 @@ export default function AdminProductsPage() {
                 const featureList: string[] = Array.isArray(plan.features) ? plan.features as string[] : [];
                 return (
                   <Card key={plan.id} className={`rounded-2xl border-border/50 transition-opacity ${!plan.is_active ? "opacity-60" : ""}`}>
-                    <div className={`h-1 rounded-t-2xl ${plan.is_active ? "bg-gradient-to-r from-cyan-500 via-pink-500 to-cyan-500" : "bg-muted"}`} />
+                    <div className={`h-1 rounded-t-2xl ${plan.is_active ? "bg-[linear-gradient(95deg,#FFB7E5,#FFE29A,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)]" : "bg-muted"}`} />
                     <CardHeader className="pb-2 pt-4">
                       <div className="flex items-start justify-between gap-2">
                         <div>
@@ -246,7 +246,7 @@ export default function AdminProductsPage() {
                         <ul className="space-y-1">
                           {featureList.slice(0, 4).map((f, i) => (
                             <li key={i} className="flex items-start gap-1.5 text-[11px] text-white">
-                              <CheckCircle className="w-3 h-3 text-emerald-500 mt-0.5 shrink-0" />
+                              <CheckCircle className="w-3 h-3 text-[#94F7C5] mt-0.5 shrink-0" />
                               {typeof f === "string" ? f : JSON.stringify(f)}
                             </li>
                           ))}
@@ -256,7 +256,7 @@ export default function AdminProductsPage() {
                       <div className="flex items-center justify-between pt-1 border-t border-border/50">
                         <div className="flex items-center gap-2">
                           {plan.is_active
-                            ? <><CheckCircle className="w-3.5 h-3.5 text-emerald-500" /><span className="text-xs text-emerald-600 font-medium">{tr.active}</span></>
+                            ? <><CheckCircle className="w-3.5 h-3.5 text-[#94F7C5]" /><span className="text-xs text-[#94F7C5] font-medium">{tr.active}</span></>
                             : <><XCircle className="w-3.5 h-3.5 text-white" /><span className="text-xs text-white">{tr.inactive}</span></>
                           }
                         </div>
@@ -279,7 +279,7 @@ export default function AdminProductsPage() {
               <button
                 onClick={() => { setForm(blankForm); setShowCreateDialog(true); }}
                 className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-[0.12em] transition-transform hover:scale-[1.02]"
-                style={{ background: "linear-gradient(90deg,#6EE7F9,#9FD8FF)", color: "#000", boxShadow: "0 0 18px rgba(110,231,249,0.5)" }}
+                style={{ background: "linear-gradient(90deg,#9FF5E8,#9FD8FF)", color: "#000", boxShadow: "0 0 18px rgba(159,245,232,0.5)" }}
                 data-testid="button-add-product"
               >
                 <PlusCircle className="w-3.5 h-3.5" />
@@ -295,7 +295,7 @@ export default function AdminProductsPage() {
                 <button
                   onClick={() => { setForm(blankForm); setShowCreateDialog(true); }}
                   className="mt-3 inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-[0.12em]"
-                  style={{ background: "linear-gradient(90deg,#6EE7F9,#9FD8FF)", color: "#000", boxShadow: "0 0 18px rgba(110,231,249,0.5)" }}
+                  style={{ background: "linear-gradient(90deg,#9FF5E8,#9FD8FF)", color: "#000", boxShadow: "0 0 18px rgba(159,245,232,0.5)" }}
                 >
                   <PlusCircle className="w-3.5 h-3.5" />
                   {isAf ? "Skep eerste produk" : "Create first product"}
@@ -325,7 +325,7 @@ export default function AdminProductsPage() {
                             <div className="flex items-center justify-between pt-2 border-t border-border/50">
                               <div className="flex items-center gap-1.5">
                                 {product.is_active
-                                  ? <><CheckCircle className="w-3.5 h-3.5 text-emerald-500" /><span className="text-xs text-emerald-600 font-medium">{tr.active}</span></>
+                                  ? <><CheckCircle className="w-3.5 h-3.5 text-[#94F7C5]" /><span className="text-xs text-[#94F7C5] font-medium">{tr.active}</span></>
                                   : <><XCircle className="w-3.5 h-3.5 text-white" /><span className="text-xs text-white">{tr.inactive}</span></>
                                 }
                               </div>
@@ -423,12 +423,12 @@ export default function AdminProductsPage() {
 
       {/* ── Create Product Dialog ─────────────────────────────── */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="max-w-lg rounded-2xl bg-black border border-[#6EE7F9]/40 shadow-[0_0_40px_rgba(110,231,249,0.25)] p-0 overflow-hidden">
-          <div className="h-[3px] w-full" style={{ background: "linear-gradient(90deg,#6EE7F9,#9FD8FF,#C5B3FF,#FFB7E5)" }} />
+        <DialogContent className="max-w-lg rounded-2xl bg-black border border-[#9FF5E8]/40 shadow-[0_0_40px_rgba(159,245,232,0.25)] p-0 overflow-hidden">
+          <div className="h-[3px] w-full" style={{ background: "linear-gradient(90deg,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)" }} />
           <div className="p-6">
             <DialogHeader className="mb-5">
               <DialogTitle className="text-lg font-black text-white flex items-center gap-2">
-                <PlusCircle className="w-5 h-5" style={{ color: "#6EE7F9" }} />
+                <PlusCircle className="w-5 h-5" style={{ color: "#9FF5E8" }} />
                 {isAf ? "Nuwe Produk" : "New Product"}
               </DialogTitle>
             </DialogHeader>
@@ -442,7 +442,7 @@ export default function AdminProductsPage() {
                     value={form.nameEn}
                     onChange={e => setField("nameEn", e.target.value)}
                     placeholder="e.g. Brain Boost Pack"
-                    className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#6EE7F9]/50 h-9 text-sm"
+                    className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#9FF5E8]/50 h-9 text-sm"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -451,7 +451,7 @@ export default function AdminProductsPage() {
                     value={form.nameAf}
                     onChange={e => setField("nameAf", e.target.value)}
                     placeholder="e.g. Brein-aansporing-pak"
-                    className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#6EE7F9]/50 h-9 text-sm"
+                    className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#9FF5E8]/50 h-9 text-sm"
                   />
                 </div>
               </div>
@@ -464,7 +464,7 @@ export default function AdminProductsPage() {
                     value={form.slug}
                     onChange={e => setField("slug", slugify(e.target.value))}
                     placeholder="brain-boost-pack"
-                    className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#6EE7F9]/50 h-9 text-sm font-mono"
+                    className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#9FF5E8]/50 h-9 text-sm font-mono"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -474,7 +474,7 @@ export default function AdminProductsPage() {
                     onChange={e => setField("category", e.target.value)}
                     placeholder={categories[0] || "power-up"}
                     list="category-list"
-                    className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#6EE7F9]/50 h-9 text-sm"
+                    className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#9FF5E8]/50 h-9 text-sm"
                   />
                   <datalist id="category-list">
                     {categories.map(c => <option key={c} value={c} />)}
@@ -488,7 +488,7 @@ export default function AdminProductsPage() {
                     value={form.priceRands}
                     onChange={e => setField("priceRands", e.target.value)}
                     placeholder="49"
-                    className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#6EE7F9]/50 h-9 text-sm"
+                    className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#9FF5E8]/50 h-9 text-sm"
                   />
                 </div>
               </div>
@@ -501,7 +501,7 @@ export default function AdminProductsPage() {
                   onChange={e => setField("descriptionEn", e.target.value)}
                   placeholder="Short English description…"
                   rows={2}
-                  className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#6EE7F9]/50 text-sm resize-none"
+                  className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#9FF5E8]/50 text-sm resize-none"
                 />
               </div>
 
@@ -513,7 +513,7 @@ export default function AdminProductsPage() {
                   onChange={e => setField("descriptionAf", e.target.value)}
                   placeholder="Kort Afrikaanse beskrywing…"
                   rows={2}
-                  className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#6EE7F9]/50 text-sm resize-none"
+                  className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#9FF5E8]/50 text-sm resize-none"
                 />
               </div>
 
@@ -545,7 +545,7 @@ export default function AdminProductsPage() {
                 onClick={() => createProductMutation.mutate(form)}
                 disabled={createProductMutation.isPending || !form.nameEn || !form.nameAf || !form.slug || !form.descriptionEn || !form.descriptionAf || !form.category || !form.priceRands}
                 className="inline-flex items-center gap-2 rounded-xl px-5 py-2 text-xs font-black uppercase tracking-[0.12em] disabled:opacity-40 disabled:cursor-not-allowed transition-transform hover:scale-[1.02]"
-                style={{ background: "linear-gradient(90deg,#6EE7F9,#9FD8FF)", color: "#000", boxShadow: "0 0 18px rgba(110,231,249,0.45)" }}
+                style={{ background: "linear-gradient(90deg,#9FF5E8,#9FD8FF)", color: "#000", boxShadow: "0 0 18px rgba(159,245,232,0.45)" }}
               >
                 <PlusCircle className="w-3.5 h-3.5" />
                 {createProductMutation.isPending ? (isAf ? "Skep…" : "Creating…") : (isAf ? "Skep Produk" : "Create Product")}

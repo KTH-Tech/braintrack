@@ -134,11 +134,11 @@ function buildHtmlWrapper(opts: {
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>${heading}</title>
 </head>
-<body style="margin:0;padding:0;background-color:#000000;font-family:Arial,Helvetica,sans-serif;">
+<body style="margin:0;padding:0;background-color:#050508;font-family:Arial,Helvetica,sans-serif;">
 
   <!-- Outer wrapper -->
   <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
-         style="background-color:#000000;padding:28px 0 48px;">
+         style="background-color:#050508;padding:28px 0 48px;">
     <tr>
       <td align="center">
 
@@ -152,14 +152,17 @@ function buildHtmlWrapper(opts: {
             <td style="height:7px;background:${RAINBOW};font-size:0;line-height:0;">&nbsp;</td>
           </tr>
 
-          <!-- Header / logo area -->
+          <!-- Header / logo area (street-graffiti brand mark + wordmark) -->
           <tr>
-            <td align="center" style="padding:28px 40px 20px;background:#000000;">
-              <!-- Branded BrainTrack logo (inlined base64 so it renders in every mail client) -->
-              <img src="${BRAND_LOGO_DATA_URI}" width="260" alt="BrainTrack" style="display:block;border:0;outline:none;text-decoration:none;width:260px;max-width:80%;height:auto;margin:0 auto;" />
+            <td align="center" style="padding:26px 40px 18px;background:#050508;">
+              <!-- Brand icon (inlined base64 so it renders in every mail client) -->
+              <img src="${BRAND_LOGO_DATA_URI}" width="88" height="88" alt="BrainTrack" style="display:block;border:0;outline:none;text-decoration:none;width:88px;height:88px;margin:0 auto;" />
+              <div style="font-family:Arial,Helvetica,sans-serif;font-size:26px;font-weight:800;letter-spacing:-0.5px;color:#ffffff;margin-top:10px;">
+                Brain<span style="color:#C5B3FF;">Track</span>
+              </div>
               <!-- Tagline -->
-              <div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:600;
-                          color:#ffffff;margin-top:12px;letter-spacing:0.3px;">
+              <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:600;
+                          color:#ffffff;margin-top:6px;letter-spacing:0.3px;">
                 Powered by <strong style="color:#9FD8FF;">KTH Tech</strong>
               </div>
             </td>

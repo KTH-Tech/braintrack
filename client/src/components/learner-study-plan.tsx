@@ -5,10 +5,10 @@ import { calcReadiness, readinessBand } from "@/lib/readiness";
 import type { DailyDirective } from "@/types/daily-directive";
 
 const URGENCY_HEX: Record<string, { hex: string; halo: string }> = {
-  final_sprint:     { hex: "#FFB7E5", halo: "rgba(255,183,229,0.45)" },
-  exam_prep_mode:   { hex: "#FFE29A", halo: "rgba(255,226,154,0.45)" },
-  focused_revision: { hex: "#FFE29A", halo: "rgba(255,226,154,0.45)" },
-  build_mastery:    { hex: "#C5B3FF", halo: "rgba(197,179,255,0.45)" },
+  final_sprint:     { hex: "#FFB7E5", halo: "rgba(255,183,229,0.3)" },
+  exam_prep_mode:   { hex: "#FFE29A", halo: "rgba(255,226,154,0.3)" },
+  focused_revision: { hex: "#FFE29A", halo: "rgba(255,226,154,0.3)" },
+  build_mastery:    { hex: "#C5B3FF", halo: "rgba(197,179,255,0.3)" },
 };
 
 interface WeakTopic {
@@ -37,22 +37,22 @@ interface StudyPlanProps {
   isAf: boolean;
 }
 
-const BAND_NEON: Record<string, { hex: string; glow: string; text: string }> = {
-  red:   { hex: "#FFB7E5", glow: "rgba(255,183,229,0.55)", text: "#f5a8cc" },
-  amber: { hex: "#FFE29A", glow: "rgba(255,226,154,0.55)", text: "#ffe98a" },
-  green: { hex: "#6EE7F9", glow: "rgba(110,231,249,0.55)", text: "#a8ecf3" },
+const BAND_PASTEL: Record<string, { hex: string; glow: string }> = {
+  red:   { hex: "#FF8DA1", glow: "rgba(255,141,161,0.3)" },
+  amber: { hex: "#FFE29A", glow: "rgba(255,226,154,0.3)" },
+  green: { hex: "#94F7C5", glow: "rgba(148,247,197,0.3)" },
 };
 
-function bandNeon(band: string) {
-  return BAND_NEON[band] ?? BAND_NEON.amber;
+function bandPastel(band: string) {
+  return BAND_PASTEL[band] ?? BAND_PASTEL.amber;
 }
 
 function BandDot({ band }: { band: string }) {
-  const n = bandNeon(band);
+  const n = bandPastel(band);
   return (
     <span
       className="inline-block w-2.5 h-2.5 rounded-full shrink-0"
-      style={{ background: n.hex, boxShadow: `0 0 8px ${n.glow}, 0 0 14px ${n.glow}` }}
+      style={{ background: n.hex, boxShadow: `0 0 8px ${n.glow}` }}
     />
   );
 }
@@ -62,6 +62,8 @@ function bandLabel(band: string, isAf: boolean) {
   if (band === "amber") return isAf ? "Matig" : "Fair";
   return isAf ? "Goed" : "Good";
 }
+
+const ACCENT = "#9FF5E8";
 
 export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
   const { data: directive } = useQuery<DailyDirective>({
@@ -99,7 +101,7 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
     questionsAnswered: userStats?.questionsAnswered,
   });
   const overallBand = readinessBand(overallReadiness);
-  const overallNeon = bandNeon(overallBand);
+  const overallPastel = bandPastel(overallBand);
 
   const subjectName = (id: number) => {
     const s = subjects?.find(x => x.id === id);
@@ -114,37 +116,32 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
     .sort(([, a], [, b]) => a - b)
     .slice(0, 3);
 
-  const NEON_CYAN = "#6EE7F9";
-
   return (
     <div
-      className="relative overflow-hidden rounded-2xl bg-black"
+      className="relative overflow-hidden"
       data-testid="study-plan-widget"
       style={{
-        border: `1.5px solid ${NEON_CYAN}`,
-        boxShadow: `0 0 22px rgba(110,231,249,0.35), inset 0 0 14px rgba(0,0,0,0.55)`,
+        background: "rgba(255,255,255,.03)",
+        border: `1.5px solid ${ACCENT}`,
+        borderRadius: 20,
+        boxShadow: "0 0 22px rgba(159,245,232,0.28)",
       }}
     >
-      {/* corner brackets */}
-      <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 pointer-events-none rounded-tl-[10px]" style={{ borderColor: NEON_CYAN }} />
-      <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 pointer-events-none rounded-tr-[10px]" style={{ borderColor: NEON_CYAN }} />
-      <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 pointer-events-none rounded-bl-[10px]" style={{ borderColor: NEON_CYAN }} />
-      <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 pointer-events-none rounded-br-[10px]" style={{ borderColor: NEON_CYAN }} />
       {/* rainbow hairline */}
       <div
         aria-hidden
         className="absolute top-0 left-0 right-0 h-[2px]"
-        style={{ background: "linear-gradient(90deg,#FFE29A,#FFE29A,#FFE29A,#FFE29A,#6EE7F9,#9FD8FF,#C5B3FF,#C5B3FF,#FFB7E5)" }}
+        style={{ background: "linear-gradient(90deg,#FFB7E5,#FFE29A,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)" }}
       />
 
-      <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid rgba(110,231,249,0.25)" }}>
+      <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid rgba(255,255,255,.08)" }}>
         <div className="flex items-center gap-2">
-          <Target className="w-4 h-4" style={{ color: NEON_CYAN, filter: `drop-shadow(0 0 6px ${NEON_CYAN})` }} />
-          <h2 className="text-sm font-black uppercase tracking-[0.18em]" style={{ color: NEON_CYAN, textShadow: `0 0 8px rgba(110,231,249,0.6)` }}>
+          <Target className="w-4 h-4" style={{ color: ACCENT }} />
+          <h2 className="text-sm uppercase tracking-[0.14em]" style={{ color: ACCENT, fontFamily: "'Poppins',sans-serif", fontWeight: 800 }}>
             {isAf ? "Studieplan" : "Study Plan"}
           </h2>
         </div>
-        <span className="text-[9px] font-black uppercase tracking-[0.22em]" style={{ color:"#ffffff" }}>
+        <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
           {isAf ? "Top 3 swak" : "Top 3 weak"}
         </span>
       </div>
@@ -157,34 +154,34 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
         return (
           <div className="px-4 pt-4" data-testid="today-directive-card">
             <div
-              className="relative rounded-xl bg-black p-4 overflow-hidden"
+              className="relative rounded-2xl p-4 overflow-hidden"
               style={{
+                background: "rgba(255,255,255,.03)",
                 border: `1.5px solid ${u.hex}`,
-                boxShadow: `0 0 0 1px ${u.halo}, 0 0 22px ${u.halo}, inset 0 0 14px rgba(0,0,0,0.55)`,
+                boxShadow: `0 0 22px ${u.halo}`,
               }}
             >
-              <span aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: u.hex, boxShadow: `0 0 8px ${u.hex}` }} />
               <div className="flex items-start gap-3">
                 <div
-                  className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shrink-0"
-                  style={{ border: `1.5px solid ${u.hex}`, boxShadow: `0 0 12px ${u.halo}, inset 0 0 8px ${u.halo}` }}
+                  className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                  style={{ background: `${u.hex}26`, boxShadow: `0 0 14px ${u.halo}` }}
                 >
                   {directive.isExamToday ? (
-                    <AlertTriangle className="w-5 h-5" style={{ color: u.hex, filter: `drop-shadow(0 0 4px ${u.halo})` }} />
+                    <AlertTriangle className="w-5 h-5" style={{ color: u.hex }} />
                   ) : (
-                    <Rocket className="w-5 h-5" style={{ color: u.hex, filter: `drop-shadow(0 0 4px ${u.halo})` }} />
+                    <Rocket className="w-5 h-5" style={{ color: u.hex }} />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <p className="text-[10px] font-black uppercase tracking-[0.22em]" style={{ color: u.hex, textShadow: `0 0 6px ${u.halo}` }}>
+                    <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: u.hex, fontFamily: "'Poppins',sans-serif", fontWeight: 800 }}>
                       {directive.isExamToday
                         ? (isAf ? "Eksamen Vandag" : "Exam Today")
                         : (isAf ? "Vandag se Fokus" : "Today's Focus")}
                     </p>
                     <span
-                      className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-black"
-                      style={{ color: u.hex, border: `1px solid ${u.hex}66` }}
+                      className="text-[9px] font-bold px-1.5 py-0.5 rounded-md"
+                      style={{ color: u.hex, background: `${u.hex}1F`, border: `1px solid ${u.hex}66` }}
                     >
                       {isAf ? directive.urgencyLabelAf : directive.urgencyLabel}
                     </span>
@@ -192,31 +189,36 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
                   <p className="text-base font-black text-white leading-tight truncate">
                     {subjectLabel}{directive.paperNumber ? ` · ${isAf ? "V" : "P"}${directive.paperNumber}` : ""}
                   </p>
-                  <p className="text-[11px] mt-1 leading-snug" style={{ color:"#ffffff" }}>
+                  <p className="text-[11px] mt-1 leading-snug" style={{ color: "#ffffff" }}>
                     {isAf ? directive.messageAf : directive.message}
                   </p>
                   <div className="flex items-center justify-between gap-2 mt-2.5 flex-wrap">
                     <div className="flex items-baseline gap-1">
                       <span
                         className="font-black tabular-nums leading-none"
-                        style={{ fontSize: 28, color: u.hex, fontFamily: '"JetBrains Mono", monospace', textShadow: `0 0 12px ${u.halo}` }}
+                        style={{ fontSize: 28, color: u.hex }}
                       >
                         {days}
                       </span>
-                      <span className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color:"#ffffff" }}>
+                      <span className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: "#ffffff" }}>
                         {days === 1 ? (isAf ? "dag oor" : "day left") : (isAf ? "dae oor" : "days left")}
                       </span>
                     </div>
                     <Link href={directive.deepLink}>
                       <button
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-[0.16em] bg-black transition-all hover:scale-[1.03]"
+                        className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-[10px] text-[11px]"
                         data-testid="today-directive-cta"
                         style={{
-                          color: u.hex,
-                          border: `1.5px solid ${u.hex}`,
-                          boxShadow: `0 0 12px ${u.halo}`,
-                          textShadow: `0 0 6px ${u.halo}`,
+                          fontFamily: "'Poppins',sans-serif",
+                          fontWeight: 800,
+                          color: "#050508",
+                          background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
+                          border: "none",
+                          cursor: "pointer",
+                          transition: "all .2s",
                         }}
+                        onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(159,245,232,.35)"; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}
                       >
                         {isAf ? "Studeer Nou" : "Study Now"}
                         <ChevronRight className="w-3 h-3" />
@@ -236,7 +238,7 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
             <div
               key={i}
               className="h-16 rounded-xl animate-pulse"
-              style={{ background: "rgba(110,231,249,0.06)", border: "1px solid rgba(110,231,249,0.15)" }}
+              style={{ background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.08)" }}
             />
           ))
         ) : topics.length === 0 ? (
@@ -244,14 +246,13 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
             <div
               className="w-12 h-12 mx-auto mb-3 rounded-2xl flex items-center justify-center"
               style={{
-                background: "rgba(110,231,249,0.10)",
-                border: `1px solid ${NEON_CYAN}55`,
-                boxShadow: `0 0 14px rgba(110,231,249,0.35)`,
+                background: "rgba(148,247,197,.16)",
+                boxShadow: "0 0 14px rgba(148,247,197,0.3)",
               }}
             >
-              <TrendingUp className="w-6 h-6" style={{ color: NEON_CYAN, filter: `drop-shadow(0 0 6px ${NEON_CYAN})` }} />
+              <TrendingUp className="w-6 h-6" style={{ color: "#94F7C5" }} />
             </div>
-            <p className="text-xs font-bold" style={{ color:"#ffffff" }}>
+            <p className="text-xs font-bold" style={{ color: "#ffffff" }}>
               {isAf ? "Geen swak onderwerpe gevind nie. Goeie werk!" : "No weak topics found — great work!"}
             </p>
           </div>
@@ -260,25 +261,25 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
             const t = wt.topic!;
             const href = `/subject/${t.subjectId}`;
             const subjectReadiness = readinessData?.readiness?.[t.subjectId];
-            const neon = bandNeon(wt.masteryBand);
-            const tierHex = subjectReadiness !== undefined ? bandNeon(readinessBand(subjectReadiness)).hex : neon.hex;
+            const pastel = bandPastel(wt.masteryBand);
+            const tierHex = subjectReadiness !== undefined ? bandPastel(readinessBand(subjectReadiness)).hex : pastel.hex;
             return (
               <div
                 key={wt.topicId}
-                className="flex items-center gap-3 p-3 rounded-xl bg-black"
+                className="flex items-center gap-3 p-3 rounded-xl"
                 data-testid={`study-plan-topic-${idx}`}
                 style={{
-                  border: `1px solid ${neon.hex}55`,
-                  boxShadow: `0 0 12px ${neon.hex}33, inset 0 0 10px rgba(0,0,0,0.5)`,
+                  background: "rgba(255,255,255,.03)",
+                  border: `1px solid ${pastel.hex}55`,
+                  boxShadow: `0 0 12px ${pastel.glow}`,
                 }}
               >
                 <div
-                  className="w-8 h-8 rounded-full flex items-center justify-center font-black text-xs shrink-0 bg-black tabular-nums"
+                  className="w-8 h-8 rounded-full flex items-center justify-center font-black text-xs shrink-0 tabular-nums"
                   style={{
-                    border: `1px solid ${neon.hex}`,
-                    color: neon.hex,
-                    boxShadow: `0 0 8px ${neon.glow}`,
-                    fontFamily: '"JetBrains Mono", monospace',
+                    background: `${pastel.hex}26`,
+                    color: pastel.hex,
+                    boxShadow: `0 0 8px ${pastel.glow}`,
                   }}
                 >
                   {idx + 1}
@@ -286,29 +287,34 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
                     <BandDot band={wt.masteryBand} />
-                    <p className="font-bold text-sm truncate" style={{ color:"#ffffff" }}>
+                    <p className="font-bold text-sm truncate" style={{ color: "#ffffff" }}>
                       {isAf ? (t.nameAfrikaans || t.name) : t.name}
                     </p>
                   </div>
-                  <p className="text-[10px] mt-0.5 flex flex-wrap items-center gap-1.5" style={{ color:"#ffffff" }}>
-                    <span className="font-bold tabular-nums" style={{ color: neon.text, fontFamily: '"JetBrains Mono", monospace' }}>
+                  <p className="text-[10px] mt-0.5 flex flex-wrap items-center gap-1.5" style={{ color: "#ffffff" }}>
+                    <span className="font-bold tabular-nums" style={{ color: pastel.hex }}>
                       {wt.masteryScore}%
                     </span>
                     <span>· {bandLabel(wt.masteryBand, isAf)}</span>
-                    <span style={{ color:"#ffffff" }}>·</span>
+                    <span style={{ color: "#ffffff" }}>·</span>
                     <span>{subjectName(t.subjectId)}</span>
                   </p>
                 </div>
                 <Link href={href}>
                   <button
-                    className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-[0.14em] bg-black transition-all hover:scale-[1.03]"
+                    className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-[10px] text-[10px] uppercase tracking-[0.1em]"
                     data-testid={`study-now-${idx}`}
                     style={{
+                      fontFamily: "'Poppins',sans-serif",
+                      fontWeight: 800,
                       color: tierHex,
-                      border: `1px solid ${tierHex}`,
-                      boxShadow: `0 0 10px ${tierHex}55`,
-                      textShadow: `0 0 6px ${tierHex}99`,
+                      background: "transparent",
+                      border: `1.5px solid ${tierHex}`,
+                      cursor: "pointer",
+                      transition: "transform .2s",
                     }}
+                    onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
                   >
                     {isAf ? "Studeer" : "Study Now"}
                     <ChevronRight className="w-3 h-3" />
@@ -320,26 +326,24 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
         )}
 
         {(readinessEntries.length > 0 || overallReadiness > 0) && (
-          <div className="pt-3 mt-1 space-y-2" style={{ borderTop: "1px solid rgba(110,231,249,0.18)" }} data-testid="readiness-summary">
+          <div className="pt-3 mt-1 space-y-2" style={{ borderTop: "1px solid rgba(255,255,255,.08)" }} data-testid="readiness-summary">
             <div className="flex items-center justify-between gap-2">
-              <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: NEON_CYAN }}>
-                <ShieldCheck className="w-3.5 h-3.5" style={{ filter: `drop-shadow(0 0 4px ${NEON_CYAN})` }} />
+              <p className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.16em]" style={{ color: ACCENT, fontFamily: "'Poppins',sans-serif", fontWeight: 800 }}>
+                <ShieldCheck className="w-3.5 h-3.5" />
                 {isAf ? "Gereedheidstellings" : "Readiness Scores"}
               </p>
               <span
                 data-testid="readiness-overall"
-                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-[0.16em] bg-black"
+                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-[0.14em]"
                 style={{
-                  border: `1px solid ${overallNeon.hex}`,
-                  boxShadow: `0 0 8px ${overallNeon.glow}`,
-                  color: overallNeon.hex,
+                  background: `${overallPastel.hex}1F`,
+                  border: `1px solid ${overallPastel.hex}`,
+                  boxShadow: `0 0 8px ${overallPastel.glow}`,
+                  color: overallPastel.hex,
                 }}
               >
                 {isAf ? "Algeheel" : "Overall"}
-                <span
-                  className="tabular-nums"
-                  style={{ fontFamily: '"JetBrains Mono", monospace', textShadow: `0 0 6px ${overallNeon.glow}` }}
-                >
+                <span className="tabular-nums">
                   {overallReadiness}%
                 </span>
               </span>
@@ -347,24 +351,22 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
             <div className="flex flex-wrap gap-1.5">
               {readinessEntries.map(([subjectId, score]) => {
                 const band = readinessBand(score);
-                const n = bandNeon(band);
+                const n = bandPastel(band);
                 return (
                   <Link href={`/subject/${subjectId}`} key={subjectId}>
                     <span
                       data-testid={`readiness-pill-${subjectId}`}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-black transition-all hover:scale-[1.03]"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold transition-transform hover:-translate-y-0.5"
                       style={{
+                        background: `${n.hex}14`,
                         border: `1px solid ${n.hex}`,
                         boxShadow: `0 0 8px ${n.glow}`,
-                        color: n.text,
+                        color: "#ffffff",
                       }}
                     >
                       <span className="truncate max-w-[110px]">{subjectName(subjectId)}</span>
-                      <span style={{ color:"#ffffff" }}>·</span>
-                      <span
-                        className="tabular-nums font-black"
-                        style={{ color: n.hex, fontFamily: '"JetBrains Mono", monospace', textShadow: `0 0 6px ${n.glow}` }}
-                      >
+                      <span style={{ color: "#ffffff" }}>·</span>
+                      <span className="tabular-nums font-black" style={{ color: n.hex }}>
                         {score}%
                       </span>
                     </span>

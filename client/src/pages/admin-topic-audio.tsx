@@ -58,7 +58,7 @@ type BulkJobStatus = {
   items: BulkJobItem[];
 };
 
-const NEON = "#6EE7F9";
+const NEON = "#9FF5E8";
 const PINK = "#FFB7E5";
 const GOLD = "#FFE29A";
 const PURPLE = "#C5B3FF";
@@ -112,7 +112,7 @@ function BulkStatusBadge({
       </span>
     );
   return (
-    <span className="inline-flex items-center gap-0.5 text-[9px] font-black uppercase tracking-wider px-1 py-0.5 rounded-full" style={{ border: `1px solid rgba(255,255,255,0.3)`, color: "rgba(255,255,255,0.5)" }}>
+    <span className="inline-flex items-center gap-0.5 text-[9px] font-black uppercase tracking-wider px-1 py-0.5 rounded-full" style={{ border: `1px solid rgba(255,255,255,0.3)`, color: "rgba(255,255,255,0.85)" }}>
       <Clock className="w-2.5 h-2.5" />
       {isAf ? "Wagstand" : "Queued"}
     </span>
@@ -587,14 +587,14 @@ export default function AdminTopicAudioPage() {
   // endpoints are still authoritatively guarded by requireRole("admin").
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+      <div className="min-h-screen text-white flex items-center justify-center" style={{ background: "#050508" }}>
         <Loader2 className="w-5 h-5 animate-spin" style={{ color: NEON }} />
       </div>
     );
   }
   if (user?.role !== "admin") {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center p-6">
+      <div className="min-h-screen text-white flex items-center justify-center p-6" style={{ background: "#050508" }}>
         <div
           className="max-w-md text-center rounded-2xl p-6 bg-black"
           style={{ border: `1px solid ${PINK}` }}
@@ -603,11 +603,11 @@ export default function AdminTopicAudioPage() {
           <p className="text-[10px] font-black uppercase tracking-[0.22em]" style={{ color: PINK }}>
             {isAf ? "Slegs Admin" : "Admin Only"}
           </p>
-          <h1 className="text-xl font-black text-white mt-2">
+          <div role="heading" aria-level={1} className="text-xl font-black text-white mt-2">
             {isAf
               ? "Hierdie bladsy is net vir administrateurs."
               : "This page is for administrators only."}
-          </h1>
+          </div>
           <Link
             href="/dashboard"
             className="inline-block mt-4 text-xs font-bold underline text-white"
@@ -625,13 +625,13 @@ export default function AdminTopicAudioPage() {
   ).length;
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen text-white" style={{ background: "#050508", fontFamily: "'Poppins', system-ui, sans-serif" }}>
       <AdminTopNav current="topic-audio" />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-5">
         <section
           className="rounded-2xl p-4 bg-black"
-          style={{ border: `1.5px solid ${NEON}`, boxShadow: `0 0 24px rgba(110,231,249,0.25)` }}
+          style={{ border: `1.5px solid ${NEON}`, boxShadow: `0 0 24px rgba(159,245,232,0.25)` }}
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
             <label className="text-xs">
@@ -642,7 +642,7 @@ export default function AdminTopicAudioPage() {
                 value={subjectId}
                 onChange={(e) => setSubjectId(e.target.value)}
                 className="w-full bg-black text-white text-xs px-2 py-1.5 rounded-md"
-                style={{ border: `1px solid rgba(110,231,249,0.45)` }}
+                style={{ border: `1px solid rgba(159,245,232,0.45)` }}
                 data-testid="filter-subject"
               >
                 <option value="">{isAf ? "Alle vakke" : "All subjects"}</option>
@@ -662,7 +662,7 @@ export default function AdminTopicAudioPage() {
                 value={missing}
                 onChange={(e) => setMissing(e.target.value)}
                 className="w-full bg-black text-white text-xs px-2 py-1.5 rounded-md"
-                style={{ border: `1px solid rgba(110,231,249,0.45)` }}
+                style={{ border: `1px solid rgba(159,245,232,0.45)` }}
                 data-testid="filter-missing"
               >
                 <option value="">{isAf ? "Enige status" : "Any status"}</option>
@@ -683,7 +683,7 @@ export default function AdminTopicAudioPage() {
                 onChange={(e) => setOlderThanDays(e.target.value.replace(/[^0-9]/g, ""))}
                 placeholder="0"
                 className="w-full bg-black text-white text-xs px-2 py-1.5 rounded-md"
-                style={{ border: `1px solid rgba(110,231,249,0.45)` }}
+                style={{ border: `1px solid rgba(159,245,232,0.45)` }}
                 data-testid="filter-older"
               />
             </label>
@@ -698,7 +698,7 @@ export default function AdminTopicAudioPage() {
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={isAf ? "onderwerp/vak" : "topic / subject"}
                 className="w-full bg-black text-white text-xs px-2 py-1.5 rounded-md"
-                style={{ border: `1px solid rgba(110,231,249,0.45)` }}
+                style={{ border: `1px solid rgba(159,245,232,0.45)` }}
                 data-testid="filter-search"
               />
             </label>

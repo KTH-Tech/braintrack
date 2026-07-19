@@ -3,11 +3,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/language-context";
 import { useLocation, Link } from "wouter";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-
-type MysteryReward = { type: "coins" | "theme"; amount?: number; themeKey?: string; label: string; labelAf: string };
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,12 +16,11 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  Coins, Lock, Loader2, Check, ShoppingBag, Palette, Sparkles, Star,
-  Home, LogOut, Globe, Crown, Shield, Zap, Trophy, Frame, User, Gem,
-  Rocket, Brain, GraduationCap, Heart,
+  Coins, Lock, Loader2, Check, ShoppingBag, Sparkles,
+  ArrowLeft, LogOut, Globe, Shield, Rocket,
 } from "lucide-react";
-import { PageHeader } from "@/components/page-header";
-import { useTheme, type ThemeMode } from "@/hooks/use-theme";
+
+type MysteryReward = { type: "coins" | "theme"; amount?: number; themeKey?: string; label: string; labelAf: string };
 
 interface StoreItem {
   key: string;
@@ -32,96 +28,40 @@ interface StoreItem {
   nameAf: string;
   description: string;
   descriptionAf: string;
-  type: string;                       // theme | power_up | cosmetic | avatar_item | badge_frame | title
+  type: string;
   coinCost: number;
   subscriptionTier: string | null;
-  themeKey: ThemeMode | null;
+  themeKey: string | null;
   tier: "free" | "unlockable" | "premium";
   palette: string[] | null;
 }
 
-type TabKey = "all" | "power_up" | "theme" | "cosmetic" | "title";
-
-const TAB_DEF: { key: TabKey; en: string; af: string; icon: any; types: string[] }[] = [
-  { key: "all",       en: "All",        af: "Alles",         icon: ShoppingBag,    types: ["theme", "power_up", "cosmetic", "avatar_item", "badge_frame", "title"] },
-  { key: "power_up",  en: "Power-Ups",  af: "Hupstote",      icon: Rocket,         types: ["power_up"] },
-  { key: "theme",     en: "Themes",     af: "Temas",         icon: Palette,        types: ["theme"] },
-  { key: "cosmetic",  en: "Cosmetics",  af: "Kosmetika",     icon: Gem,            types: ["cosmetic", "avatar_item", "badge_frame"] },
-  { key: "title",     en: "Titles",     af: "Titels",        icon: Crown,          types: ["title"] },
-];
-
-const ITEM_ICONS: Record<string, any> = {
-  theme:        Palette,
-  badge_frame:  Frame,
-  avatar_item:  User,
-  cosmetic:     Sparkles,
-  power_up:     Rocket,
-  title:        Crown,
-};
-
-// Type-specific icon overrides for known product keys.
-const KEY_ICONS: Record<string, any> = {
-  "streak-freeze":     Shield,
-  "rizz-boost":        Brain,
-  "double-coins":      Rocket,
-  "mystery-box":       Sparkles,
-  "title-scholar":     GraduationCap,
-  "title-rising-star": Star,
-  "title-matric-hero": Trophy,
-  "avatar-frame-gold": Heart,
-  "avatar-hat-wizard": User,
-  "avatar-halo-star":  Star,
-};
-
-const PRODUCT_GRADIENTS: Record<string, string> = {
-  "streak-freeze":          "from-cyan-400 to-blue-600",
-  "rizz-boost":             "from-blue-400 to-indigo-600",
-  "double-coins":           "from-amber-400 to-orange-600",
-  "mystery-box":            "from-fuchsia-400 to-purple-600",
-  "title-scholar":          "from-amber-400 to-yellow-600",
-  "title-rising-star":      "from-yellow-300 to-amber-500",
-  "title-matric-hero":      "from-orange-400 to-red-600",
-  "avatar-frame-gold":      "from-yellow-400 to-amber-500",
-  "avatar-hat-wizard":      "from-cyan-500 to-blue-700",
-  "avatar-halo-star":       "from-yellow-300 to-amber-500",
-  "cosmetic-sparkle-trail": "from-pink-400 to-cyan-500",
-  "badge-frame-gold":       "from-yellow-400 to-amber-500",
-  "badge-frame-neon":       "from-cyan-400 to-cyan-500",
-  "badge-frame-fire":       "from-orange-400 to-red-600",
-};
-
-const TIER_LABEL: Record<string, { en: string; af: string }> = {
-  free:       { en: "Free",       af: "Gratis"     },
-  unlockable: { en: "Unlockable", af: "Ontsluitbaar" },
-  premium:    { en: "Premium",    af: "Premium"    },
+/* ── Reality filter ──────────────────────────────────────────────────
+   The store shows ONLY power-ups with real server-side effects:
+   - streak-freeze : storage.updateStreak checks it before resetting a streak
+   - double-coins  : storage.awardCoins doubles earnings while active
+   - mystery-box   : server rolls a random coin reward on purchase
+   Everything else the API may still return (themes, titles, badge frames,
+   avatar items, cosmetics, rizz-boost) has NO effect anywhere in the app
+   and is deliberately not rendered. */
+const REAL_POWER_UPS: Record<string, { icon: any; hex: string; tilt: number }> = {
+  "streak-freeze": { icon: Shield,   hex: "#9FF5E8", tilt: -1 },
+  "double-coins":  { icon: Rocket,   hex: "#FFE29A", tilt: 0.8 },
+  "mystery-box":   { icon: Sparkles, hex: "#C5B3FF", tilt: -0.7 },
 };
 
 const OWNED_EFFECT: Record<string, { en: string; af: string }> = {
-  "streak-freeze":     { en: "Shield ready",        af: "Skild gereed"            },
-  "rizz-boost":        { en: "Boost active",        af: "Hupstoot aktief"         },
-  "double-coins":      { en: "2x active",           af: "2x aktief"               },
-  "mystery-box":       { en: "Box opened",          af: "Kas oopgemaak"           },
-  "title-scholar":     { en: "Title equipped",      af: "Titel toegerus"          },
-  "title-rising-star": { en: "Title equipped",      af: "Titel toegerus"          },
-  "title-matric-hero": { en: "Title equipped",      af: "Titel toegerus"          },
-};
-
-// Fallback owned-effect labels by item type so every owned card shows
-// a clear "what you get" line, not just keys present in OWNED_EFFECT.
-const TYPE_OWNED_EFFECT: Record<string, { en: string; af: string }> = {
-  theme:        { en: "Theme available",    af: "Tema beskikbaar"     },
-  power_up:     { en: "Power-up ready",     af: "Hupstoot gereed"     },
-  cosmetic:     { en: "Cosmetic unlocked",  af: "Kosmetika ontsluit"  },
-  avatar_item:  { en: "Avatar unlocked",    af: "Avatar ontsluit"     },
-  badge_frame:  { en: "Frame equipped",     af: "Raam toegerus"       },
-  title:        { en: "Title equipped",     af: "Titel toegerus"      },
+  "streak-freeze": { en: "Shield ready", af: "Skild gereed" },
+  "double-coins":  { en: "2x active",    af: "2x aktief"    },
+  "mystery-box":   { en: "Box opened",   af: "Kas oopgemaak" },
 };
 
 const T = {
   en: {
     pageTitle: "Learner Store",
-    heroTitle: "Your Learner Store",
-    heroSubtitle: "One place for it all — themes, power-ups, cosmetics, and titles.",
+    heroEyebrow: "spend those coins!",
+    heroTitle: "Power-Up Store",
+    heroSubtitle: "Real boosts, earned with real coins. Protect your streak, double your earnings, or roll the Mystery Box.",
     homeTitle: "Home",
     signOutTitle: "Sign Out",
     purchaseConfirmed: "Purchase confirmed!",
@@ -129,26 +69,23 @@ const T = {
     notEnoughCoins: "Not enough coins",
     couldNotUnlock: "Could not unlock",
     tryAgain: "Please try again.",
-    themeApplied: "Theme applied!",
     earnCoins: "Earn coins by answering questions, building streaks, and completing challenges.",
     viewRewards: "View your rewards →",
     confirmPurchase: "Confirm purchase",
     cancel: "Cancel",
     confirm: "Confirm",
-    noItemsInCategory: "No items in this category.",
-    activeLabel: "Active",
-    applyLabel: "Apply",
     ownedLabel: "Owned",
-    subscribeLabel: "Subscribe",
     tooFewLabel: "Too few",
     unlockLabel: "Unlock",
-    premiumLabel: "Premium",
-    freeLabel: "Free",
+    coinsLabel: "coins",
+    mysteryRewardTitle: "Mystery Box Reward!",
+    mysteryThanks: "Nice!",
   },
   af: {
     pageTitle: "Leerderwinkel",
-    heroTitle: "Jou Leerderwinkel",
-    heroSubtitle: "Een plek vir alles — temas, hupstote, kosmetika en titels.",
+    heroEyebrow: "spandeer daai munte!",
+    heroTitle: "Hupstoot-Winkel",
+    heroSubtitle: "Egte hupstote, verdien met egte munte. Beskerm jou reeks, verdubbel jou munte, of waag die Raaiselkas.",
     homeTitle: "Tuis",
     signOutTitle: "Uitteken",
     purchaseConfirmed: "Aankoop bevestig!",
@@ -156,21 +93,17 @@ const T = {
     notEnoughCoins: "Nie genoeg munte nie",
     couldNotUnlock: "Kon nie ontsluit nie",
     tryAgain: "Probeer asseblief weer.",
-    themeApplied: "Tema toegepas!",
     earnCoins: "Verdien munte deur vrae te beantwoord, reekse te bou en uitdagings te voltooi.",
     viewRewards: "Sien jou belonings →",
     confirmPurchase: "Bevestig aankoop",
     cancel: "Kanselleer",
     confirm: "Bevestig",
-    noItemsInCategory: "Geen items in hierdie kategorie nie.",
-    activeLabel: "Aktief",
-    applyLabel: "Pas toe",
     ownedLabel: "Eie",
-    subscribeLabel: "Inskryf",
     tooFewLabel: "Te min",
     unlockLabel: "Ontsluit",
-    premiumLabel: "Premium",
-    freeLabel: "Gratis",
+    coinsLabel: "munte",
+    mysteryRewardTitle: "Raaiselkas Beloning!",
+    mysteryThanks: "Dankie!",
   },
 } as const;
 
@@ -182,20 +115,15 @@ export default function StorePage() {
   const t = T[language];
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { theme: activeTheme, setTheme } = useTheme();
 
-  const [activeTab, setActiveTab] = useState<TabKey>("all");
   const [unlocking, setUnlocking] = useState<string | null>(null);
   const [confirmItem, setConfirmItem] = useState<StoreItem | null>(null);
-  const [ownership, setOwnership] = useState<"any" | "owned" | "locked">("any");
-  const [sortBy, setSortBy] = useState<"recommended" | "price-asc" | "price-desc">("recommended");
+  const [mysteryReward, setMysteryReward] = useState<MysteryReward | null>(null);
 
   if (user?.role === "parent") {
     navigate("/parent");
     return null;
   }
-
-  const [mysteryReward, setMysteryReward] = useState<MysteryReward | null>(null);
 
   const { data: storeData, isLoading } = useQuery<{
     items: StoreItem[];
@@ -211,7 +139,6 @@ export default function StorePage() {
     onSuccess: (data: any, vars) => {
       queryClient.invalidateQueries({ queryKey: ["/api/store/items"] });
       queryClient.invalidateQueries({ queryKey: ["/api/user/coins"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/user/themes"] });
       setUnlocking(null);
       setConfirmItem(null);
       if (vars.itemKey === "mystery-box" && data?.reward) {
@@ -239,45 +166,23 @@ export default function StorePage() {
     },
   });
 
-  const items = storeData?.items ?? [];
-  const userUnlocks = useMemo(() => new Set(storeData?.userUnlocks ?? []), [storeData?.userUnlocks]);
   const balance = storeData?.coinBalance ?? 0;
-  const subTier = storeData?.subscriptionTier;
+  const userUnlocks = useMemo(() => new Set(storeData?.userUnlocks ?? []), [storeData?.userUnlocks]);
   const activePowerUps = storeData?.activePowerUps ?? {};
 
-  // Double-coins: compute hours remaining for display
+  // Only real, server-enforced power-ups make it onto the shelf.
+  const visibleItems = useMemo(
+    () => (storeData?.items ?? []).filter((i) => REAL_POWER_UPS[i.key]),
+    [storeData?.items]
+  );
+
   const doubleCoinsExpiresAt = activePowerUps["double-coins"]?.expiresAt;
   const doubleCoinsHoursLeft = doubleCoinsExpiresAt
     ? Math.max(0, Math.ceil((new Date(doubleCoinsExpiresAt).getTime() - Date.now()) / 3_600_000))
     : 0;
 
-  const tabCounts = useMemo(() => {
-    const c: Record<TabKey, number> = { all: 0, power_up: 0, theme: 0, cosmetic: 0, title: 0 };
-    for (const def of TAB_DEF) {
-      c[def.key] = items.filter((i) => def.types.includes(i.type)).length;
-    }
-    return c;
-  }, [items]);
-
-  const visibleItems = useMemo(() => {
-    const def = TAB_DEF.find((t) => t.key === activeTab)!;
-    return items.filter((i) => def.types.includes(i.type));
-  }, [items, activeTab]);
-
-  const isOwned = (item: StoreItem) =>
-    userUnlocks.has(item.key) || (item.themeKey ? userUnlocks.has(item.themeKey) : false);
-  const isActiveTheme = (item: StoreItem) => item.type === "theme" && item.themeKey === activeTheme;
+  const isOwned = (item: StoreItem) => userUnlocks.has(item.key);
   const canAfford = (item: StoreItem) => balance >= item.coinCost;
-  const requiresSubscription = (item: StoreItem) => item.tier === "premium" && !subTier;
-
-  const applyOwnershipAndSort = (list: StoreItem[]): StoreItem[] => {
-    let filtered = list;
-    if (ownership === "owned") filtered = filtered.filter(isOwned);
-    else if (ownership === "locked") filtered = filtered.filter((i) => !isOwned(i));
-    if (sortBy === "price-asc") filtered = [...filtered].sort((a, b) => a.coinCost - b.coinCost);
-    else if (sortBy === "price-desc") filtered = [...filtered].sort((a, b) => b.coinCost - a.coinCost);
-    return filtered;
-  };
 
   const requestUnlock = (item: StoreItem) => {
     if (item.key !== "mystery-box" && isOwned(item)) return;
@@ -300,30 +205,31 @@ export default function StorePage() {
     unlockMutation.mutate({ itemKey: confirmItem.key, method: "coins" });
   };
 
-  const applyTheme = (item: StoreItem) => {
-    if (!item.themeKey) return;
-    setTheme(item.themeKey);
-    toast({
-      title: t.themeApplied,
-      description: isAf ? item.nameAf : item.name,
-    });
-  };
-
   return (
-    <div className="min-h-screen text-white">
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-background/80 ">
-        <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-14 gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#6EE7F9] via-[#9FD8FF] to-[#C5B3FF] flex items-center justify-center shadow-lg shadow-[#6EE7F9]/30">
-              <ShoppingBag className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-bold text-sm text-white">
+    <div className="min-h-screen text-white relative overflow-hidden" style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}>
+      {/* Header */}
+      <header className="sticky top-0 z-50 border-b" style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "rgba(255,255,255,.08)" }}>
+        <div className="max-w-5xl mx-auto px-4 flex items-center justify-between h-16 gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <button
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0"
+              style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
+              onClick={() => navigate("/dashboard")} title={t.homeTitle} data-testid="button-home"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span className="hidden md:inline">{t.homeTitle}</span>
+            </button>
+            <span
+              className="hidden sm:inline truncate"
+              style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 10px rgba(159,245,232,.45)" }}
+            >
               {t.pageTitle}
             </span>
           </div>
           <div className="flex items-center gap-2">
             <div
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#FFE29A]/10 border border-[#FFE29A]/40 text-xs font-bold text-[#FFE29A]"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold tabular-nums"
+              style={{ background: "rgba(255,226,154,.12)", border: "1.5px solid rgba(255,226,154,.5)", color: "#FFE29A", boxShadow: "0 0 12px rgba(255,226,154,.2)" }}
               data-testid="coin-balance-header"
             >
               <Coins className="w-3.5 h-3.5" />
@@ -331,7 +237,7 @@ export default function StorePage() {
             </div>
             <button
               onClick={toggleLanguage}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-black transition-colors text-sm font-bold hover:bg-white/5"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
               style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
               data-testid="button-language-toggle"
             >
@@ -339,14 +245,7 @@ export default function StorePage() {
               {language === "en" ? "EN" : "AF"}
             </button>
             <button
-              className="w-9 h-9 flex items-center justify-center rounded-xl bg-black"
-              style={{ color: "#6EE7F9", border: "1.5px solid #6EE7F9" }}
-              onClick={() => navigate("/dashboard")} title={t.homeTitle} data-testid="button-home"
-            >
-              <Home className="h-4 w-4" />
-            </button>
-            <button
-              className="w-9 h-9 flex items-center justify-center rounded-xl bg-black"
+              className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/[.03] hover:bg-white/10"
               style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}
               onClick={() => logout()} title={t.signOutTitle} data-testid="button-logout"
             >
@@ -356,151 +255,170 @@ export default function StorePage() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-10 space-y-8">
-        <PageHeader
-          icon={ShoppingBag}
-          title={t.heroTitle}
-          subtitle={t.heroSubtitle}
-        />
+      <main className="relative max-w-5xl mx-auto px-4 py-10 sm:py-14 space-y-10">
+        {/* Ambient auras */}
+        <div aria-hidden className="pointer-events-none absolute -top-24 -left-24 w-[380px] h-[380px] rounded-full blur-[120px] opacity-35" style={{ background: "#C5B3FF" }} />
+        <div aria-hidden className="pointer-events-none absolute top-48 -right-24 w-[340px] h-[340px] rounded-full blur-[120px] opacity-30" style={{ background: "#FFE29A" }} />
 
-        {/* Tabs */}
-        <div className="flex flex-wrap gap-2 justify-center">
-          {TAB_DEF.map((t) => {
-            const Icon = t.icon;
-            const isActive = activeTab === t.key;
-            return (
-              <button
-                key={t.key}
-                onClick={() => setActiveTab(t.key)}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-all"
-                style={
-                  isActive
-                    ? { background: "#6EE7F9", color: "#0a0a0a" }
-                    : { background: "#000", color: "#6EE7F9", border: "1.5px solid #6EE7F9" }
-                }
-                data-testid={`tab-${t.key}`}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                {isAf ? t.af : t.en}
-                <span className="ml-1 text-[10px] opacity-70 tabular-nums">{tabCounts[t.key]}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Filter & Sort controls */}
-        {!isLoading && (
-          <div className="flex flex-wrap items-center justify-center gap-2 text-xs">
-            <div className="flex items-center gap-1 border border-white/10 rounded-xl p-1" data-testid="filter-ownership">
-              {[
-                { v: "any" as const,    en: "All",    af: "Alle"     },
-                { v: "owned" as const,  en: "Owned",  af: "Besit"    },
-                { v: "locked" as const, en: "Locked", af: "Gesluit"  },
-              ].map((o) => (
-                <button
-                  key={o.v}
-                  onClick={() => setOwnership(o.v)}
-                  className="px-4 py-2 rounded-xl text-sm font-bold transition-colors"
-                  style={
-                    ownership === o.v
-                      ? { background: "#94F7C5", color: "#0a0a0a" }
-                      : { background: "#000", color: "#94F7C5", border: "1.5px solid #94F7C5" }
-                  }
-                  data-testid={`filter-ownership-${o.v}`}
-                >
-                  {isAf ? o.af : o.en}
-                </button>
-              ))}
-            </div>
-            <div className="flex items-center gap-1 border border-white/10 rounded-xl p-1" data-testid="sort-price">
-              {[
-                { v: "recommended" as const, en: "Recommended", af: "Aanbeveel" },
-                { v: "price-asc" as const,   en: "Price ↑",     af: "Prys ↑"  },
-                { v: "price-desc" as const,  en: "Price ↓",     af: "Prys ↓"  },
-              ].map((o) => (
-                <button
-                  key={o.v}
-                  onClick={() => setSortBy(o.v)}
-                  className="px-4 py-2 rounded-xl text-sm font-bold transition-colors"
-                  style={
-                    sortBy === o.v
-                      ? { background: "#6EE7F9", color: "#0a0a0a" }
-                      : { background: "#000", color: "#6EE7F9", border: "1.5px solid #6EE7F9" }
-                  }
-                  data-testid={`sort-${o.v}`}
-                >
-                  {isAf ? o.af : o.en}
-                </button>
-              ))}
-            </div>
+        {/* Hero */}
+        <section className="relative space-y-4 text-center">
+          <div className="inline-flex items-center gap-2">
+            <ShoppingBag className="w-4 h-4" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }} />
+            <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#FFE29A", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 12px rgba(255,226,154,.5)" }}>
+              {t.heroEyebrow} 💰
+            </span>
           </div>
-        )}
+          <div
+            role="heading"
+            aria-level={1}
+            className="font-black leading-[0.95] tracking-tight text-3xl sm:text-4xl md:text-5xl"
+            style={{
+              backgroundImage: "linear-gradient(90deg,#FFE29A,#FFE29A,#94F7C5,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+              color: "transparent",
+            }}
+          >
+            {t.heroTitle}
+          </div>
+          <p className="text-white text-base sm:text-lg max-w-2xl mx-auto" style={{ opacity: 0.94 }}>
+            {t.heroSubtitle}
+          </p>
+        </section>
 
+        {/* Power-up shelf */}
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="rounded-2xl border border-white/10 bg-white/[0.04] overflow-hidden animate-pulse">
-                <div className="h-28 bg-white/5" />
-                <div className="p-4 space-y-3">
-                  <div className="h-3 w-2/3 rounded bg-white/10" />
-                  <div className="h-2 w-full rounded bg-white/5" />
-                  <div className="h-7 rounded bg-white/5 mt-2" />
-                </div>
-              </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="animate-pulse" style={{ height: 220, borderRadius: 22, background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.08)" }} />
             ))}
           </div>
-        ) : activeTab === "theme" ? (
-          <ThemeGroups
-            items={applyOwnershipAndSort(visibleItems)}
-            isAf={isAf}
-            t={t}
-            isOwned={isOwned}
-            isActiveTheme={isActiveTheme}
-            canAfford={canAfford}
-            requiresSubscription={requiresSubscription}
-            onApply={applyTheme}
-            onUnlock={requestUnlock}
-            onSubscribe={() => navigate("/subscribe")}
-            unlockingKey={unlocking}
-          />
-        ) : applyOwnershipAndSort(visibleItems).length === 0 ? (
-          <EmptyState t={t} />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {applyOwnershipAndSort(visibleItems).map((item) => {
-              const ownedEffectOverride =
-                item.key === "double-coins" && isOwned(item) && doubleCoinsHoursLeft > 0
-                  ? { en: `2x active — ${doubleCoinsHoursLeft}h left`, af: `2x aktief — ${doubleCoinsHoursLeft}u oor` }
-                  : undefined;
+          <div className="relative grid grid-cols-1 sm:grid-cols-3 gap-5">
+            {visibleItems.map((item) => {
+              const meta = REAL_POWER_UPS[item.key];
+              const Icon = meta.icon;
+              const hex = meta.hex;
+              const owned = isOwned(item);
+              const affordable = canAfford(item);
+              const isUnlocking = unlocking === item.key;
+              const rebuyable = item.key === "mystery-box";
+              const ownedEffect =
+                item.key === "double-coins" && owned && doubleCoinsHoursLeft > 0
+                  ? (isAf ? `2x aktief — ${doubleCoinsHoursLeft}u oor` : `2x active — ${doubleCoinsHoursLeft}h left`)
+                  : owned
+                    ? (isAf ? OWNED_EFFECT[item.key]?.af : OWNED_EFFECT[item.key]?.en)
+                    : null;
               return (
-                <ItemCard
+                <div
                   key={item.key}
-                  item={item}
-                  isAf={isAf}
-                  t={t}
-                  owned={isOwned(item)}
-                  isActive={isActiveTheme(item)}
-                  affordable={canAfford(item)}
-                  requiresSub={requiresSubscription(item)}
-                  isUnlocking={unlocking === item.key}
-                  onApply={applyTheme}
-                  onUnlock={requestUnlock}
-                  onSubscribe={() => navigate("/subscribe")}
-                  ownedEffectOverride={ownedEffectOverride}
-                />
+                  data-testid={`store-item-${item.key}`}
+                  style={{
+                    background: `linear-gradient(160deg, ${hex}12, rgba(255,255,255,.02))`,
+                    border: `1.5px solid ${hex}`,
+                    borderRadius: 22,
+                    padding: 22,
+                    transform: `rotate(${meta.tilt}deg)`,
+                    boxShadow: `0 10px 28px ${hex}33`,
+                    transition: "transform .25s, box-shadow .25s",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 14,
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = "rotate(0deg) translateY(-6px)"; e.currentTarget.style.boxShadow = `0 16px 38px ${hex}55`; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = `rotate(${meta.tilt}deg)`; e.currentTarget.style.boxShadow = `0 10px 28px ${hex}33`; }}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <div
+                      style={{ width: 52, height: 52, borderRadius: 16, background: `${hex}26`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 16px ${hex}40` }}
+                    >
+                      <Icon style={{ width: 26, height: 26, color: hex }} />
+                    </div>
+                    <span
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-black tabular-nums"
+                      style={{ color: "#FFE29A", border: "1px solid rgba(255,226,154,.5)", background: "rgba(255,226,154,.1)" }}
+                    >
+                      <Coins className="w-3.5 h-3.5" />
+                      {item.coinCost}
+                    </span>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 18, fontWeight: 900, color: "#fff", lineHeight: 1.2 }}>
+                      {isAf ? item.nameAf : item.name}
+                    </div>
+                    <p style={{ fontSize: 13.5, color: "#fff", lineHeight: 1.55, margin: "6px 0 0" }}>
+                      {isAf ? item.descriptionAf : item.description}
+                    </p>
+                  </div>
+                  <div style={{ marginTop: "auto", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+                    {owned && !rebuyable ? (
+                      <span className="flex items-center gap-1.5 text-sm font-bold" style={{ color: hex }}>
+                        <Check className="w-4 h-4" />
+                        {t.ownedLabel}
+                      </span>
+                    ) : (
+                      <button
+                        type="button"
+                        className="w-full px-4 py-2.5 rounded-xl text-sm disabled:opacity-40"
+                        style={{
+                          background: affordable ? "linear-gradient(100deg,#9FF5E8,#C5B3FF)" : "transparent",
+                          color: affordable ? "#050508" : "#fff",
+                          border: affordable ? "none" : "1.5px solid rgba(255,255,255,.25)",
+                          fontWeight: 800,
+                          cursor: affordable ? "pointer" : "not-allowed",
+                          boxShadow: affordable ? "0 0 16px rgba(159,245,232,.3)" : "none",
+                          transition: "transform .2s",
+                        }}
+                        disabled={!affordable || isUnlocking}
+                        onClick={() => requestUnlock(item)}
+                        onMouseEnter={(e) => { if (affordable) e.currentTarget.style.transform = "translateY(-2px)"; }}
+                        onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
+                        data-testid={`btn-unlock-${item.key}`}
+                      >
+                        {isUnlocking ? (
+                          <Loader2 className="w-4 h-4 animate-spin mx-auto" />
+                        ) : !affordable ? (
+                          <span className="flex items-center justify-center gap-1.5">
+                            <Lock className="w-3.5 h-3.5" />
+                            {t.tooFewLabel}
+                          </span>
+                        ) : (
+                          t.unlockLabel
+                        )}
+                      </button>
+                    )}
+                  </div>
+                  {ownedEffect && (
+                    <p className="flex items-center gap-1 text-xs font-bold" style={{ color: hex, margin: 0 }} data-testid={`owned-effect-${item.key}`}>
+                      <Check className="w-3.5 h-3.5" />
+                      {ownedEffect}
+                    </p>
+                  )}
+                </div>
               );
             })}
           </div>
         )}
 
-        <div className="text-center pt-4 pb-2">
-          <p className="text-xs text-white">
-            {t.earnCoins}
-          </p>
+        {/* Earn-coins footer */}
+        <div
+          className="relative text-center rounded-2xl px-6 py-8"
+          style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.08)" }}
+        >
+          <div
+            aria-hidden
+            className="absolute top-0 left-0 right-0 h-[2px] rounded-t-2xl"
+            style={{ background: "linear-gradient(90deg,#FFB7E5,#FFE29A,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)" }}
+          />
+          <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#94F7C5", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 10px rgba(148,247,197,.45)" }}>
+            {isAf ? "meer munte = meer hupstote" : "more coins = more power"} ⚡
+          </span>
+          <p className="text-sm text-white mt-2">{t.earnCoins}</p>
           <Link href="/rewards">
             <button
-              className="mt-2 px-4 py-2 rounded-xl bg-black text-sm font-bold transition-colors"
-              style={{ color: "#6EE7F9", border: "1.5px solid #6EE7F9" }}
+              className="mt-4 px-5 py-2.5 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 transition-colors"
+              style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
               data-testid="link-to-rewards"
             >
               {t.viewRewards}
@@ -509,6 +427,7 @@ export default function StorePage() {
         </div>
       </main>
 
+      {/* Confirm purchase */}
       <AlertDialog open={!!confirmItem} onOpenChange={(o) => !o && setConfirmItem(null)}>
         <AlertDialogContent data-testid="confirm-purchase-dialog">
           <AlertDialogHeader>
@@ -530,13 +449,13 @@ export default function StorePage() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Mystery Box Reward Reveal */}
+      {/* Mystery Box reward reveal */}
       <AlertDialog open={!!mysteryReward} onOpenChange={(o) => !o && setMysteryReward(null)}>
         <AlertDialogContent data-testid="mystery-reward-dialog">
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-fuchsia-400" />
-              {isAf ? "Raaiselkas Beloning!" : "Mystery Box Reward!"}
+              <Sparkles className="w-5 h-5" style={{ color: "#C5B3FF" }} />
+              {t.mysteryRewardTitle}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-center text-base pt-2">
               {mysteryReward && (
@@ -548,323 +467,11 @@ export default function StorePage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogAction onClick={() => setMysteryReward(null)} data-testid="mystery-reward-close">
-              {isAf ? "Dankie!" : "Nice!"}
+              {t.mysteryThanks}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
-  );
-}
-
-function EmptyState({ t }: { t: typeof T["en"] | typeof T["af"] }) {
-  return (
-    <div className="flex flex-col items-center gap-3 py-16 text-center">
-      <ShoppingBag className="w-12 h-12 text-white" />
-      <p className="text-white text-sm">
-        {t.noItemsInCategory}
-      </p>
-    </div>
-  );
-}
-
-function ItemCard({
-  item, isAf, t, owned, isActive, affordable, requiresSub, isUnlocking,
-  onApply, onUnlock, onSubscribe, ownedEffectOverride,
-}: {
-  item: StoreItem;
-  isAf: boolean;
-  t: typeof T["en"] | typeof T["af"];
-  owned: boolean;
-  isActive: boolean;
-  affordable: boolean;
-  requiresSub: boolean;
-  isUnlocking: boolean;
-  onApply: (i: StoreItem) => void;
-  onUnlock: (i: StoreItem) => void;
-  onSubscribe: () => void;
-  ownedEffectOverride?: { en: string; af: string };
-}) {
-  const Icon = KEY_ICONS[item.key] ?? ITEM_ICONS[item.type] ?? Sparkles;
-  const palette = item.palette;
-
-  return (
-    <div
-      className={`relative rounded-2xl border transition-all duration-300 overflow-hidden ${
-        isActive
-          ? "border-primary/60 bg-primary/10 shadow-[0_0_20px_rgba(6,182,212,0.18)]"
-          : owned
-            ? "border-primary/40 bg-primary/5"
-            : "border-white/10 bg-white/[0.04] hover:border-white/20 hover:bg-white/[0.07] hover:-translate-y-0.5"
-      }`}
-      data-testid={`store-item-${item.key}`}
-    >
-      <PreviewSwatch item={item} Icon={Icon} palette={palette} owned={owned} isActive={isActive} requiresSub={requiresSub} t={t} />
-
-      <div className="p-4 space-y-3">
-        <div>
-          <div className="flex items-start justify-between gap-2">
-            <p className="font-bold text-sm text-white leading-tight">
-              {isAf ? item.nameAf : item.name}
-            </p>
-            <TierPill tier={item.tier} isAf={isAf} />
-          </div>
-          <p className="text-[11px] text-white mt-0.5 leading-tight line-clamp-2">
-            {isAf ? item.descriptionAf : item.description}
-          </p>
-        </div>
-
-        <div className="flex items-center justify-between gap-2">
-          {requiresSub ? (
-            <Badge variant="outline" className="text-[10px] gap-1 border-[#C5B3FF]/40 text-[#C5B3FF]">
-              <Crown className="w-3 h-3" />
-              {t.premiumLabel}
-            </Badge>
-          ) : item.coinCost > 0 ? (
-            <Badge variant="outline" className="text-[10px] gap-1 border-[#FFE29A]/40 text-[#FFE29A]">
-              <Coins className="w-3 h-3" />
-              {item.coinCost}
-            </Badge>
-          ) : (
-            <Badge variant="outline" className="text-[10px] gap-1 border-emerald-500/40 text-emerald-500">
-              {t.freeLabel}
-            </Badge>
-          )}
-
-          <ActionButton
-            item={item} t={t} owned={owned} isActive={isActive}
-            affordable={affordable} requiresSub={requiresSub} isUnlocking={isUnlocking}
-            onApply={onApply} onUnlock={onUnlock} onSubscribe={onSubscribe}
-          />
-        </div>
-
-        {owned && (() => {
-          const effect = ownedEffectOverride ?? OWNED_EFFECT[item.key] ?? TYPE_OWNED_EFFECT[item.type];
-          if (!effect) return null;
-          return (
-            <p className="text-[10px] text-primary/80 font-semibold flex items-center gap-1" data-testid={`owned-effect-${item.key}`}>
-              <Check className="w-3 h-3" />
-              {isAf ? effect.af : effect.en}
-            </p>
-          );
-        })()}
-      </div>
-    </div>
-  );
-}
-
-function PreviewSwatch({
-  item, Icon, palette, owned, isActive, requiresSub, t,
-}: {
-  item: StoreItem;
-  Icon: any;
-  palette: string[] | null;
-  owned: boolean;
-  isActive: boolean;
-  requiresSub: boolean;
-  t: typeof T["en"] | typeof T["af"];
-}) {
-  const fallback = PRODUCT_GRADIENTS[item.key] ?? "from-[#6EE7F9] via-[#9FD8FF] to-[#C5B3FF]";
-
-  return (
-    <div className="h-28 relative overflow-hidden">
-      {palette && palette.length > 0 ? (
-        <div
-          className="absolute inset-0"
-          style={{
-            background: `linear-gradient(135deg, ${palette[0]} 0%, ${palette[1] ?? palette[0]} 50%, ${palette[2] ?? palette[1] ?? palette[0]} 100%)`,
-          }}
-        />
-      ) : (
-        <div className={`absolute inset-0 bg-gradient-to-br ${fallback}`} />
-      )}
-      <div className="absolute inset-0 bg-black/10 -[1px]" />
-      <div className="absolute inset-0 flex items-center justify-center">
-        <Icon className="w-10 h-10 text-white drop-shadow-lg" />
-      </div>
-      {isActive && (
-        <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-primary text-[10px] font-bold text-primary-foreground shadow-lg flex items-center gap-1">
-          <Check className="w-3 h-3" />
-          {t.activeLabel}
-        </div>
-      )}
-      {!isActive && owned && (
-        <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-primary flex items-center justify-center shadow-lg">
-          <Check className="w-3.5 h-3.5 text-primary-foreground" />
-        </div>
-      )}
-      {requiresSub && !owned && (
-        <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/60 text-[10px] font-bold text-[#FFE29A]">
-          <Crown className="w-3 h-3" />
-          {t.premiumLabel}
-        </div>
-      )}
-      {/* palette swatches strip */}
-      {palette && palette.length > 0 && (
-        <div className="absolute bottom-2 left-2 flex gap-1">
-          {palette.slice(0, 3).map((c, i) => (
-            <span key={i} className="w-3 h-3 rounded-full border border-white/40 shadow" style={{ backgroundColor: c }} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function TierPill({ tier, isAf }: { tier: StoreItem["tier"]; isAf: boolean }) {
-  const lbl = TIER_LABEL[tier];
-  if (!lbl) return null;
-  const cls =
-    tier === "premium" ? "border-[#C5B3FF]/40 text-[#C5B3FF]" :
-    tier === "free"    ? "border-emerald-500/40 text-emerald-500" :
-                         "border-white/15 text-white";
-  return (
-    <span className={`text-[9px] uppercase tracking-wide font-bold px-1.5 py-0.5 rounded border ${cls}`}>
-      {isAf ? lbl.af : lbl.en}
-    </span>
-  );
-}
-
-function ActionButton({
-  item, t, owned, isActive, affordable, requiresSub, isUnlocking,
-  onApply, onUnlock, onSubscribe,
-}: {
-  item: StoreItem;
-  t: typeof T["en"] | typeof T["af"];
-  owned: boolean;
-  isActive: boolean;
-  affordable: boolean;
-  requiresSub: boolean;
-  isUnlocking: boolean;
-  onApply: (i: StoreItem) => void;
-  onUnlock: (i: StoreItem) => void;
-  onSubscribe: () => void;
-}) {
-  if (owned) {
-    if (item.type === "theme") {
-      if (isActive) {
-        return (
-          <span className="text-[10px] font-semibold text-primary flex items-center gap-1 px-2 py-1 rounded">
-            <Check className="w-3 h-3" />
-            {t.activeLabel}
-          </span>
-        );
-      }
-      return (
-        <button
-          type="button"
-          className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold"
-          style={{ background: "#6EE7F9", color: "#0a0a0a" }}
-          onClick={() => onApply(item)}
-          data-testid={`btn-apply-${item.key}`}
-        >
-          <Palette className="w-3 h-3 mr-1" />
-          {t.applyLabel}
-        </button>
-      );
-    }
-    return (
-      <span className="text-[10px] font-semibold text-primary flex items-center gap-1">
-        <Check className="w-3 h-3" />
-        {t.ownedLabel}
-      </span>
-    );
-  }
-
-  if (requiresSub) {
-    return (
-      <button
-        type="button"
-        className="px-4 py-2 rounded-xl bg-black text-sm font-bold"
-        style={{ color: "#FFE29A", border: "1.5px solid #FFE29A" }}
-        onClick={onSubscribe}
-        data-testid={`btn-subscribe-${item.key}`}
-      >
-        {t.subscribeLabel}
-      </button>
-    );
-  }
-
-  return (
-    <button
-      type="button"
-      className="px-4 py-2 rounded-xl text-sm font-bold disabled:opacity-40"
-      style={{ background: "#94F7C5", color: "#0a0a0a" }}
-      disabled={!affordable || isUnlocking}
-      onClick={() => onUnlock(item)}
-      data-testid={`btn-unlock-${item.key}`}
-    >
-      {isUnlocking ? (
-        <Loader2 className="w-3 h-3 animate-spin" />
-      ) : !affordable ? (
-        <span className="flex items-center gap-1">
-          <Lock className="w-3 h-3" />
-          {t.tooFewLabel}
-        </span>
-      ) : (
-        t.unlockLabel
-      )}
-    </button>
-  );
-}
-
-function ThemeGroups({
-  items, isAf, t, isOwned, isActiveTheme, canAfford, requiresSubscription,
-  onApply, onUnlock, onSubscribe, unlockingKey,
-}: {
-  items: StoreItem[];
-  isAf: boolean;
-  t: typeof T["en"] | typeof T["af"];
-  isOwned: (i: StoreItem) => boolean;
-  isActiveTheme: (i: StoreItem) => boolean;
-  canAfford: (i: StoreItem) => boolean;
-  requiresSubscription: (i: StoreItem) => boolean;
-  onApply: (i: StoreItem) => void;
-  onUnlock: (i: StoreItem) => void;
-  onSubscribe: () => void;
-  unlockingKey: string | null;
-}) {
-  const groups: { key: StoreItem["tier"]; en: string; af: string; subEn: string; subAf: string }[] = [
-    { key: "free",       en: "Free",       af: "Gratis",       subEn: "Always available",          subAf: "Altyd beskikbaar" },
-    { key: "unlockable", en: "Unlockable", af: "Ontsluitbaar", subEn: "Buy with coins",            subAf: "Koop met munte"   },
-    { key: "premium",    en: "Premium",    af: "Premium",      subEn: "Top-tier collectible",      subAf: "Boonste-vlak"     },
-  ];
-
-  return (
-    <div className="space-y-8">
-      {groups.map((g) => {
-        const groupItems = items.filter((i) => i.tier === g.key);
-        if (groupItems.length === 0) return null;
-        return (
-          <section key={g.key} className="space-y-3" data-testid={`theme-group-${g.key}`}>
-            <div className="flex items-baseline justify-between border-b border-white/5 pb-2">
-              <div>
-                <h3 className="text-sm font-bold text-white">{isAf ? g.af : g.en}</h3>
-                <p className="text-[11px] text-white">{isAf ? g.subAf : g.subEn}</p>
-              </div>
-              <span className="text-[11px] text-white tabular-nums">{groupItems.length}</span>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {groupItems.map((item) => (
-                <ItemCard
-                  key={item.key}
-                  item={item}
-                  isAf={isAf}
-                  t={t}
-                  owned={isOwned(item)}
-                  isActive={isActiveTheme(item)}
-                  affordable={canAfford(item)}
-                  requiresSub={requiresSubscription(item)}
-                  isUnlocking={unlockingKey === item.key}
-                  onApply={onApply}
-                  onUnlock={onUnlock}
-                  onSubscribe={onSubscribe}
-                />
-              ))}
-            </div>
-          </section>
-        );
-      })}
     </div>
   );
 }

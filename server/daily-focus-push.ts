@@ -73,8 +73,8 @@ function buildLearnerPayload(
   return JSON.stringify({
     title,
     body,
-    icon: "/icon-192.png",
-    badge: "/icon-192.png",
+    icon: "/icon-192.png?v=bt2",
+    badge: "/icon-192.png?v=bt2",
     tag: `daily-focus-${new Date().toISOString().slice(0, 10)}`,
     data: {
       url: directive.deepLink || "/dashboard?focus=today",
@@ -122,8 +122,8 @@ function buildParentPayload(
   return JSON.stringify({
     title,
     body,
-    icon: "/icon-192.png",
-    badge: "/icon-192.png",
+    icon: "/icon-192.png?v=bt2",
+    badge: "/icon-192.png?v=bt2",
     tag: `daily-focus-parent-${new Date().toISOString().slice(0, 10)}`,
     data: {
       url: "/parent",

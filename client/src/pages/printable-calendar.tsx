@@ -4,38 +4,25 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Printer, ChevronLeft, ChevronRight, Download, Calendar } from "lucide-react";
 import { Link } from "wouter";
-import brandLogo from "@assets/Logo_01_1779989960628.jpeg";
+import { useQuery } from "@tanstack/react-query";
+import brandLogo from "@/assets/handoff/icon-transparent.png";
 
-const NSC_EXAM_DATES_2026 = [
-  { date: "2026-10-26", subject: "English HL P1 / FAL P1", time: "09:00" },
-  { date: "2026-10-27", subject: "English HL P2 / FAL P2", time: "09:00" },
-  { date: "2026-10-28", subject: "Afrikaans HL P1 / FAL P1", time: "09:00" },
-  { date: "2026-10-29", subject: "Afrikaans HL P2 / FAL P2", time: "09:00" },
-  { date: "2026-10-30", subject: "Mathematics P1", time: "09:00" },
-  { date: "2026-11-02", subject: "Mathematics P2", time: "09:00" },
-  { date: "2026-11-02", subject: "Mathematical Literacy P1", time: "14:00" },
-  { date: "2026-11-03", subject: "Mathematical Literacy P2", time: "09:00" },
-  { date: "2026-11-04", subject: "Physical Sciences P1", time: "09:00" },
-  { date: "2026-11-05", subject: "Physical Sciences P2", time: "09:00" },
-  { date: "2026-11-06", subject: "Life Sciences P1", time: "09:00" },
-  { date: "2026-11-09", subject: "Life Sciences P2", time: "09:00" },
-  { date: "2026-11-10", subject: "Accounting", time: "09:00" },
-  { date: "2026-11-11", subject: "Business Studies", time: "09:00" },
-  { date: "2026-11-12", subject: "Economics P1", time: "09:00" },
-  { date: "2026-11-13", subject: "Economics P2", time: "09:00" },
-  { date: "2026-11-16", subject: "Geography P1", time: "09:00" },
-  { date: "2026-11-17", subject: "Geography P2", time: "09:00" },
-  { date: "2026-11-18", subject: "History P1", time: "09:00" },
-  { date: "2026-11-19", subject: "History P2", time: "09:00" },
-  { date: "2026-11-20", subject: "Information Technology P1", time: "09:00" },
-  { date: "2026-11-23", subject: "Information Technology P2", time: "09:00" },
-  { date: "2026-11-23", subject: "CAT P1", time: "14:00" },
-  { date: "2026-11-24", subject: "CAT P2", time: "09:00" },
-  { date: "2026-11-25", subject: "Engineering Graphics & Design P1", time: "09:00" },
-  { date: "2026-11-26", subject: "Engineering Graphics & Design P2", time: "09:00" },
-  { date: "2026-11-27", subject: "Agricultural Sciences P1", time: "09:00" },
-  { date: "2026-11-30", subject: "Agricultural Sciences P2", time: "09:00" },
-];
+// Exam dates come LIVE from /api/timetable (the verified official DBE
+// Oct/Nov 2026 session in the database) — never hardcoded again. A previous
+// hardcoded list here carried fabricated dates (Maths P1 was 7 days off).
+type PrintableExam = { date: string; subject: string; time: string };
+function useOfficialExamDates(): PrintableExam[] {
+  const { data } = useQuery<any>({ queryKey: ["/api/timetable"], staleTime: 60 * 60 * 1000 });
+  const entries = data?.entries ?? [];
+  return entries
+    .filter((e: any) => !e.isNonExaminationDay && (e.session === "November" || !e.session))
+    .map((e: any) => ({
+      date: String(e.examDate ?? e.exam_date ?? "").slice(0, 10),
+      subject: e.paperNumber ? `${e.subjectName ?? e.subject_name} P${e.paperNumber}` : (e.subjectName ?? e.subject_name ?? ""),
+      time: String(e.startTime ?? e.start_time ?? "09:00").slice(0, 5),
+    }))
+    .sort((a: PrintableExam, b: PrintableExam) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+}
 
 const MONTHS_2026 = [
   { name: "January", nameAf: "Januarie", days: 31, startDay: 4 },
@@ -56,6 +43,9 @@ const WEEKDAYS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const WEEKDAYS_AF = ["Son", "Maa", "Din", "Woe", "Don", "Vry", "Sat"];
 
 export default function PrintableCalendar() {
+  // Live official dates (verified against the DBE PDF) — replaces the old
+  // fabricated hardcoded list; existing render code keeps its name.
+  const NSC_EXAM_DATES_2026 = useOfficialExamDates();
   const { language, setLanguage } = useLanguage();
   const [currentMonthIndex, setCurrentMonthIndex] = useState(9);
   const [viewMode, setViewMode] = useState<"single" | "full">("single");

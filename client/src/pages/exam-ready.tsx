@@ -1,38 +1,33 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+// BrainTrack Exam Ready — restyled to the "Permanent Marker Street Pastel"
+// design system (docs/design-guidelines.md). #050508 ground, pastel accent
+// cards, Permanent Marker eyebrows, aqua→purple gradient action buttons,
+// pure white text. RESTYLE ONLY — all hooks, anti-cheat logic, mutations
+// and data-testids preserved exactly.
+import { useState, useEffect, useRef, useCallback, type CSSProperties } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLocation, Link } from "wouter";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/language-context";
-import { 
-  AlertTriangle, 
-  Clock, 
-  Globe,
-  Shield, 
-  Eye, 
-  Maximize2, 
-  CheckCircle2, 
-  XCircle, 
+import {
+  AlertTriangle,
+  Clock,
+  Shield,
+  Eye,
+  Maximize2,
+  CheckCircle2,
+  XCircle,
   Loader2,
   Play,
-  StopCircle,
   ArrowRight,
   ArrowLeft,
   Send,
   AlertCircle,
   BookOpen,
-  ExternalLink,
-  Home,
   LogOut
 } from "lucide-react";
-import type { ExamPaper, Question, Subject, ExamSession, OnboardingResult } from "@shared/schema";
-import { BrainTrackLogo } from "@/components/braintrack-logo";
+import type { ExamPaper, Subject, OnboardingResult } from "@shared/schema";
 
 interface SimulatedPaperOverview {
   subjectCode: string;
@@ -74,11 +69,57 @@ interface SimulatedPaperFull {
 
 type ExamState = "setup" | "ready" | "active" | "paused" | "violated" | "completed";
 
+// ── Street Pastel style constants ────────────────────────────────
+const PASTELS = ["#9FF5E8", "#9FD8FF", "#FFB7E5", "#C5B3FF", "#FFE29A", "#94F7C5"];
+const ALERT_HEX = "#FF8DA1";
+const RAINBOW_TEXT: CSSProperties = {
+  backgroundImage:
+    "linear-gradient(90deg, #FFE29A, #FFE29A, #94F7C5, #9FF5E8, #9FD8FF, #C5B3FF, #FFB7E5)",
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+  backgroundClip: "text",
+  color: "transparent",
+};
+const CARD: CSSProperties = {
+  background: "rgba(255,255,255,.03)",
+  border: "1px solid rgba(255,255,255,.08)",
+  borderRadius: 20,
+};
+const PRIMARY_BTN: CSSProperties = {
+  background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
+  color: "#050508",
+  border: "none",
+  borderRadius: 12,
+  fontWeight: 800,
+  boxShadow: "0 0 20px rgba(159,245,232,.3)",
+};
+const SECONDARY_BTN: CSSProperties = {
+  background: "transparent",
+  border: "1.5px solid rgba(255,255,255,.2)",
+  color: "#fff",
+  borderRadius: 12,
+  fontWeight: 700,
+};
+const marker = (color: string, size = 15): CSSProperties => ({
+  fontFamily: "'Permanent Marker',cursive",
+  fontSize: size,
+  color,
+  transform: "rotate(-2deg)",
+  display: "inline-block",
+  textShadow: `0 0 10px ${color}55`,
+});
+const lift = (e: React.MouseEvent<HTMLButtonElement>) => {
+  e.currentTarget.style.transform = "translateY(-2px)";
+};
+const unlift = (e: React.MouseEvent<HTMLButtonElement>) => {
+  e.currentTarget.style.transform = "none";
+};
+
 // GPT Detection: Patterns that indicate AI-generated content
 const detectAIPatterns = (text: string): { isLikelyAI: boolean; flags: string[] } => {
   const flags: string[] = [];
   const lowerText = text.toLowerCase();
-  
+
   // Flag 1: Common AI phrases
   const aiPhrases = [
     "i'd be happy to",
@@ -99,26 +140,26 @@ const detectAIPatterns = (text: string): { isLikelyAI: boolean; flags: string[] 
     "step 1:",
     "step 2:",
   ];
-  
+
   for (const phrase of aiPhrases) {
     if (lowerText.includes(phrase)) {
       flags.push(`ai_phrase:${phrase}`);
     }
   }
-  
+
   // Flag 2: Unusual length for simple questions (too verbose)
   // For short-answer questions, >500 chars is suspicious
   if (text.length > 500) {
     flags.push("excessive_length");
   }
-  
+
   // Flag 3: Perfect grammar/formatting with bullet points in short answers
   const bulletPatterns = /[•\-\*]\s+\w/g;
   const bulletCount = (text.match(bulletPatterns) || []).length;
   if (bulletCount >= 3) {
     flags.push("structured_bullets");
   }
-  
+
   // Flag 4: Overly formal language patterns
   const formalPatterns = [
     /\bfurthermore\b/i,
@@ -128,16 +169,16 @@ const detectAIPatterns = (text: string): { isLikelyAI: boolean; flags: string[] 
     /\bnotwithstanding\b/i,
     /\binsofar as\b/i,
   ];
-  
+
   for (const pattern of formalPatterns) {
     if (pattern.test(text)) {
       flags.push("overly_formal");
       break;
     }
   }
-  
+
   // Flag 5: Suspiciously fast typing (tracked separately)
-  
+
   // Threshold: 3+ flags = likely AI
   return {
     isLikelyAI: flags.length >= 3,
@@ -150,7 +191,7 @@ export default function ExamReadyPage() {
   const { toast } = useToast();
   const { user, logout } = useAuth();
   const { language, toggleLanguage } = useLanguage();
-  
+
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
   const [selectedPaperNum, setSelectedPaperNum] = useState<number | null>(null);
   const [selectedPaperId, setSelectedPaperId] = useState<number | null>(null);
@@ -168,7 +209,7 @@ export default function ExamReadyPage() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [answerStartTimes, setAnswerStartTimes] = useState<Record<string, number>>({});
   const [aiFlags, setAiFlags] = useState<string[]>([]);
-  
+
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const pauseCheckRef = useRef<NodeJS.Timeout | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -237,8 +278,8 @@ export default function ExamReadyPage() {
   });
 
   const updateSessionMutation = useMutation({
-    mutationFn: async (data: { 
-      status?: string; 
+    mutationFn: async (data: {
+      status?: string;
       timeUsedSeconds?: number;
       violationType?: string;
       violationCount?: number;
@@ -253,42 +294,42 @@ export default function ExamReadyPage() {
   const checkAllAnswersForAI = useCallback((): { flaggedQuestions: string[]; allFlags: string[] } => {
     const flaggedQuestions: string[] = [];
     const allFlags: string[] = [];
-    
+
     for (const [questionId, answer] of Object.entries(answers)) {
       if (!answer || answer.length < 20) continue; // Skip very short answers
-      
+
       const detection = detectAIPatterns(answer);
       allFlags.push(...detection.flags);
-      
+
       // Check typing speed (words per minute)
       const startTime = answerStartTimes[questionId];
       if (startTime) {
         const timeSpentMs = Date.now() - startTime;
         const wordCount = answer.split(/\s+/).length;
         const wpm = (wordCount / timeSpentMs) * 60000;
-        
+
         // >120 WPM is suspicious (professional typist is 60-80 WPM)
         if (wpm > 120 && wordCount > 30) {
           allFlags.push(`fast_typing:${Math.round(wpm)}wpm`);
         }
       }
-      
+
       if (detection.isLikelyAI) {
         flaggedQuestions.push(questionId);
       }
     }
-    
+
     return { flaggedQuestions, allFlags };
   }, [answers, answerStartTimes]);
 
   const submitExamMutation = useMutation({
     mutationFn: async () => {
       if (!sessionId) return;
-      
+
       // GPT Detection check
       const aiCheck = checkAllAnswersForAI();
       setAiFlags(aiCheck.allFlags);
-      
+
       return apiRequest("POST", `/api/exam-sessions/${sessionId}/submit`, {
         answersJson: answers,
         timeUsedSeconds: timeUsed,
@@ -309,16 +350,16 @@ export default function ExamReadyPage() {
   const cancelExam = useCallback((reason: string) => {
     if (timerRef.current) clearInterval(timerRef.current);
     if (pauseCheckRef.current) clearInterval(pauseCheckRef.current);
-    
+
     setViolationMessage(reason);
     setExamState("violated");
-    
+
     updateSessionMutation.mutate({
       status: "violated",
       violationType: reason,
       timeUsedSeconds: timeUsed,
     });
-    
+
     if (document.fullscreenElement) {
       document.exitFullscreen().catch(() => {});
     }
@@ -326,11 +367,11 @@ export default function ExamReadyPage() {
 
   const handleVisibilityChange = useCallback(() => {
     if (examState !== "active") return;
-    
+
     if (document.hidden) {
       const newCount = violationCount + 1;
       setViolationCount(newCount);
-      
+
       if (newCount >= 1) {
         cancelExam(isAfrikaansRef.current ? "Jy het die eksamanskerm verlaat. Toets gekanselleer." : "You left the exam screen. Test cancelled.");
       }
@@ -340,7 +381,7 @@ export default function ExamReadyPage() {
   const handleFullscreenChange = useCallback(() => {
     const isNowFullscreen = !!document.fullscreenElement;
     setIsFullscreen(isNowFullscreen);
-    
+
     if (examState === "active" && !isNowFullscreen) {
       cancelExam(isAfrikaansRef.current ? "Jy het volskerm verlaat. Toets gekanselleer." : "You exited fullscreen mode. Test cancelled.");
     }
@@ -348,10 +389,10 @@ export default function ExamReadyPage() {
 
   const handleBlur = useCallback(() => {
     if (examState !== "active") return;
-    
+
     const newCount = violationCount + 1;
     setViolationCount(newCount);
-    
+
     if (newCount >= 1) {
       cancelExam(isAfrikaansRef.current ? "Jy het weggenavigeer van die eksamen. Toets gekanselleer." : "You navigated away from the exam. Test cancelled.");
     }
@@ -365,18 +406,18 @@ export default function ExamReadyPage() {
   const handleCopyPaste = useCallback((e: ClipboardEvent) => {
     if (examState !== "active") return;
     e.preventDefault();
-    
+
     const newCount = violationCount + 1;
     setViolationCount(newCount);
     setShowViolationWarning(true);
     setViolationMessage(isAfrikaansRef.current ? "Kopieer/plak is nie toegelaat nie!" : "Copy/paste is not allowed!");
-    
+
     toast({
       title: isAfrikaansRef.current ? "Waarskuwing" : "Warning",
       description: isAfrikaansRef.current ? "Kopieer/plak gedetekteer - dit word nie toegelaat nie" : "Copy/paste detected - this is not allowed",
       variant: "destructive",
     });
-    
+
     if (newCount >= 2) {
       cancelExam(isAfrikaansRef.current ? "Veelvuldige kopieer/plak pogings. Toets gekanselleer." : "Multiple copy/paste attempts. Test cancelled.");
     }
@@ -392,24 +433,24 @@ export default function ExamReadyPage() {
   // ANTI-CHEATING: Block keyboard shortcuts (Ctrl+C, Ctrl+V, etc.)
   const handleKeyboardShortcuts = useCallback((e: KeyboardEvent) => {
     if (examState !== "active") return;
-    
+
     // Block common cheat shortcuts
     if ((e.ctrlKey || e.metaKey) && ['c', 'v', 'x', 'a', 'p'].includes(e.key.toLowerCase())) {
       e.preventDefault();
       const newCount = violationCount + 1;
       setViolationCount(newCount);
-      
+
       toast({
         title: isAfrikaansRef.current ? "Waarskuwing" : "Warning",
         description: isAfrikaansRef.current ? "Sleutelbord kortpaaie is nie toegelaat nie" : "Keyboard shortcuts are not allowed",
         variant: "destructive",
       });
-      
+
       if (newCount >= 2) {
         cancelExam(isAfrikaansRef.current ? "Veelvuldige kortpadpogings. Toets gekanselleer." : "Multiple shortcut attempts. Test cancelled.");
       }
     }
-    
+
     // Block F12 (dev tools), Alt+Tab detection handled by blur
     if (e.key === 'F12') {
       e.preventDefault();
@@ -426,14 +467,14 @@ export default function ExamReadyPage() {
       document.addEventListener("mousemove", handleActivity);
       document.addEventListener("keydown", handleActivity);
       document.addEventListener("click", handleActivity);
-      
+
       // ANTI-CHEATING: Block copy/paste/cut
       document.addEventListener("copy", handleCopyPaste as EventListener);
       document.addEventListener("paste", handleCopyPaste as EventListener);
       document.addEventListener("cut", handleCopyPaste as EventListener);
       document.addEventListener("contextmenu", handleContextMenu as EventListener);
       document.addEventListener("keydown", handleKeyboardShortcuts as EventListener);
-      
+
       // 90-second inactivity detection (warning at 60s, cancel at 90s)
       pauseCheckRef.current = setInterval(() => {
         const timeSinceActivity = Date.now() - lastActivityTime;
@@ -523,55 +564,101 @@ export default function ExamReadyPage() {
   const selectedPaperInfo = selectedPaperData?.paper;
   const selectedSubjectName = isAfrikaans ? selectedPaperInfo?.subjectNameAf : selectedPaperInfo?.subjectName;
 
+  // ── Shared street-pastel chrome ────────────────────────────────
+  const pageRootStyle: CSSProperties = {
+    background: "#050508",
+    fontFamily: "'Poppins',sans-serif",
+  };
+
+  const renderHeader = () => (
+    <header
+      className="sticky top-0 z-50 border-b"
+      style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "rgba(255,255,255,.08)" }}
+    >
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="flex items-center justify-between h-16 gap-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <Link href="/dashboard">
+              <button
+                data-testid="button-home"
+                title={isAfrikaans ? "Tuis" : "Home"}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0"
+                style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span className="hidden md:inline">{isAfrikaans ? "Tuis" : "Home"}</span>
+              </button>
+            </Link>
+            <span className="hidden sm:inline truncate" style={marker("#9FF5E8", 16)}>
+              {isAfrikaans ? "Eksamen Gereed" : "Exam Ready"}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleLanguage}
+              data-testid="button-language-toggle"
+              className="px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
+              style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
+            >
+              {language === "en" ? "EN" : "AF"}
+            </button>
+            <button
+              onClick={() => logout()}
+              data-testid="button-logout"
+              title={isAfrikaans ? "Uitteken" : "Sign Out"}
+              className="inline-flex items-center px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
+              style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}
+            >
+              <LogOut className="w-4 h-4 md:mr-2" />
+              <span className="hidden md:inline">{isAfrikaans ? "Uitteken" : "Sign Out"}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+
   if (examState === "violated") {
     return (
-      <div ref={containerRef} className="min-h-screen">
-        <header className="bg-card/80 border-b border-border sticky top-0 z-50">
-          <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
-            <div className="flex items-center gap-3">
-              <BrainTrackLogo className="h-7 w-auto" />
-              <h1 className="text-xl font-semibold text-foreground">
-                <span className="gradient-text">{isAfrikaans ? "Eksamen" : "Exam"}</span>{" "}
-                {isAfrikaans ? "Gereed" : "Ready"}
-              </h1>
+      <div ref={containerRef} className="min-h-screen text-white" style={pageRootStyle}>
+        {renderHeader()}
+        <div className="flex items-center justify-center p-4 min-h-[calc(100vh-64px)]">
+          <div
+            className="max-w-md w-full p-8 text-center"
+            style={{
+              ...CARD,
+              border: `1.5px solid ${ALERT_HEX}66`,
+              boxShadow: `0 0 30px ${ALERT_HEX}30`,
+              animation: "bt-fadeup .5s both",
+            }}
+          >
+            <div
+              className="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4"
+              style={{ background: `${ALERT_HEX}1a`, border: `1.5px solid ${ALERT_HEX}55` }}
+            >
+              <XCircle className="w-8 h-8" style={{ color: ALERT_HEX }} />
             </div>
-            <div className="flex items-center gap-3">
-              <button onClick={toggleLanguage} className="flex items-center gap-1 px-2 py-1.5 rounded-md text-foreground hover:bg-white/10 transition-colors" data-testid="button-language-toggle">
-                <Globe className="h-4 w-4" />
-                <span className="text-xs font-semibold">{language === "en" ? "EN" : "AF"}</span>
-              </button>
-              <Link href="/dashboard">
-                <button className="p-1.5 rounded-lg text-foreground hover:bg-white/5 transition-colors" title={isAfrikaans ? "Tuis" : "Home"} data-testid="button-home">
-                  <Home className="h-4 w-4" />
-                </button>
-              </Link>
-              <button onClick={() => logout()} className="p-1.5 rounded-lg text-foreground hover:bg-white/5 transition-colors" title={isAfrikaans ? "Uitteken" : "Sign Out"} data-testid="button-logout">
-                <LogOut className="h-4 w-4" />
-              </button>
+            <span style={marker(ALERT_HEX, 15)}>{isAfrikaans ? "Eish... reëls is reëls" : "Eish... rules are rules"}</span>
+            <div role="heading" aria-level={1} className="text-xl font-black mt-2" style={{ color: ALERT_HEX }}>
+              {isAfrikaans ? "Eksamen Gekanselleer" : "Exam Cancelled"}
             </div>
-          </div>
-        </header>
-        <div className="flex items-center justify-center p-4 min-h-[calc(100vh-57px)]">
-          <Card className="max-w-md w-full border-destructive">
-            <CardHeader className="text-center">
-              <div className="mx-auto w-16 h-16 rounded-full bg-destructive/20 flex items-center justify-center mb-4">
-                <XCircle className="w-8 h-8 text-destructive" />
-              </div>
-              <CardTitle className="text-destructive">{isAfrikaans ? "Eksamen Gekanselleer" : "Exam Cancelled"}</CardTitle>
-              <CardDescription className="text-base mt-2 text-white">
-                {violationMessage}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="p-4 bg-destructive/10 rounded-lg">
-                <p className="text-sm text-center text-white">
-                  {isAfrikaans
-                    ? "Jou eksamen is gekanselleer weens 'n reëloortreding. Al jou antwoorde is verwyder."
-                    : "Your exam has been cancelled due to a rule violation. All your answers have been discarded."}
-                </p>
-              </div>
-              <Button 
-                className="w-full" 
+            <p className="text-base mt-2 text-white">{violationMessage}</p>
+            <div
+              className="p-4 mt-5 rounded-xl"
+              style={{ background: `${ALERT_HEX}12`, border: `1px solid ${ALERT_HEX}40` }}
+            >
+              <p className="text-sm text-center text-white">
+                {isAfrikaans
+                  ? "Jou eksamen is gekanselleer weens 'n reëloortreding. Al jou antwoorde is verwyder."
+                  : "Your exam has been cancelled due to a rule violation. All your answers have been discarded."}
+              </p>
+            </div>
+            <div className="space-y-3 mt-6">
+              <button
+                className="w-full px-5 py-3 text-sm transition-all"
+                style={PRIMARY_BTN}
+                onMouseEnter={lift}
+                onMouseLeave={unlift}
                 onClick={() => {
                   setExamState("setup");
                   setSelectedPaperId(null);
@@ -582,17 +669,17 @@ export default function ExamReadyPage() {
                 data-testid="button-restart-exam"
               >
                 {isAfrikaans ? "Begin Nuwe Eksamen" : "Start New Exam"}
-              </Button>
-              <Button 
-                variant="outline" 
-                className="w-full"
+              </button>
+              <button
+                className="w-full px-5 py-3 text-sm transition-all hover:bg-white/5"
+                style={SECONDARY_BTN}
                 onClick={() => navigate("/dashboard")}
                 data-testid="button-back-dashboard"
               >
                 {isAfrikaans ? "Terug na Tuisbladsy" : "Back to Dashboard"}
-              </Button>
-            </CardContent>
-          </Card>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -600,158 +687,171 @@ export default function ExamReadyPage() {
 
   if (examState === "completed") {
     return (
-      <div className="min-h-screen">
-        <header className="bg-card/80 border-b border-border sticky top-0 z-50">
-          <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
-            <div className="flex items-center gap-3">
-              <BrainTrackLogo className="h-7 w-auto" />
-              <h1 className="text-xl font-semibold text-foreground">
-                <span className="gradient-text">{isAfrikaans ? "Eksamen" : "Exam"}</span>{" "}
-                {isAfrikaans ? "Gereed" : "Ready"}
-              </h1>
+      <div className="min-h-screen text-white relative overflow-hidden" style={pageRootStyle}>
+        {renderHeader()}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full blur-[120px] opacity-30"
+          style={{ background: "#94F7C5" }}
+        />
+        <div className="flex items-center justify-center p-4 min-h-[calc(100vh-64px)]">
+          <div
+            className="max-w-md w-full p-8 text-center relative"
+            style={{
+              ...CARD,
+              border: "1.5px solid rgba(148,247,197,.5)",
+              boxShadow: "0 0 30px rgba(148,247,197,.22)",
+              animation: "bt-fadeup .5s both",
+            }}
+          >
+            <div
+              className="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4"
+              style={{ background: "rgba(148,247,197,.12)", border: "1.5px solid rgba(148,247,197,.5)" }}
+            >
+              <CheckCircle2 className="w-8 h-8" style={{ color: "#94F7C5", filter: "drop-shadow(0 0 8px rgba(148,247,197,.6))" }} />
             </div>
-            <div className="flex items-center gap-3">
-              <button onClick={toggleLanguage} className="flex items-center gap-1 px-2 py-1.5 rounded-md text-foreground hover:bg-white/10 transition-colors" data-testid="button-language-toggle">
-                <Globe className="h-4 w-4" />
-                <span className="text-xs font-semibold">{language === "en" ? "EN" : "AF"}</span>
-              </button>
-              <Link href="/dashboard">
-                <button className="p-1.5 rounded-lg text-foreground hover:bg-white/5 transition-colors" title={isAfrikaans ? "Tuis" : "Home"} data-testid="button-home">
-                  <Home className="h-4 w-4" />
-                </button>
-              </Link>
-              <button onClick={() => logout()} className="p-1.5 rounded-lg text-foreground hover:bg-white/5 transition-colors" title={isAfrikaans ? "Uitteken" : "Sign Out"} data-testid="button-logout">
-                <LogOut className="h-4 w-4" />
-              </button>
+            <span style={marker("#94F7C5", 16)}>{isAfrikaans ? "Mooi so! 🎉" : "Sharp sharp! 🎉"}</span>
+            <div role="heading" aria-level={1} className="text-2xl font-black mt-2" style={RAINBOW_TEXT}>
+              {isAfrikaans ? "Eksamen Voltooi" : "Exam Completed"}
             </div>
-          </div>
-        </header>
-        <div className="flex items-center justify-center p-4 min-h-[calc(100vh-57px)]">
-          <Card className="max-w-md w-full">
-            <CardHeader className="text-center">
-              <div className="mx-auto w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mb-4">
-                <CheckCircle2 className="w-8 h-8 text-primary" />
+            <p className="text-base mt-2 text-white">
+              {isAfrikaans ? "Goed gedaan! Jou eksamen is ingedien." : "Well done! Your exam has been submitted."}
+            </p>
+            <div className="grid grid-cols-2 gap-4 text-center mt-6">
+              <div className="p-4 rounded-xl" style={{ background: "rgba(159,216,255,.06)", border: "1.5px solid rgba(159,216,255,.4)" }}>
+                <p className="text-2xl font-black" style={{ color: "#9FD8FF" }}>{answeredCount}</p>
+                <p className="text-sm text-white">{isAfrikaans ? "Vrae Beantwoord" : "Questions Answered"}</p>
               </div>
-              <CardTitle className="text-foreground">{isAfrikaans ? "Eksamen Voltooi" : "Exam Completed"}</CardTitle>
-              <CardDescription className="text-base mt-2 text-white">
-                {isAfrikaans ? "Goed gedaan! Jou eksamen is ingedien." : "Well done! Your exam has been submitted."}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4 text-center">
-                <div className="p-4 bg-muted/30 border border-border rounded-lg">
-                  <p className="text-2xl font-semibold text-foreground">{answeredCount}</p>
-                  <p className="text-sm text-white">{isAfrikaans ? "Vrae Beantwoord" : "Questions Answered"}</p>
-                </div>
-                <div className="p-4 bg-muted/30 border border-border rounded-lg">
-                  <p className="text-2xl font-semibold text-foreground">{formatTime(timeUsed)}</p>
-                  <p className="text-sm text-white">{isAfrikaans ? "Tyd Gebruik" : "Time Used"}</p>
-                </div>
+              <div className="p-4 rounded-xl" style={{ background: "rgba(255,226,154,.06)", border: "1.5px solid rgba(255,226,154,.4)" }}>
+                <p className="text-2xl font-black tabular-nums" style={{ color: "#FFE29A" }}>{formatTime(timeUsed)}</p>
+                <p className="text-sm text-white">{isAfrikaans ? "Tyd Gebruik" : "Time Used"}</p>
               </div>
-              <Button 
-                className="w-full"
+            </div>
+            <div className="space-y-3 mt-6">
+              <button
+                className="w-full px-5 py-3 text-sm transition-all"
+                style={PRIMARY_BTN}
+                onMouseEnter={lift}
+                onMouseLeave={unlift}
                 onClick={() => navigate("/progress")}
                 data-testid="button-view-results"
               >
                 {isAfrikaans ? "Sien Resultate" : "View Results"}
-              </Button>
-              <Button 
-                variant="outline" 
-                className="w-full"
+              </button>
+              <button
+                className="w-full px-5 py-3 text-sm transition-all hover:bg-white/5"
+                style={SECONDARY_BTN}
                 onClick={() => navigate("/dashboard")}
                 data-testid="button-back-dashboard-completed"
               >
                 {isAfrikaans ? "Terug na Tuisbladsy" : "Back to Dashboard"}
-              </Button>
-            </CardContent>
-          </Card>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   if (examState === "setup") {
-    return (
-      <div className="min-h-screen">
-        <header className="bg-card/80 border-b border-border sticky top-0 z-50">
-          <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
-            <div className="flex items-center gap-3">
-              <BrainTrackLogo className="h-7 w-auto" />
-              <h1 className="text-xl font-semibold text-foreground">
-                <span className="gradient-text">{isAfrikaans ? "Eksamen" : "Exam"}</span>{" "}
-                {isAfrikaans ? "Gereed" : "Ready"}
-              </h1>
-            </div>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={toggleLanguage}
-                className="flex items-center gap-1 px-2 py-1.5 rounded-md text-foreground hover:bg-white/10 transition-colors"
-                data-testid="button-language-toggle"
-              >
-                <Globe className="h-4 w-4" />
-                <span className="text-xs font-semibold">{language === "en" ? "EN" : "AF"}</span>
-              </button>
-              <Link href="/dashboard">
-                <button className="p-1.5 rounded-lg text-foreground hover:bg-white/5 transition-colors" title={isAfrikaans ? "Tuis" : "Home"} data-testid="button-home">
-                  <Home className="h-4 w-4" />
-                </button>
-              </Link>
-              <button onClick={() => logout()} className="p-1.5 rounded-lg text-foreground hover:bg-white/5 transition-colors" title={isAfrikaans ? "Uitteken" : "Sign Out"} data-testid="button-logout">
-                <LogOut className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-        </header>
+    const rules = [
+      {
+        Icon: Shield,
+        hex: PASTELS[0],
+        text: isAfrikaans ? "Volskerm is vereis. As jy volskerm verlaat, word die eksamen gekanselleer." : "Fullscreen mode is required. Exiting fullscreen will cancel the exam.",
+      },
+      {
+        Icon: Eye,
+        hex: PASTELS[1],
+        text: isAfrikaans ? "Oortjie-wisseling of die verlaat van die venster sal die eksamen onmiddellik kanselleer." : "Tab switching or leaving the window will immediately cancel the exam.",
+      },
+      {
+        Icon: Clock,
+        hex: PASTELS[2],
+        text: isAfrikaans ? "Onaktiwiteit van meer as 10 sekondes gee 'n waarskuwing. Langer pouses kanselleer die eksamen." : "Pausing for more than 10 seconds triggers a warning. Extended pauses cancel the exam.",
+      },
+      {
+        Icon: XCircle,
+        hex: PASTELS[3],
+        text: isAfrikaans ? "Geen KI-hulp toegelaat nie. Antwoorde moet uit jou eie kennis kom." : "No AI assistance allowed. Answers must come from your own knowledge.",
+      },
+    ];
 
-        <main className="container mx-auto px-4 py-8">
-          <div className="max-w-2xl mx-auto space-y-6">
-            <div className="text-center space-y-2">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/20 mb-4">
-                <BookOpen className="w-8 h-8 text-primary" />
+    return (
+      <div className="min-h-screen text-white relative overflow-hidden" style={pageRootStyle}>
+        {renderHeader()}
+        {/* Ambient auras */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full blur-[120px] opacity-40"
+          style={{ background: "#9FF5E8" }}
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute top-40 -right-24 w-[380px] h-[380px] rounded-full blur-[120px] opacity-30"
+          style={{ background: "#FFB7E5" }}
+        />
+
+        <main className="relative max-w-3xl mx-auto px-4 sm:px-6 py-10">
+          <div className="space-y-8">
+            {/* Hero */}
+            <section className="text-center space-y-3" style={{ animation: "bt-fadeup .5s both" }}>
+              <div className="inline-flex items-center gap-2">
+                <BookOpen className="w-4 h-4" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px #9FF5E8)" }} />
+                <span style={marker("#9FF5E8", 16)}>
+                  {isAfrikaans ? "Regte toestande. Regte fokus. 🔒" : "Real conditions. Real focus. 🔒"}
+                </span>
               </div>
-              <h1 className="text-2xl font-semibold text-white">{isAfrikaans ? "Eksamen Gereed Modus" : "Exam Ready Mode"}</h1>
-              <p className="text-white">
+              <div
+                role="heading"
+                aria-level={1}
+                className="font-black leading-[0.95] tracking-tight text-3xl sm:text-4xl md:text-5xl"
+                style={RAINBOW_TEXT}
+              >
+                {isAfrikaans ? "Eksamen Gereed Modus" : "Exam Ready Mode"}
+              </div>
+              <p className="text-white text-base sm:text-lg max-w-xl mx-auto" style={{ opacity: 0.94 }}>
                 {isAfrikaans ? "Oefen onder werklike eksamentoestande met bedrogkontrolering" : "Practice under real exam conditions with anti-cheat monitoring"}
               </p>
+            </section>
+
+            {/* Rules card */}
+            <div
+              className="relative overflow-hidden p-6"
+              style={{ ...CARD, border: "1.5px solid rgba(255,226,154,.45)", boxShadow: "0 0 26px rgba(255,226,154,.12)" }}
+            >
+              <span
+                aria-hidden
+                className="absolute top-0 left-0 right-0 h-[2px]"
+                style={{ background: "#FFE29A", boxShadow: "0 0 10px rgba(255,226,154,.5)" }}
+              />
+              <div className="flex items-center gap-2 mb-4">
+                <AlertTriangle className="w-5 h-5" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 6px #FFE29A)" }} />
+                <div role="heading" aria-level={2} className="font-black text-lg text-white">
+                  {isAfrikaans ? "Belangrike Reëls" : "Important Rules"}
+                </div>
+              </div>
+              <div className="space-y-3">
+                {rules.map(({ Icon, hex, text }, i) => (
+                  <div key={i} className="flex items-start gap-3">
+                    <Icon className="w-5 h-5 mt-0.5 shrink-0" style={{ color: hex, filter: `drop-shadow(0 0 5px ${hex})` }} />
+                    <p className="text-sm text-white">{text}</p>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <Card className="border-accent/50">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-white">
-                  <AlertTriangle className="w-5 h-5 text-accent" />
-                  {isAfrikaans ? "Belangrike Reëls" : "Important Rules"}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-start gap-3">
-                  <Shield className="w-5 h-5 text-accent mt-0.5" />
-                  <p className="text-sm text-white">{isAfrikaans ? "Volskerm is vereis. As jy volskerm verlaat, word die eksamen gekanselleer." : "Fullscreen mode is required. Exiting fullscreen will cancel the exam."}</p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <Eye className="w-5 h-5 text-accent mt-0.5" />
-                  <p className="text-sm text-white">{isAfrikaans ? "Oortjie-wisseling of die verlaat van die venster sal die eksamen onmiddellik kanselleer." : "Tab switching or leaving the window will immediately cancel the exam."}</p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <Clock className="w-5 h-5 text-accent mt-0.5" />
-                  <p className="text-sm text-white">{isAfrikaans ? "Onaktiwiteit van meer as 10 sekondes gee 'n waarskuwing. Langer pouses kanselleer die eksamen." : "Pausing for more than 10 seconds triggers a warning. Extended pauses cancel the exam."}</p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <XCircle className="w-5 h-5 text-accent mt-0.5" />
-                  <p className="text-sm text-white">{isAfrikaans ? "Geen KI-hulp toegelaat nie. Antwoorde moet uit jou eie kennis kom." : "No AI assistance allowed. Answers must come from your own knowledge."}</p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-white">{isAfrikaans ? "Kies Jou Vraestel" : "Choose Your Paper"}</CardTitle>
-                <p className="text-sm text-white">
-                  {isAfrikaans
-                    ? "Hierdie is gesimuleerde KABV-belynde vraestelle — nie amptelike DBO-eksamens nie."
-                    : "These are simulated CAPS-aligned papers — not official DBE exams."}
-                </p>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            {/* Paper picker */}
+            <div className="p-6" style={CARD}>
+              <div role="heading" aria-level={2} className="font-black text-lg text-white">
+                {isAfrikaans ? "Kies Jou Vraestel" : "Choose Your Paper"}
+              </div>
+              <p className="text-sm text-white mt-1 mb-4" style={{ opacity: 0.9 }}>
+                {isAfrikaans
+                  ? "Hierdie is gesimuleerde KABV-belynde vraestelle — nie amptelike DBO-eksamens nie."
+                  : "These are simulated CAPS-aligned papers — not official DBE exams."}
+              </p>
+              <div className="space-y-4">
                 {(() => {
                   const learnerSubjectIds = (profile as any)?.selectedSubjects as number[] | undefined;
                   const codeToSimCode: Record<string, string> = {
@@ -781,54 +881,68 @@ export default function ExamReadyPage() {
                     if (!grouped.has(name)) grouped.set(name, []);
                     grouped.get(name)!.push(p);
                   }
+                  let paperIdx = -1;
                   return (
                     <>
                       {visiblePapers.length > 0 ? (
                         <div className="space-y-3">
-                          <div className="grid gap-2 max-h-80 overflow-y-auto">
+                          <div className="grid gap-2 max-h-80 overflow-y-auto pr-1">
                             {Array.from(grouped.entries()).map(([name, papers]) => (
-                              papers.map(paper => (
-                                <div
-                                  key={`${paper.subjectCode}-${paper.paperNumber}`}
-                                  className={`p-3 rounded-lg border cursor-pointer hover-elevate transition-all ${
-                                    selectedSubject === paper.subjectCode && selectedPaperNum === paper.paperNumber
-                                      ? "border-primary bg-primary/10 shadow-sm"
-                                      : "border-border hover:border-primary/50"
-                                  }`}
-                                  onClick={() => {
-                                    setSelectedSubject(paper.subjectCode);
-                                    setSelectedPaperNum(paper.paperNumber);
-                                    setSelectedPaperId(null);
-                                  }}
-                                  data-testid={`sim-paper-${paper.subjectCode}-${paper.paperNumber}`}
-                                >
-                                  <div className="flex items-center justify-between">
-                                    <div>
-                                      <p className="font-medium text-white">{name}</p>
-                                      <p className="text-sm text-white">
-                                        {isAfrikaans ? "Vraestel" : "Paper"} {paper.paperNumber} — {paper.totalMarks} {isAfrikaans ? "punte" : "marks"} — {paper.duration}
-                                      </p>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                      <Badge variant="outline">{paper.questionCount} Q</Badge>
+                              papers.map(paper => {
+                                paperIdx += 1;
+                                const hex = PASTELS[paperIdx % PASTELS.length];
+                                const isSelected = selectedSubject === paper.subjectCode && selectedPaperNum === paper.paperNumber;
+                                return (
+                                  <div
+                                    key={`${paper.subjectCode}-${paper.paperNumber}`}
+                                    className="p-3 cursor-pointer transition-all"
+                                    style={{
+                                      borderRadius: 14,
+                                      background: isSelected ? `${hex}14` : "rgba(255,255,255,.03)",
+                                      border: isSelected ? `1.5px solid ${hex}` : "1px solid rgba(255,255,255,.1)",
+                                      boxShadow: isSelected ? `0 0 18px ${hex}40` : "none",
+                                    }}
+                                    onClick={() => {
+                                      setSelectedSubject(paper.subjectCode);
+                                      setSelectedPaperNum(paper.paperNumber);
+                                      setSelectedPaperId(null);
+                                    }}
+                                    data-testid={`sim-paper-${paper.subjectCode}-${paper.paperNumber}`}
+                                  >
+                                    <div className="flex items-center justify-between gap-3">
+                                      <div className="min-w-0">
+                                        <p className="font-bold truncate" style={{ color: isSelected ? hex : "#fff" }}>{name}</p>
+                                        <p className="text-sm text-white" style={{ opacity: 0.9 }}>
+                                          {isAfrikaans ? "Vraestel" : "Paper"} {paper.paperNumber} — {paper.totalMarks} {isAfrikaans ? "punte" : "marks"} — {paper.duration}
+                                        </p>
+                                      </div>
+                                      <span
+                                        className="shrink-0 text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full"
+                                        style={{ color: hex, border: `1px solid ${hex}` }}
+                                      >
+                                        {paper.questionCount} Q
+                                      </span>
                                     </div>
                                   </div>
-                                </div>
-                              ))
+                                );
+                              })
                             ))}
                           </div>
                         </div>
                       ) : (
                         <div className="flex items-center justify-center py-8">
-                          <Loader2 className="w-6 h-6 animate-spin" />
+                          <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#9FF5E8" }} />
                         </div>
                       )}
                     </>
                   );
                 })()}
 
-                <Button
-                  className="w-full"
+                <button
+                  className="w-full inline-flex items-center justify-center px-5 py-3 text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={PRIMARY_BTN}
+                  onMouseEnter={lift}
+                  onMouseLeave={unlift}
                   disabled={!selectedSubject || !selectedPaperNum}
                   onClick={() => {
                     if (selectedSubject && selectedPaperNum) {
@@ -850,9 +964,9 @@ export default function ExamReadyPage() {
                 >
                   <Play className="w-4 h-4 mr-2" />
                   {isAfrikaans ? "Begin Eksamen" : "Start Exam"}
-                </Button>
-              </CardContent>
-            </Card>
+                </button>
+              </div>
+            </div>
           </div>
         </main>
       </div>
@@ -861,38 +975,56 @@ export default function ExamReadyPage() {
 
   if (examState === "ready") {
     return (
-      <div ref={containerRef} className="min-h-screen flex items-center justify-center p-4">
-        <Card className="max-w-md w-full">
-          <CardHeader className="text-center">
-            <div className="mx-auto w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mb-4">
-              <Maximize2 className="w-8 h-8 text-primary" />
-            </div>
-            <CardTitle className="text-white">{isAfrikaans ? "Gereed om te Begin" : "Ready to Begin"}</CardTitle>
-            <CardDescription className="text-base mt-2 text-white">
-              {selectedPaperData?.paper?.subjectName
-                ? (isAfrikaans ? selectedPaperData.paper.subjectNameAf : selectedPaperData.paper.subjectName)
-                : selectedSubject} {selectedPaperNum ? `— ${isAfrikaans ? "Vraestel" : "Paper"} ${selectedPaperNum}` : ""}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="p-4 bg-accent/10 border border-accent/30 rounded-lg">
-              <p className="text-sm text-center text-white">
-                {isAfrikaans
-                  ? "Klik op \"Volskerm\" om die eksamenstimer te begin. Maak seker jy is gereed en sal nie onderbreek word nie."
-                  : "Clicking \"Enter Fullscreen\" will start the exam timer. Make sure you're ready and won't be interrupted."}
-              </p>
-            </div>
-            <Button 
-              className="w-full" 
+      <div ref={containerRef} className="min-h-screen flex items-center justify-center p-4 text-white" style={pageRootStyle}>
+        <div
+          className="max-w-md w-full p-8 text-center"
+          style={{
+            ...CARD,
+            border: "1.5px solid rgba(159,216,255,.5)",
+            boxShadow: "0 0 30px rgba(159,216,255,.18)",
+            animation: "bt-fadeup .5s both",
+          }}
+        >
+          <div
+            className="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4"
+            style={{ background: "rgba(159,216,255,.1)", border: "1.5px solid rgba(159,216,255,.5)" }}
+          >
+            <Maximize2 className="w-8 h-8" style={{ color: "#9FD8FF", filter: "drop-shadow(0 0 8px rgba(159,216,255,.6))" }} />
+          </div>
+          <span style={marker("#9FD8FF", 16)}>{isAfrikaans ? "Diep asem. Jy's reg. 💪" : "Deep breath. You got this. 💪"}</span>
+          <div role="heading" aria-level={1} className="text-2xl font-black mt-2 text-white">
+            {isAfrikaans ? "Gereed om te Begin" : "Ready to Begin"}
+          </div>
+          <p className="text-base mt-2 text-white">
+            {selectedPaperData?.paper?.subjectName
+              ? (isAfrikaans ? selectedPaperData.paper.subjectNameAf : selectedPaperData.paper.subjectName)
+              : selectedSubject} {selectedPaperNum ? `— ${isAfrikaans ? "Vraestel" : "Paper"} ${selectedPaperNum}` : ""}
+          </p>
+          <div
+            className="p-4 mt-5 rounded-xl"
+            style={{ background: "rgba(255,226,154,.08)", border: "1px solid rgba(255,226,154,.4)" }}
+          >
+            <p className="text-sm text-center text-white">
+              {isAfrikaans
+                ? "Klik op \"Volskerm\" om die eksamenstimer te begin. Maak seker jy is gereed en sal nie onderbreek word nie."
+                : "Clicking \"Enter Fullscreen\" will start the exam timer. Make sure you're ready and won't be interrupted."}
+            </p>
+          </div>
+          <div className="space-y-3 mt-6">
+            <button
+              className="w-full inline-flex items-center justify-center px-5 py-3 text-sm transition-all"
+              style={PRIMARY_BTN}
+              onMouseEnter={lift}
+              onMouseLeave={unlift}
               onClick={enterFullscreen}
               data-testid="button-enter-fullscreen"
             >
               <Maximize2 className="w-4 h-4 mr-2" />
               {isAfrikaans ? "Volskerm & Begin" : "Enter Fullscreen & Start"}
-            </Button>
-            <Button 
-              variant="outline" 
-              className="w-full"
+            </button>
+            <button
+              className="w-full px-5 py-3 text-sm transition-all hover:bg-white/5"
+              style={SECONDARY_BTN}
               onClick={() => {
                 setExamState("setup");
                 setSelectedPaperId(null);
@@ -900,51 +1032,77 @@ export default function ExamReadyPage() {
               data-testid="button-cancel-ready"
             >
               {isAfrikaans ? "Kanselleer" : "Cancel"}
-            </Button>
-          </CardContent>
-        </Card>
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div ref={containerRef} className="min-h-screen flex flex-col">
+    <div ref={containerRef} className="min-h-screen flex flex-col text-white" style={pageRootStyle}>
       {showViolationWarning && (
-        <div className="fixed inset-0 z-50 bg-destructive/90 flex items-center justify-center">
-          <div className="text-center text-white p-8">
-            <AlertCircle className="w-16 h-16 mx-auto mb-4 animate-pulse" />
-            <h2 className="text-2xl font-semibold mb-2">{isAfrikaans ? "Onaktiwiteit Gedetekteer!" : "Inactivity Detected!"}</h2>
-            <p className="text-lg">{isAfrikaans ? "Beweeg jou muis of tik om die eksamen voort te sit" : "Move your mouse or type to continue the exam"}</p>
-            <p className="text-sm mt-2 opacity-80">{isAfrikaans ? "Eksamen word in 5 sekondes gekanselleer as daar geen aktiwiteit is nie" : "Exam will be cancelled in 5 seconds if no activity"}</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: "rgba(5,5,8,.96)" }}>
+          <div
+            className="text-center text-white p-10 mx-4"
+            style={{
+              background: "rgba(255,141,161,.08)",
+              border: `1.5px solid ${ALERT_HEX}`,
+              borderRadius: 24,
+              boxShadow: `0 0 40px ${ALERT_HEX}40`,
+            }}
+          >
+            <AlertCircle
+              className="w-16 h-16 mx-auto mb-4"
+              style={{ color: ALERT_HEX, animation: "bt-glowpulse 1.2s infinite" }}
+            />
+            <div role="heading" aria-level={1} className="text-2xl font-black mb-2" style={{ color: ALERT_HEX }}>
+              {isAfrikaans ? "Onaktiwiteit Gedetekteer!" : "Inactivity Detected!"}
+            </div>
+            <p className="text-lg text-white">{isAfrikaans ? "Beweeg jou muis of tik om die eksamen voort te sit" : "Move your mouse or type to continue the exam"}</p>
+            <p className="text-sm mt-2 text-white" style={{ opacity: 0.9 }}>{isAfrikaans ? "Eksamen word in 5 sekondes gekanselleer as daar geen aktiwiteit is nie" : "Exam will be cancelled in 5 seconds if no activity"}</p>
           </div>
         </div>
       )}
 
-      <header className="border-b border-border bg-card p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div>
-              <p className="font-semibold text-white">{selectedSubject}</p>
-              <p className="text-sm text-white">
+      <header
+        className="border-b p-4"
+        style={{ background: "rgba(5,5,8,.94)", borderColor: "rgba(255,255,255,.08)", backdropFilter: "blur(10px)" }}
+      >
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-4 min-w-0">
+            <div className="min-w-0">
+              <p className="font-black truncate" style={marker("#9FF5E8", 16)}>{selectedSubject}</p>
+              <p className="text-sm text-white" style={{ opacity: 0.9 }}>
                 {selectedPaper?.year} {selectedPaper?.month} - {isAfrikaans ? "Vraestel" : "Paper"} {selectedPaper?.paperNumber}
               </p>
             </div>
           </div>
-          
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-white">
-              <Shield className="w-5 h-5 text-accent" />
-              <span className="text-sm font-medium text-white">{isAfrikaans ? "Gemonitor" : "Monitored"}</span>
-            </div>
-            
-            <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg">
-              <Clock className="w-4 h-4 text-white" />
-              <span className="font-mono font-semibold text-white">{formatTime(timeUsed)}</span>
+
+          <div className="flex items-center gap-3 flex-wrap">
+            <div
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full"
+              style={{ border: "1px solid rgba(148,247,197,.5)" }}
+            >
+              <Shield className="w-4 h-4" style={{ color: "#94F7C5" }} />
+              <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "#94F7C5" }}>
+                {isAfrikaans ? "Gemonitor" : "Monitored"}
+              </span>
             </div>
 
-            <Button 
-              variant="destructive" 
-              size="sm"
+            <div
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full"
+              style={{ border: "1px solid rgba(255,226,154,.5)" }}
+            >
+              <Clock className="w-4 h-4" style={{ color: "#FFE29A" }} />
+              <span className="font-mono font-bold text-sm" style={{ color: "#FFE29A" }}>{formatTime(timeUsed)}</span>
+            </div>
+
+            <button
+              className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+              style={{ background: "transparent", border: `1.5px solid ${ALERT_HEX}`, color: ALERT_HEX }}
+              onMouseEnter={(e) => { e.currentTarget.style.boxShadow = `0 0 16px ${ALERT_HEX}45`; }}
+              onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "none"; }}
               onClick={() => submitExamMutation.mutate()}
               disabled={submitExamMutation.isPending}
               data-testid="button-submit-exam"
@@ -955,39 +1113,58 @@ export default function ExamReadyPage() {
                 <Send className="w-4 h-4 mr-2" />
               )}
               {isAfrikaans ? "Dien Eksamen In" : "Submit Exam"}
-            </Button>
+            </button>
           </div>
         </div>
       </header>
 
       <div className="flex-1 flex">
-        <aside className="w-64 border-r border-border bg-card p-4 overflow-y-auto">
-          <h3 className="font-medium text-white mb-3">{isAfrikaans ? "Vrae" : "Questions"}</h3>
-          <div className="grid grid-cols-5 gap-2">
-            {questions?.map((q, idx) => (
-              <button
-                key={q.id}
-                className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${
-                  currentQuestionIndex === idx
-                    ? "bg-primary text-primary-foreground"
-                    : answers[q.id]?.trim()
-                    ? "bg-primary/20 text-primary border border-primary/50"
-                    : "bg-white/10 hover-elevate"
-                }`}
-                onClick={() => setCurrentQuestionIndex(idx)}
-                data-testid={`question-nav-${idx}`}
-              >
-                {idx + 1}
-              </button>
-            ))}
+        <aside
+          className="w-64 border-r p-4 overflow-y-auto"
+          style={{ background: "rgba(255,255,255,.02)", borderColor: "rgba(255,255,255,.08)" }}
+        >
+          <div role="heading" aria-level={2} className="font-bold text-white mb-3">
+            {isAfrikaans ? "Vrae" : "Questions"}
           </div>
-          
+          <div className="grid grid-cols-5 gap-2">
+            {questions?.map((q, idx) => {
+              const isCurrent = currentQuestionIndex === idx;
+              const isAnswered = !!answers[q.id]?.trim();
+              return (
+                <button
+                  key={q.id}
+                  className="w-10 h-10 text-sm font-bold transition-colors"
+                  style={
+                    isCurrent
+                      ? { ...PRIMARY_BTN, borderRadius: 10, boxShadow: "0 0 14px rgba(159,245,232,.35)" }
+                      : isAnswered
+                      ? { background: "rgba(148,247,197,.1)", color: "#94F7C5", border: "1px solid rgba(148,247,197,.5)", borderRadius: 10 }
+                      : { background: "rgba(255,255,255,.05)", color: "#fff", border: "1px solid rgba(255,255,255,.12)", borderRadius: 10 }
+                  }
+                  onClick={() => setCurrentQuestionIndex(idx)}
+                  data-testid={`question-nav-${idx}`}
+                >
+                  {idx + 1}
+                </button>
+              );
+            })}
+          </div>
+
           <div className="mt-6 space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-white">{isAfrikaans ? "Vordering" : "Progress"}</span>
-              <span className="text-white">{answeredCount}/{totalQuestions}</span>
+              <span className="text-white font-bold">{answeredCount}/{totalQuestions}</span>
             </div>
-            <Progress value={(answeredCount / totalQuestions) * 100} />
+            <div className="h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.08)" }}>
+              <div
+                className="h-full rounded-full transition-all"
+                style={{
+                  width: `${totalQuestions ? (answeredCount / totalQuestions) * 100 : 0}%`,
+                  background: "linear-gradient(90deg,#9FF5E8,#C5B3FF)",
+                  boxShadow: "0 0 10px rgba(159,245,232,.5)",
+                }}
+              />
+            </div>
           </div>
         </aside>
 
@@ -995,35 +1172,38 @@ export default function ExamReadyPage() {
           {currentQuestion ? (
             <div className="max-w-3xl mx-auto space-y-6">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-white">
+                <div role="heading" aria-level={2} className="text-xl font-black text-white">
                   {isAfrikaans ? "Vraag" : "Question"} {currentQuestionIndex + 1}
-                </h2>
+                </div>
                 {currentQuestion.marks && (
-                  <Badge variant="outline">{currentQuestion.marks} {isAfrikaans ? "punte" : "marks"}</Badge>
+                  <span
+                    className="text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full"
+                    style={{ color: "#FFE29A", border: "1px solid #FFE29A" }}
+                  >
+                    {currentQuestion.marks} {isAfrikaans ? "punte" : "marks"}
+                  </span>
                 )}
               </div>
 
-              <Card>
-                <CardContent className="p-6">
-                  {isAfrikaans ? (
-                    <p className="text-base whitespace-pre-wrap">
-                      {currentQuestion.questionTextAf || "[Afrikaanse vertaling nie beskikbaar nie]"}
-                    </p>
-                  ) : (
-                    <p className="text-base whitespace-pre-wrap">{currentQuestion.questionText}</p>
-                  )}
-                </CardContent>
-              </Card>
+              <div className="p-6" style={CARD}>
+                {isAfrikaans ? (
+                  <p className="text-base whitespace-pre-wrap text-white">
+                    {currentQuestion.questionTextAf || "[Afrikaanse vertaling nie beskikbaar nie]"}
+                  </p>
+                ) : (
+                  <p className="text-base whitespace-pre-wrap text-white">{currentQuestion.questionText}</p>
+                )}
+              </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-white">{isAfrikaans ? "Jou Antwoord" : "Your Answer"}</label>
-                <Textarea
+                <label className="text-sm font-bold text-white">{isAfrikaans ? "Jou Antwoord" : "Your Answer"}</label>
+                <textarea
                   placeholder={isAfrikaans ? "Tik jou antwoord hier..." : "Type your answer here..."}
                   value={answers[currentQuestion.id] || ""}
                   onChange={(e) => {
                     const questionId = currentQuestion.id;
                     const newValue = e.target.value;
-                    
+
                     // Track when typing starts for this question (typing speed detection)
                     if (!answerStartTimes[questionId] && newValue.length > 0) {
                       setAnswerStartTimes(prev => ({
@@ -1031,14 +1211,23 @@ export default function ExamReadyPage() {
                         [questionId]: Date.now()
                       }));
                     }
-                    
+
                     setAnswers(prev => ({
                       ...prev,
                       [questionId]: newValue
                     }));
                   }}
-                  className="min-h-[200px] text-base select-none"
-                  style={{ userSelect: 'text' }} // Allow typing but block selection for copy
+                  className="w-full min-h-[200px] text-base select-none p-4 outline-none placeholder:text-white"
+                  style={{
+                    userSelect: 'text', // Allow typing but block selection for copy
+                    background: "rgba(5,5,8,.6)",
+                    border: "1.5px solid rgba(255,255,255,.18)",
+                    borderRadius: 12,
+                    color: "#fff",
+                    fontFamily: "'Poppins',sans-serif",
+                  }}
+                  onFocus={(e) => { e.currentTarget.style.borderColor = "#9FF5E8"; e.currentTarget.style.boxShadow = "0 0 14px rgba(159,245,232,.2)"; }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,.18)"; e.currentTarget.style.boxShadow = "none"; }}
                   onPaste={(e) => e.preventDefault()} // Extra paste prevention
                   onCopy={(e) => e.preventDefault()} // Extra copy prevention
                   onCut={(e) => e.preventDefault()} // Extra cut prevention
@@ -1047,28 +1236,33 @@ export default function ExamReadyPage() {
               </div>
 
               <div className="flex justify-between pt-4">
-                <Button
-                  variant="outline"
+                <button
+                  className="inline-flex items-center px-5 py-2.5 text-sm transition-all hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={SECONDARY_BTN}
                   disabled={currentQuestionIndex === 0}
                   onClick={() => setCurrentQuestionIndex(prev => prev - 1)}
                   data-testid="button-prev-question"
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   {isAfrikaans ? "Vorige" : "Previous"}
-                </Button>
-                <Button
+                </button>
+                <button
+                  className="inline-flex items-center px-5 py-2.5 text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={PRIMARY_BTN}
+                  onMouseEnter={lift}
+                  onMouseLeave={unlift}
                   disabled={currentQuestionIndex === totalQuestions - 1}
                   onClick={() => setCurrentQuestionIndex(prev => prev + 1)}
                   data-testid="button-next-question"
                 >
                   {isAfrikaans ? "Volgende" : "Next"}
                   <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
+                </button>
               </div>
             </div>
           ) : (
             <div className="flex items-center justify-center h-full">
-              <Loader2 className="w-8 h-8 animate-spin" />
+              <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#9FF5E8" }} />
             </div>
           )}
         </main>

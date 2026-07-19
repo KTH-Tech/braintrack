@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- KTH Tech roundel — bold ring; KTH drawn as heavy strokes with the
+       T-crossbar running over the H's left stem (the official ligature);
+       "TECH" letterspaced beneath. currentColor inherits surrounding text. -->
+  <circle cx="100" cy="100" r="86" stroke="currentColor" stroke-width="10"/>
+  <g stroke="currentColor" stroke-width="13" stroke-linecap="butt">
+    <!-- K -->
+    <path d="M52 64v64"/>
+    <path d="M52 98l32-32M52 98l34 30"/>
+    <!-- T: crossbar spans across into the H zone; stem centered under it -->
+    <path d="M92 70h62"/>
+    <path d="M112 70v58"/>
+    <!-- H: left stem hangs from the T crossbar; right stem full height; mid bar -->
+    <path d="M134 70v58"/>
+    <path d="M154 64v64"/>
+    <path d="M134 100h20"/>
+  </g>
+  <text x="100" y="160" text-anchor="middle" font-family="Poppins, Arial, sans-serif" font-size="23" font-weight="600" letter-spacing="10" fill="currentColor" stroke="none">TECH</text>
+</svg>

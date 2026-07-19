@@ -1,11 +1,8 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { Link, useLocation } from "wouter";
+import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/language-context";
-import { BrainTrackLogo } from "@/components/braintrack-logo";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import {
   ArrowLeft,
   Brain,
@@ -369,8 +366,8 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
 
   if (deckLoading) {
     return (
-      <div className="rounded-2xl border border-dashed border-white/10 p-8 text-center space-y-3">
-        <Layers className="w-10 h-10 mx-auto text-white animate-pulse" />
+      <div className="rounded-2xl border border-dashed border-white/10 p-8 text-center space-y-3" style={{ background: "rgba(255,255,255,.03)" }}>
+        <Layers className="w-10 h-10 mx-auto animate-pulse" style={{ color: "#9FD8FF" }} />
         <p className="text-sm text-white">
           {isAf ? "Laai amptelike DBE-flitskaarte..." : "Loading official DBE flashcards..."}
         </p>
@@ -380,16 +377,24 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
 
   if (noneEnrolled) {
     return (
-      <div className="rounded-2xl border border-dashed border-white/10 p-8 text-center space-y-3">
-        <Layers className="w-10 h-10 mx-auto text-white" />
-        <h3 className="text-lg font-bold">{isAf ? "Geen flitskaarte gereed nie" : "No flashcards ready yet"}</h3>
+      <div className="rounded-2xl border border-dashed border-white/10 p-8 text-center space-y-3" style={{ background: "rgba(255,255,255,.03)" }}>
+        <Layers className="w-10 h-10 mx-auto" style={{ color: "#C5B3FF", filter: "drop-shadow(0 0 6px #C5B3FF)" }} />
+        <h3 className="text-lg font-bold text-white">{isAf ? "Geen flitskaarte gereed nie" : "No flashcards ready yet"}</h3>
         <p className="text-sm text-white max-w-sm mx-auto">
           {isAf
             ? "Kies eers jou vakke in Instellings. Flitskaarte verskyn sodra die amptelike DBE-vrae vir jou vakke vrygestel is."
             : "Pick your subjects in Settings. Flashcards appear once the official DBE questions for your subjects have been released."}
         </p>
         <Link href="/settings">
-          <Button size="sm">{isAf ? "Gaan na Instellings" : "Go to Settings"}</Button>
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all"
+            style={{ background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", color: "#050508", fontWeight: 800, boxShadow: "0 0 20px rgba(159,245,232,.35)" }}
+            onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
+            onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
+          >
+            {isAf ? "Gaan na Instellings" : "Go to Settings"}
+          </button>
         </Link>
       </div>
     );
@@ -401,14 +406,19 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
     const totalReviewed = isReviewMissedPass ? cumulativeGot + cumulativeMissed + sessionReviewed : sessionReviewed;
     const pct = totalReviewed > 0 ? Math.round((totalGot / totalReviewed) * 100) : 0;
     return (
-      <div className="flex flex-col items-center justify-center py-12 space-y-6">
+      <div className="flex flex-col items-center justify-center py-12 space-y-6" style={{ animation: "bt-fadeup .5s both" }}>
         <div
-          className="w-20 h-20 rounded-2xl bg-black flex items-center justify-center"
-          style={{ border: "1.5px solid #6EE7F9", boxShadow: "0 0 0 1px rgba(110,231,249,0.25), 0 0 28px rgba(110,231,249,0.55), inset 0 0 18px rgba(0,0,0,0.6)" }}
+          className="w-20 h-20 rounded-2xl flex items-center justify-center"
+          style={{ background: "rgba(255,255,255,.03)", border: "1.5px solid #FFE29A", boxShadow: "0 0 0 1px rgba(255,226,154,0.25), 0 0 28px rgba(255,226,154,0.35), inset 0 0 18px rgba(0,0,0,0.6)" }}
         >
-          <Trophy className="w-10 h-10" style={{ color: "#6EE7F9", filter: "drop-shadow(0 0 6px #6EE7F9)" }} />
+          <Trophy className="w-10 h-10" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 6px #FFE29A)" }} />
         </div>
         <div className="text-center space-y-2">
+          <span
+            style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#94F7C5", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 12px rgba(148,247,197,.5)" }}
+          >
+            {isAf ? "Jy het dit gekraak! 🔥" : "You smashed it! 🔥"}
+          </span>
           <h2 className="text-2xl font-bold text-white">
             {isReviewMissedPass
               ? (isAf ? "Hersieningsbeurt Klaar!" : "Review Pass Done!")
@@ -418,19 +428,19 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
             {isAf ? `Jy het ${totalReviewed} kaarte hersien` : `You reviewed ${totalReviewed} cards`}
           </p>
           {isReviewMissedPass && (
-            <p className="text-xs text-cyan-400">
+            <p className="text-xs" style={{ color: "#9FD8FF" }}>
               {isAf ? "Gekombineerde resultate vir beide rondes" : "Combined results across both passes"}
             </p>
           )}
         </div>
         <div className="grid grid-cols-2 gap-4 w-full max-w-xs">
-          <div className="rounded-xl border-2 border-emerald-400/40 bg-emerald-950/30 p-4 text-center">
-            <p className="text-3xl font-bold text-emerald-400">{totalGot}</p>
-            <p className="text-xs font-semibold text-emerald-300 mt-1">{isAf ? "Geweet ✓" : "Got it ✓"}</p>
+          <div className="rounded-xl p-4 text-center" style={{ background: "rgba(255,255,255,.03)", border: "1.5px solid #94F7C5", boxShadow: "0 0 18px rgba(148,247,197,.25)" }}>
+            <p className="text-3xl font-bold" style={{ color: "#94F7C5" }}>{totalGot}</p>
+            <p className="text-xs font-semibold mt-1" style={{ color: "#94F7C5" }}>{isAf ? "Geweet ✓" : "Got it ✓"}</p>
           </div>
-          <div className="rounded-xl border-2 border-red-400/40 bg-red-950/30 p-4 text-center">
-            <p className="text-3xl font-bold text-red-400">{totalMissed}</p>
-            <p className="text-xs font-semibold text-red-300 mt-1">{isAf ? "Gemis ✗" : "Missed ✗"}</p>
+          <div className="rounded-xl p-4 text-center" style={{ background: "rgba(255,255,255,.03)", border: "1.5px solid #FF8DA1", boxShadow: "0 0 18px rgba(255,141,161,.25)" }}>
+            <p className="text-3xl font-bold" style={{ color: "#FF8DA1" }}>{totalMissed}</p>
+            <p className="text-xs font-semibold mt-1" style={{ color: "#FF8DA1" }}>{isAf ? "Gemis ✗" : "Missed ✗"}</p>
           </div>
         </div>
         <div className="w-full max-w-xs space-y-1">
@@ -443,7 +453,8 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
               className="h-full rounded-full transition-all duration-700"
               style={{
                 width: `${pct}%`,
-                background: pct >= 70 ? "linear-gradient(90deg,#10b981,#34d399)" : pct >= 40 ? "linear-gradient(90deg,#f59e0b,#fbbf24)" : "linear-gradient(90deg,#ef4444,#f87171)",
+                background: pct >= 70 ? "linear-gradient(90deg,#94F7C5,#9FF5E8)" : pct >= 40 ? "linear-gradient(90deg,#FFE29A,#FFB7E5)" : "linear-gradient(90deg,#FF8DA1,#FFB7E5)",
+                boxShadow: pct >= 70 ? "0 0 12px rgba(148,247,197,.6)" : "0 0 12px rgba(255,226,154,.5)",
               }}
             />
           </div>
@@ -452,24 +463,37 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
           {isAf ? `Kaarte vir môre: ${dueTomorrow}` : `Cards due tomorrow: ${dueTomorrow}`}
         </p>
         {!isReviewMissedPass && missedCards.length > 0 && (
-          <Button
+          <button
+            type="button"
             onClick={startMissedReview}
-            variant="outline"
-            className="w-full max-w-xs border-red-400/50 text-red-400 hover:bg-red-950/30 hover:border-red-400"
+            className="w-full max-w-xs inline-flex items-center justify-center px-5 py-2.5 rounded-xl font-bold text-sm bg-white/[.03] hover:bg-white/10 transition-all"
+            style={{ color: "#FF8DA1", border: "1.5px solid #FF8DA1" }}
           >
             <RotateCcw className="w-4 h-4 mr-2" />
             {isAf ? `Hersien Gemiste (${missedCards.length})` : `Review Missed (${missedCards.length})`}
-          </Button>
+          </button>
         )}
         <div className="flex gap-3">
-          <Button onClick={() => { setSessionStarted(false); setSessionComplete(false); setIsReviewMissedPass(false); }} variant="outline">
+          <button
+            type="button"
+            onClick={() => { setSessionStarted(false); setSessionComplete(false); setIsReviewMissedPass(false); }}
+            className="inline-flex items-center px-5 py-2.5 rounded-xl font-bold text-sm text-white bg-transparent hover:bg-white/10 transition-all"
+            style={{ border: "1.5px solid rgba(255,255,255,.2)" }}
+          >
             <ArrowLeft className="w-4 h-4 mr-2" />
             {isAf ? "Terug" : "Back"}
-          </Button>
-          <Button onClick={() => startSession()}>
+          </button>
+          <button
+            type="button"
+            onClick={() => startSession()}
+            className="inline-flex items-center px-5 py-2.5 rounded-xl font-bold text-sm transition-all"
+            style={{ background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", color: "#050508", fontWeight: 800, boxShadow: "0 0 20px rgba(159,245,232,.35)" }}
+            onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
+            onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
+          >
             <RotateCcw className="w-4 h-4 mr-2" />
             {isAf ? "Weer Begin" : "Start Again"}
-          </Button>
+          </button>
         </div>
       </div>
     );
@@ -483,23 +507,23 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
           {/* Summary strip — Task #748: server-aggregated cross-device counts */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {([
-              { icon: Target, value: serverStats?.totalReviewed ?? stats.totalReviewed, label: isAf ? "Hersien"     : "Reviewed"   },
-              { icon: Zap,    value: serverStats?.dueToday ?? dueCardIds.length,        label: isAf ? "Vandag Reg"  : "Due Today"  },
-              { icon: Layers, value: serverStats?.dueTomorrow ?? dueTomorrow,           label: isAf ? "Môre Reg"    : "Due Tomorrow" },
-              { icon: Trophy, value: serverStats?.cardsMastered ?? 0,                   label: isAf ? "Bemeester"   : "Mastered"   },
-            ] as const).map(({ icon: Icon, value, label }) => (
-              <div key={label} className="rounded-xl border border-white/10 bg-white/5 p-3 text-center">
-                <Icon className="w-4 h-4 mx-auto mb-1 text-primary" />
+              { icon: Target, value: serverStats?.totalReviewed ?? stats.totalReviewed, label: isAf ? "Hersien"     : "Reviewed",     hex: "#9FF5E8" },
+              { icon: Zap,    value: serverStats?.dueToday ?? dueCardIds.length,        label: isAf ? "Vandag Reg"  : "Due Today",    hex: "#9FD8FF" },
+              { icon: Layers, value: serverStats?.dueTomorrow ?? dueTomorrow,           label: isAf ? "Môre Reg"    : "Due Tomorrow", hex: "#FFB7E5" },
+              { icon: Trophy, value: serverStats?.cardsMastered ?? 0,                   label: isAf ? "Bemeester"   : "Mastered",     hex: "#C5B3FF" },
+            ] as const).map(({ icon: Icon, value, label, hex }) => (
+              <div key={label} className="rounded-xl p-3 text-center" style={{ background: "rgba(255,255,255,.03)", border: `1px solid ${hex}55`, boxShadow: `0 0 12px ${hex}22` }}>
+                <Icon className="w-4 h-4 mx-auto mb-1" style={{ color: hex, filter: `drop-shadow(0 0 4px ${hex})` }} />
                 <p className="text-xl font-bold text-white">{value}</p>
                 <p className="text-[10px] text-white font-semibold uppercase tracking-wider">{label}</p>
               </div>
             ))}
           </div>
           {serverStats && (serverStats.currentStreak > 0 || serverStats.longestStreak > 0) && (
-            <div className="rounded-xl border border-white/10 bg-white/5 p-3 flex items-center justify-between">
+            <div className="rounded-xl p-3 flex items-center justify-between" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,226,154,.4)", boxShadow: "0 0 12px rgba(255,226,154,.18)" }}>
               <div className="flex items-center gap-2 text-sm text-white">
-                <Zap className="w-4 h-4 text-amber-400" />
-                <span>{isAf ? "Huidige reeks" : "Current streak"}: <strong>{serverStats.currentStreak}</strong> {isAf ? "dae" : "days"}</span>
+                <Zap className="w-4 h-4" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }} />
+                <span>{isAf ? "Huidige reeks" : "Current streak"}: <strong>{serverStats.currentStreak}</strong> {isAf ? "dae" : "days"} 🔥</span>
               </div>
               <div className="text-xs text-white">
                 {isAf ? "Beste" : "Best"}: <strong className="text-white">{serverStats.longestStreak}</strong>
@@ -509,41 +533,45 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
 
           {/* Subject cards */}
           <div className="space-y-2">
-            <p className="text-xs font-black uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.35)" }}>
+            <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFE29A", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 10px rgba(255,226,154,.45)" }}>
               {isAf ? "Kies 'n Vak" : "Choose a Subject"}
             </p>
             {subjects.length === 0 ? (
-              <p className="text-sm text-center py-8" style={{ color: "rgba(255,255,255,0.3)" }}>
+              <p className="text-sm text-center py-8 text-white">
                 {isAf ? "Geen vakke gereed nie" : "No subjects available"}
               </p>
-            ) : subjects.map(sub => {
+            ) : subjects.map((sub, subIdx) => {
               void gradeTick;
               const subCards = allCards.filter(c => c.subjectCode === sub.code);
               const reviewed = subCards.filter(c => getCardState(c.id).lastReview !== null).length;
               const pct = subCards.length > 0 ? Math.round((reviewed / subCards.length) * 100) : 0;
               const topicCount = new Set(subCards.map(c => c.topicCode)).size;
+              const hex = ["#9FF5E8", "#9FD8FF", "#FFB7E5", "#C5B3FF", "#FFE29A", "#94F7C5"][subIdx % 6];
               return (
                 <button
                   key={sub.code}
                   onClick={() => { setSelectedSubject(sub.code); setSelectedTopic("all"); }}
-                  className="w-full text-left rounded-xl border transition-all hover:scale-[1.01] active:scale-[0.99] p-4"
+                  className="w-full text-left rounded-2xl transition-all p-4"
                   style={{
-                    background: pct > 0 ? "rgba(110,231,249,0.06)" : "rgba(255,255,255,0.04)",
-                    borderColor: pct > 0 ? "rgba(110,231,249,0.35)" : "rgba(255,255,255,0.10)",
+                    background: "rgba(255,255,255,.03)",
+                    border: pct > 0 ? `1.5px solid ${hex}` : "1px solid rgba(255,255,255,.08)",
+                    boxShadow: pct > 0 ? `0 0 14px ${hex}33` : "none",
                   }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = `0 0 24px ${hex}55`; e.currentTarget.style.borderColor = hex; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = pct > 0 ? `0 0 14px ${hex}33` : "none"; e.currentTarget.style.borderColor = pct > 0 ? hex : "rgba(255,255,255,.08)"; }}
                 >
                   <div className="flex items-center justify-between gap-3 mb-2">
                     <div>
                       <p className="text-sm font-bold text-white">{sub.name}</p>
-                      <p className="text-[11px] mt-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>
+                      <p className="text-[11px] mt-0.5 text-white">
                         {subCards.length} {isAf ? "kaarte" : "cards"} · {topicCount} {isAf ? "onderwerpe" : "topics"}
                       </p>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-xs font-black" style={{ color: pct > 0 ? "#6EE7F9" : "rgba(255,255,255,0.3)" }}>
+                      <span className="text-xs font-black" style={{ color: pct > 0 ? hex : "#ffffff" }}>
                         {pct}%
                       </span>
-                      <ArrowRight className="w-4 h-4" style={{ color: "rgba(255,255,255,0.25)" }} />
+                      <ArrowRight className="w-4 h-4 text-white" />
                     </div>
                   </div>
                   <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
@@ -552,10 +580,9 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
                       style={{
                         width: `${pct}%`,
                         background: pct >= 80
-                          ? "linear-gradient(90deg,#10b981,#34d399)"
-                          : pct >= 40
-                            ? "linear-gradient(90deg,#6EE7F9,#C5B3FF)"
-                            : "linear-gradient(90deg,#9FD8FF,#6EE7F9)",
+                          ? "linear-gradient(90deg,#94F7C5,#9FF5E8)"
+                          : "linear-gradient(90deg,#9FF5E8,#C5B3FF)",
+                        boxShadow: `0 0 8px ${hex}66`,
                       }}
                     />
                   </div>
@@ -598,51 +625,58 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
         {/* Back to subjects */}
         <button
           onClick={() => { setSelectedSubject("all"); setSelectedTopic("all"); }}
-          className="flex items-center gap-1.5 text-sm transition-colors"
-          style={{ color: "rgba(255,255,255,0.5)" }}
-          onMouseEnter={e => (e.currentTarget.style.color = "rgba(255,255,255,0.9)")}
-          onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.5)")}
+          className="flex items-center gap-1.5 text-sm font-bold transition-colors"
+          style={{ color: "#9FD8FF" }}
+          onMouseEnter={e => (e.currentTarget.style.color = "#ffffff")}
+          onMouseLeave={e => (e.currentTarget.style.color = "#9FD8FF")}
         >
           <ArrowLeft className="w-4 h-4" />
           {isAf ? "Alle Vakke" : "All Subjects"}
         </button>
 
         {/* Subject header */}
-        <div className="rounded-xl border p-4 space-y-2.5"
-          style={{ background: "rgba(110,231,249,0.06)", borderColor: "rgba(110,231,249,0.3)" }}>
+        <div className="rounded-2xl p-4 space-y-2.5"
+          style={{ background: "rgba(255,255,255,.03)", border: "1.5px solid #9FD8FF", boxShadow: "0 0 18px rgba(159,216,255,.22)" }}>
           <div className="flex items-center justify-between">
             <h2 className="text-base font-black text-white">{selectedSubjectName}</h2>
-            <span className="text-xs font-black" style={{ color: "#6EE7F9" }}>
+            <span className="text-xs font-black" style={{ color: "#9FD8FF" }}>
               {subjectReviewed}/{subjectAllCards.length}
             </span>
           </div>
           <div className="h-2 rounded-full bg-white/10 overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-500"
-              style={{ width: `${subjectPct}%`, background: "linear-gradient(90deg,#6EE7F9,#C5B3FF)" }}
+              style={{ width: `${subjectPct}%`, background: "linear-gradient(90deg,#9FF5E8,#C5B3FF)", boxShadow: "0 0 8px rgba(159,245,232,.55)" }}
             />
           </div>
           {subjectAllCards.length > 0 && (
-            <Button onClick={() => startSession(subjectAllCards)} size="sm" className="w-full">
+            <button
+              type="button"
+              onClick={() => startSession(subjectAllCards)}
+              className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl font-bold text-sm transition-all"
+              style={{ background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", color: "#050508", fontWeight: 800, boxShadow: "0 0 20px rgba(159,245,232,.3)" }}
+              onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
+            >
               <Brain className="w-4 h-4 mr-1.5" />
               {isAf
                 ? `Hersien Alles (${subjectAllCards.length} kaarte)`
                 : `Review All (${subjectAllCards.length} cards)`}
-            </Button>
+            </button>
           )}
         </div>
 
         {/* Topic list */}
         {!dbDeck ? (
           <div className="py-8 text-center">
-            <Layers className="w-7 h-7 mx-auto mb-2 animate-pulse" style={{ color: "rgba(255,255,255,0.3)" }} />
-            <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>
+            <Layers className="w-7 h-7 mx-auto mb-2 animate-pulse" style={{ color: "#9FD8FF" }} />
+            <p className="text-sm text-white">
               {isAf ? "Laai onderwerpe..." : "Loading topics..."}
             </p>
           </div>
         ) : (
           <div className="space-y-2">
-            <p className="text-xs font-black uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.35)" }}>
+            <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 10px rgba(255,183,229,.45)" }}>
               {isAf ? "Onderwerpe" : "Topics"}
             </p>
             {dbDeck.topics.map(t => {
@@ -666,29 +700,32 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
                   key={t.capsCode}
                   onClick={() => startSession(topicCards)}
                   disabled={tot === 0}
-                  className="w-full text-left rounded-xl border transition-all hover:scale-[1.01] active:scale-[0.99] p-3.5 disabled:opacity-40"
+                  className="w-full text-left rounded-2xl transition-all p-3.5 disabled:opacity-40"
                   style={{
-                    background: pct === 100 ? "rgba(16,185,129,0.07)" : pct > 0 ? "rgba(110,231,249,0.05)" : "rgba(255,255,255,0.03)",
-                    borderColor: pct === 100 ? "rgba(16,185,129,0.4)" : pct > 0 ? "rgba(110,231,249,0.25)" : "rgba(255,255,255,0.08)",
+                    background: "rgba(255,255,255,.03)",
+                    border: pct === 100 ? "1.5px solid #94F7C5" : pct > 0 ? "1.5px solid rgba(159,216,255,.55)" : "1px solid rgba(255,255,255,.08)",
+                    boxShadow: pct === 100 ? "0 0 14px rgba(148,247,197,.3)" : "none",
                   }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = pct === 100 ? "0 0 24px rgba(148,247,197,.45)" : "0 0 24px rgba(159,216,255,.35)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = pct === 100 ? "0 0 14px rgba(148,247,197,.3)" : "none"; }}
                 >
                   <div className="flex items-center justify-between gap-2 mb-1.5">
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold text-white truncate">{topicLabel}</p>
                       {t.hasNotes && (
                         <span className="text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded mt-0.5 inline-block"
-                          style={{ color: "#6EE7F9", border: "1px solid rgba(110,231,249,0.4)", background: "rgba(110,231,249,0.08)" }}>
+                          style={{ color: "#9FD8FF", border: "1px solid rgba(159,216,255,0.4)", background: "rgba(159,216,255,0.08)" }}>
                           {isAf ? "Gekureer" : "Curated"}
                         </span>
                       )}
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-[10px] font-bold" style={{ color: "rgba(255,255,255,0.4)" }}>
+                      <span className="text-[10px] font-bold text-white">
                         {rev}/{tot}
                       </span>
                       {pct === 100
-                        ? <span className="text-[9px] font-black px-1.5 py-0.5 rounded" style={{ background: "rgba(16,185,129,0.2)", color: "#10b981" }}>✓</span>
-                        : <ArrowRight className="w-3.5 h-3.5" style={{ color: "rgba(255,255,255,0.3)" }} />}
+                        ? <span className="text-[9px] font-black px-1.5 py-0.5 rounded" style={{ background: "rgba(148,247,197,0.2)", color: "#94F7C5" }}>✓</span>
+                        : <ArrowRight className="w-3.5 h-3.5 text-white" />}
                     </div>
                   </div>
                   <div className="h-1 rounded-full bg-white/10 overflow-hidden">
@@ -696,7 +733,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
                       className="h-full rounded-full transition-all duration-500"
                       style={{
                         width: `${pct}%`,
-                        background: pct === 100 ? "linear-gradient(90deg,#10b981,#34d399)" : "linear-gradient(90deg,#6EE7F9,#C5B3FF)",
+                        background: pct === 100 ? "linear-gradient(90deg,#94F7C5,#9FF5E8)" : "linear-gradient(90deg,#9FF5E8,#C5B3FF)",
                       }}
                     />
                   </div>
@@ -725,9 +762,9 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
             <span
               className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border"
               style={{
-                color: "#fca5a5",
-                background: "rgba(239,68,68,0.12)",
-                borderColor: "rgba(239,68,68,0.45)",
+                color: "#FF8DA1",
+                background: "rgba(255,141,161,0.12)",
+                borderColor: "rgba(255,141,161,0.45)",
               }}
               data-testid="badge-redrill"
             >
@@ -740,25 +777,34 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
           {isReviewMissedPass ? (
             <div
               className="w-24 h-2 rounded-full overflow-hidden"
-              style={{ background: "rgba(239,68,68,0.15)" }}
+              style={{ background: "rgba(255,141,161,0.15)" }}
               data-testid="progress-redrill"
             >
               <div
                 className="h-full rounded-full transition-all duration-300"
                 style={{
                   width: `${((currentIndex + 1) / reviewQueue.length) * 100}%`,
-                  background: "linear-gradient(90deg,#ef4444,#f59e0b)",
+                  background: "linear-gradient(90deg,#FF8DA1,#FFE29A)",
                 }}
               />
             </div>
           ) : (
-            <Progress value={((currentIndex + 1) / reviewQueue.length) * 100} className="w-24 h-2" />
+            <div className="w-24 h-2 rounded-full bg-white/10 overflow-hidden">
+              <div
+                className="h-full rounded-full transition-all duration-300"
+                style={{
+                  width: `${((currentIndex + 1) / reviewQueue.length) * 100}%`,
+                  background: "linear-gradient(90deg,#9FF5E8,#C5B3FF)",
+                  boxShadow: "0 0 8px rgba(159,245,232,.55)",
+                }}
+              />
+            </div>
           )}
         </div>
       </div>
 
       <div className="text-center mb-2">
-        <span className="text-xs text-white bg-black border border-white/15 px-2 py-1 rounded-full">
+        <span className="text-xs text-white px-2 py-1 rounded-full" style={{ background: "rgba(5,5,8,.6)", border: "1px solid rgba(255,255,255,.18)" }}>
           {currentCard.topic}
         </span>
       </div>
@@ -767,14 +813,14 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
       <div className="flex justify-between items-center px-1 mb-1 select-none pointer-events-none">
         <div
           className="flex items-center gap-1 text-xs font-bold transition-opacity duration-150"
-          style={{ color: "#ef4444", opacity: swipeDelta < -20 ? Math.min(1, (Math.abs(swipeDelta) - 20) / 60) : 0.18 }}
+          style={{ color: "#FF8DA1", opacity: swipeDelta < -20 ? Math.min(1, (Math.abs(swipeDelta) - 20) / 60) : 0.18 }}
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           {isAf ? "Weet nie" : "Don't know"}
         </div>
         <div
           className="flex items-center gap-1 text-xs font-bold transition-opacity duration-150"
-          style={{ color: "#10b981", opacity: swipeDelta > 20 ? Math.min(1, (swipeDelta - 20) / 60) : 0.18 }}
+          style={{ color: "#94F7C5", opacity: swipeDelta > 20 ? Math.min(1, (swipeDelta - 20) / 60) : 0.18 }}
         >
           {isAf ? "Het dit!" : "Got it!"}
           <ArrowRight className="w-3.5 h-3.5" />
@@ -804,19 +850,21 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
           }}
         >
           <div
-            className="absolute inset-0 rounded-2xl border-2 bg-card p-6 sm:p-8 flex flex-col items-center justify-center"
+            className="absolute inset-0 rounded-2xl border-2 p-6 sm:p-8 flex flex-col items-center justify-center"
             style={{
+              background: "rgba(5,5,8,.97)",
+              boxShadow: "inset 0 0 22px rgba(0,0,0,.6)",
               backfaceVisibility: "hidden",
-              borderColor: swipeDelta > 30 ? "rgba(16,185,129,0.6)" : swipeDelta < -30 ? "rgba(239,68,68,0.6)" : "rgba(var(--primary),0.2)",
+              borderColor: swipeDelta > 30 ? "rgba(148,247,197,0.7)" : swipeDelta < -30 ? "rgba(255,141,161,0.7)" : "rgba(159,245,232,0.45)",
               transition: swipeDelta !== 0 ? "border-color 0.1s" : "border-color 0.3s",
             }}
           >
             <div className="absolute top-3 left-3">
-              <span className="text-[10px] font-bold text-primary/60 uppercase">{isAf ? "Voorkant" : "Front"}</span>
+              <span className="text-[10px] font-bold uppercase" style={{ color: "#9FF5E8" }}>{isAf ? "Voorkant" : "Front"}</span>
             </div>
             {currentCard.type === "cloze" && (
               <div className="absolute top-3 right-3">
-                <span className="text-[10px] font-bold text-amber-500 bg-amber-50 px-2 py-0.5 rounded-full">Cloze</span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ color: "#FFE29A", border: "1px solid rgba(255,226,154,.5)", background: "rgba(255,226,154,.1)" }}>Cloze</span>
               </div>
             )}
             <p className="text-lg sm:text-xl font-semibold text-white text-center leading-relaxed whitespace-pre-line">
@@ -828,16 +876,18 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
           </div>
 
           <div
-            className="absolute inset-0 rounded-2xl border-2 bg-card p-6 sm:p-8 flex flex-col items-center justify-center"
+            className="absolute inset-0 rounded-2xl border-2 p-6 sm:p-8 flex flex-col items-center justify-center"
             style={{
+              background: "rgba(5,5,8,.97)",
+              boxShadow: "inset 0 0 22px rgba(0,0,0,.6)",
               backfaceVisibility: "hidden",
               transform: "rotateY(180deg)",
-              borderColor: swipeDelta > 30 ? "rgba(16,185,129,0.6)" : swipeDelta < -30 ? "rgba(239,68,68,0.6)" : "rgba(52,211,153,0.4)",
+              borderColor: swipeDelta > 30 ? "rgba(148,247,197,0.7)" : swipeDelta < -30 ? "rgba(255,141,161,0.7)" : "rgba(148,247,197,0.5)",
               transition: swipeDelta !== 0 ? "border-color 0.1s" : "border-color 0.3s",
             }}
           >
             <div className="absolute top-3 left-3">
-              <span className="text-[10px] font-bold text-emerald-500/60 uppercase">{isAf ? "Antwoord" : "Answer"}</span>
+              <span className="text-[10px] font-bold uppercase" style={{ color: "#94F7C5" }}>{isAf ? "Antwoord" : "Answer"}</span>
             </div>
             <p className="text-base sm:text-lg font-medium text-white text-center leading-relaxed whitespace-pre-line">
               {currentCard.back}
@@ -847,23 +897,26 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
       </div>
 
       {flipped && (
-        <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-200">
+        <div className="space-y-3" style={{ animation: "bt-fadeup .25s both" }}>
           <p className="text-xs text-center text-white font-semibold">
             {isAf ? "Hoe goed het jy dit geken?" : "How well did you know this?"}
           </p>
           <div className="grid grid-cols-4 gap-2">
             {[
-              { quality: 1, label: isAf ? "Weer" : "Again", labelShort: "1", color: "text-red-500 border-red-200 hover:bg-red-50", desc: isAf ? "<1 min" : "<1 min" },
-              { quality: 2, label: isAf ? "Moeilik" : "Hard", labelShort: "2", color: "text-amber-500 border-amber-200 hover:bg-amber-50", desc: isAf ? "1 dag" : "1 day" },
-              { quality: 3, label: isAf ? "Goed" : "Good", labelShort: "3", color: "text-emerald-500 border-emerald-200 hover:bg-emerald-50", desc: cardState.I > 0 ? `${Math.max(1, Math.round(cardState.I * cardState.EF))}d` : "6d" },
-              { quality: 5, label: isAf ? "Maklik" : "Easy", labelShort: "4", color: "text-cyan-500 border-cyan-200 hover:bg-cyan-50", desc: cardState.I > 0 ? `${Math.max(1, Math.round(cardState.I * cardState.EF * 1.3))}d` : "10d" },
-            ].map(({ quality, label, labelShort, color, desc }) => (
+              { quality: 1, label: isAf ? "Weer" : "Again", labelShort: "1", hex: "#FF8DA1", desc: isAf ? "<1 min" : "<1 min" },
+              { quality: 2, label: isAf ? "Moeilik" : "Hard", labelShort: "2", hex: "#FFE29A", desc: isAf ? "1 dag" : "1 day" },
+              { quality: 3, label: isAf ? "Goed" : "Good", labelShort: "3", hex: "#94F7C5", desc: cardState.I > 0 ? `${Math.max(1, Math.round(cardState.I * cardState.EF))}d` : "6d" },
+              { quality: 5, label: isAf ? "Maklik" : "Easy", labelShort: "4", hex: "#9FD8FF", desc: cardState.I > 0 ? `${Math.max(1, Math.round(cardState.I * cardState.EF * 1.3))}d` : "10d" },
+            ].map(({ quality, label, labelShort, hex, desc }) => (
               <button
                 key={quality}
                 onClick={() => handleGrade(quality)}
-                className={`flex flex-col items-center gap-0.5 p-3 rounded-xl border-2 ${color} transition-all active:scale-95 hover:scale-[1.02]`}
+                className="flex flex-col items-center gap-0.5 p-3 rounded-xl transition-all active:scale-95 hover:scale-[1.02]"
+                style={{ background: "rgba(255,255,255,.03)", border: `2px solid ${hex}` }}
+                onMouseEnter={(e) => (e.currentTarget.style.boxShadow = `0 0 16px ${hex}55`)}
+                onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
               >
-                <span className="font-bold text-sm">{label}</span>
+                <span className="font-bold text-sm" style={{ color: hex }}>{label}</span>
                 <span className="text-[10px] text-white">{desc}</span>
                 <span className="text-[9px] text-white">({labelShort})</span>
               </button>
@@ -877,13 +930,13 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
 
 
 export default function FlashcardsPage() {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const { language, toggleLanguage } = useLanguage();
   const isAf = language === "af";
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <header className="sticky top-0 z-50 bg-black/90 " style={{ borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
+    <div className="min-h-screen text-white" style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}>
+      <header className="sticky top-0 z-50 border-b" style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "rgba(255,255,255,.08)" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 gap-4">
             <div className="flex items-center gap-3 min-w-0">
@@ -898,7 +951,7 @@ export default function FlashcardsPage() {
               </Link>
               <span
                 className="hidden sm:inline truncate"
-                style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#94F7C5", transform: "rotate(-2deg)", textShadow: "0 0 10px rgba(148,247,197,.45)" }}
+                style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", textShadow: "0 0 10px rgba(159,245,232,.45)" }}
               >
                 {isAf ? "Flitskaarte" : "Flashcards"}
               </span>
@@ -907,13 +960,15 @@ export default function FlashcardsPage() {
             <div className="flex items-center gap-1.5">
               <button
                 onClick={toggleLanguage}
-                className="text-xs font-bold text-white px-2 py-1 rounded-lg border border-white/20 hover:border-white/30 hover:bg-white/5 transition-all"
+                className="px-3 py-1.5 rounded-xl bg-white/[.03] text-xs font-bold hover:bg-white/10 transition-all"
+                style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
               >
                 {language === "en" ? "EN" : "AF"}
               </button>
               <button
                 onClick={() => logout()}
-                className="text-white transition-colors p-1.5 rounded-lg hover:bg-white/5"
+                className="p-1.5 rounded-xl bg-white/[.03] hover:bg-white/10 transition-colors"
+                style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}
                 title={isAf ? "Uitteken" : "Sign Out"}
               >
                 <LogOut className="w-4 h-4" />
@@ -924,26 +979,34 @@ export default function FlashcardsPage() {
       </header>
 
       <main className="max-w-2xl mx-auto px-4 sm:px-6 py-8 space-y-6">
-        <div className="flex items-center gap-3">
-          <Link href="/dashboard">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-1" />
-              {isAf ? "Terug" : "Back"}
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold text-white">
-              {isAf ? "Flitskaarte" : "Flashcards"}
-            </h1>
-            <p className="text-sm text-white">
-              {isAf ? "Hersien met gespaseerde herhaling" : "Review with spaced repetition"}
-            </p>
+        <div className="space-y-1">
+          <span
+            style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 12px rgba(159,245,232,.5)" }}
+          >
+            {isAf ? "Gespaseerde herhaling" : "Spaced repetition"}
+          </span>
+          <div
+            role="heading"
+            aria-level={1}
+            className="text-3xl font-black tracking-tight leading-[0.98]"
+            style={{
+              backgroundImage: "linear-gradient(90deg, #FFE29A, #FFE29A, #94F7C5, #9FF5E8, #9FD8FF, #C5B3FF, #FFB7E5)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+              color: "transparent",
+            }}
+          >
+            {isAf ? "Flitskaarte" : "Flashcards"}
           </div>
+          <p className="text-sm text-white">
+            {isAf ? "Hersien slim, onthou langer 🧠" : "Review smart, remember longer 🧠"}
+          </p>
         </div>
 
         <FlashcardReview isAf={isAf} />
 
-        <div className="rounded-2xl border border-dashed border-white/10 p-5 text-center space-y-2">
+        <div className="rounded-2xl border border-dashed border-white/10 p-5 text-center space-y-2" style={{ background: "rgba(255,255,255,.03)" }}>
           <p className="text-sm font-semibold text-white">
             {isAf ? "Soek jy 'n vasvra?" : "Looking for a quiz?"}
           </p>
@@ -954,10 +1017,24 @@ export default function FlashcardsPage() {
           </p>
           <div className="flex items-center justify-center gap-2 pt-1">
             <Link href="/subjects">
-              <Button size="sm" variant="outline">{isAf ? "Vakke" : "Subjects"}</Button>
+              <button
+                type="button"
+                className="px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 transition-all"
+                style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
+              >
+                {isAf ? "Vakke" : "Subjects"}
+              </button>
             </Link>
             <Link href="/daily-challenge">
-              <Button size="sm">{isAf ? "Daaglikse Uitdaging" : "Daily Challenge"}</Button>
+              <button
+                type="button"
+                className="px-4 py-2 rounded-xl text-sm transition-all"
+                style={{ background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", color: "#050508", fontWeight: 800, boxShadow: "0 0 20px rgba(159,245,232,.3)" }}
+                onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
+                onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
+              >
+                {isAf ? "Daaglikse Uitdaging" : "Daily Challenge"}
+              </button>
             </Link>
           </div>
         </div>

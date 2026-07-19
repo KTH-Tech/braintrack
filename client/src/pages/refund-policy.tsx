@@ -1,6 +1,6 @@
 // Chrome restyled to the Claude Design handoff "Luxury Street Graffiti
 // EdTech" comp (LEGAL PAGES section) via LegalShell. Legal copy verbatim.
-import { Undo2, CreditCard, AlertCircle, Clock, Mail, Scale } from "lucide-react";
+import { Undo2, CreditCard, AlertCircle, Clock, Scale } from "lucide-react";
 import { LegalShell, LegalSection } from "@/components/legal-shell";
 import { Link } from "wouter";
 import { useLanguage } from "@/lib/language-context";
@@ -14,7 +14,7 @@ export default function RefundPolicyPage() {
   const isAf = language === "af";
   useSEO({
     title: "Refund Policy | BrainTrack",
-    description: "BrainTrack refund and cancellation policy — subscription billing, cancellation terms, and how to contact support for billing queries.",
+    description: "BrainTrack refund and cancellation policy — subscription billing, cancellation terms, and how refunds are handled under South African consumer law.",
     canonical: "https://app.braintrack.co.za/refund-policy",
   });
 
@@ -48,13 +48,13 @@ export default function RefundPolicyPage() {
         title: "3. Refund Policy",
         content: [
           "BrainTrack™ does not issue refunds for partial months or unused days within a billing period.",
-          "Once a billing period begins, the subscription fee for that period is non-refundable.",
-          "If you believe a charge was made in error, contact us within 7 days at learn@kth-tech.com and we will investigate promptly."
+          "Once a billing period begins, the subscription fee for that period is non-refundable, except where a refund is required by these terms or by applicable South African consumer law.",
+          "If you believe a charge was made in error, raise it within 7 days through your subscription settings in the app (Settings → Subscription) and it will be reviewed in line with these terms."
         ],
         bullets: [
           "No refunds for partial months",
           "No refunds for unused access within a paid period",
-          "Disputed charges must be raised within 7 days",
+          "Disputed charges must be raised in the app within 7 days",
         ],
       },
       {
@@ -85,13 +85,13 @@ export default function RefundPolicyPage() {
         ],
       },
       {
-        icon: Mail,
-        title: "7. Billing Support",
+        icon: Scale,
+        title: "7. How Refunds Are Handled",
         content: [
-          "For billing queries, disputed charges, or refund requests, contact us at:",
+          "Cancellations and any refunds are handled in the app under your subscription settings (Settings → Subscription), in line with these terms and applicable South African consumer law.",
+          "Nothing in this policy limits any right you may have under the Consumer Protection Act 68 of 2008 or, where it applies, the cooling-off provision of the Electronic Communications and Transactions Act 25 of 2002.",
         ],
-        contact: "learn@kth-tech.com",
-        footer: "Please include your account email address and the date of the charge in your message. We aim to respond within 2 business days.",
+        footer: "Billing queries raised in the app are typically resolved within 2 business days.",
       },
     ],
     af: [
@@ -123,13 +123,13 @@ export default function RefundPolicyPage() {
         title: "3. Terugbetalingsbeleid",
         content: [
           "BrainTrack™ reik nie terugbetalings uit vir gedeeltelike maande of ongebruikte dae binne 'n faktureringssiklus nie.",
-          "Sodra 'n faktureringssiklus begin, is die intekeningsfooi vir daardie tydperk nie-terugbetaalbaar.",
-          "As jy glo dat 'n heffing per abuis gemaak is, kontak ons binne 7 dae by learn@kth-tech.com en ons sal onmiddellik ondersoek instel."
+          "Sodra 'n faktureringssiklus begin, is die intekeningsfooi vir daardie tydperk nie-terugbetaalbaar nie, behalwe waar 'n terugbetaling deur hierdie bepalings of deur toepaslike Suid-Afrikaanse verbruikersreg vereis word.",
+          "As jy glo dat 'n heffing per abuis gemaak is, meld dit binne 7 dae aan via jou intekeninginstellings in die app (Instellings → Intekening), en dit sal in lyn met hierdie bepalings hersien word."
         ],
         bullets: [
           "Geen terugbetalings vir gedeeltelike maande nie",
           "Geen terugbetalings vir ongebruikte toegang binne 'n betaalde tydperk nie",
-          "Betwiste heffings moet binne 7 dae aangemeld word",
+          "Betwiste heffings moet binne 7 dae in die app aangemeld word",
         ],
       },
       {
@@ -160,13 +160,13 @@ export default function RefundPolicyPage() {
         ],
       },
       {
-        icon: Mail,
-        title: "7. Faktureringsondersteuning",
+        icon: Scale,
+        title: "7. Hoe Terugbetalings Hanteer Word",
         content: [
-          "Vir faktureringsnavrae, betwiste heffings of terugbetalingsversoeke, kontak ons by:",
+          "Kansellasies en enige terugbetalings word in die app hanteer onder jou intekeninginstellings (Instellings → Intekening), in lyn met hierdie bepalings en toepaslike Suid-Afrikaanse verbruikersreg.",
+          "Niks in hierdie beleid beperk enige reg wat jy mag hê onder die Wet op Verbruikersbeskerming 68 van 2008 of, waar dit van toepassing is, die afkoelbepaling van die Wet op Elektroniese Kommunikasie en Transaksies 25 van 2002 nie.",
         ],
-        contact: "learn@kth-tech.com",
-        footer: "Sluit asseblief jou rekeningse e-posadres en die datum van die heffing in jou boodskap in. Ons beoog om binne 2 werksdae te reageer.",
+        footer: "Faktureringsnavrae wat in die app aangemeld word, word gewoonlik binne 2 werksdae opgelos.",
       },
     ],
   };
@@ -207,20 +207,6 @@ export default function RefundPolicyPage() {
                     </li>
                   ))}
                 </ul>
-              )}
-              {(section as any).contact && (
-                <div
-                  className="mt-3 p-3 rounded-xl"
-                  style={{ background: "rgba(255,255,255,.04)", border: `1.5px solid ${hex}` }}
-                >
-                  <a
-                    href={`mailto:${(section as any).contact}`}
-                    className="font-bold"
-                    style={{ color: hex }}
-                  >
-                    {(section as any).contact}
-                  </a>
-                </div>
               )}
               {(section as any).footer && (
                 <p className="mt-2">

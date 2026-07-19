@@ -5,11 +5,10 @@ import { useEffect, useRef, useState } from "react";
 import QRCode from "qrcode";
 import { Download, QrCode as QrIcon, Link2, Check } from "lucide-react";
 import { AdminTopNav } from "@/components/admin-top-nav";
-import { GraffitiSplats } from "@/components/graffiti-splats";
 import { useLanguage } from "@/lib/language-context";
 import { useSEO } from "@/hooks/use-seo";
 
-const PASTEL = ["#9FD8FF", "#6EE7F9", "#94F7C5", "#FFE29A", "#FFE29A", "#FFB7E5", "#C5B3FF"];
+const PASTEL = ["#9FD8FF", "#9FF5E8", "#94F7C5", "#FFE29A", "#FFE29A", "#FFB7E5", "#C5B3FF"];
 
 // Handy one-tap presets for the links the team shares most.
 const PRESETS = [
@@ -96,18 +95,14 @@ export default function AdminQrGeneratorPage() {
     "inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold transition-transform hover:scale-[1.03]";
 
   return (
-    <div className="relative min-h-screen bg-background text-white overflow-hidden">
-      <div aria-hidden className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
-        <GraffitiSplats variant="full" opacity={0.9} />
-      </div>
-
+    <div className="relative min-h-screen text-white overflow-hidden" style={{ background: "#050508", fontFamily: "'Poppins', system-ui, sans-serif" }}>
       <div className="relative z-10">
-        <AdminTopNav />
+        <AdminTopNav current="qr" />
 
         <main className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
-          <h1 className="text-3xl sm:text-4xl font-black tracking-tight leading-[1.1] text-center">
-            <span className="callout-hl">{isAf ? "QR-Kodegenerator" : "QR Code Generator"}</span>
-          </h1>
+          <div role="heading" aria-level={1} className="text-3xl sm:text-4xl font-black tracking-tight leading-[1.1] text-center">
+            {isAf ? "QR-Kodegenerator" : "QR Code Generator"}
+          </div>
           <p className="mt-4 text-center text-sm text-white">
             {isAf
               ? "Verander enige skakel of teks in 'n BrainTrack QR-kode. Laai af as PNG vir plakkate, klasse of vennootskole."
@@ -132,12 +127,12 @@ export default function AdminQrGeneratorPage() {
                     data-testid="input-qr-value"
                     placeholder="https://app.braintrack.co.za"
                     className="flex-1 rounded-xl px-3 py-2.5 text-sm text-white outline-none"
-                    style={{ background: "#0a0b12", border: "1.5px solid rgba(110,231,249,0.4)" }}
+                    style={{ background: "#0a0b12", border: "1.5px solid rgba(159,245,232,0.4)" }}
                   />
                   <button
                     onClick={copyLink}
                     className={btnSecondary}
-                    style={{ background: "#000", border: "1.5px solid #6EE7F9", color: "#6EE7F9" }}
+                    style={{ background: "#000", border: "1.5px solid #9FF5E8", color: "#9FF5E8" }}
                     data-testid="button-qr-copy"
                     aria-label={isAf ? "Kopieer skakel" : "Copy link"}
                   >
@@ -212,8 +207,8 @@ export default function AdminQrGeneratorPage() {
                       className={btnSecondary}
                       style={
                         size === s
-                          ? { background: "#6EE7F9", color: "#0a0a0a", border: "1.5px solid #6EE7F9" }
-                          : { background: "#000", color: "#6EE7F9", border: "1.5px solid #6EE7F9" }
+                          ? { background: "#9FF5E8", color: "#0a0a0a", border: "1.5px solid #9FF5E8" }
+                          : { background: "#000", color: "#9FF5E8", border: "1.5px solid #9FF5E8" }
                       }
                     >
                       {s}px
@@ -238,7 +233,7 @@ export default function AdminQrGeneratorPage() {
             <div className="flex flex-col items-center gap-3">
               <div
                 className="rounded-2xl p-4"
-                style={{ background: "#0a0a0a", border: "1.5px solid rgba(110,231,249,0.35)" }}
+                style={{ background: "#0a0a0a", border: "1.5px solid rgba(159,245,232,0.35)" }}
               >
                 <canvas
                   ref={canvasRef}

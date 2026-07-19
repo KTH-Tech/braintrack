@@ -326,7 +326,7 @@ export default function AdminEmailsPage() {
   );
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen text-white" style={{ background: "#050508", fontFamily: "'Poppins', system-ui, sans-serif" }}>
       <AdminTopNav current="emails" />
       <PageHeader
         sticky
@@ -345,8 +345,8 @@ export default function AdminEmailsPage() {
               data-testid="config-status-banner"
               className={`mb-6 flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium ${
                 emailConfig.isConfigured
-                  ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
-                  : "bg-amber-500/10 border-amber-500/30 text-amber-300"
+                  ? "bg-[#94F7C5]/10 border-[#94F7C5]/40 text-[#94F7C5]"
+                  : "bg-[#FFE29A]/10 border-[#FFE29A]/40 text-[#FFE29A]"
               }`}
             >
               {emailConfig.isConfigured
@@ -484,9 +484,9 @@ export default function AdminEmailsPage() {
                 data-testid="settings-test-result"
                 className={`flex items-start gap-2 rounded-xl px-3 py-2.5 text-sm border ${
                   settingsTestResult.delivery === "sent"
-                    ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
+                    ? "bg-[#94F7C5]/10 border-[#94F7C5]/40 text-[#94F7C5]"
                     : settingsTestResult.delivery === "not_configured"
-                    ? "bg-amber-500/10 border-amber-500/30 text-amber-300"
+                    ? "bg-[#FFE29A]/10 border-[#FFE29A]/40 text-[#FFE29A]"
                     : "bg-destructive/10 border-destructive/30 text-destructive"
                 }`}
               >
@@ -588,9 +588,9 @@ export default function AdminEmailsPage() {
                   data-testid="send-result"
                   className={`flex items-start gap-2 rounded-lg px-3 py-2 text-xs border ${
                     lastSendResult.delivery === "sent"
-                      ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
+                      ? "bg-[#94F7C5]/10 border-[#94F7C5]/40 text-[#94F7C5]"
                       : lastSendResult.delivery === "not_configured"
-                      ? "bg-amber-500/10 border-amber-500/30 text-amber-300"
+                      ? "bg-[#FFE29A]/10 border-[#FFE29A]/40 text-[#FFE29A]"
                       : "bg-destructive/10 border-destructive/30 text-destructive"
                   }`}
                 >
@@ -616,9 +616,9 @@ export default function AdminEmailsPage() {
                     <Badge variant="outline" className="text-[10px] uppercase tracking-wider">
                       {isAf ? CATEGORY_META[selectedMeta.category].af : CATEGORY_META[selectedMeta.category].en}
                     </Badge>
-                    <h1 className="text-lg font-bold text-foreground">
+                    <div role="heading" aria-level={1} className="text-lg font-bold text-foreground">
                       {isAf ? selectedMeta.labelAf : selectedMeta.label}
-                    </h1>
+                    </div>
                   </div>
                   <p className="text-sm text-white">
                     {isAf ? selectedMeta.descAf : selectedMeta.desc}

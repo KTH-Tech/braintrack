@@ -1,4 +1,4 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import {
   LayoutDashboard,
   BarChart3,
@@ -8,25 +8,16 @@ import {
   Handshake,
   FileEdit,
   Mail,
-  ShieldAlert,
-  Store,
+  FileText,
   GraduationCap,
   Users,
   Database,
-  ChevronDown,
   LogOut,
   Home,
   QrCode,
 } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import iconTransparent from "@/assets/handoff/icon-transparent.png";
 
 export type AdminNavKey =
   | "dashboard"
@@ -38,6 +29,7 @@ export type AdminNavKey =
   | "partner-branding"
   | "content-editor"
   | "content-studio"
+  | "dbe-portal"
   | "schools"
   | "qr"
   | "classroom"
@@ -48,10 +40,8 @@ type NavItem = {
   href: string;
   labelEn: string;
   labelAf: string;
-  descEn: string;
-  descAf: string;
   Icon: any;
-  color: string;
+  testId?: string;
 };
 
 type NavGroup = {
@@ -60,139 +50,44 @@ type NavGroup = {
   items: NavItem[];
 };
 
+// Routes verified against App.tsx (note: Content Studio lives at
+// /admin/content-studio, not /learn/admin/content-studio).
 const NAV_GROUPS: NavGroup[] = [
   {
-    labelEn: "Reports & Insights",
-    labelAf: "Verslae & Insig",
+    labelEn: "Operations",
+    labelAf: "Bedrywighede",
     items: [
-      {
-        key: "reports",
-        href: "/learn/admin/reports",
-        labelEn: "Reports",
-        labelAf: "Verslae",
-        descEn: "User, parent, learner & school analytics",
-        descAf: "Gebruiker-, ouer-, leerder- en skoolontleding",
-        Icon: BarChart3,
-        color: "#6EE7F9",
-      },
-      {
-        key: "billing",
-        href: "/learn/admin/billing",
-        labelEn: "Billing",
-        labelAf: "Fakturering",
-        descEn: "Trials, recurring failures, lapsed subscribers",
-        descAf: "Proewe, mislukkings en vervalde intekeninge",
-        Icon: CreditCard,
-        color: "#94F7C5",
-      },
+      { key: "dashboard", href: "/learn/admin", labelEn: "Dashboard", labelAf: "Paneel", Icon: LayoutDashboard, testId: "admin-nav-dashboard" },
+      { key: "reports", href: "/learn/admin/reports", labelEn: "Reports", labelAf: "Verslae", Icon: BarChart3 },
+      { key: "billing", href: "/learn/admin/billing", labelEn: "Billing", labelAf: "Fakturering", Icon: CreditCard },
     ],
   },
   {
     labelEn: "Catalogue & Content",
     labelAf: "Katalogus & Inhoud",
     items: [
-      {
-        key: "products",
-        href: "/learn/admin/products",
-        labelEn: "Products",
-        labelAf: "Produkte",
-        descEn: "Plans, products and availability",
-        descAf: "Planne, produkte en beskikbaarheid",
-        Icon: Package,
-        color: "#FFE29A",
-      },
-      {
-        key: "content-editor",
-        href: "/learn/admin/content",
-        labelEn: "Content Editor",
-        labelAf: "Inhoudsredigeerder",
-        descEn: "Edit topic notes, flashcards, literature",
-        descAf: "Wysig notas, flitskaarte en literatuur",
-        Icon: FileEdit,
-        color: "#FFE29A",
-      },
-      {
-        key: "content-studio",
-        href: "/learn/admin/content-studio",
-        labelEn: "Content Studio",
-        labelAf: "Inhoudstudio",
-        descEn: "DBE pipeline: papers, memos and ingestion",
-        descAf: "DBE-pyplyn: vraestelle, memo's en ingestie",
-        Icon: Database,
-        color: "#9FD8FF",
-      },
-      {
-        key: "topic-audio",
-        href: "/learn/admin/topic-audio",
-        labelEn: "Topic Audio",
-        labelAf: "Onderwerp Klank",
-        descEn: "Preview, regenerate and replace MP3s",
-        descAf: "Voorskou, hergenereer en vervang MP3's",
-        Icon: Headphones,
-        color: "#C5B3FF",
-      },
+      { key: "products", href: "/learn/admin/products", labelEn: "Products", labelAf: "Produkte", Icon: Package },
+      { key: "content-editor", href: "/learn/admin/content", labelEn: "Content Editor", labelAf: "Inhoudsredigeerder", Icon: FileEdit },
+      { key: "content-studio", href: "/admin/content-studio", labelEn: "Content Studio", labelAf: "Inhoudstudio", Icon: Database },
+      { key: "dbe-portal", href: "/learn/admin/dbe-portal", labelEn: "DBE Portal", labelAf: "DBE Portaal", Icon: FileText },
+      { key: "topic-audio", href: "/learn/admin/topic-audio", labelEn: "Topic Audio", labelAf: "Onderwerp Klank", Icon: Headphones },
     ],
   },
   {
     labelEn: "Outreach & Partners",
     labelAf: "Uitreik & Vennote",
     items: [
-      {
-        key: "emails",
-        href: "/learn/admin/emails",
-        labelEn: "Email Templates",
-        labelAf: "E-pos Sjablone",
-        descEn: "Preview and test-send transactional emails",
-        descAf: "Voorskou en toets-stuur e-posse",
-        Icon: Mail,
-        color: "#FFB7E5",
-      },
-      {
-        key: "partner-branding",
-        href: "/learn/admin/partner-branding",
-        labelEn: "Partner Branding",
-        labelAf: "Vennoothandelsmerk",
-        descEn: "Partner name, logo and report schedule",
-        descAf: "Vennootnaam, logo en verslagskedule",
-        Icon: Handshake,
-        color: "#6EE7F9",
-      },
-      {
-        key: "qr",
-        href: "/learn/admin/qr",
-        labelEn: "QR Generator",
-        labelAf: "QR-Generator",
-        descEn: "Turn any link into a branded, downloadable QR code",
-        descAf: "Maak enige skakel 'n QR-kode om af te laai",
-        Icon: QrCode,
-        color: "#94F7C5",
-      },
+      { key: "emails", href: "/learn/admin/emails", labelEn: "Emails", labelAf: "E-pos", Icon: Mail, testId: "admin-nav-emails-top" },
+      { key: "partner-branding", href: "/learn/admin/partner-branding", labelEn: "Partner Branding", labelAf: "Vennoothandelsmerk", Icon: Handshake },
+      { key: "qr", href: "/learn/admin/qr", labelEn: "QR Generator", labelAf: "QR-Generator", Icon: QrCode },
     ],
   },
   {
     labelEn: "Quick Jumps",
     labelAf: "Vinnige Skakels",
     items: [
-      {
-        key: "classroom",
-        href: "/classroom",
-        labelEn: "Learner Classroom",
-        labelAf: "Leerderklaskamer",
-        descEn: "Open the learner-facing classroom view",
-        descAf: "Maak die leerder-klaskamer oop",
-        Icon: GraduationCap,
-        color: "#FFE29A",
-      },
-      {
-        key: "parent",
-        href: "/parent",
-        labelEn: "Parent View",
-        labelAf: "Ouer Aansig",
-        descEn: "Jump to the parent dashboard",
-        descAf: "Gaan na die ouerpaneel",
-        Icon: Users,
-        color: "#FFE29A",
-      },
+      { key: "classroom", href: "/classroom", labelEn: "Learner Classroom", labelAf: "Leerderklaskamer", Icon: GraduationCap },
+      { key: "parent", href: "/parent", labelEn: "Parent View", labelAf: "Ouer Aansig", Icon: Users },
     ],
   },
 ];
@@ -201,193 +96,200 @@ interface AdminTopNavProps {
   current?: AdminNavKey;
 }
 
+/**
+ * Admin left sidebar (formerly a top bar). Renders a fixed 240px column
+ * (200px below 861px — the same breakpoint as the learner dashboard shell)
+ * and offsets every following sibling of the mounting page automatically,
+ * so pages keep their existing structure: <AdminTopNav /> + content.
+ */
 export function AdminTopNav({ current }: AdminTopNavProps) {
   const { language, toggleLanguage } = useLanguage();
+  const [location] = useLocation();
   const isAf = language === "af";
 
-  const dashboardActive = current === "dashboard" || !current;
+  const isActive = (item: NavItem) =>
+    current ? current === item.key : location === item.href;
 
   return (
-    <header
-      className="sticky top-0 z-40"
-      style={{
-        background: "#000",
-        borderBottom: "3px solid transparent",
-        borderImage: "linear-gradient(90deg,#C5B3FF,#FFB7E5,#9FD8FF,#6EE7F9,#94F7C5,#FFE29A,#FFE29A) 1",
-        boxShadow: "0 0 28px rgba(197,179,255,0.25), 0 4px 20px rgba(0,0,0,0.8)",
-      }}
-      data-testid="admin-top-nav"
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3">
-        <Link href="/learn/admin" className="flex items-center gap-2.5 min-w-0" data-testid="admin-nav-brand">
-          <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-            style={{
-              background: "rgba(197,179,255,0.15)",
-              border: "2px solid #C5B3FF",
-              boxShadow: "0 0 18px rgba(197,179,255,0.5)",
-            }}
-          >
-            <ShieldAlert className="w-4.5 h-4.5" style={{ color: "#C5B3FF" }} />
-          </div>
-          <div className="min-w-0 hidden sm:block">
-            <p className="text-[9px] font-black uppercase tracking-[0.3em]" style={{ color: "#C5B3FF" }}>
-              BrainTrack
-            </p>
-            <p className="text-[15px] font-black text-white leading-none tracking-tight">
-              Admin
-            </p>
-          </div>
+    <>
+      <aside
+        className="bt-admin-sidebar"
+        data-testid="admin-top-nav"
+        style={{
+          position: "fixed",
+          left: 0,
+          top: 0,
+          bottom: 0,
+          width: 240,
+          zIndex: 40,
+          background: "#050508",
+          borderRight: "1px solid rgba(255,255,255,.07)",
+          padding: "22px 14px",
+          display: "flex",
+          flexDirection: "column",
+          gap: 4,
+          boxSizing: "border-box",
+          overflowY: "auto",
+          fontFamily: "'Poppins', system-ui, sans-serif",
+        }}
+      >
+        <Link
+          href="/learn/admin"
+          data-testid="admin-nav-brand"
+          style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 8px", cursor: "pointer" }}
+        >
+          <img src={iconTransparent} alt="" style={{ width: 48, height: 48, objectFit: "contain", flex: "none" }} />
+          <span className="bt-wordmark" style={{ fontSize: 16, fontWeight: 900 }}>BrainTrack</span>
         </Link>
+        <span
+          className="uppercase"
+          style={{
+            alignSelf: "flex-start",
+            margin: "8px 8px 10px",
+            fontSize: 10,
+            fontWeight: 700,
+            letterSpacing: "2px",
+            color: "#C5B3FF",
+            border: "1px solid rgba(197,179,255,0.4)",
+            borderRadius: 6,
+            padding: "3px 9px",
+          }}
+        >
+          Admin
+        </span>
 
-        <nav className="flex items-center gap-1.5 ml-2">
-          <Link
-            href="/learn/admin"
-            data-testid="admin-nav-dashboard"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all hover:scale-105"
-            style={dashboardActive ? {
-              background: "#C5B3FF",
-              color: "#fff",
-              border: "2px solid #C5B3FF",
-              boxShadow: "0 0 16px rgba(197,179,255,0.55)",
-            } : {
-              background: "rgba(197,179,255,0.1)",
-              color: "#C5B3FF",
-              border: "1.5px solid rgba(197,179,255,0.4)",
-            }}
-          >
-            <LayoutDashboard className="w-3.5 h-3.5" />
-            {isAf ? "Paneel" : "Dashboard"}
-          </Link>
-
-          <Link
-            href="/learn/admin/emails"
-            data-testid="admin-nav-emails-top"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all hover:scale-105"
-            style={current === "emails" ? {
-              background: "#FFB7E5",
-              color: "#fff",
-              border: "2px solid #FFB7E5",
-              boxShadow: "0 0 16px rgba(255,183,229,0.55)",
-            } : {
-              background: "rgba(255,183,229,0.1)",
-              color: "#FFB7E5",
-              border: "1.5px solid rgba(255,183,229,0.4)",
-            }}
-          >
-            <Mail className="w-3.5 h-3.5" />
-            {isAf ? "E-pos" : "Emails"}
-          </Link>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                type="button"
-                data-testid="admin-nav-menu-trigger"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all hover:scale-105"
-                style={{
-                  background: "rgba(110,231,249,0.1)",
-                  color: "#6EE7F9",
-                  border: "1.5px solid rgba(110,231,249,0.4)",
-                }}
-              >
-                {isAf ? "Spyskaart" : "All Tools"}
-                <ChevronDown className="w-3.5 h-3.5" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="start"
-              sideOffset={10}
-              className="w-80 max-h-[80vh] overflow-y-auto"
+        {NAV_GROUPS.map((group) => (
+          <div key={group.labelEn} style={{ display: "flex", flexDirection: "column", gap: 2, marginBottom: 6 }}>
+            <div
+              className="uppercase"
               style={{
-                background: "#050508",
-                border: "2px solid rgba(197,179,255,0.4)",
-                boxShadow: "0 0 40px rgba(197,179,255,0.2), 0 20px 60px rgba(0,0,0,0.8)",
+                padding: "6px 10px 4px",
+                fontSize: 9,
+                fontWeight: 800,
+                letterSpacing: "2.4px",
+                color: "#fff",
+                opacity: 0.85,
               }}
-              data-testid="admin-nav-menu-content"
             >
-              {NAV_GROUPS.map((group, gi) => (
-                <div key={group.labelEn}>
-                  {gi > 0 && <DropdownMenuSeparator style={{ background: "rgba(255,255,255,0.06)" }} />}
-                  <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-[0.3em]" style={{ color: "rgba(255,255,255,0.4)" }}>
-                    {isAf ? group.labelAf : group.labelEn}
-                  </DropdownMenuLabel>
-                  {group.items.map(({ key, href, labelEn, labelAf, descEn, descAf, Icon, color }) => {
-                    const active = current === key;
-                    return (
-                      <DropdownMenuItem
-                        key={key}
-                        asChild
-                        className="focus:bg-white/5"
-                        style={active ? { background: `${color}15` } : {}}
-                      >
-                        <Link
-                          href={href}
-                          className="flex items-start gap-3 cursor-pointer px-2 py-2"
-                          data-testid={`admin-nav-${key}`}
-                        >
-                          <div
-                            className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                            style={{
-                              background: `${color}15`,
-                              border: `1.5px solid ${color}`,
-                              boxShadow: `0 0 10px ${color}33`,
-                            }}
-                          >
-                            <Icon className="w-4 h-4" style={{ color }} />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-xs font-black text-white leading-tight">
-                              {isAf ? labelAf : labelEn}
-                            </p>
-                            <p className="text-[11px] leading-snug mt-0.5" style={{ color: "rgba(255,255,255,0.5)" }}>
-                              {isAf ? descAf : descEn}
-                            </p>
-                          </div>
-                        </Link>
-                      </DropdownMenuItem>
-                    );
-                  })}
-                </div>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </nav>
+              {isAf ? group.labelAf : group.labelEn}
+            </div>
+            {group.items.map((item) => {
+              const { key, href, labelEn, labelAf, Icon, testId } = item;
+              const active = isActive(item);
+              return (
+                <Link key={key} href={href}>
+                  <div
+                    data-testid={testId ?? `admin-nav-${key}`}
+                    title={isAf ? labelAf : labelEn}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      padding: "8px 10px",
+                      borderRadius: 10,
+                      cursor: "pointer",
+                      fontWeight: active ? 700 : 600,
+                      fontSize: 13,
+                      color: active ? "#9FF5E8" : "#fff",
+                      background: active ? "rgba(159,245,232,.12)" : "transparent",
+                      border: active ? "1px solid #9FF5E8" : "1px solid transparent",
+                      transition: "all .2s",
+                    }}
+                    onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = "rgba(255,255,255,.05)"; }}
+                    onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = "transparent"; }}
+                  >
+                    <Icon style={{ width: 15, height: 15, flex: "none" }} />
+                    <span style={{ flex: 1, minWidth: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      {isAf ? labelAf : labelEn}
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        ))}
 
-        <div className="ml-auto flex items-center gap-2">
-          <button
-            onClick={toggleLanguage}
-            className="text-[10px] font-black uppercase tracking-[0.25em] px-3 py-1.5 rounded-xl transition-all hover:scale-105"
-            style={{ background: "rgba(255,255,255,0.05)", border: "1.5px solid rgba(255,255,255,0.15)", color: "#fff" }}
-            data-testid="admin-nav-lang"
-          >
-            {isAf ? "EN" : "AF"}
-          </button>
-          <Link
-            href="/"
-            className="hidden sm:inline-flex items-center justify-center w-9 h-9 rounded-xl transition-all hover:scale-105"
-            style={{ background: "rgba(110,231,249,0.08)", border: "1.5px solid rgba(110,231,249,0.35)", color: "#6EE7F9" }}
-            data-testid="admin-nav-home"
-            title={isAf ? "Tuis" : "Home"}
-          >
-            <Home className="w-3.5 h-3.5" />
-          </Link>
+        <div style={{ marginTop: "auto", display: "flex", flexDirection: "column", gap: 6, paddingTop: 10 }}>
+          <div style={{ display: "flex", gap: 6 }}>
+            <button
+              onClick={toggleLanguage}
+              data-testid="admin-nav-lang"
+              style={{
+                flex: 1,
+                fontFamily: "'Poppins',sans-serif",
+                fontWeight: 700,
+                fontSize: 12,
+                color: "#fff",
+                background: "transparent",
+                border: "1px solid rgba(255,255,255,.2)",
+                borderRadius: 10,
+                padding: "8px 10px",
+                cursor: "pointer",
+                transition: "border-color .2s",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#9FD8FF"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,.2)"; }}
+            >
+              {isAf ? "EN" : "AF"}
+            </button>
+            <Link
+              href="/"
+              data-testid="admin-nav-home"
+              title={isAf ? "Tuis" : "Home"}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: 38,
+                color: "#fff",
+                border: "1px solid rgba(255,255,255,.2)",
+                borderRadius: 10,
+                transition: "border-color .2s",
+              }}
+            >
+              <Home style={{ width: 14, height: 14 }} />
+            </Link>
+          </div>
           <a
             href="/api/auth/logout"
-            className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-xl transition-all hover:scale-105"
-            style={{
-              background: "rgba(255,183,229,0.1)",
-              border: "1.5px solid #FFB7E5",
-              color: "#FFB7E5",
-              boxShadow: "0 0 12px rgba(255,183,229,0.2)",
-            }}
             data-testid="admin-nav-logout"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              width: "100%",
+              boxSizing: "border-box",
+              fontFamily: "'Poppins',sans-serif",
+              fontWeight: 700,
+              fontSize: 13,
+              color: "#fff",
+              background: "transparent",
+              border: "1px solid rgba(255,255,255,.14)",
+              borderRadius: 10,
+              padding: "9px 12px",
+              transition: "all .2s",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#FF8DA1"; e.currentTarget.style.color = "#FF8DA1"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,.14)"; e.currentTarget.style.color = "#fff"; }}
           >
-            <LogOut className="w-3 h-3" /> {isAf ? "Teken Uit" : "Logout"}
+            <LogOut style={{ width: 15, height: 15 }} />
+            {isAf ? "Teken Uit" : "Logout"}
           </a>
         </div>
-      </div>
-    </header>
+      </aside>
+
+      {/* The sidebar persists at every width (no top-bar fallback); it slims
+          to 200px under 861px — same approach as the learner dashboard.
+          Following siblings of the sidebar are offset so existing admin page
+          layouts keep working unchanged. */}
+      <style>{`
+        .bt-admin-sidebar ~ * { margin-left: 240px !important; }
+        @media (max-width: 860px) {
+          .bt-admin-sidebar { width: 200px !important; padding: 16px 10px !important; }
+          .bt-admin-sidebar ~ * { margin-left: 200px !important; }
+        }
+      `}</style>
+    </>
   );
 }
 

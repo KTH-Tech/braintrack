@@ -2,8 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Flame, Star, Zap, Target, Trophy, GraduationCap, Award, BookOpen, Sparkles, ChevronRight } from "lucide-react";
 import { Link } from "wouter";
 
-const NEON = "#FFE29A";
-const NEON_GLOW = "rgba(255,226,154,0.35)";
+const ACCENT = "#FFE29A";
+const ACCENT_GLOW = "rgba(255,226,154,0.3)";
 
 const BADGE_ICONS: Record<string, any> = {
   streak_3: Flame, streak_7: Flame, streak_14: Flame, streak_30: Flame,
@@ -35,8 +35,8 @@ export function NextMilestoneWidget({ isAf = false }: NextMilestoneWidgetProps) 
   if (isLoading) {
     return (
       <div
-        className="h-full min-h-[180px] rounded-2xl bg-black"
-        style={{ border: `1px solid ${NEON}33` }}
+        className="h-full min-h-[180px] animate-pulse"
+        style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.08)", borderRadius: 20 }}
       />
     );
   }
@@ -44,17 +44,17 @@ export function NextMilestoneWidget({ isAf = false }: NextMilestoneWidgetProps) 
   if (!milestone) {
     return (
       <div
-        className="h-full rounded-2xl bg-black p-5 text-center flex flex-col items-center justify-center"
-        style={{ border: `1px solid ${NEON}55`, boxShadow: `0 0 14px ${NEON_GLOW}` }}
+        className="h-full p-5 text-center flex flex-col items-center justify-center"
+        style={{ background: "rgba(255,255,255,.03)", border: `1.5px solid ${ACCENT}`, borderRadius: 20, boxShadow: `0 0 18px ${ACCENT_GLOW}` }}
       >
-        <Trophy className="w-7 h-7 mx-auto mb-2" style={{ color: NEON, filter: `drop-shadow(0 0 6px ${NEON})` }} />
+        <Trophy className="w-7 h-7 mx-auto mb-2" style={{ color: ACCENT }} />
         <p className="text-sm font-semibold text-white">
           {isAf ? "Jy't al die mylpale bereik!" : "You've reached all milestones!"}
         </p>
         <Link href="/rewards">
           <button
-            className="text-[11px] font-bold mt-2 inline-flex items-center gap-1 uppercase tracking-[0.16em]"
-            style={{ color: NEON }}
+            className="text-[11px] mt-2 inline-flex items-center gap-1 uppercase tracking-[0.14em]"
+            style={{ color: ACCENT, fontFamily: "'Poppins',sans-serif", fontWeight: 800, background: "transparent", border: "none", cursor: "pointer" }}
             data-testid="next-milestone-view-all"
           >
             {isAf ? "Sien al jou kentekens" : "View all badges"} <ChevronRight className="w-3 h-3" />
@@ -70,43 +70,46 @@ export function NextMilestoneWidget({ isAf = false }: NextMilestoneWidgetProps) 
   return (
     <Link href="/rewards" className="block h-full">
       <div
-        className="h-full rounded-2xl bg-black p-5 flex flex-col gap-4 cursor-pointer transition-transform hover:scale-[1.01]"
-        style={{ border: `1px solid ${NEON}55`, boxShadow: `0 0 18px ${NEON_GLOW}` }}
+        className="h-full p-5 flex flex-col gap-4 cursor-pointer transition-transform hover:-translate-y-1"
+        style={{ background: "rgba(255,255,255,.03)", border: `1.5px solid ${ACCENT}`, borderRadius: 20, boxShadow: `0 0 18px ${ACCENT_GLOW}` }}
         data-testid="next-milestone-widget"
       >
         <div className="flex items-center gap-3">
           <div
             className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
-            style={{ background: `${NEON}18`, border: `1px solid ${NEON}55` }}
+            style={{ background: `${ACCENT}26`, boxShadow: `0 0 14px ${ACCENT_GLOW}` }}
           >
-            <Icon className="w-5 h-5" style={{ color: NEON, filter: `drop-shadow(0 0 6px ${NEON})` }} />
+            <Icon className="w-5 h-5" style={{ color: ACCENT }} />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[9px] font-black uppercase tracking-[0.22em] text-white">
+            <p className="text-[9px] uppercase tracking-[0.18em]" style={{ color: ACCENT, fontFamily: "'Poppins',sans-serif", fontWeight: 800 }}>
               {isAf ? "Jaag jou volgende kenteken" : "Chasing your next badge"}
             </p>
-            <p className="text-sm font-bold text-white truncate">
+            <p
+              className="truncate"
+              style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", transformOrigin: "left center" }}
+            >
               {isAf ? milestone.nameAf : milestone.name}
             </p>
           </div>
-          <span className="text-[11px] font-bold tabular-nums shrink-0" style={{ color: NEON }}>
+          <span className="text-[11px] font-bold tabular-nums shrink-0" style={{ color: ACCENT }}>
             {milestone.currentValue}/{milestone.targetValue}
           </span>
         </div>
 
         <div className="space-y-1.5">
-          <div className="h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+          <div className="h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.08)" }}>
             <div
               className="h-full rounded-full transition-[width] duration-700 ease-out"
               style={{
                 width: `${milestone.progressPct}%`,
-                background: "linear-gradient(90deg, #FFE29A, #FFE29A, #FFE29A, #FFE29A)",
-                boxShadow: `0 0 10px ${NEON}`,
+                background: "linear-gradient(90deg,#FFE29A,#94F7C5)",
+                boxShadow: `0 0 10px ${ACCENT_GLOW}`,
               }}
             />
           </div>
           <div className="flex justify-between">
-            <span className="text-[10px] font-black tabular-nums" style={{ color: NEON }}>{milestone.progressPct}%</span>
+            <span className="text-[10px] font-black tabular-nums" style={{ color: ACCENT }}>{milestone.progressPct}%</span>
             <span className="text-[10px] text-white font-semibold">
               {isAf
                 ? `Nog ${remaining} ${milestone.unit}`

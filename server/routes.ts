@@ -15756,7 +15756,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
             body: `You scored ${percentage}% — ${score}/${questions.length} correct.${coinsEarned > 0 ? ` +${coinsEarned} coins earned!` : ""}`,
             url: "/dashboard",
             tag: "daily-challenge",
-            icon: "/favicon.png",
+            icon: "/favicon.png?v=bt2",
           });
           await Promise.allSettled(
             pushSubs.map(s =>
@@ -17566,7 +17566,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         return res.status(200).json({ ok: false, reason: "push_not_configured", userId: targetUserId });
       }
 
-      const payload = JSON.stringify({ title, body, url, tag: `admin-reminder-${Date.now()}`, icon: "/icon-192.png", badge: "/icon-192.png" });
+      const payload = JSON.stringify({ title, body, url, tag: `admin-reminder-${Date.now()}`, icon: "/icon-192.png?v=bt2", badge: "/icon-192.png?v=bt2" });
       const results = await Promise.allSettled(
         pushSubs.map(s => webpush.sendNotification({ endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } }, payload))
       );
@@ -20624,8 +20624,8 @@ Return a JSON object:
           const payload = JSON.stringify({
             title: finalTitleEn,
             body: finalMsgEn,
-            icon: "/icon-192.png",
-            badge: "/icon-192.png",
+            icon: "/icon-192.png?v=bt2",
+            badge: "/icon-192.png?v=bt2",
             tag: `rate-prompt-${Date.now()}`,
             data: { url: finalCta, type: "rate_prompt" },
           });

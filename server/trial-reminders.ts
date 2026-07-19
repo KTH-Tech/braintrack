@@ -54,8 +54,8 @@ function buildPayload(slot: "d13" | "d14", langAf: boolean, firstName: string | 
   return JSON.stringify({
     title,
     body: formatBody(slot, langAf, firstName),
-    icon: "/icon-192.png",
-    badge: "/icon-192.png",
+    icon: "/icon-192.png?v=bt2",
+    badge: "/icon-192.png?v=bt2",
     tag: `trial-${slot}-${new Date().toISOString().slice(0, 10)}`,
     data: { url: "/subscribe?from=trial-reminder", type: `trial_reminder_${slot}` },
   });

@@ -121,7 +121,7 @@ interface NewLitNote {
 
 // ── Colour palette ───────────────────────────────────────────────────────────
 const HEX = {
-  cyan: "#6EE7F9",
+  cyan: "#9FF5E8",
   violet: "#C5B3FF",
   pink: "#FFB7E5",
   amber: "#FFE29A",
@@ -308,7 +308,7 @@ function CoverageBanner({
           className="shrink-0 flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold uppercase tracking-widest transition-all"
           style={{
             background: showUnreviewedOnly ? `${HEX.amber}33` : "rgba(255,255,255,0.05)",
-            color: showUnreviewedOnly ? HEX.amber : "rgba(255,255,255,0.40)",
+            color: showUnreviewedOnly ? HEX.amber : "rgba(255,255,255,0.85)",
             border: `1px solid ${showUnreviewedOnly ? HEX.amber : "rgba(255,255,255,0.10)"}`,
           }}
         >
@@ -354,7 +354,7 @@ function SubjectBreakdownPanel({
       <button
         onClick={() => setOpen((v) => !v)}
         className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest transition-colors"
-        style={{ color: open ? accent : "rgba(255,255,255,0.35)" }}
+        style={{ color: open ? accent : "rgba(255,255,255,0.85)" }}
         data-testid="coverage-by-subject-toggle"
       >
         {open ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
@@ -399,7 +399,7 @@ function SubjectBreakdownPanel({
                     </div>
                     <span
                       className="text-[10px] w-8 text-right"
-                      style={{ color: allDone ? HEX.green : "rgba(255,255,255,0.35)" }}
+                      style={{ color: allDone ? HEX.green : "rgba(255,255,255,0.85)" }}
                     >
                       {pct}%
                     </span>
@@ -514,7 +514,7 @@ function BulkImportPanel({
         data-testid={`bulk-import-toggle-${type}`}
         onClick={() => { setOpen((v) => !v); setResult(null); setParseError(null); }}
         className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest transition-colors"
-        style={{ color: open ? accent : "rgba(255,255,255,0.35)" }}
+        style={{ color: open ? accent : "rgba(255,255,255,0.85)" }}
       >
         <Upload size={13} />
         Bulk Import
@@ -1426,7 +1426,7 @@ export default function AdminContentEditorPage() {
   const [tab, setTab] = useState<Tab>("notes");
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen text-white" style={{ background: "#050508", fontFamily: "'Poppins', system-ui, sans-serif" }}>
       {/* Header */}
       <AdminTopNav current="content-editor" />
 
@@ -1452,7 +1452,7 @@ export default function AdminContentEditorPage() {
               onClick={() => setTab(t.id)}
               className="flex items-center gap-2 px-4 py-3 text-xs font-bold uppercase tracking-widest transition-all"
               style={{
-                color: tab === t.id ? t.accent : "rgba(255,255,255,0.35)",
+                color: tab === t.id ? t.accent : "rgba(255,255,255,0.85)",
                 borderBottom: tab === t.id ? `2px solid ${t.accent}` : "2px solid transparent",
               }}
             >

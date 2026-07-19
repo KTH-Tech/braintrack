@@ -4,7 +4,6 @@ import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/language-context";
 import { AdminTopNav } from "@/components/admin-top-nav";
-import { GraffitiSplats, SpraySmear } from "@/components/graffiti-splats";
 import { formatNumber } from "@/lib/formatters";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -15,17 +14,18 @@ import {
 } from "lucide-react";
 
 type NeonHex =
-  | "#FFE29A"
-  | "#6EE7F9" | "#9FD8FF" | "#C5B3FF" | "#FFB7E5";
+  | "#9FF5E8" | "#9FD8FF" | "#FFB7E5"
+  | "#C5B3FF" | "#FFE29A" | "#94F7C5";
 
 function halo(color: NeonHex, a = 0.28) {
   // Token-palette rgb triplets (braintrack-tokens.css pastels).
   const rgb: Record<NeonHex, string> = {
-    "#FFE29A": "255,226,154",
-    "#6EE7F9": "110,231,249",
+    "#9FF5E8": "159,245,232",
     "#9FD8FF": "159,216,255",
-    "#C5B3FF": "197,179,255",
     "#FFB7E5": "255,183,229",
+    "#C5B3FF": "197,179,255",
+    "#FFE29A": "255,226,154",
+    "#94F7C5": "148,247,197",
   };
   return `rgba(${rgb[color]},${a})`;
 }
@@ -38,17 +38,17 @@ function NeonShell({
   className?: string;
   testId?: string;
 }) {
-  const h = halo(color, 0.28);
   return (
     <div
-      className={`relative rounded-2xl bg-black overflow-hidden ${className}`}
-      style={{ border: `1.5px solid ${color}`, boxShadow: `0 0 0 1px ${h}, 0 0 28px ${h}` }}
+      className={`relative overflow-hidden ${className}`}
+      style={{
+        background: "rgba(255,255,255,0.035)",
+        border: "1px solid rgba(255,255,255,0.1)",
+        borderRadius: 20,
+      }}
       data-testid={testId}
     >
-      <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: color }} />
-      <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2" style={{ borderColor: color }} />
-      <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2" style={{ borderColor: color }} />
-      <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: color }} />
+      <span aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: color, opacity: 0.8 }} />
       {children}
     </div>
   );
@@ -84,7 +84,7 @@ type SchoolEnquiry = {
 
 const STATUS_COLORS: Record<string, string> = {
   new: "#FFE29A",
-  contacted: "#6EE7F9",
+  contacted: "#9FF5E8",
   converted: "#9FD8FF",
   dismissed: "#C5B3FF",
 };
@@ -280,7 +280,7 @@ function FraudFlagsPanel({ isAf }: { isAf: boolean }) {
                         {flag.reviewed ? (
                           <span
                             className="inline-block px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider"
-                            style={{ border: "1px solid rgba(110,231,249,0.4)", color: "#6EE7F9" }}
+                            style={{ border: "1px solid rgba(159,216,255,0.4)", color: "#9FD8FF" }}
                             data-testid={`fraud-flag-reviewed-${flag.id}`}
                           >
                             {isAf ? "Hersien" : "Reviewed"}
@@ -304,9 +304,9 @@ function FraudFlagsPanel({ isAf }: { isAf: boolean }) {
                             data-testid={`fraud-flag-clear-${flag.id}`}
                             className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider disabled:opacity-50 transition-opacity"
                             style={{
-                              border: "1px solid rgba(110,231,249,0.5)",
-                              color: "#6EE7F9",
-                              background: "rgba(110,231,249,0.08)",
+                              border: "1px solid rgba(159,216,255,0.5)",
+                              color: "#9FD8FF",
+                              background: "rgba(159,216,255,0.08)",
                             }}
                           >
                             {isPending ? (
@@ -355,7 +355,7 @@ type PartnerSchoolInquiry = {
 };
 
 const INQUIRY_ACTION_COLORS: Record<string, string> = {
-  contacted: "#6EE7F9",
+  contacted: "#9FF5E8",
   approved: "#9FD8FF",
   dismissed: "#C5B3FF",
 };
@@ -395,7 +395,7 @@ function DbHealthPanel({ isAf }: { isAf: boolean }) {
     return parts.join(" ");
   }
 
-  const color: NeonHex = "#6EE7F9";
+  const color: NeonHex = "#9FD8FF";
   const poolPct = data ? Math.round((data.poolStats.total / data.poolStats.max) * 100) : 0;
   const lastMig = data?.lastMigrationAt
     ? new Date(data.lastMigrationAt).toLocaleDateString(isAf ? "af-ZA" : "en-ZA", { day: "2-digit", month: "short", year: "numeric" })
@@ -430,7 +430,7 @@ function DbHealthPanel({ isAf }: { isAf: boolean }) {
           <>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
               {/* Pool connections */}
-              <div className="rounded-xl p-3" style={{ background: "rgba(110,231,249,0.07)", border: "1px solid rgba(110,231,249,0.25)" }} data-testid="db-health-pool">
+              <div className="rounded-xl p-3" style={{ background: "rgba(159,216,255,0.07)", border: "1px solid rgba(159,216,255,0.25)" }} data-testid="db-health-pool">
                 <p className="text-[10px] font-black uppercase tracking-wider mb-1" style={{ color }}>
                   {isAf ? "Verbindings (Pool)" : "Pool Connections"}
                 </p>
@@ -453,7 +453,7 @@ function DbHealthPanel({ isAf }: { isAf: boolean }) {
               </div>
 
               {/* Active connections (pg_stat_activity) */}
-              <div className="rounded-xl p-3" style={{ background: "rgba(110,231,249,0.07)", border: "1px solid rgba(110,231,249,0.25)" }} data-testid="db-health-active">
+              <div className="rounded-xl p-3" style={{ background: "rgba(159,216,255,0.07)", border: "1px solid rgba(159,216,255,0.25)" }} data-testid="db-health-active">
                 <p className="text-[10px] font-black uppercase tracking-wider mb-1" style={{ color }}>
                   {isAf ? "Aktiewe Verbindings" : "Active Connections"}
                 </p>
@@ -467,7 +467,7 @@ function DbHealthPanel({ isAf }: { isAf: boolean }) {
               </div>
 
               {/* Slow queries */}
-              <div className="rounded-xl p-3" style={{ background: "rgba(110,231,249,0.07)", border: "1px solid rgba(110,231,249,0.25)" }} data-testid="db-health-slow">
+              <div className="rounded-xl p-3" style={{ background: "rgba(159,216,255,0.07)", border: "1px solid rgba(159,216,255,0.25)" }} data-testid="db-health-slow">
                 <p className="text-[10px] font-black uppercase tracking-wider mb-1" style={{ color }}>
                   {isAf ? "Stadige Navrae (>500ms)" : "Slow Queries (>500ms)"}
                 </p>
@@ -486,7 +486,7 @@ function DbHealthPanel({ isAf }: { isAf: boolean }) {
               </div>
 
               {/* DB Uptime */}
-              <div className="rounded-xl p-3" style={{ background: "rgba(110,231,249,0.07)", border: "1px solid rgba(110,231,249,0.25)" }} data-testid="db-health-uptime">
+              <div className="rounded-xl p-3" style={{ background: "rgba(159,216,255,0.07)", border: "1px solid rgba(159,216,255,0.25)" }} data-testid="db-health-uptime">
                 <p className="text-[10px] font-black uppercase tracking-wider mb-1" style={{ color }}>
                   {isAf ? "DB Beskikbaartyd" : "DB Uptime"}
                 </p>
@@ -524,7 +524,7 @@ function DbHealthPanel({ isAf }: { isAf: boolean }) {
                 disabled={isFetching}
                 data-testid="db-health-refresh"
                 className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider transition-colors disabled:opacity-40"
-                style={{ border: `1px solid rgba(110,231,249,0.4)`, color, background: "rgba(110,231,249,0.08)" }}
+                style={{ border: `1px solid rgba(159,216,255,0.4)`, color, background: "rgba(159,216,255,0.08)" }}
               >
                 {isFetching ? <Loader2 className="w-3 h-3 animate-spin" /> : <Activity className="w-3 h-3" />}
                 {isAf ? "Verfris" : "Refresh"}
@@ -1018,7 +1018,7 @@ export default function AdminDashboardPage() {
       Icon: Package, testId: "quick-products",
     },
     {
-      href: "/learn/admin/topic-audio", color: "#6EE7F9",
+      href: "/learn/admin/topic-audio", color: "#9FD8FF",
       title: "Topic Audio", titleAf: "Onderwerp Klank",
       desc: "Preview, regenerate or upload replacement MP3s before students hear them.",
       descAf: "Voorskou, hergenereer of laai vervangings-MP3's op voor leerders dit hoor.",
@@ -1032,7 +1032,7 @@ export default function AdminDashboardPage() {
       Icon: Store, testId: "quick-schools",
     },
     {
-      href: "/learn/admin/school-qr", color: "#6EE7F9",
+      href: "/learn/admin/school-qr", color: "#9FD8FF",
       title: "School QR Codes", titleAf: "Skool QR-kodes",
       desc: "Download or print unique QR codes for each partner school.",
       descAf: "Laai af of druk unieke QR-kodes vir elke vennootskool.",
@@ -1071,7 +1071,7 @@ export default function AdminDashboardPage() {
           : `Skedule: af (${freqAf})`
         : "Skedule: laai…";
       return {
-        href: "/learn/admin/partner-branding", color: "#6EE7F9" as NeonHex,
+        href: "/learn/admin/partner-branding", color: "#9FD8FF" as NeonHex,
         title: "Partner Branding & Reports", titleAf: "Vennoothandel & Verslae",
         desc: `${statusEn} · Set partner name, logo and report send schedule.`,
         descAf: `${statusAf} · Stel vennootnaam, logo en verslagskedule.`,
@@ -1093,7 +1093,7 @@ export default function AdminDashboardPage() {
       Icon: Mail, testId: "quick-email-templates",
     },
     {
-      href: "/learn/admin/dbe-portal", color: "#6EE7F9",
+      href: "/learn/admin/dbe-portal", color: "#9FD8FF",
       title: "DBE Portal", titleAf: "DBE Portaal",
       desc: "Manage DBE past-paper ingestion, catalog and release-gate controls.",
       descAf: "Bestuur DBE vorige vraestelle, katalogus en vrystellingbeheer.",
@@ -1111,7 +1111,7 @@ export default function AdminDashboardPage() {
   };
 
   const statCards: { label: string; labelAf: string; value: number; color: NeonHex; Icon: any; testId: string }[] = [
-    { label: "Total Users",  labelAf: "Totaal Gebruikers", value: stats?.totalUsers  ?? 0, color: "#6EE7F9", Icon: Users,         testId: "stat-total"     },
+    { label: "Total Users",  labelAf: "Totaal Gebruikers", value: stats?.totalUsers  ?? 0, color: "#9FF5E8", Icon: Users,         testId: "stat-total"     },
     { label: "Learners",     labelAf: "Leerders",          value: stats?.learners    ?? 0, color: "#9FD8FF", Icon: GraduationCap, testId: "stat-learners"  },
     { label: "Parents",      labelAf: "Ouers",             value: stats?.parents     ?? 0, color: "#C5B3FF", Icon: Users,         testId: "stat-parents"   },
     { label: "Subscribed",   labelAf: "Geabonneer",        value: stats?.subscribedUsers ?? 0, color: "#FFB7E5", Icon: Zap,       testId: "stat-subs"      },
@@ -1120,59 +1120,50 @@ export default function AdminDashboardPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-hidden">
-      <GraffitiSplats variant="corner" opacity={0.35} />
+    <div className="min-h-screen text-white relative" style={{ background: "#050508", fontFamily: "'Poppins', system-ui, sans-serif" }}>
       <AdminTopNav current="dashboard" />
 
       <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8">
         {/* Hero */}
         <section
-          className="relative overflow-hidden rounded-3xl bg-black p-6 sm:p-8 md:p-10"
+          className="relative overflow-hidden p-6 sm:p-8 md:p-10"
           style={{
-            border: "1.5px solid #C5B3FF",
-            boxShadow: "0 0 0 1px rgba(197,179,255,0.35), 0 0 44px rgba(197,179,255,0.35), inset 0 0 40px rgba(0,0,0,0.65)",
+            background: "rgba(255,255,255,0.035)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            borderRadius: 20,
           }}
           data-testid="admin-hero"
         >
           <div aria-hidden className="absolute top-0 left-0 right-0 h-[3px]"
-            style={{ background: "linear-gradient(90deg, #FFE29A, #FFE29A, #94F7C5, #6EE7F9, #9FD8FF, #C5B3FF, #FFB7E5)" }} />
-          <div aria-hidden className="absolute -top-24 -right-24 w-72 h-72 rounded-full blur-3xl pointer-events-none"
-            style={{ background: "radial-gradient(circle, rgba(197,179,255,0.3), transparent 70%)" }} />
-          <div aria-hidden className="absolute -bottom-24 -left-24 w-72 h-72 rounded-full blur-3xl pointer-events-none"
-            style={{ background: "radial-gradient(circle, rgba(110,231,249,0.22), transparent 70%)" }} />
-          <span aria-hidden className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2" style={{ borderColor: "#C5B3FF" }} />
-          <span aria-hidden className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2" style={{ borderColor: "#C5B3FF" }} />
-          <span aria-hidden className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2" style={{ borderColor: "#C5B3FF" }} />
-          <span aria-hidden className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2" style={{ borderColor: "#C5B3FF" }} />
+            style={{ background: "linear-gradient(95deg,#FFB7E5,#FFE29A,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)" }} />
 
           <div className="relative flex flex-wrap items-center gap-3 mb-4">
-            <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
-              style={{ border: "1px solid #C5B3FF", boxShadow: "0 0 12px rgba(197,179,255,0.45)" }}>
-              <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#C5B3FF", boxShadow: "0 0 6px #C5B3FF" }} />
+            <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1"
+              style={{ border: "1px solid rgba(197,179,255,0.5)" }}>
+              <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#C5B3FF" }} />
               <span className="text-[10px] font-black uppercase tracking-[0.24em]" style={{ color: "#C5B3FF" }}>
                 {isAf ? "Administrateur" : "Administrator"}
               </span>
             </div>
             {superFlag?.isSuperAdmin && (
-              <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
-                style={{ border: "1px solid #FFE29A", boxShadow: "0 0 12px rgba(255,226,154,0.45)" }}>
+              <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1"
+                style={{ border: "1px solid rgba(255,226,154,0.5)" }}>
                 <span className="text-[10px] font-black uppercase tracking-[0.24em]" style={{ color: "#FFE29A" }}>
                   {isAf ? "Hoof" : "Super"}
                 </span>
               </div>
             )}
-            <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
+            <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1"
               style={{
-                border: emergencyActive ? "1px solid #FFE29A" : "1px solid rgba(110,231,249,0.55)",
-                boxShadow: emergencyActive ? "0 0 12px rgba(255,226,154,0.45)" : "0 0 10px rgba(110,231,249,0.35)",
+                border: emergencyActive ? "1px solid rgba(255,226,154,0.5)" : "1px solid rgba(148,247,197,0.5)",
               }}
               data-testid="badge-emergency"
             >
               {emergencyActive
                 ? <AlertTriangle className="w-3 h-3" style={{ color: "#FFE29A" }} />
-                : <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#6EE7F9", boxShadow: "0 0 6px #6EE7F9" }} />}
+                : <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#94F7C5", boxShadow: "0 0 8px #94F7C5" }} />}
               <span className="text-[10px] font-bold uppercase tracking-[0.2em]"
-                style={{ color: emergencyActive ? "#FFE29A" : "#6EE7F9" }}>
+                style={{ color: emergencyActive ? "#FFE29A" : "#94F7C5" }}>
                 {emergencyActive
                   ? (isAf ? "Noodgeval Aktief" : "Emergency Active")
                   : (isAf ? "Stelsel Gesond" : "System Nominal")}
@@ -1181,12 +1172,9 @@ export default function AdminDashboardPage() {
           </div>
 
           <p className="text-white font-semibold text-sm mb-1">{isAf ? "Welkom terug," : "Welcome back,"}</p>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl text-white tracking-tight leading-[0.98] graffiti-hand">
-            <span className="spray-title graffiti-hand">
-              <SpraySmear color="#C5B3FF" />
-              {firstName}.
-            </span>
-          </h1>
+          <div role="heading" aria-level={1} className="text-4xl sm:text-5xl text-white font-black tracking-tight leading-[0.98]">
+            {firstName}.
+          </div>
           <p className="text-white text-base sm:text-lg mt-2 max-w-xl">
             {isAf
               ? "Die hele BrainTrack-enjinkamer is hier. Hou kaarte dop, kataloge oop en die stelsel onder beheer."
@@ -1195,8 +1183,8 @@ export default function AdminDashboardPage() {
 
           {disabledCount > 0 && (
             <div
-              className="mt-4 inline-flex items-center gap-2 rounded-full px-3 py-1.5 bg-black"
-              style={{ border: "1px solid rgba(255,226,154,0.55)", boxShadow: "0 0 10px rgba(255,226,154,0.35)" }}
+              className="mt-4 inline-flex items-center gap-2 rounded-full px-3 py-1.5"
+              style={{ border: "1px solid rgba(255,226,154,0.55)" }}
             >
               <AlertTriangle className="w-3.5 h-3.5" style={{ color: "#FFE29A" }} />
               <span className="text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: "#FFE29A" }}>
@@ -1213,20 +1201,19 @@ export default function AdminDashboardPage() {
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {statCards.map(({ label, labelAf, value, color, Icon, testId }) => {
-              const h = halo(color, 0.3);
+              const h = halo(color, 0.35);
               return (
                 <NeonShell key={label} color={color} className="p-4" testId={testId}>
                   <div className="flex items-center gap-2 mb-3">
-                    <div className="w-8 h-8 rounded-xl bg-black flex items-center justify-center"
-                      style={{ border: `1.5px solid ${color}`, boxShadow: `0 0 10px ${h}, inset 0 0 8px ${h}` }}>
-                      <Icon className="w-4 h-4" style={{ color, filter: `drop-shadow(0 0 4px ${h})` }} />
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center"
+                      style={{ background: "rgba(255,255,255,0.035)", border: `1px solid ${h}` }}>
+                      <Icon className="w-4 h-4" style={{ color }} />
                     </div>
                     <span className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color }}>
                       {isAf ? labelAf : label}
                     </span>
                   </div>
-                  <div className="text-3xl font-black tabular-nums text-white"
-                    style={{ textShadow: `0 0 14px ${h}` }}>
+                  <div className="text-3xl font-black tabular-nums text-white">
                     {formatNumber(value, language)}
                   </div>
                 </NeonShell>
@@ -1238,10 +1225,10 @@ export default function AdminDashboardPage() {
         {/* Learner Referral Programme */}
         <section>
           <h2 className="text-[10px] font-black uppercase tracking-[0.24em] text-white mb-3 flex items-center gap-2">
-            <Gift className="w-3 h-3" style={{ color: "#6EE7F9" }} />
+            <Gift className="w-3 h-3" style={{ color: "#9FD8FF" }} />
             {isAf ? "Verwysingsprogram" : "Referral Programme"}
           </h2>
-          <NeonShell color="#6EE7F9" className="p-5" testId="admin-referral-summary">
+          <NeonShell color="#9FD8FF" className="p-5" testId="admin-referral-summary">
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
               {[
                 { label: "Links",            labelAf: "Skakels",     value: referralSummary?.linksGenerated ?? 0,         testId: "ref-links" },
@@ -1251,8 +1238,8 @@ export default function AdminDashboardPage() {
                 { label: "Rewarded",         labelAf: "Beloon",      value: referralSummary?.rewarded ?? 0,               testId: "ref-rewarded" },
                 { label: "Free Months",      labelAf: "Gratis Maande", value: referralSummary?.monthsAwarded ?? 0,        testId: "ref-months" },
               ].map(({ label, labelAf, value, testId }) => (
-                <div key={label} className="rounded-xl bg-black/40 p-3" style={{ border: "1px solid rgba(110,231,249,0.35)" }} data-testid={testId}>
-                  <div className="text-[10px] font-black uppercase tracking-[0.18em]" style={{ color: "#6EE7F9" }}>
+                <div key={label} className="rounded-xl bg-black/40 p-3" style={{ border: "1px solid rgba(159,216,255,0.35)" }} data-testid={testId}>
+                  <div className="text-[10px] font-black uppercase tracking-[0.18em]" style={{ color: "#9FD8FF" }}>
                     {isAf ? labelAf : label}
                   </div>
                   <div className="text-2xl font-black tabular-nums text-white mt-1">
@@ -1291,9 +1278,9 @@ export default function AdminDashboardPage() {
                       aria-pressed={active}
                       className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider transition-colors"
                       style={{
-                        border: `1px solid ${active ? "#6EE7F9" : "rgba(255,255,255,0.18)"}`,
-                        color: active ? "#6EE7F9" : "#fff",
-                        background: active ? "rgba(110,231,249,0.12)" : "transparent",
+                        border: `1px solid ${active ? "#9FD8FF" : "rgba(255,255,255,0.18)"}`,
+                        color: active ? "#9FD8FF" : "#fff",
+                        background: active ? "rgba(159,216,255,0.12)" : "transparent",
                       }}
                     >
                       {isAf ? c.af : c.en}
@@ -1346,7 +1333,7 @@ export default function AdminDashboardPage() {
                 )}
               </div>
 
-              <div className="overflow-x-auto rounded-xl" style={{ border: "1px solid rgba(110,231,249,0.28)" }}>
+              <div className="overflow-x-auto rounded-xl" style={{ border: "1px solid rgba(159,216,255,0.28)" }}>
                 <table className="w-full text-xs" data-testid="ref-recent-table">
                   <thead className="bg-black/60 text-white">
                     <tr className="text-left">
@@ -1362,7 +1349,7 @@ export default function AdminDashboardPage() {
                     {referralRecentLoading ? (
                       <tr>
                         <td colSpan={6} className="px-3 py-6 text-center text-white" data-testid="ref-recent-loading">
-                          <Loader2 className="w-4 h-4 animate-spin inline-block mr-2" style={{ color: "#6EE7F9" }} />
+                          <Loader2 className="w-4 h-4 animate-spin inline-block mr-2" style={{ color: "#9FD8FF" }} />
                           {isAf ? "Laai verwysings…" : "Loading referrals…"}
                         </td>
                       </tr>
@@ -1387,7 +1374,7 @@ export default function AdminDashboardPage() {
                         const fmt = (s: string | null) => (s ? new Date(s).toLocaleDateString(isAf ? "af-ZA" : "en-ZA") : "—");
                         const statusColor =
                           r.status === "rewarded" ? "#FFE29A" :
-                          r.status === "converted" ? "#6EE7F9" :
+                          r.status === "converted" ? "#9FD8FF" :
                           "#C5B3FF";
                         return (
                           <tr key={r.id} className="border-t border-white/5" data-testid={`ref-row-${r.id}`}>
@@ -1443,9 +1430,9 @@ export default function AdminDashboardPage() {
                     data-testid="ref-prev-page"
                     className="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider disabled:opacity-40"
                     style={{
-                      border: "1px solid rgba(110,231,249,0.4)",
-                      color: "#6EE7F9",
-                      background: "rgba(110,231,249,0.08)",
+                      border: "1px solid rgba(159,216,255,0.4)",
+                      color: "#9FD8FF",
+                      background: "rgba(159,216,255,0.08)",
                     }}
                   >
                     {isAf ? "Vorige" : "Previous"}
@@ -1457,9 +1444,9 @@ export default function AdminDashboardPage() {
                     data-testid="ref-next-page"
                     className="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider disabled:opacity-40"
                     style={{
-                      border: "1px solid rgba(110,231,249,0.4)",
-                      color: "#6EE7F9",
-                      background: "rgba(110,231,249,0.08)",
+                      border: "1px solid rgba(159,216,255,0.4)",
+                      color: "#9FD8FF",
+                      background: "rgba(159,216,255,0.08)",
                     }}
                   >
                     {isAf ? "Volgende" : "Next"}
@@ -1504,12 +1491,12 @@ export default function AdminDashboardPage() {
                     <NeonShell color={color} className="h-full">
                       <div className="p-5 space-y-3">
                         <div className="flex items-start justify-between">
-                          <div className="w-11 h-11 rounded-2xl bg-black flex items-center justify-center"
-                            style={{ border: `1.5px solid ${color}`, boxShadow: `0 0 14px ${h}, inset 0 0 10px ${h}` }}>
+                          <div className="w-11 h-11 rounded-xl flex items-center justify-center"
+                            style={{ background: "rgba(255,255,255,0.035)", border: `1px solid ${h}` }}>
                             {busy ? (
-                              <Loader2 className="w-5 h-5 animate-spin" style={{ color, filter: `drop-shadow(0 0 5px ${h})` }} />
+                              <Loader2 className="w-5 h-5 animate-spin" style={{ color }} />
                             ) : (
-                              <Eye className="w-5 h-5" style={{ color, filter: `drop-shadow(0 0 5px ${h})` }} />
+                              <Eye className="w-5 h-5" style={{ color }} />
                             )}
                           </div>
                           <span className="text-[10px] font-black uppercase tracking-[0.22em]" style={{ color }}>→</span>
@@ -1534,9 +1521,9 @@ export default function AdminDashboardPage() {
                     <NeonShell color={color} className="h-full">
                       <div className="p-5 space-y-3">
                         <div className="flex items-start justify-between">
-                          <div className="w-11 h-11 rounded-2xl bg-black flex items-center justify-center"
-                            style={{ border: `1.5px solid ${color}`, boxShadow: `0 0 14px ${h}, inset 0 0 10px ${h}` }}>
-                            <Icon className="w-5 h-5" style={{ color, filter: `drop-shadow(0 0 5px ${h})` }} />
+                          <div className="w-11 h-11 rounded-xl flex items-center justify-center"
+                            style={{ background: "rgba(255,255,255,0.035)", border: `1px solid ${h}` }}>
+                            <Icon className="w-5 h-5" style={{ color }} />
                           </div>
                           <span className="text-[10px] font-black uppercase tracking-[0.22em]" style={{ color }}>→</span>
                         </div>

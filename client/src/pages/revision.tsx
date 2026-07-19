@@ -1,12 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams, useSearch, Link } from "wouter";
+import type { CSSProperties } from "react";
+import { useParams, Link } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLanguage } from "@/lib/language-context";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, CheckCircle2, XCircle, RotateCcw, Trophy, BookOpen, Loader2, Target, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -31,9 +28,51 @@ interface RevisionData {
 
 type QuizPhase = "loading" | "quiz" | "results";
 
+const RAINBOW_GRADIENT =
+  "linear-gradient(90deg,#FFE29A,#FFE29A,#94F7C5,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)";
+
+const halo = (hex: string, a = 0.32) => {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r},${g},${b},${a})`;
+};
+
+const marker = (color: string, size = 16): CSSProperties => ({
+  fontFamily: "'Permanent Marker',cursive",
+  fontSize: size,
+  color,
+  transform: "rotate(-2deg)",
+  display: "inline-block",
+  textShadow: `0 0 10px ${halo(color, 0.45)}`,
+});
+
+const rainbowText: CSSProperties = {
+  backgroundImage: RAINBOW_GRADIENT,
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+  backgroundClip: "text",
+  color: "transparent",
+};
+
+const cardStyle = (accent?: string, radius = 22): CSSProperties => ({
+  background: "rgba(255,255,255,.03)",
+  border: accent ? `1.5px solid ${accent}` : "1px solid rgba(255,255,255,.08)",
+  borderRadius: radius,
+  ...(accent ? { boxShadow: `0 0 22px ${halo(accent, 0.22)}` } : {}),
+});
+
+const primaryBtnStyle: CSSProperties = {
+  background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
+  color: "#050508",
+  border: "none",
+  borderRadius: 12,
+  fontWeight: 800,
+};
+
 export default function RevisionPage() {
   const { subjectId } = useParams<{ subjectId: string }>();
-  const { language } = useLanguage();
+  const { language, toggleLanguage } = useLanguage();
   const isAf = language === "af";
   const { toast } = useToast();
 
@@ -158,8 +197,11 @@ export default function RevisionPage() {
 
   if (isLoading || phase === "loading") {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <div
+        className="min-h-screen flex flex-col items-center justify-center gap-4 text-white"
+        style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}
+      >
+        <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#9FF5E8" }} />
         <p className="text-sm text-white">
           {isAf ? "Laai hersiening vrae..." : "Loading revision questions..."}
         </p>
@@ -168,36 +210,77 @@ export default function RevisionPage() {
   }
 
   return (
-    <div className="min-h-screen">
-      <header className="sticky top-0 z-50 border-b border-border bg-background/95 ">
-        <div className="max-w-3xl mx-auto px-4 h-14 flex items-center gap-3">
+    <div
+      className="min-h-screen text-white relative overflow-hidden"
+      style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}
+    >
+      {/* ── Sticky street header ── */}
+      <header
+        className="sticky top-0 z-50 border-b"
+        style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "rgba(255,255,255,.08)" }}
+      >
+        <div className="max-w-3xl mx-auto px-4 h-16 flex items-center gap-3">
           <Link href={`/subject/${subjectId}`}>
-            <button className="flex items-center gap-1.5 text-sm font-semibold text-white hover:text-white transition-colors">
+            <button
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0"
+              style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
+            >
               <ArrowLeft className="w-4 h-4" />
               {isAf ? "Terug" : "Back"}
             </button>
           </Link>
           <div className="flex-1" />
-          <div className="flex items-center gap-2">
-            <RotateCcw className="w-4 h-4 text-primary" />
-            <span className="text-sm font-bold gradient-text">
+          <div className="flex items-center gap-2 min-w-0">
+            <RotateCcw className="w-4 h-4 shrink-0" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px #9FF5E8)" }} />
+            <span className="truncate" style={marker("#9FF5E8")}>
               {isAf ? "Hersiening" : "Revision Mode"}
             </span>
             {data?.source === "ai_practice" && (
-              <Badge variant="secondary" className="text-[10px]">
+              <span
+                className="text-[10px] font-black uppercase tracking-[0.14em] px-2 py-0.5 rounded-full shrink-0"
+                style={{ color: "#C5B3FF", border: "1px solid #C5B3FF", background: "rgba(255,255,255,.03)" }}
+              >
                 {isAf ? "Oefensessie" : "Practice"}
-              </Badge>
+              </span>
             )}
           </div>
+          <button
+            onClick={toggleLanguage}
+            className="px-3 py-2 rounded-xl bg-white/[.03] text-xs font-extrabold hover:bg-white/10 shrink-0"
+            style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
+            data-testid="button-language-toggle"
+          >
+            {language === "en" ? "EN" : "AF"}
+          </button>
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto px-4 py-8 space-y-6">
+      <main className="relative max-w-3xl mx-auto px-4 py-8 space-y-6">
+        {/* Ambient pastel auras */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-24 -left-32 w-[360px] h-[360px] rounded-full blur-[120px] opacity-40"
+          style={{ background: "#9FF5E8" }}
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute top-56 -right-32 w-[320px] h-[320px] rounded-full blur-[120px] opacity-30"
+          style={{ background: "#C5B3FF" }}
+        />
+
         {phase === "quiz" && totalQuestions > 0 && current && (
           <>
             {data?.hasWrongAttempts ? (
-              <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-red-300/30 bg-red-500/[0.07] ">
-                <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+              <div
+                className="relative flex items-center gap-2 px-4 py-2.5"
+                style={{
+                  background: halo("#FF8DA1", 0.07),
+                  border: `1px solid ${halo("#FF8DA1", 0.4)}`,
+                  borderRadius: 14,
+                  animation: "bt-fadeup .5s both",
+                }}
+              >
+                <AlertCircle className="w-4 h-4 shrink-0" style={{ color: "#FF8DA1" }} />
                 <p className="text-xs font-semibold text-white">
                   {isAf
                     ? `${totalQuestions} vrae wat jy verkeerd geantwoord het — hersien dit nou.`
@@ -205,8 +288,16 @@ export default function RevisionPage() {
                 </p>
               </div>
             ) : (
-              <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-cyan-300/30 bg-cyan-500/[0.07] ">
-                <Target className="w-4 h-4 text-cyan-500 shrink-0" />
+              <div
+                className="relative flex items-center gap-2 px-4 py-2.5"
+                style={{
+                  background: halo("#9FD8FF", 0.07),
+                  border: `1px solid ${halo("#9FD8FF", 0.4)}`,
+                  borderRadius: 14,
+                  animation: "bt-fadeup .5s both",
+                }}
+              >
+                <Target className="w-4 h-4 shrink-0" style={{ color: "#9FD8FF" }} />
                 <p className="text-xs font-semibold text-white">
                   {isAf
                     ? "Oefeningsvrae vir hierdie vak. Doen die daaglikse vasvraag om verkeerde antwoorde te bou."
@@ -215,24 +306,42 @@ export default function RevisionPage() {
               </div>
             )}
 
-            <div className="space-y-2">
+            <div className="relative space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="font-semibold text-white">
+                <span className="font-bold text-white">
                   {isAf ? `Vraag ${currentIdx + 1} van ${totalQuestions}` : `Question ${currentIdx + 1} of ${totalQuestions}`}
                 </span>
                 {current.topic && (
-                  <Badge variant="secondary" className="text-xs">
+                  <span
+                    className="text-xs font-bold px-2.5 py-0.5 rounded-full"
+                    style={{ color: "#FFE29A", border: "1px solid #FFE29A", background: "rgba(255,255,255,.03)" }}
+                  >
                     {current.topic}
-                  </Badge>
+                  </span>
                 )}
               </div>
-              <Progress value={((currentIdx + 1) / totalQuestions) * 100} className="h-2" />
+              {/* Rainbow progress bar */}
+              <div className="h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.08)" }}>
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{
+                    width: `${((currentIdx + 1) / totalQuestions) * 100}%`,
+                    background: RAINBOW_GRADIENT,
+                    boxShadow: "0 0 10px rgba(159,245,232,.5)",
+                  }}
+                />
+              </div>
             </div>
 
-            <Card className="rounded-2xl overflow-hidden">
-              <CardContent className="p-6 space-y-5">
+            {/* Question card */}
+            <div className="relative overflow-hidden" style={{ ...cardStyle(undefined, 24), animation: "bt-fadeup .5s .05s both" }}>
+              <div className="absolute top-0 inset-x-0 h-1" style={{ background: RAINBOW_GRADIENT }} aria-hidden="true" />
+              <div className="p-6 space-y-5">
                 <div className="flex items-start gap-3">
-                  <span className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-sm font-bold text-primary shrink-0">
+                  <span
+                    className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-extrabold shrink-0"
+                    style={{ background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", color: "#050508" }}
+                  >
                     Q
                   </span>
                   <div className="flex-1 pt-0.5">
@@ -240,7 +349,7 @@ export default function RevisionPage() {
                       {current.question}
                     </p>
                     {current.timesWrong && current.timesWrong > 1 && (
-                      <p className="text-[10px] text-red-500 mt-1 font-semibold">
+                      <p className="text-[10px] mt-1 font-bold" style={{ color: "#FF8DA1" }}>
                         {isAf ? `Verkeerd ${current.timesWrong}× voorheen` : `Wrong ${current.timesWrong}× before`}
                       </p>
                     )}
@@ -254,40 +363,65 @@ export default function RevisionPage() {
                     const wasWrong = submitted && selected && !isCorrect;
                     const showCorrect = submitted && isCorrect;
 
+                    const optionStyle: CSSProperties = showCorrect
+                      ? { background: halo("#94F7C5", 0.1), border: `1.5px solid ${halo("#94F7C5", 0.6)}`, boxShadow: `0 0 14px ${halo("#94F7C5", 0.2)}` }
+                      : wasWrong
+                      ? { background: halo("#FF8DA1", 0.1), border: `1.5px solid ${halo("#FF8DA1", 0.6)}`, boxShadow: `0 0 14px ${halo("#FF8DA1", 0.2)}` }
+                      : selected
+                      ? { background: halo("#9FF5E8", 0.08), border: "1.5px solid #9FF5E8" }
+                      : { background: "rgba(255,255,255,.03)", border: "1.5px solid rgba(255,255,255,.08)" };
+
                     return (
                       <button
                         key={opt.label}
                         onClick={() => handleAnswer(opt.label)}
                         disabled={submitted}
-                        className={`w-full text-left flex items-center gap-3 p-4 rounded-xl border text-sm font-medium transition-all ${
-                          showCorrect
-                            ? "border-emerald-400/60 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-800 dark:text-emerald-200"
-                            : wasWrong
-                            ? "border-red-400/60 bg-red-50 dark:bg-red-950/20 text-red-800 dark:text-red-200"
-                            : selected
-                            ? "border-primary/40 bg-primary/5 text-white"
-                            : "border-border hover:border-primary/30 hover:bg-primary/5 text-white"
-                        } ${submitted ? "cursor-default" : "cursor-pointer active:scale-[0.99]"}`}
+                        className={`w-full text-left flex items-center gap-3 p-4 text-sm font-medium text-white transition-all ${
+                          submitted ? "cursor-default" : "cursor-pointer active:scale-[0.99]"
+                        }`}
+                        style={{ borderRadius: 14, ...optionStyle }}
+                        onMouseEnter={(e) => {
+                          if (!submitted && !selected) e.currentTarget.style.border = "1.5px solid rgba(159,245,232,.5)";
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!submitted && !selected) e.currentTarget.style.border = "1.5px solid rgba(255,255,255,.08)";
+                        }}
                       >
-                        <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${
-                          showCorrect ? "bg-emerald-500 text-white" : wasWrong ? "bg-red-500 text-white" : selected ? "bg-primary text-primary-foreground" : "bg-muted text-white"
-                        }`}>
+                        <span
+                          className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-extrabold shrink-0"
+                          style={
+                            showCorrect
+                              ? { background: "#94F7C5", color: "#050508" }
+                              : wasWrong
+                              ? { background: "#FF8DA1", color: "#050508" }
+                              : selected
+                              ? { background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", color: "#050508" }
+                              : { background: "rgba(255,255,255,.06)", color: "#ffffff" }
+                          }
+                        >
                           {opt.label}
                         </span>
                         <span>{opt.text}</span>
-                        {showCorrect && <CheckCircle2 className="w-4 h-4 text-emerald-500 ml-auto shrink-0" />}
-                        {wasWrong && <XCircle className="w-4 h-4 text-red-500 ml-auto shrink-0" />}
+                        {showCorrect && <CheckCircle2 className="w-4 h-4 ml-auto shrink-0" style={{ color: "#94F7C5" }} />}
+                        {wasWrong && <XCircle className="w-4 h-4 ml-auto shrink-0" style={{ color: "#FF8DA1" }} />}
                       </button>
                     );
                   })}
                 </div>
 
                 {submitted && selectedAnswer && selectedAnswer !== current.correctAnswer && (
-                  <div className="rounded-xl border border-emerald-400/50 bg-emerald-500/10 p-3 flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                    <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">
+                  <div
+                    className="p-3 flex items-center gap-2"
+                    style={{
+                      borderRadius: 12,
+                      border: `1px solid ${halo("#94F7C5", 0.5)}`,
+                      background: halo("#94F7C5", 0.1),
+                    }}
+                  >
+                    <CheckCircle2 className="w-4 h-4 flex-shrink-0" style={{ color: "#94F7C5" }} />
+                    <p className="text-sm font-bold text-white">
                       {isAf ? "Korrekte antwoord:" : "Correct answer:"}{" "}
-                      <span className="font-bold">{current.correctAnswer}</span>
+                      <span style={{ color: "#94F7C5" }}>{current.correctAnswer}</span>
                       {current.options.find((o: { label: string; text: string }) => o.label === current.correctAnswer) && (
                         <span className="font-normal"> — {current.options.find((o: { label: string; text: string }) => o.label === current.correctAnswer)!.text}</span>
                       )}
@@ -296,38 +430,57 @@ export default function RevisionPage() {
                 )}
 
                 {submitted && current.explanation && (
-                  <div className="rounded-xl border border-blue-200 bg-blue-50 dark:bg-blue-950/20 p-4">
-                    <p className="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-widest mb-1">
+                  <div
+                    className="p-4"
+                    style={{
+                      borderRadius: 12,
+                      background: halo("#9FD8FF", 0.08),
+                      border: `1px solid ${halo("#9FD8FF", 0.4)}`,
+                    }}
+                  >
+                    <p className="text-xs font-extrabold uppercase tracking-widest mb-1" style={{ color: "#9FD8FF" }}>
                       {isAf ? "Verduideliking" : "Explanation"}
                     </p>
-                    <p className="text-sm text-blue-800 dark:text-blue-200 leading-relaxed">
+                    <p className="text-sm text-white leading-relaxed">
                       {current.explanation}
                     </p>
                   </div>
                 )}
 
                 {submitted && (
-                  <Button onClick={handleNext} className="w-full">
+                  <button
+                    onClick={handleNext}
+                    className="w-full py-3 text-sm transition-all"
+                    style={{ ...primaryBtnStyle, boxShadow: "0 0 20px rgba(159,245,232,.35)" }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                      e.currentTarget.style.boxShadow = "0 0 28px rgba(159,245,232,.5)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "none";
+                      e.currentTarget.style.boxShadow = "0 0 20px rgba(159,245,232,.35)";
+                    }}
+                  >
                     {currentIdx < totalQuestions - 1
                       ? (isAf ? "Volgende Vraag" : "Next Question")
                       : (isAf ? "Sien Resultate" : "See Results")}
-                  </Button>
+                  </button>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </>
         )}
 
         {phase === "quiz" && totalQuestions === 0 && (
-          <Card className="rounded-2xl">
-            <CardContent className="p-10 text-center">
+          <div className="relative" style={{ ...cardStyle(error ? "#FF8DA1" : "#94F7C5", 24), animation: "bt-fadeup .5s both" }}>
+            <div className="p-10 text-center">
               {error ? (
                 <>
-                  <AlertCircle className="w-16 h-16 mx-auto mb-4 text-red-500" />
-                  <h2 className="text-xl font-bold text-white mb-2">
+                  <AlertCircle className="w-16 h-16 mx-auto mb-4" style={{ color: "#FF8DA1", filter: "drop-shadow(0 0 8px #FF8DA1)" }} />
+                  <div role="heading" aria-level={2} className="text-xl font-extrabold text-white mb-2">
                     {isAf ? "Kon nie vrae laai nie" : "Could not load questions"}
-                  </h2>
-                  <p className="text-white mb-6">
+                  </div>
+                  <p className="text-white mb-6" style={{ opacity: 0.92 }}>
                     {isAf
                       ? "Iets het verkeerd gegaan. Probeer asseblief weer."
                       : "Something went wrong loading revision questions. Please try again."}
@@ -335,11 +488,14 @@ export default function RevisionPage() {
                 </>
               ) : (
                 <>
-                  <CheckCircle2 className="w-16 h-16 mx-auto mb-4 text-emerald-500" />
-                  <h2 className="text-xl font-bold text-white mb-2">
+                  <CheckCircle2 className="w-16 h-16 mx-auto mb-4" style={{ color: "#94F7C5", filter: "drop-shadow(0 0 8px #94F7C5)" }} />
+                  <span className="block mb-2" style={marker("#94F7C5", 17)}>
+                    {isAf ? "Sterk gedaan! 💪" : "You're crushing it! 💪"}
+                  </span>
+                  <div role="heading" aria-level={2} className="text-xl font-extrabold text-white mb-2">
                     {isAf ? "Alles hersien!" : "All caught up!"}
-                  </h2>
-                  <p className="text-white mb-6">
+                  </div>
+                  <p className="text-white mb-6" style={{ opacity: 0.92 }}>
                     {isAf
                       ? "Geen verkeerde antwoorde om te hersien nie. Doen die daaglikse vasvraag om jou hersiening te bou."
                       : "No wrong answers to revise. Do the daily quiz to build your revision list."}
@@ -347,54 +503,97 @@ export default function RevisionPage() {
                 </>
               )}
               <Link href={`/subject/${subjectId}`}>
-                <Button>{isAf ? "Terug na Vak" : "Back to Subject"}</Button>
+                <button
+                  className="px-6 py-2.5 text-sm transition-all"
+                  style={{ ...primaryBtnStyle, boxShadow: "0 0 20px rgba(159,245,232,.35)" }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "translateY(-2px)";
+                    e.currentTarget.style.boxShadow = "0 0 28px rgba(159,245,232,.5)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "none";
+                    e.currentTarget.style.boxShadow = "0 0 20px rgba(159,245,232,.35)";
+                  }}
+                >
+                  {isAf ? "Terug na Vak" : "Back to Subject"}
+                </button>
               </Link>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )}
 
         {phase === "results" && (
-          <Card className="rounded-2xl">
-            <CardContent className="p-8 text-center space-y-6">
-              <div className="w-20 h-20 mx-auto rounded-full border-4 border-primary/30 flex items-center justify-center bg-primary/10">
-                <Trophy className="w-10 h-10 text-primary" />
+          <div className="relative overflow-hidden" style={{ ...cardStyle("#FFE29A", 24), animation: "bt-fadeup .5s both" }}>
+            <div className="absolute top-0 inset-x-0 h-1" style={{ background: RAINBOW_GRADIENT }} aria-hidden="true" />
+            <div className="p-8 text-center space-y-6">
+              <div
+                className="w-20 h-20 mx-auto rounded-full flex items-center justify-center"
+                style={{
+                  background: "rgba(5,5,8,.6)",
+                  border: "2px solid #FFE29A",
+                  boxShadow: `0 0 24px ${halo("#FFE29A", 0.35)}`,
+                  animation: "bt-float 3s ease-in-out infinite",
+                }}
+              >
+                <Trophy className="w-10 h-10" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 8px #FFE29A)" }} />
               </div>
               <div>
-                <p className="text-4xl font-bold gradient-text">{scorePct}%</p>
-                <p className="text-white mt-1 font-semibold">
+                <p className="text-4xl font-black" style={rainbowText}>{scorePct}%</p>
+                <p className="text-white mt-1 font-bold">
                   {correctCount}/{totalQuestions} {isAf ? "korrek" : "correct"}
                 </p>
               </div>
-              <Progress value={scorePct} className="h-3" />
-              <p className="text-white font-semibold">
+              <div className="h-3 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.08)" }}>
+                <div
+                  className="h-full rounded-full"
+                  style={{
+                    width: `${scorePct}%`,
+                    background: RAINBOW_GRADIENT,
+                    boxShadow: "0 0 12px rgba(159,245,232,.5)",
+                  }}
+                />
+              </div>
+              <span style={marker("#FFB7E5", 16)}>
                 {scorePct >= 80
                   ? (isAf ? "Uitstekend! Jy's op dreef!" : "Excellent! You're on track!")
                   : scorePct >= 60
                   ? (isAf ? "Goeie werk! Oefen nog 'n bietjie." : "Good work! Keep practicing.")
                   : (isAf ? "Bly oefen – jy sal dit kry!" : "Keep practicing — you'll get there!")}
-              </p>
+              </span>
               <div className="flex gap-3 justify-center flex-wrap">
-                <Button
-                  variant="outline"
+                <button
                   onClick={() => {
                     setCurrentIdx(0);
                     setAnswers({});
                     setSubmitted(false);
                     setPhase("quiz");
                   }}
+                  className="inline-flex items-center px-5 py-2.5 text-sm font-bold hover:bg-white/5 transition-colors"
+                  style={{ background: "transparent", border: "1.5px solid #9FD8FF", color: "#9FD8FF", borderRadius: 12 }}
                 >
                   <RotateCcw className="w-4 h-4 mr-2" />
                   {isAf ? "Herhaal" : "Retry"}
-                </Button>
+                </button>
                 <Link href={`/subject/${subjectId}`}>
-                  <Button>
+                  <button
+                    className="inline-flex items-center px-5 py-2.5 text-sm transition-all"
+                    style={{ ...primaryBtnStyle, boxShadow: "0 0 20px rgba(159,245,232,.35)" }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                      e.currentTarget.style.boxShadow = "0 0 28px rgba(159,245,232,.5)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "none";
+                      e.currentTarget.style.boxShadow = "0 0 20px rgba(159,245,232,.35)";
+                    }}
+                  >
                     <BookOpen className="w-4 h-4 mr-2" />
                     {isAf ? "Terug na Vak" : "Back to Subject"}
-                  </Button>
+                  </button>
                 </Link>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )}
       </main>
     </div>

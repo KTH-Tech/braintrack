@@ -14,7 +14,7 @@ type Partner = {
   totalReferrals: number;
 };
 
-const NEON = "#6EE7F9";
+const NEON = "#9FF5E8";
 
 function hexToRgba(hex: string, a: number) {
   const r = parseInt(hex.slice(1, 3), 16);
@@ -232,7 +232,7 @@ export default function AdminSchoolQRPage() {
         }
       `}</style>
 
-      <div className="min-h-screen bg-black text-white">
+      <div className="min-h-screen text-white" style={{ background: "#050508", fontFamily: "'Poppins', system-ui, sans-serif" }}>
         <AdminTopNav current="partner-branding" />
 
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -247,9 +247,9 @@ export default function AdminSchoolQRPage() {
                 <QrCode className="w-5 h-5" style={{ color: NEON }} />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-white">
+                <div role="heading" aria-level={1} className="text-xl font-bold text-white">
                   {isAf ? "Vennoot QR-kodes" : "Partner QR Codes"}
-                </h1>
+                </div>
                 <p className="text-sm text-white">
                   {partners.length} {isAf ? "aktiewe vennote" : "active partners"}
                 </p>

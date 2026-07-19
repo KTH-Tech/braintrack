@@ -1,10 +1,11 @@
+import type { CSSProperties } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/language-context";
 import { formatDate } from "@/lib/formatters";
 import { useLocation, Link } from "wouter";
 import {
-  Loader2, Home, LogOut, Globe, MapPin, CheckCircle2, Star, Flame,
+  Loader2, LogOut, CheckCircle2, Star, Flame,
   BookOpen, Trophy, Target, Brain, Rocket, Sparkles, ArrowRight, Lock,
   ArrowLeft, Calendar, HelpCircle, FileText,
 } from "lucide-react";
@@ -38,10 +39,9 @@ interface JourneyData {
   upcomingGoals: { title: string; titleAf: string; progress: number }[];
 }
 
-/* Wordmark rainbow — keep this the single source of truth for this page. */
+/* Guideline rainbow — single source of truth for this page. */
 const RAINBOW = [
-  "#FFE29A", "#FFE29A", "#FFE29A", "#FFE29A",
-  "#6EE7F9", "#9FD8FF", "#C5B3FF", "#C5B3FF", "#FFB7E5",
+  "#FFE29A", "#FFE29A", "#94F7C5", "#9FF5E8", "#9FD8FF", "#C5B3FF", "#FFB7E5",
 ] as const;
 
 const EVENT_ICONS: Record<string, any> = {
@@ -55,9 +55,9 @@ const EVENT_ICONS: Record<string, any> = {
   daily:      Sparkles,
 };
 
-/* Map each event type to one stop on the rainbow. */
+/* Map each event type to one stop on the guideline pastel cycle. */
 const EVENT_HEX: Record<string, string> = {
-  onboarding: "#6EE7F9",
+  onboarding: "#9FF5E8",
   first_quiz: "#FFE29A",
   subject:    "#9FD8FF",
   badge:      "#FFE29A",
@@ -74,6 +74,15 @@ const halo = (hex: string, a = 0.32) => {
   return `rgba(${r},${g},${b},${a})`;
 };
 
+const marker = (color: string, size = 16): CSSProperties => ({
+  fontFamily: "'Permanent Marker',cursive",
+  fontSize: size,
+  color,
+  transform: "rotate(-2deg)",
+  display: "inline-block",
+  textShadow: `0 0 10px ${halo(color, 0.45)}`,
+});
+
 const T = {
   en: {
     pageTitle: "Learning Journey",
@@ -83,6 +92,7 @@ const T = {
     backTitle: "Back",
     heroLabel: "Journey",
     heroSubtitle: "Your personal learning journey — every milestone, every spark.",
+    hypeLine: "Every step counts. Let's get it! 🚀",
     rizzSays: "Rizz says",
     statDays: "Days",
     statBadges: "Badges",
@@ -104,6 +114,7 @@ const T = {
     backTitle: "Terug",
     heroLabel: "Leerreis",
     heroSubtitle: "Jou persoonlike leerreis — elke mylpaal, elke vonk.",
+    hypeLine: "Elke tree tel. Kom ons doen dit! 🚀",
     rizzSays: "Rizz sê",
     statDays: "Dae",
     statBadges: "Kentekens",
@@ -120,7 +131,7 @@ const T = {
 } as const;
 
 export default function JourneyPage() {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const { language, toggleLanguage } = useLanguage();
   const [, navigate] = useLocation();
   const isAf = language === "af";
@@ -137,140 +148,151 @@ export default function JourneyPage() {
   const upcoming = events.filter((e) => !e.isCompleted);
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      {/* ── Sticky neon header ── */}
+    <div
+      className="min-h-screen text-white relative overflow-hidden"
+      style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}
+    >
+      {/* ── Sticky street header ── */}
       <header
-        className="sticky top-0 z-40 bg-black"
-        style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}
+        className="sticky top-0 z-50 border-b"
+        style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "rgba(255,255,255,.08)" }}
       >
-        <div className="max-w-5xl mx-auto px-4 flex items-center justify-between h-14 gap-4">
-          <div className="flex items-center gap-3 min-w-0">
-            <div
-              className="w-8 h-8 rounded-xl bg-black flex items-center justify-center shrink-0"
-              style={{
-                border: "1px solid #6EE7F9",
-                boxShadow: "0 0 12px rgba(110,231,249,0.4), inset 0 0 8px rgba(110,231,249,0.15)",
-              }}
-            >
-              <MapPin className="w-4 h-4" style={{ color: "#6EE7F9", filter: "drop-shadow(0 0 4px #6EE7F9)" }} />
-            </div>
-            <span className="font-black text-sm text-white truncate">
-              {t.pageTitle}
-            </span>
-            {isParentView && (
-              <span
-                className="text-[9px] font-black uppercase tracking-[0.22em] px-2 py-0.5 rounded-full bg-black shrink-0"
-                style={{ color: "#C5B3FF", border: "1px solid #C5B3FF" }}
-              >
-                {t.parentBadge}
-              </span>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={toggleLanguage}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-black text-xs font-black uppercase tracking-[0.18em] hover:bg-white/5 transition-colors"
-              style={{ border: "1px solid rgba(255,255,255,0.12)", color:"#ffffff" }}
-              data-testid="button-toggle-language"
-            >
-              <Globe className="h-3.5 w-3.5" />
-              {language === "en" ? "EN" : "AF"}
-            </button>
-            {!isParentView ? (
-              <>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <div className="flex items-center justify-between h-16 gap-4">
+            <div className="flex items-center gap-3 min-w-0">
+              {!isParentView ? (
                 <button
                   onClick={() => navigate("/dashboard")}
-                  className="h-8 w-8 rounded-lg bg-black flex items-center justify-center hover:bg-white/5 transition-colors"
-                  style={{ border: "1px solid rgba(255,255,255,0.12)" }}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0"
+                  style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
                   title={t.homeTitle}
                   data-testid="button-home"
                 >
-                  <Home className="h-4 w-4 text-white" />
+                  <ArrowLeft className="w-4 h-4" />
+                  <span className="hidden md:inline">{t.homeTitle}</span>
                 </button>
+              ) : (
+                <button
+                  onClick={() => navigate("/parent")}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0"
+                  style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
+                  title={t.backTitle}
+                  data-testid="button-back"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span className="hidden md:inline">{t.backTitle}</span>
+                </button>
+              )}
+              <span className="hidden sm:inline truncate" style={marker("#9FF5E8")}>
+                {t.pageTitle}
+              </span>
+              {isParentView && (
+                <span
+                  className="text-[9px] font-black uppercase tracking-[0.22em] px-2 py-0.5 rounded-full shrink-0"
+                  style={{ color: "#C5B3FF", border: "1px solid #C5B3FF", background: "rgba(255,255,255,.03)" }}
+                >
+                  {t.parentBadge}
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={toggleLanguage}
+                className="px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
+                style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
+                data-testid="button-toggle-language"
+              >
+                {language === "en" ? "EN" : "AF"}
+              </button>
+              {!isParentView && (
                 <button
                   onClick={() => logout()}
-                  className="h-8 w-8 rounded-lg bg-black flex items-center justify-center hover:bg-white/5 transition-colors"
-                  style={{ border: "1px solid rgba(255,255,255,0.12)" }}
+                  className="inline-flex items-center px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
+                  style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}
                   title={t.signOutTitle}
                   data-testid="button-logout"
                 >
-                  <LogOut className="h-4 w-4 text-white" />
+                  <LogOut className="w-4 h-4 sm:mr-2" />
+                  <span className="hidden sm:inline">{t.signOutTitle}</span>
                 </button>
-              </>
-            ) : (
-              <button
-                onClick={() => navigate("/parent")}
-                className="h-8 w-8 rounded-lg bg-black flex items-center justify-center hover:bg-white/5 transition-colors"
-                style={{ border: "1px solid rgba(255,255,255,0.12)" }}
-                title={t.backTitle}
-                data-testid="button-back"
-              >
-                <ArrowLeft className="h-4 w-4 text-white" />
-              </button>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 py-8 sm:py-10 space-y-8">
+      <main className="relative max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-8">
+        {/* Ambient pastel auras */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full blur-[120px] opacity-40"
+          style={{ background: "#9FF5E8" }}
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute top-40 -right-24 w-[380px] h-[380px] rounded-full blur-[120px] opacity-30"
+          style={{ background: "#FFB7E5" }}
+        />
+
         {/* ── Hero ── */}
-        <section className="relative">
-          <div className="flex items-center gap-3 mb-3">
-            <div
-              className="w-10 h-10 rounded-2xl bg-black flex items-center justify-center"
-              style={{
-                border: "1.5px solid #FFE29A",
-                boxShadow: "0 0 16px rgba(255,226,154,0.35), inset 0 0 10px rgba(255,226,154,0.15)",
-              }}
-            >
-              <Rocket className="w-5 h-5" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 5px #FFE29A)" }} />
-            </div>
-            <span className="text-[10px] font-black uppercase tracking-[0.28em] text-white">
-              {t.heroLabel}
-            </span>
+        <section className="relative space-y-4" style={{ animation: "bt-fadeup .5s both" }}>
+          <div className="inline-flex items-center gap-2">
+            <Rocket
+              className="w-4 h-4"
+              style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }}
+            />
+            <span style={marker("#FFE29A")}>{t.heroLabel}</span>
           </div>
-          <h1
+          <div
+            role="heading"
+            aria-level={1}
             className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-[0.95]"
             style={{
-              background: `linear-gradient(90deg, ${RAINBOW.join(", ")})`,
+              backgroundImage: `linear-gradient(90deg, ${RAINBOW.join(", ")})`,
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
+              color: "transparent",
             }}
           >
             {isAf
               ? `${journey?.learnerName ? journey.learnerName : "Jou"} Leerreis`
               : `${journey?.learnerName ? journey.learnerName + "'s" : "Your"} Journey`}
-          </h1>
-          <p className="text-white font-medium text-sm sm:text-base mt-3 max-w-2xl leading-relaxed">
+          </div>
+          <p className="text-white font-medium text-sm sm:text-base max-w-2xl leading-relaxed" style={{ opacity: 0.94 }}>
             {t.heroSubtitle}
           </p>
+          <span style={marker("#FFB7E5", 15)}>{t.hypeLine}</span>
         </section>
 
         {isLoading ? (
           <div className="flex justify-center py-24">
-            <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#6EE7F9" }} />
+            <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#9FF5E8" }} />
           </div>
         ) : (
           <>
-            {/* ── Rizz narrator card ── */}
+            {/* ── Rizz narrator card (Rizz-branded — keeps #6EE7F9) ── */}
             <section
-              className="relative rounded-2xl bg-black p-5 sm:p-6 overflow-hidden"
+              className="relative rounded-3xl p-5 sm:p-6 overflow-hidden"
               style={{
+                background: "rgba(255,255,255,.03)",
                 border: "1.5px solid #6EE7F9",
-                boxShadow: `0 0 0 1px ${halo("#6EE7F9", 0.2)}, 0 0 28px ${halo("#6EE7F9", 0.3)}, inset 0 0 22px rgba(0,0,0,0.6)`,
+                borderRadius: 22,
+                boxShadow: `0 0 28px ${halo("#6EE7F9", 0.28)}`,
+                animation: "bt-fadeup .5s .05s both",
               }}
               data-testid="rizz-narrator"
             >
-              <span aria-hidden className="absolute top-0 left-0 right-0 h-[2px]"
-                style={{ background: "#6EE7F9", boxShadow: "0 0 10px #6EE7F9" }} />
-              <span aria-hidden className="absolute top-1.5 left-1.5 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: "#6EE7F9" }} />
-              <span aria-hidden className="absolute bottom-1.5 right-1.5 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: "#6EE7F9" }} />
-
+              <span
+                aria-hidden
+                className="absolute top-0 left-0 right-0 h-[2px]"
+                style={{ background: "#6EE7F9", boxShadow: "0 0 10px #6EE7F9" }}
+              />
               <div className="flex items-start gap-4">
                 <div
-                  className="shrink-0 w-14 h-14 rounded-2xl overflow-hidden bg-black"
+                  className="shrink-0 w-14 h-14 rounded-2xl overflow-hidden"
                   style={{
+                    background: "rgba(5,5,8,.6)",
                     border: "1.5px solid #6EE7F9",
                     boxShadow: `0 0 14px ${halo("#6EE7F9", 0.45)}`,
                   }}
@@ -278,12 +300,9 @@ export default function JourneyPage() {
                   <img src={rizzAvatar} alt="Rizz" className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p
-                    className="text-[10px] font-black mb-1.5 uppercase tracking-[0.28em]"
-                    style={{ color: "#6EE7F9", textShadow: `0 0 8px ${halo("#6EE7F9", 0.4)}` }}
-                  >
+                  <span className="block mb-1.5" style={marker("#6EE7F9", 15)}>
                     {t.rizzSays}
-                  </p>
+                  </span>
                   <p className="text-sm sm:text-base text-white leading-relaxed font-medium italic">
                     "{isAf ? journey?.rizzCommentAf : journey?.rizzComment}"
                   </p>
@@ -291,45 +310,47 @@ export default function JourneyPage() {
               </div>
             </section>
 
-            {/* ── Stats bar — 5 neon chips across the rainbow ── */}
+            {/* ── Stats bar — 5 pastel chips ── */}
             {journey?.stats && (
-              <section className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+              <section className="grid grid-cols-2 sm:grid-cols-5 gap-3" style={{ animation: "bt-fadeup .5s .1s both" }}>
                 {[
-                  { label: t.statDays,      value: journey.stats.totalDays,         hex: "#6EE7F9", Icon: Calendar,   testid: "stat-days"      },
-                  { label: t.statBadges,    value: journey.stats.badgesEarned,      hex: "#FFE29A", Icon: Trophy,     testid: "stat-badges"    },
-                  { label: t.statQuestions, value: journey.stats.questionsAnswered, hex: "#9FD8FF", Icon: HelpCircle, testid: "stat-questions" },
+                  { label: t.statDays,      value: journey.stats.totalDays,         hex: "#9FF5E8", Icon: Calendar,   testid: "stat-days"      },
+                  { label: t.statBadges,    value: journey.stats.badgesEarned,      hex: "#9FD8FF", Icon: Trophy,     testid: "stat-badges"    },
+                  { label: t.statQuestions, value: journey.stats.questionsAnswered, hex: "#FFB7E5", Icon: HelpCircle, testid: "stat-questions" },
                   { label: t.statPapers,    value: journey.stats.papersCompleted,   hex: "#C5B3FF", Icon: FileText,   testid: "stat-papers"    },
                   { label: t.statStreak,    value: journey.stats.currentStreak,     hex: "#FFE29A", Icon: Flame,      testid: "stat-streak"    },
-                ].map(({ label, value, hex, Icon, testid }) => {
+                ].map(({ label, value, hex, Icon, testid }, i) => {
                   const h = halo(hex, 0.32);
                   return (
                     <div
                       key={label}
-                      className="relative rounded-2xl bg-black p-4 text-center overflow-hidden"
+                      className="relative p-4 text-center overflow-hidden transition-transform"
                       style={{
+                        background: "rgba(255,255,255,.03)",
                         border: `1.5px solid ${hex}`,
-                        boxShadow: `0 0 0 1px ${halo(hex, 0.18)}, 0 0 16px ${h}, inset 0 0 12px rgba(0,0,0,0.55)`,
+                        borderRadius: 20,
+                        boxShadow: `0 0 16px ${halo(hex, 0.22)}`,
+                        transform: `rotate(${i % 2 === 0 ? -1 : 1}deg)`,
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = "rotate(0deg) translateY(-6px)";
+                        e.currentTarget.style.boxShadow = `0 0 26px ${h}`;
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = `rotate(${i % 2 === 0 ? -1 : 1}deg)`;
+                        e.currentTarget.style.boxShadow = `0 0 16px ${halo(hex, 0.22)}`;
                       }}
                       data-testid={testid}
                     >
-                      <span aria-hidden className="absolute top-0 left-0 right-0 h-[1.5px]"
-                        style={{ background: hex, boxShadow: `0 0 8px ${hex}` }} />
                       <div className="flex items-center justify-center gap-1.5 mb-1.5">
                         <Icon className="w-3.5 h-3.5" style={{ color: hex, filter: `drop-shadow(0 0 4px ${h})` }} />
-                        <span
-                          className="text-[9px] font-black uppercase tracking-[0.22em]"
-                          style={{ color: hex }}
-                        >
+                        <span className="text-[9px] font-black uppercase tracking-[0.22em]" style={{ color: hex }}>
                           {label}
                         </span>
                       </div>
                       <p
-                        className="text-3xl font-black tabular-nums leading-none"
-                        style={{
-                          fontFamily: '"JetBrains Mono", "Sora", monospace',
-                          color: "#ffffff",
-                          textShadow: `0 0 12px ${h}`,
-                        }}
+                        className="text-3xl font-black tabular-nums leading-none text-white"
+                        style={{ textShadow: `0 0 12px ${h}` }}
                       >
                         {value}
                       </p>
@@ -340,13 +361,13 @@ export default function JourneyPage() {
             )}
 
             {/* ── Completed timeline ── */}
-            <section className="space-y-3">
+            <section className="space-y-3" style={{ animation: "bt-fadeup .5s .15s both" }}>
               <h2 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.28em] text-white">
-                <CheckCircle2 className="w-3.5 h-3.5" style={{ color: "#6EE7F9", filter: "drop-shadow(0 0 4px #6EE7F9)" }} />
+                <CheckCircle2 className="w-3.5 h-3.5" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px #9FF5E8)" }} />
                 {t.completedMilestones}
                 <span
-                  className="ml-1 px-2 py-0.5 rounded-full bg-black text-[9px] font-black tabular-nums"
-                  style={{ border: "1px solid #6EE7F9", color: "#6EE7F9" }}
+                  className="ml-1 px-2 py-0.5 rounded-full text-[9px] font-black tabular-nums"
+                  style={{ background: "rgba(255,255,255,.03)", border: "1px solid #9FF5E8", color: "#9FF5E8" }}
                 >
                   {completed.length}
                 </span>
@@ -367,8 +388,12 @@ export default function JourneyPage() {
                 <div className="space-y-3">
                   {completed.length === 0 && (
                     <div
-                      className="flex items-center gap-3 p-4 rounded-2xl bg-black text-white text-sm"
-                      style={{ border: "1px solid rgba(255,255,255,0.1)" }}
+                      className="flex items-center gap-3 p-4 text-white text-sm"
+                      style={{
+                        background: "rgba(255,255,255,.03)",
+                        border: "1px solid rgba(255,255,255,.08)",
+                        borderRadius: 18,
+                      }}
                     >
                       <Sparkles className="w-4 h-4 shrink-0" style={{ color: "#FFB7E5" }} />
                       {t.emptyMilestones}
@@ -377,33 +402,45 @@ export default function JourneyPage() {
 
                   {completed.map((event) => {
                     const Icon = EVENT_ICONS[event.type] ?? Star;
-                    const hex = EVENT_HEX[event.type] ?? "#6EE7F9";
+                    const hex = EVENT_HEX[event.type] ?? "#9FF5E8";
                     const h = halo(hex, 0.32);
                     return (
                       <div key={event.id} className="relative flex gap-4" data-testid={`journey-event-${event.id}`}>
                         {/* timeline node */}
                         <span
                           aria-hidden
-                          className="absolute -left-[23px] top-4 w-3 h-3 rounded-full bg-black"
+                          className="absolute -left-[23px] top-4 w-3 h-3 rounded-full"
                           style={{
+                            background: "#050508",
                             border: `2px solid ${hex}`,
                             boxShadow: `0 0 10px ${hex}, 0 0 20px ${h}`,
                           }}
                         />
                         <div
-                          className="flex-1 rounded-2xl bg-black p-4 transition-transform hover:scale-[1.005]"
+                          className="flex-1 p-4 transition-all"
                           style={{
+                            background: "rgba(255,255,255,.03)",
                             border: `1px solid ${hex}`,
-                            boxShadow: `0 0 0 1px ${halo(hex, 0.15)}, 0 0 14px ${h}, inset 0 0 12px rgba(0,0,0,0.55)`,
+                            borderRadius: 18,
+                            boxShadow: `0 0 14px ${halo(hex, 0.18)}`,
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = "translateY(-6px)";
+                            e.currentTarget.style.boxShadow = `0 0 24px ${h}`;
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = "none";
+                            e.currentTarget.style.boxShadow = `0 0 14px ${halo(hex, 0.18)}`;
                           }}
                         >
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex items-start gap-3 min-w-0">
                               <div
-                                className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shrink-0"
+                                className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                                 style={{
+                                  background: "rgba(5,5,8,.6)",
                                   border: `1.5px solid ${hex}`,
-                                  boxShadow: `0 0 10px ${h}, inset 0 0 8px ${h}`,
+                                  boxShadow: `0 0 10px ${h}`,
                                 }}
                               >
                                 <Icon className="w-4 h-4" style={{ color: hex, filter: `drop-shadow(0 0 4px ${hex})` }} />
@@ -412,7 +449,7 @@ export default function JourneyPage() {
                                 <p className="font-black text-sm text-white leading-tight">
                                   {isAf ? event.titleAf : event.title}
                                 </p>
-                                <p className="text-[11px] text-white mt-1 leading-relaxed">
+                                <p className="text-[11px] text-white mt-1 leading-relaxed" style={{ opacity: 0.92 }}>
                                   {isAf ? event.descriptionAf : event.description}
                                 </p>
                               </div>
@@ -437,13 +474,13 @@ export default function JourneyPage() {
 
             {/* ── Upcoming goals ── */}
             {!isParentView && upcoming.length > 0 && (
-              <section className="space-y-3">
+              <section className="space-y-3" style={{ animation: "bt-fadeup .5s .2s both" }}>
                 <h2 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.28em] text-white">
-                  <Lock className="w-3.5 h-3.5 text-white" />
+                  <Lock className="w-3.5 h-3.5" style={{ color: "#C5B3FF" }} />
                   {t.upcomingGoals}
                   <span
-                    className="ml-1 px-2 py-0.5 rounded-full bg-black text-[9px] font-black tabular-nums text-white"
-                    style={{ border: "1px solid rgba(255,255,255,0.18)" }}
+                    className="ml-1 px-2 py-0.5 rounded-full text-[9px] font-black tabular-nums text-white"
+                    style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.18)" }}
                   >
                     {upcoming.length}
                   </span>
@@ -451,27 +488,28 @@ export default function JourneyPage() {
                 <div className="grid sm:grid-cols-2 gap-3">
                   {upcoming.slice(0, 6).map((event) => {
                     const Icon = EVENT_ICONS[event.type] ?? Star;
-                    const hex = EVENT_HEX[event.type] ?? "#6EE7F9";
+                    const hex = EVENT_HEX[event.type] ?? "#9FF5E8";
                     return (
                       <div
                         key={event.id}
-                        className="flex items-start gap-3 p-4 rounded-2xl bg-black"
+                        className="flex items-start gap-3 p-4"
                         style={{
+                          background: "rgba(255,255,255,.03)",
                           border: `1px dashed ${hex}55`,
-                          opacity: 0.75,
+                          borderRadius: 18,
                         }}
                       >
                         <div
-                          className="w-9 h-9 rounded-xl bg-black flex items-center justify-center shrink-0"
-                          style={{ border: `1px dashed ${hex}66` }}
+                          className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                          style={{ background: "rgba(5,5,8,.6)", border: `1px dashed ${hex}66` }}
                         >
-                          <Icon className="w-4 h-4" style={{ color: `${hex}aa` }} />
+                          <Icon className="w-4 h-4" style={{ color: hex }} />
                         </div>
                         <div className="min-w-0">
                           <p className="font-black text-sm text-white leading-tight">
                             {isAf ? event.titleAf : event.title}
                           </p>
-                          <p className="text-[11px] text-white mt-1 leading-relaxed">
+                          <p className="text-[11px] text-white mt-1 leading-relaxed" style={{ opacity: 0.92 }}>
                             {isAf ? event.descriptionAf : event.description}
                           </p>
                         </div>
@@ -485,33 +523,41 @@ export default function JourneyPage() {
             {/* ── Learner CTA ── */}
             {!isParentView && (
               <section
-                className="relative rounded-2xl bg-black p-6 sm:p-7 flex flex-col sm:flex-row items-center justify-between gap-5 overflow-hidden"
+                className="relative p-6 sm:p-7 flex flex-col sm:flex-row items-center justify-between gap-5 overflow-hidden"
                 style={{
+                  background: "rgba(255,255,255,.03)",
                   border: "1.5px solid #FFB7E5",
-                  boxShadow: `0 0 0 1px ${halo("#FFB7E5", 0.2)}, 0 0 26px ${halo("#FFB7E5", 0.3)}, inset 0 0 20px rgba(0,0,0,0.55)`,
+                  borderRadius: 22,
+                  boxShadow: `0 0 26px ${halo("#FFB7E5", 0.28)}`,
+                  animation: "bt-fadeup .5s .25s both",
                 }}
                 data-testid="journey-cta"
               >
-                <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: "#FFB7E5" }} />
-                <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2" style={{ borderColor: "#FFB7E5" }} />
-                <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2" style={{ borderColor: "#FFB7E5" }} />
-                <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: "#FFB7E5" }} />
-
                 <div className="min-w-0">
-                  <h3 className="font-black text-xl text-white">
-                    {t.ctaHeading}
-                  </h3>
-                  <p className="text-sm text-white mt-1 leading-relaxed">
+                  <span className="block mb-1" style={marker("#FFB7E5", 15)}>
+                    {isAf ? "Klein treë, GROOT resultate!" : "Small steps BIG results!"}
+                  </span>
+                  <h3 className="font-black text-xl text-white">{t.ctaHeading}</h3>
+                  <p className="text-sm text-white mt-1 leading-relaxed" style={{ opacity: 0.92 }}>
                     {t.ctaDescription}
                   </p>
                 </div>
                 <Link href="/subjects">
                   <button
-                    className="shrink-0 inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-black font-black text-sm uppercase tracking-[0.16em]"
+                    className="shrink-0 inline-flex items-center gap-2 px-5 py-3 rounded-xl font-extrabold text-sm transition-all"
                     style={{
-                      color: "#FFB7E5",
-                      border: "1.5px solid #FFB7E5",
-                      boxShadow: `0 0 16px ${halo("#FFB7E5", 0.4)}`,
+                      background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
+                      color: "#050508",
+                      border: "none",
+                      boxShadow: "0 0 20px rgba(159,245,232,.35)",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                      e.currentTarget.style.boxShadow = "0 0 28px rgba(159,245,232,.5)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "none";
+                      e.currentTarget.style.boxShadow = "0 0 20px rgba(159,245,232,.35)";
                     }}
                     data-testid="button-start-studying"
                   >

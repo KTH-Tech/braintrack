@@ -2,7 +2,8 @@
 // "Luxury Street Graffiti EdTech" comp (BrainTrack.dc.html, LANDING section).
 // Near-black #050508 ground, rainbow wordmark, graffiti mural hero with
 // Permanent Marker scatter, marquee, neon feature cards, ecosystem split,
-// XP strip, Meet-Rizz strip, footer. Bilingual EN/AF.
+// XP strip, share row, footer. Bilingual EN/AF. Rizz has no landing-page
+// presence (owner decision) — the bot lives in signed-in areas only.
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { useSEO } from "@/hooks/use-seo";
@@ -10,8 +11,7 @@ import { useLanguage } from "@/lib/language-context";
 import { useRolePromptNav } from "@/components/role-prompt-modal";
 import iconTransparent from "@/assets/handoff/icon-transparent.png";
 import muralTransparent from "@/assets/handoff/mural-transparent.png";
-import rizzAvatar from "@/assets/handoff/rizz-avatar.png";
-import { RizzHeaderButton } from "@/components/rizz-support-bot";
+import { KthMark } from "@/components/kth-mark";
 
 const RAINBOW =
   "linear-gradient(95deg,#FFB7E5,#FFE29A,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)";
@@ -58,16 +58,15 @@ const COPY = {
     ],
     proofEye: "the receipts",
     proofHead1: "Not claims. ",
-    proofHead2: "Counted.",
+    proofHead2: "Evidence.",
     proofSub:
-      "Every figure below is what is already loaded inside BrainTrack — indexed, verified and searchable by topic. No rounding up, no roadmap promises.",
-    proofFoot: "Counted from the BrainTrack question bank — not estimated.",
+      "Everything below is already loaded inside BrainTrack — indexed, verified and searchable by topic. No hype, no roadmap promises.",
     proof: [
-      { value: 14068, suffix: "", label: "verbatim DBE questions", detail: "typed word-for-word from the real papers", color: "#9FF5E8", glow: "rgba(159,245,232,.28)" },
-      { value: 59, suffix: "", label: "subjects covered", detail: "mapped across the CAPS curriculum", color: "#FFB7E5", glow: "rgba(255,183,229,.28)" },
-      { value: 10, suffix: "", label: "years of papers", detail: "2015 – 2025, sitting by sitting", color: "#9FD8FF", glow: "rgba(159,216,255,.28)" },
-      { value: 10, suffix: "", label: "languages", detail: "English + Afrikaans + 8 African languages", color: "#C5B3FF", glow: "rgba(197,179,255,.28)" },
-      { value: 118, suffix: "", label: "examiner profiles", detail: "profiled across the DBE archive", color: "#FFE29A", glow: "rgba(255,226,154,.28)" },
+      { icon: "📜", title: "10 years of real NSC papers", detail: "2015 – 2025, sitting by sitting", color: "#9FF5E8", glow: "rgba(159,245,232,.28)" },
+      { icon: "🎯", title: "Every CAPS subject covered", detail: "mapped across the full curriculum", color: "#FFB7E5", glow: "rgba(255,183,229,.28)" },
+      { icon: "📝", title: "Official DBE sources, verbatim", detail: "typed word-for-word from the real papers", color: "#9FD8FF", glow: "rgba(159,216,255,.28)" },
+      { icon: "🌍", title: "EN + AF, always", detail: "with African-language support built in", color: "#C5B3FF", glow: "rgba(197,179,255,.28)" },
+      { icon: "🧠", title: "Examiner patterns studied", detail: "profiled across the DBE archive", color: "#FFE29A", glow: "rgba(255,226,154,.28)" },
     ],
     tPosEye: "one ecosystem",
     tPosHead1: "Stop juggling apps. ",
@@ -98,11 +97,13 @@ const COPY = {
       { value: "21🔥", label: "day streak", color: "#FFB7E5", glow: "rgba(255,183,229,.25)" },
       { value: "12", label: "crowns", color: "#FFE29A", glow: "rgba(255,226,154,.25)" },
     ],
-    rizzEye: "meet rizz 🤖",
-    rizzHead: "Try our AI study buddy — free, right now",
-    rizzBody:
-      "Parents, test-drive Rizz before you sign up. Ask about CAPS subjects, exam tips or how BrainTrack works. Afrikaans toggle included. 💬",
-    rizzCta: "Chat with Rizz →",
+    proofVerify: "6 months of testing and verification behind every question",
+    shareEye: "spread the word",
+    shareHead: "Share BrainTrack",
+    shareMsg:
+      "BrainTrack — Grade 12 matric prep with real NSC past papers, memos and a 24/7 AI tutor. Try it free:",
+    referralLine: "Refer a friend — you both earn rewards when they join.",
+    referralCta: "Get your referral link →",
     footMade: "© 2026 — Made in South Africa",
     footPrivacy: "Privacy",
     footTerms: "Terms",
@@ -110,7 +111,7 @@ const COPY = {
     footBilling: "Billing",
     footSafeguarding: "Safeguarding",
     footAdmin: "Admin",
-    footAskRizz: "Ask Rizz 🤖",
+    footPowered: "KTH Tech",
   },
   af: {
     tFeatures: "Funksies",
@@ -149,16 +150,15 @@ const COPY = {
     ],
     proofEye: "die bewyse",
     proofHead1: "Nie beloftes nie. ",
-    proofHead2: "Getel.",
+    proofHead2: "Bewyse.",
     proofSub:
-      "Elke syfer hieronder is wat reeds in BrainTrack gelaai is — geïndekseer, geverifieer en per onderwerp deursoekbaar. Niks opgerond nie, geen padkaart-beloftes nie.",
-    proofFoot: "Getel uit die BrainTrack-vraebank — nie geskat nie.",
+      "Alles hieronder is reeds in BrainTrack gelaai — geïndekseer, geverifieer en per onderwerp deursoekbaar. Geen oordrywing nie, geen padkaart-beloftes nie.",
     proof: [
-      { value: 14068, suffix: "", label: "woordelikse DBE-vrae", detail: "woord-vir-woord uit die regte vraestelle getik", color: "#9FF5E8", glow: "rgba(159,245,232,.28)" },
-      { value: 59, suffix: "", label: "vakke gedek", detail: "gekarteer oor die KABV-kurrikulum", color: "#FFB7E5", glow: "rgba(255,183,229,.28)" },
-      { value: 10, suffix: "", label: "jaar se vraestelle", detail: "2015 – 2025, sitting vir sitting", color: "#9FD8FF", glow: "rgba(159,216,255,.28)" },
-      { value: 10, suffix: "", label: "tale", detail: "Engels + Afrikaans + 8 Afrikatale", color: "#C5B3FF", glow: "rgba(197,179,255,.28)" },
-      { value: 118, suffix: "", label: "eksaminatorprofiele", detail: "geprofileer oor die DBE-argief", color: "#FFE29A", glow: "rgba(255,226,154,.28)" },
+      { icon: "📜", title: "10 jaar se regte NSS-vraestelle", detail: "2015 – 2025, sitting vir sitting", color: "#9FF5E8", glow: "rgba(159,245,232,.28)" },
+      { icon: "🎯", title: "Elke KABV-vak gedek", detail: "gekarteer oor die volle kurrikulum", color: "#FFB7E5", glow: "rgba(255,183,229,.28)" },
+      { icon: "📝", title: "Amptelike DBE-bronne, woordeliks", detail: "woord-vir-woord uit die regte vraestelle getik", color: "#9FD8FF", glow: "rgba(159,216,255,.28)" },
+      { icon: "🌍", title: "AF + EN, altyd", detail: "met Afrikataal-ondersteuning ingebou", color: "#C5B3FF", glow: "rgba(197,179,255,.28)" },
+      { icon: "🧠", title: "Eksaminatorpatrone bestudeer", detail: "geprofileer oor die DBE-argief", color: "#FFE29A", glow: "rgba(255,226,154,.28)" },
     ],
     tPosEye: "een ekosisteem",
     tPosHead1: "Hou op om apps te jongleer. ",
@@ -189,11 +189,13 @@ const COPY = {
       { value: "21🔥", label: "dae-reeks", color: "#FFB7E5", glow: "rgba(255,183,229,.25)" },
       { value: "12", label: "krone", color: "#FFE29A", glow: "rgba(255,226,154,.25)" },
     ],
-    rizzEye: "ontmoet rizz 🤖",
-    rizzHead: "Probeer ons KI-studiemaat — gratis, nou dadelik",
-    rizzBody:
-      "Ouers, toets Rizz voordat julle inteken. Vra oor KABV-vakke, eksamenwenke of hoe BrainTrack werk. Afrikaanse skakel ingesluit. 💬",
-    rizzCta: "Gesels met Rizz →",
+    proofVerify: "6 maande se toetsing en verifikasie agter elke vraag",
+    shareEye: "sprei die woord",
+    shareHead: "Deel BrainTrack",
+    shareMsg:
+      "BrainTrack — Graad 12-matriekvoorbereiding met regte NSS-vraestelle, memo's en 'n 24/7 KI-tutor. Probeer dit gratis:",
+    referralLine: "Verwys 'n vriend — julle albei verdien belonings wanneer hulle aansluit.",
+    referralCta: "Kry jou verwysingskakel →",
     footMade: "© 2026 — Gemaak in Suid-Afrika",
     footPrivacy: "Privaatheid",
     footTerms: "Bepalings",
@@ -201,7 +203,7 @@ const COPY = {
     footBilling: "Betaling",
     footSafeguarding: "Beskerming",
     footAdmin: "Admin",
-    footAskRizz: "Vra Rizz 🤖",
+    footPowered: "KTH Tech",
   },
 } as const;
 
@@ -309,11 +311,6 @@ function Reveal({
   );
 }
 
-const groupDigits = (n: number, sep: string) =>
-  n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, sep);
-
-/** Big pastel numeral that counts up the first time it scrolls into view. */
-
 export default function LandingPage() {
   const { language, toggleLanguage } = useLanguage();
   const t = COPY[language];
@@ -330,9 +327,14 @@ export default function LandingPage() {
       "10 years of NSC past papers + memos, CAPS-aligned weekly revision, AI tutor and parent reports. R169/month — 14 days free.",
   });
 
-  const openRizz = () => {
-    window.dispatchEvent(new CustomEvent("bt:rizz-toggle"));
-  };
+  // Social share intents — plain links, no SDKs. https://braintrack.tech is
+  // the public share URL.
+  const SHARE_URL = "https://braintrack.tech";
+  const shareLinks = [
+    { label: "WhatsApp", color: "#94F7C5", testid: "link-share-whatsapp", href: `https://wa.me/?text=${encodeURIComponent(`${t.shareMsg} ${SHARE_URL}`)}` },
+    { label: "Facebook", color: "#9FD8FF", testid: "link-share-facebook", href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(SHARE_URL)}` },
+    { label: "X", color: "#C5B3FF", testid: "link-share-x", href: `https://twitter.com/intent/tweet?url=${encodeURIComponent(SHARE_URL)}&text=${encodeURIComponent(t.shareMsg)}` },
+  ];
 
   return (
     <div style={{ minHeight: "100vh", background: "#050508", overflowX: "hidden" }}>
@@ -385,7 +387,6 @@ export default function LandingPage() {
           .btl-grid2 { grid-template-columns: 1fr !important; }
           .btl-proof-grid { grid-template-columns: repeat(2,1fr) !important; gap: 14px !important; }
           .btl-proof-grid > *:last-child:nth-child(odd) { grid-column: 1 / -1; }
-          .btl-proof-num { font-size: 40px !important; letter-spacing: -1.5px !important; }
           .btl-proof-cell { padding: 24px 14px 22px !important; }
           .btl-sec { margin-top: 68px !important; padding-left: 20px !important; padding-right: 20px !important; }
           .btl-sec-head { font-size: 28px !important; letter-spacing: -.6px !important; }
@@ -394,9 +395,6 @@ export default function LandingPage() {
           .btl-xp-head { font-size: 25px !important; }
           .btl-xp-stats { gap: 12px !important; width: 100%; }
           .btl-xp-stats > * { flex: 1 1 30%; min-width: 0 !important; padding: 18px 10px !important; }
-          .btl-rizz-card { padding: 26px 22px !important; text-align: center; justify-content: center; }
-          .btl-rizz-card > button { width: 100%; }
-          .btl-rizz-head { font-size: 21px !important; }
           .btl-quote { font-size: 15px !important; padding: 20px 22px !important; }
           .btl-foot { padding: 36px 22px !important; flex-direction: column; align-items: flex-start !important; }
           .btl-foot-links { gap: 16px 18px !important; }
@@ -435,7 +433,6 @@ export default function LandingPage() {
             <span style={{ padding: "6px 10px", background: en ? "#9FF5E8" : "transparent", color: en ? "#050508" : "#fff" }}>EN</span>
             <span style={{ padding: "6px 10px", background: en ? "transparent" : "#9FF5E8", color: en ? "#fff" : "#050508" }}>AF</span>
           </span>
-          <RizzHeaderButton compact />
           <a href="/signin">
             <button
               className="btl-nav-cta"
@@ -604,38 +601,48 @@ export default function LandingPage() {
               <span style={{ background: HEADLINE_GRADIENT, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>{t.proofHead2}</span>
             </div>
             <div className="btl-sec-sub" style={{ marginTop: 16, fontSize: 16.5, lineHeight: 1.68, color: "#fff", opacity: 0.9 }}>{t.proofSub}</div>
+            {/* Credibility chip — evidence-toned, not salesy. */}
+            <div
+              data-testid="badge-proof-verified"
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 8, marginTop: 18,
+                border: "1.5px solid #94F7C5", borderRadius: 999, padding: "9px 18px",
+                fontSize: 13.5, fontWeight: 700, color: "#94F7C5",
+                background: "rgba(148,247,197,.08)", boxShadow: "0 0 18px rgba(148,247,197,.18)",
+              }}
+            >
+              <span aria-hidden>✓</span>
+              <span>{t.proofVerify}</span>
+            </div>
           </Reveal>
-          {/* Static figures — no count-up animation (owner request). The
-              numbers carry the weight on their own. */}
+          {/* Qualitative evidence cards — no internal counts on the landing
+              page (owner request). Confidence without exact figures. */}
           <div
             className="btl-proof-grid"
             data-testid="proof-band"
             style={{ position: "relative", display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 18 }}
           >
             {t.proof.map((p, i) => (
-              <Reveal key={p.label} delay={i * 90}>
+              <Reveal key={p.title} delay={i * 90} style={{ display: "flex" }}>
                 <div
+                  className="btl-proof-cell"
                   style={{
+                    "--c": p.color, "--glow": p.glow,
                     position: "relative", padding: "26px 18px", textAlign: "center",
                     borderRadius: 22, border: "1.5px solid " + p.color,
                     background: "linear-gradient(160deg,rgba(255,255,255,.06),rgba(5,5,8,.5))",
-                    boxShadow: "0 10px 34px " + p.glow,
-                  }}
+                    boxShadow: "0 10px 34px " + p.glow, width: "100%", boxSizing: "border-box",
+                  } as React.CSSProperties}
                 >
-                  <div style={{ fontSize: 40, fontWeight: 900, color: p.color, letterSpacing: "-1.5px", lineHeight: 1, fontVariantNumeric: "tabular-nums", textShadow: "0 0 22px " + p.glow }}>
-                    {p.value.toLocaleString(en ? "en-ZA" : "af-ZA")}{p.suffix}
+                  <div aria-hidden style={{ fontSize: 30, lineHeight: 1, marginBottom: 12, filter: "drop-shadow(0 0 14px " + p.glow + ")" }}>{p.icon}</div>
+                  <div style={{ fontSize: 17, fontWeight: 900, color: p.color, letterSpacing: "-.4px", lineHeight: 1.3, textShadow: "0 0 22px " + p.glow }}>
+                    {p.title}
                   </div>
-                  <div style={{ marginTop: 10, fontSize: 13, fontWeight: 800, letterSpacing: "1.2px", textTransform: "uppercase", color: "#fff" }}>{p.label}</div>
-                  <div style={{ marginTop: 5, fontSize: 12.5, lineHeight: 1.45, color: "#fff", opacity: 0.86 }}>{p.detail}</div>
+                  <div style={{ marginTop: 8, fontSize: 12.5, lineHeight: 1.5, color: "#fff", opacity: 0.88 }}>{p.detail}</div>
                 </div>
               </Reveal>
             ))}
           </div>
-          <Reveal delay={260} style={{ position: "relative", textAlign: "center", marginTop: 34 }}>
-            <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFE29A", display: "inline-block", transform: "rotate(-1.2deg)" }}>
-              {t.proofFoot}
-            </span>
-          </Reveal>
         </div>
       </div>
 
@@ -721,25 +728,33 @@ export default function LandingPage() {
         </Reveal>
       </div>
 
-      {/* ── Meet Rizz strip ─────────────────────────────────── */}
+      {/* ── Share + referral ────────────────────────────────── */}
       <div className="btl-sec" style={{ maxWidth: 1100, margin: "116px auto 0", padding: "0 32px" }}>
         <Reveal>
-          <div className="btl-rizz-card" style={{ position: "relative", overflow: "hidden", background: "linear-gradient(120deg,rgba(179,136,255,.14),rgba(255,126,198,.1))", border: "1.5px solid rgba(179,136,255,.3)", borderRadius: 26, padding: "38px 44px", display: "flex", alignItems: "center", gap: 28, flexWrap: "wrap", boxShadow: "0 0 40px rgba(179,136,255,.1)" }}>
-            <div aria-hidden style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1.5, background: "linear-gradient(90deg,transparent,#C5B3FF,#FFB7E5,transparent)", opacity: 0.7 }} />
-            <img src={rizzAvatar} alt="Rizz" style={{ width: 92, height: 92, borderRadius: 22, objectFit: "cover", border: "2px solid #B388FF", boxShadow: "0 0 30px rgba(179,136,255,.5)", animation: "bt-float 7s ease-in-out infinite" }} />
-            <div style={{ flex: 1, minWidth: 240 }}>
-              <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#C5B3FF", letterSpacing: ".5px", transform: "rotate(-2deg)" }}>{t.rizzEye}</div>
-              <div className="btl-rizz-head" style={{ fontSize: 28, fontWeight: 900, letterSpacing: "-.8px", lineHeight: 1.2, marginTop: 6 }}>{t.rizzHead}</div>
-              <div style={{ fontSize: 15, lineHeight: 1.62, color: "#fff", opacity: 0.9, marginTop: 8 }}>{t.rizzBody}</div>
+          <div data-testid="share-braintrack" style={{ textAlign: "center" }}>
+            <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#FFE29A", fontSize: 16, letterSpacing: ".5px", transform: "rotate(-2deg)" }}>{t.shareEye}</div>
+            <div style={{ fontSize: 27, fontWeight: 900, letterSpacing: "-.9px", marginTop: 8, color: "#fff" }}>{t.shareHead}</div>
+            <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap", marginTop: 18 }}>
+              {shareLinks.map((s) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-testid={s.testid}
+                  className="btl-eco-chip"
+                  style={{ fontSize: 13.5, fontWeight: 700, color: s.color, border: `1.5px solid ${s.color}`, borderRadius: 999, padding: "9px 18px", textDecoration: "none", "--cg": `${s.color}55` } as React.CSSProperties}
+                >
+                  {s.label}
+                </a>
+              ))}
             </div>
-            <button
-              onClick={openRizz}
-              data-testid="button-rizz-cta"
-              className="btl-nav-cta"
-              style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 15, color: "#050508", background: "linear-gradient(100deg,#B388FF,#FF7EC6)", border: "none", borderRadius: 12, padding: "16px 32px", whiteSpace: "nowrap", cursor: "pointer", boxShadow: "0 0 24px rgba(179,136,255,.4)", transition: "transform .2s" }}
-            >
-              {t.rizzCta}
-            </button>
+            <div data-testid="text-referral-line" style={{ marginTop: 18, fontSize: 14.5, lineHeight: 1.6, color: "#fff" }}>
+              {t.referralLine}{" "}
+              <Link href="/signin">
+                <span data-testid="link-referral-signin" style={{ color: "#9FF5E8", fontWeight: 800, cursor: "pointer" }}>{t.referralCta}</span>
+              </Link>
+            </div>
           </div>
         </Reveal>
       </div>
@@ -754,10 +769,22 @@ export default function LandingPage() {
             animation: "bt-rainbow 9s linear infinite", opacity: 0.55,
           }}
         />
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
           <img src={iconTransparent} alt="" className="btl-logo-img" style={{ width: 52, height: 52, objectFit: "contain" }} />
           <RainbowWordmark size={16} />
           <span style={{ fontSize: 14, color: "#fff", opacity: 0.92, marginLeft: 10 }}>{t.footMade}</span>
+          {/* Official KTH Tech mark — currentColor inherits the white text colour. */}
+          <a
+            href="https://kth-tech.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="link-footer-kth"
+            aria-label="KTH Tech"
+            style={{ display: "inline-flex", alignItems: "center", gap: 8, marginLeft: 14, color: "#fff", textDecoration: "none" }}
+          >
+            <KthMark size={40} />
+            <span style={{ fontSize: 14, fontWeight: 700 }}>{t.footPowered}</span>
+          </a>
         </div>
         <div className="btl-foot-links" style={{ display: "flex", gap: 26, fontSize: 13, fontWeight: 600, flexWrap: "wrap" }}>
           <Link href="/privacy-policy"><span className="btl-foot-link" style={{ "--h": "#9FD8FF" } as React.CSSProperties}>{t.footPrivacy}</span></Link>
@@ -765,7 +792,6 @@ export default function LandingPage() {
           <Link href="/privacy-policy"><span className="btl-foot-link" style={{ "--h": "#C5B3FF" } as React.CSSProperties}>{t.footPopia}</span></Link>
           <Link href="/refund-policy"><span className="btl-foot-link" style={{ "--h": "#FFE29A" } as React.CSSProperties}>{t.footBilling}</span></Link>
           <Link href="/terms-of-service"><span className="btl-foot-link" style={{ "--h": "#94F7C5" } as React.CSSProperties}>{t.footSafeguarding}</span></Link>
-          <span onClick={openRizz} className="btl-foot-link" style={{ color: "#C5B3FF", cursor: "pointer", fontWeight: 800, "--h": "#FF7EC6" } as React.CSSProperties}>{t.footAskRizz}</span>
           {/* Owner shortcut — the sign-in page grants admin via the
               ADMIN_EMAILS allowlist, so this is just a convenient door. */}
           <Link href="/signin?returnTo=/learn/admin"><span className="btl-foot-link" data-testid="link-footer-admin" style={{ "--h": "#FFE29A" } as React.CSSProperties}>{t.footAdmin}</span></Link>

@@ -15,7 +15,7 @@ const HEX = {
   orange: "#FFE29A",
   amber: "#FFE29A",
   gold: "#FFE29A",
-  cyan: "#6EE7F9",
+  cyan: "#9FF5E8",
   blue: "#9FD8FF",
   violet: "#C5B3FF",
   pink: "#FFB7E5",
@@ -28,16 +28,14 @@ function GlowCard({
 }: { accent: string; children: React.ReactNode; onClick?: () => void; disabled?: boolean }) {
   return (
     <div
-      className="relative rounded-2xl bg-black p-6 transition-shadow"
+      className="relative overflow-hidden p-6"
       style={{
-        border: `1px solid ${accent}55`,
-        boxShadow: `0 0 0 1px ${accent}22, 0 0 24px -8px ${accent}77`,
+        background: "rgba(255,255,255,0.035)",
+        border: "1px solid rgba(255,255,255,0.1)",
+        borderRadius: 16,
       }}
     >
-      <span aria-hidden className="pointer-events-none absolute left-0 top-0 h-3 w-3 border-l border-t rounded-tl-2xl" style={{ borderColor: accent }} />
-      <span aria-hidden className="pointer-events-none absolute right-0 top-0 h-3 w-3 border-r border-t rounded-tr-2xl" style={{ borderColor: accent }} />
-      <span aria-hidden className="pointer-events-none absolute left-0 bottom-0 h-3 w-3 border-l border-b rounded-bl-2xl" style={{ borderColor: accent }} />
-      <span aria-hidden className="pointer-events-none absolute right-0 bottom-0 h-3 w-3 border-r border-b rounded-br-2xl" style={{ borderColor: accent }} />
+      <span aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: accent, opacity: 0.8 }} />
       {children}
     </div>
   );
@@ -103,8 +101,8 @@ function ActionCard({
     <GlowCard accent={accent}>
       <div className="flex items-start gap-4">
         <div
-          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-black"
-          style={{ border: `1px solid ${accent}77`, color: accent, boxShadow: `0 0 18px -6px ${accent}aa` }}
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
+          style={{ background: "rgba(255,255,255,0.035)", border: `1px solid ${accent}55`, color: accent }}
         >
           {icon}
         </div>
@@ -217,7 +215,7 @@ export default function AdminContentStudio() {
   })();
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen text-white" style={{ background: "#050508", fontFamily: "'Poppins', system-ui, sans-serif" }}>
       <AdminTopNav current="content-studio" />
       <div className="mx-auto max-w-6xl px-4 py-8 md:px-6 md:py-10">
         <div className="mb-8 flex items-center justify-end">
@@ -228,9 +226,9 @@ export default function AdminContentStudio() {
 
         {/* Hero */}
         <div className="mb-10">
-          <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight" data-testid="heading-content-studio">
+          <div role="heading" aria-level={1} className="text-3xl md:text-4xl font-black text-white tracking-tight" data-testid="heading-content-studio">
             {t.heading}
-          </h1>
+          </div>
           <p className="mt-3 text-white max-w-2xl">
             {t.intro}
           </p>

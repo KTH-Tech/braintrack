@@ -21,31 +21,19 @@ import {
   Rocket,
   CalendarDays,
   Languages,
-  HelpCircle,
-  ChevronDown,
-  Globe,
-  Home,
-  ArrowLeft,
   Layers,
   Clock,
   AlertTriangle,
   CheckCircle2,
-  ListOrdered,
-  Coffee,
   CalendarCheck,
   Timer,
   RefreshCcw,
-  CreditCard,
 } from "lucide-react";
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import type { UserBadge } from "@shared/schema";
 import { LEARNING_STYLE_INFO, type LearningStyle } from "@/lib/constants";
 import rizzAvatar from "@/assets/handoff/rizz-avatar.png";
 import { RizzHeaderButton } from "@/components/rizz-support-bot";
 import btIcon from "@/assets/handoff/icon-transparent.png";
-import { BrainTrackLogo } from "@/components/braintrack-logo";
 import { TrialEndingBanner } from "@/components/TrialEndingBanner";
 import { RescuePackAlert } from "@/components/performance-packs";
 import { LearnerStudyPlan } from "@/components/learner-study-plan";
@@ -53,15 +41,13 @@ import { useLanguage } from "@/lib/language-context";
 import { formatDate, formatNumber } from "@/lib/formatters";
 import { calcReadiness } from "@/lib/readiness";
 import { useVark } from "@/hooks/use-vark";
-import { VARK_STYLES } from "@/lib/vark";
 import { BadgePopup } from "@/components/badge-popup";
-import { GraffitiSplats } from "@/components/graffiti-splats";
 import { NotificationsPanel } from "@/components/notifications-panel";
 import { NextMilestoneWidget } from "@/components/next-milestone-widget";
 import { GoalProgress } from "@/components/goal-progress";
 import { YouVsYouChart } from "@/components/you-vs-you-chart";
 import { PersonalBestsWidget } from "@/components/personal-bests-widget";
-import { useEarliestPrelimDate, FINALS_DATE, CountdownDigits } from "@/components/exam-countdown";
+import { useEarliestPrelimDate, FINALS_DATE } from "@/components/exam-countdown";
 
 const BADGE_INFO: Record<string, { name: string; nameAfrikaans: string; icon: any; color: string }> = {
   streak_3:      { name: "3-Day Streak",    nameAfrikaans: "3-Dag Reeks",    icon: Flame,        color: "text-orange-500" },
@@ -91,51 +77,6 @@ const NAV_LINKS = (labels: { navHome: string; navSubjects: string; navTutor: str
   { href: "/journey",        icon: Rocket,      label: labels.navJourney      },
   { href: "/settings",       icon: Settings,    label: labels.navSettings     },
 ];
-
-function CountdownBox({
-  value,
-  unit,
-  hex,
-  pulse = false,
-}: {
-  value: string | number;
-  unit: string;
-  hex: string;
-  pulse?: boolean;
-}) {
-  const str = typeof value === "number" ? String(value) : value;
-  return (
-    <div
-      className="relative flex flex-col items-center justify-center rounded-xl bg-black px-3.5 py-2.5 min-w-[72px] sm:min-w-[84px]"
-      style={{
-        border: `1px solid ${hex}66`,
-        boxShadow: `0 0 14px ${hex}33, inset 0 0 10px ${hex}14`,
-      }}
-    >
-      <span
-        aria-hidden
-        className="absolute top-0 left-0 right-0 h-[1.5px] rounded-t-xl"
-        style={{ background: hex, opacity: pulse ? 1 : 0.55, transition: "opacity 0.4s" }}
-      />
-      <span
-        className="text-[28px] sm:text-[34px] font-black tabular-nums leading-none"
-        style={{
-          fontFamily: "'Poppins', sans-serif",
-          color: hex,
-          textShadow: `0 0 10px ${hex}88, 0 0 22px ${hex}44`,
-        }}
-      >
-        {str}
-      </span>
-      <span
-        className="mt-1.5 text-[10px] sm:text-[11px] font-black tracking-[0.22em] uppercase"
-        style={{ color: `${hex}cc` }}
-      >
-        {unit}
-      </span>
-    </div>
-  );
-}
 
 /* ── Live count-up hook: smoothly animates number changes. ────────── */
 function useCountUp(target: number, duration = 900) {
@@ -307,9 +248,7 @@ const T = {
     liveSession: "Live session",
     calendarLabel: "Calendar",
     nextExam: "Next Exam",
-    daysUnit: "Days",
     thisWeek: "This Week",
-    noExamsThisWeek: "No exams this week",
     subjectPriority: "Subject Priority Queue",
     fullPlan: "Full plan",
     daysAbbr: "days",
@@ -359,9 +298,6 @@ const T = {
     selectSubjectsDesc: "Complete your profile to select your subjects",
     achievementsHeading: "Achievements",
     startLearningToUnlock: "Start learning to unlock!",
-    recommendedHeading: "Recommended for You",
-    tryRizz: "Try Rizz",
-    completePractice: "Complete a practice paper",
     toLabel: "to",
     yourVibeHeading: "Your Vibe",
     learningStyleLabel: "Learning Style",
@@ -371,7 +307,6 @@ const T = {
     openPlanBtn: "Open your plan",
     nextMilestoneTitle: "Next Milestone",
     personalBestsTitle: "Personal Bests",
-    faqHeading: "FAQ",
     trialBannerDay: "day",
     trialBannerDays: "days",
     trialBannerLeft: "left in your free trial",
@@ -392,12 +327,7 @@ const T = {
     greetingSubMorning: "a fresh day to own your matric.",
     greetingSubAfternoon: "still time to pull ahead today.",
     greetingSubEvening: "one more session and you're a step ahead.",
-    subTrialEnds: "Trial ends",
-    subGraceEnds: "Grace ends",
-    subNextRenewal: "Next renewal",
-    dayLeft: "day left",
     daysLeft: "days left",
-    statusManageLabel: "Manage",
     prelimsFallback: "Aug – Sept (provincial)",
     claimXp: "⚡ Claim daily XP 💰",
     startRevision: "Start revision — practise now →",
@@ -456,9 +386,7 @@ const T = {
     liveSession: "Lewende sessie",
     calendarLabel: "Kalender",
     nextExam: "Volgende Eksamen",
-    daysUnit: "Dae",
     thisWeek: "Hierdie Week",
-    noExamsThisWeek: "Geen eksamens hierdie week nie",
     subjectPriority: "Vak Prioriteitslys",
     fullPlan: "Volledige plan",
     daysAbbr: "dae",
@@ -508,9 +436,6 @@ const T = {
     selectSubjectsDesc: "Voltooi jou profiel om jou vakke te kies",
     achievementsHeading: "Prestasies",
     startLearningToUnlock: "Begin leer om prestasies te ontsluit!",
-    recommendedHeading: "Wat Nou?",
-    tryRizz: "Vra vir Rizz se hulp",
-    completePractice: "Doen 'n paar oefenvrae",
     toLabel: "tot",
     yourVibeHeading: "Jou Leerstyl",
     learningStyleLabel: "Leerstyl",
@@ -520,7 +445,6 @@ const T = {
     openPlanBtn: "Open jou plan",
     nextMilestoneTitle: "Volgende Mylpaal",
     personalBestsTitle: "Persoonlike Rekords",
-    faqHeading: "Gereelde Vrae",
     trialBannerDay: "dag",
     trialBannerDays: "dae",
     trialBannerLeft: "oor in jou gratis proeftydperk",
@@ -541,12 +465,7 @@ const T = {
     greetingSubMorning: "'n nuwe dag om jou matriek te oorrompel.",
     greetingSubAfternoon: "nog tyd om vandag vooruit te kom.",
     greetingSubEvening: "een meer sessie en jy's 'n stap voor.",
-    subTrialEnds: "Proef eindig",
-    subGraceEnds: "Grasie eindig",
-    subNextRenewal: "Volgende hernuwing",
-    dayLeft: "dag oor",
     daysLeft: "dae oor",
-    statusManageLabel: "Sien meer",
     prelimsFallback: "Aug – Sept (per provinsie)",
     claimXp: "⚡ Eis daaglikse XP 💰",
     startRevision: "Begin hersiening — oefen nou →",
@@ -928,26 +847,31 @@ export default function DashboardPage() {
               data-testid="subscription-trial-banner"
               className="flex flex-wrap items-center justify-between gap-3 rounded-2xl px-5 py-3.5"
               style={{
-                background: `linear-gradient(135deg, ${hex}11 0%, transparent 60%), #000`,
-                border: `1px solid ${hex}55`,
-                boxShadow: `0 0 18px ${hex}22`,
+                background: `linear-gradient(135deg, ${hex}14 0%, rgba(255,255,255,.03) 60%)`,
+                border: `1.5px solid ${hex}66`,
+                boxShadow: `0 0 18px ${hex}30`,
               }}
             >
               <div className="flex items-center gap-3">
                 <Timer className="w-4 h-4 shrink-0" style={{ color: hex }} />
-                <span className="text-sm font-semibold" style={{ color: hex }}>
+                <span className="text-sm font-bold text-white">
                   {daysLeft !== null
                     ? `${daysLeft} ${dayWord} ${t.trialBannerLeft}`
-                    : t.trialBannerLeft}
+                    : t.trialBannerLeft}{" "}
+                  ⏳
                 </span>
               </div>
               <Link href="/subscribe">
                 <button
-                  className="rounded-xl px-4 py-2 text-sm font-bold transition-all"
+                  className="rounded-xl px-4 py-2 text-sm transition-all"
                   style={{
-                    background: "#9FF5E8",
-                    color: "#0a0a0a",
+                    background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
+                    color: "#050508",
+                    fontWeight: 800,
+                    boxShadow: "0 0 16px rgba(159,245,232,.3)",
                   }}
+                  onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
                 >
                   {t.trialBannerUpgrade}
                 </button>
@@ -961,24 +885,28 @@ export default function DashboardPage() {
             data-testid="subscription-lapsed-banner"
             className="flex flex-wrap items-center justify-between gap-3 rounded-2xl px-5 py-3.5"
             style={{
-              background: "linear-gradient(135deg, rgba(255,183,229,0.10) 0%, transparent 60%), #000",
-              border: "1px solid rgba(255,183,229,0.45)",
-              boxShadow: "0 0 18px rgba(255,183,229,0.15)",
+              background: "linear-gradient(135deg, rgba(255,183,229,0.12) 0%, rgba(255,255,255,.03) 60%)",
+              border: "1.5px solid rgba(255,183,229,0.5)",
+              boxShadow: "0 0 18px rgba(255,183,229,0.25)",
             }}
           >
             <div className="flex items-center gap-3">
               <AlertTriangle className="w-4 h-4 shrink-0 text-[#FFB7E5]" />
-              <span className="text-sm font-semibold text-[#FFB7E5]">
+              <span className="text-sm font-bold text-white">
                 {t.lapsedBannerMsg}
               </span>
             </div>
             <Link href="/subscribe">
               <button
-                className="rounded-xl px-4 py-2 text-sm font-bold transition-all"
+                className="rounded-xl px-4 py-2 text-sm transition-all"
                 style={{
-                  background: "#9FF5E8",
-                  color: "#0a0a0a",
+                  background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
+                  color: "#050508",
+                  fontWeight: 800,
+                  boxShadow: "0 0 16px rgba(159,245,232,.3)",
                 }}
+                onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
+                onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
               >
                 <RefreshCcw className="w-3 h-3 inline mr-1.5 -mt-0.5" />
                 {t.lapsedBannerCta}
@@ -1297,126 +1225,72 @@ export default function DashboardPage() {
           <div style={{ marginTop: 14, fontSize: 13, color: "#fff" }}>{t.prelimNote}</div>
         </div>
 
-        {/* Prep status banner — cosmic neon */}
+        {/* ── Prep status — graffiti sticker banner ── */}
         <div
-          className="relative rounded-2xl bg-black p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden"
-          style={{
-            border: `1.5px solid ${ac.hex}`,
-            boxShadow: `0 0 0 1px ${ac.halo}, 0 0 32px ${ac.halo}, inset 0 0 24px rgba(0,0,0,0.6)`,
-          }}
           data-testid="prep-status-indicator"
+          style={{
+            background: `linear-gradient(120deg, ${ac.hex}14, rgba(255,255,255,.03))`,
+            border: `1.5px solid ${ac.hex}`,
+            borderRadius: 20,
+            padding: "20px 26px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 20,
+            flexWrap: "wrap",
+            boxShadow: `0 10px 30px ${ac.halo}`,
+          }}
         >
-          {/* corner brackets */}
-          <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: ac.hex }} />
-          <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2" style={{ borderColor: ac.hex }} />
-          <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2" style={{ borderColor: ac.hex }} />
-          <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: ac.hex }} />
-
-          <div className="flex items-center gap-5 relative">
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
             <div
-              className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center shrink-0"
               style={{
-                border: `1.5px solid ${ac.hex}`,
-                boxShadow: `0 0 18px ${ac.halo}, inset 0 0 12px ${ac.halo}`,
+                width: 52,
+                height: 52,
+                flex: "none",
+                borderRadius: 16,
+                background: `${ac.hex}26`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: `0 0 16px ${ac.halo}`,
               }}
             >
-              {(() => { const Icon = prepStatus.icon; return <Icon className="w-7 h-7" style={{ color: ac.hex, filter: `drop-shadow(0 0 6px ${ac.halo})` }} />; })()}
+              {(() => { const Icon = prepStatus.icon; return <Icon style={{ width: 26, height: 26, color: ac.hex }} />; })()}
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: `${ac.hex}cc` }}>
-                {t.yourStatus}
-              </p>
-              <p className="text-3xl font-bold" style={{ color: ac.hex, textShadow: `0 0 16px ${ac.halo}` }} data-testid="prep-status-label">
+              <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: ac.hex, transform: "rotate(-2deg)", display: "inline-block", textShadow: `0 0 10px ${ac.halo}` }}>
+                {t.yourStatus} ✦
+              </div>
+              <div data-testid="prep-status-label" style={{ fontSize: 26, fontWeight: 900, letterSpacing: -0.5, color: "#fff" }}>
                 {isAf ? prepStatus.labelAf : prepStatus.label}
-              </p>
+              </div>
             </div>
           </div>
-          <p className="text-white font-semibold text-lg flex-1 md:text-center leading-snug relative" data-testid="prep-status-message">
+          <p data-testid="prep-status-message" style={{ flex: 1, minWidth: 200, fontSize: 15, fontWeight: 600, color: "#fff", lineHeight: 1.5, margin: 0 }}>
             {isAf ? prepStatus.messageAf : prepStatus.message}
           </p>
-          <Link href="/progress" className="relative">
+          <Link href="/progress">
             <button
-              className="shrink-0 px-4 py-2 rounded-xl bg-black font-bold text-sm transition-none"
-              style={{
-                color: ac.hex,
-                border: `1.5px solid ${ac.hex}`,
-              }}
               data-testid="button-view-details"
+              style={{
+                fontFamily: "'Poppins',sans-serif",
+                fontWeight: 700,
+                fontSize: 13,
+                color: "#fff",
+                background: "transparent",
+                border: "1.5px solid rgba(255,255,255,.25)",
+                borderRadius: 10,
+                padding: "10px 18px",
+                cursor: "pointer",
+                transition: "all .2s",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = ac.hex; e.currentTarget.style.color = ac.hex; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,.25)"; e.currentTarget.style.color = "#fff"; }}
             >
               {t.viewDetails}
             </button>
           </Link>
         </div>
-
-        {/* Compact subscription status banner */}
-        {subscription && (() => {
-          const status = subscription.status;
-          const statusConfig: Record<string, { label: string; labelAf: string; hex: string; halo: string }> = {
-            active: { label: "Active",       labelAf: "Aktief",         hex: "#9FF5E8", halo: "rgba(159,245,232,0.22)"  },
-            trial:  { label: "Free Trial",   labelAf: "Gratis Proef",   hex: "#FFE29A", halo: "rgba(255,226,154,0.22)"  },
-            grace:  { label: "Grace Period", labelAf: "Grasietydperk",  hex: "#94F7C5", halo: "rgba(148,247,197,0.22)"  },
-            lapsed: { label: "Lapsed",       labelAf: "Verval",         hex: "#FFB7E5", halo: "rgba(255,183,229,0.22)"  },
-          };
-          const sc = statusConfig[status] ?? statusConfig["lapsed"];
-
-          const fmt = (iso: string | null | undefined) => {
-            if (!iso) return null;
-            return new Date(iso).toLocaleDateString(isAf ? "af-ZA" : "en-ZA", { day: "numeric", month: "short", year: "numeric" });
-          };
-
-          const trialDaysLeft = (() => {
-            if (status !== "trial" || !subscription.trialEndsAt) return null;
-            return Math.max(0, Math.ceil((new Date(subscription.trialEndsAt).getTime() - Date.now()) / 86400000));
-          })();
-
-          const dateVal = (() => {
-            if (status === "trial") return fmt(subscription.trialEndsAt);
-            if (status === "grace") return fmt(subscription.gracePeriodEndsAt);
-            return fmt(subscription.nextRenewalAt);
-          })();
-
-          const dateLabel = (() => {
-            if (status === "trial") return t.subTrialEnds;
-            if (status === "grace") return t.subGraceEnds;
-            return t.subNextRenewal;
-          })();
-
-          return (
-            <div
-              className="flex items-center gap-4 rounded-2xl bg-black px-4 py-3"
-              style={{ border: `1px solid ${sc.hex}55`, boxShadow: `0 0 16px ${sc.halo}` }}
-              data-testid="sub-status-banner"
-            >
-              <div className="flex items-center gap-3">
-                <div
-                  className="w-8 h-8 rounded-xl bg-black flex items-center justify-center shrink-0"
-                  style={{ border: `1.5px solid ${sc.hex}`, boxShadow: `0 0 10px ${sc.halo}` }}
-                >
-                  <CreditCard className="w-4 h-4" style={{ color: sc.hex }} />
-                </div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span
-                    className="text-[10px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-full bg-black"
-                    style={{ color: sc.hex, border: `1px solid ${sc.hex}`, boxShadow: `0 0 8px ${sc.halo}` }}
-                  >
-                    {isAf ? sc.labelAf : sc.label}
-                  </span>
-                  {trialDaysLeft !== null && (
-                    <span className="text-[11px] text-white flex items-center gap-1">
-                      <Clock className="w-3 h-3" style={{ color: "#FFE29A" }} />
-                      {trialDaysLeft} {trialDaysLeft === 1 ? t.dayLeft : t.daysLeft}
-                    </span>
-                  )}
-                  {dateVal && (
-                    <span className="text-[11px] text-white">
-                      {dateLabel}: <span className="font-semibold" style={{ color: sc.hex }}>{dateVal}</span>
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-          );
-        })()}
 
         {/* Dynamic Study Plan widget — Top 3 weak topics + Readiness Scores
             (elevated above stat cards so it's the primary actionable element) */}
@@ -1424,612 +1298,334 @@ export default function DashboardPage() {
 
         <GoalProgress isAf={isAf} />
 
-        {/* ===== EXAM-AWARE WIDGETS (T114) ===== */}
-        {examWidgets && (examWidgets.nextExam || examWidgets.thisWeekExams?.length > 0) && (
-          <div className="space-y-4" data-testid="exam-aware-section">
-            {/* Urgency Banner — cosmic neon, wordmark palette */}
-            {examWidgets.urgencyBanner && (() => {
-              const urgencyColor: Record<string, { hex: string; halo: string }> = {
-                red:     { hex: "#FFB7E5", halo: "rgba(255,183,229,0.28)" }, // pink = final sprint
-                amber:   { hex: "#94F7C5", halo: "rgba(148,247,197,0.28)" }, // orange = exam prep
-                blue:    { hex: "#FFE29A", halo: "rgba(255,226,154,0.28)" }, // gold = focused
-                emerald: { hex: "#C5B3FF", halo: "rgba(197,179,255,0.28)" },// violet = build
-              };
-              const u = urgencyColor[examWidgets.urgencyBanner.color] ?? urgencyColor.emerald;
-              const Icon =
-                examWidgets.urgencyBanner.color === "red"   ? AlertTriangle :
-                examWidgets.urgencyBanner.color === "amber" ? Clock :
-                examWidgets.urgencyBanner.color === "blue"  ? Target : CheckCircle2;
-              return (
-                <div
-                  className="relative rounded-2xl bg-black p-4 flex items-center gap-4 overflow-hidden"
-                  style={{ border: `1.5px solid ${u.hex}`, boxShadow: `0 0 0 1px ${u.halo}, 0 0 22px ${u.halo}, inset 0 0 18px rgba(0,0,0,0.6)` }}
-                  data-testid="urgency-banner"
-                >
-                  <span aria-hidden className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: u.hex }} />
-                  <span aria-hidden className="absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2" style={{ borderColor: u.hex }} />
-                  <span aria-hidden className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2" style={{ borderColor: u.hex }} />
-                  <span aria-hidden className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: u.hex }} />
-                  <div
-                    className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shrink-0"
-                    style={{ border: `1.5px solid ${u.hex}`, boxShadow: `0 0 14px ${u.halo}, inset 0 0 10px ${u.halo}` }}
-                  >
-                    <Icon className="w-5 h-5" style={{ color: u.hex, filter: `drop-shadow(0 0 4px ${u.halo})` }} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-bold text-sm" style={{ color: u.hex, textShadow: `0 0 10px ${u.halo}` }}>
-                      {isAf ? examWidgets.urgencyBanner.labelAf : examWidgets.urgencyBanner.label}
-                    </p>
-                    <p className="text-xs text-white mt-0.5 truncate">{isAf ? (examWidgets.urgencyBanner.descriptionAf || examWidgets.urgencyBanner.description) : examWidgets.urgencyBanner.description}</p>
-                  </div>
-                  <Link href="/study-calendar">
-                    <button
-                      className="shrink-0 px-4 py-2 rounded-xl bg-black font-bold text-sm"
-                      style={{ color: u.hex, border: `1.5px solid ${u.hex}` }}
-                    >
-                      {t.calendarLabel} <ChevronRight className="w-3 h-3 ml-1 inline" />
-                    </button>
-                  </Link>
-                </div>
-              );
-            })()}
-
-            <div className="grid md:grid-cols-2 gap-4">
-              {/* Next Exam Card — cosmic neon, cyan accent */}
-              {examWidgets.nextExam && (
-                <div
-                  className="relative rounded-2xl bg-black overflow-hidden"
-                  style={{ border: "1.5px solid #9FF5E8", boxShadow: "0 0 0 1px rgba(159,245,232,0.22), 0 0 22px rgba(159,245,232,0.22)" }}
-                  data-testid="next-exam-card"
-                >
-                  <span aria-hidden className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: "#9FF5E8" }} />
-                  <span aria-hidden className="absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2" style={{ borderColor: "#9FF5E8" }} />
-                  <span aria-hidden className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2" style={{ borderColor: "#9FF5E8" }} />
-                  <span aria-hidden className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: "#9FF5E8" }} />
-                  <div className="flex items-center gap-2 px-5 py-4 border-b" style={{ borderColor: "rgba(159,245,232,0.25)" }}>
-                    <GraduationCap className="w-4 h-4" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px rgba(159,245,232,0.6))" }} />
-                    <h3 className="font-bold text-sm" style={{ color: "#9FF5E8", textShadow: "0 0 8px rgba(159,245,232,0.4)" }}>
-                      {t.nextExam}
-                    </h3>
-                  </div>
-                  <div className="p-5">
-                    <p className="font-bold text-white text-base leading-tight">{examWidgets.nextExam.subjectName}</p>
-                    <p className="text-xs text-white mt-0.5 mb-3">
-                      {t.paperLabel} {examWidgets.nextExam.paperNumber} · {examWidgets.nextExam.startTime}
-                    </p>
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="flex-1 rounded-xl p-3 text-center bg-black"
-                        style={{ border: "1px solid rgba(159,245,232,0.4)", boxShadow: "inset 0 0 12px rgba(159,245,232,0.15)" }}
-                      >
-                        <p className="text-2xl font-bold tabular-nums" style={{ color: "#9FF5E8", textShadow: "0 0 10px rgba(159,245,232,0.5)" }} data-testid="next-exam-days">
-                          {examWidgets.nextExam.daysRemaining}
-                        </p>
-                        <p className="text-[10px] font-semibold text-white uppercase">{t.daysUnit}</p>
-                      </div>
-                      <div className="flex-1 text-center">
-                        <p className="text-xs font-semibold text-white">
-                          {formatDate(examWidgets.nextExam.examDate + "T00:00:00", language, { weekday: "short", day: "numeric", month: "short" })}
-                        </p>
-                        <p className="text-[10px] text-white mt-0.5">{examWidgets.nextExam.examDate.slice(0, 7)}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* This Week Exams — cosmic neon, orange accent */}
+        {/* ── Exam urgency banner. (Old Next-Exam + This-Week cards removed:
+            both duplicated the hero countdown and priority-queue tiles.) ── */}
+        {examWidgets?.urgencyBanner && (() => {
+          const urgencyColor: Record<string, { hex: string; halo: string }> = {
+            red:     { hex: "#FF8DA1", halo: "rgba(255,141,161,0.3)" },
+            amber:   { hex: "#FFE29A", halo: "rgba(255,226,154,0.3)" },
+            blue:    { hex: "#9FD8FF", halo: "rgba(159,216,255,0.3)" },
+            emerald: { hex: "#94F7C5", halo: "rgba(148,247,197,0.3)" },
+          };
+          const u = urgencyColor[examWidgets.urgencyBanner.color] ?? urgencyColor.emerald;
+          const Icon =
+            examWidgets.urgencyBanner.color === "red"   ? AlertTriangle :
+            examWidgets.urgencyBanner.color === "amber" ? Clock :
+            examWidgets.urgencyBanner.color === "blue"  ? Target : CheckCircle2;
+          return (
+            <div
+              data-testid="urgency-banner"
+              style={{
+                background: `linear-gradient(120deg, ${u.hex}14, rgba(255,255,255,.03))`,
+                border: `1.5px solid ${u.hex}`,
+                borderRadius: 18,
+                padding: "14px 20px",
+                display: "flex",
+                alignItems: "center",
+                gap: 16,
+                flexWrap: "wrap",
+                boxShadow: `0 0 22px ${u.halo}`,
+              }}
+            >
               <div
-                className="relative rounded-2xl bg-black overflow-hidden"
-                style={{ border: "1.5px solid #94F7C5", boxShadow: "0 0 0 1px rgba(148,247,197,0.22), 0 0 22px rgba(148,247,197,0.22)" }}
-                data-testid="this-week-exams-card"
-              >
-                <span aria-hidden className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: "#94F7C5" }} />
-                <span aria-hidden className="absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2" style={{ borderColor: "#94F7C5" }} />
-                <span aria-hidden className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2" style={{ borderColor: "#94F7C5" }} />
-                <span aria-hidden className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: "#94F7C5" }} />
-                <div className="flex items-center gap-2 px-5 py-4 border-b" style={{ borderColor: "rgba(148,247,197,0.25)" }}>
-                  <CalendarDays className="w-4 h-4" style={{ color: "#94F7C5", filter: "drop-shadow(0 0 4px rgba(148,247,197,0.6))" }} />
-                  <h3 className="font-bold text-sm" style={{ color: "#94F7C5", textShadow: "0 0 8px rgba(148,247,197,0.4)" }}>{t.thisWeek}</h3>
-                </div>
-                <div className="p-5">
-                  {examWidgets.thisWeekExams?.length > 0 ? (
-                    <div className="space-y-2">
-                      {examWidgets.thisWeekExams.slice(0, 3).map((e: any, i: number) => (
-                        <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl bg-black" style={{ border: "1px solid rgba(148,247,197,0.35)" }}>
-                          <div
-                            className="w-8 h-8 rounded-lg bg-black flex items-center justify-center shrink-0"
-                            style={{ border: "1px solid #94F7C5", boxShadow: "0 0 10px rgba(148,247,197,0.35)" }}
-                          >
-                            <span className="text-xs font-bold" style={{ color: "#94F7C5" }}>P{e.paperNumber}</span>
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-xs font-semibold text-white truncate">{e.subjectName}</p>
-                            <p className="text-[10px] text-white">
-                              {formatDate(e.examDate + "T00:00:00", language, { weekday: "short", day: "numeric", month: "short" })}
-                            </p>
-                          </div>
-                          <span className="text-[10px] font-bold shrink-0" style={{ color: "#94F7C5" }}>
-                            {e.daysRemaining}{t.daysShort}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center py-4 text-center">
-                      <Coffee className="w-8 h-8 text-white mb-2" />
-                      <p className="text-xs font-semibold text-white">{t.noExamsThisWeek}</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-          </div>
-        )}
-
-        {/* VARK Style Badge */}
-        {varkStyle && (
-          <div
-            className="relative flex items-center gap-3 px-4 py-3 rounded-2xl bg-black w-fit overflow-hidden"
-            style={{ border: "1.5px solid #C5B3FF", boxShadow: "0 0 0 1px rgba(197,179,255,0.22), 0 0 18px rgba(197,179,255,0.22)" }}
-            data-testid="vark-style-badge"
-          >
-            <span aria-hidden className="absolute inset-y-3 left-0 w-[2px] rounded-r" style={{ background: "#C5B3FF", boxShadow: "0 0 8px #C5B3FF" }} />
-            <span className="text-2xl pl-1">{varkStyle.icon}</span>
-            <div>
-              <p className="text-xs uppercase font-semibold tracking-widest" style={{ color: "#C5B3FF", textShadow: "0 0 8px rgba(197,179,255,0.45)" }}>
-                {t.yourStyleLabel}
-              </p>
-              <p className="font-bold text-white text-sm">
-                {isAf ? varkStyle.labelAf : varkStyle.label}
-                <span className="font-normal text-white"> · {isAf ? varkStyle.taglineAf : varkStyle.tagline}</span>
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* VARK Evolving Nudge — shown when study history reveals a style shift */}
-        {varkInsights?.styleEvolving && varkInsights.dominantStyle && (
-          <div
-            data-testid="vark-evolving-nudge"
-            className="flex items-start gap-4 px-5 py-4 rounded-2xl border"
-            style={{
-              background: "#000",
-              borderColor: "rgba(159,245,232,0.45)",
-              boxShadow: "0 0 18px rgba(159,245,232,0.22)",
-            }}
-          >
-            <span className="text-2xl flex-shrink-0 mt-0.5">
-              {varkInsights.dominantStyle === "visual" ? "👁" : varkInsights.dominantStyle === "auditory" ? "🔊" : varkInsights.dominantStyle === "read" ? "📖" : "✏"}
-            </span>
-            <div className="flex-1 min-w-0">
-              <p className="font-bold text-white text-sm mb-0.5">
-                {t.styleEvolving}
-              </p>
-              <p className="text-white text-xs leading-relaxed">
-                {varkInsights.recommendation
-                  ? varkInsights.recommendation
-                  : isAf
-                    ? `Jou studiegeskiedenis wys dat jy die beste presteer met ${varkInsights.dominantStyle}-inhoud.`
-                    : `Your study history shows you perform best with ${varkInsights.dominantStyle} content.`}
-              </p>
-              {varkInsights.autoUpdated && (
-                <p className="text-xs font-semibold mt-1.5" style={{ color: "#9FF5E8" }}>
-                  {t.profileAutoUpdated}
-                </p>
-              )}
-            </div>
-            <Link href="/settings" className="flex-shrink-0">
-              <button
-                className="text-sm font-bold px-4 py-2 rounded-xl bg-black"
-                style={{ color: "#9FF5E8", border: "1.5px solid #9FF5E8" }}
-              >
-                {t.viewLabel}
-              </button>
-            </Link>
-          </div>
-        )}
-
-        {/* Quick action cards — cosmic neon, reordered by VARK style */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {(() => {
-            const allCards = [
-              {
-                href: "/tutor", testid: "link-smart-tutor", varkKey: "auditory",
-                hex: "#C5B3FF", halo: "rgba(197,179,255,",
-                head: <img src={rizzAvatar} alt="Rizz" className="w-14 h-14 rounded-2xl object-cover" style={{ border: "1.5px solid #C5B3FF", boxShadow: "0 0 14px rgba(197,179,255,0.45)" }} />,
-                title: "Rizz",
-                sub: t.tutorCardSub,
-                cta: t.tutorCardCta,
-              },
-              {
-                href: "/exam-mode", testid: "link-exam-mode", varkKey: "kinesthetic",
-                hex: "#9FD8FF", halo: "rgba(159,216,255,",
-                head: (
-                  <div
-                    className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center"
-                    style={{ border: "1.5px solid #9FD8FF", boxShadow: "0 0 14px rgba(159,216,255,0.45), inset 0 0 10px rgba(159,216,255,0.25)" }}
-                  >
-                    <Shield className="w-7 h-7" style={{ color: "#9FD8FF", filter: "drop-shadow(0 0 4px rgba(159,216,255,0.55))" }} />
-                  </div>
-                ),
-                title: t.crunchTitle,
-                sub: t.crunchSub,
-                cta: t.crunchCta,
-              },
-              {
-                href: "/progress", testid: "link-progress-card", varkKey: "visual",
-                hex: "#C5B3FF", halo: "rgba(197,179,255,",
-                head: (
-                  <div
-                    className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center"
-                    style={{ border: "1.5px solid #C5B3FF", boxShadow: "0 0 14px rgba(197,179,255,0.45), inset 0 0 10px rgba(197,179,255,0.25)" }}
-                  >
-                    <TrendingUp className="w-7 h-7" style={{ color: "#C5B3FF", filter: "drop-shadow(0 0 4px rgba(197,179,255,0.55))" }} />
-                  </div>
-                ),
-                title: t.progressCardTitle,
-                sub: t.progressCardSub,
-                cta: t.progressCardCta,
-              },
-              {
-                href: "/daily-challenge", testid: "link-daily-challenge", varkKey: "read",
-                hex: "#94F7C5", halo: "rgba(148,247,197,",
-                head: (
-                  <div
-                    className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center"
-                    style={{ border: "1.5px solid #94F7C5", boxShadow: "0 0 14px rgba(148,247,197,0.45), inset 0 0 10px rgba(148,247,197,0.25)" }}
-                  >
-                    <Sparkles className="w-7 h-7" style={{ color: "#94F7C5", filter: "drop-shadow(0 0 4px rgba(148,247,197,0.55))" }} />
-                  </div>
-                ),
-                title: t.dailyChallengeTitle,
-                sub: t.dailyChallengeSub,
-                cta: t.dailyChallengeCta,
-              },
-            ];
-            const order: Record<string, string[]> = {
-              visual:      ["visual", "auditory", "kinesthetic", "read"],
-              auditory:    ["auditory", "kinesthetic", "visual", "read"],
-              read:        ["read", "auditory", "visual", "kinesthetic"],
-              kinesthetic: ["kinesthetic", "read", "auditory", "visual"],
-            };
-            const preferred = varkPrimary ? (order[varkPrimary] ?? []) : [];
-            const sorted = preferred.length
-              ? [...allCards].sort((a, b) => {
-                  const ai = preferred.indexOf(a.varkKey);
-                  const bi = preferred.indexOf(b.varkKey);
-                  return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
-                })
-              : allCards;
-            return sorted.map(({ href, testid, head, title, sub, cta, hex, halo }) => (
-              <Link key={href} href={href} className="block h-full" data-testid={testid}>
-                <div
-                  className="relative h-full rounded-2xl bg-black p-6 space-y-4 overflow-hidden hover:scale-[1.02] active:scale-95 transition-all duration-200 cursor-pointer group"
-                  style={{
-                    border: `1.5px solid ${hex}`,
-                    boxShadow: `0 0 0 1px ${halo}0.22), 0 0 22px ${halo}0.22), inset 0 0 18px rgba(0,0,0,0.55)`,
-                  }}
-                >
-                  <span aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: hex, boxShadow: `0 0 10px ${halo}0.8)` }} />
-                  <span aria-hidden className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: hex }} />
-                  <span aria-hidden className="absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2" style={{ borderColor: hex }} />
-                  <span aria-hidden className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2" style={{ borderColor: hex }} />
-                  <span aria-hidden className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: hex }} />
-                  <div className="relative">{head}</div>
-                  <div className="relative">
-                    <h3 className="text-lg font-bold text-white leading-tight mb-1" style={{ textShadow: `0 0 10px ${halo}0.35)` }}>{title}</h3>
-                    <p className="text-white font-semibold text-sm">{sub}</p>
-                  </div>
-                  <div
-                    className="relative flex items-center font-bold text-xs group-hover:translate-x-1 transition-all"
-                    style={{ color: hex, textShadow: `0 0 8px ${halo}0.5)` }}
-                  >
-                    {cta} <ChevronRight className="w-4 h-4 ml-1" />
-                  </div>
-                </div>
-              </Link>
-            ));
-          })()}
-        </div>
-
-        {/* Exam practice — Mini Mock + Full Exam prominent CTAs */}
-        <div className="grid sm:grid-cols-2 gap-4" data-testid="section-exam-practice">
-          {[
-            {
-              href: "/exam/mini-mock",
-              testid: "link-mini-mock",
-              hex: "#9FF5E8",
-              halo: "rgba(159,245,232,",
-              icon: <Zap className="w-7 h-7" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px rgba(159,245,232,0.55))" }} />,
-              title: t.miniMockTitle,
-              sub: t.miniMockSub,
-              cta: t.miniMockCta,
-            },
-            {
-              href: "/exam/full",
-              testid: "link-full-exam",
-              hex: "#FFB7E5",
-              halo: "rgba(255,183,229,",
-              icon: <GraduationCap className="w-7 h-7" style={{ color: "#FFB7E5", filter: "drop-shadow(0 0 4px rgba(255,183,229,0.55))" }} />,
-              title: t.fullExamTitle,
-              sub: t.fullExamSub,
-              cta: t.fullExamCta,
-            },
-          ].map(({ href, testid, hex, halo, icon, title, sub, cta }) => (
-            <Link key={href} href={href} className="block h-full" data-testid={testid}>
-              <div
-                className="relative h-full rounded-2xl bg-black p-6 overflow-hidden hover:scale-[1.02] active:scale-95 transition-all duration-200 cursor-pointer group"
                 style={{
-                  border: `1.5px solid ${hex}`,
-                  boxShadow: `0 0 0 1px ${halo}0.22), 0 0 22px ${halo}0.28), inset 0 0 18px rgba(0,0,0,0.55)`,
+                  width: 40, height: 40, flex: "none", borderRadius: 12,
+                  background: `${u.hex}26`, display: "flex", alignItems: "center", justifyContent: "center",
+                  boxShadow: `0 0 14px ${u.halo}`,
                 }}
               >
-                <span aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: hex, boxShadow: `0 0 10px ${halo}0.8)` }} />
-                <span aria-hidden className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: hex }} />
-                <span aria-hidden className="absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2" style={{ borderColor: hex }} />
-                <span aria-hidden className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2" style={{ borderColor: hex }} />
-                <span aria-hidden className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: hex }} />
-                <div className="relative flex items-start gap-4">
+                <Icon style={{ width: 20, height: 20, color: u.hex }} />
+              </div>
+              <div style={{ flex: 1, minWidth: 180 }}>
+                <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: u.hex, transform: "rotate(-1.5deg)", display: "inline-block" }}>
+                  {isAf ? examWidgets.urgencyBanner.labelAf : examWidgets.urgencyBanner.label}
+                </div>
+                <p style={{ fontSize: 13, color: "#fff", margin: "2px 0 0" }}>
+                  {isAf ? (examWidgets.urgencyBanner.descriptionAf || examWidgets.urgencyBanner.description) : examWidgets.urgencyBanner.description}
+                </p>
+              </div>
+              <Link href="/study-calendar">
+                <button
+                  style={{
+                    fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 13,
+                    color: "#fff", background: "transparent",
+                    border: "1.5px solid rgba(255,255,255,.25)", borderRadius: 10,
+                    padding: "9px 16px", cursor: "pointer", transition: "all .2s",
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = u.hex; e.currentTarget.style.color = u.hex; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,.25)"; e.currentTarget.style.color = "#fff"; }}
+                >
+                  {t.calendarLabel} <ChevronRight className="w-3 h-3 ml-1 inline" />
+                </button>
+              </Link>
+            </div>
+          );
+        })()}
+
+        {/* ── Quick actions — one curated graffiti grid (merged the old
+            4-card quick actions + 2-card exam practice sections) ── */}
+        <div>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 16 }}>
+            <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 18, color: "#fff" }}>{t.quickActions} 🚀</div>
+            <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#FFE29A", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 10px rgba(255,226,154,.45)" }}>
+              {isAf ? "kies jou missie" : "pick your mission"}
+            </span>
+          </div>
+          <div className="bt-grid-quick" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 18 }}>
+            {(() => {
+              const allCards = [
+                {
+                  href: "/tutor", testid: "link-smart-tutor", varkKey: "auditory", hex: "#C5B3FF", tilt: -1,
+                  head: <img src={rizzAvatar} alt="Rizz" style={{ width: 46, height: 46, borderRadius: 14, objectFit: "cover" as const, border: "1.5px solid #C5B3FF", boxShadow: "0 0 14px rgba(197,179,255,.4)" }} />,
+                  isImg: true,
+                  title: "Rizz", sub: t.tutorCardSub, cta: t.tutorCardCta,
+                },
+                {
+                  href: "/exam-mode", testid: "link-exam-mode", varkKey: "kinesthetic", hex: "#9FD8FF", tilt: 0.8,
+                  head: <Shield style={{ width: 24, height: 24, color: "#9FD8FF" }} />, isImg: false,
+                  title: t.crunchTitle, sub: t.crunchSub, cta: t.crunchCta,
+                },
+                {
+                  href: "/progress", testid: "link-progress-card", varkKey: "visual", hex: "#FFB7E5", tilt: -0.7,
+                  head: <TrendingUp style={{ width: 24, height: 24, color: "#FFB7E5" }} />, isImg: false,
+                  title: t.progressCardTitle, sub: t.progressCardSub, cta: t.progressCardCta,
+                },
+                {
+                  href: "/daily-challenge", testid: "link-daily-challenge", varkKey: "read", hex: "#94F7C5", tilt: 1,
+                  head: <Sparkles style={{ width: 24, height: 24, color: "#94F7C5" }} />, isImg: false,
+                  title: t.dailyChallengeTitle, sub: t.dailyChallengeSub, cta: t.dailyChallengeCta,
+                },
+                {
+                  href: "/exam/mini-mock", testid: "link-mini-mock", varkKey: "", hex: "#9FF5E8", tilt: -1.1,
+                  head: <Zap style={{ width: 24, height: 24, color: "#9FF5E8" }} />, isImg: false,
+                  title: t.miniMockTitle, sub: t.miniMockSub, cta: t.miniMockCta,
+                },
+                {
+                  href: "/exam/full", testid: "link-full-exam", varkKey: "", hex: "#FFE29A", tilt: 0.9,
+                  head: <GraduationCap style={{ width: 24, height: 24, color: "#FFE29A" }} />, isImg: false,
+                  title: t.fullExamTitle, sub: t.fullExamSub, cta: t.fullExamCta,
+                },
+              ];
+              const order: Record<string, string[]> = {
+                visual:      ["visual", "auditory", "kinesthetic", "read"],
+                auditory:    ["auditory", "kinesthetic", "visual", "read"],
+                read:        ["read", "auditory", "visual", "kinesthetic"],
+                kinesthetic: ["kinesthetic", "read", "auditory", "visual"],
+              };
+              const preferred = varkPrimary ? (order[varkPrimary] ?? []) : [];
+              const sorted = preferred.length
+                ? [...allCards].sort((a, b) => {
+                    const ai = a.varkKey ? preferred.indexOf(a.varkKey) : 90;
+                    const bi = b.varkKey ? preferred.indexOf(b.varkKey) : 90;
+                    return (ai === -1 ? 90 : ai) - (bi === -1 ? 90 : bi);
+                  })
+                : allCards;
+              return sorted.map(({ href, testid, head, isImg, title, sub, cta, hex, tilt }) => (
+                <Link key={href} href={href} data-testid={testid}>
                   <div
-                    className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center flex-shrink-0"
-                    style={{ border: `1.5px solid ${hex}`, boxShadow: `0 0 14px ${halo}0.45), inset 0 0 10px ${halo}0.25)` }}
+                    style={{
+                      height: "100%",
+                      background: "linear-gradient(160deg,rgba(255,255,255,.055),rgba(255,255,255,.015))",
+                      border: `1.5px solid ${hex}`,
+                      borderRadius: 20,
+                      padding: "18px 20px",
+                      cursor: "pointer",
+                      transform: `rotate(${tilt}deg)`,
+                      boxShadow: `0 8px 24px ${hex}33`,
+                      transition: "transform .25s, box-shadow .25s",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 12,
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.transform = "rotate(0deg) translateY(-6px)"; e.currentTarget.style.boxShadow = `0 14px 34px ${hex}55`; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.transform = `rotate(${tilt}deg)`; e.currentTarget.style.boxShadow = `0 8px 24px ${hex}33`; }}
                   >
-                    {icon}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-bold text-white leading-tight mb-1" style={{ textShadow: `0 0 10px ${halo}0.35)` }}>{title}</h3>
-                    <p className="text-white font-semibold text-sm leading-relaxed">{sub}</p>
-                    <div
-                      className="mt-3 inline-flex items-center font-bold text-xs group-hover:translate-x-1 transition-all"
-                      style={{ color: hex, textShadow: `0 0 8px ${halo}0.5)` }}
-                    >
-                      {cta} <ChevronRight className="w-4 h-4 ml-1" />
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      {isImg ? head : (
+                        <div style={{ width: 46, height: 46, flex: "none", borderRadius: 14, background: `${hex}26`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 14px ${hex}40` }}>
+                          {head}
+                        </div>
+                      )}
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ fontSize: 16, fontWeight: 900, color: "#fff", lineHeight: 1.2 }}>{title}</div>
+                        <div style={{ fontSize: 13, color: "#fff" }}>{sub}</div>
+                      </div>
+                    </div>
+                    <div style={{ marginTop: "auto", fontSize: 13, fontWeight: 800, color: hex, display: "flex", alignItems: "center", gap: 4 }}>
+                      {cta} <ChevronRight style={{ width: 15, height: 15 }} />
                     </div>
                   </div>
-                </div>
-              </div>
-            </Link>
-          ))}
+                </Link>
+              ));
+            })()}
+          </div>
         </div>
 
-        {/* Focus Areas — cross-subject mastery gaps (Task #743) */}
+        {/* ── Focus areas — cross-subject mastery gaps, graffiti restyle ── */}
         {focusAreasData && (
           <div
-            className="relative rounded-2xl bg-black overflow-hidden"
-            style={{
-              border: "1.5px solid #94F7C5",
-              boxShadow: "0 0 0 1px rgba(148,247,197,0.28), 0 0 28px rgba(148,247,197,0.28), inset 0 0 22px rgba(0,0,0,0.55)",
-            }}
             data-testid="panel-focus-areas"
+            style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.08)", borderRadius: 24, padding: 26 }}
           >
-            <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#94F7C5" }} />
-            <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#94F7C5" }} />
-            <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#94F7C5" }} />
-            <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#94F7C5" }} />
-
-            <div
-              className="flex items-center justify-between px-6 py-5 gap-3"
-              style={{ borderBottom: "1px solid rgba(148,247,197,0.35)" }}
-            >
-              <div className="min-w-0">
-                <h2 className="flex items-center gap-2 text-lg font-bold text-white">
-                  <Target className="w-5 h-5" style={{ color: "#94F7C5", filter: "drop-shadow(0 0 6px rgba(148,247,197,0.8))" }} />
-                  {t.focusAreasHeading}
-                </h2>
-                <p className="text-xs text-white mt-1">{t.focusAreasSubtitle}</p>
+            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10, flexWrap: "wrap", marginBottom: 6 }}>
+              <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 18, color: "#fff", display: "flex", alignItems: "center", gap: 8 }}>
+                <Target style={{ width: 18, height: 18, color: "#94F7C5" }} />
+                {t.focusAreasHeading} 🎯
               </div>
+              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#94F7C5", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 10px rgba(148,247,197,.45)" }}>
+                {isAf ? "vang hulle vas!" : "lock them down!"}
+              </span>
             </div>
+            <p style={{ fontSize: 13, color: "#fff", margin: "0 0 18px" }}>{t.focusAreasSubtitle}</p>
             {focusAreasData.focusAreas.length === 0 ? (
-              <div className="p-6 text-center">
-                <div
-                  className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-black flex items-center justify-center"
-                  style={{ border: "1.5px solid #94F7C5", boxShadow: "0 0 14px rgba(148,247,197,0.4)" }}
-                >
-                  <Sparkles className="w-7 h-7" style={{ color: "#94F7C5", filter: "drop-shadow(0 0 5px #94F7C5)" }} />
-                </div>
-                <p className="text-sm text-white" data-testid="text-focus-areas-empty">{t.focusAreasEmpty}</p>
+              <div style={{ textAlign: "center", padding: "18px 0" }}>
+                <Sparkles style={{ width: 28, height: 28, color: "#94F7C5", margin: "0 auto 10px" }} />
+                <p data-testid="text-focus-areas-empty" style={{ fontSize: 14, color: "#fff", margin: 0 }}>{t.focusAreasEmpty}</p>
               </div>
             ) : (
-            <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {focusAreasData.focusAreas.map((fa) => {
-                const isRed = fa.masteryBand === "red";
-                const hex = isRed ? "#FF8DA1" : "#FFE29A";
-                const halo = isRed ? "rgba(255,141,161,0.28)" : "rgba(255,226,154,0.28)";
-                const bandLabel = isRed ? t.focusBandCatchUp : t.focusBandBuilding;
-                const topicName = language === "af" && fa.topicNameAfrikaans ? fa.topicNameAfrikaans : fa.topicName;
-                const subjectName = language === "af" && fa.subjectNameAfrikaans ? fa.subjectNameAfrikaans : fa.subjectName;
-                return (
-                  <Link key={`${fa.subjectId}-${fa.topicId}`} href={`/subject/${fa.subjectId}?topicId=${fa.topicId}`}>
-                    <div
-                      className="group relative rounded-2xl bg-black p-4 cursor-pointer transition-all hover:-translate-y-0.5 h-full"
-                      style={{ border: `1px solid ${hex}66`, boxShadow: `0 0 12px ${halo}` }}
-                      onMouseEnter={(e) => { e.currentTarget.style.borderColor = hex; e.currentTarget.style.boxShadow = `0 0 22px ${hex}99`; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.borderColor = `${hex}66`; e.currentTarget.style.boxShadow = `0 0 12px ${halo}`; }}
-                      data-testid={`focus-area-${fa.topicId}`}
-                    >
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <span
-                          className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md"
-                          style={{ color: hex, border: `1px solid ${hex}88`, boxShadow: `0 0 8px ${halo}` }}
-                        >
-                          {bandLabel}
-                        </span>
-                        <span className="text-xs font-bold" style={{ color: hex }}>
-                          {fa.masteryScore}%
-                        </span>
+              <div className="bt-grid-focus" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 14 }}>
+                {focusAreasData.focusAreas.map((fa) => {
+                  const isRed = fa.masteryBand === "red";
+                  const hex = isRed ? "#FF8DA1" : "#FFE29A";
+                  const bandLabel = isRed ? t.focusBandCatchUp : t.focusBandBuilding;
+                  const topicName = language === "af" && fa.topicNameAfrikaans ? fa.topicNameAfrikaans : fa.topicName;
+                  const subjectName = language === "af" && fa.subjectNameAfrikaans ? fa.subjectNameAfrikaans : fa.subjectName;
+                  return (
+                    <Link key={`${fa.subjectId}-${fa.topicId}`} href={`/subject/${fa.subjectId}?topicId=${fa.topicId}`}>
+                      <div
+                        data-testid={`focus-area-${fa.topicId}`}
+                        style={{
+                          height: "100%",
+                          background: `linear-gradient(160deg, ${hex}12, rgba(255,255,255,.02))`,
+                          border: `1.5px solid ${hex}66`,
+                          borderRadius: 18,
+                          padding: 16,
+                          cursor: "pointer",
+                          transition: "all .2s",
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.borderColor = hex; e.currentTarget.style.boxShadow = `0 10px 26px ${hex}40`; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; e.currentTarget.style.borderColor = `${hex}66`; e.currentTarget.style.boxShadow = "none"; }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 10 }}>
+                          <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 13, color: hex, transform: "rotate(-2deg)", display: "inline-block" }}>
+                            {bandLabel}
+                          </span>
+                          <span className="tabular-nums" style={{ fontSize: 13, fontWeight: 800, color: hex }}>{fa.masteryScore}%</span>
+                        </div>
+                        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{subjectName}</div>
+                        <div style={{ fontSize: 14.5, fontWeight: 800, color: "#fff", marginTop: 2, lineHeight: 1.35 }}>{topicName}</div>
+                        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 8 }}>
+                          <span style={{ fontSize: 12.5, fontWeight: 800, color: hex, display: "flex", alignItems: "center", gap: 3 }}>
+                            {t.practiceNow} <ChevronRight style={{ width: 14, height: 14 }} />
+                          </span>
+                        </div>
                       </div>
-                      <p className="text-[10px] uppercase tracking-wider text-white truncate">{subjectName}</p>
-                      <p className="text-sm font-bold text-white mt-0.5 line-clamp-2">{topicName}</p>
-                      <div className="flex items-center justify-end mt-2">
-                        <ChevronRight className="w-4 h-4 text-white group-hover:text-white transition-colors" />
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
+                    </Link>
+                  );
+                })}
+              </div>
             )}
           </div>
         )}
 
-        {/* Recommended + Your Vibe — cosmic neon */}
-        <div className="grid lg:grid-cols-2 gap-6">
+        {/* ── Your Vibe — merged panel (was: VARK badge + evolving nudge +
+            Recommended-for-You + Your Vibe + Pro-tip, five separate blocks) ── */}
+        {profile && (
           <div
-            className="relative rounded-2xl bg-black overflow-hidden"
-            style={{
-              border: "1.5px solid #9FF5E8",
-              boxShadow: "0 0 0 1px rgba(159,245,232,0.28), 0 0 28px rgba(159,245,232,0.28), inset 0 0 22px rgba(0,0,0,0.55)",
-            }}
+            data-testid="vark-style-badge"
+            style={{ background: "linear-gradient(150deg,rgba(197,179,255,.12),rgba(255,255,255,.02))", border: "1.5px solid rgba(197,179,255,.5)", borderRadius: 24, padding: 26, boxShadow: "0 0 24px rgba(197,179,255,.18)" }}
           >
-            <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#9FF5E8" }} />
-            <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#9FF5E8" }} />
-            <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#9FF5E8" }} />
-            <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#9FF5E8" }} />
-            <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(159,245,232,0.35)" }}>
-              <Sparkles className="w-5 h-5" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 6px rgba(159,245,232,0.85))" }} />
-              <h2 className="text-lg font-bold text-white">{t.recommendedHeading}</h2>
-            </div>
-            <div className="p-5 space-y-3">
-              {(() => {
-                const items = [
-                  { href: "/tutor", num: 1, hex: "#9FF5E8", label: t.tryRizz },
-                  { href: "/subjects",    num: 2, hex: "#C5B3FF", label: t.completePractice },
-                ];
-                return items.map(({ href, num, hex, label }) => (
-                  <Link key={href} href={href}>
-                    <div
-                      className="group flex items-center gap-3 p-3.5 rounded-2xl bg-black cursor-pointer transition-all hover:-translate-y-0.5"
-                      style={{ border: `1px solid ${hex}55`, boxShadow: `0 0 12px ${hex}33` }}
-                      onMouseEnter={(e) => { e.currentTarget.style.borderColor = hex; e.currentTarget.style.boxShadow = `0 0 22px ${hex}88`; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.borderColor = `${hex}55`; e.currentTarget.style.boxShadow = `0 0 12px ${hex}33`; }}
-                    >
-                      <div
-                        className="w-10 h-10 rounded-xl bg-black flex items-center justify-center font-bold text-base shrink-0"
-                        style={{ color: hex, border: `1.5px solid ${hex}`, boxShadow: `0 0 12px ${hex}66, inset 0 0 8px ${hex}44`, textShadow: `0 0 8px ${hex}88` }}
-                      >
-                        {num}
-                      </div>
-                      <p className="flex-1 font-semibold text-white group-hover:text-white text-sm transition-colors">{label}</p>
-                      <ChevronRight className="w-4 h-4 text-white group-hover:text-white transition-colors" />
-                    </div>
-                  </Link>
-                ));
-              })()}
-            </div>
-          </div>
-
-          <div
-            className="relative rounded-2xl bg-black overflow-hidden"
-            style={{
-              border: "1.5px solid #C5B3FF",
-              boxShadow: "0 0 0 1px rgba(197,179,255,0.3), 0 0 28px rgba(197,179,255,0.3), inset 0 0 22px rgba(0,0,0,0.55)",
-            }}
-          >
-            <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#C5B3FF" }} />
-            <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#C5B3FF" }} />
-            <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#C5B3FF" }} />
-            <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#C5B3FF" }} />
-            <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(197,179,255,0.35)" }}>
-              <Brain className="w-5 h-5" style={{ color: "#C5B3FF", filter: "drop-shadow(0 0 6px rgba(197,179,255,0.85))" }} />
-              <h2 className="text-lg font-bold text-white">{t.yourVibeHeading}</h2>
-            </div>
-            <div className="p-5">
-              {profile ? (
-                <div className="grid grid-cols-2 gap-3">
-                  <div
-                    className="p-4 rounded-2xl bg-black"
-                    style={{ border: "1px solid rgba(197,179,255,0.55)", boxShadow: "0 0 14px rgba(197,179,255,0.3)" }}
-                  >
-                    <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: "#C5B3FF" }}>{t.learningStyleLabel}</p>
-                    <p className="font-bold text-white text-base">
-                      {isAf
-                        ? LEARNING_STYLE_INFO[profile.learningStyle as LearningStyle]?.nameAfrikaans
-                        : LEARNING_STYLE_INFO[profile.learningStyle as LearningStyle]?.name || profile.learningStyle}
-                    </p>
-                  </div>
-                  <div
-                    className="p-4 rounded-2xl bg-black"
-                    style={{ border: "1px solid rgba(255,226,154,0.5)", boxShadow: "0 0 14px rgba(255,226,154,0.25)" }}
-                  >
-                    <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: "#FFE29A" }}>{t.bestTimeLabel}</p>
-                    <p className="font-bold text-white text-base capitalize">{profile.studyPreference}</p>
-                  </div>
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="h-20 rounded-2xl bg-white/5 animate-pulse" />
-                  <div className="h-20 rounded-2xl bg-white/5 animate-pulse" />
-                </div>
+            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
+              <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 18, color: "#fff", display: "flex", alignItems: "center", gap: 8 }}>
+                <Brain style={{ width: 18, height: 18, color: "#C5B3FF" }} />
+                {t.yourVibeHeading} {varkStyle ? varkStyle.icon : "🧠"}
+              </div>
+              {varkStyle && (
+                <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#C5B3FF", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 10px rgba(197,179,255,.45)" }}>
+                  {isAf ? varkStyle.taglineAf : varkStyle.tagline}
+                </span>
               )}
             </div>
-          </div>
-        </div>
-
-        {/* Pro tip banner — neon cosmic, links to personalised study plan */}
-        {profile && LEARNING_STYLE_INFO[profile.learningStyle as LearningStyle] && (
-          <div
-            className="relative rounded-2xl bg-black p-6 sm:p-7 flex flex-col md:flex-row items-start md:items-center gap-5"
-            style={{
-              border: "1.5px solid #FFE29A",
-              boxShadow:
-                "0 0 18px rgba(255,226,154,0.35), 0 0 36px rgba(255,226,154,0.20), inset 0 0 22px rgba(255,226,154,0.10)",
-            }}
-            data-testid="pro-tip-banner"
-          >
-            <span
-              className="inline-flex h-12 w-12 rounded-xl items-center justify-center bg-black shrink-0"
-              style={{
-                border: "1.5px solid #FFE29A",
-                boxShadow: "0 0 14px rgba(255,226,154,0.55), inset 0 0 12px rgba(255,226,154,0.25)",
-              }}
-            >
-              <Lightbulb
-                className="w-6 h-6"
-                style={{ color: "#FFE29A", filter: "drop-shadow(0 0 6px #FFE29A)" }}
-              />
-            </span>
-            <div className="flex-1 space-y-1.5">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="text-base sm:text-lg font-bold text-white">
-                  {t.proTipHeading}
-                </h3>
-                <span
-                  className="text-[10px] font-bold tracking-[0.12em] uppercase px-2 py-0.5 rounded-full bg-black"
-                  style={{
-                    color: "#FFE29A",
-                    border: "1px solid #FFE29A",
-                    boxShadow: "0 0 8px rgba(255,226,154,0.45)",
-                  }}
-                >
-                  {profile.learningStyle}
-                </span>
+            <div className="bt-grid-vibe" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 16 }}>
+              <div style={{ background: "rgba(5,5,8,.45)", border: "1px solid rgba(197,179,255,.4)", borderRadius: 16, padding: 16 }}>
+                <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 1.5, textTransform: "uppercase", color: "#C5B3FF", marginBottom: 4 }}>{t.learningStyleLabel}</div>
+                <div style={{ fontSize: 16, fontWeight: 800, color: "#fff" }}>
+                  {varkStyle
+                    ? (isAf ? varkStyle.labelAf : varkStyle.label)
+                    : (isAf
+                        ? LEARNING_STYLE_INFO[profile.learningStyle as LearningStyle]?.nameAfrikaans
+                        : LEARNING_STYLE_INFO[profile.learningStyle as LearningStyle]?.name) || profile.learningStyle}
+                </div>
               </div>
-              <p className="text-white text-sm sm:text-base leading-snug max-w-2xl">
-                {(isAf
-                  ? LEARNING_STYLE_INFO[profile.learningStyle as LearningStyle]?.tipsAfrikaans
-                  : LEARNING_STYLE_INFO[profile.learningStyle as LearningStyle]?.tips
-                )?.[0] || t.consistencyTip}
-              </p>
+              <div style={{ background: "rgba(5,5,8,.45)", border: "1px solid rgba(255,226,154,.4)", borderRadius: 16, padding: 16 }}>
+                <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 1.5, textTransform: "uppercase", color: "#FFE29A", marginBottom: 4 }}>{t.bestTimeLabel}</div>
+                <div style={{ fontSize: 16, fontWeight: 800, color: "#fff", textTransform: "capitalize" }}>{profile.studyPreference}</div>
+              </div>
             </div>
-            <Link href="/study-calendar">
-              <button
-                className="shrink-0 inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold"
-                style={{
-                  color: "#0a0a0a",
-                  background: "#9FF5E8",
-                }}
-                data-testid="button-pro-tip-learn-more"
+            {/* Pro tip for this style */}
+            {LEARNING_STYLE_INFO[profile.learningStyle as LearningStyle] && (
+              <div
+                data-testid="pro-tip-banner"
+                style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap", background: "rgba(255,226,154,.08)", border: "1px solid rgba(255,226,154,.35)", borderRadius: 16, padding: "14px 18px" }}
               >
-                {t.openPlanBtn}
-              </button>
-            </Link>
+                <Lightbulb style={{ width: 20, height: 20, flex: "none", color: "#FFE29A" }} />
+                <p style={{ flex: 1, minWidth: 200, fontSize: 14, color: "#fff", lineHeight: 1.55, margin: 0 }}>
+                  <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#FFE29A", marginRight: 8 }}>{t.proTipHeading}:</span>
+                  {(isAf
+                    ? LEARNING_STYLE_INFO[profile.learningStyle as LearningStyle]?.tipsAfrikaans
+                    : LEARNING_STYLE_INFO[profile.learningStyle as LearningStyle]?.tips
+                  )?.[0] || t.consistencyTip}
+                </p>
+                <Link href="/study-calendar">
+                  <button
+                    data-testid="button-pro-tip-learn-more"
+                    style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 13, color: "#050508", background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", border: "none", borderRadius: 10, padding: "10px 18px", cursor: "pointer", transition: "transform .2s" }}
+                    onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
+                  >
+                    {t.openPlanBtn}
+                  </button>
+                </Link>
+              </div>
+            )}
+            {/* Style-evolving nudge */}
+            {varkInsights?.styleEvolving && varkInsights.dominantStyle && (
+              <div
+                data-testid="vark-evolving-nudge"
+                style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", marginTop: 14, background: "rgba(159,245,232,.08)", border: "1px solid rgba(159,245,232,.35)", borderRadius: 16, padding: "12px 18px" }}
+              >
+                <span style={{ fontSize: 20 }}>
+                  {varkInsights.dominantStyle === "visual" ? "👁" : varkInsights.dominantStyle === "auditory" ? "🔊" : varkInsights.dominantStyle === "read" ? "📖" : "✏"}
+                </span>
+                <div style={{ flex: 1, minWidth: 200 }}>
+                  <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 13, color: "#9FF5E8", marginRight: 8 }}>{t.styleEvolving}</span>
+                  <span style={{ fontSize: 13, color: "#fff" }}>
+                    {varkInsights.recommendation
+                      ? varkInsights.recommendation
+                      : isAf
+                        ? `Jou studiegeskiedenis wys dat jy die beste presteer met ${varkInsights.dominantStyle}-inhoud.`
+                        : `Your study history shows you perform best with ${varkInsights.dominantStyle} content.`}
+                    {varkInsights.autoUpdated && (
+                      <b style={{ color: "#9FF5E8" }}> {t.profileAutoUpdated}</b>
+                    )}
+                  </span>
+                </div>
+                <Link href="/settings">
+                  <button
+                    style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 13, color: "#fff", background: "transparent", border: "1.5px solid rgba(255,255,255,.25)", borderRadius: 10, padding: "8px 14px", cursor: "pointer", transition: "all .2s" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#9FF5E8"; e.currentTarget.style.color = "#9FF5E8"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,.25)"; e.currentTarget.style.color = "#fff"; }}
+                  >
+                    {t.viewLabel}
+                  </button>
+                </Link>
+              </div>
+            )}
           </div>
         )}
 
         {/* Gamification — Next Milestone + You vs You + Personal Bests */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+        <div className="bt-grid-game" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24, alignItems: "stretch" }}>
           {(() => {
             const sections = [
               { title: t.nextMilestoneTitle, hex: "#94F7C5", Widget: NextMilestoneWidget },
@@ -2037,14 +1633,11 @@ export default function DashboardPage() {
               { title: t.personalBestsTitle, hex: "#FFE29A", Widget: PersonalBestsWidget },
             ];
             return sections.map(({ title, hex, Widget }) => (
-              <div key={title} className="flex flex-col gap-4 h-full">
-                <div className="flex items-center gap-3">
-                  <span aria-hidden className="h-4 w-0.5 rounded-full" style={{ background: hex, boxShadow: `0 0 8px ${hex}` }} />
-                  <h2 className="text-[11px] font-bold uppercase tracking-[0.22em]" style={{ color: hex, textShadow: `0 0 10px ${hex}66` }}>
-                    {title}
-                  </h2>
+              <div key={title} style={{ display: "flex", flexDirection: "column", gap: 12, height: "100%" }}>
+                <div role="heading" aria-level={2} style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: hex, transform: "rotate(-2deg)", display: "inline-block", textShadow: `0 0 10px ${hex}66` }}>
+                  {title}
                 </div>
-                <div className="flex-1">
+                <div style={{ flex: 1 }}>
                   <Widget isAf={isAf} />
                 </div>
               </div>
@@ -2061,90 +1654,14 @@ export default function DashboardPage() {
         @media (max-width: 860px) {
           .bt-dash-sidebar { width: 200px !important; padding: 18px 10px !important; }
           .bt-dash-main { padding: 20px 14px !important; }
-          .bt-grid-stats, .bt-grid-2col { grid-template-columns: 1fr !important; }
+          .bt-grid-stats, .bt-grid-2col, .bt-grid-quick, .bt-grid-focus, .bt-grid-vibe, .bt-grid-game { grid-template-columns: 1fr !important; }
         }
         @media (max-width: 1280px) and (min-width: 861px) {
           .bt-grid-stats { grid-template-columns: repeat(2, 1fr) !important; }
+          .bt-grid-quick, .bt-grid-focus, .bt-grid-game { grid-template-columns: repeat(2, 1fr) !important; }
         }
       `}</style>
     </div>
   );
 }
 
-const LEARNER_FAQ = {
-  en: [
-    { q: "How do I improve my marks?",              a: "Complete more quizzes, daily challenges, and practice exams. Focus on your weakest subjects shown on the dashboard and keep your study streak going." },
-    { q: "What counts towards questions completed?", a: "Everything counts: Boost Quizzes, Daily Challenges, Crunch Time sessions, Brain Boost Mock Exams, and Simulated Past Papers." },
-    { q: "How does the daily challenge work?",       a: "You get 5 questions per subject each day. Answer them all to earn coins (5 per correct answer). Your results feed into your mastery stats." },
-    { q: "What are coins used for?",                 a: "Coins are earned from quizzes and challenges. They track your effort and can unlock rewards in the Rewards section." },
-    { q: "How is my exam readiness calculated?",    a: "It's based on your study streak consistency, total questions completed, and how many papers you've covered." },
-    { q: "Can I change my subjects?",               a: "Yes — go to Settings and update your selected subjects. You can only change subjects once per week." },
-    { q: "What is Crunch Time?",                    a: "Crunch Time is an exam simulation with timed questions per subject. It tests you under real exam pressure." },
-    { q: "How do I ask Rizz for help?",             a: "Go to the Tutor section and type your question. Rizz understands all your NSC subjects and can explain concepts in English or Afrikaans." },
-  ],
-  af: [
-    { q: "Hoe verbeter ek my punte?",               a: "Voltooi meer vasvrae, daaglikse uitdagings en oefeneksamens. Fokus op jou swakste vakke en hou jou studie-reeks aan die gang." },
-    { q: "Wat tel vir my voltooide vrae?",           a: "Alles tel: Boost-vasvrae, Daaglikse Uitdagings, Eksamentyd-sessies, Brain Boost-proefeksamens en Gesimuleerde Ou Vraestelle." },
-    { q: "Hoe werk die daaglikse uitdaging?",        a: "Jy kry 5 vrae per vak elke dag. Beantwoord almal om munte te verdien (5 per korrekte antwoord)." },
-    { q: "Waarvoor word munte gebruik?",             a: "Munte word verdien uit vasvrae en uitdagings en kan belonings in die Belonings-afdeling ontsluit." },
-    { q: "Hoe word my eksamengereedheid bereken?",   a: "Dit is gebaseer op jou studie-reeks-konsekwentheid, totale vrae voltooi, en hoeveel vraestelle jy gedek het." },
-    { q: "Kan ek my vakke verander?",               a: "Ja — gaan na Instellings en werk jou geselekteerde vakke by. Jy kan vakke slegs een keer per week verander." },
-    { q: "Wat is Eksamentyd?",                      a: "Eksamentyd is 'n eksamensimulasie met tydbeperkte vrae per vak onder werklike eksamendruk." },
-    { q: "Hoe vra ek Rizz vir hulp?",              a: "Gaan na die Tutor-afdeling en tik jou vraag. Rizz verstaan al jou NSC-vakke in Engels of Afrikaans." },
-  ],
-};
-
-function LearnerFAQ({ isAf, faqHeading }: { isAf: boolean; faqHeading: string }) {
-  const [openIdx, setOpenIdx] = useState<number | null>(null);
-  const items = isAf ? LEARNER_FAQ.af : LEARNER_FAQ.en;
-  return (
-    <div
-      className="relative rounded-2xl bg-black overflow-hidden"
-      style={{
-        border: "1.5px solid #C5B3FF",
-        boxShadow: "0 0 0 1px rgba(255,183,229,0.25), 0 0 28px rgba(197,179,255,0.3), 0 0 44px rgba(255,183,229,0.22), inset 0 0 22px rgba(0,0,0,0.55)",
-      }}
-    >
-      <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FFB7E5" }} />
-      <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#C5B3FF" }} />
-      <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#C5B3FF" }} />
-      <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#FFB7E5" }} />
-
-      <div
-        className="flex items-center gap-2 px-6 py-5"
-        style={{ borderBottom: "1px solid rgba(197,179,255,0.35)" }}
-      >
-        <HelpCircle className="w-5 h-5" style={{ color: "#FFB7E5", filter: "drop-shadow(0 0 6px rgba(255,183,229,0.85))" }} />
-        <h2 className="text-lg font-bold text-white">{faqHeading}</h2>
-      </div>
-      <div className="divide-y" style={{ borderColor: "rgba(197,179,255,0.2)" }}>
-        {items.map((item, idx) => {
-          const isOpen = openIdx === idx;
-          return (
-            <div key={idx} style={{ borderTop: idx === 0 ? "none" : "1px solid rgba(197,179,255,0.18)" }}>
-              <button
-                onClick={() => setOpenIdx(isOpen ? null : idx)}
-                className="flex items-center justify-between w-full px-6 py-4 text-left text-sm font-semibold transition-colors"
-                style={{ color: isOpen ? "#C5B3FF" : "rgb(var(--foreground) / 1)" }}
-                data-testid={`faq-q-${idx}`}
-              >
-                <span className={isOpen ? "" : "text-white"}>{item.q}</span>
-                <ChevronDown
-                  className="w-4 h-4 shrink-0 transition-transform duration-200 ml-3"
-                  style={{
-                    color: isOpen ? "#C5B3FF" : "#ffffff",
-                    transform: isOpen ? "rotate(180deg)" : undefined,
-                    filter: isOpen ? "drop-shadow(0 0 4px #C5B3FF)" : undefined,
-                  }}
-                />
-              </button>
-              {isOpen && (
-                <p className="px-6 pb-4 text-sm text-white leading-relaxed" data-testid={`faq-a-${idx}`}>{item.a}</p>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}

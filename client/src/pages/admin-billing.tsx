@@ -143,12 +143,12 @@ function fmtMrr(rands: number): string {
 
 function deliveryStatusColor(status: string | null): string {
   const s = (status || "").toLowerCase();
-  if (s === "delivered") return "#22d3ee";
-  if (s === "opened" || s === "used") return "#a3e635";
-  if (s === "failed" || s === "undelivered") return "#f87171";
-  if (s === "queued" || s === "sending" || s === "sent" || s === "accepted") return "#c084fc";
-  if (s === "not_configured") return "#ffffff44";
-  return "#ffffff60";
+  if (s === "delivered") return "#9FD8FF";
+  if (s === "opened" || s === "used") return "#94F7C5";
+  if (s === "failed" || s === "undelivered") return "#FF8DA1";
+  if (s === "queued" || s === "sending" || s === "sent" || s === "accepted") return "#C5B3FF";
+  if (s === "not_configured") return "#FFFFFF";
+  return "#FFFFFF";
 }
 
 function NeonTile({
@@ -158,19 +158,16 @@ function NeonTile({
 }) {
   return (
     <div
-      className="rounded-2xl bg-black p-4 flex flex-col gap-2 relative overflow-hidden"
-      style={{ border: `1.5px solid ${color}`, boxShadow: `0 0 22px ${color}44` }}
+      className="p-4 flex flex-col gap-2 relative overflow-hidden"
+      style={{ background: "rgba(255,255,255,0.035)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 16 }}
       data-testid={testId}
     >
-      <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: color }} />
-      <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2" style={{ borderColor: color }} />
-      <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2" style={{ borderColor: color }} />
-      <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: color }} />
+      <span aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: color, opacity: 0.8 }} />
       <div className="flex items-center gap-2">
         <Icon className="w-4 h-4 shrink-0" style={{ color }} />
         <span className="text-[10px] font-black uppercase tracking-[0.22em]" style={{ color }}>{label}</span>
       </div>
-      <div className="text-3xl font-black tabular-nums text-white" style={{ textShadow: `0 0 14px ${color}88` }}>
+      <div className="text-3xl font-black tabular-nums text-white">
         {value}
       </div>
       {subLabel && <div className="text-[10px] text-white">{subLabel}</div>}
@@ -208,9 +205,9 @@ function ConsentBtn({ userId }: { userId: string }) {
       href={`/learn/admin/consent/${userId}`}
       className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider transition"
       style={{
-        border: "1px solid #a78bfa88",
-        color: "#a78bfa",
-        background: "#a78bfa14",
+        border: "1px solid #C5B3FF88",
+        color: "#C5B3FF",
+        background: "#C5B3FF14",
       }}
     >
       <FileText className="w-3 h-3" />
@@ -227,9 +224,9 @@ function LinksBtn({ userId, userName, onClick }: { userId: string; userName: str
       data-testid={`btn-links-${userId}`}
       className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider transition"
       style={{
-        border: "1px solid #7dd3fc88",
-        color: "#7dd3fc",
-        background: "#7dd3fc14",
+        border: "1px solid #9FD8FF88",
+        color: "#9FD8FF",
+        background: "#9FD8FF14",
       }}
     >
       <Link2 className="w-3 h-3" />
@@ -260,10 +257,10 @@ function LinkHistoryModal({
     >
       <div
         className="w-full max-w-2xl rounded-2xl bg-black flex flex-col max-h-[80vh]"
-        style={{ border: "1.5px solid #7dd3fc55", boxShadow: "0 0 40px #7dd3fc22" }}
+        style={{ border: "1.5px solid #9FD8FF55", boxShadow: "0 0 40px #9FD8FF22" }}
       >
         <div className="flex items-center gap-3 px-5 py-4 border-b border-white/10 shrink-0">
-          <Link2 className="w-4 h-4 shrink-0" style={{ color: "#7dd3fc" }} />
+          <Link2 className="w-4 h-4 shrink-0" style={{ color: "#9FD8FF" }} />
           <div className="flex-1 min-w-0">
             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white">Onboarding Link History</p>
             <p className="text-sm font-bold text-white truncate">{userName || userId}</p>
@@ -299,7 +296,7 @@ function LinkHistoryModal({
           {!isLoading && !isError && rows && rows.length > 0 && (
             <div className="space-y-2">
               {rows.map((r, i) => {
-                const statusColor = r.usedAt ? "#a3e635" : deliveryStatusColor(r.deliveryStatus);
+                const statusColor = r.usedAt ? "#94F7C5" : deliveryStatusColor(r.deliveryStatus);
                 const displayStatus = r.usedAt ? "opened" : (r.deliveryStatus ?? "unknown");
                 return (
                   <div
@@ -629,7 +626,7 @@ export default function AdminBillingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen text-white" style={{ background: "#050508", fontFamily: "'Poppins', system-ui, sans-serif" }}>
       {linkHistoryUser && (
         <LinkHistoryModal
           userId={linkHistoryUser.userId}
@@ -643,7 +640,7 @@ export default function AdminBillingPage() {
         <div className="max-w-7xl mx-auto flex items-center gap-4">
           <div className="min-w-0">
             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white">Admin</p>
-            <h1 className="text-base font-black text-white leading-tight">Billing & Operations</h1>
+            <div role="heading" aria-level={1} className="text-base font-black text-white leading-tight">Billing & Operations</div>
           </div>
           <div className="ml-auto flex items-center gap-3">
             <span className="text-[10px] text-white">
@@ -673,7 +670,7 @@ export default function AdminBillingPage() {
           <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white mb-3">Live Billing KPIs</p>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             <NeonTile
-              color="#6EE7F9" label="Active" testId="kpi-active"
+              color="#9FF5E8" label="Active" testId="kpi-active"
               value={summary?.active ?? "—"} icon={Zap}
               subLabel="Paid subscribers"
             />
@@ -693,7 +690,7 @@ export default function AdminBillingPage() {
               subLabel="Need reactivation"
             />
             <NeonTile
-              color="#6b7280" label="Cancelled" testId="kpi-cancelled"
+              color="#FFFFFF" label="Cancelled" testId="kpi-cancelled"
               value={summary?.cancelled ?? "—"} icon={Ban}
               subLabel="Voluntarily cancelled"
             />
@@ -710,12 +707,12 @@ export default function AdminBillingPage() {
           <section data-testid="stuck-links-banner">
             <div
               className="rounded-2xl p-4"
-              style={{ border: "1.5px solid #f8717188", background: "rgba(248,113,113,0.07)", boxShadow: "0 0 20px #f8717122" }}
+              style={{ border: "1.5px solid #FF8DA188", background: "rgba(255,141,161,0.07)", boxShadow: "0 0 20px #FF8DA122" }}
             >
               <div className="flex items-start gap-3">
-                <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#f87171" }} />
+                <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#FF8DA1" }} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-black" style={{ color: "#f87171" }}>
+                  <p className="text-sm font-black" style={{ color: "#FF8DA1" }}>
                     {stuckLinks.count} onboarding link{stuckLinks.count !== 1 ? "s" : ""} stuck &gt;24h — learners may be unable to onboard
                   </p>
                   <p className="text-xs text-white mt-1">
@@ -735,7 +732,7 @@ export default function AdminBillingPage() {
                         {stuckLinks.links.slice(0, 10).map(l => (
                           <tr key={l.jti} style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
                             <td className="py-1.5 pr-4 font-mono text-white">{l.sentTo}</td>
-                            <td className="py-1.5 pr-4" style={{ color: "#f87171" }}>{l.deliveryStatus}</td>
+                            <td className="py-1.5 pr-4" style={{ color: "#FF8DA1" }}>{l.deliveryStatus}</td>
                             <td className="py-1.5 pr-4 text-white">{l.hoursAgo}h ago</td>
                             <td className="py-1.5 text-white">{l.retryCount}</td>
                           </tr>
@@ -830,23 +827,23 @@ export default function AdminBillingPage() {
         {smsStats && (
           <section data-testid="onboarding-sms-section">
             <div className="flex items-center gap-2 mb-3">
-              <MessageSquare className="w-4 h-4" style={{ color: "#7dd3fc" }} />
+              <MessageSquare className="w-4 h-4" style={{ color: "#9FD8FF" }} />
               <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white">
                 Onboarding WhatsApp Links — last {smsStats.days} days
               </p>
             </div>
             <div
               className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-2 rounded-2xl p-4"
-              style={{ border: "1px solid #7dd3fc44", background: "rgba(125,211,252,0.04)" }}
+              style={{ border: "1px solid #9FD8FF44", background: "rgba(125,211,252,0.04)" }}
               data-testid="onboarding-sms-stats"
             >
               {([
                 { k: "total",       label: "Issued",       color: "#ffffff" },
-                { k: "sent",        label: "Sent",         color: "#a3e635" },
-                { k: "delivered",   label: "Delivered",    color: "#22d3ee" },
+                { k: "sent",        label: "Sent",         color: "#94F7C5" },
+                { k: "delivered",   label: "Delivered",    color: "#9FD8FF" },
                 { k: "opened",      label: "Opened",       color: "#facc15" },
-                { k: "failed",      label: "Failed",       color: "#f87171" },
-                { k: "pending",     label: "Pending",      color: "#c084fc" },
+                { k: "failed",      label: "Failed",       color: "#FF8DA1" },
+                { k: "pending",     label: "Pending",      color: "#C5B3FF" },
                 { k: "autoRetried", label: "Auto-retried", color: "#fb923c" },
               ] as Array<{ k: keyof Pick<SmsStats, "total"|"sent"|"delivered"|"opened"|"failed"|"pending"|"autoRetried">; label: string; color: string }>
               ).map(c => (
@@ -916,10 +913,10 @@ export default function AdminBillingPage() {
                       {actionLog.map(row => {
                         const meta = row.details?.metadata;
                         const actionLabel: Record<string, { label: string; color: string }> = {
-                          "billing.extend_trial":  { label: "Extend Trial",  color: "#6EE7F9" },
-                          "billing.grant_trial":   { label: "Grant Trial",   color: "#a3e635" },
+                          "billing.extend_trial":  { label: "Extend Trial",  color: "#9FF5E8" },
+                          "billing.grant_trial":   { label: "Grant Trial",   color: "#94F7C5" },
                           "billing.mark_lapsed":   { label: "Mark Lapsed",   color: "#FFB7E5" },
-                          "billing.mark_active":   { label: "Mark Active",   color: "#6EE7F9" },
+                          "billing.mark_active":   { label: "Mark Active",   color: "#9FF5E8" },
                         };
                         const { label, color } = actionLabel[row.action] ?? { label: row.action, color: "#ffffff60" };
                         return (
@@ -982,14 +979,14 @@ export default function AdminBillingPage() {
             onClick={() => setReminderHistoryOpen(v => !v)}
             className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-white hover:text-white transition mb-3"
           >
-            <History className="w-4 h-4" style={{ color: "#c084fc" }} />
-            <span style={{ color: "#c084fc" }}>Reminder History</span>
+            <History className="w-4 h-4" style={{ color: "#C5B3FF" }} />
+            <span style={{ color: "#C5B3FF" }}>Reminder History</span>
             <ChevronDown
               className="w-3 h-3 transition-transform"
-              style={{ color: "#c084fc", transform: reminderHistoryOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+              style={{ color: "#C5B3FF", transform: reminderHistoryOpen ? "rotate(180deg)" : "rotate(0deg)" }}
             />
             {reminderHistory && (
-              <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full" style={{ background: "#c084fc22", color: "#c084fc" }}>
+              <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full" style={{ background: "#C5B3FF22", color: "#C5B3FF" }}>
                 {reminderHistory.length}
               </span>
             )}
@@ -998,7 +995,7 @@ export default function AdminBillingPage() {
           {reminderHistoryOpen && (
             <div
               className="rounded-2xl overflow-hidden"
-              style={{ border: "1px solid #c084fc44", background: "rgba(192,132,252,0.03)" }}
+              style={{ border: "1px solid #C5B3FF44", background: "rgba(192,132,252,0.03)" }}
               data-testid="reminder-history-panel"
             >
               {reminderHistoryLoading && (
@@ -1044,7 +1041,7 @@ export default function AdminBillingPage() {
                             <Td>
                               <span
                                 className="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase"
-                                style={{ background: "#c084fc22", color: "#c084fc" }}
+                                style={{ background: "#C5B3FF22", color: "#C5B3FF" }}
                               >
                                 {r.type}
                               </span>
@@ -1052,7 +1049,7 @@ export default function AdminBillingPage() {
                             <Td>
                               <span
                                 className="font-black text-sm tabular-nums"
-                                style={{ color: sent > 0 ? "#a3e635" : "#ffffff44" }}
+                                style={{ color: sent > 0 ? "#94F7C5" : "#ffffff44" }}
                               >
                                 {sent}
                               </span>
@@ -1060,7 +1057,7 @@ export default function AdminBillingPage() {
                             <Td>
                               <span
                                 className="font-black text-sm tabular-nums"
-                                style={{ color: failed > 0 ? "#f87171" : "#ffffff44" }}
+                                style={{ color: failed > 0 ? "#FF8DA1" : "#ffffff44" }}
                               >
                                 {failed}
                               </span>
@@ -1141,7 +1138,7 @@ function LastNudgedBadge({ sentAt }: { sentAt: string | undefined }) {
   if (!sentAt) return <span className="text-white text-xs">—</span>;
   const daysAgoVal = Math.floor((Date.now() - new Date(sentAt).getTime()) / 86_400_000);
   const label = daysAgoVal === 0 ? "Today" : daysAgoVal === 1 ? "Yesterday" : `${daysAgoVal}d ago`;
-  const color = daysAgoVal === 0 ? "#a3e635" : daysAgoVal <= 2 ? "#22d3ee" : "#c084fc";
+  const color = daysAgoVal === 0 ? "#94F7C5" : daysAgoVal <= 2 ? "#9FD8FF" : "#C5B3FF";
   return (
     <div>
       <span
@@ -1156,7 +1153,7 @@ function LastNudgedBadge({ sentAt }: { sentAt: string | undefined }) {
 }
 
 function MethodBadge({ method }: { method: string | null }) {
-  const color = method === "debicheck" ? "#22d3ee" : method === "card" ? "#a3e635" : "#ffffff44";
+  const color = method === "debicheck" ? "#9FD8FF" : method === "card" ? "#94F7C5" : "#ffffff44";
   const label = method ?? "none";
   return (
     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: `${color}22`, color }}>
@@ -1226,7 +1223,7 @@ function TrialsTable({ rows, isLoading, inFlight, onSendReminder, onExtendTrial,
                 <div className="flex gap-2 flex-wrap">
                   <ActionBtn
                     label="Extend 7 days"
-                    color="#6EE7F9"
+                    color="#9FF5E8"
                     icon={CalendarPlus}
                     disabled={inFlight.has(r.userId)}
                     onClick={() => onExtendTrial(r.userId)}
@@ -1373,7 +1370,7 @@ function LapsedTable({ rows, isLoading, inFlight, onSendOutreach, onGrantTrial, 
                 <div className="flex gap-2 flex-wrap">
                   <ActionBtn
                     label="Mark Active"
-                    color="#6EE7F9"
+                    color="#9FF5E8"
                     icon={ShieldCheck}
                     disabled={inFlight.has(r.userId)}
                     onClick={() => onMarkActive(r.userId)}
@@ -1381,7 +1378,7 @@ function LapsedTable({ rows, isLoading, inFlight, onSendOutreach, onGrantTrial, 
                   />
                   <ActionBtn
                     label="Grant Fresh Trial"
-                    color="#a3e635"
+                    color="#94F7C5"
                     icon={Gift}
                     disabled={inFlight.has(r.userId)}
                     onClick={() => onGrantTrial(r.userId)}

@@ -10,10 +10,8 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { ExamQuestionText } from "@/components/exam/exam-question-text";
 import { Sparkles, Download } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLanguage } from "@/lib/language-context";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuth } from "@/hooks/use-auth";
 import {
   PatGuidanceBanner,
@@ -28,13 +26,12 @@ import {
   EyeOff,
   ChevronLeft,
   ChevronRight,
+  ArrowLeft,
   FileText,
   Award,
   Loader2,
   AlertCircle,
   ExternalLink,
-  Globe,
-  Home,
   LogOut,
 } from "lucide-react";
 
@@ -208,7 +205,7 @@ export default function DbePracticePage() {
 
   if (!subject) {
     return (
-      <div style={{ minHeight: "100vh", background: "#050508", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ minHeight: "100vh", background: "#050508", color: "#fff", fontFamily: "'Poppins',sans-serif", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div
           style={{
             background: "#0b0b12",
@@ -232,11 +229,13 @@ export default function DbePracticePage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#050508", color: "#fff", overflowX: "hidden" }}>
+    <div style={{ minHeight: "100vh", background: "#050508", color: "#fff", fontFamily: "'Poppins',sans-serif", overflowX: "hidden" }}>
       <style>{`
         .btx-action { transition: transform .2s; }
         .btx-action:hover { transform: translateY(-2px); }
         .btx-action:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+        .btx-nav { transition: transform .2s, background .2s; }
+        .btx-nav:hover { transform: translateY(-1px); background: rgba(255,255,255,.08) !important; }
         .btx-ghost { transition: border-color .2s, transform .2s; }
         .btx-ghost:hover { border-color: rgba(255,255,255,.5) !important; transform: translateY(-1px); }
         .btx-ghost:disabled { opacity: .4; cursor: not-allowed; transform: none; }
@@ -251,44 +250,117 @@ export default function DbePracticePage() {
       <div
         style={{
           display: "flex", alignItems: "center", justifyContent: "space-between",
-          gap: 16, padding: "12px 28px", position: "sticky", top: 0, zIndex: 50,
-          background: "rgba(5,5,8,.82)", backdropFilter: "blur(14px)",
-          borderBottom: "1px solid rgba(255,255,255,.06)",
+          gap: 16, padding: "10px 20px", position: "sticky", top: 0, zIndex: 50,
+          background: "rgba(5,5,8,.94)", backdropFilter: "blur(14px)",
+          borderBottom: "1px solid rgba(255,255,255,.08)",
         }}
       >
-        <div style={{ minWidth: 0 }}>
-          <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-            {subject}
-          </div>
-          <div style={{ fontSize: 10, fontWeight: 900, letterSpacing: "2px", textTransform: "uppercase", color: "#fff", opacity: 0.85 }}>
-            {yearParam && paperParam
-              ? `${yearParam} | ${isAf ? "Vraestel" : "Paper"} ${paperParam}`
-              : isAf ? "Alle Vraestelle" : "All Papers"}
+        <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+          <Link href="/dashboard">
+            <button
+              data-testid="button-home"
+              title={isAf ? "Tuis" : "Home"}
+              className="btx-nav"
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 6,
+                fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 13,
+                color: "#9FD8FF", background: "rgba(255,255,255,.03)",
+                border: "1.5px solid #9FD8FF", borderRadius: 12,
+                padding: "8px 14px", cursor: "pointer", whiteSpace: "nowrap", flex: "none",
+              }}
+            >
+              <ArrowLeft style={{ width: 15, height: 15 }} />
+              <span className="hidden md:inline">{isAf ? "Tuis" : "Home"}</span>
+            </button>
+          </Link>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", textShadow: "0 0 10px rgba(159,245,232,.45)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              {subject}
+            </div>
+            <div style={{ fontSize: 10, fontWeight: 900, letterSpacing: "2px", textTransform: "uppercase", color: "#fff", opacity: 0.85 }}>
+              {yearParam && paperParam
+                ? `${yearParam} | ${isAf ? "Vraestel" : "Paper"} ${paperParam}`
+                : isAf ? "Alle Vraestelle" : "All Papers"}
+            </div>
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8, flex: "none" }}>
-          <ThemeToggle />
           <button
             onClick={toggleLanguage}
-            className="btx-ghost"
-            style={{ ...ghostBtn, border: "1px solid rgba(255,255,255,.22)", padding: "6px 10px" }}
+            className="btx-nav"
+            style={{
+              fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 13,
+              color: "#C5B3FF", background: "rgba(255,255,255,.03)",
+              border: "1.5px solid #C5B3FF", borderRadius: 12,
+              padding: "8px 14px", cursor: "pointer",
+            }}
             data-testid="button-language-toggle"
           >
-            <Globe style={{ width: 14, height: 14 }} />
-            <span>{language === "en" ? "EN" : "AF"}</span>
+            {language === "en" ? "EN" : "AF"}
           </button>
-          <Link href="/dashboard">
-            <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:text-white" title={isAf ? "Tuis" : "Home"} data-testid="button-home">
-              <Home className="h-4 w-4" />
-            </Button>
-          </Link>
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:text-white" onClick={() => logout()} title={isAf ? "Uitteken" : "Sign Out"} data-testid="button-logout">
-            <LogOut className="h-4 w-4" />
-          </Button>
+          <button
+            onClick={() => logout()}
+            title={isAf ? "Uitteken" : "Sign Out"}
+            className="btx-nav"
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 13,
+              color: "#FFB7E5", background: "rgba(255,255,255,.03)",
+              border: "1.5px solid #FFB7E5", borderRadius: 12,
+              padding: "8px 14px", cursor: "pointer",
+            }}
+            data-testid="button-logout"
+          >
+            <LogOut style={{ width: 15, height: 15 }} />
+            <span className="hidden md:inline">{isAf ? "Uitteken" : "Sign Out"}</span>
+          </button>
         </div>
       </div>
 
       <main style={{ maxWidth: 900, margin: "0 auto", padding: "28px 20px 80px", display: "flex", flexDirection: "column", gap: 22 }}>
+        {/* ── Hero ──────────────────────────────────────────────── */}
+        <section style={{ animation: "bt-fadeup .5s both" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+            <BookOpen style={{ width: 15, height: 15, color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }} />
+            <span
+              style={{
+                fontFamily: "'Permanent Marker',cursive",
+                fontSize: 15,
+                color: "#FFE29A",
+                transform: "rotate(-2deg)",
+                display: "inline-block",
+                textShadow: "0 0 10px rgba(255,226,154,.5)",
+              }}
+            >
+              {isAf ? "Regte vraestelle. Regte oefening. 🔥" : "Real papers. Real reps. 🔥"}
+            </span>
+          </div>
+          <div
+            role="heading"
+            aria-level={1}
+            style={{
+              fontWeight: 900,
+              letterSpacing: "-.02em",
+              lineHeight: 0.98,
+              fontSize: "clamp(28px, 5vw, 42px)",
+              marginTop: 8,
+              backgroundImage:
+                "linear-gradient(90deg, #FFE29A, #FFE29A, #94F7C5, #9FF5E8, #9FD8FF, #C5B3FF, #FFB7E5)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+              color: "transparent",
+            }}
+          >
+            {isAf ? "DBE-oefening" : "DBE Practice"}
+          </div>
+          <p style={{ fontSize: 14, color: "#fff", opacity: 0.94, marginTop: 8, maxWidth: 560 }}>
+            {isAf
+              ? "Werk deur egte DBE-vrae en KI-oefenvrae — memo's op aanvraag, geen druk nie."
+              : "Work through real DBE questions and AI practice sets — memos on demand, zero pressure."}
+          </p>
+        </section>
+
         {isLoading ? (
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <Skeleton className="h-12 rounded-xl bg-white/5" />
@@ -402,7 +474,7 @@ export default function DbePracticePage() {
                     }}
                     data-testid="exam-all"
                   >
-                    {isAf ? "Alle vraestelle" : "All papers"} <span style={{ opacity: 0.7 }}>({allQuestions.length})</span>
+                    {isAf ? "Alle vraestelle" : "All papers"} <span style={{ opacity: 0.85 }}>({allQuestions.length})</span>
                   </button>
                   {exams.map(ex => {
                     const active = examKey === ex.key;
@@ -426,7 +498,7 @@ export default function DbePracticePage() {
                         {ex.source === "ai"
                           ? (isAf ? "KI-oefening" : "AI Practice")
                           : `${ex.year} ${ex.session} · ${isAf ? "V" : "P"}${ex.paperNumber}`}
-                        <span style={{ opacity: 0.7, marginLeft: 4 }}>({ex.count})</span>
+                        <span style={{ opacity: 0.85, marginLeft: 4 }}>({ex.count})</span>
                       </button>
                     );
                   })}
@@ -665,7 +737,7 @@ export default function DbePracticePage() {
 
                     {/* Memo reveal */}
                     {shownMemos.has(current.id) && (
-                      <div className="animate-in fade-in" style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8, animation: "bt-fadeup .4s both" }}>
                         {isPatGuidanceMemo(current.memoText) ? (
                           <PatGuidanceBanner
                             memoText={current.memoText!}
@@ -743,7 +815,7 @@ export default function DbePracticePage() {
                     data-testid={`button-jump-${q.id}`}
                   >
                     Q{q.questionNumber}
-                    {q.marks != null && <span style={{ fontSize: 9, marginLeft: 4, opacity: 0.7 }}>({q.marks})</span>}
+                    {q.marks != null && <span style={{ fontSize: 9, marginLeft: 4, opacity: 0.85 }}>({q.marks})</span>}
                   </button>
                 );
               })}

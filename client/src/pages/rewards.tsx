@@ -3,8 +3,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/language-context";
 import { formatDate } from "@/lib/formatters";
 import { useLocation } from "wouter";
-import { Flame, Star, Zap, Target, Trophy, GraduationCap, Award, BookOpen, Coins, Lock, Loader2, Globe, Home, LogOut, ShoppingBag, ArrowRight, Users, Copy, Check, Share2, Sparkles, Medal } from "lucide-react";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { Flame, Star, Zap, Target, Trophy, GraduationCap, Award, BookOpen, Coins, Lock, Loader2, Globe, ArrowLeft, LogOut, ShoppingBag, ArrowRight, Users, Copy, Check, Share2, Sparkles, Medal } from "lucide-react";
 import { GraffitiSplats } from "@/components/graffiti-splats";
 import { useState } from "react";
 
@@ -12,25 +11,24 @@ const BADGE_INFO: Record<string, {
   name: string;
   nameAf: string;
   icon: any;
-  color: string;
   unlockHint: string;
   unlockHintAf: string;
 }> = {
-  streak_3:        { name: "3-Day Streak",   nameAf: "3-Dag Reeks",         icon: Flame,        color: "text-orange-500",  unlockHint: "Study 3 days in a row",          unlockHintAf: "Studeer 3 dae agtereenvolgens" },
-  streak_7:        { name: "7-Day Streak",   nameAf: "7-Dag Reeks",         icon: Flame,        color: "text-orange-600",  unlockHint: "Study 7 days in a row",          unlockHintAf: "Studeer 7 dae agtereenvolgens" },
-  streak_14:       { name: "14-Day Streak",  nameAf: "14-Dag Reeks",        icon: Flame,        color: "text-red-500",     unlockHint: "Study 14 days in a row",         unlockHintAf: "Studeer 14 dae agtereenvolgens" },
-  streak_30:       { name: "30-Day Streak",  nameAf: "30-Dag Reeks",        icon: Flame,        color: "text-red-600",     unlockHint: "Study 30 days in a row",         unlockHintAf: "Studeer 30 dae agtereenvolgens" },
-  questions_10:    { name: "10 Questions",   nameAf: "10 Vrae",             icon: Star,         color: "text-amber-300",   unlockHint: "Answer 10 questions",            unlockHintAf: "Beantwoord 10 vrae" },
-  questions_50:    { name: "50 Questions",   nameAf: "50 Vrae",             icon: Star,         color: "text-yellow-600",  unlockHint: "Answer 50 questions",            unlockHintAf: "Beantwoord 50 vrae" },
-  questions_100:   { name: "100 Questions",  nameAf: "100 Vrae",            icon: Zap,          color: "text-blue-500",    unlockHint: "Answer 100 questions",           unlockHintAf: "Beantwoord 100 vrae" },
-  questions_500:   { name: "500 Questions",  nameAf: "500 Vrae",            icon: Zap,          color: "text-blue-600",    unlockHint: "Answer 500 questions",           unlockHintAf: "Beantwoord 500 vrae" },
-  accuracy_70:     { name: "70% Accuracy",  nameAf: "70% Akkuraatheid",    icon: Target,       color: "text-green-500",   unlockHint: "Reach 70% overall accuracy",     unlockHintAf: "Behaal 70% algehele akkuraatheid" },
-  accuracy_80:     { name: "80% Accuracy",  nameAf: "80% Akkuraatheid",    icon: Target,       color: "text-green-600",   unlockHint: "Reach 80% overall accuracy",     unlockHintAf: "Behaal 80% algehele akkuraatheid" },
-  accuracy_90:     { name: "90% Accuracy",  nameAf: "90% Akkuraatheid",    icon: Trophy,       color: "text-cyan-500",  unlockHint: "Reach 90% overall accuracy",     unlockHintAf: "Behaal 90% algehele akkuraatheid" },
-  subject_mastery: { name: "Subject Master", nameAf: "Vak Meester",         icon: GraduationCap,color: "text-blue-500",  unlockHint: "Master all topics in a subject", unlockHintAf: "Bemeester alle onderwerpe in 'n vak" },
-  exam_complete:   { name: "Exam Ready",     nameAf: "Eksamen Gereed",      icon: Award,        color: "text-emerald-500", unlockHint: "Complete a full exam paper",     unlockHintAf: "Voltooi 'n volledige vraestel" },
-  first_paper:     { name: "First Paper",    nameAf: "Eerste Vraestel",     icon: BookOpen,     color: "text-cyan-500",    unlockHint: "Complete your first paper",       unlockHintAf: "Voltooi jou eerste vraestel" },
-  high_score:      { name: "80% Club",       nameAf: "80% Klub",            icon: Trophy,       color: "text-yellow-500",  unlockHint: "Score 80% or higher on any quiz, exam or paper", unlockHintAf: "Behaal 80% of hoër in enige toets, eksamen of vraestel" },
+  streak_3:        { name: "3-Day Streak",   nameAf: "3-Dag Reeks",         icon: Flame,        unlockHint: "Study 3 days in a row",          unlockHintAf: "Studeer 3 dae agtereenvolgens" },
+  streak_7:        { name: "7-Day Streak",   nameAf: "7-Dag Reeks",         icon: Flame,        unlockHint: "Study 7 days in a row",          unlockHintAf: "Studeer 7 dae agtereenvolgens" },
+  streak_14:       { name: "14-Day Streak",  nameAf: "14-Dag Reeks",        icon: Flame,        unlockHint: "Study 14 days in a row",         unlockHintAf: "Studeer 14 dae agtereenvolgens" },
+  streak_30:       { name: "30-Day Streak",  nameAf: "30-Dag Reeks",        icon: Flame,        unlockHint: "Study 30 days in a row",         unlockHintAf: "Studeer 30 dae agtereenvolgens" },
+  questions_10:    { name: "10 Questions",   nameAf: "10 Vrae",             icon: Star,         unlockHint: "Answer 10 questions",            unlockHintAf: "Beantwoord 10 vrae" },
+  questions_50:    { name: "50 Questions",   nameAf: "50 Vrae",             icon: Star,         unlockHint: "Answer 50 questions",            unlockHintAf: "Beantwoord 50 vrae" },
+  questions_100:   { name: "100 Questions",  nameAf: "100 Vrae",            icon: Zap,          unlockHint: "Answer 100 questions",           unlockHintAf: "Beantwoord 100 vrae" },
+  questions_500:   { name: "500 Questions",  nameAf: "500 Vrae",            icon: Zap,          unlockHint: "Answer 500 questions",           unlockHintAf: "Beantwoord 500 vrae" },
+  accuracy_70:     { name: "70% Accuracy",  nameAf: "70% Akkuraatheid",    icon: Target,       unlockHint: "Reach 70% overall accuracy",     unlockHintAf: "Behaal 70% algehele akkuraatheid" },
+  accuracy_80:     { name: "80% Accuracy",  nameAf: "80% Akkuraatheid",    icon: Target,       unlockHint: "Reach 80% overall accuracy",     unlockHintAf: "Behaal 80% algehele akkuraatheid" },
+  accuracy_90:     { name: "90% Accuracy",  nameAf: "90% Akkuraatheid",    icon: Trophy,       unlockHint: "Reach 90% overall accuracy",     unlockHintAf: "Behaal 90% algehele akkuraatheid" },
+  subject_mastery: { name: "Subject Master", nameAf: "Vak Meester",         icon: GraduationCap,unlockHint: "Master all topics in a subject", unlockHintAf: "Bemeester alle onderwerpe in 'n vak" },
+  exam_complete:   { name: "Exam Ready",     nameAf: "Eksamen Gereed",      icon: Award,        unlockHint: "Complete a full exam paper",     unlockHintAf: "Voltooi 'n volledige vraestel" },
+  first_paper:     { name: "First Paper",    nameAf: "Eerste Vraestel",     icon: BookOpen,     unlockHint: "Complete your first paper",       unlockHintAf: "Voltooi jou eerste vraestel" },
+  high_score:      { name: "80% Club",       nameAf: "80% Klub",            icon: Trophy,       unlockHint: "Score 80% or higher on any quiz, exam or paper", unlockHintAf: "Behaal 80% of hoër in enige toets, eksamen of vraestel" },
 };
 
 const STREAK_MILESTONES = [3, 7, 14, 30];
@@ -67,7 +65,7 @@ const T = {
     signedUpWaiting: "signed up — waiting on payment.",
     paidSubNote: "Only paid subscriptions count — free trials don't qualify.",
     spendCoins: "Spend your coins",
-    spendDesc: "Power-ups, cosmetics, titles, and exclusive themes are waiting in the Learner Store.",
+    spendDesc: "Power-ups like Streak Freeze, 2x Coins and the Mystery Box are waiting in the Learner Store.",
     goToStore: "Go to Store",
     yourCode: "Your referral code",
     shareLink: "Share link",
@@ -116,7 +114,7 @@ const T = {
     signedUpWaiting: "het ingeteken — wag op betaling.",
     paidSubNote: "Slegs betaalde intekenings tel — gratis proeftydperke tel nie.",
     spendCoins: "Spandeer jou munte",
-    spendDesc: "Hupstote, kosmetika, titels en eksklusiewe temas wag in die Leerderwinkel.",
+    spendDesc: "Hupstote soos Reeks Vries, 2x Munte en die Raaiselkas wag in die Leerderwinkel.",
     goToStore: "Gaan na winkel",
     yourCode: "Jou verwysings kode",
     shareLink: "Deel skakel",
@@ -264,21 +262,35 @@ export default function RewardsPage() {
   const isLoading = coinsLoading || badgesLoading;
 
   return (
-    <div className="min-h-screen bg-black text-white relative">
+    <div className="min-h-screen text-white relative" style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}>
       {/* One fixed full-page graffiti wall behind everything */}
       <div aria-hidden className="pointer-events-none fixed inset-0" style={{ zIndex: 0, opacity: 0.9 }}>
         <GraffitiSplats variant="full" opacity={0.9} />
       </div>
-      <header className="sticky top-0 z-50 py-3 bg-black/90" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+      <header className="sticky top-0 z-50 py-3" style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
         <div className="max-w-4xl mx-auto px-4 flex items-center justify-between flex-wrap gap-2">
-          <span className="text-sm graffiti-hand">
-            <span className="callout-hl">{t.pageTitle}</span>
-          </span>
+          <div className="flex items-center gap-3 min-w-0">
+            <button
+              onClick={() => setLocation("/dashboard")}
+              title={t.homeTitle}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
+              style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
+              data-testid="button-home"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span className="hidden md:inline">{t.homeTitle}</span>
+            </button>
+            <span
+              className="hidden sm:inline truncate"
+              style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 10px rgba(159,245,232,.45)" }}
+            >
+              {t.pageTitle}
+            </span>
+          </div>
           <div className="flex items-center gap-2">
-            <ThemeToggle />
             <button
               onClick={toggleLanguage}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-black text-sm font-bold transition-colors"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
               style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
               data-testid="button-language-toggle"
             >
@@ -286,18 +298,9 @@ export default function RewardsPage() {
               <span>{language === "en" ? "EN" : "AF"}</span>
             </button>
             <button
-              onClick={() => setLocation("/dashboard")}
-              title={t.homeTitle}
-              className="w-9 h-9 flex items-center justify-center rounded-xl bg-black transition-colors"
-              style={{ color: "#6EE7F9", border: "1.5px solid #6EE7F9" }}
-              data-testid="button-home"
-            >
-              <Home className="h-4 w-4" />
-            </button>
-            <button
               onClick={() => logout()}
               aria-label={t.signOutTitle}
-              className="w-9 h-9 flex items-center justify-center rounded-xl bg-black transition-colors"
+              className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/[.03] hover:bg-white/10"
               style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}
               data-testid="button-logout"
             >
@@ -312,22 +315,41 @@ export default function RewardsPage() {
         <div
           className="relative rounded-2xl overflow-hidden p-6 sm:p-8"
           style={{
-            background: "rgba(255,255,255,0.04)",
+            background: "rgba(255,255,255,0.03)",
             border: "1px solid rgba(255,255,255,0.08)",
           }}
           data-testid="rewards-hero"
         >
+          <div
+            aria-hidden
+            className="absolute top-0 left-0 right-0 h-[2px]"
+            style={{ background: "linear-gradient(90deg,#FFB7E5,#FFE29A,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)" }}
+          />
           <div className="relative flex items-center gap-4">
             <div
-              className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center shrink-0"
-              style={{ border: "1px solid rgba(255,226,154,0.4)" }}
+              className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0"
+              style={{ background: "rgba(255,226,154,.15)", border: "1.5px solid #FFE29A", boxShadow: "0 0 16px rgba(255,226,154,.35)" }}
             >
-              <Trophy className="w-7 h-7" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 6px #FFE29A)" }} />
+              <Trophy className="w-7 h-7" style={{ color: "#FFE29A" }} />
             </div>
             <div className="flex-1 min-w-0">
-              <h1 className="text-2xl sm:text-3xl graffiti-hand leading-tight">
-                <span className="callout-hl">{t.heroHeading}</span>
-              </h1>
+              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFE29A", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 10px rgba(255,226,154,.45)" }}>
+                {isAf ? "verdien dit, dra dit!" : "earn it, flex it!"} 🏆
+              </span>
+              <div
+                role="heading"
+                aria-level={1}
+                className="font-black leading-tight text-2xl sm:text-3xl"
+                style={{
+                  backgroundImage: "linear-gradient(90deg,#FFE29A,#FFE29A,#94F7C5,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                  color: "transparent",
+                }}
+              >
+                {t.heroHeading}
+              </div>
               <p className="text-sm text-white mt-2">
                 {t.heroSubtitle}
               </p>
@@ -357,7 +379,7 @@ export default function RewardsPage() {
                       {coins?.balance ?? 0}
                     </span>
                     <div className="flex flex-col text-xs text-white mb-1 gap-0.5">
-                      <span><span style={{ color: "#6EE7F9" }}>↑</span> {coins?.totalEarned ?? 0} {t.earned}</span>
+                      <span><span style={{ color: "#9FD8FF" }}>↑</span> {coins?.totalEarned ?? 0} {t.earned}</span>
                       <span><span style={{ color: "#FFB7E5" }}>↓</span> {coins?.totalSpent ?? 0} {t.spent}</span>
                     </div>
                   </div>
@@ -372,7 +394,7 @@ export default function RewardsPage() {
                         return (
                           <div key={i} className="flex justify-between items-center text-sm py-1 border-b last:border-0" style={{ borderColor: "rgba(255,255,255,0.06)" }} data-testid={`tx-row-${i}`}>
                             <span className="text-white truncate max-w-[180px]">{tx.description || tx.reason || ""}</span>
-                            <span className="font-bold tabular-nums" style={{ color: positive ? "#6EE7F9" : "#FFB7E5" }}>
+                            <span className="font-bold tabular-nums" style={{ color: positive ? "#9FD8FF" : "#FFB7E5" }}>
                               {positive ? "+" : ""}{tx.amount ?? 0}
                             </span>
                           </div>
@@ -392,8 +414,8 @@ export default function RewardsPage() {
                 </CosmicCardTitle>
                 <div className="p-5 pt-3">
                   <div
-                    className="text-5xl font-black tabular-nums mb-1 text-transparent bg-clip-text"
-                    style={{ backgroundImage: "linear-gradient(135deg,#FFE29A,#FFE29A)" }}
+                    className="text-5xl font-black tabular-nums mb-1"
+                    style={{ color: "#FFE29A", textShadow: "0 0 20px rgba(255,226,154,0.5)" }}
                     data-testid="streak-count"
                   >
                     {streak}
@@ -508,8 +530,8 @@ export default function RewardsPage() {
             </CosmicCard>
 
             {/* Refer a Friend */}
-            <CosmicCard hex="#6EE7F9" halo="rgba(110,231,249," testId="card-refer-friend">
-              <CosmicCardTitle hex="#6EE7F9" halo="rgba(110,231,249," icon={Users}>
+            <CosmicCard hex="#9FD8FF" halo="rgba(159,216,255," testId="card-refer-friend">
+              <CosmicCardTitle hex="#9FD8FF" halo="rgba(159,216,255," icon={Users}>
                 {t.referHeading}
               </CosmicCardTitle>
               <div className="p-5 pt-3 space-y-4">
@@ -518,9 +540,9 @@ export default function RewardsPage() {
                   <div className="flex flex-col items-center gap-4 py-4 text-center">
                     <div
                       className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center"
-                      style={{ border: "1px solid rgba(110,231,249,0.4)" }}
+                      style={{ border: "1px solid rgba(159,216,255,0.4)" }}
                     >
-                      <Sparkles className="w-7 h-7" style={{ color: "#6EE7F9", filter: "drop-shadow(0 0 6px #6EE7F9)" }} />
+                      <Sparkles className="w-7 h-7" style={{ color: "#9FD8FF", filter: "drop-shadow(0 0 6px #9FD8FF)" }} />
                     </div>
                     <div>
                       <p className="font-bold text-sm text-white mb-1">{t.upgradeToRefer}</p>
@@ -529,7 +551,7 @@ export default function RewardsPage() {
                     <button
                       onClick={() => setLocation("/subscribe")}
                       className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm hover:opacity-90 transition-opacity"
-                      style={{ background: "#6EE7F9", color: "#0a0a0a" }}
+                      style={{ background: "#9FD8FF", color: "#0a0a0a" }}
                       data-testid="button-upgrade-to-refer"
                     >
                       <Sparkles className="w-4 h-4" />
@@ -551,11 +573,11 @@ export default function RewardsPage() {
                       </p>
                       <div
                         className="flex items-center gap-3 p-3 rounded-xl bg-black/40"
-                        style={{ border: "1px solid rgba(110,231,249,0.4)" }}
+                        style={{ border: "1px solid rgba(159,216,255,0.4)" }}
                       >
                         <code
                           className="flex-1 text-base sm:text-lg font-black font-mono tracking-wide"
-                          style={{ color: "#6EE7F9", textShadow: "0 0 12px rgba(110,231,249,0.5)" }}
+                          style={{ color: "#9FD8FF", textShadow: "0 0 12px rgba(159,216,255,0.5)" }}
                           data-testid="referral-code"
                         >
                           {referralCode?.code ?? referral?.code ?? "—"}
@@ -564,8 +586,8 @@ export default function RewardsPage() {
                           onClick={handleCopyCode}
                           disabled={!(referralCode?.code ?? referral?.code)}
                           title={t.copyLinkTitle}
-                          className="inline-flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-bold bg-black text-[#6EE7F9] hover:bg-[#6EE7F9]/10 transition-colors disabled:opacity-50"
-                          style={{ border: "1.5px solid #6EE7F9" }}
+                          className="inline-flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-bold bg-black text-[#9FD8FF] hover:bg-[#9FD8FF]/10 transition-colors disabled:opacity-50"
+                          style={{ border: "1.5px solid #9FD8FF" }}
                           data-testid="button-copy-referral"
                         >
                           {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
@@ -579,7 +601,7 @@ export default function RewardsPage() {
                       <p className="text-[11px] uppercase tracking-[0.2em] text-white font-bold mb-2">
                         {t.shareLink}
                       </p>
-                      <div className="flex items-center gap-2 p-3 rounded-xl bg-black/40" style={{ border: "1px solid rgba(110,231,249,0.25)" }}>
+                      <div className="flex items-center gap-2 p-3 rounded-xl bg-black/40" style={{ border: "1px solid rgba(159,216,255,0.25)" }}>
                         <code className="flex-1 text-xs text-white truncate font-mono" data-testid="referral-link">
                           {referralCode?.link ?? referral?.link ?? "—"}
                         </code>
@@ -587,8 +609,8 @@ export default function RewardsPage() {
                           onClick={handleCopyLink}
                           disabled={!(referralCode?.link ?? referral?.link)}
                           title={t.copyLinkTitle}
-                          className="inline-flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-bold bg-black text-[#6EE7F9] hover:bg-[#6EE7F9]/10 transition-colors disabled:opacity-50 shrink-0"
-                          style={{ border: "1.5px solid #6EE7F9" }}
+                          className="inline-flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-bold bg-black text-[#9FD8FF] hover:bg-[#9FD8FF]/10 transition-colors disabled:opacity-50 shrink-0"
+                          style={{ border: "1.5px solid #9FD8FF" }}
                           data-testid="button-copy-referral-link"
                         >
                           {copiedLink ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
@@ -614,7 +636,7 @@ export default function RewardsPage() {
                           {t.progressToReward}
                         </p>
                         <p className="text-sm text-white" data-testid="referral-progress-text">
-                          <span className="font-black text-lg" style={{ color: "#6EE7F9" }}>
+                          <span className="font-black text-lg" style={{ color: "#9FD8FF" }}>
                             {referral?.towardNextReward ?? 0}
                           </span>
                           <span className="text-white"> / {referral?.threshold ?? 2} </span>
@@ -625,7 +647,7 @@ export default function RewardsPage() {
                             className="h-full rounded-full transition-all"
                             style={{
                               width: `${Math.min(100, ((referral?.towardNextReward ?? 0) / (referral?.threshold ?? 2)) * 100)}%`,
-                              background: "linear-gradient(90deg,#6EE7F9,#9FD8FF)",
+                              background: "linear-gradient(90deg,#9FD8FF,#9FD8FF)",
                             }}
                           />
                         </div>
@@ -634,7 +656,7 @@ export default function RewardsPage() {
                         <p className="text-[11px] uppercase tracking-[0.2em] text-white font-bold mb-1">
                           {t.earnedLabel}
                         </p>
-                        <p className="text-2xl font-black tabular-nums" style={{ color: "#6EE7F9" }} data-testid="referral-months-earned">
+                        <p className="text-2xl font-black tabular-nums" style={{ color: "#9FD8FF" }} data-testid="referral-months-earned">
                           {referral?.monthsEarned ?? 0}
                         </p>
                         <p className="text-[10px] text-white leading-tight">
@@ -680,20 +702,20 @@ export default function RewardsPage() {
                     <ul className="space-y-1.5" data-testid="leaderboard-list">
                       {leaderboard.top.map((row) => {
                         const isMe = row.isCurrentUser;
-                        const medal = row.rank === 1 ? "#FFE29A" : row.rank === 2 ? "#6EE7F9" : row.rank === 3 ? "#FFE29A" : null;
+                        const medal = row.rank === 1 ? "#FFE29A" : row.rank === 2 ? "#9FD8FF" : row.rank === 3 ? "#FFE29A" : null;
                         return (
                           <li
                             key={`${row.rank}-${row.displayName}`}
                             className="grid grid-cols-[auto_1fr_auto] gap-x-3 items-center px-3 py-2 rounded-lg"
                             style={{
-                              background: isMe ? "rgba(110,231,249,0.12)" : "rgba(255,255,255,0.03)",
-                              border: isMe ? "1px solid rgba(110,231,249,0.5)" : "1px solid rgba(255,255,255,0.06)",
+                              background: isMe ? "rgba(159,216,255,0.12)" : "rgba(255,255,255,0.03)",
+                              border: isMe ? "1px solid rgba(159,216,255,0.5)" : "1px solid rgba(255,255,255,0.06)",
                             }}
                             data-testid={`leaderboard-row-${row.rank}`}
                           >
                             <span
                               className="font-black text-sm tabular-nums min-w-[1.75rem] text-center"
-                              style={{ color: medal ?? (isMe ? "#6EE7F9" : "#FFFFFF"), textShadow: medal ? `0 0 10px ${medal}` : undefined }}
+                              style={{ color: medal ?? (isMe ? "#9FD8FF" : "#FFFFFF"), textShadow: medal ? `0 0 10px ${medal}` : undefined }}
                             >
                               {row.rank}
                             </span>
@@ -702,13 +724,13 @@ export default function RewardsPage() {
                               {isMe && (
                                 <span
                                   className="text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider"
-                                  style={{ background: "rgba(110,231,249,0.2)", color: "#6EE7F9", border: "1px solid rgba(110,231,249,0.5)" }}
+                                  style={{ background: "rgba(159,216,255,0.2)", color: "#9FD8FF", border: "1px solid rgba(159,216,255,0.5)" }}
                                 >
                                   {t.leaderboardYou}
                                 </span>
                               )}
                             </span>
-                            <span className="font-bold text-sm tabular-nums" style={{ color: isMe ? "#6EE7F9" : "#FFE29A" }}>
+                            <span className="font-bold text-sm tabular-nums" style={{ color: isMe ? "#9FD8FF" : "#FFE29A" }}>
                               {row.conversions}
                             </span>
                           </li>
@@ -718,7 +740,7 @@ export default function RewardsPage() {
                     {leaderboard.me && !leaderboard.top.some((r) => r.isCurrentUser) && (
                       <div
                         className="mt-3 px-3 py-2 rounded-lg flex items-center justify-between"
-                        style={{ background: "rgba(110,231,249,0.10)", border: "1px solid rgba(110,231,249,0.5)" }}
+                        style={{ background: "rgba(159,216,255,0.10)", border: "1px solid rgba(159,216,255,0.5)" }}
                         data-testid="leaderboard-you-row"
                       >
                         <span className="text-xs text-white">
@@ -728,7 +750,7 @@ export default function RewardsPage() {
                           </span>
                         </span>
                         <span className="text-xs text-white">
-                          <span className="font-bold tabular-nums" style={{ color: "#6EE7F9" }}>
+                          <span className="font-bold tabular-nums" style={{ color: "#9FD8FF" }}>
                             {leaderboard.me.conversions}
                           </span>{" "}
                           <span className="text-white">{t.paidReferrals}</span>
@@ -746,8 +768,8 @@ export default function RewardsPage() {
             </CosmicCard>
 
             {/* Store CTA */}
-            <CosmicCard hex="#6EE7F9" halo="rgba(110,231,249," testId="card-store-cta">
-              <CosmicCardTitle hex="#6EE7F9" halo="rgba(110,231,249," icon={ShoppingBag}>
+            <CosmicCard hex="#9FD8FF" halo="rgba(159,216,255," testId="card-store-cta">
+              <CosmicCardTitle hex="#9FD8FF" halo="rgba(159,216,255," icon={ShoppingBag}>
                 {t.spendCoins}
               </CosmicCardTitle>
               <div className="p-5 pt-3 flex flex-col sm:flex-row sm:items-center gap-4">
@@ -789,10 +811,11 @@ function CosmicCard({
 }) {
   return (
     <div
-      className={`relative rounded-2xl overflow-hidden ${className}`}
+      className={`relative rounded-2xl overflow-hidden transition-all ${className}`}
       style={{
-        background: "rgba(255,255,255,0.04)",
-        border: "1px solid rgba(255,255,255,0.08)",
+        background: "rgba(255,255,255,0.03)",
+        border: `1px solid ${hex}44`,
+        boxShadow: `0 0 18px ${halo}0.14)`,
       }}
       data-testid={testId}
     >
@@ -816,17 +839,20 @@ function CosmicCardTitle({
 }) {
   return (
     <div
-      className="flex items-center gap-2 px-5 py-4"
-      style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}
+      className="flex items-center gap-2.5 px-5 py-4"
+      style={{ borderBottom: `1px solid ${hex}33` }}
     >
-      <Icon className="w-4 h-4" style={{ color: hex, filter: `drop-shadow(0 0 4px ${halo}0.6))` }} />
-      <h3 className="text-base graffiti-hand flex-1 flex items-center gap-2">
-        <span className="callout-hl">{children}</span>
-      </h3>
+      <Icon className="w-4 h-4" style={{ color: hex }} />
+      <span
+        className="flex-1"
+        style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: hex, transform: "rotate(-1.5deg)", display: "inline-block", textShadow: `0 0 10px ${halo}0.4)` }}
+      >
+        {children}
+      </span>
       {typeof count === "number" && (
         <span
-          className="text-[11px] font-black px-2 py-0.5 rounded-full bg-black"
-          style={{ color: hex, border: `1px solid ${hex}` }}
+          className="text-[11px] font-black px-2 py-0.5 rounded-full"
+          style={{ color: hex, border: `1px solid ${hex}`, background: `${hex}1A` }}
         >
           {count}
         </span>

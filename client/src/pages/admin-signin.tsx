@@ -38,9 +38,9 @@ export default function AdminSignInPage() {
           <div className="w-14 h-14 rounded-full bg-muted/40 border border-border/60 flex items-center justify-center">
             <Shield className="w-7 h-7 text-white" />
           </div>
-          <h1 className="text-lg font-semibold tracking-tight" data-testid="text-admin-signin-title">
+          <div role="heading" aria-level={1} className="text-lg font-semibold tracking-tight" data-testid="text-admin-signin-title">
             {isAf ? "Beveiligde Aanmelding" : "Secure Sign in"}
-          </h1>
+          </div>
           <p className="text-xs text-white leading-relaxed">
             {isAf
               ? "Hierdie area is slegs vir gemagtigde personeel. Meld aan om voort te gaan."

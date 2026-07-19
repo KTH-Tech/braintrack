@@ -239,8 +239,8 @@ export async function processExamReminders(schoolIdFilter?: number): Promise<Rem
         const payload = JSON.stringify({
           title,
           body,
-          icon: "/icon-192.png",
-          badge: "/icon-192.png",
+          icon: "/icon-192.png?v=bt2",
+          badge: "/icon-192.png?v=bt2",
           tag: `exam-countdown-${userId}-${examRow.subjectName}-${milestone}`,
           data: { url: "/dashboard", type: "exam_countdown", milestoneDay: milestone },
         });
@@ -382,8 +382,8 @@ export async function sendCustomReminder(input: CustomReminderInput): Promise<Cu
     const payload = JSON.stringify({
       title: input.title,
       body: input.body,
-      icon: "/icon-192.png",
-      badge: "/icon-192.png",
+      icon: "/icon-192.png?v=bt2",
+      badge: "/icon-192.png?v=bt2",
       tag: `custom-reminder-${user.id}-${Date.now()}`,
       data: { url, type: "custom_reminder" },
     });

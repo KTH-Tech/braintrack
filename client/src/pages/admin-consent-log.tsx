@@ -63,9 +63,9 @@ export default function AdminConsentLogPage() {
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-6 h-6 text-primary" />
             <div>
-              <h1 className="text-xl font-bold text-foreground">
+              <div role="heading" aria-level={1} className="text-xl font-bold text-foreground">
                 {isAf ? "Toestemming Ouditlys" : "Consent Audit Log"}
-              </h1>
+              </div>
               <p className="text-xs text-white font-mono">{userId}</p>
             </div>
           </div>
