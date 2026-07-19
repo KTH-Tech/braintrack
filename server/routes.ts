@@ -14,6 +14,7 @@ import { getCuratedTopicCountsBySubject, bumpCuratedTopicCountVersion } from "./
 import { eq, sql, and, desc, asc, isNull, isNotNull, or, gte, lt, lte, count, inArray, notInArray, ilike, type SQL } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { setupAuth, registerAuthRoutes, isAuthenticated, rotateSigningKey, generateAccessToken, generateRefreshToken } from "./replit_integrations/auth";
+import { registerLocalAuthRoutes } from "./local-auth";
 import { authStorage } from "./replit_integrations/auth/storage";
 import OpenAI from "openai";
 import type { TranscriptionVerbose } from "openai/resources/audio/transcriptions";
@@ -1399,6 +1400,9 @@ export async function registerRoutes(
   // Setup auth FIRST — must happen before any middleware or routes that use req.isAuthenticated()
   await setupAuth(app);
   registerAuthRoutes(app);
+  // Native email + password sign-in. Works on any host; does not depend on
+  // Replit OIDC being configured.
+  registerLocalAuthRoutes(app);
 
   // Feedback endpoint
   app.post("/api/tutor/feedback", isAuthenticated, async (req: any, res) => {
@@ -6754,9 +6758,14 @@ Create comprehensive study notes for the topic provided.`;
       const allSubjects = await storage.getAllSubjects();
       
       // Generate weekly report data
+      // Week runs Monday–Sunday in SAST, matching the date_trunc('week') bucketing
+      // used for the activity aggregation below. Deriving these from the server's
+      // local timezone would label the numbers with the wrong dates on a UTC host.
       const now = new Date();
-      const weekStart = new Date(now);
-      weekStart.setDate(now.getDate() - now.getDay());
+      const sastNow = new Date(now.toLocaleString("en-US", { timeZone: "Africa/Johannesburg" }));
+      const weekStart = new Date(sastNow);
+      weekStart.setDate(sastNow.getDate() - ((sastNow.getDay() + 6) % 7));
+      weekStart.setHours(0, 0, 0, 0);
       const weekEnd = new Date(weekStart);
       weekEnd.setDate(weekStart.getDate() + 6);
       
@@ -6840,13 +6849,53 @@ Create comprehensive study notes for the topic provided.`;
         .filter((n): n is string => Boolean(n))
         .slice(0, 3);
 
+      // Real weekly activity, bucketed in SAST — the timezone learners and the DBE
+      // timetable actually run on. This block used to report `questionsAnswered * 2`
+      // as minutes off LIFETIME totals while labelling it "this week", so a learner
+      // with 900 lifetime questions showed parents "30h 00m studied this week".
+      let weekMinutes = 0;
+      let weekStudyDays = 0;
+      let weekQuestions = 0;
+      let weekCorrect = 0;
+      let lastActiveAt: string | null = null;
+      try {
+        const weekAgg: any = await db.execute(sql`
+          with local_attempts as (
+            select
+              ((created_at at time zone 'UTC') at time zone 'Africa/Johannesburg') as local_ts,
+              coalesce(time_spent_seconds, 0) as secs,
+              is_correct
+            from attempts
+            where user_id = ${learnerTargetId}
+          )
+          select
+            coalesce(round(sum(secs) filter (where local_ts >= date_trunc('week', (now() at time zone 'Africa/Johannesburg'))) / 60.0), 0)::int as total_minutes,
+            count(distinct local_ts::date) filter (where local_ts >= date_trunc('week', (now() at time zone 'Africa/Johannesburg')))::int as study_days,
+            count(*) filter (where local_ts >= date_trunc('week', (now() at time zone 'Africa/Johannesburg')))::int as questions_answered,
+            count(*) filter (where is_correct and local_ts >= date_trunc('week', (now() at time zone 'Africa/Johannesburg')))::int as correct_answers,
+            max(local_ts) as last_active
+          from local_attempts
+        `);
+        const agg = (weekAgg.rows ?? weekAgg)[0] ?? {};
+        weekMinutes = Number(agg.total_minutes) || 0;
+        weekStudyDays = Number(agg.study_days) || 0;
+        weekQuestions = Number(agg.questions_answered) || 0;
+        weekCorrect = Number(agg.correct_answers) || 0;
+        lastActiveAt = agg.last_active ? new Date(agg.last_active).toISOString() : null;
+      } catch (e) {
+        console.error("[Parent Report] weekly activity aggregation failed:", e);
+      }
+
       const weeklyReport = {
         weekStarting: weekStart.toISOString(),
         weekEnding: weekEnd.toISOString(),
-        studyDays: Math.min(stats.studyStreak, 7),
-        totalMinutes: stats.questionsAnswered * 2,
-        questionsAnswered: stats.questionsAnswered,
-        accuracy: stats.accuracy,
+        studyDays: weekStudyDays,
+        totalMinutes: weekMinutes,
+        questionsAnswered: weekQuestions,
+        accuracy: weekQuestions > 0 ? Math.round((weekCorrect / weekQuestions) * 100) : 0,
+        // Lifetime figures kept alongside so nothing that needs all-time loses it.
+        lifetimeQuestionsAnswered: stats.questionsAnswered,
+        lifetimeAccuracy: stats.accuracy,
         subjectBreakdown: subjectBreakdown.slice(0, 4),
         achievements,
         areasForImprovement,
@@ -6950,7 +6999,9 @@ Create comprehensive study notes for the topic provided.`;
         overallAccuracy: stats.accuracy,
         totalQuestionsAnswered: stats.questionsAnswered,
         totalPapersCompleted: stats.papersCompleted,
-        lastActiveDate: new Date().toISOString(),
+        // Real last-seen from the learner's most recent attempt. This was hardcoded to
+        // now, so a child who hadn't opened the app in weeks still read "active today".
+        lastActiveDate: lastActiveAt,
         weeklyReport,
         subjectMarks,
         examSessions: examSessionResults,

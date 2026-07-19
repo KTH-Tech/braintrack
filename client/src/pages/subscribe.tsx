@@ -390,7 +390,7 @@ export default function SubscribePage() {
             <Link href="/features"><span className="bts-nav-link">{isAf ? "Funksies" : "Features"}</span></Link>
             <Link href="/research"><span className="bts-nav-link">{isAf ? "Navorsing" : "Research"}</span></Link>
           </span>
-          <a href="/api/login">
+          <a href="/signin">
             <button
               className="bts-nav-cta"
               data-testid="button-nav-enter"

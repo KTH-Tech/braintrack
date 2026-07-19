@@ -99,7 +99,7 @@ export function PublicNav() {
                 </a>
               </div>
             ) : location === "/" ? (
-              <a href="/api/login">
+              <a href="/signin">
                 <button
                   data-testid="button-sign-in"
                   className="inline-flex items-center px-5 py-2 rounded-xl text-[12px] font-black uppercase tracking-wider text-black transition-all hover:scale-105 active:scale-95"
@@ -205,7 +205,7 @@ export function PublicNav() {
               </>
             ) : location === "/" ? (
               <a
-                href="/api/login"
+                href="/signin"
                 className="nav-mobile-item block"
                 style={{ animationDelay: `${navLinks.length * 50}ms` }}
               >

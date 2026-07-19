@@ -243,7 +243,7 @@ export default function ResearchPage() {
             <span style={{ padding: "6px 10px", background: en ? "#9FF5E8" : "transparent", color: en ? "#050508" : "#fff" }}>EN</span>
             <span style={{ padding: "6px 10px", background: en ? "transparent" : "#9FF5E8", color: en ? "#fff" : "#050508" }}>AF</span>
           </span>
-          <a href="/api/login">
+          <a href="/signin">
             <button
               className="btr-nav-cta"
               data-testid="button-nav-enter"

@@ -108,6 +108,7 @@ const NotFound = lazy(() => import("@/pages/not-found"));
 const LandingPage = lazy(() => import("@/pages/landing"));
 const OnboardingPage = lazy(() => import("@/pages/onboarding"));
 const SubscribePage = lazy(() => import("@/pages/subscribe"));
+const SignInPage = lazy(() => import("@/pages/signin"));
 const DashboardPage = lazy(() => import("@/pages/dashboard"));
 const AdminDashboardPage = lazy(() => import("@/pages/admin-dashboard"));
 const SubjectsPage = lazy(() => import("@/pages/subjects"));
@@ -681,6 +682,10 @@ function Router() {
             <SubscribePage />
           </SubscribeRoute>
         </Route>
+
+        {/* Native email + password auth — works without Replit OIDC. */}
+        <Route path="/signin"><SignInPage /></Route>
+        <Route path="/login"><SignInPage /></Route>
 
         <Route path="/dashboard">
           <ProtectedRoute>
