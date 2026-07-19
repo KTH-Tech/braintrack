@@ -13,7 +13,6 @@ import { GraffitiSplats } from "@/components/graffiti-splats";
 import { type VarkStyle, VARK_STYLES } from "@/lib/vark";
 import { useLanguage } from "@/lib/language-context";
 import { useAuth } from "@/hooks/use-auth";
-import rizzAvatar from "@/assets/handoff/rizz-avatar.png";
 
 interface SubjectMark {
   subjectCode: string;
@@ -707,130 +706,6 @@ function usePrefersReducedMotion(): boolean {
   return reduced;
 }
 
-// ── Rizz: the guide who hosts the whole journey ─────────────────────────────
-type RizzMood = "welcome" | "curious" | "hyped" | "impressed" | "proud";
-
-const MOOD_RING: Record<RizzMood, string> = {
-  welcome: BRAND.cyan,
-  curious: BRAND.purple,
-  hyped: BRAND.yellow,
-  impressed: BRAND.mint,
-  proud: BRAND.pink,
-};
-
-const MOOD_SPARK: Record<RizzMood, string> = {
-  welcome: "👋",
-  curious: "🤔",
-  hyped: "⚡",
-  impressed: "🔥",
-  proud: "🏆",
-};
-
-function RizzGuide({
-  mood,
-  line,
-  sub,
-  name,
-  reduced,
-  size = "md",
-}: {
-  mood: RizzMood;
-  line: string;
-  sub?: string;
-  name: string;
-  reduced: boolean;
-  size?: "md" | "lg";
-}) {
-  const ring = MOOD_RING[mood];
-  const avatar = size === "lg" ? 84 : 64;
-  return (
-    <div
-      className="flex items-start gap-3 sm:gap-4 w-full"
-      data-testid="rizz-guide"
-      data-rizz-mood={mood}
-    >
-      <div className="relative shrink-0" style={{ width: avatar, height: avatar }}>
-        <span
-          aria-hidden
-          className="absolute inset-0 rounded-full"
-          style={{
-            border: `2px solid ${ring}`,
-            boxShadow: `0 0 18px ${ring}66, inset 0 0 12px ${ring}22`,
-            transition: "border-color .4s ease, box-shadow .4s ease",
-          }}
-        />
-        <img
-          src={rizzAvatar}
-          alt={name}
-          width={avatar}
-          height={avatar}
-          className="relative rounded-full object-cover select-none"
-          style={{
-            width: avatar,
-            height: avatar,
-            background: BRAND.card,
-            animation: reduced ? undefined : "bt-rizzbob 3.6s ease-in-out infinite",
-          }}
-        />
-        <span
-          aria-hidden
-          className="absolute -bottom-1 -right-1 flex items-center justify-center rounded-full"
-          style={{
-            width: 24,
-            height: 24,
-            fontSize: 13,
-            background: BRAND.ground,
-            border: `1.5px solid ${ring}`,
-          }}
-        >
-          {MOOD_SPARK[mood]}
-        </span>
-      </div>
-
-      <div className="relative flex-1 min-w-0">
-        <span
-          aria-hidden
-          className="absolute left-[-5px] top-6 hidden sm:block"
-          style={{
-            width: 12,
-            height: 12,
-            background: BRAND.card,
-            borderLeft: "1px solid rgba(255,255,255,.16)",
-            borderBottom: "1px solid rgba(255,255,255,.16)",
-            transform: "rotate(45deg)",
-          }}
-        />
-        <div
-          className="rounded-2xl px-4 py-3 sm:px-5 sm:py-4"
-          style={{
-            background: BRAND.card,
-            border: "1px solid rgba(255,255,255,.16)",
-            boxShadow: `0 0 22px ${ring}22`,
-          }}
-        >
-          <p
-            className="text-[11px] uppercase tracking-[0.18em] text-white mb-1"
-            style={{ fontFamily: MARKER, letterSpacing: "0.08em" }}
-          >
-            {name}
-          </p>
-          <p className="text-white font-semibold text-[15px] sm:text-base leading-snug break-words">
-            {line}
-          </p>
-          {sub && (
-            <p
-              className="mt-1.5 text-white text-[13px] sm:text-sm leading-snug break-words"
-              style={{ fontFamily: MARKER, color: ring }}
-            >
-              {sub}
-            </p>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ── One "question block" for the sequenced details step ─────────────────────
 function StepBlock({
   n,
@@ -1308,59 +1183,7 @@ export default function OnboardingPage() {
     ? BRAND.cyan
     : BRAND.pink;
 
-  const RIZZ_QUESTION_LINE: Record<string, string> = {
-    study: t.rizzQstudy,
-    focus: t.rizzQfocus,
-    practice: t.rizzQpractice,
-    stress: t.rizzQstress,
-    planning: t.rizzQplanning,
-  };
-
-  // Per-phase Rizz mood + copy.
-  const schoolDone = canProceed() && phase === "school";
   const subjectsDone = subjectMarks.length >= 6;
-  const rizzMood: RizzMood =
-    phase === "questions"
-      ? currentStep === 0
-        ? "welcome"
-        : "curious"
-      : phase === "vark"
-      ? "hyped"
-      : phase === "subjects"
-      ? subjectsDone
-        ? "impressed"
-        : "hyped"
-      : phase === "school"
-      ? schoolDone
-        ? "impressed"
-        : "curious"
-      : "proud";
-
-  const rizzLine =
-    phase === "questions"
-      ? currentStep === 0
-        ? t.rizzHi
-        : RIZZ_QUESTION_LINE[category]
-      : phase === "vark"
-      ? t.rizzVarkLine
-      : phase === "subjects"
-      ? subjectsDone
-        ? t.rizzSubjectsDone
-        : t.rizzSubjectsLine
-      : phase === "school"
-      ? schoolDone
-        ? t.rizzSchoolDone
-        : t.rizzSchoolLine
-      : t.rizzFinalLine;
-
-  const rizzSub =
-    phase === "questions" && currentStep === 0
-      ? t.rizzHiSub
-      : phase === "parent_consent"
-      ? t.rizzFinalSub
-      : progress >= 75
-      ? t.almostThere
-      : undefined;
 
   // Subject list, filtered for the picker. Default (no filter, "All") keeps
   // every subject in the DOM so nothing is hidden by default.
@@ -1514,16 +1337,6 @@ export default function OnboardingPage() {
 
       <main className="relative z-10 flex-1 w-full">
         <div className="w-full max-w-2xl mx-auto px-4 py-6 sm:py-8 space-y-5">
-          {/* Rizz hosts every single step. */}
-          <RizzGuide
-            mood={rizzMood}
-            line={rizzLine}
-            sub={rizzSub}
-            name={t.rizzName}
-            reduced={reduced}
-            size={phase === "parent_consent" ? "lg" : "md"}
-          />
-
           {/* ── PHASE: QUESTIONS — one big question per screen ─────────────── */}
           {phase === "questions" && currentQuestion && (
             <section
@@ -2510,13 +2323,7 @@ export default function OnboardingPage() {
                 className="rounded-3xl p-7 text-center max-w-sm w-full"
                 style={{ background: BRAND.card, border: `1px solid ${BRAND.cyan}55`, boxShadow: `0 0 40px ${BRAND.cyan}33` }}
               >
-                <img
-                  src={rizzAvatar}
-                  alt={t.rizzName}
-                  className="w-20 h-20 rounded-full mx-auto mb-4 object-cover"
-                  style={{ border: `2px solid ${BRAND.cyan}`, animation: anim("bt-rizzbob 2s ease-in-out infinite") }}
-                />
-                <Loader2 className="w-7 h-7 animate-spin mx-auto mb-3" style={{ color: BRAND.cyan }} />
+                <Loader2 className="w-9 h-9 animate-spin mx-auto mb-4" style={{ color: BRAND.cyan }} />
                 <h3 className="text-lg font-extrabold text-white mb-1">{t.preparingClassroomTitle}</h3>
                 <p className="text-sm text-white">{t.preparingClassroomDesc}</p>
                 <p className="mt-3" style={{ fontFamily: MARKER, color: BRAND.yellow, fontSize: 16 }}>{t.letsGetIt}</p>
@@ -2540,10 +2347,6 @@ export default function OnboardingPage() {
         @keyframes bt-fadeup {
           from { opacity: 0; transform: translateY(14px); }
           to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes bt-rizzbob {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-5px); }
         }
         @keyframes bt-checkpop {
           0% { transform: scale(.7); }
