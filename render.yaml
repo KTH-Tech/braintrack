@@ -161,3 +161,25 @@ services:
         sync: false
       - key: CRON_SECRET
         sync: false
+
+  # ── Cron: Anonymised Cohort Aggregation — runs daily at 02:00 UTC ───────────
+  # Rolls per-learner attempt data up into the de-identified cohort_performance
+  # table (k-anonymity K>=10 enforced in server/cohort-analytics.ts). No learner
+  # identifiers are persisted. Idempotent — upserts each bucket in place.
+  - type: cron
+    name: braintrack-aggregate-cohort
+    runtime: node
+    region: frankfurt
+    schedule: "0 2 * * *"
+    buildCommand: echo "skip build"
+    startCommand: >
+      curl -sf -X POST
+      -H "Authorization: Bearer $CRON_SECRET"
+      -H "Content-Type: application/json"
+      "${APP_URL}/api/cron/aggregate-cohort"
+      | node -e "process.stdin.resume(); process.stdin.on('data', d => console.log(d.toString()));"
+    envVars:
+      - key: APP_URL
+        sync: false
+      - key: CRON_SECRET
+        sync: false

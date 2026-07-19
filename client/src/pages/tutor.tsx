@@ -41,6 +41,7 @@ import type { Subject, OnboardingResult, TutorMessage, Topic, TutorFeedback } fr
 import { BrainTrackLogo } from "@/components/braintrack-logo";
 import { TopicMindmap } from "@/components/topic-mindmap";
 import { GraffitiSplats, SpraySmear } from "@/components/graffiti-splats";
+import { RizzFace, RizzWordmark, RizzBrandStyles, type RizzExpression } from "@/components/rizz-brand";
 import brandLogo from "@assets/Logo_01_1779989960628.jpeg";
 
 const TUTOR_AVATARS: Record<string, { icon: any; color: string; bgFrom: string; bgTo: string }> = {
@@ -616,9 +617,21 @@ export default function TutorPage() {
                   <span className="max-[374px]:hidden">{t.homeLabel}</span>
                 </button>
               </Link>
-              <span className="hidden sm:inline text-base tracking-tight graffiti-hand" style={{ color: "#C5B3FF", textShadow: "0 0 8px rgba(197,179,255,0.45)" }}>
-                Rizz
-              </span>
+              {/* Rizz, alive — expression tracks whether he's working. */}
+              <RizzBrandStyles />
+              <div className="flex items-center gap-2 min-w-0">
+                <RizzFace
+                  expression={
+                    (askMutation.isPending || notesMutation.isPending
+                      ? "thinking"
+                      : "happy") as RizzExpression
+                  }
+                  size={34}
+                />
+                <span className="hidden sm:inline-flex">
+                  <RizzWordmark size={20} />
+                </span>
+              </div>
             </div>
             <div className="flex items-center gap-1 min-[375px]:gap-2 shrink-0">
               <button
@@ -1701,19 +1714,8 @@ export default function TutorPage() {
               })}
               {askMutation.isPending && (
                 <div className="flex gap-3 justify-start">
-                  {(() => {
-                    const learningStyle = profile?.learningStyle || "mixed";
-                    const tutorAvatar = TUTOR_AVATARS[learningStyle] || TUTOR_AVATARS.mixed;
-                    const TutorIcon = tutorAvatar.icon;
-                    return (
-                      <div
-                        className="w-8 h-8 rounded-lg bg-background flex items-center justify-center"
-                        style={{ border: "1.5px solid #C5B3FF", boxShadow: "0 0 10px rgba(197,179,255,0.5)" }}
-                      >
-                        <TutorIcon className="w-4 h-4" style={{ color: "#C5B3FF", filter: "drop-shadow(0 0 3px #C5B3FF)" }} />
-                      </div>
-                    );
-                  })()}
+                  {/* Rizz himself, thinking — expression state made visible. */}
+                  <RizzFace expression="thinking" size={32} radius={9} />
                   <div
                     className="rounded-2xl px-4 py-3 bg-background"
                     style={{ border: "1.5px solid rgba(197,179,255,0.6)", boxShadow: "0 0 18px rgba(197,179,255,0.3)" }}

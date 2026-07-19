@@ -786,16 +786,7 @@ export default function SubjectsPage() {
             )}
 
             {/* Subject grid */}
-            {isLoading ? (
-              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <div
-                    key={i}
-                    className="h-44 rounded-2xl bg-white/5 border border-white/10 animate-pulse"
-                  />
-                ))}
-              </div>
-            ) : filteredSubjects.length > 0 ? (
+            {filteredSubjects.length > 0 ? (
               <div
                 key={language}
                 className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
@@ -819,6 +810,7 @@ export default function SubjectsPage() {
                         isAf={isAf}
                         t={t}
                         testId={`subject-card-${subject.id}`}
+                        animDelay={Math.min(idx, 8) * 0.05}
                       />
                     </Link>
                   );
@@ -849,8 +841,11 @@ export default function SubjectsPage() {
           </>
         )}
 
-        {/* When subjects are loading */}
-        {isLoading ? (
+        {/* Loading skeleton — the main grid above only renders once data is in,
+            so this is the only surface shown while subjects load. (The grid was
+            previously duplicated here unconditionally, rendering every subject
+            card twice — that duplication is removed.) */}
+        {isLoading && (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div
@@ -858,56 +853,6 @@ export default function SubjectsPage() {
                 className="h-44 rounded-2xl bg-white/5 border border-white/10 animate-pulse"
               />
             ))}
-          </div>
-        ) : filteredSubjects.length > 0 ? (
-          <div
-            key={language}
-            className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
-          >
-            {filteredSubjects.map((subject, idx) => {
-              const Icon = getSubjectLucide(subject.name);
-              const hex = RAINBOW[idx % RAINBOW.length];
-              const prog = progressBySubject.get(subject.id);
-              return (
-                <Link key={subject.id} href={`/subject/${subject.id}`}>
-                  <SubjectNeonCard
-                    title={isAf ? subject.nameAfrikaans : subject.name}
-                    altTitle={isAf ? subject.name : subject.nameAfrikaans}
-                    category={getCategoryLabel(subject.category)}
-                    Icon={Icon}
-                    hex={hex}
-                    accuracy={prog?.accuracy ?? 0}
-                    questionsAttempted={prog?.questionsAttempted ?? 0}
-                    papersCompleted={prog?.papersCompleted ?? 0}
-                    curatedTopicCount={(subject as any).curatedTopicCount ?? 0}
-                    isAf={isAf}
-                    t={t}
-                    testId={`subject-card-${subject.id}`}
-                  />
-                </Link>
-              );
-            })}
-          </div>
-        ) : (
-          <div
-            className="relative text-center py-16 rounded-[22px] bg-white/[.03] overflow-hidden"
-            style={{
-              border: "1px solid rgba(255,255,255,0.1)",
-            }}
-          >
-            <Sparkles
-              className="w-12 h-12 mx-auto mb-4"
-              style={{
-                color: "#C5B3FF",
-                filter: "drop-shadow(0 0 10px #C5B3FF)",
-              }}
-            />
-            <p className="text-lg text-white font-semibold">
-              {t.noSubjectsFound}
-            </p>
-            <p className="text-sm text-white mt-1">
-              {searchQuery ? t.tryDifferentSearch : t.subjectsWillAppear}
-            </p>
           </div>
         )}
       </main>
@@ -999,6 +944,7 @@ function SubjectNeonCard({
   isAf,
   t,
   testId,
+  animDelay = 0,
 }: {
   title: string;
   altTitle: string;
@@ -1012,16 +958,17 @@ function SubjectNeonCard({
   isAf: boolean;
   t: typeof T["en"] | typeof T["af"];
   testId: string;
+  animDelay?: number;
 }) {
   const hasProgress = questionsAttempted > 0;
   const pct = Math.max(0, Math.min(100, Math.round(accuracy)));
 
   const strengthHex =
-    !hasProgress ? "rgba(255,255,255,0.25)"
-    : pct >= 75 ? "#9FF5E8"
-    : pct >= 55 ? "#FFE29A"
+    !hasProgress ? "#ffffff"
+    : pct >= 75 ? "#94F7C5"
+    : pct >= 55 ? "#9FF5E8"
     : pct >= 35 ? "#FFE29A"
-    : "#FFB7E5";
+    : "#FF8DA1";
   const strengthLabel =
     !hasProgress ? t.notStarted
     : pct >= 75 ? t.strong
@@ -1038,6 +985,7 @@ function SubjectNeonCard({
         border: "1px solid rgba(255,255,255,.08)",
         borderRadius: 22,
         transition: "transform .25s, box-shadow .25s",
+        animation: `bt-fadeup .45s cubic-bezier(.22,1,.36,1) ${animDelay}s both`,
       }}
       onMouseEnter={(e) => (e.currentTarget.style.boxShadow = `0 14px 44px -18px ${hex}, 0 0 24px ${hex}33`)}
       onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}

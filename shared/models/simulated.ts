@@ -104,6 +104,55 @@ export const paymentEvents = pgTable("payment_events", {
   providerEventUq: uniqueIndex("payment_events_provider_event_uq").on(t.provider, t.providerEventId),
 }));
 
+/**
+ * Anonymised cohort performance — aggregate learner outcomes rolled up per
+ * (subject, topic, paper, cognitive level, grade, province, school-size band,
+ * ISO-week). This is the ONLY analytics surface intended to persist learner
+ * performance for ongoing product improvement.
+ *
+ * PRIVACY / POPIA (data minimisation + de-identification):
+ *  - There is deliberately NO user_id, NO learner identifier, NO school id,
+ *    and NO free-text here. A row is a count over a bucket, never a person.
+ *  - `sampleSize` is the number of DISTINCT learners contributing to the
+ *    bucket. A k-anonymity guard (K_ANONYMITY_MIN = 10) means a bucket is
+ *    only ever written or returned when sampleSize >= 10, so no individual
+ *    learner can be re-identified from a thin bucket (e.g. a single learner
+ *    at a small school in a small province). The guard is enforced in code
+ *    (server/cohort-analytics.ts), not by convention: buckets that fall
+ *    below K are SUPPRESSED (never written) at aggregation time, and the
+ *    read path additionally filters on sampleSize >= K as defence in depth.
+ *  - `province` and `schoolSizeBand` are nullable and intentionally coarse
+ *    (a province name and a 3-way size band, never a school id/name), so
+ *    that even a written bucket generalises the cohort rather than pointing
+ *    at one classroom.
+ */
+export const cohortPerformance = pgTable("cohort_performance", {
+  id: serial("id").primaryKey(),
+  subject: text("subject").notNull(),
+  topic: text("topic"),
+  paperNumber: integer("paper_number"),
+  cognitiveLevel: text("cognitive_level"),
+  grade: integer("grade"),
+  // Coarse, non-identifying cohort dimensions. Nullable by design.
+  province: text("province"),
+  schoolSizeBand: text("school_size_band"), // 'small' | 'medium' | 'large'
+  // ISO week the underlying attempts fall in, e.g. '2026-W29'.
+  bucketPeriod: text("bucket_period").notNull(),
+  attempts: integer("attempts").notNull().default(0),
+  correct: integer("correct").notNull().default(0),
+  avgScorePct: numeric("avg_score_pct", { mode: "number" }),
+  // Distinct learners behind this bucket. MUST be >= 10 for the row to exist.
+  sampleSize: integer("sample_size").notNull().default(0),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+}, (t) => ({
+  // One aggregate row per fully-qualified bucket. Re-runs upsert in place.
+  bucketUq: uniqueIndex("cohort_performance_bucket_uq").on(
+    t.subject, t.topic, t.paperNumber, t.cognitiveLevel,
+    t.grade, t.province, t.schoolSizeBand, t.bucketPeriod,
+  ),
+  subjectPeriodIdx: index("cohort_performance_subject_period_idx").on(t.subject, t.bucketPeriod),
+}));
+
 /** Which papers each learner holds — enforces the ≥8-papers-per-learner rule. */
 export const learnerPaperAllocations = pgTable("learner_paper_allocations", {
   id: serial("id").primaryKey(),

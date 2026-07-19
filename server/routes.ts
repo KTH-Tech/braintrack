@@ -17,6 +17,7 @@ import { alias } from "drizzle-orm/pg-core";
 import { setupAuth, registerAuthRoutes, isAuthenticated, rotateSigningKey, generateAccessToken, generateRefreshToken } from "./replit_integrations/auth";
 import { registerLocalAuthRoutes } from "./local-auth";
 import { registerPaystackRoutes, isPaystackConfigured, paystackFetch, recordEventOnce, applyCardCaptureSuccess } from "./paystack";
+import { registerRizzRoutes } from "./rizz";
 import { authStorage } from "./replit_integrations/auth/storage";
 import OpenAI from "openai";
 import type { TranscriptionVerbose } from "openai/resources/audio/transcriptions";
@@ -103,6 +104,19 @@ const WATERMARK_SECRET = createHash("sha256").update(_sessionKeyBase + ":waterma
 // EXAM TOKEN — ANTI-AUTOMATION (T026)
 // ============================================
 const EXAM_TOKEN_SECRET = createHash("sha256").update(_sessionKeyBase + ":exam-token").digest("hex");
+
+/**
+ * Constant-time check of a cron Authorization header against CRON_SECRET.
+ * Plain `!==` short-circuits on the first differing byte, which leaks secret
+ * prefix length via response timing (security audit M-3). Hashing both sides
+ * first also removes the length side-channel timingSafeEqual would throw on.
+ */
+function cronAuthOk(authHeader: string | undefined, cronSecret: string): boolean {
+  const provided = createHash("sha256").update(String(authHeader ?? "")).digest();
+  const expected = createHash("sha256").update(`Bearer ${cronSecret}`).digest();
+  return timingSafeEqual(provided, expected);
+}
+
 const EXAM_MIN_SECONDS = 30; // Submissions in under 30 seconds are considered automated
 const EXAM_SCRAPING_HOURLY_THRESHOLD = 3; // >3 exams/hour → SUSPECTED_SCRAPING alert
 
@@ -1463,6 +1477,11 @@ export async function registerRoutes(
   // Paystack checkout + recurring subscriptions (sole payment provider —
   // Netcash retired per owner decision, 2026-07-19).
   registerPaystackRoutes(app, isAuthenticated);
+
+  // Rizz — role-aware AI mascot + troubleshooting agent. Role and data scope
+  // are resolved from the authenticated session inside the handler (visitors
+  // allowed), so this is intentionally NOT wrapped in isAuthenticated here.
+  registerRizzRoutes(app, { openai, limiter: tutorLimiter });
 
   // Feedback endpoint
   app.post("/api/tutor/feedback", isAuthenticated, async (req: any, res) => {
@@ -16674,7 +16693,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       console.error("[StreakReminderPush] refusing request — CRON_SECRET not configured");
       return res.status(503).json({ error: "Cron secret not configured" });
     }
-    if (authHeader !== `Bearer ${cronSecret}`) {
+    if (!cronAuthOk(authHeader, cronSecret)) {
       return res.status(401).json({ error: "Unauthorized" });
     }
 
@@ -16741,7 +16760,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       return res.status(503).json({ error: "Cron secret not configured" });
     }
     const authHeader = req.headers.authorization;
-    if (authHeader !== `Bearer ${cronSecret}`) {
+    if (!cronAuthOk(authHeader, cronSecret)) {
       return res.status(401).json({ error: "Unauthorized" });
     }
 
@@ -16777,7 +16796,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       console.error("[ChargeTrials] refusing request — CRON_SECRET not configured");
       return res.status(503).json({ error: "Cron secret not configured" });
     }
-    if (req.headers.authorization !== `Bearer ${cronSecret}`) {
+    if (!cronAuthOk(req.headers.authorization, cronSecret)) {
       return res.status(401).json({ error: "Unauthorized" });
     }
     if (!isPaystackConfigured()) {
@@ -16832,6 +16851,12 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
               email: chargeEmail,
               amount: 16900, // R169.00 in minor units
               currency: "ZAR",
+              // Deterministic PER-SUBSCRIPTION reference (audit M-2): if our
+              // ledger write or HTTP read fails AFTER Paystack processed the
+              // charge, tomorrow's run would re-charge under a new date-scoped
+              // event id. Paystack rejects duplicate references, so the
+              // provider itself guarantees at-most-once trial conversion.
+              reference: `trialconv-${sub.id}`,
               metadata: { userId: sub.userId, purpose: "trial_conversion" },
             }),
           });
@@ -16918,7 +16943,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
     if (!cronSecret) {
       return res.status(503).json({ error: "CRON_SECRET not configured" });
     }
-    if (req.headers.authorization !== `Bearer ${cronSecret}`) {
+    if (!cronAuthOk(req.headers.authorization, cronSecret)) {
       return res.status(401).json({ error: "Unauthorized" });
     }
 
@@ -16994,7 +17019,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
     if (!cronSecret) {
       return res.status(503).json({ error: "CRON_SECRET not configured" });
     }
-    if (req.headers.authorization !== `Bearer ${cronSecret}`) {
+    if (!cronAuthOk(req.headers.authorization, cronSecret)) {
       return res.status(401).json({ error: "Unauthorized" });
     }
 
@@ -17163,6 +17188,64 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       graceLapsed: pushResult.graceLapsed ?? 0,
       stuckLinksCount: stuckLinksFound,
     });
+  });
+
+  // ─── Cron: anonymised cohort aggregation ────────────────────────────
+  // Rolls per-learner attempt data up into the de-identified
+  // `cohort_performance` table (k-anonymity K>=10 enforced in
+  // server/cohort-analytics.ts). Bearer CRON_SECRET — same pattern as the
+  // other crons. render.yaml runs this daily at 02:00 UTC.
+  app.post("/api/cron/aggregate-cohort", async (req, res) => {
+    const cronSecret = process.env.CRON_SECRET;
+    if (!cronSecret) {
+      console.error("[CohortAgg] refusing request — CRON_SECRET not configured");
+      return res.status(503).json({ error: "CRON_SECRET not configured" });
+    }
+    if (!cronAuthOk(req.headers.authorization, cronSecret)) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    try {
+      const { aggregateCohortPerformance } = await import("./cohort-analytics");
+      const sinceDaysRaw = Number((req.body as any)?.sinceDays);
+      const sinceDays = Number.isFinite(sinceDaysRaw) && sinceDaysRaw > 0
+        ? Math.min(sinceDaysRaw, 3650)
+        : undefined;
+      const result = await aggregateCohortPerformance({ sinceDays });
+      console.log(
+        `[CohortAgg] complete — written=${result.bucketsWritten} ` +
+        `suppressed=${result.bucketsSuppressed} attempts=${result.attemptsRolledUp}`,
+      );
+      res.json({ success: true, ...result });
+    } catch (err: any) {
+      console.error("[CohortAgg] run failed:", err?.message ?? err);
+      res.status(500).json({ error: "Failed to aggregate cohort performance" });
+    }
+  });
+
+  // ─── Admin: anonymised cohort insights (weakest topics) ─────────────
+  app.get("/api/admin/cohort-insights", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    try {
+      const { getWeakestTopicsByCohort } = await import("./cohort-analytics");
+      const subject = typeof req.query.subject === "string" ? req.query.subject : undefined;
+      const limit = req.query.limit ? Number(req.query.limit) : undefined;
+      const weakestTopics = await getWeakestTopicsByCohort({ subject, limit });
+      res.json({ weakestTopics });
+    } catch (err: any) {
+      console.error("[GET /api/admin/cohort-insights]", err);
+      res.status(500).json({ error: "Failed to load cohort insights" });
+    }
+  });
+
+  // ─── Admin: DBE / CAPS curriculum-mapping proof (DBE portal) ────────
+  app.get("/api/admin/dbe-mapping-report", isAuthenticated, requireRole("admin"), async (_req: any, res) => {
+    try {
+      const { computeDbeMappingReport } = await import("./dbe-mapping-report");
+      const report = await computeDbeMappingReport();
+      res.json(report);
+    } catch (err: any) {
+      console.error("[GET /api/admin/dbe-mapping-report]", err);
+      res.status(500).json({ error: "Failed to build DBE mapping report" });
+    }
   });
 
   // ─── Admin: billing overview ───────────────────────────────────────
@@ -20296,7 +20379,7 @@ Return a JSON object:
   });
 
   // GET /api/admin/timetable — admin: full timetable view
-  app.get("/api/admin/timetable", isAuthenticated, async (req: Request, res: Response) => {
+  app.get("/api/admin/timetable", isAuthenticated, requireRole("admin"), async (req: Request, res: Response) => {
     try {
       const role = (req as any).user?.role;
 
@@ -20314,7 +20397,7 @@ Return a JSON object:
   });
 
   // PATCH /api/admin/timetable/mappings/:id — update a subject mapping
-  app.patch("/api/admin/timetable/mappings/:id", isAuthenticated, async (req: Request, res: Response) => {
+  app.patch("/api/admin/timetable/mappings/:id", isAuthenticated, requireRole("admin"), async (req: Request, res: Response) => {
     try {
       const role = (req as any).user?.role;
       const adminId = (req as any).user?.claims?.sub;
@@ -20358,7 +20441,7 @@ Return a JSON object:
   });
 
   // GET /api/admin/timetable/cohort-pressure — exam pressure heatmap for admin
-  app.get("/api/admin/timetable/cohort-pressure", isAuthenticated, async (req: Request, res: Response) => {
+  app.get("/api/admin/timetable/cohort-pressure", isAuthenticated, requireRole("admin"), async (req: Request, res: Response) => {
     try {
       const role = (req as any).user?.role;
 
@@ -20372,7 +20455,7 @@ Return a JSON object:
   });
 
   // GET /api/admin/timetable/reminder-campaigns — list campaign settings
-  app.get("/api/admin/timetable/reminder-campaigns", isAuthenticated, async (req: Request, res: Response) => {
+  app.get("/api/admin/timetable/reminder-campaigns", isAuthenticated, requireRole("admin"), async (req: Request, res: Response) => {
     try {
       const role = (req as any).user?.role;
 
@@ -20386,7 +20469,7 @@ Return a JSON object:
   });
 
   // PATCH /api/admin/timetable/reminder-campaigns/:cohortKey — update campaign settings
-  app.patch("/api/admin/timetable/reminder-campaigns/:cohortKey", isAuthenticated, async (req: Request, res: Response) => {
+  app.patch("/api/admin/timetable/reminder-campaigns/:cohortKey", isAuthenticated, requireRole("admin"), async (req: Request, res: Response) => {
     try {
       const role = (req as any).user?.role;
       const adminId = (req as any).user?.claims?.sub;
@@ -20410,7 +20493,7 @@ Return a JSON object:
   });
 
   // POST /api/admin/timetable/send-reminders — manually trigger reminder dispatch
-  app.post("/api/admin/timetable/send-reminders", isAuthenticated, async (req: Request, res: Response) => {
+  app.post("/api/admin/timetable/send-reminders", isAuthenticated, requireRole("admin"), async (req: Request, res: Response) => {
     try {
       const role = (req as any).user?.role;
 
@@ -20429,7 +20512,7 @@ Return a JSON object:
   });
 
   // POST /api/admin/timetable/send-custom-reminder — fire an ad-hoc push notification
-  app.post("/api/admin/timetable/send-custom-reminder", isAuthenticated, async (req: Request, res: Response) => {
+  app.post("/api/admin/timetable/send-custom-reminder", isAuthenticated, requireRole("admin"), async (req: Request, res: Response) => {
     try {
       const role = (req as any).user?.role;
 
@@ -20545,7 +20628,7 @@ Return a JSON object:
     },
   });
 
-  app.get("/api/admin/partner-branding", async (_req: Request, res: Response) => {
+  app.get("/api/admin/partner-branding", isAuthenticated, requireRole("admin"), async (_req: Request, res: Response) => {
     try {
       const [row] = await db.select().from(systemConfig).where(eq(systemConfig.key, "partner_branding"));
       const value = (row?.value as any) ?? {};
@@ -20562,6 +20645,8 @@ Return a JSON object:
 
   app.put(
     "/api/admin/partner-branding",
+    isAuthenticated,
+    requireRole("admin"),
     partnerLogoUpload.single("logo") as any,
     async (req: any, res: Response) => {
       try {
@@ -20800,7 +20885,7 @@ a{color:#28c9d6;text-decoration:none}</style></head>
   });
 
   // GET /api/admin/timetable/reminder-log — recent sent reminders
-  app.get("/api/admin/timetable/reminder-log", isAuthenticated, async (req: Request, res: Response) => {
+  app.get("/api/admin/timetable/reminder-log", isAuthenticated, requireRole("admin"), async (req: Request, res: Response) => {
     try {
       const role = (req as any).user?.role;
 
@@ -21288,7 +21373,7 @@ a{color:#28c9d6;text-decoration:none}</style></head>
   });
 
   // GET /api/admin/school/inquiries — list partner_schools rows with endorsementStatus="interested" and isActive=false
-  app.get("/api/admin/school/inquiries", async (req: Request, res: Response) => {
+  app.get("/api/admin/school/inquiries", isAuthenticated, requireRole("admin"), async (req: Request, res: Response) => {
     try {
       const rows = await db
         .select({
@@ -21317,7 +21402,7 @@ a{color:#28c9d6;text-decoration:none}</style></head>
   });
 
   // PATCH /api/admin/school/inquiries/:id — update endorsementStatus / isActive / notes
-  app.patch("/api/admin/school/inquiries/:id", async (req: Request, res: Response) => {
+  app.patch("/api/admin/school/inquiries/:id", isAuthenticated, requireRole("admin"), async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id as string, 10);
       if (!Number.isFinite(id)) return res.status(400).json({ error: "Invalid id." });

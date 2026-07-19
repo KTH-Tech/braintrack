@@ -1,4 +1,7 @@
 // NSC Timetable — Exam-Aware Engine (T114)
+// November-session seed data (data/nsc-2026-timetable.ts) verified 2026-07-19
+// against the official DBE Oct/Nov 2026 NSC timetable, revision FINAL — February 2026.
+// See docs/nsc-timetable-verification-2026.md for the audit trail.
 // Responsibilities:
 //   1. Seed official timetable on startup if empty
 //   2. Build/refresh per-learner exam schedules

@@ -8,18 +8,15 @@ import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/language-context";
 import { apiRequest } from "@/lib/queryClient";
 import { formatSAPhone } from "@/lib/utils";
-import { 
-  ArrowLeft, 
-  Phone, 
-  Shield, 
-  Loader2, 
+import {
+  ArrowLeft,
+  Phone,
+  Shield,
+  Loader2,
   CheckCircle,
   AlertCircle,
   BookOpen,
   Save,
-  Dumbbell,
-  Plus,
-  X,
   Gift,
   Copy,
   Check,
@@ -27,42 +24,128 @@ import {
   Globe,
   SlidersHorizontal,
   CalendarDays,
+  UserRound,
+  LogOut,
+  GraduationCap,
 } from "lucide-react";
 import type { Subject, OnboardingResult } from "@shared/schema";
-import { SpraySmear } from "@/components/graffiti-splats";
-import brainLogo from "@/assets/brain-logo.png";
 
-type NeonHex = "#6EE7F9" | "#9FD8FF" | "#FFE29A" | "#FFB7E5" | "#C5B3FF";
-function NeonCard({ color, icon: Icon, title, subtitle, children, testId }: {
-  color: NeonHex;
+/* ── Street-pastel section card ──────────────────────────────────────────
+   Executive card on the #050508 wall: soft glass body, pastel accent bar,
+   icon chip and a Permanent Marker eyebrow. Poppins everywhere else. */
+type PastelHex = "#9FF5E8" | "#9FD8FF" | "#FFB7E5" | "#C5B3FF" | "#FFE29A" | "#94F7C5";
+
+function SectionCard({ color, icon: Icon, eyebrow, title, subtitle, children, testId, delay = 0 }: {
+  color: PastelHex;
   icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
+  eyebrow: string;
   title: string;
   subtitle?: string;
   children: React.ReactNode;
   testId?: string;
+  delay?: number;
 }) {
-  // Sections sit directly on the wall: marker+smear header, plain white content,
-  // thin hairline separator between sections — no card boxes.
   return (
     <section
-      className="relative pb-8"
-      style={{ borderBottom: "1px solid rgba(255,255,255,0.12)" }}
+      className="relative overflow-hidden"
+      style={{
+        background: "rgba(255,255,255,.03)",
+        border: "1px solid rgba(255,255,255,.08)",
+        borderRadius: 22,
+        animation: `bt-fadeup .5s cubic-bezier(.22,1,.36,1) ${delay}s both`,
+      }}
       data-testid={testId}
     >
-      <div className="flex items-start gap-3 mb-2">
-        <Icon className="w-5 h-5 shrink-0 mt-1.5" style={{ color, filter: `drop-shadow(0 0 5px ${color})` }} />
-        <div className="min-w-0">
-          <h3 className="text-xl text-white leading-tight graffiti-hand">
-            <span className="spray-title graffiti-hand">
-              <SpraySmear color={color} />
+      {/* Pastel accent bar */}
+      <div aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: color, boxShadow: `0 0 12px ${color}` }} />
+      {/* Soft aura */}
+      <div aria-hidden className="pointer-events-none absolute -top-16 -right-16 w-44 h-44 rounded-full blur-3xl opacity-20" style={{ background: color }} />
+
+      <div className="relative p-5 sm:p-6">
+        <div className="flex items-start gap-3.5 mb-5">
+          <div
+            className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
+            style={{ background: "rgba(5,5,8,.6)", border: `1px solid ${color}`, boxShadow: `0 0 14px ${color}44, inset 0 0 10px ${color}22` }}
+          >
+            <Icon className="w-5 h-5" style={{ color, filter: `drop-shadow(0 0 5px ${color})` }} />
+          </div>
+          <div className="min-w-0">
+            <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 13, color, transform: "rotate(-1.5deg)", display: "inline-block", textShadow: `0 0 10px ${color}66` }}>
+              {eyebrow}
+            </div>
+            <div role="heading" aria-level={2} className="text-lg font-black text-white leading-tight">
               {title}
-            </span>
-          </h3>
-          {subtitle && <p className="text-xs text-white mt-1 leading-snug">{subtitle}</p>}
+            </div>
+            {subtitle && <p className="text-xs text-white mt-0.5 leading-snug" style={{ opacity: 0.85 }}>{subtitle}</p>}
+          </div>
         </div>
+        <div className="space-y-4">{children}</div>
       </div>
-      <div className="mt-4 space-y-4">{children}</div>
     </section>
+  );
+}
+
+/* Shared field styling — guideline inputs */
+const fieldClass =
+  "text-white placeholder:text-white rounded-xl focus-visible:ring-[#9FF5E8]/40 focus-visible:border-[#9FF5E8]";
+const fieldStyle: React.CSSProperties = {
+  background: "rgba(5,5,8,.6)",
+  border: "1.5px solid rgba(255,255,255,.18)",
+};
+
+function PrimaryButton({ children, testId, onClick, disabled, full }: {
+  children: React.ReactNode;
+  testId?: string;
+  onClick?: () => void;
+  disabled?: boolean;
+  full?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      data-testid={testId}
+      className={`${full ? "w-full " : ""}inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all disabled:opacity-40`}
+      style={{
+        background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
+        color: "#050508",
+        border: "none",
+        boxShadow: "0 0 20px rgba(159,245,232,.30)",
+      }}
+      onMouseEnter={(e) => { if (!disabled) e.currentTarget.style.transform = "translateY(-2px)"; }}
+      onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}
+    >
+      {children}
+    </button>
+  );
+}
+
+function GhostButton({ children, testId, onClick, disabled, color = "#ffffff", full }: {
+  children: React.ReactNode;
+  testId?: string;
+  onClick?: () => void;
+  disabled?: boolean;
+  color?: string;
+  full?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      data-testid={testId}
+      className={`${full ? "w-full " : ""}inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all disabled:opacity-40`}
+      style={{
+        background: "transparent",
+        color,
+        border: color === "#ffffff" ? "1.5px solid rgba(255,255,255,.2)" : `1.5px solid ${color}`,
+      }}
+      onMouseEnter={(e) => { if (!disabled) e.currentTarget.style.transform = "translateY(-2px)"; }}
+      onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}
+    >
+      {children}
+    </button>
   );
 }
 
@@ -72,8 +155,16 @@ const T = {
     dashboardBtn: "Dashboard",
     yourAccount: "Your Account",
     secure: "Secure",
+    heroEyebrow: "Your space, your rules",
     heroHeading: "Settings",
-    heroSubtitle: "Manage your account, phone number, subjects and commitments.",
+    heroSubtitle: "Your profile, subjects, prelim dates and account — all in one place.",
+    profileEyebrow: "This is you",
+    profileTitle: "Profile",
+    profileSubtitle: "Your details on BrainTrack",
+    nameLabel: "Name",
+    gradeLabel: "Grade",
+    schoolLabel: "School",
+    learnerRole: "Learner",
     phoneNumber: "Phone Number",
     phoneLearnerSub: "Set by your parent — ask them to change it",
     phoneParentSub: "Update your number for account recovery",
@@ -117,12 +208,12 @@ const T = {
     phoneNumberUpdatedDesc: "Your phone number has been successfully changed.",
     verificationFailed: "Verification Failed",
     verificationFailedDesc: "Invalid or expired code. Please try again.",
-    profileCreated: "Profile Created!",
-    profileCreatedDesc: "Your study profile has been saved.",
+    subjectsEyebrow: "Your line-up",
     yourSubjects: "Your Subjects",
     yourSubjectsSubtitle: "Tap to add or remove subjects (once per week)",
     loadingSubjects: "Loading subjects...",
     save: "Save",
+    prelimEyebrow: "Big dates",
     prelimDates: "Preliminary Exam Dates",
     prelimDatesSubtitle: "Enter your school's prelim dates (Aug–Sep). Schools differ — this is optional.",
     selectSubjectsFirst: "Select your subjects above first.",
@@ -130,6 +221,13 @@ const T = {
     paper1: "Paper 1",
     paper2: "Paper 2",
     datesSet: "dates set",
+    languageEyebrow: "Praat jou taal",
+    languageTitle: "Language",
+    languageSubtitle: "Choose the language BrainTrack speaks to you in",
+    langEnglish: "English",
+    langAfrikaans: "Afrikaans",
+    langActive: "Active",
+    referralEyebrow: "Squad goals",
     referAFriend: "Refer a Friend",
     referAFriendSubtitle: "Every friend who signs up earns you both coins (max 2/month)",
     yourReferralCode: "Your referral code",
@@ -140,24 +238,30 @@ const T = {
     thisMonth: "This month",
     slotsLeft: "Slots left",
     referralDisclaimer: "Your friends must activate their own subscription. Coins are awarded once their account is confirmed. The limit resets on the 1st of each month.",
-    sportActivities: "Sport & Activities",
-    sportActivitiesSubtitle: "Add commitments so your study plan works around your schedule",
-    activityPlaceholder: "e.g. Rugby practice, Drama class...",
-    noActivities: "No activities added yet",
-    activitiesSaved: "Activities Saved",
-    saveActivities: "Save Activities",
+    accountEyebrow: "Locked in",
+    accountTitle: "Account",
+    accountSubtitle: "Sign-in details and session",
+    emailLabel: "Email",
+    roleLabel: "Role",
+    signOut: "Sign Out",
     selectAtLeast4: "Select at least 4 subjects",
     subjectsSelectedLabel: "subjects selected",
-    activitiesSavedDesc: "activities saved.",
-    subStartTrial: "Start Free Trial",
   },
   af: {
     pageTitle: "Instellings",
     dashboardBtn: "Tuis",
     yourAccount: "Jou Rekening",
     secure: "Veilig",
+    heroEyebrow: "Jou spasie, jou reëls",
     heroHeading: "Instellings",
-    heroSubtitle: "Pas jou rekening, foonnommer, vakke en verpligtinge na jou sin aan.",
+    heroSubtitle: "Jou profiel, vakke, vooreksamendatums en rekening — alles op een plek.",
+    profileEyebrow: "Dis jy dié",
+    profileTitle: "Profiel",
+    profileSubtitle: "Jou besonderhede op BrainTrack",
+    nameLabel: "Naam",
+    gradeLabel: "Graad",
+    schoolLabel: "Skool",
+    learnerRole: "Leerder",
     phoneNumber: "Foonnommer",
     phoneLearnerSub: "Deur jou ouer gestel — vra hulle om dit te verander",
     phoneParentSub: "Dateer jou nommer op vir rekeningherstel",
@@ -201,12 +305,12 @@ const T = {
     phoneNumberUpdatedDesc: "Jou foonnommer is suksesvol verander.",
     verificationFailed: "Verifikasie Misluk",
     verificationFailedDesc: "Ongeldige of vervalde kode. Probeer asseblief weer.",
-    profileCreated: "Profiel Geskep!",
-    profileCreatedDesc: "Jou studieprofiel is gestoor.",
+    subjectsEyebrow: "Jou span",
     yourSubjects: "Jou Vakke",
     yourSubjectsSubtitle: "Tik om vakke by te voeg of te verwyder (een keer per week)",
     loadingSubjects: "Vakke laai...",
     save: "Stoor",
+    prelimEyebrow: "Groot datums",
     prelimDates: "Vooreksamendatums",
     prelimDatesSubtitle: "Vul jou skool se vooreksamendatums in (Aug–Sep). Skole se datums verskil — dit is opsioneel.",
     selectSubjectsFirst: "Kies eers jou vakke hierbo.",
@@ -214,6 +318,13 @@ const T = {
     paper1: "Vraestel 1",
     paper2: "Vraestel 2",
     datesSet: "datums ingevul",
+    languageEyebrow: "Speak your language",
+    languageTitle: "Taal",
+    languageSubtitle: "Kies die taal waarin BrainTrack met jou praat",
+    langEnglish: "Engels",
+    langAfrikaans: "Afrikaans",
+    langActive: "Aktief",
+    referralEyebrow: "Bring jou tjommies",
     referAFriend: "Verwys 'n Vriend",
     referAFriendSubtitle: "Elke vriend wat aansluit gee julle albei munte (max 2/maand)",
     yourReferralCode: "Jou verwysingskode",
@@ -224,21 +335,19 @@ const T = {
     thisMonth: "Hierdie maand",
     slotsLeft: "Slots oor",
     referralDisclaimer: "Jou vriende moet hul eie intekening aktiveer. Munte word toegeken sodra hul rekening bevestig word. Die grens stel terug op die 1ste van elke maand.",
-    sportActivities: "Sport & Aktiwiteite",
-    sportActivitiesSubtitle: "Voeg verpligtinge by sodat jou studieplan rondom jou skedule werk",
-    activityPlaceholder: "bv. Rugby-oefening, Drama-klas...",
-    noActivities: "Nog geen aktiwiteite bygevoeg nie",
-    activitiesSaved: "Aktiwiteite Gestoor",
-    saveActivities: "Stoor Aktiwiteite",
+    accountEyebrow: "Veilig gebêre",
+    accountTitle: "Rekening",
+    accountSubtitle: "Aanmeldbesonderhede en sessie",
+    emailLabel: "E-pos",
+    roleLabel: "Rol",
+    signOut: "Teken Uit",
     selectAtLeast4: "Kies minstens 4 vakke",
     subjectsSelectedLabel: "vakke gekies",
-    activitiesSavedDesc: "aktiwiteite gestoor.",
-    subStartTrial: "Begin Gratis Proef",
   },
 } as const;
 
 export default function SettingsPage() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { language, toggleLanguage } = useLanguage();
@@ -251,8 +360,6 @@ export default function SettingsPage() {
   const [verifyError, setVerifyError] = useState("");
   const [selectedSubjects, setSelectedSubjects] = useState<number[]>([]);
   const hasLocalSubjectEdits = useRef(false);
-  const [activities, setActivities] = useState<string[]>([]);
-  const [newActivity, setNewActivity] = useState("");
   const [linkCopied, setLinkCopied] = useState(false);
   // Prelim exam dates (Task #359): keyed by `${subjectId}:${paperNumber}` → YYYY-MM-DD
   const [prelimDates, setPrelimDates] = useState<Record<string, string>>({});
@@ -351,7 +458,6 @@ export default function SettingsPage() {
     updatePrelimsMutation.mutate(entries);
   };
 
-
   const copyReferralLink = async () => {
     if (!referral?.link) return;
     await navigator.clipboard.writeText(referral.link);
@@ -392,7 +498,7 @@ export default function SettingsPage() {
           const jsonStr = errMsg.substring(errMsg.indexOf("{"));
           const data = JSON.parse(jsonStr);
           if (data?.daysRemaining) {
-            message = isAf 
+            message = isAf
               ? `Jy kan net een keer per week jou vakke verander. Probeer weer oor ${data.daysRemaining} dag(e).`
               : `You can only change your subjects once per week. Try again in ${data.daysRemaining} day(s).`;
           } else {
@@ -410,15 +516,11 @@ export default function SettingsPage() {
 
   const toggleSubject = (subjectId: number) => {
     hasLocalSubjectEdits.current = true;
-    setSelectedSubjects(prev => 
-      prev.includes(subjectId) 
+    setSelectedSubjects(prev =>
+      prev.includes(subjectId)
         ? prev.filter(id => id !== subjectId)
         : [...prev, subjectId]
     );
-  };
-
-  const saveSubjects = () => {
-    updateSubjectsMutation.mutate(selectedSubjects);
   };
 
   const parseOtpError = (error: any): string => {
@@ -531,161 +633,123 @@ export default function SettingsPage() {
     return phone.replace(/(\+27)(\d{2})(\d{3})(\d{4})/, "$1 $2 $3 $4");
   };
 
+  const displayName = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email || "—";
+
   return (
-    <div className="min-h-screen relative bg-black text-white">
-      {/* Cosmic wordmark wash */}
-      <div
-        aria-hidden
-        className="pointer-events-none fixed inset-0 z-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 55% 45% at 12% 8%,  rgba(110,231,249,0.10) 0%, transparent 60%)," +
-            "radial-gradient(ellipse 55% 45% at 88% 6%,  rgba(197,179,255,0.10) 0%, transparent 60%)," +
-            "radial-gradient(ellipse 70% 55% at 50% 100%, rgba(255,226,154,0.08) 0%, transparent 65%)," +
-            "#000",
-        }}
-      />
+    <div className="min-h-screen relative text-white overflow-x-hidden" style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}>
+      {/* Ambient pastel auras on the wall */}
+      <div aria-hidden className="pointer-events-none fixed -top-24 -left-24 w-[420px] h-[420px] rounded-full blur-[120px] opacity-30" style={{ background: "#9FF5E8" }} />
+      <div aria-hidden className="pointer-events-none fixed top-1/3 -right-24 w-[380px] h-[380px] rounded-full blur-[120px] opacity-25" style={{ background: "#C5B3FF" }} />
+      <div aria-hidden className="pointer-events-none fixed -bottom-24 left-1/4 w-[360px] h-[360px] rounded-full blur-[120px] opacity-20" style={{ background: "#FFB7E5" }} />
+
       <div className="relative z-10">
+        {/* ── Sticky street header ── */}
         <header
-          className="sticky top-0 z-50 bg-black/80"
-          style={{ borderBottom: "1px solid rgba(110,231,249,0.35)" }}
+          className="sticky top-0 z-50 border-b"
+          style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "rgba(255,255,255,.08)" }}
         >
-          <div className="max-w-4xl mx-auto px-4 sm:px-6">
-            <div className="flex items-center justify-between h-14 gap-4">
-              <div className="flex items-center gap-2">
-                <SlidersHorizontal className="w-4 h-4" style={{ color: "#6EE7F9", filter: "drop-shadow(0 0 4px #6EE7F9)" }} />
-                <span className="text-sm font-black uppercase tracking-[0.2em]" style={{ color: "#6EE7F9" }}>
-                  {t.pageTitle}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={toggleLanguage}
-                  className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 bg-black text-sm font-bold"
-                  style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
-                  data-testid="button-language-toggle"
-                >
-                  <Globe className="h-3.5 w-3.5" />
-                  <span>{language === "en" ? "EN" : "AF"}</span>
-                </button>
+          <div className="max-w-3xl mx-auto px-4 sm:px-6">
+            <div className="flex items-center justify-between h-16 gap-4">
+              <div className="flex items-center gap-3 min-w-0">
                 <Link href="/dashboard">
                   <button
-                    className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 bg-black font-bold text-sm"
-                    style={{
-                      color: "#6EE7F9",
-                      border: "1.5px solid #6EE7F9",
-                    }}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0"
+                    style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
                     data-testid="button-dashboard"
                   >
                     <ArrowLeft className="w-4 h-4" />
-                    {t.dashboardBtn}
+                    <span className="hidden sm:inline">{t.dashboardBtn}</span>
                   </button>
                 </Link>
+                <span
+                  className="hidden sm:inline truncate"
+                  style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", textShadow: "0 0 10px rgba(159,245,232,.45)" }}
+                >
+                  {t.pageTitle}
+                </span>
               </div>
+              <button
+                onClick={toggleLanguage}
+                className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 bg-white/[.03] text-sm font-bold hover:bg-white/10"
+                style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
+                data-testid="button-language-toggle"
+              >
+                <Globe className="h-3.5 w-3.5" />
+                <span>{language === "en" ? "EN" : "AF"}</span>
+              </button>
             </div>
           </div>
         </header>
 
-        <main className="max-w-2xl mx-auto px-4 py-8 space-y-8">
-          {/* ═══ Cinematic Hero ═══ */}
-          <section
-            className="relative overflow-hidden rounded-3xl bg-black p-6 sm:p-8"
-            style={{
-              border: "1.5px solid #6EE7F9",
-              boxShadow:
-                "0 0 0 1px rgba(110,231,249,0.32), 0 0 34px rgba(110,231,249,0.4), inset 0 0 28px rgba(0,0,0,0.6)",
-            }}
-          >
-            <div
-              aria-hidden
-              className="absolute top-0 left-0 right-0 h-[3px]"
-              style={{
-                background:
-                  "linear-gradient(90deg, #FFE29A, #FFE29A, #FFE29A, #FFE29A, #6EE7F9, #9FD8FF, #C5B3FF, #C5B3FF, #FFB7E5)",
-              }}
-            />
-            <div aria-hidden className="absolute -top-20 -right-20 w-60 h-60 rounded-full blur-3xl pointer-events-none"
-              style={{ background: "radial-gradient(circle, rgba(110,231,249,0.28), transparent 70%)" }} />
-            <div aria-hidden className="absolute -bottom-20 -left-20 w-60 h-60 rounded-full blur-3xl pointer-events-none"
-              style={{ background: "radial-gradient(circle, rgba(197,179,255,0.22), transparent 70%)" }} />
-
-            <span aria-hidden className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2" style={{ borderColor: "#6EE7F9" }} />
-            <span aria-hidden className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2" style={{ borderColor: "#6EE7F9" }} />
-            <span aria-hidden className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2" style={{ borderColor: "#6EE7F9" }} />
-            <span aria-hidden className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2" style={{ borderColor: "#6EE7F9" }} />
-
-            <div className="relative text-center space-y-4">
-              <div className="relative mx-auto w-32 sm:w-40 aspect-square">
-                <div
-                  aria-hidden
-                  className="absolute inset-0 rounded-full blur-2xl"
-                  style={{
-                    background:
-                      "radial-gradient(circle, rgba(110,231,249,0.55) 0%, rgba(197,179,255,0.35) 45%, transparent 75%)",
-                  }}
-                />
-                <img
-                  src={brainLogo}
-                  alt="BrainTrack"
-                  className="relative w-full h-full object-contain"
-                  style={{ filter: "drop-shadow(0 0 22px rgba(110,231,249,0.5)) drop-shadow(0 0 12px rgba(255,183,229,0.45))" }}
-                  data-testid="img-brain-logo"
-                />
-              </div>
-              <div className="flex flex-wrap items-center justify-center gap-2">
-                <div
-                  className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
-                  style={{ border: "1px solid #6EE7F9", boxShadow: "0 0 14px rgba(110,231,249,0.5)" }}
-                >
-                  <SlidersHorizontal className="w-3 h-3" style={{ color: "#6EE7F9", filter: "drop-shadow(0 0 4px #6EE7F9)" }} />
-                  <span className="text-[10px] font-black uppercase tracking-[0.24em]" style={{ color: "#6EE7F9" }}>
-                    {t.yourAccount}
-                  </span>
-                </div>
-                <div
-                  className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
-                  style={{ border: "1px solid rgba(197,179,255,0.65)", boxShadow: "0 0 10px rgba(197,179,255,0.4)" }}
-                >
-                  <Shield className="w-3 h-3" style={{ color: "#C5B3FF", filter: "drop-shadow(0 0 4px #C5B3FF)" }} />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#C5B3FF" }}>
-                    {t.secure}
-                  </span>
-                </div>
-              </div>
-
-              <h1
-                className="text-4xl sm:text-5xl font-black tracking-tight leading-[0.98]"
-                style={{
-                  background:
-                    "linear-gradient(90deg, #FFE29A, #FFE29A, #6EE7F9, #9FD8FF, #C5B3FF, #FFB7E5)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                  filter: "drop-shadow(0 0 22px rgba(110,231,249,0.32))",
-                }}
-                data-testid="text-settings-title"
-              >
-                {t.heroHeading}
-              </h1>
-              <p className="text-white max-w-xl mx-auto leading-relaxed text-sm sm:text-base">
-                {t.heroSubtitle}
-              </p>
+        <main className="max-w-3xl mx-auto px-4 sm:px-6 py-10 space-y-6">
+          {/* ── Hero ── */}
+          <section className="relative mb-2" style={{ animation: "bt-fadeup .5s cubic-bezier(.22,1,.36,1) both" }}>
+            <div className="inline-flex items-center gap-2 mb-3">
+              <SlidersHorizontal className="w-4 h-4" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px #9FF5E8)" }} />
+              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 12px rgba(159,245,232,.5)" }}>
+                {t.heroEyebrow}
+              </span>
             </div>
+            <div
+              role="heading"
+              aria-level={1}
+              className="font-black leading-[0.95] tracking-tight text-4xl sm:text-5xl"
+              style={{
+                backgroundImage: "linear-gradient(90deg, #FFE29A, #94F7C5, #9FF5E8, #9FD8FF, #C5B3FF, #FFB7E5)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+                color: "transparent",
+              }}
+              data-testid="text-settings-title"
+            >
+              {t.heroHeading}
+            </div>
+            <p className="text-white text-sm sm:text-base mt-3 max-w-xl" style={{ opacity: 0.9 }}>
+              {t.heroSubtitle}
+            </p>
           </section>
 
-        <div className="space-y-6">
-          <NeonCard
-            color="#6EE7F9"
-            icon={Phone}
-            title={t.phoneNumber}
-            subtitle={user?.role === "learner" ? t.phoneLearnerSub : t.phoneParentSub}
+          {/* ── Profile ── */}
+          <SectionCard
+            color="#9FF5E8"
+            icon={UserRound}
+            eyebrow={t.profileEyebrow}
+            title={t.profileTitle}
+            subtitle={t.profileSubtitle}
+            testId="card-profile"
+            delay={0.05}
           >
-            <div className="space-y-4">
-              <div
-                className="p-3 rounded-xl bg-black"
-                style={{ border: "1px solid rgba(110,231,249,0.35)" }}
-              >
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="p-3 rounded-xl" style={{ background: "rgba(5,5,8,.6)", border: "1px solid rgba(255,255,255,.1)" }}>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white" style={{ opacity: 0.82 }}>{t.nameLabel}</p>
+                <p className="font-bold text-white mt-0.5 truncate" data-testid="text-profile-name">{displayName}</p>
+              </div>
+              <div className="p-3 rounded-xl" style={{ background: "rgba(5,5,8,.6)", border: "1px solid rgba(255,255,255,.1)" }}>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white" style={{ opacity: 0.82 }}>{t.gradeLabel}</p>
+                <p className="font-bold text-white mt-0.5 flex items-center gap-1.5">
+                  <GraduationCap className="w-4 h-4" style={{ color: "#9FF5E8" }} />
+                  {user?.grade ? `${isAf ? "Graad" : "Grade"} ${user.grade}` : "Matric"}
+                </p>
+              </div>
+              <div className="p-3 rounded-xl" style={{ background: "rgba(5,5,8,.6)", border: "1px solid rgba(255,255,255,.1)" }}>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white" style={{ opacity: 0.82 }}>{t.schoolLabel}</p>
+                <p className="font-bold text-white mt-0.5 truncate">{user?.schoolName || "—"}</p>
+              </div>
+            </div>
+
+            {/* Phone number block */}
+            <div className="pt-1 space-y-4">
+              <div className="flex items-center gap-2">
+                <Phone className="w-4 h-4" style={{ color: "#9FF5E8" }} />
+                <p className="text-sm font-black text-white">{t.phoneNumber}</p>
+                <p className="text-[11px] text-white" style={{ opacity: 0.82 }}>
+                  · {user?.role === "learner" ? t.phoneLearnerSub : t.phoneParentSub}
+                </p>
+              </div>
+
+              <div className="p-3 rounded-xl" style={{ background: "rgba(5,5,8,.6)", border: "1px solid rgba(159,245,232,.35)" }}>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white" style={{ opacity: 0.82 }}>
                   {t.currentNumber}
                 </p>
                 <p className="font-bold text-white mt-0.5" data-testid="text-current-phone">
@@ -695,16 +759,16 @@ export default function SettingsPage() {
 
               {user?.role === "learner" && (
                 <div
-                  className="flex items-start gap-3 p-3 rounded-xl bg-black"
-                  style={{ border: "1px solid rgba(197,179,255,0.45)", boxShadow: "0 0 12px rgba(197,179,255,0.18)" }}
+                  className="flex items-start gap-3 p-3 rounded-xl"
+                  style={{ background: "rgba(197,179,255,.06)", border: "1px solid rgba(197,179,255,.4)", boxShadow: "0 0 12px rgba(197,179,255,.12)" }}
                   data-testid="phone-parent-lock"
                 >
-                  <Shield className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#C5B3FF", filter: "drop-shadow(0 0 4px rgba(197,179,255,0.7))" }} />
+                  <Shield className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#C5B3FF", filter: "drop-shadow(0 0 4px rgba(197,179,255,.7))" }} />
                   <div className="text-sm">
                     <p className="font-black uppercase tracking-[0.16em] text-[11px]" style={{ color: "#C5B3FF" }}>
                       {t.managedByParent}
                     </p>
-                    <p className="text-white mt-0.5 leading-snug">
+                    <p className="text-white mt-0.5 leading-snug" style={{ opacity: 0.9 }}>
                       {t.managedByParentDesc}
                     </p>
                   </div>
@@ -725,38 +789,34 @@ export default function SettingsPage() {
                       inputMode="tel"
                       autoComplete="tel"
                       maxLength={17}
-                      className="bg-black text-white placeholder:text-white border-[#6EE7F9]/40 focus-visible:ring-[#6EE7F9]/50"
+                      className={fieldClass}
+                      style={fieldStyle}
                       data-testid="input-new-phone"
                     />
-                    <p className="text-[11px] text-white">
+                    <p className="text-[11px] text-white" style={{ opacity: 0.82 }}>
                       {t.newPhoneHint}
                     </p>
                   </div>
 
                   <div
-                    className="flex items-start gap-3 p-3 rounded-xl bg-black"
-                    style={{ border: "1px solid rgba(255,226,154,0.45)", boxShadow: "0 0 12px rgba(255,226,154,0.18)" }}
+                    className="flex items-start gap-3 p-3 rounded-xl"
+                    style={{ background: "rgba(255,226,154,.06)", border: "1px solid rgba(255,226,154,.4)", boxShadow: "0 0 12px rgba(255,226,154,.12)" }}
                   >
-                    <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px rgba(255,226,154,0.7))" }} />
+                    <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px rgba(255,226,154,.7))" }} />
                     <div className="text-sm">
                       <p className="font-black uppercase tracking-[0.16em] text-[11px]" style={{ color: "#FFE29A" }}>
                         {t.verificationRequired}
                       </p>
-                      <p className="text-white mt-0.5 leading-snug">
+                      <p className="text-white mt-0.5 leading-snug" style={{ opacity: 0.9 }}>
                         {t.verificationRequiredDesc}
                       </p>
                     </div>
                   </div>
 
-                  <button
+                  <PrimaryButton
                     onClick={handleRequestOtp}
                     disabled={!newPhone || requestOtpMutation.isPending}
-                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm disabled:opacity-40"
-                    style={{
-                      background: "#6EE7F9",
-                      color: "#0a0a0a",
-                    }}
-                    data-testid="button-request-otp"
+                    testId="button-request-otp"
                   >
                     {requestOtpMutation.isPending ? (
                       <>
@@ -769,20 +829,20 @@ export default function SettingsPage() {
                         {t.sendVerificationCode}
                       </>
                     )}
-                  </button>
+                  </PrimaryButton>
                 </div>
               )}
 
               {step === "verify" && (
                 <div className="space-y-4">
                   <div
-                    className="flex items-center gap-2 p-3 rounded-xl bg-black"
-                    style={{ border: "1px solid rgba(110,231,249,0.45)", boxShadow: "0 0 12px rgba(110,231,249,0.22)" }}
+                    className="flex items-center gap-2 p-3 rounded-xl"
+                    style={{ background: "rgba(159,245,232,.06)", border: "1px solid rgba(159,245,232,.4)", boxShadow: "0 0 12px rgba(159,245,232,.15)" }}
                   >
-                    <CheckCircle className="w-5 h-5" style={{ color: "#6EE7F9", filter: "drop-shadow(0 0 4px rgba(110,231,249,0.7))" }} />
+                    <CheckCircle className="w-5 h-5" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px rgba(159,245,232,.7))" }} />
                     <p className="text-sm text-white">
                       {t.codeSentTo}{" "}
-                      <strong style={{ color: "#6EE7F9" }}>{pendingPhone}</strong>
+                      <strong style={{ color: "#9FF5E8" }}>{pendingPhone}</strong>
                     </p>
                   </div>
 
@@ -799,37 +859,32 @@ export default function SettingsPage() {
                         if (verifyError) setVerifyError("");
                       }}
                       maxLength={6}
-                      className={`text-center text-2xl tracking-[0.4em] bg-black text-white placeholder:text-white font-black focus-visible:ring-[#6EE7F9]/50 ${verifyError ? "border-red-500/70" : "border-[#6EE7F9]/50"}`}
+                      className={`text-center text-2xl tracking-[0.4em] font-black ${fieldClass}`}
+                      style={{ ...fieldStyle, borderColor: verifyError ? "rgba(255,141,161,.7)" : "rgba(255,255,255,.18)" }}
                       data-testid="input-otp-code"
                     />
                     {verifyError && (
-                      <p className="text-xs font-bold text-red-400 mt-1" role="alert" data-testid="otp-verify-error">
+                      <p className="text-xs font-bold mt-1" style={{ color: "#FF8DA1" }} role="alert" data-testid="otp-verify-error">
                         {verifyError}
                       </p>
                     )}
                   </div>
 
                   <div className="flex gap-3 justify-end">
-                    <button
+                    <GhostButton
                       onClick={() => {
                         setStep("input");
                         setOtpCode("");
                       }}
-                      className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-black font-bold text-sm"
-                      style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
-                      data-testid="button-cancel-verify"
+                      color="#C5B3FF"
+                      testId="button-cancel-verify"
                     >
                       {t.cancel}
-                    </button>
-                    <button
+                    </GhostButton>
+                    <PrimaryButton
                       onClick={handleVerifyOtp}
                       disabled={otpCode.length !== 6 || verifyOtpMutation.isPending}
-                      className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm disabled:opacity-40"
-                      style={{
-                        background: "#6EE7F9",
-                        color: "#0a0a0a",
-                      }}
-                      data-testid="button-verify-otp"
+                      testId="button-verify-otp"
                     >
                       {verifyOtpMutation.isPending ? (
                         <>
@@ -842,119 +897,124 @@ export default function SettingsPage() {
                           {t.verifyAndUpdate}
                         </>
                       )}
-                    </button>
+                    </PrimaryButton>
                   </div>
 
-                  <button
+                  <GhostButton
                     onClick={() => requestOtpMutation.mutate(pendingPhone)}
                     disabled={requestOtpMutation.isPending}
-                    className="w-full inline-flex items-center justify-center px-4 py-2 rounded-xl bg-black font-bold text-sm disabled:opacity-40"
-                    style={{ color: "#6EE7F9", border: "1.5px solid #6EE7F9" }}
-                    data-testid="button-resend-otp"
+                    color="#9FF5E8"
+                    full
+                    testId="button-resend-otp"
                   >
                     {t.resendCode}
-                  </button>
+                  </GhostButton>
                 </div>
               )}
             </div>
-          </NeonCard>
+          </SectionCard>
 
-          <NeonCard
+          {/* ── Subjects ── */}
+          <SectionCard
             color="#9FD8FF"
             icon={BookOpen}
+            eyebrow={t.subjectsEyebrow}
             title={t.yourSubjects}
             subtitle={t.yourSubjectsSubtitle}
+            testId="card-subjects"
+            delay={0.1}
           >
-              {(() => {
-                const canSave = selectedSubjects.length >= 4 && isDirty && !updateSubjectsMutation.isPending;
+            {(() => {
+              const canSave = selectedSubjects.length >= 4 && isDirty && !updateSubjectsMutation.isPending;
 
-                return (
-                  <div className="space-y-3">
-                    {(subjects || []).length === 0 ? (
-                      <div className="text-center py-6">
-                        <BookOpen className="w-8 h-8 mx-auto mb-2" style={{ color: "#9FD8FF" }} />
-                        <p className="text-sm text-white">
-                          {t.loadingSubjects}
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {(subjects || []).map((subject) => {
-                          const active = selectedSubjects.includes(subject.id);
-                          return (
-                            <button
-                              key={subject.id}
-                              type="button"
-                              onClick={() => toggleSubject(subject.id)}
-                              className="flex items-center gap-3 p-3 rounded-xl bg-black text-left transition-all"
-                              style={{
-                                border: active ? "1.5px solid #9FD8FF" : "1px solid rgba(255,255,255,0.12)",
-                              }}
-                              data-testid={`subject-chip-${subject.id}`}
-                            >
-                              <div
-                                className="w-7 h-7 rounded-lg bg-black flex items-center justify-center shrink-0"
-                                style={{ border: active ? "1.5px solid #9FD8FF" : "1px solid rgba(255,255,255,0.18)" }}
-                              >
-                                {active ? (
-                                  <Check className="w-3.5 h-3.5" style={{ color: "#9FD8FF" }} />
-                                ) : (
-                                  <span className="text-[11px] font-black text-white">
-                                    {(isAf ? subject.nameAfrikaans : subject.name).charAt(0)}
-                                  </span>
-                                )}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="font-semibold text-sm text-white truncate">
-                                  {isAf ? subject.nameAfrikaans : subject.name}
-                                </p>
-                                <p className="text-[10px] text-white">{subject.category}</p>
-                              </div>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    )}
-
-                    <div className="flex items-center justify-between pt-1">
-                      <p className="text-[11px] text-white">
-                        {selectedSubjects.length < 4
-                          ? `${t.selectAtLeast4} (${selectedSubjects.length}/4)`
-                          : `${selectedSubjects.length} ${t.subjectsSelectedLabel}`}
+              return (
+                <div className="space-y-3">
+                  {(subjects || []).length === 0 ? (
+                    <div className="text-center py-6">
+                      <BookOpen className="w-8 h-8 mx-auto mb-2" style={{ color: "#9FD8FF" }} />
+                      <p className="text-sm text-white" style={{ opacity: 0.85 }}>
+                        {t.loadingSubjects}
                       </p>
-                      <button
-                        type="button"
-                        onClick={() => updateSubjectsMutation.mutate(selectedSubjects)}
-                        disabled={!canSave}
-                        className="px-5 py-2.5 rounded-xl text-sm font-bold normal-case tracking-normal inline-flex items-center justify-center gap-2 disabled:opacity-40"
-                        style={{
-                          background: "#6EE7F9",
-                          color: "#0a0a0a",
-                        }}
-                        data-testid="button-save-subjects"
-                      >
-                        {updateSubjectsMutation.isPending ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <>
-                            <Save className="w-4 h-4" />
-                            {t.save}
-                          </>
-                        )}
-                      </button>
                     </div>
-                  </div>
-                );
-              })()}
-          </NeonCard>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {(subjects || []).map((subject) => {
+                        const active = selectedSubjects.includes(subject.id);
+                        return (
+                          <button
+                            key={subject.id}
+                            type="button"
+                            onClick={() => toggleSubject(subject.id)}
+                            className="flex items-center gap-3 p-3 rounded-xl text-left transition-all"
+                            style={{
+                              background: active ? "rgba(159,216,255,.08)" : "rgba(255,255,255,.03)",
+                              border: active ? "1.5px solid #9FD8FF" : "1px solid rgba(255,255,255,.1)",
+                              boxShadow: active ? "0 0 14px rgba(159,216,255,.2)" : "none",
+                            }}
+                            data-testid={`subject-chip-${subject.id}`}
+                          >
+                            <div
+                              className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                              style={{
+                                background: "rgba(5,5,8,.6)",
+                                border: active ? "1.5px solid #9FD8FF" : "1px solid rgba(255,255,255,.18)",
+                              }}
+                            >
+                              {active ? (
+                                <Check className="w-3.5 h-3.5" style={{ color: "#9FD8FF" }} />
+                              ) : (
+                                <span className="text-[11px] font-black text-white">
+                                  {(isAf ? subject.nameAfrikaans : subject.name).charAt(0)}
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-semibold text-sm text-white truncate">
+                                {isAf ? subject.nameAfrikaans : subject.name}
+                              </p>
+                              <p className="text-[10px] text-white" style={{ opacity: 0.82 }}>{subject.category}</p>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
 
-          {/* Preliminary Exam Dates — Task #359 */}
-          <NeonCard
-            color="#6EE7F9"
+                  <div className="flex items-center justify-between pt-1">
+                    <p className="text-[11px] text-white" style={{ opacity: 0.85 }}>
+                      {selectedSubjects.length < 4
+                        ? `${t.selectAtLeast4} (${selectedSubjects.length}/4)`
+                        : `${selectedSubjects.length} ${t.subjectsSelectedLabel}`}
+                    </p>
+                    <PrimaryButton
+                      onClick={() => updateSubjectsMutation.mutate(selectedSubjects)}
+                      disabled={!canSave}
+                      testId="button-save-subjects"
+                    >
+                      {updateSubjectsMutation.isPending ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <>
+                          <Save className="w-4 h-4" />
+                          {t.save}
+                        </>
+                      )}
+                    </PrimaryButton>
+                  </div>
+                </div>
+              );
+            })()}
+          </SectionCard>
+
+          {/* ── Preliminary Exam Dates — Task #359 ── */}
+          <SectionCard
+            color="#C5B3FF"
             icon={CalendarDays}
+            eyebrow={t.prelimEyebrow}
             title={t.prelimDates}
             subtitle={t.prelimDatesSubtitle}
             testId="card-prelim-exams"
+            delay={0.15}
           >
             {(() => {
               const selectedSubjectsList = (subjects || []).filter(s =>
@@ -964,8 +1024,8 @@ export default function SettingsPage() {
               if (selectedSubjectsList.length === 0) {
                 return (
                   <div className="text-center py-6">
-                    <CalendarDays className="w-8 h-8 mx-auto mb-2" style={{ color: "#6EE7F9" }} />
-                    <p className="text-sm text-white">
+                    <CalendarDays className="w-8 h-8 mx-auto mb-2" style={{ color: "#C5B3FF" }} />
+                    <p className="text-sm text-white" style={{ opacity: 0.85 }}>
                       {t.selectSubjectsFirst}
                     </p>
                   </div>
@@ -978,8 +1038,8 @@ export default function SettingsPage() {
                 <div className="space-y-3">
                   {hasSchoolPushed && (
                     <div
-                      className="rounded-xl bg-black px-3 py-2 text-[11px] text-white"
-                      style={{ border: "1px solid rgba(110,231,249,0.30)" }}
+                      className="rounded-xl px-3 py-2 text-[11px] text-white"
+                      style={{ background: "rgba(197,179,255,.06)", border: "1px solid rgba(197,179,255,.3)" }}
                     >
                       {t.schoolPushedNotice}
                     </div>
@@ -993,8 +1053,8 @@ export default function SettingsPage() {
                       return (
                         <div
                           key={subject.id}
-                          className="rounded-xl bg-black p-3"
-                          style={{ border: "1px solid rgba(110,231,249,0.20)" }}
+                          className="rounded-xl p-3"
+                          style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(197,179,255,.22)" }}
                           data-testid={`prelim-row-${subject.id}`}
                         >
                           <p className="text-sm font-bold text-white mb-2">
@@ -1002,7 +1062,7 @@ export default function SettingsPage() {
                           </p>
                           <div className="grid grid-cols-2 gap-2">
                             <label className="block">
-                              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-white">
+                              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-white" style={{ opacity: 0.85 }}>
                                 {t.paper1}
                               </span>
                               <Input
@@ -1011,12 +1071,13 @@ export default function SettingsPage() {
                                 max="2026-10-15"
                                 value={p1}
                                 onChange={(e) => setPrelimDate(subject.id, 1, e.target.value)}
-                                className="mt-1 h-9 bg-black border-white/15 text-white text-xs"
+                                className={`mt-1 h-9 text-xs ${fieldClass}`}
+                                style={fieldStyle}
                                 data-testid={`prelim-${subject.id}-p1`}
                               />
                             </label>
                             <label className="block">
-                              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-white">
+                              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-white" style={{ opacity: 0.85 }}>
                                 {t.paper2}
                               </span>
                               <Input
@@ -1025,7 +1086,8 @@ export default function SettingsPage() {
                                 max="2026-10-15"
                                 value={p2}
                                 onChange={(e) => setPrelimDate(subject.id, 2, e.target.value)}
-                                className="mt-1 h-9 bg-black border-white/15 text-white text-xs"
+                                className={`mt-1 h-9 text-xs ${fieldClass}`}
+                                style={fieldStyle}
                                 data-testid={`prelim-${subject.id}-p2`}
                               />
                             </label>
@@ -1035,19 +1097,13 @@ export default function SettingsPage() {
                     })}
                   </div>
                   <div className="flex items-center justify-between pt-1">
-                    <p className="text-[11px] text-white">
+                    <p className="text-[11px] text-white" style={{ opacity: 0.85 }}>
                       {Object.values(prelimDates).filter(Boolean).length} {t.datesSet}
                     </p>
-                    <button
-                      type="button"
+                    <PrimaryButton
                       onClick={savePrelims}
                       disabled={!prelimDirty || updatePrelimsMutation.isPending}
-                      className="px-5 py-2.5 rounded-xl text-sm font-bold normal-case tracking-normal inline-flex items-center justify-center gap-2 disabled:opacity-40"
-                      style={{
-                        background: "#6EE7F9",
-                        color: "#0a0a0a",
-                      }}
-                      data-testid="button-save-prelims"
+                      testId="button-save-prelims"
                     >
                       {updatePrelimsMutation.isPending ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -1057,41 +1113,95 @@ export default function SettingsPage() {
                           {t.save}
                         </>
                       )}
-                    </button>
+                    </PrimaryButton>
                   </div>
                 </div>
               );
             })()}
-          </NeonCard>
+          </SectionCard>
 
-          {/* Referral Link Card — learner only */}
+          {/* ── Language ── */}
+          <SectionCard
+            color="#FFE29A"
+            icon={Globe}
+            eyebrow={t.languageEyebrow}
+            title={t.languageTitle}
+            subtitle={t.languageSubtitle}
+            testId="card-language"
+            delay={0.2}
+          >
+            <div className="grid grid-cols-2 gap-3">
+              {([
+                { code: "en" as const, label: t.langEnglish, flagLetters: "EN" },
+                { code: "af" as const, label: t.langAfrikaans, flagLetters: "AF" },
+              ]).map(opt => {
+                const active = language === opt.code;
+                return (
+                  <button
+                    key={opt.code}
+                    type="button"
+                    onClick={() => { if (!active) toggleLanguage(); }}
+                    className="relative p-4 rounded-xl text-left transition-all"
+                    style={{
+                      background: active ? "rgba(255,226,154,.08)" : "rgba(255,255,255,.03)",
+                      border: active ? "1.5px solid #FFE29A" : "1px solid rgba(255,255,255,.1)",
+                      boxShadow: active ? "0 0 16px rgba(255,226,154,.22)" : "none",
+                    }}
+                    data-testid={`language-option-${opt.code}`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span
+                        className="w-9 h-9 rounded-lg flex items-center justify-center text-xs font-black"
+                        style={{
+                          background: "rgba(5,5,8,.6)",
+                          border: active ? "1.5px solid #FFE29A" : "1px solid rgba(255,255,255,.18)",
+                          color: active ? "#FFE29A" : "#ffffff",
+                        }}
+                      >
+                        {opt.flagLetters}
+                      </span>
+                      {active && (
+                        <span
+                          className="text-[9px] font-black uppercase tracking-[0.18em] px-2 py-0.5 rounded-full"
+                          style={{ color: "#FFE29A", border: "1px solid rgba(255,226,154,.55)", background: "rgba(255,226,154,.1)" }}
+                        >
+                          {t.langActive}
+                        </span>
+                      )}
+                    </div>
+                    <p className="font-bold text-white mt-2.5">{opt.label}</p>
+                  </button>
+                );
+              })}
+            </div>
+          </SectionCard>
+
+          {/* ── Refer a Friend — learner only ── */}
           {user?.role === "learner" && (
-            <NeonCard
+            <SectionCard
               color="#FFB7E5"
               icon={Gift}
+              eyebrow={t.referralEyebrow}
               title={t.referAFriend}
               subtitle={t.referAFriendSubtitle}
               testId="card-referral"
+              delay={0.25}
             >
               {/* Referral code hero */}
               <div
-                className="relative rounded-2xl bg-black px-4 py-5 text-center overflow-hidden"
+                className="relative rounded-2xl px-4 py-5 text-center overflow-hidden"
                 style={{
+                  background: "rgba(5,5,8,.6)",
                   border: "1.5px solid #FFB7E5",
-                  boxShadow: "0 0 0 1px rgba(255,183,229,0.25), 0 0 22px rgba(255,183,229,0.35), inset 0 0 14px rgba(0,0,0,0.55)",
+                  boxShadow: "0 0 22px rgba(255,183,229,.3), inset 0 0 14px rgba(0,0,0,.5)",
                 }}
               >
-                <span aria-hidden className="absolute top-1 left-1 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: "#FFB7E5" }} />
-                <span aria-hidden className="absolute top-1 right-1 w-2.5 h-2.5 border-t-2 border-r-2" style={{ borderColor: "#FFB7E5" }} />
-                <span aria-hidden className="absolute bottom-1 left-1 w-2.5 h-2.5 border-b-2 border-l-2" style={{ borderColor: "#FFB7E5" }} />
-                <span aria-hidden className="absolute bottom-1 right-1 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: "#FFB7E5" }} />
-
-                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white">
+                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white" style={{ opacity: 0.85 }}>
                   {t.yourReferralCode}
                 </p>
                 <p
                   className="mt-1.5 font-mono font-black text-2xl sm:text-3xl tracking-[0.18em]"
-                  style={{ color: "#FFB7E5", textShadow: "0 0 12px rgba(255,183,229,0.75)" }}
+                  style={{ color: "#FFB7E5", textShadow: "0 0 12px rgba(255,183,229,.7)" }}
                   data-testid="text-referral-code"
                 >
                   {referral?.code ?? "········"}
@@ -1100,10 +1210,10 @@ export default function SettingsPage() {
 
               {/* Full link row */}
               <div
-                className="rounded-xl bg-black px-3 py-2.5"
-                style={{ border: "1px solid rgba(255,183,229,0.3)" }}
+                className="rounded-xl px-3 py-2.5"
+                style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,183,229,.3)" }}
               >
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white mb-1">
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white mb-1" style={{ opacity: 0.85 }}>
                   {t.yourReferralLink}
                 </p>
                 <p
@@ -1115,30 +1225,26 @@ export default function SettingsPage() {
                 </p>
               </div>
 
-              {/* Copy button — full width neon */}
-              <button
+              <GhostButton
                 onClick={copyReferralLink}
                 disabled={!referral}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-black font-bold text-sm disabled:opacity-40"
-                style={{
-                  color: "#FFB7E5",
-                  border: "1.5px solid #FFB7E5",
-                }}
-                data-testid="button-copy-referral"
+                color="#FFB7E5"
+                full
+                testId="button-copy-referral"
               >
                 {linkCopied
                   ? <><Check className="w-4 h-4" />{t.copied}</>
                   : <><Copy className="w-4 h-4" />{t.copyLink}</>}
-              </button>
+              </GhostButton>
 
               <div className="flex items-center gap-3">
-                <div className="flex-1 h-2 rounded-full bg-black overflow-hidden" style={{ border: "1px solid rgba(255,183,229,0.3)" }}>
+                <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,183,229,.3)" }}>
                   <div
                     className="h-full rounded-full"
                     style={{
                       width: `${((referral?.thisMonthCount ?? 0) / (referral?.maxPerMonth ?? 2)) * 100}%`,
                       background: "#FFB7E5",
-                      boxShadow: "0 0 10px rgba(255,183,229,0.6)",
+                      boxShadow: "0 0 10px rgba(255,183,229,.6)",
                     }}
                   />
                 </div>
@@ -1148,109 +1254,58 @@ export default function SettingsPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 rounded-xl bg-black text-center" style={{ border: "1px solid rgba(255,183,229,0.3)" }}>
+                <div className="p-3 rounded-xl text-center" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,183,229,.3)" }}>
                   <Users className="w-5 h-5 mx-auto mb-1" style={{ color: "#FFB7E5" }} />
                   <p className="text-lg font-bold text-white">{referral?.thisMonthCount ?? 0}</p>
-                  <p className="text-[10px] text-white">{t.thisMonth}</p>
+                  <p className="text-[10px] text-white" style={{ opacity: 0.82 }}>{t.thisMonth}</p>
                 </div>
-                <div className="p-3 rounded-xl bg-black text-center" style={{ border: "1px solid rgba(255,226,154,0.3)" }}>
+                <div className="p-3 rounded-xl text-center" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,226,154,.3)" }}>
                   <Gift className="w-5 h-5 mx-auto mb-1" style={{ color: "#FFE29A" }} />
                   <p className="text-lg font-bold text-white">{(referral?.maxPerMonth ?? 2) - (referral?.thisMonthCount ?? 0)}</p>
-                  <p className="text-[10px] text-white">{t.slotsLeft}</p>
+                  <p className="text-[10px] text-white" style={{ opacity: 0.82 }}>{t.slotsLeft}</p>
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl bg-black/60 flex items-start gap-2" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
+              <div className="p-3 rounded-xl flex items-start gap-2" style={{ background: "rgba(255,255,255,.02)", border: "1px solid rgba(255,255,255,.08)" }}>
                 <AlertCircle className="w-4 h-4 text-white shrink-0 mt-0.5" />
-                <p className="text-xs text-white leading-snug">
+                <p className="text-xs text-white leading-snug" style={{ opacity: 0.85 }}>
                   {t.referralDisclaimer}
                 </p>
               </div>
-            </NeonCard>
+            </SectionCard>
           )}
 
-          <NeonCard
-            color="#FFE29A"
-            icon={Dumbbell}
-            title={t.sportActivities}
-            subtitle={t.sportActivitiesSubtitle}
-            testId="card-activities"
+          {/* ── Account ── */}
+          <SectionCard
+            color="#94F7C5"
+            icon={Shield}
+            eyebrow={t.accountEyebrow}
+            title={t.accountTitle}
+            subtitle={t.accountSubtitle}
+            testId="card-account"
+            delay={0.3}
           >
-            <div className="flex gap-2 items-center">
-              <Input
-                placeholder={t.activityPlaceholder}
-                value={newActivity}
-                onChange={(e) => setNewActivity(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && newActivity.trim()) {
-                    setActivities([...activities, newActivity.trim()]);
-                    setNewActivity("");
-                  }
-                }}
-                className="bg-black border-[#FFE29A]/40 text-white placeholder:text-white focus-visible:ring-[#FFE29A]/50"
-                data-testid="input-new-activity"
-              />
-              <button
-                onClick={() => {
-                  if (newActivity.trim()) {
-                    setActivities([...activities, newActivity.trim()]);
-                    setNewActivity("");
-                  }
-                }}
-                disabled={!newActivity.trim()}
-                className="shrink-0 w-9 h-9 rounded-xl bg-black flex items-center justify-center disabled:opacity-50"
-                style={{ color: "#FFE29A", border: "1.5px solid #FFE29A" }}
-                data-testid="button-add-activity"
-              >
-                <Plus className="w-4 h-4" />
-              </button>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="p-3 rounded-xl" style={{ background: "rgba(5,5,8,.6)", border: "1px solid rgba(255,255,255,.1)" }}>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white" style={{ opacity: 0.82 }}>{t.emailLabel}</p>
+                <p className="font-bold text-white mt-0.5 truncate" data-testid="text-account-email">{user?.email || "—"}</p>
+              </div>
+              <div className="p-3 rounded-xl" style={{ background: "rgba(5,5,8,.6)", border: "1px solid rgba(255,255,255,.1)" }}>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white" style={{ opacity: 0.82 }}>{t.roleLabel}</p>
+                <p className="font-bold mt-0.5" style={{ color: "#94F7C5" }}>
+                  {user?.role === "learner" ? t.learnerRole : (user?.role ?? "—")}
+                </p>
+              </div>
             </div>
-
-            {activities.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {activities.map((activity, idx) => (
-                  <span
-                    key={idx}
-                    className="flex items-center gap-1 py-1.5 px-3 text-sm rounded-full bg-black text-white"
-                    style={{ border: "1px solid rgba(255,226,154,0.5)" }}
-                    data-testid={`activity-badge-${idx}`}
-                  >
-                    <Dumbbell className="w-3 h-3" style={{ color: "#FFE29A" }} />
-                    {activity}
-                    <button
-                      onClick={() => setActivities(activities.filter((_, i) => i !== idx))}
-                      className="ml-1 text-white hover:text-white"
-                      data-testid={`button-remove-activity-${idx}`}
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
-
-            {activities.length === 0 && (
-              <div className="text-center py-4 text-white">
-                <Dumbbell className="w-8 h-8 mx-auto mb-2" style={{ color: "#FFE29A" }} />
-                <p className="text-sm">{t.noActivities}</p>
-              </div>
-            )}
-
-            <button
-              onClick={() => {
-                toast({ title: t.activitiesSaved, description: `${activities.length} ${t.activitiesSavedDesc}` });
-              }}
-              disabled={activities.length === 0}
-              className="px-5 py-2.5 rounded-xl font-bold text-sm inline-flex items-center justify-center gap-2 disabled:opacity-40"
-              style={{ background: "#6EE7F9", color: "#0a0a0a" }}
-              data-testid="button-save-activities"
+            <GhostButton
+              onClick={() => logout()}
+              color="#FF8DA1"
+              testId="button-sign-out"
             >
-              <Save className="w-4 h-4" />
-              {t.saveActivities} ({activities.length})
-            </button>
-          </NeonCard>
-        </div>
-
+              <LogOut className="w-4 h-4" />
+              {t.signOut}
+            </GhostButton>
+          </SectionCard>
         </main>
       </div>
     </div>

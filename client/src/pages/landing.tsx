@@ -11,6 +11,7 @@ import { useRolePromptNav } from "@/components/role-prompt-modal";
 import iconTransparent from "@/assets/handoff/icon-transparent.png";
 import muralTransparent from "@/assets/handoff/mural-transparent.png";
 import rizzAvatar from "@/assets/handoff/rizz-avatar.png";
+import { RizzHeaderButton } from "@/components/rizz-support-bot";
 
 const RAINBOW =
   "linear-gradient(95deg,#FFB7E5,#FFE29A,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)";
@@ -434,6 +435,7 @@ export default function LandingPage() {
             <span style={{ padding: "6px 10px", background: en ? "#9FF5E8" : "transparent", color: en ? "#050508" : "#fff" }}>EN</span>
             <span style={{ padding: "6px 10px", background: en ? "transparent" : "#9FF5E8", color: en ? "#fff" : "#050508" }}>AF</span>
           </span>
+          <RizzHeaderButton compact />
           <a href="/signin">
             <button
               className="btl-nav-cta"

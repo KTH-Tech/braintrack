@@ -1,22 +1,19 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, Link } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
-import { Checkbox } from "@/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { ONBOARDING_QUESTIONS, GRADE_12_SUBJECTS } from "@/lib/constants";
-import { ArrowLeft, ArrowRight, Brain, Loader2, Globe, BookOpen, Check, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2, Globe, Check, Sparkles, Search } from "lucide-react";
 import { BrainTrackLogo } from "@/components/braintrack-logo";
 import { GraffitiSplats } from "@/components/graffiti-splats";
 import { type VarkStyle, VARK_STYLES } from "@/lib/vark";
 import { useLanguage } from "@/lib/language-context";
 import { useAuth } from "@/hooks/use-auth";
+import rizzAvatar from "@/assets/handoff/rizz-avatar.png";
 
 interface SubjectMark {
   subjectCode: string;
@@ -119,11 +116,11 @@ function calculateTraits(answers: Answers) {
 
 function calculateRecommendations(answers: Answers, traits: Record<string, string>) {
   const recommendations: Record<string, unknown> = {};
-  
+
   // Calculate recommended session length based on focus duration and traits
   const focusDuration = answers.focus_duration as number || 45;
   const distraction = answers.distraction_level;
-  
+
   let sessionLength = focusDuration;
   if (distraction === "often" || distraction === "always") {
     sessionLength = Math.min(30, focusDuration);
@@ -137,13 +134,13 @@ function calculateRecommendations(answers: Answers, traits: Record<string, strin
   const studyFreq = answers.study_frequency;
   const studyTime = answers.study_time;
   const planningStyle = answers.planning_style;
-  
+
   let sessionsPerWeek = 3;
   if (studyFreq === "daily") sessionsPerWeek = 6;
   else if (studyFreq === "few_times") sessionsPerWeek = 4;
   else if (studyFreq === "weekends") sessionsPerWeek = 2;
   else sessionsPerWeek = 2;
-  
+
   recommendations.weeklyRoutine = {
     sessionsPerWeek,
     preferredTime: studyTime || "evening",
@@ -152,7 +149,7 @@ function calculateRecommendations(answers: Answers, traits: Record<string, strin
 
   // Calculate subject risk flags based on stress, focus, and practice style
   const riskFlags: string[] = [];
-  
+
   if (traits.stressResilience === "low") {
     riskFlags.push("Mathematics", "Physical Sciences"); // High-pressure subjects
   }
@@ -168,7 +165,7 @@ function calculateRecommendations(answers: Answers, traits: Record<string, strin
   if (answers.exam_performance === "worse") {
     riskFlags.push("English Home Language"); // Exam technique issues
   }
-  
+
   // Remove duplicates
   recommendations.subjectRiskFlags = Array.from(new Set(riskFlags));
 
@@ -395,6 +392,55 @@ const T = {
     dobHint: "Day / month / year — we only store a scrambled fingerprint of this, never the raw date.",
     dobInvalid: "Hmm, that date doesn't look right 🤔",
     dobMismatch: "That doesn't match the first 6 digits of your ID number 👀 — double-check both.",
+
+    // ── Rizz-hosted journey ────────────────────────────────────────────────
+    rizzName: "Rizz",
+    rizzHi: "Yebo! I'm Rizz — your study wingman.",
+    rizzHiSub: "Smarter study. Higher score. Brighter future.",
+    rizzQstudy: "First up — how you actually study. No wrong answers here.",
+    rizzQfocus: "Now let's talk focus. Be honest, I've seen worse.",
+    rizzQpractice: "How you practise tells me how to feed you questions.",
+    rizzQstress: "Exam nerves are normal. Let's map yours.",
+    rizzQplanning: "Last stretch of questions. Discipline today, success tomorrow.",
+    rizzVarkLine: "Now the good part — how does your brain like to be taught?",
+    rizzSubjectsLine: "Pick your subjects. Tap a card, drop your latest mark. Easy.",
+    rizzSubjectsDone: "6 locked in! Add more if you're writing more. Let's get it!",
+    rizzSchoolLine: "Quick admin — who are you and where do you write?",
+    rizzSchoolDone: "Perfect. That's your NSC results matched automatically.",
+    rizzFinalLine: "You're set up. Let's get it!",
+    rizzFinalSub: "I don't do easy. I make easy happen.",
+    almostThere: "almost there!",
+    startHere: "let's go!",
+    journeyLabel: "Your setup journey",
+    phaseYou: "You",
+    phaseBrain: "Brain",
+    phaseSubjects: "Subjects",
+    phaseSchool: "School",
+    phaseDone: "Done",
+    subjectFilterPh: "Search subjects…",
+    allSubjectsLabel: "All",
+    subjectCountLabel: "subjects locked in",
+    minimumHit: "minimum unlocked",
+    markLabel: "Latest mark",
+    noSubjectMatches: "No subject matches that. Try a shorter word.",
+    nameQ: "What should I call you?",
+    nameQHint: "Exactly as it appears on your ID — that's how the NSC matches you.",
+    schoolQ: "Where do you write?",
+    idQ: "Your SA ID number",
+    dobQ: "When did you land?",
+    youreSetTitle: "You're set for the year",
+    youreSetSub: "Here's what I've got on you:",
+    summarySubjectsLabel: "Subjects",
+    summaryStyleLabel: "Learning style",
+    summarySchoolLabel: "School",
+    whatsNextTitle: "What happens next",
+    whatsNextMinor: "Your parent/guardian confirms the link, then your full study plan unlocks. I'll be waiting.",
+    whatsNextAdult: "Pick your plan and your first study session is ready. I'll be waiting.",
+    letsGetIt: "Let's get it!",
+    doneTag: "done",
+    optionalTag: "optional",
+    tapToChange: "Tap to change",
+    questionProgress: "Question {n} of {total}",
   },
   af: {
     pageTitle: "Studieprofiel",
@@ -494,19 +540,123 @@ const T = {
     dobHint: "Dag / maand / jaar — ons stoor net 'n geskommelde vingerafdruk hiervan, nooit die rou datum nie.",
     dobInvalid: "Hmm, daai datum lyk nie reg nie 🤔",
     dobMismatch: "Dit pas nie by die eerste 6 syfers van jou ID-nommer nie 👀 — kontroleer albei.",
+
+    // ── Rizz-hosted journey ────────────────────────────────────────────────
+    rizzName: "Rizz",
+    rizzHi: "Yebo! Ek's Rizz — jou studiemaat.",
+    rizzHiSub: "Slimmer leer. Hoër punt. Helderder toekoms.",
+    rizzQstudy: "Eerste ding — hoe jy régtig leer. Daar's geen verkeerde antwoord nie.",
+    rizzQfocus: "Nou praat ons fokus. Wees eerlik, ek het al erger gesien.",
+    rizzQpractice: "Hoe jy oefen sê my hoe om vir jou vrae te gooi.",
+    rizzQstress: "Eksamensenuwees is normaal. Kom ons kyk na joune.",
+    rizzQplanning: "Laaste paar vrae. Dissipline vandag, sukses môre.",
+    rizzVarkLine: "Nou die lekker deel — hoe hou jou brein daarvan om geleer te word?",
+    rizzSubjectsLine: "Kies jou vakke. Tik 'n kaart, gooi jou nuutste punt in. Maklik.",
+    rizzSubjectsDone: "6 ingesluit! Voeg meer by as jy meer skryf. Kom ons vat dit!",
+    rizzSchoolLine: "Vinnige admin — wie is jy en waar skryf jy?",
+    rizzSchoolDone: "Perfek. Jou NSS-uitslae word nou outomaties gepas.",
+    rizzFinalLine: "Jy's reg. Kom ons vat dit!",
+    rizzFinalSub: "Ek doen nie maklik nie. Ek maak maklik gebeur.",
+    almostThere: "amper daar!",
+    startHere: "kom ons gaan!",
+    journeyLabel: "Jou opstel-reis",
+    phaseYou: "Jy",
+    phaseBrain: "Brein",
+    phaseSubjects: "Vakke",
+    phaseSchool: "Skool",
+    phaseDone: "Klaar",
+    subjectFilterPh: "Soek vakke…",
+    allSubjectsLabel: "Alles",
+    subjectCountLabel: "vakke gekies",
+    minimumHit: "minimum ontsluit",
+    markLabel: "Nuutste punt",
+    noSubjectMatches: "Geen vak pas daarby nie. Probeer 'n korter woord.",
+    nameQ: "Wat noem ek jou?",
+    nameQHint: "Presies soos op jou ID — so pas die NSS jou.",
+    schoolQ: "Waar skryf jy?",
+    idQ: "Jou SA ID-nommer",
+    dobQ: "Wanneer het jy geland?",
+    youreSetTitle: "Jy's reg vir die jaar",
+    youreSetSub: "Dis wat ek van jou het:",
+    summarySubjectsLabel: "Vakke",
+    summaryStyleLabel: "Leerstyl",
+    summarySchoolLabel: "Skool",
+    whatsNextTitle: "Wat gebeur nou",
+    whatsNextMinor: "Jou ouer/voog bevestig die skakel, dan ontsluit jou volle studieplan. Ek wag vir jou.",
+    whatsNextAdult: "Kies jou plan en jou eerste studiesessie is gereed. Ek wag vir jou.",
+    letsGetIt: "Kom ons vat dit!",
+    doneTag: "klaar",
+    optionalTag: "opsioneel",
+    tapToChange: "Tik om te verander",
+    questionProgress: "Vraag {n} van {total}",
   },
 } as const;
 
-// ── Fun bits: step-completion cheers + DOB helpers ──────────────────────────
-const CHEERS = {
-  en: ["nice one 🔥", "you're cooking ⚡", "big brain move 🧠", "smooth 😎", "keep it rolling 🛹"],
-  af: ["mooi so 🔥", "jy's aan die brand ⚡", "groot brein-skuif 🧠", "glad gedoen 😎", "hou die pas 🛹"],
+// ── Brand palette (official Rizz brand sheet) ───────────────────────────────
+const BRAND = {
+  pink: "#FF7EC6",
+  purple: "#B388FF",
+  cyan: "#6EE7F9",
+  yellow: "#FFD166",
+  mint: "#94F7C5",
+  ground: "#0D0D14",
+  card: "#1C1C26",
 } as const;
+
+const CONFETTI_COLORS = [BRAND.pink, BRAND.purple, BRAND.cyan, BRAND.yellow, BRAND.mint];
+const MARKER = "'Permanent Marker',cursive";
+
+// Rizz's real brand lines — used as step-completion encouragement.
+const RIZZ_LINES = {
+  en: [
+    "Let's get it!",
+    "Progress not perfection",
+    "Small steps BIG results",
+    "Discipline today, success tomorrow",
+    "You can shine later — study now",
+    "Smarter study. Higher score.",
+  ],
+  af: [
+    "Kom ons vat dit!",
+    "Vordering, nie perfeksie nie",
+    "Klein treë GROOT resultate",
+    "Dissipline vandag, sukses môre",
+    "Jy kan later blink — leer nou",
+    "Slimmer leer. Hoër punt.",
+  ],
+} as const;
+
 const PHASE_CHEERS = {
-  en: { vark: "level up 🎮", subjects: "almost there ⚡", school: "home stretch 🏁", parent_consent: "last one, promise 🤞" },
-  af: { vark: "volgende vlak 🎮", subjects: "amper daar ⚡", school: "pylvak 🏁", parent_consent: "laaste een, belowe 🤞" },
+  en: {
+    vark: "Let's get it!",
+    subjects: "Small steps BIG results",
+    school: "You can shine later — study now",
+    parent_consent: "Almost home 🏁",
+  },
+  af: {
+    vark: "Kom ons vat dit!",
+    subjects: "Klein treë GROOT resultate",
+    school: "Jy kan later blink — leer nou",
+    parent_consent: "Amper tuis 🏁",
+  },
 } as const;
-const CONFETTI_COLORS = ["#9FF5E8", "#9FD8FF", "#FFB7E5", "#C5B3FF", "#FFE29A"];
+
+// Per-category colour + icon so subject picking is visual, not clerical.
+const SUBJECT_META: Record<string, { color: string; icon: string }> = {
+  Mathematics: { color: BRAND.cyan, icon: "📐" },
+  Sciences: { color: BRAND.mint, icon: "🧪" },
+  Commerce: { color: BRAND.yellow, icon: "📈" },
+  Humanities: { color: BRAND.pink, icon: "🌍" },
+  Languages: { color: BRAND.purple, icon: "💬" },
+  Arts: { color: BRAND.pink, icon: "🎨" },
+  Technical: { color: BRAND.cyan, icon: "⚙️" },
+  Agriculture: { color: BRAND.mint, icon: "🌱" },
+  Services: { color: BRAND.yellow, icon: "🍳" },
+  "Life Orientation": { color: BRAND.purple, icon: "🧭" },
+};
+const metaFor = (category: string) => SUBJECT_META[category] ?? { color: "#FFFFFF", icon: "📚" };
+
+const MARK_CHIPS = [30, 40, 50, 60, 70, 80, 90];
 
 /** Build yyyy-mm-dd from the 3 DOB fields; null if incomplete/not a real date. */
 function buildIsoDob(dd: string, mm: string, yyyy: string): string | null {
@@ -540,11 +690,203 @@ function ageFromIsoDob(isoDob: string): number {
   return age;
 }
 
+/** Honour prefers-reduced-motion — animations off, layout unchanged. */
+function usePrefersReducedMotion(): boolean {
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof window.matchMedia !== "function") return;
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduced(mq.matches);
+    const onChange = () => setReduced(mq.matches);
+    if (mq.addEventListener) {
+      mq.addEventListener("change", onChange);
+      return () => mq.removeEventListener("change", onChange);
+    }
+    return undefined;
+  }, []);
+  return reduced;
+}
+
+// ── Rizz: the guide who hosts the whole journey ─────────────────────────────
+type RizzMood = "welcome" | "curious" | "hyped" | "impressed" | "proud";
+
+const MOOD_RING: Record<RizzMood, string> = {
+  welcome: BRAND.cyan,
+  curious: BRAND.purple,
+  hyped: BRAND.yellow,
+  impressed: BRAND.mint,
+  proud: BRAND.pink,
+};
+
+const MOOD_SPARK: Record<RizzMood, string> = {
+  welcome: "👋",
+  curious: "🤔",
+  hyped: "⚡",
+  impressed: "🔥",
+  proud: "🏆",
+};
+
+function RizzGuide({
+  mood,
+  line,
+  sub,
+  name,
+  reduced,
+  size = "md",
+}: {
+  mood: RizzMood;
+  line: string;
+  sub?: string;
+  name: string;
+  reduced: boolean;
+  size?: "md" | "lg";
+}) {
+  const ring = MOOD_RING[mood];
+  const avatar = size === "lg" ? 84 : 64;
+  return (
+    <div
+      className="flex items-start gap-3 sm:gap-4 w-full"
+      data-testid="rizz-guide"
+      data-rizz-mood={mood}
+    >
+      <div className="relative shrink-0" style={{ width: avatar, height: avatar }}>
+        <span
+          aria-hidden
+          className="absolute inset-0 rounded-full"
+          style={{
+            border: `2px solid ${ring}`,
+            boxShadow: `0 0 18px ${ring}66, inset 0 0 12px ${ring}22`,
+            transition: "border-color .4s ease, box-shadow .4s ease",
+          }}
+        />
+        <img
+          src={rizzAvatar}
+          alt={name}
+          width={avatar}
+          height={avatar}
+          className="relative rounded-full object-cover select-none"
+          style={{
+            width: avatar,
+            height: avatar,
+            background: BRAND.card,
+            animation: reduced ? undefined : "bt-rizzbob 3.6s ease-in-out infinite",
+          }}
+        />
+        <span
+          aria-hidden
+          className="absolute -bottom-1 -right-1 flex items-center justify-center rounded-full"
+          style={{
+            width: 24,
+            height: 24,
+            fontSize: 13,
+            background: BRAND.ground,
+            border: `1.5px solid ${ring}`,
+          }}
+        >
+          {MOOD_SPARK[mood]}
+        </span>
+      </div>
+
+      <div className="relative flex-1 min-w-0">
+        <span
+          aria-hidden
+          className="absolute left-[-5px] top-6 hidden sm:block"
+          style={{
+            width: 12,
+            height: 12,
+            background: BRAND.card,
+            borderLeft: "1px solid rgba(255,255,255,.16)",
+            borderBottom: "1px solid rgba(255,255,255,.16)",
+            transform: "rotate(45deg)",
+          }}
+        />
+        <div
+          className="rounded-2xl px-4 py-3 sm:px-5 sm:py-4"
+          style={{
+            background: BRAND.card,
+            border: "1px solid rgba(255,255,255,.16)",
+            boxShadow: `0 0 22px ${ring}22`,
+          }}
+        >
+          <p
+            className="text-[11px] uppercase tracking-[0.18em] text-white mb-1"
+            style={{ fontFamily: MARKER, letterSpacing: "0.08em" }}
+          >
+            {name}
+          </p>
+          <p className="text-white font-semibold text-[15px] sm:text-base leading-snug break-words">
+            {line}
+          </p>
+          {sub && (
+            <p
+              className="mt-1.5 text-white text-[13px] sm:text-sm leading-snug break-words"
+              style={{ fontFamily: MARKER, color: ring }}
+            >
+              {sub}
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── One "question block" for the sequenced details step ─────────────────────
+function StepBlock({
+  n,
+  title,
+  hint,
+  done,
+  accent,
+  testId,
+  children,
+}: {
+  n: number;
+  title: string;
+  hint?: string;
+  done: boolean;
+  accent: string;
+  testId?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      data-testid={testId}
+      className="rounded-2xl p-4 sm:p-5"
+      style={{
+        background: done ? "rgba(148,247,197,.05)" : BRAND.card,
+        border: `1px solid ${done ? `${BRAND.mint}55` : "rgba(255,255,255,.12)"}`,
+        transition: "background .3s ease, border-color .3s ease",
+      }}
+    >
+      <div className="flex items-center gap-2.5 mb-3">
+        <span
+          className="flex items-center justify-center rounded-full shrink-0 text-[13px] font-bold"
+          style={{
+            width: 26,
+            height: 26,
+            background: done ? BRAND.mint : "transparent",
+            color: done ? BRAND.ground : "#FFFFFF",
+            border: `1.5px solid ${done ? BRAND.mint : accent}`,
+          }}
+        >
+          {done ? <Check className="w-3.5 h-3.5" /> : n}
+        </span>
+        <h3 className="text-white font-bold text-lg sm:text-xl leading-tight">{title}</h3>
+      </div>
+      {hint && <p className="text-white text-[13px] leading-snug mb-3 opacity-100">{hint}</p>}
+      {children}
+    </div>
+  );
+}
+
 export default function OnboardingPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const persisted = useRef<PersistedState | null>(loadPersistedState()).current;
+  const reduced = usePrefersReducedMotion();
+  const anim = (value: string) => (reduced ? undefined : value);
   const [hydrated, setHydrated] = useState(false);
   const [currentStep, setCurrentStep] = useState<number>(persisted?.currentStep ?? 0);
   const [phase, setPhase] = useState<Phase>(persisted?.phase ?? "questions");
@@ -562,6 +904,11 @@ export default function OnboardingPage() {
   const [dobDay, setDobDay] = useState("");
   const [dobMonth, setDobMonth] = useState("");
   const [dobYear, setDobYear] = useState("");
+  // Conversational auto-advance between the identity fields.
+  const lastNameRef = useRef<HTMLInputElement>(null);
+  const schoolInputRef = useRef<HTMLInputElement>(null);
+  const idNumberRef = useRef<HTMLInputElement>(null);
+  const dobDayRef = useRef<HTMLInputElement>(null);
   const dobMonthRef = useRef<HTMLInputElement>(null);
   const dobYearRef = useRef<HTMLInputElement>(null);
   // Step-completion micro-celebration (marker-font cheer + confetti burst).
@@ -570,15 +917,20 @@ export default function OnboardingPage() {
   const celebrate = (text: string) => {
     if (cheerTimer.current) clearTimeout(cheerTimer.current);
     setCheer(text);
-    cheerTimer.current = setTimeout(() => setCheer(null), 1500);
+    cheerTimer.current = setTimeout(() => setCheer(null), 1600);
   };
   useEffect(() => () => { if (cheerTimer.current) clearTimeout(cheerTimer.current); }, []);
+  // Auto-advance after a single-select answer so questions feel conversational.
+  const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (advanceTimer.current) clearTimeout(advanceTimer.current); }, []);
   const [schoolQuery, setSchoolQuery] = useState<string>(persisted?.schoolName ?? "");
   const [schoolResults, setSchoolResults] = useState<Array<{ id: number; name: string; province: string | null }>>([]);
   const [schoolSearching, setSchoolSearching] = useState(false);
   const [parentEmail, setParentEmail] = useState<string>(persisted?.parentEmail ?? "");
   const [consentLink, setConsentLink] = useState<string | null>(null);
   const [consentDelivery, setConsentDelivery] = useState<"sent" | "not_configured" | "failed" | null>(null);
+  const [subjectFilter, setSubjectFilter] = useState("");
+  const [subjectCategory, setSubjectCategory] = useState<string>("__all__");
   const { language, setLanguage } = useLanguage();
   const isAf = language === "af";
   const t = T[language];
@@ -649,7 +1001,7 @@ export default function OnboardingPage() {
     const q = schoolQuery.trim();
     if (q.length < 2) { setSchoolResults([]); return; }
     setSchoolSearching(true);
-    const t = setTimeout(async () => {
+    const timer = setTimeout(async () => {
       try {
         const r = await fetch(`/api/schools/search?q=${encodeURIComponent(q)}`, { credentials: "include" });
         const j = await r.json();
@@ -660,7 +1012,7 @@ export default function OnboardingPage() {
         setSchoolSearching(false);
       }
     }, 250);
-    return () => clearTimeout(t);
+    return () => clearTimeout(timer);
   }, [schoolQuery, phase]);
 
   const currentQuestion = phase === "questions" ? ONBOARDING_QUESTIONS[currentStep] : null;
@@ -688,10 +1040,22 @@ export default function OnboardingPage() {
   };
 
   const updateMark = (code: string, mark: number) => {
-    setSubjectMarks(prev => prev.map(s => 
+    setSubjectMarks(prev => prev.map(s =>
       s.subjectCode === code ? { ...s, mark: Math.max(0, Math.min(100, mark)) } : s
     ));
   };
+
+  // Celebrate the moment the 6-subject minimum is reached (once per session).
+  const hitSixRef = useRef<boolean>((persisted?.subjectMarks?.length ?? 0) >= 6);
+  useEffect(() => {
+    if (phase !== "subjects") return;
+    if (subjectMarks.length >= 6 && !hitSixRef.current) {
+      hitSixRef.current = true;
+      celebrate(isAf ? "6/6 — kom ons vat dit!" : "6/6 — let's get it!");
+    }
+    if (subjectMarks.length < 6) hitSixRef.current = false;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subjectMarks.length, phase]);
 
   const submitMutation = useMutation({
     mutationFn: async () => {
@@ -767,11 +1131,6 @@ export default function OnboardingPage() {
     },
   });
 
-  const handleSingleSelect = (value: string) => {
-    if (!currentQuestion) return;
-    setAnswers((prev) => ({ ...prev, [currentQuestion.id]: value }));
-  };
-
   const handleMultiSelect = (value: string, checked: boolean) => {
     if (!currentQuestion) return;
     setAnswers((prev) => {
@@ -824,12 +1183,14 @@ export default function OnboardingPage() {
   };
 
   const handleNext = () => {
+    if (advanceTimer.current) clearTimeout(advanceTimer.current);
     if (phase === "questions") {
       if (currentStep < ONBOARDING_QUESTIONS.length - 1) {
-        // Cheer at the end of each question category (every 4th step).
+        // Cheer at the end of each question category (every 4th step) using
+        // one of Rizz's real brand lines.
         if ((currentStep + 1) % 4 === 0) {
-          const cheers = CHEERS[language];
-          celebrate(cheers[Math.floor(currentStep / 4) % cheers.length]);
+          const lines = RIZZ_LINES[language];
+          celebrate(lines[Math.floor(currentStep / 4) % lines.length]);
         }
         setCurrentStep((prev) => prev + 1);
       } else {
@@ -850,7 +1211,23 @@ export default function OnboardingPage() {
     }
   };
 
+  // Keep a stable handle so the auto-advance timer always calls the latest
+  // handleNext (which closes over currentStep/phase).
+  const handleNextRef = useRef(handleNext);
+  useEffect(() => {
+    handleNextRef.current = handleNext;
+  });
+
+  const handleSingleSelect = (value: string) => {
+    if (!currentQuestion) return;
+    setAnswers((prev) => ({ ...prev, [currentQuestion.id]: value }));
+    // Conversational auto-advance: pick → tick → next question.
+    if (advanceTimer.current) clearTimeout(advanceTimer.current);
+    advanceTimer.current = setTimeout(() => handleNextRef.current(), 420);
+  };
+
   const handleBack = () => {
+    if (advanceTimer.current) clearTimeout(advanceTimer.current);
     if (phase === "parent_consent") {
       setPhase("school");
     } else if (phase === "school") {
@@ -892,7 +1269,7 @@ export default function OnboardingPage() {
     },
   });
 
-  const questionText = currentQuestion 
+  const questionText = currentQuestion
     ? (language === "en" ? currentQuestion.questionEn : currentQuestion.questionAf)
     : "";
 
@@ -914,17 +1291,132 @@ export default function OnboardingPage() {
 
   const category = getCategory(currentStep);
 
+  const QUESTION_ACCENT: Record<string, string> = {
+    study: BRAND.cyan,
+    focus: BRAND.purple,
+    practice: BRAND.yellow,
+    stress: BRAND.pink,
+    planning: BRAND.mint,
+  };
+  const accent = phase === "questions"
+    ? QUESTION_ACCENT[category]
+    : phase === "vark"
+    ? BRAND.purple
+    : phase === "subjects"
+    ? BRAND.yellow
+    : phase === "school"
+    ? BRAND.cyan
+    : BRAND.pink;
+
+  const RIZZ_QUESTION_LINE: Record<string, string> = {
+    study: t.rizzQstudy,
+    focus: t.rizzQfocus,
+    practice: t.rizzQpractice,
+    stress: t.rizzQstress,
+    planning: t.rizzQplanning,
+  };
+
+  // Per-phase Rizz mood + copy.
+  const schoolDone = canProceed() && phase === "school";
+  const subjectsDone = subjectMarks.length >= 6;
+  const rizzMood: RizzMood =
+    phase === "questions"
+      ? currentStep === 0
+        ? "welcome"
+        : "curious"
+      : phase === "vark"
+      ? "hyped"
+      : phase === "subjects"
+      ? subjectsDone
+        ? "impressed"
+        : "hyped"
+      : phase === "school"
+      ? schoolDone
+        ? "impressed"
+        : "curious"
+      : "proud";
+
+  const rizzLine =
+    phase === "questions"
+      ? currentStep === 0
+        ? t.rizzHi
+        : RIZZ_QUESTION_LINE[category]
+      : phase === "vark"
+      ? t.rizzVarkLine
+      : phase === "subjects"
+      ? subjectsDone
+        ? t.rizzSubjectsDone
+        : t.rizzSubjectsLine
+      : phase === "school"
+      ? schoolDone
+        ? t.rizzSchoolDone
+        : t.rizzSchoolLine
+      : t.rizzFinalLine;
+
+  const rizzSub =
+    phase === "questions" && currentStep === 0
+      ? t.rizzHiSub
+      : phase === "parent_consent"
+      ? t.rizzFinalSub
+      : progress >= 75
+      ? t.almostThere
+      : undefined;
+
+  // Subject list, filtered for the picker. Default (no filter, "All") keeps
+  // every subject in the DOM so nothing is hidden by default.
+  const filteredSubjects = useMemo(() => {
+    const q = subjectFilter.trim().toLowerCase();
+    return GRADE_12_SUBJECTS.filter((s) => {
+      if (subjectCategory !== "__all__" && s.category !== subjectCategory) return false;
+      if (!q) return true;
+      return (
+        s.name.toLowerCase().includes(q) ||
+        s.nameAfrikaans.toLowerCase().includes(q) ||
+        s.code.toLowerCase().includes(q)
+      );
+    });
+  }, [subjectFilter, subjectCategory]);
+
+  const subjectCategoryIds = useMemo(
+    () => Array.from(new Set(GRADE_12_SUBJECTS.map((s) => s.category))),
+    []
+  );
+
+  const phaseOrder: Phase[] = ["questions", "vark", "subjects", "school", "parent_consent"];
+  const phaseIdx = phaseOrder.indexOf(phase);
+  const phaseNames = [t.phaseYou, t.phaseBrain, t.phaseSubjects, t.phaseSchool, t.phaseDone];
+
+  const isoDobNow = buildIsoDob(dobDay, dobMonth, dobYear);
+  const isMinor = isoDobNow ? ageFromIsoDob(isoDobNow) < 18 : false;
+
+  // Shared button styles — large tap targets, brand gradient.
+  const primaryBtn =
+    "h-14 px-6 text-base font-bold rounded-2xl text-[#0D0D14] shadow-md flex-1 sm:flex-none disabled:opacity-40";
+  const primaryBtnStyle = {
+    background: `linear-gradient(95deg, ${BRAND.cyan}, ${BRAND.mint}, ${BRAND.yellow})`,
+  } as const;
+  const ghostBtn =
+    "h-14 px-5 text-base font-bold rounded-2xl bg-transparent text-white border border-white/25 hover:border-white/60 hover:bg-white/[0.06] flex-1 sm:flex-none";
+
   return (
-    <div className="relative min-h-screen flex flex-col bg-background text-white overflow-hidden">
-      <GraffitiSplats variant="full" opacity={0.5} />
-      <header className="relative z-40 border-b border-border py-4 bg-background/90 sticky top-0">
-        <div className="max-w-4xl mx-auto px-4 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+    <div
+      className="relative min-h-screen flex flex-col text-white overflow-x-hidden"
+      style={{ background: BRAND.ground, fontFamily: "Poppins, ui-sans-serif, system-ui, sans-serif" }}
+    >
+      <GraffitiSplats variant="full" opacity={0.35} />
+
+      <header
+        className="relative z-40 sticky top-0"
+        style={{ background: "rgba(13,13,20,.92)", borderBottom: "1px solid rgba(255,255,255,.10)", backdropFilter: "blur(10px)" }}
+      >
+        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-2 min-w-0">
+            <BrainTrackLogo className="h-7 w-7" />
             {phase === "questions" && (
               <button
                 onClick={() => resetRoleMutation.mutate()}
                 disabled={resetRoleMutation.isPending}
-                className="inline-flex items-center gap-1 text-xs text-white hover:text-white transition-colors ml-2 disabled:opacity-50 min-h-[44px] px-2 rounded"
+                className="inline-flex items-center gap-1 text-[11px] text-white hover:opacity-80 transition-opacity disabled:opacity-50 min-h-[44px] px-1 rounded"
                 data-testid="button-change-role"
               >
                 <ArrowLeft className="w-3 h-3" />
@@ -932,11 +1424,15 @@ export default function OnboardingPage() {
               </button>
             )}
           </div>
-          <div className="flex items-center gap-2 bg-muted rounded-full p-1 border border-border">
+          <div
+            className="flex items-center gap-1 rounded-full p-1 shrink-0"
+            style={{ background: BRAND.card, border: "1px solid rgba(255,255,255,.14)" }}
+          >
             <Button
-              variant={language === "en" ? "default" : "ghost"}
+              variant="ghost"
               size="sm"
-              className={`rounded-full px-4 font-semibold ${language === "en" ? "bg-[#6EE7F9] text-[#0a0a0a] shadow-md" : "text-white"}`}
+              className={`rounded-full px-3 h-9 font-bold ${language === "en" ? "text-[#0D0D14]" : "text-white"}`}
+              style={language === "en" ? { background: BRAND.cyan } : undefined}
               onClick={() => setLanguage("en")}
               data-testid="button-lang-en"
             >
@@ -944,9 +1440,10 @@ export default function OnboardingPage() {
               EN
             </Button>
             <Button
-              variant={language === "af" ? "default" : "ghost"}
+              variant="ghost"
               size="sm"
-              className={`rounded-full px-4 font-semibold ${language === "af" ? "bg-[#6EE7F9] text-[#0a0a0a] shadow-md" : "text-white"}`}
+              className={`rounded-full px-3 h-9 font-bold ${language === "af" ? "text-[#0D0D14]" : "text-white"}`}
+              style={language === "af" ? { background: BRAND.cyan } : undefined}
               onClick={() => setLanguage("af")}
               data-testid="button-lang-af"
             >
@@ -954,161 +1451,216 @@ export default function OnboardingPage() {
             </Button>
           </div>
         </div>
+
+        {/* Pastel progress rail — visibly fills as the journey advances. */}
+        <div className="max-w-3xl mx-auto px-4 pb-3">
+          <div className="flex items-center justify-between mb-1.5 gap-2">
+            <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-white truncate">
+              {phaseNames[phaseIdx]}
+              {phase === "questions" && ` · ${currentStep + 1}/${ONBOARDING_QUESTIONS.length}`}
+            </span>
+            <span
+              className="text-[13px] shrink-0"
+              style={{ fontFamily: MARKER, color: progress >= 75 ? BRAND.yellow : BRAND.mint }}
+            >
+              {progress >= 75 ? t.almostThere : `${Math.round(progress)}%`}
+            </span>
+          </div>
+          <div
+            className="h-2.5 rounded-full w-full overflow-hidden"
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={Math.round(progress)}
+            aria-label={t.progressBarLabel}
+            style={{ background: "rgba(255,255,255,.10)" }}
+          >
+            <div
+              className="h-full rounded-full"
+              style={{
+                width: `${progress}%`,
+                background: `linear-gradient(90deg, ${BRAND.cyan}, ${BRAND.mint}, ${BRAND.yellow}, ${BRAND.pink}, ${BRAND.purple})`,
+                boxShadow: `0 0 12px ${BRAND.pink}66`,
+                transition: "width .55s cubic-bezier(.22,1,.36,1)",
+              }}
+            />
+          </div>
+          {/* Phase dots — where you are in the journey. */}
+          <div className="flex items-center justify-center gap-1.5 pt-2" data-testid="onboarding-phase-dots" aria-hidden>
+            {phaseOrder.map((p, i) => {
+              const dotDone = i < phaseIdx;
+              const dotActive = i === phaseIdx;
+              return (
+                <span
+                  key={p}
+                  style={{
+                    width: dotActive ? 26 : 8,
+                    height: 8,
+                    borderRadius: 999,
+                    transition: "all .35s cubic-bezier(.22,1,.36,1)",
+                    background: dotDone
+                      ? CONFETTI_COLORS[i]
+                      : dotActive
+                      ? `linear-gradient(90deg, ${BRAND.cyan}, ${BRAND.pink})`
+                      : "rgba(255,255,255,.16)",
+                    boxShadow: dotActive ? `0 0 10px ${BRAND.cyan}99` : dotDone ? `0 0 6px ${CONFETTI_COLORS[i]}66` : "none",
+                  }}
+                />
+              );
+            })}
+          </div>
+        </div>
       </header>
 
-      <main className="relative z-10 flex-1 flex items-center justify-center p-4">
-        <div className="w-full max-w-2xl space-y-6">
-          <div className="text-center space-y-2">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[#0a0b12] shadow-xl mb-6 transform -rotate-3 hover:rotate-0 transition-transform duration-300" style={{ border: "1.5px solid rgba(110,231,249,0.5)", boxShadow: "0 0 14px rgba(110,231,249,0.15)" }}>
-              {phase === "questions" ? <Brain className="w-10 h-10" style={{ color: "#6EE7F9" }} /> : <BookOpen className="w-10 h-10" style={{ color: "#6EE7F9" }} />}
-            </div>
-            <h1 className="graffiti-hand text-3xl sm:text-4xl tracking-tight" data-testid="onboarding-heading">
-              <span className="callout-hl">
-                {phase === "questions"
-                  ? t.pageTitle
-                  : phase === "vark"
-                  ? t.varkHeading
-                  : phase === "subjects"
-                  ? t.selectSubjectsHeading
-                  : phase === "school"
-                  ? t.schoolGradeHeading
-                  : t.parentConsentHeading}
-              </span>
-            </h1>
-            <p className="text-white font-medium text-lg">
-              {phase === "questions"
-                ? t.questionsSubtitle
-                : phase === "vark"
-                ? t.varkSubtitle
-                : t.subjectsSubtitle}
-            </p>
-            {phase === "questions" && (
-              <div className="inline-block px-4 py-1.5 rounded-full bg-[#6EE7F9] text-[#0a0a0a] text-xs font-semibold uppercase tracking-widest mt-4 shadow-md">
-                {isAf ? categoryLabels[category].af : categoryLabels[category].en}
-              </div>
-            )}
-          </div>
+      <main className="relative z-10 flex-1 w-full">
+        <div className="w-full max-w-2xl mx-auto px-4 py-6 sm:py-8 space-y-5">
+          {/* Rizz hosts every single step. */}
+          <RizzGuide
+            mood={rizzMood}
+            line={rizzLine}
+            sub={rizzSub}
+            name={t.rizzName}
+            reduced={reduced}
+            size={phase === "parent_consent" ? "lg" : "md"}
+          />
 
-          <div className="space-y-2">
-            <div className="flex justify-between text-xs font-semibold text-white uppercase tracking-widest px-1">
-              <span>{Math.round(progress)}% {t.completeLabel}</span>
-              <span>{t.progressBarLabel}</span>
-            </div>
-            <div className="h-3 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)" }}>
-              <div className="h-full rounded-full transition-all" style={{ width: `${progress}%`, background: "linear-gradient(90deg,#9FF5E8,#9FD8FF,#C5B3FF)", boxShadow: "0 0 10px rgba(159,245,232,0.55)" }} />
-            </div>
-            {/* Phase dots — pastel glow marks where you are in the journey. */}
-            <div className="flex items-center justify-center gap-2 pt-1" data-testid="onboarding-phase-dots" aria-hidden>
-              {(["questions", "vark", "subjects", "school", "parent_consent"] as Phase[]).map((p, i) => {
-                const order: Phase[] = ["questions", "vark", "subjects", "school", "parent_consent"];
-                const idx = order.indexOf(phase);
-                const dotDone = i < idx;
-                const dotActive = i === idx;
-                return (
-                  <span
-                    key={p}
-                    style={{
-                      width: dotActive ? 22 : 8,
-                      height: 8,
-                      borderRadius: 999,
-                      transition: "all .3s cubic-bezier(.22,1,.36,1)",
-                      background: dotDone
-                        ? CONFETTI_COLORS[i]
-                        : dotActive
-                        ? "linear-gradient(90deg,#9FF5E8,#C5B3FF)"
-                        : "rgba(255,255,255,.15)",
-                      boxShadow: dotActive
-                        ? "0 0 10px rgba(159,245,232,.6)"
-                        : dotDone
-                        ? `0 0 6px ${CONFETTI_COLORS[i]}66`
-                        : "none",
-                    }}
-                  />
-                );
-              })}
-            </div>
-          </div>
-
+          {/* ── PHASE: QUESTIONS — one big question per screen ─────────────── */}
           {phase === "questions" && currentQuestion && (
-            <Card className="border border-white/10 bg-[#050508] shadow-[0_0_30px_rgba(159,245,232,0.15)] rounded-3xl overflow-hidden" data-testid="card-onboarding">
-              <div aria-hidden className="h-[3px]" style={{ background: "linear-gradient(95deg,#FFB7E5,#FFE29A,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)" }} />
-              <CardHeader className="pb-2 pt-8 px-8">
-                <CardTitle className="text-sm font-semibold text-white uppercase tracking-widest flex items-center justify-between">
-                  <span>
-                    {t.questionLabel} {currentStep + 1} {t.ofLabel} {ONBOARDING_QUESTIONS.length}
+            <section
+              key={currentQuestion.id}
+              data-testid="card-onboarding"
+              className="rounded-3xl overflow-hidden"
+              style={{
+                background: BRAND.card,
+                border: "1px solid rgba(255,255,255,.12)",
+                boxShadow: `0 0 34px ${accent}22`,
+                animation: anim("bt-fadeup .45s cubic-bezier(.22,1,.36,1) both"),
+              }}
+            >
+              <div aria-hidden className="h-[3px]" style={{ background: `linear-gradient(95deg, ${BRAND.pink}, ${BRAND.yellow}, ${BRAND.mint}, ${BRAND.cyan}, ${BRAND.purple})` }} />
+              <div className="p-5 sm:p-8 space-y-6">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span
+                    className="inline-block px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-[0.14em]"
+                    style={{ background: accent, color: BRAND.ground }}
+                  >
+                    {isAf ? categoryLabels[category].af : categoryLabels[category].en}
                   </span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-8 p-8">
-                <h2 className="text-lg sm:text-xl font-semibold text-white leading-tight">{questionText}</h2>
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white">
+                    {t.questionProgress
+                      .replace("{n}", String(currentStep + 1))
+                      .replace("{total}", String(ONBOARDING_QUESTIONS.length))}
+                  </span>
+                </div>
+
+                {/* One clear question — big, confident, not a form label. */}
+                <h2 data-testid="onboarding-heading" className="text-white font-extrabold leading-[1.15] text-[26px] sm:text-[34px] tracking-tight">
+                  {questionText}
+                </h2>
 
                 {currentQuestion.type === "single" && currentQuestion.options && (
-                  <RadioGroup
-                    value={(answers[currentQuestion.id] as string) || ""}
-                    onValueChange={handleSingleSelect}
-                    className="grid grid-cols-1 gap-3"
-                  >
-                    {currentQuestion.options.map((option) => (
-                      <div
-                        key={option.value}
-                        className={`flex items-center space-x-3 p-5 rounded-2xl border transition-all duration-200 cursor-pointer  shadow-[inset_0_1px_0_rgba(255,255,255,0.10)] ${
-                          answers[currentQuestion.id] === option.value ? "border-[#6EE7F9] bg-[#6EE7F9]/10 shadow-[0_0_18px_rgba(110,231,249,0.4)]" : "border-white/15 bg-black hover:border-[#6EE7F9]/60 hover:bg-white/[0.03]"
-                        }`}
-                        onClick={() => handleSingleSelect(option.value)}
-                        data-testid={`option-${option.value}`}
-                      >
-                        <RadioGroupItem value={option.value} id={option.value} className="sr-only" />
-                        <Label htmlFor={option.value} className="flex-1 cursor-pointer text-lg font-semibold text-white">
-                          {language === "en" ? option.labelEn : option.labelAf}
-                        </Label>
-                        {answers[currentQuestion.id] === option.value && <div className="w-6 h-6 rounded-full bg-[#6EE7F9] flex items-center justify-center text-[#0a0a0a]"><Check className="w-4 h-4" /></div>}
-                      </div>
-                    ))}
-                  </RadioGroup>
+                  <div className="grid grid-cols-1 gap-3" role="radiogroup" aria-label={questionText}>
+                    {currentQuestion.options.map((option, i) => {
+                      const isSel = answers[currentQuestion.id] === option.value;
+                      return (
+                        <button
+                          key={option.value}
+                          type="button"
+                          role="radio"
+                          aria-checked={isSel}
+                          onClick={() => handleSingleSelect(option.value)}
+                          data-testid={`option-${option.value}`}
+                          className="w-full text-left flex items-center gap-3 rounded-2xl px-4 py-4 min-h-[64px]"
+                          style={{
+                            background: isSel ? `${accent}1F` : "rgba(255,255,255,.03)",
+                            border: `1.5px solid ${isSel ? accent : "rgba(255,255,255,.14)"}`,
+                            boxShadow: isSel ? `0 0 20px ${accent}55` : "none",
+                            transition: "background .2s ease, border-color .2s ease, box-shadow .2s ease",
+                            animation: anim(`bt-fadeup .4s cubic-bezier(.22,1,.36,1) ${0.04 * i}s both`),
+                          }}
+                        >
+                          <span
+                            className="shrink-0 rounded-full flex items-center justify-center"
+                            style={{
+                              width: 26,
+                              height: 26,
+                              background: isSel ? accent : "transparent",
+                              border: `1.5px solid ${isSel ? accent : "rgba(255,255,255,.32)"}`,
+                            }}
+                          >
+                            {isSel && <Check className="w-4 h-4" style={{ color: BRAND.ground }} />}
+                          </span>
+                          <span className="flex-1 text-white font-semibold text-[16px] sm:text-lg leading-snug">
+                            {language === "en" ? option.labelEn : option.labelAf}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 )}
 
                 {currentQuestion.type === "multiple" && currentQuestion.options && (
                   <div className="grid grid-cols-1 gap-3">
-                    <p className="text-xs font-semibold text-white uppercase tracking-widest mb-2">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white">
                       {t.selectAllThatApply}
                     </p>
-                    {currentQuestion.options.map((option) => {
+                    {currentQuestion.options.map((option, i) => {
                       const isChecked = ((answers[currentQuestion.id] as string[]) || []).includes(option.value);
                       return (
-                        <div
+                        <button
                           key={option.value}
-                          className={`flex items-center space-x-3 p-5 rounded-2xl border transition-all duration-200 cursor-pointer  shadow-[inset_0_1px_0_rgba(255,255,255,0.10)] ${
-                            isChecked ? "border-[#6EE7F9] bg-[#6EE7F9]/10 shadow-[0_0_18px_rgba(110,231,249,0.4)]" : "border-white/15 bg-black hover:border-[#6EE7F9]/60 hover:bg-white/[0.03]"
-                          }`}
+                          type="button"
+                          aria-pressed={isChecked}
                           onClick={() => handleMultiSelect(option.value, !isChecked)}
                           data-testid={`option-${option.value}`}
+                          className="w-full text-left flex items-center gap-3 rounded-2xl px-4 py-4 min-h-[64px]"
+                          style={{
+                            background: isChecked ? `${accent}1F` : "rgba(255,255,255,.03)",
+                            border: `1.5px solid ${isChecked ? accent : "rgba(255,255,255,.14)"}`,
+                            boxShadow: isChecked ? `0 0 20px ${accent}55` : "none",
+                            transition: "background .2s ease, border-color .2s ease, box-shadow .2s ease",
+                            animation: anim(`bt-fadeup .4s cubic-bezier(.22,1,.36,1) ${0.04 * i}s both`),
+                          }}
                         >
-                          <Checkbox
-                            checked={isChecked}
-                            onCheckedChange={(checked) => handleMultiSelect(option.value, !!checked)}
-                            id={option.value}
-                            className="sr-only"
-                          />
-                          <Label htmlFor={option.value} className="flex-1 cursor-pointer text-lg font-semibold text-white">
+                          <span
+                            className="shrink-0 rounded-lg flex items-center justify-center"
+                            style={{
+                              width: 26,
+                              height: 26,
+                              background: isChecked ? accent : "transparent",
+                              border: `1.5px solid ${isChecked ? accent : "rgba(255,255,255,.32)"}`,
+                            }}
+                          >
+                            {isChecked && <Check className="w-4 h-4" style={{ color: BRAND.ground }} />}
+                          </span>
+                          <span className="flex-1 text-white font-semibold text-[16px] sm:text-lg leading-snug">
                             {language === "en" ? option.labelEn : option.labelAf}
-                          </Label>
-                          {isChecked && <div className="w-6 h-6 rounded-full bg-[#6EE7F9] flex items-center justify-center text-[#0a0a0a]"><Check className="w-4 h-4" /></div>}
-                        </div>
+                          </span>
+                        </button>
                       );
                     })}
                   </div>
                 )}
 
                 {currentQuestion.type === "slider" && (
-                  <div className="space-y-10 py-8">
+                  <div className="space-y-8 py-4">
                     <div className="flex justify-center">
                       <div className="relative">
-                        <div className="w-32 h-32 rounded-full border-8 border-border flex items-center justify-center">
-                          <span className="text-4xl font-semibold text-white">
+                        <div
+                          className="w-32 h-32 sm:w-36 sm:h-36 rounded-full flex items-center justify-center"
+                          style={{
+                            border: `6px solid ${accent}`,
+                            boxShadow: `0 0 26px ${accent}55, inset 0 0 22px ${accent}22`,
+                          }}
+                        >
+                          <span className="text-5xl font-extrabold text-white">
                             {(answers[currentQuestion.id] as number) || currentQuestion.min}
                           </span>
                         </div>
-                        <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#6EE7F9] text-[#0a0a0a] text-[10px] font-semibold uppercase tracking-widest px-3 py-1 rounded-full whitespace-nowrap shadow-lg">
+                        <span
+                          className="absolute -bottom-2 left-1/2 -translate-x-1/2 text-[10px] font-bold uppercase tracking-[0.16em] px-3 py-1 rounded-full whitespace-nowrap"
+                          style={{ background: accent, color: BRAND.ground }}
+                        >
                           {t.minutesLabel}
                         </span>
                       </div>
@@ -1122,55 +1674,69 @@ export default function OnboardingPage() {
                       className="w-full"
                       data-testid="slider-focus"
                     />
-                    <div className="flex justify-between text-xs font-semibold text-white uppercase tracking-widest px-1">
+                    <div className="flex justify-between text-[11px] font-bold uppercase tracking-[0.14em] text-white">
                       <span>{currentQuestion.min} min</span>
                       <span>{currentQuestion.max} min</span>
                     </div>
                   </div>
                 )}
 
-                <div className="flex justify-between pt-8 gap-4">
+                <div className="flex gap-3 pt-2">
                   <Button
                     variant="outline"
-                    className="px-5 py-2.5 text-sm font-bold rounded-xl bg-transparent text-white border border-white/20 hover:border-[#9FF5E8]/70 hover:bg-white/[0.04] flex-1 md:flex-none"
+                    className={ghostBtn}
                     onClick={handleBack}
                     disabled={currentStep === 0}
                     data-testid="button-back"
                   >
-                    <ArrowLeft className="w-5 h-5 mr-2" />
+                    <ArrowLeft className="w-5 h-5 mr-1.5" />
                     {t.backBtn}
                   </Button>
                   <Button
-                    className="px-5 py-2.5 text-sm font-bold rounded-xl bg-gradient-to-r from-[#9FF5E8] to-[#C5B3FF] hover:opacity-90 text-[#050508] shadow-md flex-1 md:flex-none"
+                    className={primaryBtn}
+                    style={primaryBtnStyle}
                     onClick={handleNext}
                     disabled={!canProceed()}
                     data-testid="button-next"
                   >
                     {t.nextBtn}
-                    <ArrowRight className="w-5 h-5 ml-2" />
+                    <ArrowRight className="w-5 h-5 ml-1.5" />
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </section>
           )}
 
+          {/* ── PHASE: VARK ────────────────────────────────────────────────── */}
           {phase === "vark" && (
-            <Card className="border border-white/10 bg-[#050508] shadow-[0_0_30px_rgba(159,245,232,0.15)] rounded-3xl overflow-hidden" data-testid="card-vark">
-              <div aria-hidden className="h-[3px]" style={{ background: "linear-gradient(95deg,#FFB7E5,#FFE29A,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)" }} />
-              <CardHeader className="pb-2 pt-8 px-8">
-                <CardTitle className="text-sm font-semibold text-white uppercase tracking-widest">
+            <section
+              data-testid="card-vark"
+              className="rounded-3xl overflow-hidden"
+              style={{
+                background: BRAND.card,
+                border: "1px solid rgba(255,255,255,.12)",
+                boxShadow: `0 0 34px ${BRAND.purple}22`,
+                animation: anim("bt-fadeup .45s cubic-bezier(.22,1,.36,1) both"),
+              }}
+            >
+              <div aria-hidden className="h-[3px]" style={{ background: `linear-gradient(95deg, ${BRAND.pink}, ${BRAND.yellow}, ${BRAND.mint}, ${BRAND.cyan}, ${BRAND.purple})` }} />
+              <div className="p-5 sm:p-8 space-y-6">
+                <h2 className="text-white font-extrabold leading-[1.15] text-[26px] sm:text-[34px] tracking-tight">
+                  {t.varkHeading}
+                </h2>
+                <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white">
                   {t.primaryStyleLabel}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6 p-8">
+                </p>
+
                 <div className="grid grid-cols-2 gap-3">
-                  {(Object.entries(VARK_STYLES) as [VarkStyle, typeof VARK_STYLES[VarkStyle]][]).map(([key, style]) => {
+                  {(Object.entries(VARK_STYLES) as [VarkStyle, typeof VARK_STYLES[VarkStyle]][]).map(([key, style], i) => {
                     const isPrimary = varkPrimary === key;
-                    const isSecondary = varkSecondary === key;
+                    const tint = CONFETTI_COLORS[i % CONFETTI_COLORS.length];
                     return (
                       <button
                         key={key}
                         type="button"
+                        aria-pressed={isPrimary}
                         onClick={() => {
                           if (isPrimary) {
                             setVarkPrimary(null);
@@ -1180,31 +1746,41 @@ export default function OnboardingPage() {
                           }
                         }}
                         data-testid={`vark-primary-${key}`}
-                        className={`relative p-5 rounded-2xl border-2 text-left transition-all duration-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.10)] ${
-                          isPrimary
-                            ? "border-[#6EE7F9] bg-[#6EE7F9]/10 shadow-[0_0_22px_rgba(110,231,249,0.5)]"
-                            : "border-white/15 bg-black hover:border-[#6EE7F9]/60 hover:bg-white/[0.03]"
-                        }`}
+                        className="relative rounded-2xl p-4 text-left min-h-[124px]"
+                        style={{
+                          background: isPrimary ? `${tint}1F` : "rgba(255,255,255,.03)",
+                          border: `1.5px solid ${isPrimary ? tint : "rgba(255,255,255,.14)"}`,
+                          boxShadow: isPrimary ? `0 0 22px ${tint}66` : "none",
+                          transition: "background .2s ease, border-color .2s ease, box-shadow .2s ease",
+                          animation: anim(`bt-fadeup .4s cubic-bezier(.22,1,.36,1) ${0.05 * i}s both`),
+                        }}
                       >
                         {isPrimary && (
-                          <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[#6EE7F9] flex items-center justify-center">
-                            <Check className="w-3 h-3 text-[#0a0a0a]" />
+                          <span
+                            className="absolute top-2.5 right-2.5 w-6 h-6 rounded-full flex items-center justify-center"
+                            style={{ background: tint }}
+                          >
+                            <Check className="w-3.5 h-3.5" style={{ color: BRAND.ground }} />
                           </span>
                         )}
-                        <span className="text-3xl block mb-2">{style.icon}</span>
-                        <p className="font-bold text-white text-sm">{language === "en" ? style.label : style.labelAf}</p>
-                        <p className="text-white text-xs mt-0.5">{language === "en" ? style.tagline : style.taglineAf}</p>
+                        <span className="text-4xl block mb-2 leading-none">{style.icon}</span>
+                        <p className="font-extrabold text-white text-base leading-tight">
+                          {language === "en" ? style.label : style.labelAf}
+                        </p>
+                        <p className="text-white text-[13px] mt-1 leading-snug">
+                          {language === "en" ? style.tagline : style.taglineAf}
+                        </p>
                       </button>
                     );
                   })}
                 </div>
 
                 {varkPrimary && (
-                  <div className="space-y-3">
-                    <p className="text-xs font-semibold text-white uppercase tracking-widest">
+                  <div className="space-y-3" style={{ animation: anim("bt-fadeup .4s cubic-bezier(.22,1,.36,1) both") }}>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white">
                       {t.secondaryStyleLabel}
                     </p>
-                    <div className="grid grid-cols-4 gap-2">
+                    <div className="grid grid-cols-3 gap-2">
                       {(Object.entries(VARK_STYLES) as [VarkStyle, typeof VARK_STYLES[VarkStyle]][])
                         .filter(([key]) => key !== varkPrimary)
                         .map(([key, style]) => {
@@ -1213,16 +1789,20 @@ export default function OnboardingPage() {
                             <button
                               key={key}
                               type="button"
+                              aria-pressed={isSelected}
                               onClick={() => setVarkSecondary(isSelected ? null : key)}
                               data-testid={`vark-secondary-${key}`}
-                              className={`p-3 rounded-xl border text-center transition-all duration-200 ${
-                                isSelected
-                                  ? "border-[#6EE7F9] bg-[#6EE7F9]/10"
-                                  : "border-white/15 bg-black hover:border-[#6EE7F9]/60"
-                              }`}
+                              className="rounded-2xl p-3 text-center min-h-[76px]"
+                              style={{
+                                background: isSelected ? `${BRAND.purple}1F` : "rgba(255,255,255,.03)",
+                                border: `1.5px solid ${isSelected ? BRAND.purple : "rgba(255,255,255,.14)"}`,
+                                transition: "background .2s ease, border-color .2s ease",
+                              }}
                             >
-                              <span className="text-2xl block">{style.icon}</span>
-                              <p className="text-xs font-semibold text-white mt-1">{language === "en" ? style.label : style.labelAf}</p>
+                              <span className="text-2xl block leading-none">{style.icon}</span>
+                              <p className="text-[12px] font-bold text-white mt-1.5 leading-tight">
+                                {language === "en" ? style.label : style.labelAf}
+                              </p>
                             </button>
                           );
                         })}
@@ -1230,142 +1810,318 @@ export default function OnboardingPage() {
                   </div>
                 )}
 
-                <div className="flex justify-between pt-4 gap-4">
-                  <Button
-                    variant="outline"
-                    className="px-5 py-2.5 text-sm font-bold rounded-xl bg-transparent text-white border border-white/20 hover:border-[#9FF5E8]/70 hover:bg-white/[0.04] flex-1 md:flex-none"
-                    onClick={handleBack}
-                    data-testid="button-back-vark"
-                  >
-                    <ArrowLeft className="w-5 h-5 mr-2" />
+                <div className="flex gap-3 pt-2">
+                  <Button variant="outline" className={ghostBtn} onClick={handleBack} data-testid="button-back-vark">
+                    <ArrowLeft className="w-5 h-5 mr-1.5" />
                     {t.backBtn}
                   </Button>
                   <Button
-                    className="px-5 py-2.5 text-sm font-bold rounded-xl bg-gradient-to-r from-[#9FF5E8] to-[#C5B3FF] hover:opacity-90 text-[#050508] shadow-md flex-1 md:flex-none"
+                    className={primaryBtn}
+                    style={primaryBtnStyle}
                     onClick={handleNext}
                     disabled={!canProceed()}
                     data-testid="button-next-vark"
                   >
                     {t.nextBtn}
-                    <ArrowRight className="w-5 h-5 ml-2" />
+                    <ArrowRight className="w-5 h-5 ml-1.5" />
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </section>
           )}
 
+          {/* ── PHASE: SUBJECTS — the fun part ─────────────────────────────── */}
           {phase === "subjects" && (
-            <Card className="border border-white/10 bg-[#050508] shadow-[0_0_30px_rgba(159,245,232,0.15)] rounded-3xl overflow-hidden" data-testid="card-subjects">
-              <div aria-hidden className="h-[3px]" style={{ background: "linear-gradient(95deg,#FFB7E5,#FFE29A,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)" }} />
-              <CardHeader className="pb-2 pt-8 px-8">
-                <CardTitle className="text-2xl font-semibold text-white">
-                  {t.selectSubjectsHeading}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6 p-8">
-                <p className="text-white font-medium">
-                  {t.selectSubjectsHint}
-                </p>
-                {subjectMarks.length > 0 && subjectMarks.length < 6 && (
-                  <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-black border border-[#FFE29A]/40 text-sm text-[#FFE29A] font-medium">
-                    <span>
-                      {(() => {
-                        const n = 6 - subjectMarks.length;
-                        return t.selectMoreMsg
-                          .replace("{count}", String(n))
-                          .replace("{plural}", n > 1 ? t.selectMorePlural : "");
-                      })()}
-                    </span>
+            <section
+              data-testid="card-subjects"
+              className="rounded-3xl overflow-hidden"
+              style={{
+                background: BRAND.card,
+                border: "1px solid rgba(255,255,255,.12)",
+                boxShadow: `0 0 34px ${BRAND.yellow}22`,
+                animation: anim("bt-fadeup .45s cubic-bezier(.22,1,.36,1) both"),
+              }}
+            >
+              <div aria-hidden className="h-[3px]" style={{ background: `linear-gradient(95deg, ${BRAND.pink}, ${BRAND.yellow}, ${BRAND.mint}, ${BRAND.cyan}, ${BRAND.purple})` }} />
+              <div className="p-5 sm:p-8 space-y-5">
+                <h2 className="text-white font-extrabold leading-[1.15] text-[26px] sm:text-[34px] tracking-tight">
+                  {t.subjectsHeading}
+                </h2>
+
+                {/* Live counter — celebrates the moment 6 is hit. */}
+                <div
+                  className="flex items-center gap-3 rounded-2xl px-4 py-3"
+                  data-testid="subject-counter"
+                  style={{
+                    background: subjectsDone ? `${BRAND.mint}1A` : "rgba(255,255,255,.04)",
+                    border: `1.5px solid ${subjectsDone ? BRAND.mint : "rgba(255,255,255,.14)"}`,
+                    transition: "background .3s ease, border-color .3s ease",
+                  }}
+                >
+                  <span
+                    className="shrink-0 rounded-xl flex items-center justify-center font-extrabold"
+                    style={{
+                      minWidth: 62,
+                      height: 44,
+                      fontSize: 18,
+                      background: subjectsDone ? BRAND.mint : "rgba(255,255,255,.08)",
+                      color: subjectsDone ? BRAND.ground : "#FFFFFF",
+                      animation: subjectsDone ? anim("bt-checkpop .45s cubic-bezier(.22,1,.36,1) both") : undefined,
+                    }}
+                  >
+                    {subjectMarks.length}/6
+                  </span>
+                  <div className="min-w-0">
+                    {subjectsDone ? (
+                      <p className="font-bold text-white text-[15px] leading-snug">
+                        ✓ {t.minimumHit} — {subjectMarks.length} {t.subjectCountLabel}
+                      </p>
+                    ) : (
+                      <p className="font-semibold text-white text-[14px] leading-snug">
+                        {(() => {
+                          const n = 6 - subjectMarks.length;
+                          return t.selectMoreMsg
+                            .replace("{count}", String(n))
+                            .replace("{plural}", n > 1 ? t.selectMorePlural : "");
+                        })()}
+                      </p>
+                    )}
                   </div>
-                )}
-                
-                <div className="grid gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                  {GRADE_12_SUBJECTS.map((subject) => {
+                </div>
+
+                {/* Filter — search + category pills. Defaults to showing all. */}
+                <div className="space-y-3">
+                  <div className="relative">
+                    <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-white pointer-events-none" />
+                    <Input
+                      value={subjectFilter}
+                      onChange={(e) => setSubjectFilter(e.target.value)}
+                      placeholder={t.subjectFilterPh}
+                      className="h-12 pl-11 rounded-2xl text-white"
+                      style={{ background: "rgba(255,255,255,.04)", border: "1px solid rgba(255,255,255,.14)" }}
+                      data-testid="input-subject-filter"
+                    />
+                  </div>
+                  <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1" style={{ scrollbarWidth: "none" }}>
+                    {["__all__", ...subjectCategoryIds].map((cat) => {
+                      const active = subjectCategory === cat;
+                      const cm = cat === "__all__" ? { color: "#FFFFFF", icon: "✨" } : metaFor(cat);
+                      const label = cat === "__all__" ? t.allSubjectsLabel : cat;
+                      return (
+                        <button
+                          key={cat}
+                          type="button"
+                          onClick={() => setSubjectCategory(cat)}
+                          data-testid={`subject-cat-${cat}`}
+                          className="shrink-0 rounded-full px-3.5 h-10 text-[13px] font-bold whitespace-nowrap"
+                          style={{
+                            background: active ? cm.color : "rgba(255,255,255,.05)",
+                            color: active ? BRAND.ground : "#FFFFFF",
+                            border: `1px solid ${active ? cm.color : "rgba(255,255,255,.14)"}`,
+                          }}
+                        >
+                          {cm.icon} {label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Subject cards — tactile, colour-coded, light mark entry. */}
+                <div className="grid gap-3 max-h-[58vh] overflow-y-auto pr-1 custom-scrollbar">
+                  {filteredSubjects.length === 0 && (
+                    <p className="text-white text-sm py-6 text-center">{t.noSubjectMatches}</p>
+                  )}
+                  {filteredSubjects.map((subject) => {
                     const isSelected = selectedSubjects.has(subject.code);
-                    const mark = subjectMarks.find(s => s.subjectCode === subject.code)?.mark || 50;
-                    
+                    const mark = subjectMarks.find((s) => s.subjectCode === subject.code)?.mark ?? 50;
+                    const cm = metaFor(subject.category);
                     return (
                       <div
                         key={subject.code}
-                        className={`p-4 rounded-2xl border transition-all duration-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]  ${isSelected ? "border-[#6EE7F9] bg-[#6EE7F9]/10 shadow-[0_0_18px_rgba(110,231,249,0.4)]" : "border-white/15 bg-black hover:border-[#6EE7F9]/60 hover:bg-white/[0.03]"}`}
+                        className="rounded-2xl overflow-hidden"
+                        style={{
+                          background: isSelected ? `${cm.color}16` : "rgba(255,255,255,.03)",
+                          border: `1.5px solid ${isSelected ? cm.color : "rgba(255,255,255,.12)"}`,
+                          boxShadow: isSelected ? `0 0 18px ${cm.color}44` : "none",
+                          transition: "background .2s ease, border-color .2s ease, box-shadow .2s ease",
+                        }}
                       >
-                        <div className="flex items-center gap-4">
-                          <Checkbox
-                            checked={isSelected}
-                            onCheckedChange={() => toggleSubject(subject.code, subject.name)}
-                            id={subject.code}
-                            className="w-6 h-6 border-2"
-                            data-testid={`subject-${subject.code}`}
-                          />
-                          <Label htmlFor={subject.code} className="flex-1 cursor-pointer text-base font-semibold text-white">
+                        <button
+                          type="button"
+                          aria-pressed={isSelected}
+                          onClick={() => toggleSubject(subject.code, subject.name)}
+                          data-testid={`subject-${subject.code}`}
+                          className="w-full text-left flex items-center gap-3 px-4 py-3.5 min-h-[64px]"
+                        >
+                          <span
+                            className="shrink-0 rounded-xl flex items-center justify-center text-xl"
+                            style={{
+                              width: 42,
+                              height: 42,
+                              background: isSelected ? cm.color : "rgba(255,255,255,.06)",
+                              border: `1px solid ${isSelected ? cm.color : "rgba(255,255,255,.12)"}`,
+                            }}
+                          >
+                            {cm.icon}
+                          </span>
+                          <span className="flex-1 min-w-0 text-white font-bold text-[15px] leading-snug break-words">
                             {language === "en" ? subject.name : subject.nameAfrikaans}
-                          </Label>
-                          {isSelected && (
-                            <div className="flex items-center gap-2">
-                              <Input
-                                type="number"
-                                min={0}
-                                max={100}
-                                value={mark}
-                                onChange={(e) => updateMark(subject.code, parseInt(e.target.value) || 0)}
-                                className="w-20 h-10 text-center font-semibold text-lg border border-[#6EE7F9]/30 bg-black focus-visible:ring-[#6EE7F9]"
-                                data-testid={`mark-${subject.code}`}
-                              />
-                              <span className="text-lg font-semibold text-white">%</span>
+                          </span>
+                          <span
+                            className="shrink-0 rounded-full flex items-center justify-center"
+                            style={{
+                              width: 26,
+                              height: 26,
+                              background: isSelected ? cm.color : "transparent",
+                              border: `1.5px solid ${isSelected ? cm.color : "rgba(255,255,255,.30)"}`,
+                            }}
+                          >
+                            {isSelected && <Check className="w-4 h-4" style={{ color: BRAND.ground }} />}
+                          </span>
+                        </button>
+
+                        {isSelected && (
+                          <div
+                            className="px-4 pb-4 pt-1 space-y-3"
+                            style={{ animation: anim("bt-fadeup .35s cubic-bezier(.22,1,.36,1) both") }}
+                          >
+                            <div className="flex items-center gap-3 flex-wrap">
+                              <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-white">
+                                {t.markLabel}
+                              </span>
+                              <div className="flex items-center gap-1.5 ml-auto">
+                                <Input
+                                  type="number"
+                                  min={0}
+                                  max={100}
+                                  value={mark}
+                                  onChange={(e) => updateMark(subject.code, parseInt(e.target.value) || 0)}
+                                  className="w-[76px] h-12 text-center font-extrabold text-xl rounded-xl text-white"
+                                  style={{
+                                    background: "rgba(0,0,0,.35)",
+                                    border: `1.5px solid ${cm.color}66`,
+                                  }}
+                                  data-testid={`mark-${subject.code}`}
+                                />
+                                <span className="text-xl font-extrabold text-white">%</span>
+                              </div>
                             </div>
-                          )}
-                        </div>
+                            <div className="flex gap-1.5 flex-wrap">
+                              {MARK_CHIPS.map((v) => (
+                                <button
+                                  key={v}
+                                  type="button"
+                                  onClick={() => updateMark(subject.code, v)}
+                                  data-testid={`mark-chip-${subject.code}-${v}`}
+                                  className="rounded-full h-10 px-3 text-[13px] font-bold"
+                                  style={{
+                                    background: mark === v ? cm.color : "rgba(255,255,255,.06)",
+                                    color: mark === v ? BRAND.ground : "#FFFFFF",
+                                    border: `1px solid ${mark === v ? cm.color : "rgba(255,255,255,.14)"}`,
+                                  }}
+                                >
+                                  {v}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     );
                   })}
                 </div>
 
-                <div className="flex justify-between pt-8 gap-4">
-                  <Button
-                    variant="outline"
-                    className="px-5 py-2.5 text-sm font-bold rounded-xl bg-transparent text-white border border-white/20 hover:border-[#9FF5E8]/70 hover:bg-white/[0.04] flex-1 md:flex-none"
-                    onClick={handleBack}
-                    data-testid="button-back-subjects"
-                  >
-                    <ArrowLeft className="w-5 h-5 mr-2" />
+                <div className="flex gap-3 pt-1">
+                  <Button variant="outline" className={ghostBtn} onClick={handleBack} data-testid="button-back-subjects">
+                    <ArrowLeft className="w-5 h-5 mr-1.5" />
                     {t.backBtn}
                   </Button>
                   <Button
-                    className="px-5 py-2.5 text-sm font-bold rounded-xl bg-gradient-to-r from-[#9FF5E8] to-[#C5B3FF] hover:opacity-90 text-[#050508] shadow-md flex-1 md:flex-none"
+                    className={primaryBtn}
+                    style={primaryBtnStyle}
                     onClick={handleNext}
                     disabled={!canProceed()}
                     data-testid="button-subjects-next"
                   >
-                    <ArrowRight className="w-5 h-5 mr-2" />
                     {t.nextBtn}
+                    <ArrowRight className="w-5 h-5 ml-1.5" />
                   </Button>
                 </div>
-                <p className="text-center text-xs text-white pt-2 leading-relaxed">
+
+                <p className="text-center text-[12px] text-white pt-1 leading-relaxed">
                   {t.termsAgree}{" "}
-                  <Link href="/terms" className="underline hover:text-white transition-colors">{t.termsLink}</Link>
+                  <Link href="/terms" className="underline">{t.termsLink}</Link>
                   {" "}{t.termsAnd}{" "}
-                  <Link href="/privacy" className="underline hover:text-white transition-colors">{t.privacyLink}</Link>.
+                  <Link href="/privacy" className="underline">{t.privacyLink}</Link>.
                 </p>
-              </CardContent>
-            </Card>
+              </div>
+            </section>
           )}
 
+          {/* ── PHASE: SCHOOL — sequenced, conversational detail capture ───── */}
           {phase === "school" && (
-            <Card className="border border-white/10 bg-[#050508] shadow-[0_0_30px_rgba(159,245,232,0.15)] rounded-3xl overflow-hidden" data-testid="card-school">
-              <div aria-hidden className="h-[3px]" style={{ background: "linear-gradient(95deg,#FFB7E5,#FFE29A,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)" }} />
-              <CardHeader className="pb-2 pt-8 px-8">
-                <CardTitle className="text-2xl font-semibold text-white">
-                  {t.schoolGradeHeading}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6 p-8">
-                <p className="text-white font-medium">
-                  {t.schoolSearchHint}
-                </p>
+            <section
+              data-testid="card-school"
+              className="rounded-3xl overflow-hidden"
+              style={{
+                background: "rgba(28,28,38,.6)",
+                border: "1px solid rgba(255,255,255,.12)",
+                boxShadow: `0 0 34px ${BRAND.cyan}22`,
+                animation: anim("bt-fadeup .45s cubic-bezier(.22,1,.36,1) both"),
+              }}
+            >
+              <div aria-hidden className="h-[3px]" style={{ background: `linear-gradient(95deg, ${BRAND.pink}, ${BRAND.yellow}, ${BRAND.mint}, ${BRAND.cyan}, ${BRAND.purple})` }} />
+              <div className="p-4 sm:p-7 space-y-4">
+                {/* 1 — Name */}
+                <StepBlock
+                  n={1}
+                  title={t.nameQ}
+                  hint={t.nameQHint}
+                  done={firstName.trim().length >= 1 && lastName.trim().length >= 1}
+                  accent={BRAND.cyan}
+                  testId="school-block-name"
+                >
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <Input
+                      id="onboarding-first-name"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); lastNameRef.current?.focus(); } }}
+                      placeholder={t.firstNamePlaceholder}
+                      autoComplete="given-name"
+                      aria-label={t.firstNameLabel}
+                      className="h-14 rounded-2xl text-white text-base px-4"
+                      style={{ background: "rgba(0,0,0,.35)", border: "1px solid rgba(255,255,255,.16)" }}
+                      data-testid="input-first-name"
+                    />
+                    <Input
+                      id="onboarding-last-name"
+                      ref={lastNameRef}
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); schoolInputRef.current?.focus(); } }}
+                      placeholder={t.lastNamePlaceholder}
+                      autoComplete="family-name"
+                      aria-label={t.lastNameLabel}
+                      className="h-14 rounded-2xl text-white text-base px-4"
+                      style={{ background: "rgba(0,0,0,.35)", border: "1px solid rgba(255,255,255,.16)" }}
+                      data-testid="input-last-name"
+                    />
+                  </div>
+                </StepBlock>
 
-                <div className="space-y-2">
-                  <Label className="text-sm font-semibold">{t.schoolNameLabel}</Label>
+                {/* 2 — School */}
+                <StepBlock
+                  n={2}
+                  title={t.schoolQ}
+                  hint={t.schoolSearchHint}
+                  done={schoolName.trim().length >= 2}
+                  accent={BRAND.purple}
+                  testId="school-block-school"
+                >
                   <Input
+                    ref={schoolInputRef}
                     value={schoolQuery}
                     onChange={(e) => {
                       setSchoolQuery(e.target.value);
@@ -1373,14 +2129,19 @@ export default function OnboardingPage() {
                       setSchoolId(null);
                     }}
                     placeholder={t.schoolPlaceholder}
-                    className="h-12 bg-background"
+                    aria-label={t.schoolNameLabel}
+                    className="h-14 rounded-2xl text-white text-base px-4"
+                    style={{ background: "rgba(0,0,0,.35)", border: "1px solid rgba(255,255,255,.16)" }}
                     data-testid="input-school-name"
                   />
                   {schoolSearching && (
-                    <p className="text-xs text-white">{t.schoolSearchingLabel}</p>
+                    <p className="text-[12px] text-white mt-2">{t.schoolSearchingLabel}</p>
                   )}
                   {schoolResults.length > 0 && (
-                    <div className="rounded-xl border border-border bg-card divide-y divide-border max-h-56 overflow-y-auto">
+                    <div
+                      className="mt-2 rounded-2xl overflow-hidden max-h-56 overflow-y-auto"
+                      style={{ border: "1px solid rgba(255,255,255,.14)", background: "rgba(0,0,0,.45)" }}
+                    >
                       {schoolResults.map((s) => (
                         <button
                           key={s.id}
@@ -1390,278 +2151,350 @@ export default function OnboardingPage() {
                             setSchoolName(s.name);
                             setSchoolQuery(s.name);
                             setSchoolResults([]);
+                            idNumberRef.current?.focus();
                           }}
-                          className={`w-full text-left px-4 py-3 hover:bg-white/[0.04] ${schoolId === s.id ? "bg-[#6EE7F9]/10" : ""}`}
+                          className="w-full text-left px-4 py-3.5 min-h-[56px] hover:bg-white/[0.06]"
+                          style={{ background: schoolId === s.id ? `${BRAND.cyan}1A` : undefined, borderTop: "1px solid rgba(255,255,255,.08)" }}
                           data-testid={`school-result-${s.id}`}
                         >
-                          <div className="font-semibold text-white">{s.name}</div>
-                          {s.province && <div className="text-xs text-white">{s.province}</div>}
+                          <div className="font-bold text-white text-[15px] leading-snug">{s.name}</div>
+                          {s.province && <div className="text-[12px] text-white">{s.province}</div>}
                         </button>
                       ))}
                     </div>
                   )}
                   {schoolId && (
-                    <p className="text-xs text-[#94F7C5]" data-testid="text-school-linked">
+                    <p className="text-[12px] mt-2" style={{ color: BRAND.mint }} data-testid="text-school-linked">
                       {t.schoolLinkedLabel}
                     </p>
                   )}
                   {!schoolId && schoolName.trim().length >= 2 && (
-                    <p className="text-xs text-white">
-                      {t.schoolPendingLabel}
-                    </p>
+                    <p className="text-[12px] text-white mt-2">{t.schoolPendingLabel}</p>
                   )}
-                </div>
+                </StepBlock>
 
-                <div className="space-y-4 pt-2 border-t border-white/10">
-                  <Label className="text-sm font-semibold uppercase tracking-widest text-white">{t.identityHeading}</Label>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label className="text-sm font-semibold" htmlFor="onboarding-first-name">{t.firstNameLabel}</Label>
-                      <Input
-                        id="onboarding-first-name"
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        placeholder={t.firstNamePlaceholder}
-                        autoComplete="given-name"
-                        className="h-12 bg-background"
-                        data-testid="input-first-name"
+                {/* 3 — SA ID */}
+                <StepBlock
+                  n={3}
+                  title={t.idQ}
+                  done={isValidSaIdNumber(idNumber)}
+                  accent={BRAND.yellow}
+                  testId="school-block-id"
+                >
+                  <Input
+                    id="onboarding-id-number"
+                    ref={idNumberRef}
+                    value={idNumber}
+                    onChange={(e) => {
+                      const v = e.target.value.replace(/\D/g, "").slice(0, 13);
+                      setIdNumber(v);
+                      if (v.length === 13) dobDayRef.current?.focus();
+                    }}
+                    placeholder={t.idNumberPlaceholder}
+                    inputMode="numeric"
+                    maxLength={13}
+                    aria-label={t.idNumberLabel}
+                    className="h-14 rounded-2xl text-white text-lg px-4 tracking-[0.16em] font-bold"
+                    style={{ background: "rgba(0,0,0,.35)", border: "1px solid rgba(255,255,255,.16)" }}
+                    data-testid="input-id-number"
+                  />
+                  {/* 13 pips so progress is visible without counting. */}
+                  <div className="flex gap-1 mt-2.5" aria-hidden>
+                    {Array.from({ length: 13 }).map((_, i) => (
+                      <span
+                        key={i}
+                        className="flex-1 rounded-full"
+                        style={{
+                          height: 4,
+                          background: i < idNumber.length ? BRAND.yellow : "rgba(255,255,255,.14)",
+                          transition: "background .2s ease",
+                        }}
                       />
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-sm font-semibold" htmlFor="onboarding-last-name">{t.lastNameLabel}</Label>
-                      <Input
-                        id="onboarding-last-name"
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        placeholder={t.lastNamePlaceholder}
-                        autoComplete="family-name"
-                        className="h-12 bg-background"
-                        data-testid="input-last-name"
-                      />
-                    </div>
+                    ))}
                   </div>
-
-                  <div className="space-y-2">
-                    <Label className="text-sm font-semibold" htmlFor="onboarding-id-number">{t.idNumberLabel}</Label>
-                    <Input
-                      id="onboarding-id-number"
-                      value={idNumber}
-                      onChange={(e) => setIdNumber(e.target.value.replace(/\D/g, "").slice(0, 13))}
-                      placeholder={t.idNumberPlaceholder}
-                      inputMode="numeric"
-                      maxLength={13}
-                      className="h-12 bg-background"
-                      data-testid="input-id-number"
-                    />
-                    {idNumber.trim().length > 0 && !isValidSaIdNumber(idNumber) ? (
-                      <p className="text-xs text-[#FFB7E5]" data-testid="text-id-number-error">
-                        {t.idNumberInvalid}
-                      </p>
-                    ) : (
-                      <p className="text-xs text-white">{t.idNumberHint}</p>
-                    )}
-                  </div>
-
-                  {/* Date of birth — playful DD/MM/YYYY entry with auto-advance. */}
-                  <div className="space-y-2" data-testid="dob-block">
-                    <p style={{ fontFamily: "'Permanent Marker',cursive", color: "#FFE29A", fontSize: 16, transform: "rotate(-2deg)", margin: 0 }}>
-                      {t.dobEyebrow}
+                  {idNumber.trim().length > 0 && !isValidSaIdNumber(idNumber) ? (
+                    <p className="text-[12px] mt-2" style={{ color: BRAND.pink }} data-testid="text-id-number-error">
+                      {t.idNumberInvalid}
                     </p>
-                    <Label className="text-sm font-semibold" htmlFor="onboarding-dob-day">{t.dobLabel}</Label>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        id="onboarding-dob-day"
-                        value={dobDay}
-                        onChange={(e) => {
-                          const v = e.target.value.replace(/\D/g, "").slice(0, 2);
-                          setDobDay(v);
-                          if (v.length === 2) dobMonthRef.current?.focus();
-                        }}
-                        placeholder={t.dobDayPh}
-                        inputMode="numeric"
-                        maxLength={2}
-                        autoComplete="bday-day"
-                        className="h-12 w-16 text-center text-lg font-semibold bg-background"
-                        data-testid="input-dob-day"
-                      />
-                      <span className="text-xl font-black" style={{ color: "#C5B3FF" }}>/</span>
-                      <Input
-                        id="onboarding-dob-month"
-                        ref={dobMonthRef}
-                        value={dobMonth}
-                        onChange={(e) => {
-                          const v = e.target.value.replace(/\D/g, "").slice(0, 2);
-                          setDobMonth(v);
-                          if (v.length === 2) dobYearRef.current?.focus();
-                        }}
-                        placeholder={t.dobMonthPh}
-                        inputMode="numeric"
-                        maxLength={2}
-                        autoComplete="bday-month"
-                        className="h-12 w-16 text-center text-lg font-semibold bg-background"
-                        data-testid="input-dob-month"
-                      />
-                      <span className="text-xl font-black" style={{ color: "#C5B3FF" }}>/</span>
-                      <Input
-                        id="onboarding-dob-year"
-                        ref={dobYearRef}
-                        value={dobYear}
-                        onChange={(e) => setDobYear(e.target.value.replace(/\D/g, "").slice(0, 4))}
-                        placeholder={t.dobYearPh}
-                        inputMode="numeric"
-                        maxLength={4}
-                        autoComplete="bday-year"
-                        className="h-12 w-24 text-center text-lg font-semibold bg-background"
-                        data-testid="input-dob-year"
-                      />
-                      <span className="text-2xl" aria-hidden>🎂</span>
-                    </div>
-                    {(() => {
-                      const complete = dobDay.length >= 1 && dobMonth.length >= 1 && dobYear.length === 4;
-                      if (!complete) return <p className="text-xs text-white">{t.dobHint}</p>;
-                      const isoDob = buildIsoDob(dobDay, dobMonth, dobYear);
-                      if (!isoDob) {
-                        return <p className="text-xs text-[#FFB7E5]" data-testid="text-dob-error">{t.dobInvalid}</p>;
-                      }
-                      if (isValidSaIdNumber(idNumber) && !dobMatchesIdNumber(isoDob, idNumber)) {
-                        return <p className="text-xs text-[#FFB7E5]" data-testid="text-dob-mismatch">{t.dobMismatch}</p>;
-                      }
-                      return <p className="text-xs text-[#94F7C5]" data-testid="text-dob-ok">✓ {t.dobLabel}</p>;
-                    })()}
-                  </div>
-                </div>
+                  ) : (
+                    <p className="text-[12px] text-white mt-2">{t.idNumberHint}</p>
+                  )}
+                </StepBlock>
 
-                <div className="flex justify-between pt-4 gap-4">
-                  <Button variant="outline" className="px-5 py-2.5 text-sm font-bold rounded-xl bg-transparent text-white border border-white/20 hover:border-[#9FF5E8]/70 hover:bg-white/[0.04] flex-1 md:flex-none" onClick={handleBack} data-testid="button-back-school">
-                    <ArrowLeft className="w-5 h-5 mr-2" />
+                {/* 4 — Date of birth (raw DOB never persisted client-side) */}
+                <StepBlock
+                  n={4}
+                  title={t.dobQ}
+                  done={(() => {
+                    const iso = buildIsoDob(dobDay, dobMonth, dobYear);
+                    return !!iso && dobMatchesIdNumber(iso, idNumber);
+                  })()}
+                  accent={BRAND.pink}
+                  testId="dob-block"
+                >
+                  <p style={{ fontFamily: MARKER, color: BRAND.yellow, fontSize: 15, transform: "rotate(-2deg)", margin: "0 0 10px" }}>
+                    {t.dobEyebrow}
+                  </p>
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <Input
+                      id="onboarding-dob-day"
+                      ref={dobDayRef}
+                      value={dobDay}
+                      onChange={(e) => {
+                        const v = e.target.value.replace(/\D/g, "").slice(0, 2);
+                        setDobDay(v);
+                        if (v.length === 2) dobMonthRef.current?.focus();
+                      }}
+                      placeholder={t.dobDayPh}
+                      inputMode="numeric"
+                      maxLength={2}
+                      autoComplete="bday-day"
+                      aria-label={t.dobDayPh}
+                      className="h-14 w-[58px] text-center text-lg font-extrabold rounded-2xl text-white px-1"
+                      style={{ background: "rgba(0,0,0,.35)", border: "1px solid rgba(255,255,255,.16)" }}
+                      data-testid="input-dob-day"
+                    />
+                    <span className="text-xl font-black shrink-0" style={{ color: BRAND.purple }}>/</span>
+                    <Input
+                      id="onboarding-dob-month"
+                      ref={dobMonthRef}
+                      value={dobMonth}
+                      onChange={(e) => {
+                        const v = e.target.value.replace(/\D/g, "").slice(0, 2);
+                        setDobMonth(v);
+                        if (v.length === 2) dobYearRef.current?.focus();
+                      }}
+                      placeholder={t.dobMonthPh}
+                      inputMode="numeric"
+                      maxLength={2}
+                      autoComplete="bday-month"
+                      aria-label={t.dobMonthPh}
+                      className="h-14 w-[58px] text-center text-lg font-extrabold rounded-2xl text-white px-1"
+                      style={{ background: "rgba(0,0,0,.35)", border: "1px solid rgba(255,255,255,.16)" }}
+                      data-testid="input-dob-month"
+                    />
+                    <span className="text-xl font-black shrink-0" style={{ color: BRAND.purple }}>/</span>
+                    <Input
+                      id="onboarding-dob-year"
+                      ref={dobYearRef}
+                      value={dobYear}
+                      onChange={(e) => setDobYear(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                      placeholder={t.dobYearPh}
+                      inputMode="numeric"
+                      maxLength={4}
+                      autoComplete="bday-year"
+                      aria-label={t.dobYearPh}
+                      className="h-14 w-[86px] text-center text-lg font-extrabold rounded-2xl text-white px-1"
+                      style={{ background: "rgba(0,0,0,.35)", border: "1px solid rgba(255,255,255,.16)" }}
+                      data-testid="input-dob-year"
+                    />
+                    <span className="text-2xl shrink-0" aria-hidden>🎂</span>
+                  </div>
+                  {(() => {
+                    const complete = dobDay.length >= 1 && dobMonth.length >= 1 && dobYear.length === 4;
+                    if (!complete) return <p className="text-[12px] text-white mt-2">{t.dobHint}</p>;
+                    const isoDob = buildIsoDob(dobDay, dobMonth, dobYear);
+                    if (!isoDob) {
+                      return <p className="text-[12px] mt-2" style={{ color: BRAND.pink }} data-testid="text-dob-error">{t.dobInvalid}</p>;
+                    }
+                    if (isValidSaIdNumber(idNumber) && !dobMatchesIdNumber(isoDob, idNumber)) {
+                      return <p className="text-[12px] mt-2" style={{ color: BRAND.pink }} data-testid="text-dob-mismatch">{t.dobMismatch}</p>;
+                    }
+                    return <p className="text-[12px] mt-2" style={{ color: BRAND.mint }} data-testid="text-dob-ok">✓ {t.dobLabel}</p>;
+                  })()}
+                </StepBlock>
+
+                <div className="flex gap-3 pt-1">
+                  <Button variant="outline" className={ghostBtn} onClick={handleBack} data-testid="button-back-school">
+                    <ArrowLeft className="w-5 h-5 mr-1.5" />
                     {T[language].backBtn}
                   </Button>
                   <Button
-                    className="px-5 py-2.5 text-sm font-bold rounded-xl bg-gradient-to-r from-[#9FF5E8] to-[#C5B3FF] hover:opacity-90 text-[#050508] shadow-md flex-1 md:flex-none"
+                    className={primaryBtn}
+                    style={primaryBtnStyle}
                     onClick={handleNext}
                     disabled={!canProceed()}
                     data-testid="button-next-school"
                   >
-                    <ArrowRight className="w-5 h-5 mr-2" />
                     {T[language].nextBtn}
+                    <ArrowRight className="w-5 h-5 ml-1.5" />
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </section>
           )}
 
+          {/* ── PHASE: PARENT CONSENT — finish strong ──────────────────────── */}
           {phase === "parent_consent" && (
-            <Card className="border border-white/10 bg-[#050508] shadow-[0_0_30px_rgba(159,245,232,0.15)] rounded-3xl overflow-hidden" data-testid="card-parent-consent">
-              <div aria-hidden className="h-[3px]" style={{ background: "linear-gradient(95deg,#FFB7E5,#FFE29A,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)" }} />
-              <CardHeader className="pb-2 pt-8 px-8">
-                <CardTitle className="text-2xl font-semibold text-white">
-                  {t.parentConsentHeading}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6 p-8">
-                <p className="text-white font-medium">
-                  {t.parentConsentHint}
-                </p>
+            <section
+              data-testid="card-parent-consent"
+              className="rounded-3xl overflow-hidden"
+              style={{
+                background: BRAND.card,
+                border: "1px solid rgba(255,255,255,.12)",
+                boxShadow: `0 0 40px ${BRAND.pink}33`,
+                animation: anim("bt-fadeup .45s cubic-bezier(.22,1,.36,1) both"),
+              }}
+            >
+              <div aria-hidden className="h-[3px]" style={{ background: `linear-gradient(95deg, ${BRAND.pink}, ${BRAND.yellow}, ${BRAND.mint}, ${BRAND.cyan}, ${BRAND.purple})` }} />
+              <div className="p-5 sm:p-8 space-y-6">
+                <div>
+                  <p style={{ fontFamily: MARKER, color: BRAND.yellow, fontSize: 20, transform: "rotate(-2deg)", margin: "0 0 6px" }}>
+                    {t.letsGetIt}
+                  </p>
+                  <h2 className="text-white font-extrabold leading-[1.12] text-[28px] sm:text-[36px] tracking-tight">
+                    {t.youreSetTitle}
+                  </h2>
+                  <p className="text-white text-[15px] mt-2">{t.youreSetSub}</p>
+                </div>
 
-                <div className="space-y-2">
-                  <Label className="text-sm font-semibold">{t.parentEmailLabel}</Label>
+                {/* Setup summary — makes the work feel banked. */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3" data-testid="onboarding-summary">
+                  {[
+                    { label: t.summarySubjectsLabel, value: String(subjectMarks.length), icon: "📚", color: BRAND.yellow },
+                    {
+                      label: t.summaryStyleLabel,
+                      value: varkPrimary ? (language === "en" ? VARK_STYLES[varkPrimary].label : VARK_STYLES[varkPrimary].labelAf) : "—",
+                      icon: varkPrimary ? VARK_STYLES[varkPrimary].icon : "🧠",
+                      color: BRAND.purple,
+                    },
+                    { label: t.summarySchoolLabel, value: schoolName.trim() || "—", icon: "🏫", color: BRAND.cyan },
+                  ].map((item, i) => (
+                    <div
+                      key={item.label}
+                      className="rounded-2xl px-4 py-3.5"
+                      style={{
+                        background: `${item.color}14`,
+                        border: `1px solid ${item.color}55`,
+                        animation: anim(`bt-fadeup .45s cubic-bezier(.22,1,.36,1) ${0.06 * i}s both`),
+                      }}
+                    >
+                      <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white">
+                        {item.icon} {item.label}
+                      </p>
+                      <p className="text-white font-extrabold text-lg leading-tight mt-1 break-words">{item.value}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="rounded-2xl p-4 sm:p-5" style={{ background: "rgba(255,255,255,.04)", border: "1px solid rgba(255,255,255,.12)" }}>
+                  <h3 className="text-white font-extrabold text-xl leading-tight mb-2">{t.parentConsentHeading}</h3>
+                  <p className="text-white text-[14px] leading-relaxed mb-4">{t.parentConsentHint}</p>
+
                   <Input
                     type="email"
                     value={parentEmail}
                     onChange={(e) => setParentEmail(e.target.value)}
                     placeholder={t.parentEmailPlaceholder}
-                    className="h-12 bg-background"
+                    aria-label={t.parentEmailLabel}
+                    className="h-14 rounded-2xl text-white text-base px-4"
+                    style={{ background: "rgba(0,0,0,.35)", border: "1px solid rgba(255,255,255,.16)" }}
                     data-testid="input-parent-email"
                   />
+
+                  <Button
+                    variant="outline"
+                    className="mt-3 w-full sm:w-auto h-13 min-h-[52px] px-5 text-[15px] font-bold rounded-2xl bg-transparent text-white border border-white/25 hover:bg-white/[0.06]"
+                    onClick={() => consentMutation.mutate()}
+                    disabled={!/.+@.+\..+/.test(parentEmail.trim()) || consentMutation.isPending}
+                    data-testid="button-send-consent"
+                  >
+                    {consentMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
+                    {consentLink ? t.resendBtn : t.sendConsentEmailBtn}
+                  </Button>
+
+                  {consentLink && (
+                    <div
+                      className="mt-3 rounded-2xl p-4 space-y-2"
+                      style={{ background: "rgba(0,0,0,.4)", border: "1px solid rgba(255,255,255,.14)" }}
+                      data-testid="consent-link-block"
+                    >
+                      <p className="text-[11px] font-bold text-white uppercase tracking-[0.14em]">
+                        {consentDelivery === "sent" ? t.emailSentLabel : t.manualShareLabel}
+                      </p>
+                      <p className="text-[12px] break-all text-white select-all" data-testid="consent-link-url">{consentLink}</p>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="ghost"
+                        className="text-white min-h-[44px]"
+                        onClick={() => navigator.clipboard?.writeText(consentLink).catch(() => {})}
+                        data-testid="button-copy-consent-link"
+                      >
+                        {t.copyLinkBtn}
+                      </Button>
+                    </div>
+                  )}
+
+                  {consentLink ? (
+                    <p className="text-[12px] mt-3" style={{ color: BRAND.mint }}>{t.consentSkipHint}</p>
+                  ) : (
+                    <p className="text-[12px] mt-3" style={{ color: BRAND.yellow }}>
+                      {language === "af"
+                        ? "Stuur eers die toestemmings-e-pos om voort te gaan."
+                        : "Please send a consent request to your parent/guardian to continue."}
+                    </p>
+                  )}
                 </div>
 
-                <Button
-                  variant="outline"
-                  className="px-5 py-2.5 text-sm font-bold rounded-xl bg-transparent text-white border border-white/20 hover:border-[#C5B3FF]/70 hover:bg-white/[0.04]"
-                  onClick={() => consentMutation.mutate()}
-                  disabled={!/.+@.+\..+/.test(parentEmail.trim()) || consentMutation.isPending}
-                  data-testid="button-send-consent"
-                >
-                  {consentMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
-                  {consentLink ? t.resendBtn : t.sendConsentEmailBtn}
-                </Button>
-
-                {consentLink && (
-                  <div className="rounded-xl border border-border bg-card p-4 space-y-2" data-testid="consent-link-block">
-                    <p className="text-xs font-semibold text-white uppercase tracking-wide">
-                      {consentDelivery === "sent" ? t.emailSentLabel : t.manualShareLabel}
-                    </p>
-                    <p className="text-xs break-all text-white select-all" data-testid="consent-link-url">{consentLink}</p>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => navigator.clipboard?.writeText(consentLink).catch(() => {})}
-                      data-testid="button-copy-consent-link"
-                    >
-                      {t.copyLinkBtn}
-                    </Button>
-                  </div>
-                )}
-
-                {consentLink ? (
-                  <p className="text-xs text-[#94F7C5]">
-                    {t.consentSkipHint}
+                {/* Hand-off: what actually happens next. */}
+                <div className="rounded-2xl p-4 sm:p-5" style={{ background: `${BRAND.mint}12`, border: `1px solid ${BRAND.mint}44` }}>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white">🚀 {t.whatsNextTitle}</p>
+                  <p className="text-white text-[14px] leading-relaxed mt-1.5">
+                    {isMinor ? t.whatsNextMinor : t.whatsNextAdult}
                   </p>
-                ) : (
-                  <p className="text-xs text-[#FFE29A]">
-                    {language === "af"
-                      ? "Stuur eers die toestemmings-e-pos om voort te gaan."
-                      : "Please send a consent request to your parent/guardian to continue."}
-                  </p>
-                )}
+                </div>
 
-                <div className="flex justify-between pt-4 gap-4">
-                  <Button variant="outline" className="px-5 py-2.5 text-sm font-bold rounded-xl bg-transparent text-white border border-white/20 hover:border-[#9FF5E8]/70 hover:bg-white/[0.04] flex-1 md:flex-none" onClick={handleBack} data-testid="button-back-parent-consent">
-                    <ArrowLeft className="w-5 h-5 mr-2" />
+                <div className="flex gap-3">
+                  <Button variant="outline" className={ghostBtn} onClick={handleBack} data-testid="button-back-parent-consent">
+                    <ArrowLeft className="w-5 h-5 mr-1.5" />
                     {T[language].backBtn}
                   </Button>
                   <Button
-                    className="px-5 py-2.5 text-sm font-bold rounded-xl bg-gradient-to-r from-[#9FF5E8] to-[#C5B3FF] hover:opacity-90 text-[#050508] shadow-md flex-1 md:flex-none"
+                    className="h-16 px-6 text-lg font-extrabold rounded-2xl text-[#0D0D14] flex-1 disabled:opacity-40"
+                    style={{
+                      background: `linear-gradient(95deg, ${BRAND.pink}, ${BRAND.yellow}, ${BRAND.mint}, ${BRAND.cyan})`,
+                      boxShadow: `0 0 26px ${BRAND.pink}55`,
+                    }}
                     onClick={handleNext}
                     disabled={submitMutation.isPending}
                     data-testid="button-complete"
                   >
                     {submitMutation.isPending ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <Sparkles className="w-5 h-5 mr-2" />}
-                    {T[language].submitBtn}
+                    {t.letsGetIt}
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </section>
           )}
 
-          {/* Step-completion micro-celebration — marker cheer + confetti burst.
+          {/* Step-completion micro-celebration — Rizz brand line + confetti.
               NOTE: the global animation kill-switch in index.css exempts only
               elements whose INLINE style contains "bt-" — keep these inline. */}
           {cheer && (
-            <div className="fixed inset-x-0 top-24 z-50 flex justify-center pointer-events-none" data-testid="onboarding-cheer">
+            <div className="fixed inset-x-0 top-28 z-50 flex justify-center pointer-events-none px-4" data-testid="onboarding-cheer">
               <div
+                className="text-center max-w-[92vw]"
                 style={{
-                  fontFamily: "'Permanent Marker',cursive",
-                  fontSize: 28,
-                  color: "#FFE29A",
-                  textShadow: "0 0 18px rgba(255,226,154,.45)",
-                  animation: "bt-pop .5s cubic-bezier(.22,1,.36,1) both",
+                  fontFamily: MARKER,
+                  fontSize: 26,
+                  color: BRAND.yellow,
+                  textShadow: `0 0 20px ${BRAND.yellow}77`,
+                  animation: anim("bt-pop .5s cubic-bezier(.22,1,.36,1) both"),
                 }}
               >
                 {cheer}
               </div>
-              {CONFETTI_COLORS.map((c, i) => (
+              {!reduced && CONFETTI_COLORS.map((c, i) => (
                 <span
                   key={i}
                   aria-hidden
                   style={{
                     position: "absolute",
                     top: -6,
-                    left: `${36 + i * 7}%`,
-                    width: 8,
-                    height: 8,
+                    left: `${30 + i * 9}%`,
+                    width: 9,
+                    height: 9,
                     borderRadius: i % 2 ? 999 : 2,
                     background: c,
                     animation: `bt-confetti ${0.9 + i * 0.14}s ease-in ${i * 0.06}s both`,
@@ -1672,15 +2505,21 @@ export default function OnboardingPage() {
           )}
 
           {submitMutation.isPending && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 " data-testid="onboarding-loading-overlay">
-              <div className="rounded-2xl border border-border bg-card p-8 text-center max-w-sm">
-                <Loader2 className="w-10 h-10 animate-spin mx-auto mb-4" style={{ color: "#6EE7F9" }} />
-                <h3 className="text-lg font-bold text-white mb-1">
-                  {t.preparingClassroomTitle}
-                </h3>
-                <p className="text-sm text-white">
-                  {t.preparingClassroomDesc}
-                </p>
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(13,13,20,.86)" }} data-testid="onboarding-loading-overlay">
+              <div
+                className="rounded-3xl p-7 text-center max-w-sm w-full"
+                style={{ background: BRAND.card, border: `1px solid ${BRAND.cyan}55`, boxShadow: `0 0 40px ${BRAND.cyan}33` }}
+              >
+                <img
+                  src={rizzAvatar}
+                  alt={t.rizzName}
+                  className="w-20 h-20 rounded-full mx-auto mb-4 object-cover"
+                  style={{ border: `2px solid ${BRAND.cyan}`, animation: anim("bt-rizzbob 2s ease-in-out infinite") }}
+                />
+                <Loader2 className="w-7 h-7 animate-spin mx-auto mb-3" style={{ color: BRAND.cyan }} />
+                <h3 className="text-lg font-extrabold text-white mb-1">{t.preparingClassroomTitle}</h3>
+                <p className="text-sm text-white">{t.preparingClassroomDesc}</p>
+                <p className="mt-3" style={{ fontFamily: MARKER, color: BRAND.yellow, fontSize: 16 }}>{t.letsGetIt}</p>
               </div>
             </div>
           )}
@@ -1701,6 +2540,25 @@ export default function OnboardingPage() {
         @keyframes bt-fadeup {
           from { opacity: 0; transform: translateY(14px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes bt-rizzbob {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-5px); }
+        }
+        @keyframes bt-checkpop {
+          0% { transform: scale(.7); }
+          55% { transform: scale(1.14); }
+          100% { transform: scale(1); }
+        }
+        /* Hide the horizontal category-pill scrollbar without clipping taps. */
+        [data-testid="card-subjects"] .overflow-x-auto::-webkit-scrollbar { height: 0; }
+        /* prefers-reduced-motion: no motion, identical layout. */
+        @media (prefers-reduced-motion: reduce) {
+          [style*="bt-"] { animation: none !important; }
+          [data-testid="card-onboarding"], [data-testid="card-vark"],
+          [data-testid="card-subjects"], [data-testid="card-school"],
+          [data-testid="card-parent-consent"] { opacity: 1 !important; transform: none !important; }
+          [role="progressbar"] > div { transition: none !important; }
         }
       `}</style>
     </div>

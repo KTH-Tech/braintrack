@@ -27,26 +27,38 @@ for (const file of files) {
   const rl = readline.createInterface({ input: fs.createReadStream(path.join(dir, file)) });
   let batch = [];
   let total = 0;
+  // One multi-row INSERT per batch. Row-at-a-time costs a full round trip per
+  // row, which over SSL to a remote region turns a 35k-row load into hours.
+  // Bare DO NOTHING covers whichever unique constraint the table actually has;
+  // the column-specific form errors on tables without that exact index.
+  const norm = (v) => (v !== null && typeof v === "object" && !(v instanceof Date) ? JSON.stringify(v) : v);
   const flush = async () => {
     if (!batch.length) return;
-    for (const row of batch) {
-      const entries = Object.entries(row).filter(([k]) => k !== "id");
-      const cols = entries.map(([k]) => `"${k}"`).join(",");
-      const vals = entries.map((_, i) => `$${i + 1}`).join(",");
-      const params = entries.map(([, v]) =>
-        v !== null && typeof v === "object" ? JSON.stringify(v) : v,
-      );
-      // Bare DO NOTHING covers whichever unique constraint the table actually
-      // has; the column-specific form errors on tables with no such index.
-      const conflict = " ON CONFLICT DO NOTHING";
-      try {
-        await c.query(`INSERT INTO ${table} (${cols}) VALUES (${vals})${conflict}`, params);
-        total++;
-      } catch (e) {
-        console.error(`[import] ${table} row failed: ${e.message?.slice(0, 120)}`);
+    const rows = batch;
+    batch = [];
+    const keys = Object.keys(rows[0]).filter((k) => k !== "id");
+    const cols = keys.map((k) => `"${k}"`).join(",");
+    const params = [];
+    const tuples = rows.map((row) => {
+      const ph = keys.map((k) => { params.push(norm(row[k] ?? null)); return `$${params.length}`; });
+      return `(${ph.join(",")})`;
+    });
+    try {
+      await c.query(`INSERT INTO ${table} (${cols}) VALUES ${tuples.join(",")} ON CONFLICT DO NOTHING`, params);
+      total += rows.length;
+    } catch (e) {
+      // Fall back to row-at-a-time so one bad row can't drop the whole batch.
+      for (const row of rows) {
+        const rp = keys.map((k) => norm(row[k] ?? null));
+        const ph = keys.map((_, i) => `$${i + 1}`).join(",");
+        try {
+          await c.query(`INSERT INTO ${table} (${cols}) VALUES (${ph}) ON CONFLICT DO NOTHING`, rp);
+          total++;
+        } catch (err) {
+          console.error(`[import] ${table} row failed: ${err.message?.slice(0, 120)}`);
+        }
       }
     }
-    batch = [];
   };
   for await (const line of rl) {
     if (!line.trim()) continue;

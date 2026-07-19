@@ -8,7 +8,10 @@ import { useAuth } from "@/hooks/use-auth";
 // Reflects the earliest entry in the NSC 2026 SACAI preliminary timetable
 // (CAT P1 practical on 17 Aug 2026).
 export const PRELIMS_DATE = new Date("2026-08-17T09:00:00+02:00");
-export const FINALS_DATE = new Date("2026-10-26T08:00:00+02:00");
+// First paper of the official DBE Oct/Nov 2026 NSC timetable (FINAL — February 2026
+// revision): Computer Applications Technology P1 Practical, Tue 13 Oct 2026, 09:00 SAST.
+// Finals window runs 13 Oct – 27 Nov 2026 (last seeded paper: Music P2, Wed 25 Nov).
+export const FINALS_DATE = new Date("2026-10-13T09:00:00+02:00");
 
 export type PrelimExamEntry = {
   examDate: string;

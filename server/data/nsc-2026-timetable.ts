@@ -1,6 +1,16 @@
 // NSC October/November 2026 Official Exam Timetable
-// Based on the standard DBE examination schedule pattern.
-// Non-examination days: 03/11, 04/11, 05/11, 09/11 (as specified in task brief).
+// VERIFIED 2026-07-19 against the official DBE timetable PDF:
+//   "OCTOBER/NOVEMBER 2026 NATIONAL SENIOR CERTIFICATE (NSC) EXAMINATIONS TIMETABLE"
+//   Revision: FINAL — February 2026
+//   Source: https://www.westerncape.gov.za/education/files/wcg-blob-files?file=2026-03%2Foct-nov-2026-nsc-timetable-final-february-2026.pdf&type=file
+// Every date, session (09:00/14:00) and duration below is transcribed from that PDF.
+// Scope: subjects BrainTrack supports (see SUBJECT_NAME_MAPPINGS). Rare languages
+// (Hindi, German, Portuguese, Latin, SASL, etc.) and niche subjects (Maritime
+// Economics, Nautical Science, Equine Studies, ...) are intentionally omitted.
+// CAT/IT P1 rewrite practicals (26/11) and LO CAT (1 Sep / 12 Oct) are also omitted.
+// Finals window: first paper Tue 13 Oct 2026 09:00; last seeded paper Wed 25 Nov 2026.
+// Non-examination days: 03/11, 04/11, 05/11, 09/11 (per the official PDF).
+// Naming: "Drama" below corresponds to the official DBE subject "Dramatic Arts".
 
 export interface TimetableEntry {
   examDate: string; // YYYY-MM-DD
@@ -21,48 +31,86 @@ export const NON_EXAMINATION_DAYS_2026 = [
 ];
 
 export const NSC_2026_TIMETABLE: TimetableEntry[] = [
-  // === OCTOBER 2026 ===
-  // 26 October — Monday
-  { examDate: "2026-10-26", startTime: "09:00", durationMinutes: 180, subjectName: "English Home Language", paperNumber: 1, isNonExaminationDay: false },
-  { examDate: "2026-10-26", startTime: "09:00", durationMinutes: 180, subjectName: "English First Additional Language", paperNumber: 1, isNonExaminationDay: false },
-  { examDate: "2026-10-26", startTime: "14:00", durationMinutes: 120, subjectName: "IsiZulu Home Language", paperNumber: 1, isNonExaminationDay: false },
-  { examDate: "2026-10-26", startTime: "14:00", durationMinutes: 120, subjectName: "IsiXhosa Home Language", paperNumber: 1, isNonExaminationDay: false },
-  { examDate: "2026-10-26", startTime: "14:00", durationMinutes: 120, subjectName: "Sesotho Home Language", paperNumber: 1, isNonExaminationDay: false },
-  { examDate: "2026-10-26", startTime: "14:00", durationMinutes: 120, subjectName: "Setswana Home Language", paperNumber: 1, isNonExaminationDay: false },
-  { examDate: "2026-10-26", startTime: "14:00", durationMinutes: 120, subjectName: "Sepedi Home Language", paperNumber: 1, isNonExaminationDay: false },
+  // === WEEK 1: 12–16 October 2026 ===
+  // Tuesday 13 October
+  { examDate: "2026-10-13", startTime: "09:00", durationMinutes: 180, subjectName: "Computer Applications Technology", paperNumber: 1, isNonExaminationDay: false, notes: "Practical" },
 
-  // 27 October — Tuesday
-  { examDate: "2026-10-27", startTime: "09:00", durationMinutes: 150, subjectName: "Life Sciences", paperNumber: 1, isNonExaminationDay: false },
-  { examDate: "2026-10-27", startTime: "14:00", durationMinutes: 120, subjectName: "IsiZulu Home Language", paperNumber: 2, isNonExaminationDay: false },
-  { examDate: "2026-10-27", startTime: "14:00", durationMinutes: 120, subjectName: "IsiXhosa Home Language", paperNumber: 2, isNonExaminationDay: false },
-  { examDate: "2026-10-27", startTime: "14:00", durationMinutes: 120, subjectName: "Sesotho Home Language", paperNumber: 2, isNonExaminationDay: false },
+  // Wednesday 14 October
+  { examDate: "2026-10-14", startTime: "09:00", durationMinutes: 180, subjectName: "Information Technology", paperNumber: 1, isNonExaminationDay: false, notes: "Practical" },
 
-  // 28 October — Wednesday
-  { examDate: "2026-10-28", startTime: "09:00", durationMinutes: 180, subjectName: "English Home Language", paperNumber: 2, isNonExaminationDay: false },
-  { examDate: "2026-10-28", startTime: "09:00", durationMinutes: 180, subjectName: "English First Additional Language", paperNumber: 2, isNonExaminationDay: false },
-  { examDate: "2026-10-28", startTime: "14:00", durationMinutes: 120, subjectName: "Setswana Home Language", paperNumber: 2, isNonExaminationDay: false },
-  { examDate: "2026-10-28", startTime: "14:00", durationMinutes: 120, subjectName: "Sepedi Home Language", paperNumber: 2, isNonExaminationDay: false },
-  { examDate: "2026-10-28", startTime: "14:00", durationMinutes: 120, subjectName: "Tshivenda Home Language", paperNumber: 1, isNonExaminationDay: false },
-  { examDate: "2026-10-28", startTime: "14:00", durationMinutes: 120, subjectName: "Xitsonga Home Language", paperNumber: 1, isNonExaminationDay: false },
+  // Thursday 15 October
+  { examDate: "2026-10-15", startTime: "09:00", durationMinutes: 180, subjectName: "English Home Language", paperNumber: 3, isNonExaminationDay: false },
+  { examDate: "2026-10-15", startTime: "09:00", durationMinutes: 150, subjectName: "English First Additional Language", paperNumber: 3, isNonExaminationDay: false },
 
-  // 29 October — Thursday
-  { examDate: "2026-10-29", startTime: "09:00", durationMinutes: 150, subjectName: "Life Sciences", paperNumber: 2, isNonExaminationDay: false },
-  { examDate: "2026-10-29", startTime: "14:00", durationMinutes: 120, subjectName: "Tshivenda Home Language", paperNumber: 2, isNonExaminationDay: false },
-  { examDate: "2026-10-29", startTime: "14:00", durationMinutes: 120, subjectName: "Xitsonga Home Language", paperNumber: 2, isNonExaminationDay: false },
-  { examDate: "2026-10-29", startTime: "14:00", durationMinutes: 120, subjectName: "Siswati Home Language", paperNumber: 1, isNonExaminationDay: false },
+  // Friday 16 October
+  { examDate: "2026-10-16", startTime: "09:00", durationMinutes: 120, subjectName: "Economics", paperNumber: 1, isNonExaminationDay: false },
+  { examDate: "2026-10-16", startTime: "09:00", durationMinutes: 180, subjectName: "Mechanical Technology", paperNumber: 1, isNonExaminationDay: false, notes: "Single paper covering all specialisations" },
+  { examDate: "2026-10-16", startTime: "14:00", durationMinutes: 180, subjectName: "Design", paperNumber: 1, isNonExaminationDay: false },
 
-  // 30 October — Friday
-  { examDate: "2026-10-30", startTime: "09:00", durationMinutes: 150, subjectName: "English Home Language", paperNumber: 3, isNonExaminationDay: false },
-  { examDate: "2026-10-30", startTime: "09:00", durationMinutes: 150, subjectName: "English First Additional Language", paperNumber: 3, isNonExaminationDay: false },
-  { examDate: "2026-10-30", startTime: "14:00", durationMinutes: 120, subjectName: "Siswati Home Language", paperNumber: 2, isNonExaminationDay: false },
-  { examDate: "2026-10-30", startTime: "14:00", durationMinutes: 120, subjectName: "IsiNdebele Home Language", paperNumber: 1, isNonExaminationDay: false },
+  // === WEEK 2: 19–23 October 2026 ===
+  // Monday 19 October
+  { examDate: "2026-10-19", startTime: "09:00", durationMinutes: 180, subjectName: "IsiZulu Home Language", paperNumber: 3, isNonExaminationDay: false },
+  { examDate: "2026-10-19", startTime: "09:00", durationMinutes: 180, subjectName: "IsiXhosa Home Language", paperNumber: 3, isNonExaminationDay: false },
+  { examDate: "2026-10-19", startTime: "09:00", durationMinutes: 180, subjectName: "Siswati Home Language", paperNumber: 3, isNonExaminationDay: false },
+  { examDate: "2026-10-19", startTime: "09:00", durationMinutes: 180, subjectName: "IsiNdebele Home Language", paperNumber: 3, isNonExaminationDay: false },
+  { examDate: "2026-10-19", startTime: "09:00", durationMinutes: 150, subjectName: "IsiZulu First Additional Language", paperNumber: 3, isNonExaminationDay: false },
+  { examDate: "2026-10-19", startTime: "14:00", durationMinutes: 150, subjectName: "Agricultural Sciences", paperNumber: 1, isNonExaminationDay: false },
 
-  // === NOVEMBER 2026 ===
-  // 2 November — Monday
-  { examDate: "2026-11-02", startTime: "09:00", durationMinutes: 180, subjectName: "Mathematics", paperNumber: 1, isNonExaminationDay: false },
-  { examDate: "2026-11-02", startTime: "09:00", durationMinutes: 180, subjectName: "Mathematical Literacy", paperNumber: 1, isNonExaminationDay: false },
-  { examDate: "2026-11-02", startTime: "14:00", durationMinutes: 120, subjectName: "Afrikaans Home Language", paperNumber: 1, isNonExaminationDay: false },
-  { examDate: "2026-11-02", startTime: "14:00", durationMinutes: 120, subjectName: "Afrikaans First Additional Language", paperNumber: 1, isNonExaminationDay: false },
+  // Tuesday 20 October
+  { examDate: "2026-10-20", startTime: "09:00", durationMinutes: 180, subjectName: "Afrikaans Home Language", paperNumber: 3, isNonExaminationDay: false },
+  { examDate: "2026-10-20", startTime: "09:00", durationMinutes: 150, subjectName: "Afrikaans First Additional Language", paperNumber: 3, isNonExaminationDay: false },
+  { examDate: "2026-10-20", startTime: "14:00", durationMinutes: 180, subjectName: "History", paperNumber: 1, isNonExaminationDay: false },
+
+  // Wednesday 21 October
+  { examDate: "2026-10-21", startTime: "09:00", durationMinutes: 180, subjectName: "Sepedi Home Language", paperNumber: 3, isNonExaminationDay: false },
+  { examDate: "2026-10-21", startTime: "09:00", durationMinutes: 180, subjectName: "Sesotho Home Language", paperNumber: 3, isNonExaminationDay: false },
+  { examDate: "2026-10-21", startTime: "09:00", durationMinutes: 180, subjectName: "Setswana Home Language", paperNumber: 3, isNonExaminationDay: false },
+  { examDate: "2026-10-21", startTime: "09:00", durationMinutes: 180, subjectName: "Xitsonga Home Language", paperNumber: 3, isNonExaminationDay: false },
+  { examDate: "2026-10-21", startTime: "09:00", durationMinutes: 180, subjectName: "Tshivenda Home Language", paperNumber: 3, isNonExaminationDay: false },
+  { examDate: "2026-10-21", startTime: "14:00", durationMinutes: 180, subjectName: "Information Technology", paperNumber: 2, isNonExaminationDay: false, notes: "Theory" },
+
+  // Thursday 22 October
+  { examDate: "2026-10-22", startTime: "09:00", durationMinutes: 120, subjectName: "Accounting", paperNumber: 1, isNonExaminationDay: false },
+  { examDate: "2026-10-22", startTime: "14:00", durationMinutes: 180, subjectName: "Engineering Graphics and Design", paperNumber: 1, isNonExaminationDay: false },
+
+  // Friday 23 October
+  { examDate: "2026-10-23", startTime: "09:00", durationMinutes: 180, subjectName: "Mathematics", paperNumber: 1, isNonExaminationDay: false },
+  { examDate: "2026-10-23", startTime: "09:00", durationMinutes: 180, subjectName: "Mathematical Literacy", paperNumber: 1, isNonExaminationDay: false },
+  { examDate: "2026-10-23", startTime: "09:00", durationMinutes: 180, subjectName: "Technical Mathematics", paperNumber: 1, isNonExaminationDay: false },
+
+  // === WEEK 3: 26–30 October 2026 ===
+  // Monday 26 October
+  { examDate: "2026-10-26", startTime: "09:00", durationMinutes: 180, subjectName: "Mathematics", paperNumber: 2, isNonExaminationDay: false },
+  { examDate: "2026-10-26", startTime: "09:00", durationMinutes: 180, subjectName: "Mathematical Literacy", paperNumber: 2, isNonExaminationDay: false },
+  { examDate: "2026-10-26", startTime: "09:00", durationMinutes: 180, subjectName: "Technical Mathematics", paperNumber: 2, isNonExaminationDay: false },
+
+  // Tuesday 27 October
+  { examDate: "2026-10-27", startTime: "09:00", durationMinutes: 120, subjectName: "Sepedi Home Language", paperNumber: 1, isNonExaminationDay: false },
+  { examDate: "2026-10-27", startTime: "09:00", durationMinutes: 120, subjectName: "Sesotho Home Language", paperNumber: 1, isNonExaminationDay: false },
+  { examDate: "2026-10-27", startTime: "09:00", durationMinutes: 120, subjectName: "Setswana Home Language", paperNumber: 1, isNonExaminationDay: false },
+  { examDate: "2026-10-27", startTime: "09:00", durationMinutes: 120, subjectName: "Xitsonga Home Language", paperNumber: 1, isNonExaminationDay: false },
+  { examDate: "2026-10-27", startTime: "09:00", durationMinutes: 120, subjectName: "Tshivenda Home Language", paperNumber: 1, isNonExaminationDay: false },
+  { examDate: "2026-10-27", startTime: "14:00", durationMinutes: 180, subjectName: "Engineering Graphics and Design", paperNumber: 2, isNonExaminationDay: false },
+
+  // Wednesday 28 October
+  { examDate: "2026-10-28", startTime: "09:00", durationMinutes: 120, subjectName: "English Home Language", paperNumber: 1, isNonExaminationDay: false },
+  { examDate: "2026-10-28", startTime: "09:00", durationMinutes: 120, subjectName: "English First Additional Language", paperNumber: 1, isNonExaminationDay: false },
+  { examDate: "2026-10-28", startTime: "14:00", durationMinutes: 120, subjectName: "Accounting", paperNumber: 2, isNonExaminationDay: false },
+
+  // Thursday 29 October
+  { examDate: "2026-10-29", startTime: "09:00", durationMinutes: 180, subjectName: "Geography", paperNumber: 1, isNonExaminationDay: false, notes: "Climate and Weather, Geomorphology and Map Work" },
+  { examDate: "2026-10-29", startTime: "14:00", durationMinutes: 180, subjectName: "Computer Applications Technology", paperNumber: 2, isNonExaminationDay: false, notes: "Theory" },
+
+  // Friday 30 October
+  { examDate: "2026-10-30", startTime: "09:00", durationMinutes: 180, subjectName: "Physical Sciences", paperNumber: 1, isNonExaminationDay: false, notes: "Physics" },
+  { examDate: "2026-10-30", startTime: "09:00", durationMinutes: 180, subjectName: "Technical Sciences", paperNumber: 1, isNonExaminationDay: false },
+  { examDate: "2026-10-30", startTime: "14:00", durationMinutes: 180, subjectName: "Tourism", paperNumber: 1, isNonExaminationDay: false },
+
+  // === WEEK 4: 2–6 November 2026 ===
+  // Monday 2 November
+  { examDate: "2026-11-02", startTime: "09:00", durationMinutes: 180, subjectName: "Physical Sciences", paperNumber: 2, isNonExaminationDay: false, notes: "Chemistry" },
+  { examDate: "2026-11-02", startTime: "09:00", durationMinutes: 90, subjectName: "Technical Sciences", paperNumber: 2, isNonExaminationDay: false },
+  { examDate: "2026-11-02", startTime: "14:00", durationMinutes: 120, subjectName: "Religion Studies", paperNumber: 1, isNonExaminationDay: false },
 
   // 3 November — Tuesday (NON-EXAMINATION DAY)
   { examDate: "2026-11-03", startTime: "09:00", durationMinutes: 0, subjectName: "Non-Examination Day", paperNumber: 0, isNonExaminationDay: true, notes: "Catch-up and planning day" },
@@ -73,73 +121,76 @@ export const NSC_2026_TIMETABLE: TimetableEntry[] = [
   // 5 November — Thursday (NON-EXAMINATION DAY)
   { examDate: "2026-11-05", startTime: "09:00", durationMinutes: 0, subjectName: "Non-Examination Day", paperNumber: 0, isNonExaminationDay: true, notes: "Catch-up and planning day" },
 
-  // 6 November — Friday
-  { examDate: "2026-11-06", startTime: "09:00", durationMinutes: 180, subjectName: "Mathematics", paperNumber: 2, isNonExaminationDay: false },
-  { examDate: "2026-11-06", startTime: "09:00", durationMinutes: 180, subjectName: "Mathematical Literacy", paperNumber: 2, isNonExaminationDay: false },
-  { examDate: "2026-11-06", startTime: "14:00", durationMinutes: 120, subjectName: "Afrikaans Home Language", paperNumber: 2, isNonExaminationDay: false },
-  { examDate: "2026-11-06", startTime: "14:00", durationMinutes: 120, subjectName: "Afrikaans First Additional Language", paperNumber: 2, isNonExaminationDay: false },
+  // Friday 6 November
+  { examDate: "2026-11-06", startTime: "09:00", durationMinutes: 120, subjectName: "IsiZulu Home Language", paperNumber: 1, isNonExaminationDay: false },
+  { examDate: "2026-11-06", startTime: "09:00", durationMinutes: 120, subjectName: "IsiXhosa Home Language", paperNumber: 1, isNonExaminationDay: false },
+  { examDate: "2026-11-06", startTime: "09:00", durationMinutes: 120, subjectName: "Siswati Home Language", paperNumber: 1, isNonExaminationDay: false },
+  { examDate: "2026-11-06", startTime: "09:00", durationMinutes: 120, subjectName: "IsiNdebele Home Language", paperNumber: 1, isNonExaminationDay: false },
+  { examDate: "2026-11-06", startTime: "09:00", durationMinutes: 120, subjectName: "IsiZulu First Additional Language", paperNumber: 1, isNonExaminationDay: false },
+  { examDate: "2026-11-06", startTime: "14:00", durationMinutes: 180, subjectName: "Consumer Studies", paperNumber: 1, isNonExaminationDay: false },
+  { examDate: "2026-11-06", startTime: "14:00", durationMinutes: 180, subjectName: "Hospitality Studies", paperNumber: 1, isNonExaminationDay: false },
 
+  // === WEEK 5: 9–13 November 2026 ===
   // 9 November — Monday (NON-EXAMINATION DAY)
   { examDate: "2026-11-09", startTime: "09:00", durationMinutes: 0, subjectName: "Non-Examination Day", paperNumber: 0, isNonExaminationDay: true, notes: "Catch-up and planning day" },
 
-  // 10 November — Tuesday
-  { examDate: "2026-11-10", startTime: "09:00", durationMinutes: 180, subjectName: "Physical Sciences", paperNumber: 1, isNonExaminationDay: false },
-  { examDate: "2026-11-10", startTime: "14:00", durationMinutes: 180, subjectName: "Accounting", paperNumber: 1, isNonExaminationDay: false },
-  { examDate: "2026-11-10", startTime: "14:00", durationMinutes: 150, subjectName: "Afrikaans Home Language", paperNumber: 3, isNonExaminationDay: false },
-  { examDate: "2026-11-10", startTime: "14:00", durationMinutes: 150, subjectName: "Afrikaans First Additional Language", paperNumber: 3, isNonExaminationDay: false },
+  // Tuesday 10 November
+  { examDate: "2026-11-10", startTime: "09:00", durationMinutes: 150, subjectName: "IsiZulu Home Language", paperNumber: 2, isNonExaminationDay: false },
+  { examDate: "2026-11-10", startTime: "09:00", durationMinutes: 150, subjectName: "IsiXhosa Home Language", paperNumber: 2, isNonExaminationDay: false },
+  { examDate: "2026-11-10", startTime: "09:00", durationMinutes: 150, subjectName: "Siswati Home Language", paperNumber: 2, isNonExaminationDay: false },
+  { examDate: "2026-11-10", startTime: "09:00", durationMinutes: 150, subjectName: "IsiNdebele Home Language", paperNumber: 2, isNonExaminationDay: false },
+  { examDate: "2026-11-10", startTime: "09:00", durationMinutes: 150, subjectName: "IsiZulu First Additional Language", paperNumber: 2, isNonExaminationDay: false },
+  { examDate: "2026-11-10", startTime: "14:00", durationMinutes: 180, subjectName: "Electrical Technology", paperNumber: 1, isNonExaminationDay: false, notes: "Single paper covering all specialisations" },
 
-  // 11 November — Wednesday
-  { examDate: "2026-11-11", startTime: "09:00", durationMinutes: 180, subjectName: "History", paperNumber: 1, isNonExaminationDay: false },
-  { examDate: "2026-11-11", startTime: "14:00", durationMinutes: 150, subjectName: "Business Studies", paperNumber: 1, isNonExaminationDay: false },
+  // Wednesday 11 November
+  { examDate: "2026-11-11", startTime: "09:00", durationMinutes: 120, subjectName: "Afrikaans Home Language", paperNumber: 1, isNonExaminationDay: false },
+  { examDate: "2026-11-11", startTime: "09:00", durationMinutes: 120, subjectName: "Afrikaans First Additional Language", paperNumber: 1, isNonExaminationDay: false },
+  { examDate: "2026-11-11", startTime: "14:00", durationMinutes: 120, subjectName: "Business Studies", paperNumber: 1, isNonExaminationDay: false },
 
-  // 12 November — Thursday
-  { examDate: "2026-11-12", startTime: "09:00", durationMinutes: 180, subjectName: "Physical Sciences", paperNumber: 2, isNonExaminationDay: false },
-  { examDate: "2026-11-12", startTime: "14:00", durationMinutes: 150, subjectName: "Economics", paperNumber: 1, isNonExaminationDay: false },
+  // Thursday 12 November
+  { examDate: "2026-11-12", startTime: "09:00", durationMinutes: 180, subjectName: "Geography", paperNumber: 2, isNonExaminationDay: false, notes: "Rural and Urban Settlements, Economic Geography of SA and Map Work" },
+  { examDate: "2026-11-12", startTime: "14:00", durationMinutes: 120, subjectName: "Religion Studies", paperNumber: 2, isNonExaminationDay: false },
 
-  // 13 November — Friday
-  { examDate: "2026-11-13", startTime: "09:00", durationMinutes: 180, subjectName: "Geography", paperNumber: 1, isNonExaminationDay: false },
-  { examDate: "2026-11-13", startTime: "14:00", durationMinutes: 150, subjectName: "History", paperNumber: 2, isNonExaminationDay: false },
+  // Friday 13 November
+  { examDate: "2026-11-13", startTime: "09:00", durationMinutes: 150, subjectName: "Life Sciences", paperNumber: 1, isNonExaminationDay: false },
 
-  // 16 November — Monday
-  { examDate: "2026-11-16", startTime: "09:00", durationMinutes: 150, subjectName: "Economics", paperNumber: 2, isNonExaminationDay: false },
-  { examDate: "2026-11-16", startTime: "14:00", durationMinutes: 180, subjectName: "Geography", paperNumber: 2, isNonExaminationDay: false },
-  { examDate: "2026-11-16", startTime: "14:00", durationMinutes: 120, subjectName: "Computer Applications Technology", paperNumber: 1, isNonExaminationDay: false },
-  { examDate: "2026-11-16", startTime: "14:00", durationMinutes: 120, subjectName: "Information Technology", paperNumber: 1, isNonExaminationDay: false },
+  // === WEEK 6: 16–20 November 2026 ===
+  // Monday 16 November
+  { examDate: "2026-11-16", startTime: "09:00", durationMinutes: 150, subjectName: "Life Sciences", paperNumber: 2, isNonExaminationDay: false },
+  { examDate: "2026-11-16", startTime: "14:00", durationMinutes: 180, subjectName: "Drama", paperNumber: 1, isNonExaminationDay: false, notes: "Official DBE subject name: Dramatic Arts" },
+  { examDate: "2026-11-16", startTime: "14:00", durationMinutes: 180, subjectName: "Civil Technology", paperNumber: 1, isNonExaminationDay: false, notes: "Single paper covering all specialisations" },
 
-  // 17 November — Tuesday
-  { examDate: "2026-11-17", startTime: "09:00", durationMinutes: 180, subjectName: "Accounting", paperNumber: 2, isNonExaminationDay: false },
-  { examDate: "2026-11-17", startTime: "14:00", durationMinutes: 180, subjectName: "Consumer Studies", paperNumber: 1, isNonExaminationDay: false },
-  { examDate: "2026-11-17", startTime: "14:00", durationMinutes: 120, subjectName: "Tourism", paperNumber: 1, isNonExaminationDay: false },
+  // Tuesday 17 November
+  { examDate: "2026-11-17", startTime: "09:00", durationMinutes: 150, subjectName: "Sepedi Home Language", paperNumber: 2, isNonExaminationDay: false },
+  { examDate: "2026-11-17", startTime: "09:00", durationMinutes: 150, subjectName: "Sesotho Home Language", paperNumber: 2, isNonExaminationDay: false },
+  { examDate: "2026-11-17", startTime: "09:00", durationMinutes: 150, subjectName: "Setswana Home Language", paperNumber: 2, isNonExaminationDay: false },
+  { examDate: "2026-11-17", startTime: "09:00", durationMinutes: 150, subjectName: "Xitsonga Home Language", paperNumber: 2, isNonExaminationDay: false },
+  { examDate: "2026-11-17", startTime: "09:00", durationMinutes: 150, subjectName: "Tshivenda Home Language", paperNumber: 2, isNonExaminationDay: false },
+  { examDate: "2026-11-17", startTime: "14:00", durationMinutes: 150, subjectName: "Agricultural Sciences", paperNumber: 2, isNonExaminationDay: false },
 
-  // 18 November — Wednesday
-  { examDate: "2026-11-18", startTime: "09:00", durationMinutes: 150, subjectName: "Business Studies", paperNumber: 2, isNonExaminationDay: false },
-  { examDate: "2026-11-18", startTime: "14:00", durationMinutes: 120, subjectName: "Computer Applications Technology", paperNumber: 2, isNonExaminationDay: false },
-  { examDate: "2026-11-18", startTime: "14:00", durationMinutes: 120, subjectName: "Information Technology", paperNumber: 2, isNonExaminationDay: false },
+  // Wednesday 18 November
+  { examDate: "2026-11-18", startTime: "09:00", durationMinutes: 120, subjectName: "Business Studies", paperNumber: 2, isNonExaminationDay: false },
+  { examDate: "2026-11-18", startTime: "14:00", durationMinutes: 180, subjectName: "Visual Arts", paperNumber: 1, isNonExaminationDay: false },
 
-  // 19 November — Thursday
-  { examDate: "2026-11-19", startTime: "09:00", durationMinutes: 150, subjectName: "Agricultural Sciences", paperNumber: 1, isNonExaminationDay: false },
-  { examDate: "2026-11-19", startTime: "14:00", durationMinutes: 150, subjectName: "Religion Studies", paperNumber: 1, isNonExaminationDay: false },
-  { examDate: "2026-11-19", startTime: "14:00", durationMinutes: 150, subjectName: "Hospitality Studies", paperNumber: 1, isNonExaminationDay: false },
+  // Thursday 19 November
+  { examDate: "2026-11-19", startTime: "09:00", durationMinutes: 150, subjectName: "English Home Language", paperNumber: 2, isNonExaminationDay: false },
+  { examDate: "2026-11-19", startTime: "09:00", durationMinutes: 150, subjectName: "English First Additional Language", paperNumber: 2, isNonExaminationDay: false },
+  { examDate: "2026-11-19", startTime: "14:00", durationMinutes: 180, subjectName: "History", paperNumber: 2, isNonExaminationDay: false },
 
-  // 20 November — Friday
-  { examDate: "2026-11-20", startTime: "09:00", durationMinutes: 150, subjectName: "Agricultural Sciences", paperNumber: 2, isNonExaminationDay: false },
-  { examDate: "2026-11-20", startTime: "14:00", durationMinutes: 120, subjectName: "Engineering Graphics and Design", paperNumber: 1, isNonExaminationDay: false },
-  { examDate: "2026-11-20", startTime: "14:00", durationMinutes: 120, subjectName: "Civil Technology", paperNumber: 1, isNonExaminationDay: false },
+  // Friday 20 November
+  { examDate: "2026-11-20", startTime: "09:00", durationMinutes: 150, subjectName: "Afrikaans Home Language", paperNumber: 2, isNonExaminationDay: false },
+  { examDate: "2026-11-20", startTime: "09:00", durationMinutes: 150, subjectName: "Afrikaans First Additional Language", paperNumber: 2, isNonExaminationDay: false },
+  { examDate: "2026-11-20", startTime: "14:00", durationMinutes: 120, subjectName: "Economics", paperNumber: 2, isNonExaminationDay: false },
 
-  // 23 November — Monday
-  { examDate: "2026-11-23", startTime: "09:00", durationMinutes: 120, subjectName: "Engineering Graphics and Design", paperNumber: 2, isNonExaminationDay: false },
-  { examDate: "2026-11-23", startTime: "14:00", durationMinutes: 120, subjectName: "Electrical Technology", paperNumber: 1, isNonExaminationDay: false },
-  { examDate: "2026-11-23", startTime: "14:00", durationMinutes: 120, subjectName: "Mechanical Technology", paperNumber: 1, isNonExaminationDay: false },
+  // === WEEK 7: 23–27 November 2026 ===
+  // Monday 23 November
+  { examDate: "2026-11-23", startTime: "14:00", durationMinutes: 180, subjectName: "Music", paperNumber: 1, isNonExaminationDay: false, notes: "Theory" },
 
-  // 24 November — Tuesday
-  { examDate: "2026-11-24", startTime: "09:00", durationMinutes: 120, subjectName: "Electrical Technology", paperNumber: 2, isNonExaminationDay: false },
-  { examDate: "2026-11-24", startTime: "14:00", durationMinutes: 120, subjectName: "Mechanical Technology", paperNumber: 2, isNonExaminationDay: false },
-  { examDate: "2026-11-24", startTime: "14:00", durationMinutes: 120, subjectName: "Civil Technology", paperNumber: 2, isNonExaminationDay: false },
+  // Tuesday 24 November
+  { examDate: "2026-11-24", startTime: "14:00", durationMinutes: 180, subjectName: "Dance Studies", paperNumber: 1, isNonExaminationDay: false },
 
-  // 25 November — Wednesday
-  { examDate: "2026-11-25", startTime: "09:00", durationMinutes: 180, subjectName: "Drama", paperNumber: 1, isNonExaminationDay: false },
-  { examDate: "2026-11-25", startTime: "14:00", durationMinutes: 120, subjectName: "Music", paperNumber: 1, isNonExaminationDay: false },
-  { examDate: "2026-11-25", startTime: "14:00", durationMinutes: 120, subjectName: "Visual Arts", paperNumber: 1, isNonExaminationDay: false },
+  // Wednesday 25 November
+  { examDate: "2026-11-25", startTime: "09:00", durationMinutes: 90, subjectName: "Music", paperNumber: 2, isNonExaminationDay: false, notes: "Comprehension" },
 ];
 
 // === PRELIMINARY EXAMS (AUG–SEPT 2026) ===
@@ -256,4 +307,8 @@ export const SUBJECT_NAME_MAPPINGS: Array<{ timetableName: string; aliases: stri
   { timetableName: "Civil Technology", aliases: ["Civil Technology", "Siviele Tegnologie"] },
   { timetableName: "Religion Studies", aliases: ["Religion Studies", "Godsdienstudies"] },
   { timetableName: "Drama", aliases: ["Drama", "Dramatic Arts", "Dramatiese Kunste"] },
+  { timetableName: "Technical Mathematics", aliases: ["Technical Mathematics", "Tegniese Wiskunde"] },
+  { timetableName: "Technical Sciences", aliases: ["Technical Sciences", "Tegniese Wetenskappe"] },
+  { timetableName: "Design", aliases: ["Design", "Ontwerp"] },
+  { timetableName: "Dance Studies", aliases: ["Dance Studies", "Dansstudies"] },
 ];

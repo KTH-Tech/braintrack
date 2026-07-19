@@ -143,7 +143,22 @@ export function registerLocalAuthRoutes(app: Express) {
       const [existing] = await db.select({ id: users.id, passwordHash: users.passwordHash })
         .from(users).where(eq(users.email, email));
 
-      if (existing?.passwordHash) {
+      // SECURITY (account-takeover / admin-escalation fix, 2026-07):
+      // Reject registration for ANY email that already has an account — not
+      // only those with a passwordHash. Previously, an email that matched an
+      // existing *passwordless* account (created via SMS onboarding, a
+      // parent-created learner, a seed, or an external identity provider) had
+      // the caller's password silently attached and was then logged in AS
+      // that account — with no proof of email ownership. Because
+      // enforceAdminAllowlist() runs immediately afterwards, registering with
+      // a known allowlisted admin email (which are not secret) against a
+      // passwordless admin row would hand the caller a full admin session.
+      // For non-admins it exposed a minor's POPIA data to anyone who knew the
+      // email. Attaching a local password to a pre-existing account must go
+      // through an authenticated, email-verified "set password" flow instead
+      // (not yet implemented). The response is uniform for every existing
+      // account so this does not become an OIDC-vs-local enumeration oracle.
+      if (existing) {
         return res.status(409).json({
           error: "email_in_use",
           message: "An account with that email already exists. Try signing in instead.",
@@ -152,20 +167,10 @@ export function registerLocalAuthRoutes(app: Express) {
 
       const passwordHash = await bcrypt.hash(password, BCRYPT_COST);
 
-      let userId: string;
-      if (existing) {
-        // Account exists from an external provider — attach a local password
-        // so the same person can sign in either way.
-        await db.update(users)
-          .set({ passwordHash, updatedAt: new Date() })
-          .where(eq(users.id, existing.id));
-        userId = existing.id;
-      } else {
-        const [created] = await db.insert(users)
-          .values({ email, passwordHash, firstName, lastName, role })
-          .returning({ id: users.id });
-        userId = created.id;
-      }
+      const [created] = await db.insert(users)
+        .values({ email, passwordHash, firstName, lastName, role })
+        .returning({ id: users.id });
+      const userId = created.id;
 
       const [row] = await db.select({
         id: users.id, email: users.email, firstName: users.firstName,

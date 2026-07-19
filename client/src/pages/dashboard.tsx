@@ -43,6 +43,7 @@ import { Button } from "@/components/ui/button";
 import type { UserBadge } from "@shared/schema";
 import { LEARNING_STYLE_INFO, type LearningStyle } from "@/lib/constants";
 import rizzAvatar from "@/assets/handoff/rizz-avatar.png";
+import { RizzHeaderButton } from "@/components/rizz-support-bot";
 import btIcon from "@/assets/handoff/icon-transparent.png";
 import { BrainTrackLogo } from "@/components/braintrack-logo";
 import { TrialEndingBanner } from "@/components/TrialEndingBanner";
@@ -851,6 +852,7 @@ export default function DashboardPage() {
             </div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+            <RizzHeaderButton />
             <NotificationsPanel isAf={isAf} />
             <button
               onClick={toggleLanguage}

@@ -1,10 +1,8 @@
 ﻿import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Zap, ShieldAlert, Rocket, CheckCircle2, XCircle, Coins, Loader2, RotateCcw, Trophy, ChevronRight, Clock, AlertCircle, Sparkles, Flame, Target, Award, Play } from "lucide-react";
+import { Zap, ShieldAlert, CheckCircle2, XCircle, Coins, Loader2, RotateCcw, Trophy, ChevronRight, Clock, AlertCircle, Sparkles, Flame, Target, Award, Play } from "lucide-react";
 import { apiRequest, queryClient as globalQueryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -842,37 +840,119 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
   );
 }
 
+interface RescuePack {
+  id?: number;
+  titleEn?: string;
+  titleAf?: string;
+  messageEn?: string;
+  messageAf?: string;
+  data?: { referenceId?: number; type?: "topic" | "subject" } | null;
+}
+
 export function RescuePackAlert({ isAf }: { isAf: boolean }) {
-  const { data: rescuePacks } = useQuery<any[]>({
+  const { data: rescuePacks } = useQuery<RescuePack[]>({
     queryKey: ["/api/user/rescue-packs"],
   });
 
+  // Gate on real activity: the rescue-packs payload itself carries no usable
+  // activity signal (it is a raw notifications list), so we read the same
+  // /api/user/stats the dashboard already fetches (shared query cache — no
+  // extra request). A brand-new learner with zero answered questions and no
+  // completed papers never sees this alert.
+  const { data: stats } = useQuery<{
+    studyStreak: number;
+    accuracy: number;
+    questionsAnswered: number;
+    papersCompleted: number;
+  }>({ queryKey: ["/api/user/stats"] });
+
+  // Subject names for the "what dropped" copy — shared cache with the rest of
+  // the app, no extra request in practice.
+  const { data: allSubjects } = useQuery<Array<{ id: number; name: string; nameAfrikaans: string }>>({
+    queryKey: ["/api/subjects"],
+  });
+
   if (!rescuePacks || rescuePacks.length === 0) return null;
+  const hasActivity = (stats?.questionsAnswered ?? 0) > 0 || (stats?.papersCompleted ?? 0) > 0;
+  if (!hasActivity) return null;
 
   return (
-    <div className="space-y-4">
-      {rescuePacks.map((pack, idx) => (
-        <Card key={idx} className="border-2 border-red-500/50 bg-red-500/5">
-          <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-red-500 rounded-lg">
-                <ShieldAlert className="w-5 h-5 text-white" />
+    <div className="space-y-3">
+      {rescuePacks.map((pack, idx) => {
+        const isSubjectPack = pack.data?.type === "subject" && typeof pack.data?.referenceId === "number";
+        const subj = isSubjectPack
+          ? allSubjects?.find((s) => s.id === pack.data!.referenceId)
+          : undefined;
+        const subjName = subj ? (isAf ? subj.nameAfrikaans || subj.name : subj.name) : undefined;
+        // Subject packs deep-link straight into that subject; topic/unknown
+        // packs land on Exam Ready, where weak areas are surfaced.
+        const href = isSubjectPack ? `/subject/${pack.data!.referenceId}` : "/exam-ready";
+        const description = subjName
+          ? (isAf
+              ? `Jou punte in ${subjName} het gedaal — hierdie pakket bou die basiese beginsels vinnig weer op.`
+              : `Your marks in ${subjName} dropped — this pack rebuilds the basics fast.`)
+          : (isAf
+              ? "Jou punte het onlangs gedaal — hierdie pakket bou die basiese beginsels vinnig weer op."
+              : "Your marks dropped recently — this pack rebuilds the basics fast.");
+        return (
+          <div
+            key={pack.id ?? idx}
+            className="relative overflow-hidden"
+            style={{
+              background: "rgba(255,255,255,.03)",
+              border: "1.5px solid #FF8DA1",
+              borderRadius: 20,
+              boxShadow: "0 0 22px rgba(255,141,161,.25)",
+              animation: "bt-fadeup .45s cubic-bezier(.22,1,.36,1) both",
+              fontFamily: "'Poppins',sans-serif",
+            }}
+            data-testid={`rescue-pack-alert-${idx}`}
+          >
+            {/* Alert accent bar */}
+            <div aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: "#FF8DA1", boxShadow: "0 0 10px #FF8DA1" }} />
+            <div aria-hidden className="pointer-events-none absolute -top-14 -right-14 w-36 h-36 rounded-full blur-3xl opacity-25" style={{ background: "#FF8DA1" }} />
+
+            <div className="relative p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+              <div className="flex items-start gap-3.5 flex-1 min-w-0">
+                <div
+                  className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
+                  style={{ background: "rgba(5,5,8,.6)", border: "1px solid #FF8DA1", boxShadow: "0 0 14px rgba(255,141,161,.35), inset 0 0 10px rgba(255,141,161,.15)" }}
+                >
+                  <ShieldAlert className="w-5 h-5" style={{ color: "#FF8DA1", filter: "drop-shadow(0 0 5px #FF8DA1)" }} />
+                </div>
+                <div className="min-w-0">
+                  <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 13, color: "#FF8DA1", transform: "rotate(-1.5deg)", display: "inline-block", textShadow: "0 0 10px rgba(255,141,161,.5)" }}>
+                    {isAf ? "Reddingspakket" : "Rescue Pack"}
+                  </div>
+                  <p className="text-base font-black text-white leading-tight">
+                    {isAf ? "Reddingspakket Geaktiveer" : "Rescue Pack Activated"}
+                  </p>
+                  <p className="text-sm text-white mt-0.5 leading-snug" style={{ opacity: 0.9 }}>
+                    {description}
+                  </p>
+                </div>
               </div>
-              <div>
-                <CardTitle className="text-lg">
-                  {isAf ? "Rescue Pack is Geaktiveer" : "Rescue Pack Activated"}
-                </CardTitle>
-                <CardDescription className="text-foreground font-medium">
-                  {isAf ? "Jy het ekstra ondersteuning nodig â€” ons is hier" : "Critical progress support triggered"}
-                </CardDescription>
-              </div>
+              <Link href={href}>
+                <button
+                  type="button"
+                  className="shrink-0 inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl font-bold text-sm transition-all"
+                  style={{
+                    background: "linear-gradient(100deg,#FF8DA1,#FFB7E5)",
+                    color: "#050508",
+                    boxShadow: "0 0 18px rgba(255,141,161,.35)",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
+                  data-testid={`rescue-pack-start-${idx}`}
+                >
+                  {isAf ? "Kom ons gaan!" : "Start Now"}
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </Link>
             </div>
-            <Button size="sm" variant="destructive" className="rounded-xl">
-              {isAf ? "Kom ons gaan!" : "Start Now"}
-            </Button>
-          </CardHeader>
-        </Card>
-      ))}
+          </div>
+        );
+      })}
     </div>
   );
 }

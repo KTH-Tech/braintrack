@@ -1,13 +1,9 @@
 import { useState, useMemo, useEffect } from "react";
 import { Link, useSearch } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { ExamQuestionText } from "@/components/exam/exam-question-text";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Progress } from "@/components/ui/progress";
-import { PageHeader } from "@/components/page-header";
 import { MarkingFeedback, type MarkingResult } from "@/components/exam/marking-feedback";
 import { useLanguage } from "@/lib/language-context";
 import { apiRequest } from "@/lib/queryClient";
@@ -26,6 +22,168 @@ import {
   RotateCcw,
 } from "lucide-react";
 
+/* ── Street-pastel building blocks ─────────────────────────────────────── */
+
+const CONFETTI_COLORS = ["#9FF5E8", "#9FD8FF", "#FFB7E5", "#C5B3FF", "#FFE29A", "#94F7C5"];
+
+function ConfettiBurst() {
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-40 overflow-hidden">
+      {Array.from({ length: 16 }).map((_, i) => (
+        <span
+          key={i}
+          style={{
+            position: "absolute",
+            top: -8,
+            left: `${(i * 61) % 100}%`,
+            width: i % 3 === 0 ? 10 : 7,
+            height: i % 2 === 0 ? 12 : 7,
+            borderRadius: i % 2 === 0 ? 2 : "50%",
+            background: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+            boxShadow: `0 0 8px ${CONFETTI_COLORS[i % CONFETTI_COLORS.length]}66`,
+            ["--cx" as any]: `${((i % 5) - 2) * 26}px`,
+            animation: `bt-confetti ${0.9 + (i % 6) * 0.16}s ease-in ${(i % 8) * 0.07}s both`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function PrimaryBtn({ children, onClick, disabled, testId, full, size = "md" }: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  disabled?: boolean;
+  testId?: string;
+  full?: boolean;
+  size?: "md" | "lg";
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      data-testid={testId}
+      className={`${full ? "w-full " : ""}inline-flex items-center justify-center gap-2 rounded-xl font-bold transition-all disabled:opacity-40 ${size === "lg" ? "px-6 py-3.5 text-base" : "px-5 py-2.5 text-sm"}`}
+      style={{
+        background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
+        color: "#050508",
+        boxShadow: "0 0 20px rgba(159,245,232,.30)",
+      }}
+      onMouseEnter={(e) => { if (!disabled) e.currentTarget.style.transform = "translateY(-2px)"; }}
+      onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}
+    >
+      {children}
+    </button>
+  );
+}
+
+function GhostBtn({ children, onClick, disabled, testId, color = "#ffffff", full }: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  disabled?: boolean;
+  testId?: string;
+  color?: string;
+  full?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      data-testid={testId}
+      className={`${full ? "w-full " : ""}inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all disabled:opacity-40`}
+      style={{
+        background: "transparent",
+        color,
+        border: color === "#ffffff" ? "1.5px solid rgba(255,255,255,.2)" : `1.5px solid ${color}`,
+      }}
+      onMouseEnter={(e) => { if (!disabled) e.currentTarget.style.transform = "translateY(-2px)"; }}
+      onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}
+    >
+      {children}
+    </button>
+  );
+}
+
+function GlassCard({ children, accent, className = "", style }: {
+  children: React.ReactNode;
+  accent?: string;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <div
+      className={`relative overflow-hidden ${className}`}
+      style={{
+        background: "rgba(255,255,255,.03)",
+        border: accent ? `1.5px solid ${accent}` : "1px solid rgba(255,255,255,.08)",
+        borderRadius: 22,
+        boxShadow: accent ? `0 0 22px ${accent}33` : "none",
+        ...style,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function StreetShell({ isAf, eyebrow, onExit, children }: {
+  isAf: boolean;
+  eyebrow: string;
+  onExit?: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="min-h-screen text-white relative overflow-x-hidden" style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}>
+      {/* Ambient auras — kept faint for focused exam chrome */}
+      <div aria-hidden className="pointer-events-none fixed -top-24 -left-24 w-[380px] h-[380px] rounded-full blur-[120px] opacity-20" style={{ background: "#9FF5E8" }} />
+      <div aria-hidden className="pointer-events-none fixed -bottom-24 -right-24 w-[340px] h-[340px] rounded-full blur-[120px] opacity-15" style={{ background: "#C5B3FF" }} />
+
+      <header
+        className="sticky top-0 z-50 border-b"
+        style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "rgba(255,255,255,.08)" }}
+      >
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
+          <div className="flex items-center justify-between h-14 gap-4">
+            <div className="flex items-center gap-2 min-w-0">
+              <Zap className="w-4 h-4 shrink-0" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px #9FF5E8)" }} />
+              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 10px rgba(159,245,232,.45)" }}>
+                Mini Mock
+              </span>
+              <span className="hidden sm:inline text-[11px] font-bold uppercase tracking-[0.18em] text-white truncate" style={{ opacity: 0.85 }}>
+                · {eyebrow}
+              </span>
+            </div>
+            {onExit ? (
+              <button
+                onClick={onExit}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
+                style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}
+              >
+                <ArrowLeft className="w-4 h-4" />
+                {isAf ? "Verlaat" : "Exit"}
+              </button>
+            ) : (
+              <Link href="/dashboard">
+                <button
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
+                  style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  {isAf ? "Tuis" : "Home"}
+                </button>
+              </Link>
+            )}
+          </div>
+        </div>
+      </header>
+
+      <main className="relative max-w-3xl mx-auto px-4 sm:px-6 py-8 space-y-5">{children}</main>
+    </div>
+  );
+}
+
 function McqCorrectAnswerCallout({
   question,
   result,
@@ -41,12 +199,15 @@ function McqCorrectAnswerCallout({
   if (!correctLetter) return null;
   const opt = question.mcqOptions.find((o) => o.letter === correctLetter);
   return (
-    <div className="flex items-start gap-2 rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-3 py-2">
-      <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
-      <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">
+    <div
+      className="flex items-start gap-2 rounded-xl px-3 py-2"
+      style={{ background: "rgba(148,247,197,.08)", border: "1px solid rgba(148,247,197,.4)" }}
+    >
+      <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "#94F7C5" }} />
+      <p className="text-sm font-semibold" style={{ color: "#94F7C5" }}>
         {isAf ? "Korrekte antwoord:" : "Correct answer:"}{" "}
         <span className="font-bold">{correctLetter}</span>
-        {opt && <span className="font-normal"> — {opt.text}</span>}
+        {opt && <span className="font-normal text-white"> — {opt.text}</span>}
       </p>
     </div>
   );
@@ -223,37 +384,36 @@ export default function ExamMiniMockPage() {
     const totalAwarded = Object.values(results).reduce((s, r) => s + r.marksAwarded, 0);
     const totalAvailable = Object.values(results).reduce((s, r) => s + r.marksAvailable, 0);
     const pct = totalAvailable > 0 ? Math.round((totalAwarded / totalAvailable) * 100) : 0;
+    const gradeHex = pct >= 80 ? "#94F7C5" : pct >= 60 ? "#9FF5E8" : pct >= 40 ? "#FFE29A" : "#FFB7E5";
 
     return (
-      <div className="container max-w-3xl mx-auto px-4 py-6 space-y-6">
-        <PageHeader
-          icon={Trophy}
-          title={isAf ? "Mini Mock voltooi" : "Mini Mock complete"}
-          subtitle={subject}
-          actions={
-            <Link href="/dashboard">
-              <Button variant="outline" size="sm">
-                <ArrowLeft className="w-4 h-4 mr-1" />
-                {isAf ? "Klaar" : "Done"}
-              </Button>
-            </Link>
-          }
-        />
-
-        <Card>
-          <CardContent className="p-6 text-center space-y-3">
-            <div className="text-5xl font-bold">
-              {totalAwarded} / {totalAvailable}
+      <StreetShell isAf={isAf} eyebrow={subject}>
+        <GlassCard accent={gradeHex} className="p-6 sm:p-8 text-center" style={{ animation: "bt-fadeup .5s cubic-bezier(.22,1,.36,1) both" }}>
+          <ConfettiBurst />
+          <div className="relative space-y-3">
+            <div
+              className="mx-auto w-16 h-16 rounded-2xl flex items-center justify-center"
+              style={{ background: "rgba(5,5,8,.6)", border: `1.5px solid ${gradeHex}`, boxShadow: `0 0 22px ${gradeHex}55` }}
+            >
+              <Trophy className="w-8 h-8" style={{ color: gradeHex, filter: `drop-shadow(0 0 8px ${gradeHex})` }} />
             </div>
-            <div className="text-2xl text-foreground">{pct}%</div>
-            <Progress value={pct} className="h-3" />
-            <p className="text-sm text-white">
+            <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 18, color: gradeHex, transform: "rotate(-1.5deg)", textShadow: `0 0 12px ${gradeHex}66` }}>
+              {isAf ? "Mini Mock voltooi!" : "Mini Mock complete!"}
+            </div>
+            <div className="text-5xl font-black tabular-nums text-white">
+              {totalAwarded} <span className="text-white" style={{ opacity: 0.85 }}>/ {totalAvailable}</span>
+            </div>
+            <div className="text-2xl font-black tabular-nums" style={{ color: gradeHex, textShadow: `0 0 14px ${gradeHex}66` }}>{pct}%</div>
+            <div className="h-2.5 rounded-full overflow-hidden mx-auto max-w-sm" style={{ background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.08)" }}>
+              <div className="h-full rounded-full" style={{ width: `${pct}%`, background: `linear-gradient(90deg,#9FF5E8,${gradeHex})`, boxShadow: `0 0 10px ${gradeHex}` }} />
+            </div>
+            <p className="text-sm text-white" style={{ opacity: 0.9 }}>
               {isAf
                 ? `${questions.length} vrae gemerk volgens DBE memo`
                 : `${questions.length} questions marked from the DBE memo`}
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </GlassCard>
 
         <div className="space-y-3">
           {questions.map((q) => {
@@ -274,73 +434,91 @@ export default function ExamMiniMockPage() {
         </div>
 
         <div className="flex gap-3 justify-center">
-          <Button onClick={reset} variant="outline">
-            <RotateCcw className="w-4 h-4 mr-2" />
+          <GhostBtn onClick={reset} color="#C5B3FF">
+            <RotateCcw className="w-4 h-4" />
             {isAf ? "Nuwe sessie" : "New session"}
-          </Button>
+          </GhostBtn>
           <Link href="/exam/full">
-            <Button>
+            <PrimaryBtn>
               {isAf ? "Probeer Volle Eksamen" : "Try Full Exam"}
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
+              <ArrowRight className="w-4 h-4" />
+            </PrimaryBtn>
           </Link>
         </div>
-      </div>
+      </StreetShell>
     );
   }
 
   // ── Active question ────────────────────────────────────────
   if (currentQ) {
+    const progressPct = ((currentIdx + (currentResult ? 1 : 0)) / questions.length) * 100;
     return (
-      <div className="container max-w-3xl mx-auto px-4 py-6 space-y-5">
-        <PageHeader
-          icon={Brain}
-          title={isAf ? "Mini Mock" : "Mini Mock"}
-          subtitle={`${subject} · ${currentIdx + 1}/${questions.length}`}
-          actions={
-            <Button variant="ghost" size="sm" onClick={reset}>
-              <ArrowLeft className="w-4 h-4 mr-1" />
-              {isAf ? "Verlaat" : "Exit"}
-            </Button>
-          }
-        />
+      <StreetShell isAf={isAf} eyebrow={`${subject} · ${currentIdx + 1}/${questions.length}`} onExit={reset}>
+        {/* Focused exam chrome — slim progress rail */}
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.08)" }}>
+            <div
+              className="h-full rounded-full transition-all duration-300"
+              style={{ width: `${progressPct}%`, background: "linear-gradient(90deg,#9FF5E8,#C5B3FF)", boxShadow: "0 0 8px rgba(159,245,232,.6)" }}
+            />
+          </div>
+          <span className="text-[11px] font-black tabular-nums px-2 py-0.5 rounded-lg" style={{ color: "#9FF5E8", border: "1px solid rgba(159,245,232,.4)", background: "rgba(159,245,232,.06)" }}>
+            {currentIdx + 1}/{questions.length}
+          </span>
+        </div>
 
-        <Progress value={((currentIdx + (currentResult ? 1 : 0)) / questions.length) * 100} className="h-2" />
-
-        <Card>
-          <CardContent className="p-5 sm:p-6 space-y-4">
+        <GlassCard className="p-5 sm:p-6" style={{ animation: "bt-fadeup .4s cubic-bezier(.22,1,.36,1) both" }}>
+          {/* Aqua accent line */}
+          <div aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: "#9FF5E8", boxShadow: "0 0 10px #9FF5E8" }} />
+          <div className="space-y-4">
             <div className="flex items-start justify-between gap-3 flex-wrap">
-              <p className="text-xs font-bold uppercase tracking-wider text-foreground">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-white">
                 {isAf ? "Vraag" : "Question"} {currentQ.questionNumber}
-                {currentQ.topic && <span className="ml-2 text-white">· {currentQ.topic}</span>}
+                {currentQ.topic && <span className="ml-2" style={{ color: "#C5B3FF" }}>· {currentQ.topic}</span>}
               </p>
-              <span className="text-xs font-semibold bg-muted px-2 py-1 rounded-full">
+              <span
+                className="text-xs font-bold px-2.5 py-1 rounded-full"
+                style={{ color: "#FFE29A", background: "rgba(255,226,154,.1)", border: "1px solid rgba(255,226,154,.45)" }}
+              >
                 {currentQ.marks} {isAf ? "merke" : "marks"}
               </span>
             </div>
-            <ExamQuestionText text={currentQ.questionText} className="text-base text-foreground" />
-            <p className="text-xs text-white">
+            <ExamQuestionText text={currentQ.questionText} className="text-base text-white" />
+            <p className="text-xs text-white" style={{ opacity: 0.85 }}>
               {isAf ? "Bron: DBE" : "Source: DBE"} {currentQ.year} · {isAf ? "Vraestel" : "Paper"} {currentQ.paperNumber}
             </p>
 
             {currentQ.mcqOptions && currentQ.mcqOptions.length > 0 ? (
               <div className="space-y-2">
-                {currentQ.mcqOptions.map((o) => (
-                  <button
-                    key={o.letter}
-                    type="button"
-                    onClick={() => setAnswer(o.letter)}
-                    disabled={!!currentResult}
-                    className={`w-full text-left p-3 rounded-xl border-2 transition-colors ${
-                      answer === o.letter
-                        ? "border-primary bg-primary/10"
-                        : "border-border hover:border-primary/50"
-                    } disabled:opacity-60`}
-                  >
-                    <span className="font-bold mr-2">{o.letter}.</span>
-                    {o.text}
-                  </button>
-                ))}
+                {currentQ.mcqOptions.map((o) => {
+                  const active = answer === o.letter;
+                  return (
+                    <button
+                      key={o.letter}
+                      type="button"
+                      onClick={() => setAnswer(o.letter)}
+                      disabled={!!currentResult}
+                      className="w-full text-left p-3 rounded-xl transition-all disabled:opacity-60 flex items-center gap-3"
+                      style={{
+                        background: active ? "rgba(159,245,232,.08)" : "rgba(255,255,255,.02)",
+                        border: active ? "1.5px solid #9FF5E8" : "1.5px solid rgba(255,255,255,.12)",
+                        boxShadow: active ? "0 0 14px rgba(159,245,232,.2)" : "none",
+                      }}
+                    >
+                      <span
+                        className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black shrink-0"
+                        style={{
+                          background: active ? "linear-gradient(100deg,#9FF5E8,#C5B3FF)" : "rgba(5,5,8,.6)",
+                          color: active ? "#050508" : "#ffffff",
+                          border: active ? "none" : "1px solid rgba(255,255,255,.18)",
+                        }}
+                      >
+                        {o.letter}
+                      </span>
+                      <span className="flex-1 text-sm text-white leading-snug">{o.text}</span>
+                    </button>
+                  );
+                })}
               </div>
             ) : (
               <Textarea
@@ -349,23 +527,25 @@ export default function ExamMiniMockPage() {
                 placeholder={isAf ? "Tik jou antwoord hier…" : "Type your answer here…"}
                 rows={5}
                 disabled={!!currentResult}
-                className="resize-none"
+                className="resize-none text-white placeholder:text-white rounded-xl focus-visible:ring-[#9FF5E8]/40 focus-visible:border-[#9FF5E8]"
+                style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid rgba(255,255,255,.18)" }}
               />
             )}
 
             {!currentResult ? (
               <>
-                <Button onClick={submitAnswer} disabled={!answer.trim() || markMutation.isPending} className="w-full">
+                <PrimaryBtn onClick={submitAnswer} disabled={!answer.trim() || markMutation.isPending} full>
                   {markMutation.isPending ? (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
-                    <Send className="w-4 h-4 mr-2" />
+                    <Send className="w-4 h-4" />
                   )}
                   {isAf ? "Dien antwoord in" : "Submit answer"}
-                </Button>
+                </PrimaryBtn>
                 {markMutation.isError && !markMutation.isPending && (
                   <div
-                    className="flex items-start gap-2 rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2.5 text-sm text-destructive"
+                    className="flex items-start gap-2 rounded-xl px-3 py-2.5 text-sm"
+                    style={{ background: "rgba(255,141,161,.08)", border: "1px solid rgba(255,141,161,.45)", color: "#FF8DA1" }}
                     data-testid="mini-mock-mark-error"
                   >
                     <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
@@ -375,34 +555,32 @@ export default function ExamMiniMockPage() {
                           ? "Kon nie jou antwoord merk nie. Kontroleer jou verbinding en probeer weer."
                           : "Could not mark your answer. Check your connection and try again."}
                       </p>
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
+                      <GhostBtn
                         onClick={retryMark}
                         disabled={markMutation.isPending || !markMutation.variables}
-                        data-testid="button-retry-mark"
+                        color="#FF8DA1"
+                        testId="button-retry-mark"
                       >
-                        <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${markMutation.isPending ? "animate-spin" : ""}`} />
+                        <RefreshCw className={`w-3.5 h-3.5 ${markMutation.isPending ? "animate-spin" : ""}`} />
                         {isAf ? "Probeer weer" : "Retry"}
-                      </Button>
+                      </GhostBtn>
                     </div>
                   </div>
                 )}
               </>
             ) : (
-              <Button onClick={nextQuestion} className="w-full">
+              <PrimaryBtn onClick={nextQuestion} full>
                 {currentIdx + 1 >= questions.length
                   ? (isAf ? "Sien resultate" : "See results")
                   : (isAf ? "Volgende vraag" : "Next question")}
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
+                <ArrowRight className="w-4 h-4" />
+              </PrimaryBtn>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </GlassCard>
 
         {currentResult && (
-          <div className="space-y-2">
+          <div className="space-y-2" style={{ animation: "bt-fadeup .4s cubic-bezier(.22,1,.36,1) both" }}>
             <MarkingFeedback
               result={currentResult}
               isAf={isAf}
@@ -411,83 +589,89 @@ export default function ExamMiniMockPage() {
             <McqCorrectAnswerCallout question={currentQ} result={currentResult} isAf={isAf} />
           </div>
         )}
-      </div>
+      </StreetShell>
     );
   }
 
   // ── Setup screen ───────────────────────────────────────────
   return (
-    <div className="container max-w-2xl mx-auto px-4 py-6 space-y-6">
-      <PageHeader
-        icon={Zap}
-        title={isAf ? "Mini Mock" : "Mini Mock"}
-        subtitle={isAf ? "Vinnige memo-gemerkte oefening" : "Quick memo-marked practice"}
-        actions={
-          <Link href="/dashboard">
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-1" />
-              {isAf ? "Tuis" : "Home"}
-            </Button>
-          </Link>
-        }
-      />
+    <StreetShell isAf={isAf} eyebrow={isAf ? "Vinnige memo-gemerkte oefening" : "Quick memo-marked practice"}>
+      {/* Hero */}
+      <section style={{ animation: "bt-fadeup .5s cubic-bezier(.22,1,.36,1) both" }}>
+        <div className="inline-flex items-center gap-2 mb-3">
+          <Brain className="w-4 h-4" style={{ color: "#FFB7E5", filter: "drop-shadow(0 0 4px #FFB7E5)" }} />
+          <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 12px rgba(255,183,229,.5)" }}>
+            {isAf ? "Toets jouself" : "Test yourself"}
+          </span>
+        </div>
+        <div
+          role="heading"
+          aria-level={1}
+          className="font-black leading-[0.95] tracking-tight text-3xl sm:text-4xl"
+          style={{
+            backgroundImage: "linear-gradient(90deg, #FFE29A, #94F7C5, #9FF5E8, #9FD8FF, #C5B3FF, #FFB7E5)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+            color: "transparent",
+          }}
+        >
+          Mini Mock
+        </div>
+        <p className="text-white text-sm sm:text-base mt-3 max-w-xl" style={{ opacity: 0.9 }}>
+          {isAf
+            ? "Kies 'n vak en onderwerp. Jy kry 5–15 vrae uit DBE-vraestelle, en elke antwoord word onmiddellik teen die memo gemerk."
+            : "Pick a subject and topic. You'll get 5–15 questions from DBE papers, each marked instantly against the memo."}
+        </p>
+      </section>
 
-      <Card className="relative overflow-hidden">
+      <GlassCard className="p-5 sm:p-6" style={{ animation: "bt-fadeup .5s cubic-bezier(.22,1,.36,1) .08s both" }}>
+        <div aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: "linear-gradient(90deg,#FFE29A,#94F7C5,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)" }} />
         {loadingStart && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-xl bg-card/80 ">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            <p className="text-sm font-medium text-foreground">
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-[22px]" style={{ background: "rgba(5,5,8,.85)", backdropFilter: "blur(4px)" }}>
+            <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#9FF5E8" }} />
+            <p className="text-sm font-bold text-white">
               {isAf ? "Vrae word gelaai…" : "Fetching questions…"}
             </p>
           </div>
         )}
-        <CardContent className="p-5 sm:p-6 space-y-4">
-          <div
-            className="rounded-xl bg-black p-3 text-sm flex gap-2"
-            style={{
-              border: "1px solid rgba(255,226,154,0.55)",
-              boxShadow: "0 0 14px rgba(255,226,154,0.25), inset 0 0 12px rgba(255,226,154,0.06)",
-              color: "#FFE29A",
-            }}
-          >
-            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" style={{ filter: "drop-shadow(0 0 4px #FFE29A)" }} />
-            <p className="text-foreground">
-              {isAf
-                ? "Kies 'n vak en onderwerp. Jy kry 5–15 vrae uit DBE-vraestelle, en elke antwoord word onmiddellik teen die memo gemerk."
-                : "Pick a subject and topic. You'll get 5–15 questions from DBE papers, each marked instantly against the memo."}
-            </p>
-          </div>
-
+        <div className="space-y-5">
           {subjectsError ? (
             <div className="flex flex-col items-center text-center gap-3 py-4">
-              <div className="w-12 h-12 rounded-2xl bg-destructive/10 flex items-center justify-center">
-                <AlertCircle className="w-6 h-6 text-destructive" />
+              <div
+                className="w-12 h-12 rounded-2xl flex items-center justify-center"
+                style={{ background: "rgba(255,141,161,.08)", border: "1.5px solid #FF8DA1", boxShadow: "0 0 16px rgba(255,141,161,.25)" }}
+              >
+                <AlertCircle className="w-6 h-6" style={{ color: "#FF8DA1" }} />
               </div>
               <div className="space-y-1">
-                <p className="font-semibold text-foreground">
+                <p className="font-bold text-white">
                   {isAf ? "Kon nie vakke laai nie" : "Couldn't load subjects"}
                 </p>
-                <p className="text-sm text-white">
+                <p className="text-sm text-white" style={{ opacity: 0.85 }}>
                   {isAf
                     ? "Kyk jou internetverbinding en probeer weer."
                     : "Check your connection and try again."}
                 </p>
               </div>
-              <Button
+              <PrimaryBtn
                 onClick={() => refetchSubjects()}
                 disabled={subjectsRefetching}
-                className="rounded-2xl font-semibold"
-                data-testid="button-retry-subjects"
+                testId="button-retry-subjects"
               >
-                <RefreshCw className={`w-4 h-4 mr-2 ${subjectsRefetching ? "animate-spin" : ""}`} />
+                <RefreshCw className={`w-4 h-4 ${subjectsRefetching ? "animate-spin" : ""}`} />
                 {subjectsRefetching ? (isAf ? "Probeer…" : "Retrying…") : (isAf ? "Probeer Weer" : "Try Again")}
-              </Button>
+              </PrimaryBtn>
             </div>
           ) : (
             <div className="space-y-2">
-              <label className="text-sm font-semibold">{isAf ? "Vak" : "Subject"}</label>
+              <label className="text-[11px] font-black uppercase tracking-[0.2em] text-white">{isAf ? "Vak" : "Subject"}</label>
               <Select value={subject} onValueChange={(v) => { setSubject(v); setTopic("all"); setStartError(""); }} disabled={subjectsLoading || loadingStart}>
-                <SelectTrigger data-testid="select-subject">
+                <SelectTrigger
+                  data-testid="select-subject"
+                  className="h-12 rounded-xl text-white"
+                  style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid rgba(255,255,255,.18)" }}
+                >
                   <SelectValue placeholder={
                     subjectsLoading
                       ? (isAf ? "Laai vakke…" : "Loading subjects…")
@@ -503,7 +687,7 @@ export default function ExamMiniMockPage() {
                 </SelectContent>
               </Select>
               {!subjectsLoading && (subjects?.length ?? 0) === 0 && (
-                <p className="text-xs text-white">
+                <p className="text-xs text-white" style={{ opacity: 0.85 }}>
                   {isAf
                     ? "Geen vakke met vrygestelde vrae beskikbaar nie. Probeer later weer."
                     : "No subjects with released questions are available yet. Please check back later."}
@@ -514,9 +698,12 @@ export default function ExamMiniMockPage() {
 
           {subjectEntry && subjectEntry.topics.length > 0 && (
             <div className="space-y-2">
-              <label className="text-sm font-semibold">{isAf ? "Onderwerp" : "Topic"}</label>
+              <label className="text-[11px] font-black uppercase tracking-[0.2em] text-white">{isAf ? "Onderwerp" : "Topic"}</label>
               <Select value={topic} onValueChange={(v) => { setTopic(v); setStartError(""); }} disabled={loadingStart}>
-                <SelectTrigger>
+                <SelectTrigger
+                  className="h-12 rounded-xl text-white"
+                  style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid rgba(255,255,255,.18)" }}
+                >
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -544,7 +731,7 @@ export default function ExamMiniMockPage() {
           )}
 
           <div className="space-y-2">
-            <label className="text-sm font-semibold">{isAf ? "Aantal vrae" : "Number of questions"}</label>
+            <label className="text-[11px] font-black uppercase tracking-[0.2em] text-white">{isAf ? "Aantal vrae" : "Number of questions"}</label>
             <div className="grid grid-cols-5 gap-2">
               {COUNT_OPTIONS.map((c) => {
                 const active = count === c;
@@ -555,17 +742,19 @@ export default function ExamMiniMockPage() {
                     onClick={() => setCount(c)}
                     disabled={loadingStart}
                     data-testid={`count-${c}`}
-                    className="py-2 rounded-xl font-bold text-sm transition-all bg-black disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="py-2.5 rounded-xl font-black text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     style={
                       active
                         ? {
-                            border: "1.5px solid #6EE7F9",
-                            boxShadow: "0 0 14px rgba(110,231,249,0.55), inset 0 0 10px rgba(110,231,249,0.08)",
-                            color: "#6EE7F9",
+                            background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
+                            color: "#050508",
+                            border: "none",
+                            boxShadow: "0 0 16px rgba(159,245,232,.35)",
                           }
                         : {
-                            border: "1.5px solid rgba(255,255,255,0.12)",
-                            color:"#ffffff",
+                            background: "rgba(255,255,255,.03)",
+                            border: "1.5px solid rgba(255,255,255,.12)",
+                            color: "#ffffff",
                           }
                     }
                   >
@@ -576,23 +765,27 @@ export default function ExamMiniMockPage() {
             </div>
           </div>
 
-          <Button onClick={startSession} disabled={!subject || loadingStart} size="lg" className="w-full">
+          <PrimaryBtn onClick={startSession} disabled={!subject || loadingStart} full size="lg">
             {loadingStart ? (
-              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+              <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
-              <Brain className="w-5 h-5 mr-2" />
+              <Brain className="w-5 h-5" />
             )}
             {isAf ? "Begin Mini Mock" : "Start Mini Mock"}
-          </Button>
+          </PrimaryBtn>
 
           {startError && (
-            <div className="flex items-start gap-2 rounded-xl border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive" data-testid="mini-mock-start-error">
+            <div
+              className="flex items-start gap-2 rounded-xl p-3 text-sm"
+              style={{ background: "rgba(255,141,161,.08)", border: "1px solid rgba(255,141,161,.45)", color: "#FF8DA1" }}
+              data-testid="mini-mock-start-error"
+            >
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{startError}</span>
             </div>
           )}
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+      </GlassCard>
+    </StreetShell>
   );
 }

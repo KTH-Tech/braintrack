@@ -21,6 +21,7 @@
  *  - Amounts are always handled in minor units (kobo/cents) as integers.
  */
 import type { Express, Request, Response } from "express";
+import { paymentLimiter } from "./middleware/payment-limiter";
 import crypto from "crypto";
 import { eq, and } from "drizzle-orm";
 import { db } from "./db";
@@ -218,7 +219,7 @@ async function markSubscriptionStatus(subscriptionCode: string, status: string):
 
 export function registerPaystackRoutes(app: Express, isAuthenticated: any) {
   // ── Start checkout ───────────────────────────────────────────────────────
-  app.post("/api/paystack/initialize", isAuthenticated, async (req: any, res: Response) => {
+  app.post("/api/paystack/initialize", isAuthenticated, paymentLimiter, async (req: any, res: Response) => {
     if (!isPaystackConfigured()) {
       return res.status(503).json({ error: "payments_unavailable", message: "Payments are not configured." });
     }
