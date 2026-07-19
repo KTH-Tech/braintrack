@@ -25,6 +25,7 @@ import { eq, sql } from "drizzle-orm";
 import { db } from "./db";
 import { users } from "@shared/schema";
 import { generateAccessToken, generateRefreshToken } from "./replit_integrations/auth";
+import { isAdminEmail } from "./replit_integrations/auth/replitAuth";
 
 const BCRYPT_COST = 12;
 const MAX_FAILED_ATTEMPTS = 8;
@@ -73,6 +74,38 @@ async function establishSession(
   });
 
   return { accessToken, refreshToken };
+}
+
+/**
+ * Apply the ADMIN_EMAILS allowlist, exactly as the OIDC path does on every
+ * login: promote allowlisted emails to admin, demote anyone holding admin who
+ * is no longer listed. Returns the effective role.
+ *
+ * Without this, an account created through native sign-up would sit at
+ * "learner" even when its email is on the allowlist, and removing an email
+ * from the allowlist would not revoke an existing admin.
+ */
+async function enforceAdminAllowlist(
+  userId: string,
+  email: string | null,
+  currentRole: string | null,
+): Promise<string> {
+  const shouldBeAdmin = isAdminEmail(email);
+  if (shouldBeAdmin && currentRole !== "admin") {
+    await db.update(users)
+      .set({ role: "admin", roleConfirmed: true, updatedAt: new Date() })
+      .where(eq(users.id, userId));
+    return "admin";
+  }
+  if (!shouldBeAdmin && currentRole === "admin") {
+    await db.update(users)
+      .set({ role: "learner", updatedAt: new Date() })
+      .where(eq(users.id, userId));
+    const hint = email ? `${email.slice(0, 2)}***` : "(unknown)";
+    console.log(`[local-auth] Demoted unauthorized admin: id=${userId} email=${hint}`);
+    return "learner";
+  }
+  return currentRole ?? "learner";
 }
 
 function publicUser(row: { id: string; email: string | null; firstName: string | null; lastName: string | null; role: string | null }) {
@@ -139,8 +172,9 @@ export function registerLocalAuthRoutes(app: Express) {
         lastName: users.lastName, role: users.role,
       }).from(users).where(eq(users.id, userId));
 
-      await establishSession(req, userId, row.role ?? role);
-      return res.status(201).json({ user: publicUser(row) });
+      const effectiveRole = await enforceAdminAllowlist(userId, row.email, row.role);
+      await establishSession(req, userId, effectiveRole);
+      return res.status(201).json({ user: publicUser({ ...row, role: effectiveRole }) });
     } catch (err: any) {
       console.error("[local-auth] register failed:", err?.message ?? err);
       return res.status(500).json({ error: "server_error", message: "Could not create the account." });
@@ -203,8 +237,9 @@ export function registerLocalAuthRoutes(app: Express) {
         .set({ failedLoginAttempts: 0, lockedUntil: null, lastLoginAt: new Date() })
         .where(eq(users.id, user.id));
 
-      await establishSession(req, user.id, user.role ?? "learner");
-      return res.json({ user: publicUser(user) });
+      const effectiveRole = await enforceAdminAllowlist(user.id, user.email, user.role);
+      await establishSession(req, user.id, effectiveRole);
+      return res.json({ user: publicUser({ ...user, role: effectiveRole }) });
     } catch (err: any) {
       console.error("[local-auth] login failed:", err?.message ?? err);
       return res.status(500).json({ error: "server_error", message: "Could not sign in." });
