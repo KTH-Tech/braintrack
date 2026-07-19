@@ -117,6 +117,16 @@ export default function SignInPage() {
       return data;
     },
     onSuccess: (data: any) => {
+      // Seed the auth-user cache synchronously with the user this request
+      // just returned, THEN navigate. invalidateQueries() alone races: it
+      // only *marks* ["/api/auth/user"] stale and kicks off a background
+      // refetch, but useAuth()'s `user` stays at its old cached value until
+      // that refetch resolves. navigate() below mounts ProtectedRoute
+      // immediately, which read the stale (pre-login) `user` and hard-
+      // redirected back to /signin before the fresh session ever landed —
+      // wiping this component's state and stranding the user on the login
+      // form even though registration/login had already succeeded.
+      if (data?.user) qc.setQueryData(["/api/auth/user"], data.user);
       qc.invalidateQueries();
       try { localStorage.setItem("bt:last-email", email); } catch { /* private mode */ }
       const userRole = data?.user?.role ?? role;
