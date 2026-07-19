@@ -197,6 +197,30 @@ export async function setupAuth(app: Express) {
   app.use(passport.initialize());
   app.use(passport.session());
 
+  // Replit OIDC needs REPL_ID. Outside Replit (e.g. Render) it is absent, and
+  // calling discovery() with an undefined client id throws and kills the boot.
+  // Sessions/passport are installed above, so every non-OIDC route — including
+  // the JWT refresh path — keeps working; only interactive Replit sign-in is
+  // disabled, and /api/login reports that instead of 500-ing.
+  if (!process.env.REPL_ID) {
+    console.warn(
+      "[auth] REPL_ID not set — Replit OIDC sign-in disabled. Set REPL_ID + " +
+        "REPLIT_DOMAINS to enable it, or configure an alternative auth provider.",
+    );
+    app.get("/api/login", (_req, res) => {
+      res.status(503).json({
+        error: "sign_in_unavailable",
+        message: "Interactive sign-in is not configured on this deployment yet.",
+      });
+    });
+    app.get("/api/callback", (_req, res) => res.redirect("/"));
+    app.get("/api/auth/logout", (req: any, res) => {
+      if (req.session?.destroy) req.session.destroy(() => res.redirect("/"));
+      else res.redirect("/");
+    });
+    return;
+  }
+
   const config = await getOidcConfig();
 
   const verify: VerifyFunction = async (

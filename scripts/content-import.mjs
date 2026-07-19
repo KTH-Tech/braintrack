@@ -7,7 +7,7 @@ import path from "path";
 import readline from "readline";
 
 const dir = process.argv[2] ?? "./content-export";
-const c = new pg.Client({ connectionString: process.env.DATABASE_URL });
+const c = new pg.Client({ connectionString: process.env.DATABASE_URL, ssl: process.env.PGSSL === "1" ? { rejectUnauthorized: false } : undefined });
 await c.connect();
 
 const files = fs.readdirSync(dir).filter((f) => f.endsWith(".jsonl"));

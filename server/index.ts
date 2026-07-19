@@ -33,13 +33,18 @@ const REQUIRED_ENV_VARS = [
 ];
 
 const REQUIRED_PROD_ENV_VARS: string[] = [
-  "REPL_ID",                   // Replit OIDC client id
-  "REPLIT_DOMAINS",            // OIDC allowed return domains
   "ADMIN_EMAILS",                       // admin allowlist (comma-separated)
-  "AI_INTEGRATIONS_OPENAI_API_KEY",     // Smart Tutor + memo helpers (Replit OpenAI integration)
+  "AI_INTEGRATIONS_OPENAI_API_KEY",     // Smart Tutor + memo helpers
 ];
 
+// REPL_ID / REPLIT_DOMAINS were prod-required because Replit OIDC was the only
+// login path. The app now also deploys to Render, where those don't exist —
+// so they warn instead of crashing the boot. Replit OIDC login is disabled
+// when they're absent; every other route works. Set them (plus a real REPL_ID
+// from the Repl) to re-enable OIDC sign-in.
 const RECOMMENDED_PROD_ENV_VARS: string[] = [
+  "REPL_ID",
+  "REPLIT_DOMAINS",
   "YOCO_SECRET_KEY",
   "YOCO_WEBHOOK_SECRET",
   "VAPID_PUBLIC_KEY",
