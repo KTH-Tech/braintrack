@@ -132,22 +132,20 @@ self.addEventListener('activate',(e)=>{e.waitUntil((async()=>{
 
 if (process.env.NODE_ENV !== "production" && (!process.env.REPL_ID || process.env.REPL_ID === "local-preview")) {
   app.get("/api/login", (_req, res) => {
-    // Only learner + parent are offered here. Admin and DBE portal are NEVER
-    // selectable from a picker — they are reachable only through an
-    // authenticated sign-in whose email is on the ADMIN_EMAILS allowlist
-    // ("sign in by me"). In production this route is disabled entirely and real
-    // OIDC handles it; locally the owner reaches admin via the private
-    // /api/dev/login-as/admin URL directly (not advertised).
+    // Learner + parent + admin dev roles (owner request, 2026-07-19). This
+    // whole route only exists in dev — production disables it entirely and
+    // real OIDC + the ADMIN_EMAILS allowlist gate admin access.
     res.status(200).type("html").send(`<!doctype html><html><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><title>BrainTrack — Dev Sign-in</title>
-<style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#000;font-family:system-ui,sans-serif}
-.card{background:#0a0b12;border:2px solid #7FEFFF;border-radius:20px;padding:36px;text-align:center;box-shadow:0 0 26px rgba(127,239,255,.22)}
-h1{color:#fff;font-size:22px;margin:0 0 6px}p{color:#7FEFFF;font-size:13px;margin:0 0 22px}
-a{display:block;margin:10px 0;padding:13px 40px;border-radius:12px;font-weight:700;text-decoration:none;color:#0a0a0a}
-.l{background:#7FEFFF}.p{background:#93FFB8}</style></head><body>
+<style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#050508;font-family:'Poppins',system-ui,sans-serif}
+.card{background:#0a0b12;border:1.5px solid #9FF5E8;border-radius:20px;padding:36px;text-align:center;box-shadow:0 0 26px rgba(159,245,232,.22)}
+h1{color:#fff;font-size:22px;margin:0 0 6px}p{color:#9FF5E8;font-size:13px;margin:0 0 22px}
+a{display:block;margin:10px 0;padding:13px 40px;border-radius:12px;font-weight:700;text-decoration:none;color:#050508}
+.l{background:#9FF5E8}.p{background:#94F7C5}.a{background:linear-gradient(100deg,#FFE29A,#FFB7E5)}</style></head><body>
 <div class="card"><h1>Dev Sign-in</h1><p>Local preview — pick a role</p>
 <a class="l" href="/api/dev/login-as/learner">Learner</a>
-<a class="p" href="/api/dev/login-as/parent">Parent</a></div></body></html>`);
+<a class="p" href="/api/dev/login-as/parent">Parent</a>
+<a class="a" href="/api/dev/login-as/admin">Admin</a></div></body></html>`);
   });
 }
 

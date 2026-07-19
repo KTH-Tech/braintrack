@@ -263,8 +263,17 @@ function useCountUp(target: number, ms: number = 900): number {
 // Live exam countdown. Returns ticking days/hours/minutes/seconds to the given exam moment.
 function useExamCountdown(dateStr: string, startTime?: string | null) {
   const compute = () => {
-    const [hh, mm] = (startTime || "09:00").split(":").map(n => parseInt(n, 10));
-    const target = new Date(dateStr + `T${String(hh || 9).padStart(2, "0")}:${String(mm || 0).padStart(2, "0")}:00`).getTime();
+    const [rawH, rawM] = (startTime || "09:00").split(":").map(n => parseInt(n, 10));
+    // Fall back only when the value is genuinely absent — `hh || 9` turned a
+    // legitimate 00:xx start time into 09:00.
+    const hh = Number.isFinite(rawH) ? rawH : 9;
+    const mm = Number.isFinite(rawM) ? rawM : 0;
+    // DBE exam times are SAST wall-clock. Pinning the offset (+02:00, no DST in
+    // South Africa) keeps the countdown identical for a parent travelling abroad
+    // instead of silently shifting by their device's timezone.
+    const target = new Date(
+      `${dateStr}T${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}:00+02:00`
+    ).getTime();
     const diff = Math.max(0, target - Date.now());
     const totalSec = Math.floor(diff / 1000);
     return {

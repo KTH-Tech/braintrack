@@ -1,3 +1,8 @@
+// BrainTrack DBE Practice — verbatim past-paper practice UI restyled to the
+// "Luxury Street Graffiti EdTech" comp (matches exam-mode.tsx conventions).
+// #050508 ground, #0b0b12 accent-bordered cards, Permanent Marker eyebrows,
+// aqua→purple gradient action buttons, pure white text. Bilingual EN/AF.
+// RESTYLE ONLY — all hooks, queries, mutations and data-testids preserved.
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link, useSearch } from "wouter";
@@ -6,8 +11,6 @@ import { apiRequest } from "@/lib/queryClient";
 import { ExamQuestionText } from "@/components/exam/exam-question-text";
 import { Sparkles, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLanguage } from "@/lib/language-context";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -20,7 +23,6 @@ import {
   isCreativeWritingGuidanceMemo,
 } from "@/components/exam/pat-guidance-banner";
 import {
-  ArrowLeft,
   BookOpen,
   Eye,
   EyeOff,
@@ -62,6 +64,45 @@ interface QuestionsResponse {
   limit: number;
   counts?: { verbatim: number; ai: number };
 }
+
+// Comp gradient + accent constants — mirror exam-mode.tsx
+const ACTION_GRADIENT = "linear-gradient(100deg,#9FF5E8,#C5B3FF)";
+const VERBATIM_HEX = "#94F7C5";
+const VERBATIM_HALO = "rgba(148,247,197,.25)";
+const AI_HEX = "#C5B3FF";
+const AI_HALO = "rgba(197,179,255,.25)";
+
+// Small pill helper style (uppercase micro-label chips)
+const pillBase: React.CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 5,
+  borderRadius: 999,
+  padding: "4px 11px",
+  fontSize: 10,
+  fontWeight: 900,
+  letterSpacing: "1.5px",
+  textTransform: "uppercase",
+};
+
+const ghostBtn: React.CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: 6,
+  fontFamily: "'Poppins',sans-serif",
+  fontWeight: 700,
+  fontSize: 11,
+  letterSpacing: "1.2px",
+  textTransform: "uppercase",
+  color: "#fff",
+  background: "transparent",
+  border: "2px solid rgba(255,255,255,.22)",
+  borderRadius: 10,
+  padding: "8px 14px",
+  cursor: "pointer",
+  whiteSpace: "nowrap",
+};
 
 export default function DbePracticePage() {
   const { logout } = useAuth();
@@ -167,12 +208,23 @@ export default function DbePracticePage() {
 
   if (!subject) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <AlertCircle className="w-12 h-12 text-white mx-auto" />
-          <p className="text-white">{isAf ? "Geen vak gekies nie." : "No subject selected."}</p>
+      <div style={{ minHeight: "100vh", background: "#050508", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div
+          style={{
+            background: "#0b0b12",
+            border: "1.5px solid rgba(255,141,161,.4)",
+            borderRadius: 20,
+            padding: "42px 36px",
+            textAlign: "center",
+            boxShadow: "0 0 26px rgba(255,141,161,.14)",
+          }}
+        >
+          <AlertCircle style={{ width: 48, height: 48, margin: "0 auto 12px", color: "#FF8DA1" }} />
+          <div style={{ fontSize: 15, fontWeight: 700, color: "#fff" }}>{isAf ? "Geen vak gekies nie." : "No subject selected."}</div>
           <Link href="/exam-mode">
-            <Button variant="outline">{isAf ? "Terug na Eksamens" : "Back to Exams"}</Button>
+            <button className="btx-ghost" style={{ ...ghostBtn, marginTop: 18 }}>
+              {isAf ? "Terug na Eksamens" : "Back to Exams"}
+            </button>
           </Link>
         </div>
       </div>
@@ -180,67 +232,100 @@ export default function DbePracticePage() {
   }
 
   return (
-    <div className="min-h-screen">
-      <header className="border-b border-border sticky top-0 z-50 bg-background/90">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="flex items-center justify-between h-16 gap-4">
-            <div className="flex items-center gap-3">
-              <div>
-                <p className="font-semibold text-sm leading-tight">{subject}</p>
-                <p className="text-[10px] text-white uppercase tracking-wider">
-                  {yearParam && paperParam
-                    ? `${yearParam} | ${isAf ? "Vraestel" : "Paper"} ${paperParam}`
-                    : isAf ? "Alle Vraestelle" : "All Papers"}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <ThemeToggle />
-              <button onClick={toggleLanguage} className="flex items-center gap-1 px-2 py-1.5 rounded-md text-white hover:text-white transition-colors" data-testid="button-language-toggle">
-                <Globe className="h-4 w-4" />
-                <span className="text-xs font-semibold">{language === "en" ? "EN" : "AF"}</span>
-              </button>
-              <Link href="/dashboard">
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:text-white" title={isAf ? "Tuis" : "Home"} data-testid="button-home">
-                  <Home className="h-4 w-4" />
-                </Button>
-              </Link>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:text-white" onClick={() => logout()} title={isAf ? "Uitteken" : "Sign Out"} data-testid="button-logout">
-                <LogOut className="h-4 w-4" />
-              </Button>
-            </div>
+    <div style={{ minHeight: "100vh", background: "#050508", color: "#fff", overflowX: "hidden" }}>
+      <style>{`
+        .btx-action { transition: transform .2s; }
+        .btx-action:hover { transform: translateY(-2px); }
+        .btx-action:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+        .btx-ghost { transition: border-color .2s, transform .2s; }
+        .btx-ghost:hover { border-color: rgba(255,255,255,.5) !important; transform: translateY(-1px); }
+        .btx-ghost:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+        .btx-jump { transition: border-color .2s, transform .2s; }
+        .btx-jump:hover { border-color: #9FF5E8 !important; transform: translateY(-1px); }
+        @media (max-width: 640px) {
+          .btx-jumpgrid { grid-template-columns: repeat(2,1fr) !important; }
+        }
+      `}</style>
+
+      {/* ── Sticky header ───────────────────────────────────── */}
+      <div
+        style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          gap: 16, padding: "12px 28px", position: "sticky", top: 0, zIndex: 50,
+          background: "rgba(5,5,8,.82)", backdropFilter: "blur(14px)",
+          borderBottom: "1px solid rgba(255,255,255,.06)",
+        }}
+      >
+        <div style={{ minWidth: 0 }}>
+          <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+            {subject}
+          </div>
+          <div style={{ fontSize: 10, fontWeight: 900, letterSpacing: "2px", textTransform: "uppercase", color: "#fff", opacity: 0.85 }}>
+            {yearParam && paperParam
+              ? `${yearParam} | ${isAf ? "Vraestel" : "Paper"} ${paperParam}`
+              : isAf ? "Alle Vraestelle" : "All Papers"}
           </div>
         </div>
-      </header>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flex: "none" }}>
+          <ThemeToggle />
+          <button
+            onClick={toggleLanguage}
+            className="btx-ghost"
+            style={{ ...ghostBtn, border: "1px solid rgba(255,255,255,.22)", padding: "6px 10px" }}
+            data-testid="button-language-toggle"
+          >
+            <Globe style={{ width: 14, height: 14 }} />
+            <span>{language === "en" ? "EN" : "AF"}</span>
+          </button>
+          <Link href="/dashboard">
+            <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:text-white" title={isAf ? "Tuis" : "Home"} data-testid="button-home">
+              <Home className="h-4 w-4" />
+            </Button>
+          </Link>
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:text-white" onClick={() => logout()} title={isAf ? "Uitteken" : "Sign Out"} data-testid="button-logout">
+            <LogOut className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
 
-      <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+      <main style={{ maxWidth: 900, margin: "0 auto", padding: "28px 20px 80px", display: "flex", flexDirection: "column", gap: 22 }}>
         {isLoading ? (
-          <div className="space-y-4">
-            <Skeleton className="h-12 rounded-xl" />
-            <Skeleton className="h-64 rounded-2xl" />
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <Skeleton className="h-12 rounded-xl bg-white/5" />
+            <Skeleton className="h-64 rounded-2xl bg-white/5" />
           </div>
         ) : questions.length === 0 ? (
-          <Card>
-            <CardContent className="py-16 text-center">
-              <BookOpen className="w-12 h-12 mx-auto mb-3 text-white" />
-              <p className="font-semibold text-white">{isAf ? "Geen vrae beskikbaar nie." : "No questions available."}</p>
-              <Link href="/exam-mode">
-                <Button variant="outline" className="mt-4">
-                  {isAf ? "Terug na Eksamens" : "Back to Exams"}
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
+          <div
+            style={{
+              background: "#0b0b12",
+              border: "1.5px solid rgba(255,226,154,.4)",
+              borderRadius: 20,
+              padding: "56px 32px",
+              textAlign: "center",
+              boxShadow: "0 0 26px rgba(255,226,154,.14)",
+            }}
+          >
+            <BookOpen style={{ width: 48, height: 48, margin: "0 auto 12px", color: "#FFE29A", filter: "drop-shadow(0 0 10px rgba(255,226,154,.5))" }} />
+            <div role="heading" aria-level={2} style={{ fontSize: 18, fontWeight: 900, color: "#fff" }}>
+              {isAf ? "Geen vrae beskikbaar nie." : "No questions available."}
+            </div>
+            <Link href="/exam-mode">
+              <button className="btx-ghost" style={{ ...ghostBtn, marginTop: 20 }}>
+                {isAf ? "Terug na Eksamens" : "Back to Exams"}
+              </button>
+            </Link>
+          </div>
         ) : (
           <>
-            <div className="flex items-center justify-between flex-wrap gap-3">
-              <div className="flex items-center gap-2 flex-wrap">
-                <Badge variant="outline" className="text-xs">
-                  <FileText className="w-3 h-3 mr-1" />
+            {/* ── Toolbar: count pill + source filter + prev/next ── */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                <span style={{ ...pillBase, color: "#9FD8FF", border: "1px solid #9FD8FF" }}>
+                  <FileText style={{ width: 12, height: 12 }} />
                   {total} {isAf ? "vrae" : "questions"}
-                </Badge>
+                </span>
                 {data?.counts && (
-                  <div className="inline-flex items-center rounded-md border border-border overflow-hidden text-[11px]">
+                  <div style={{ display: "inline-flex", borderRadius: 999, border: "1px solid rgba(255,255,255,.14)", overflow: "hidden" }}>
                     {(["all", "verbatim", "ai"] as const).map(opt => {
                       const labels = {
                         all: { en: "All", af: "Alles" },
@@ -252,9 +337,17 @@ export default function DbePracticePage() {
                         <button
                           key={opt}
                           onClick={() => { setSourceFilter(opt); setCurrentIdx(0); }}
-                          className={`px-2 py-1 font-semibold transition-colors ${
-                            isActive ? "bg-primary text-primary-foreground" : "bg-card text-white hover:bg-muted"
-                          }`}
+                          style={{
+                            fontFamily: "'Poppins',sans-serif",
+                            fontSize: 11,
+                            fontWeight: 800,
+                            padding: "6px 12px",
+                            border: "none",
+                            cursor: "pointer",
+                            transition: "background .2s, color .2s",
+                            color: isActive ? "#050508" : "#fff",
+                            background: isActive ? ACTION_GRADIENT : "transparent",
+                          }}
                           data-testid={`filter-source-${opt}`}
                         >
                           {labels[opt][isAf ? "af" : "en"]}
@@ -264,71 +357,84 @@ export default function DbePracticePage() {
                   </div>
                 )}
               </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <button
+                  className="btx-ghost"
+                  style={{ ...ghostBtn, padding: "7px 10px" }}
                   onClick={() => setCurrentIdx(i => Math.max(0, i - 1))}
                   disabled={currentIdx === 0}
                   data-testid="button-prev"
                 >
-                  <ChevronLeft className="w-4 h-4" />
-                </Button>
-                <span className="text-sm font-medium text-white">
+                  <ChevronLeft style={{ width: 15, height: 15 }} />
+                </button>
+                <span className="tabular-nums" style={{ fontSize: 14, fontWeight: 800, color: "#fff" }}>
                   {currentIdx + 1} / {questions.length}
                 </span>
-                <Button
-                  variant="outline"
-                  size="sm"
+                <button
+                  className="btx-ghost"
+                  style={{ ...ghostBtn, padding: "7px 10px" }}
                   onClick={() => setCurrentIdx(i => Math.min(questions.length - 1, i + 1))}
                   disabled={currentIdx === questions.length - 1}
                   data-testid="button-next"
                 >
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
+                  <ChevronRight style={{ width: 15, height: 15 }} />
+                </button>
               </div>
             </div>
 
+            {/* ── Exam chooser chips ─────────────────────────────── */}
             {exams.length > 1 && (
-              <div className="space-y-2">
-                <p className="text-[10px] font-semibold text-white uppercase tracking-wider">
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <div style={{ fontSize: 10, fontWeight: 900, letterSpacing: "2px", textTransform: "uppercase", color: "#FFE29A" }}>
                   {isAf ? "Kies eksamen" : "Choose exam"}
-                </p>
-                <div className="flex flex-wrap gap-1.5">
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                   <button
                     onClick={() => { setExamKey(""); setCurrentIdx(0); }}
-                    className={`px-2.5 py-1 rounded-md border text-[11px] font-semibold transition-colors ${
-                      examKey === ""
-                        ? "border-primary bg-primary/15 text-primary"
-                        : "border-border bg-card text-white hover:border-primary/40"
-                    }`}
+                    className="btx-jump"
+                    style={{
+                      fontFamily: "'Poppins',sans-serif",
+                      fontSize: 11, fontWeight: 800,
+                      padding: "6px 12px", borderRadius: 10, cursor: "pointer",
+                      color: examKey === "" ? "#9FF5E8" : "#fff",
+                      background: examKey === "" ? "rgba(159,245,232,.12)" : "rgba(255,255,255,.03)",
+                      border: examKey === "" ? "1px solid #9FF5E8" : "1px solid rgba(255,255,255,.14)",
+                    }}
                     data-testid="exam-all"
                   >
-                    {isAf ? "Alle vraestelle" : "All papers"} <span className="opacity-60">({allQuestions.length})</span>
+                    {isAf ? "Alle vraestelle" : "All papers"} <span style={{ opacity: 0.7 }}>({allQuestions.length})</span>
                   </button>
-                  {exams.map(ex => (
-                    <button
-                      key={ex.key}
-                      onClick={() => { setExamKey(ex.key); setCurrentIdx(0); }}
-                      className={`px-2.5 py-1 rounded-md border text-[11px] font-semibold transition-colors ${
-                        examKey === ex.key
-                          ? ex.source === "ai"
-                            ? "border-violet-500 bg-violet-500/15 text-violet-700 dark:text-violet-300"
-                            : "border-primary bg-primary/15 text-primary"
-                          : "border-border bg-card text-white hover:border-primary/40"
-                      }`}
-                      data-testid={`exam-${ex.key}`}
-                    >
-                      {ex.source === "ai"
-                        ? (isAf ? "KI-oefening" : "AI Practice")
-                        : `${ex.year} ${ex.session} · ${isAf ? "V" : "P"}${ex.paperNumber}`}
-                      <span className="opacity-60 ml-1">({ex.count})</span>
-                    </button>
-                  ))}
+                  {exams.map(ex => {
+                    const active = examKey === ex.key;
+                    const hex = ex.source === "ai" ? AI_HEX : "#9FF5E8";
+                    const tint = ex.source === "ai" ? "rgba(197,179,255,.12)" : "rgba(159,245,232,.12)";
+                    return (
+                      <button
+                        key={ex.key}
+                        onClick={() => { setExamKey(ex.key); setCurrentIdx(0); }}
+                        className="btx-jump"
+                        style={{
+                          fontFamily: "'Poppins',sans-serif",
+                          fontSize: 11, fontWeight: 800,
+                          padding: "6px 12px", borderRadius: 10, cursor: "pointer",
+                          color: active ? hex : "#fff",
+                          background: active ? tint : "rgba(255,255,255,.03)",
+                          border: active ? `1px solid ${hex}` : "1px solid rgba(255,255,255,.14)",
+                        }}
+                        data-testid={`exam-${ex.key}`}
+                      >
+                        {ex.source === "ai"
+                          ? (isAf ? "KI-oefening" : "AI Practice")
+                          : `${ex.year} ${ex.session} · ${isAf ? "V" : "P"}${ex.paperNumber}`}
+                        <span style={{ opacity: 0.7, marginLeft: 4 }}>({ex.count})</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
 
+            {/* ── Source paper panel ─────────────────────────────── */}
             {(() => {
               const selectedExam = exams.find(e => e.key === examKey);
               if (!selectedExam || selectedExam.source !== "verbatim") return null;
@@ -339,103 +445,140 @@ export default function DbePracticePage() {
               const memoUrl = seedQ?.sourceMemoUrl;
               const isGen = generateFromPaper.isPending;
               return (
-                <Card className="border-primary/30 bg-primary/5" data-testid="source-paper-panel">
-                  <CardContent className="py-4 space-y-3">
-                    <div className="flex items-center justify-between flex-wrap gap-2">
-                      <div className="space-y-0.5">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-white">
-                          {isAf ? "Bron-vraestel" : "Source paper"}
-                        </p>
-                        <p className="text-sm font-semibold">
-                          {selectedExam.year} {selectedExam.session} · {isAf ? "Vraestel" : "Paper"} {selectedExam.paperNumber}
-                        </p>
+                <div
+                  style={{
+                    position: "relative",
+                    background: "#0b0b12",
+                    border: "1.5px solid rgba(159,216,255,.4)",
+                    borderRadius: 20,
+                    padding: "18px 20px",
+                    boxShadow: "0 0 22px rgba(159,216,255,.12)",
+                    overflow: "hidden",
+                  }}
+                  data-testid="source-paper-panel"
+                >
+                  <span aria-hidden style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "#9FD8FF", boxShadow: "0 0 10px rgba(159,216,255,.4)" }} />
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
+                    <div>
+                      <div style={{ fontSize: 10, fontWeight: 900, letterSpacing: "2px", textTransform: "uppercase", color: "#9FD8FF" }}>
+                        {isAf ? "Bron-vraestel" : "Source paper"}
                       </div>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        {paperUrl && (
-                          <a
-                            href={paperUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border bg-card hover:bg-muted text-xs font-semibold transition-colors"
-                            data-testid="link-paper-pdf"
-                          >
-                            <Download className="w-3.5 h-3.5" /> {isAf ? "Vraestel PDF" : "Paper PDF"}
-                          </a>
-                        )}
-                        {memoUrl && (
-                          <a
-                            href={memoUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border bg-card hover:bg-muted text-xs font-semibold transition-colors"
-                            data-testid="link-memo-pdf"
-                          >
-                            <Download className="w-3.5 h-3.5" /> {isAf ? "Memo PDF" : "Memo PDF"}
-                          </a>
-                        )}
-                        <Button
-                          size="sm"
-                          disabled={isGen}
-                          onClick={() => generateFromPaper.mutate({
-                            year: selectedExam.year!,
-                            session: selectedExam.session,
-                            paperNumber: selectedExam.paperNumber!,
-                          })}
-                          className="gap-1.5 text-xs"
-                          data-testid="button-generate-from-paper"
-                        >
-                          {isGen ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-                          {isGen
-                            ? (isAf ? "Genereer..." : "Generating…")
-                            : (isAf ? "Genereer oefening uit hierdie vraestel" : "Generate practice from this paper")}
-                        </Button>
+                      <div role="heading" aria-level={3} style={{ fontSize: 15, fontWeight: 800, color: "#fff", marginTop: 3 }}>
+                        {selectedExam.year} {selectedExam.session} · {isAf ? "Vraestel" : "Paper"} {selectedExam.paperNumber}
                       </div>
                     </div>
-                    <p className="text-[11px] text-white">
-                      {isAf
-                        ? "Skep 10 nuwe KI-oefenvrae in dieselfde styl, onderwerpe en moeilikheidsvlak as hierdie vraestel — perfek om verder te oefen sodra jy klaar is."
-                        : "Creates 10 new AI practice questions in the same style, topics and difficulty as this paper — perfect for extra revision once you're done."}
-                    </p>
-                  </CardContent>
-                </Card>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                      {paperUrl && (
+                        <a
+                          href={paperUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btx-ghost"
+                          style={{ ...ghostBtn, border: "1px solid rgba(255,255,255,.22)", padding: "7px 12px", textDecoration: "none" }}
+                          data-testid="link-paper-pdf"
+                        >
+                          <Download style={{ width: 13, height: 13 }} /> {isAf ? "Vraestel PDF" : "Paper PDF"}
+                        </a>
+                      )}
+                      {memoUrl && (
+                        <a
+                          href={memoUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btx-ghost"
+                          style={{ ...ghostBtn, border: "1px solid rgba(255,255,255,.22)", padding: "7px 12px", textDecoration: "none" }}
+                          data-testid="link-memo-pdf"
+                        >
+                          <Download style={{ width: 13, height: 13 }} /> {isAf ? "Memo PDF" : "Memo PDF"}
+                        </a>
+                      )}
+                      <button
+                        className="btx-action"
+                        disabled={isGen}
+                        onClick={() => generateFromPaper.mutate({
+                          year: selectedExam.year!,
+                          session: selectedExam.session,
+                          paperNumber: selectedExam.paperNumber!,
+                        })}
+                        style={{
+                          display: "inline-flex", alignItems: "center", gap: 6,
+                          fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 11,
+                          letterSpacing: "1px", textTransform: "uppercase",
+                          color: "#050508", background: ACTION_GRADIENT,
+                          border: "none", borderRadius: 10, padding: "9px 14px",
+                          cursor: "pointer", whiteSpace: "nowrap",
+                          boxShadow: "0 0 14px rgba(159,245,232,.28)",
+                        }}
+                        data-testid="button-generate-from-paper"
+                      >
+                        {isGen ? <Loader2 style={{ width: 13, height: 13 }} className="animate-spin" /> : <Sparkles style={{ width: 13, height: 13 }} />}
+                        {isGen
+                          ? (isAf ? "Genereer..." : "Generating…")
+                          : (isAf ? "Genereer oefening uit hierdie vraestel" : "Generate practice from this paper")}
+                      </button>
+                    </div>
+                  </div>
+                  <div style={{ fontSize: 12, lineHeight: 1.6, color: "#fff", opacity: 0.85, marginTop: 10 }}>
+                    {isAf
+                      ? "Skep 10 nuwe KI-oefenvrae in dieselfde styl, onderwerpe en moeilikheidsvlak as hierdie vraestel — perfek om verder te oefen sodra jy klaar is."
+                      : "Creates 10 new AI practice questions in the same style, topics and difficulty as this paper — perfect for extra revision once you're done."}
+                  </div>
+                </div>
               );
             })()}
 
-            {current && (
-              <Card className="border-2 border-border" data-testid={`question-card-${current.id}`}>
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between gap-3 flex-wrap">
-                    <div className="space-y-1">
-                      <CardTitle className="text-base font-semibold">
+            {/* ── Question card ──────────────────────────────────── */}
+            {current && (() => {
+              const srcHex = current.source === "ai" ? AI_HEX : VERBATIM_HEX;
+              const srcHalo = current.source === "ai" ? AI_HALO : VERBATIM_HALO;
+              return (
+                <div
+                  style={{
+                    position: "relative",
+                    background: "#0b0b12",
+                    border: `1.5px solid ${srcHex}55`,
+                    borderRadius: 20,
+                    padding: 22,
+                    boxShadow: `0 0 22px ${srcHalo}`,
+                    overflow: "hidden",
+                  }}
+                  data-testid={`question-card-${current.id}`}
+                >
+                  <span aria-hidden style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: srcHex, boxShadow: `0 0 10px ${srcHalo}` }} />
+
+                  {/* Card header */}
+                  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
+                    <div style={{ minWidth: 0 }}>
+                      <div role="heading" aria-level={2} style={{ fontSize: 17, fontWeight: 800, color: "#fff" }}>
                         {isAf ? "Vraag" : "Question"} {current.questionNumber}
-                      </CardTitle>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <Badge
-                          className={`text-[10px] ${current.source === "ai" ? "bg-violet-500/15 text-violet-700 dark:text-violet-300 border border-violet-500/30" : "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30"}`}
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
+                        <span
+                          style={{ ...pillBase, color: srcHex, border: `1px solid ${srcHex}` }}
                           data-testid={`source-${current.source}`}
                         >
                           {current.source === "ai"
                             ? (isAf ? "KI-oefening" : "AI Practice")
                             : (isAf ? "Eg DBE" : "Real DBE")}
                           {current.source === "ai" && current.qualityScore != null && ` · ${current.qualityScore}%`}
-                        </Badge>
-                        <Badge variant="secondary" className="text-[10px]">
+                        </span>
+                        <span style={{ ...pillBase, color: "#9FD8FF", border: "1px solid #9FD8FF66" }}>
                           {paperLabel(current)}
-                        </Badge>
+                        </span>
                         {current.topic && (
-                          <Badge variant="outline" className="text-[10px]">
+                          <span style={{ ...pillBase, color: "#fff", border: "1px solid rgba(255,255,255,.25)" }}>
                             {current.topic}
-                          </Badge>
+                          </span>
                         )}
                         {current.marks != null && (
-                          <Badge className="text-[10px] bg-primary/15 text-primary">
-                            <Award className="w-2.5 h-2.5 mr-1" />
+                          <span style={{ ...pillBase, color: "#FFE29A", border: "1px solid #FFE29A" }}>
+                            <Award style={{ width: 11, height: 11 }} />
                             {current.marks} {isAf ? current.marks === 1 ? "punt" : "punte" : current.marks === 1 ? "mark" : "marks"}
-                          </Badge>
+                          </span>
                         )}
-                        <Badge variant="outline" className="text-[10px] capitalize text-white">
+                        <span style={{ ...pillBase, color: "#FFB7E5", border: "1px solid #FFB7E566", textTransform: "capitalize", letterSpacing: ".5px" }}>
                           {current.cognitiveLevel}
-                        </Badge>
+                        </span>
                       </div>
                     </div>
                     {current.sourcePaperUrl && (
@@ -443,122 +586,167 @@ export default function DbePracticePage() {
                         href={current.sourcePaperUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs text-white hover:text-primary flex items-center gap-1"
+                        style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 700, color: "#9FF5E8", textDecoration: "none", flex: "none" }}
                         data-testid={`link-source-${current.id}`}
                       >
-                        <ExternalLink className="w-3 h-3" />
+                        <ExternalLink style={{ width: 12, height: 12 }} />
                         {isAf ? "DBE-bron" : "DBE source"}
                       </a>
                     )}
                   </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {(() => {
-                    const isCreativeWritingPaper =
-                      isCreativeWritingGuidanceMemo(current.memoText) ||
-                      (/isixhosa/i.test(current.subject) &&
-                        /home language|huistaal/i.test(current.subject) &&
-                        current.paperNumber === 3);
-                    if (
-                      !isCreativeWritingPaper ||
-                      writingTipsDismissed ||
-                      startedQuestions.has(current.id)
-                    ) {
-                      return null;
-                    }
-                    return (
-                      <CreativeWritingTipsPanel
-                        isAf={isAf}
-                        onDismiss={() => setWritingTipsDismissed(true)}
-                      />
-                    );
-                  })()}
 
-                  <div className="p-4 rounded-xl bg-muted/30 border border-border/40">
-                    <div className="text-sm leading-relaxed font-medium" data-testid={`text-question-${current.id}`}>
-                      <ExamQuestionText text={current.questionText} />
+                  <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                    {(() => {
+                      const isCreativeWritingPaper =
+                        isCreativeWritingGuidanceMemo(current.memoText) ||
+                        (/isixhosa/i.test(current.subject) &&
+                          /home language|huistaal/i.test(current.subject) &&
+                          current.paperNumber === 3);
+                      if (
+                        !isCreativeWritingPaper ||
+                        writingTipsDismissed ||
+                        startedQuestions.has(current.id)
+                      ) {
+                        return null;
+                      }
+                      return (
+                        <CreativeWritingTipsPanel
+                          isAf={isAf}
+                          onDismiss={() => setWritingTipsDismissed(true)}
+                        />
+                      );
+                    })()}
+
+                    {/* Question text */}
+                    <div
+                      style={{
+                        padding: 18,
+                        borderRadius: 14,
+                        background: "rgba(255,255,255,.03)",
+                        border: "1px solid rgba(255,255,255,.08)",
+                      }}
+                    >
+                      <div style={{ fontSize: 14, lineHeight: 1.7, fontWeight: 500, color: "#fff" }} data-testid={`text-question-${current.id}`}>
+                        <ExamQuestionText text={current.questionText} />
+                      </div>
                     </div>
+
+                    {/* Memo toggle */}
+                    {shownMemos.has(current.id) ? (
+                      <button
+                        className="btx-ghost"
+                        onClick={() => toggleMemo(current.id)}
+                        style={{ ...ghostBtn, width: "100%", padding: "11px 14px" }}
+                        data-testid={`button-memo-${current.id}`}
+                      >
+                        <EyeOff style={{ width: 14, height: 14 }} />
+                        {isAf ? "Verberg Memo" : "Hide Memo"}
+                      </button>
+                    ) : (
+                      <button
+                        className="btx-action"
+                        onClick={() => toggleMemo(current.id)}
+                        style={{
+                          width: "100%",
+                          display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6,
+                          fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 12,
+                          letterSpacing: "1.2px", textTransform: "uppercase",
+                          color: "#050508", background: ACTION_GRADIENT,
+                          border: "none", borderRadius: 10, padding: "12px 14px",
+                          cursor: "pointer",
+                          boxShadow: "0 0 14px rgba(159,245,232,.28)",
+                        }}
+                        data-testid={`button-memo-${current.id}`}
+                      >
+                        <Eye style={{ width: 14, height: 14 }} />
+                        {isAf ? "Wys Memo / Antwoord" : "Show Memo / Answer"}
+                      </button>
+                    )}
+
+                    {/* Memo reveal */}
+                    {shownMemos.has(current.id) && (
+                      <div className="animate-in fade-in" style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                        {isPatGuidanceMemo(current.memoText) ? (
+                          <PatGuidanceBanner
+                            memoText={current.memoText!}
+                            isAf={isAf}
+                          />
+                        ) : isCreativeWritingGuidanceMemo(current.memoText) ? (
+                          <CreativeWritingGuidanceBanner
+                            memoText={current.memoText!}
+                            isAf={isAf}
+                          />
+                        ) : (
+                          <div
+                            style={{
+                              padding: 18,
+                              borderRadius: 14,
+                              background: "rgba(148,247,197,.08)",
+                              border: "1px solid rgba(148,247,197,.45)",
+                              boxShadow: "0 0 16px rgba(148,247,197,.12)",
+                              display: "flex", flexDirection: "column", gap: 8,
+                            }}
+                          >
+                            <div style={{ fontSize: 10, fontWeight: 900, letterSpacing: "2px", textTransform: "uppercase", color: "#94F7C5" }}>
+                              {isAf ? "Memo / Amptelike Antwoord" : "Memo / Official Answer"}
+                            </div>
+                            {current.memoText ? (
+                              <div style={{ fontSize: 14, lineHeight: 1.7, color: "#fff" }} data-testid={`text-memo-${current.id}`}>
+                                <ExamQuestionText text={current.memoText} />
+                              </div>
+                            ) : (
+                              <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#fff" }}>
+                                <AlertCircle style={{ width: 15, height: 15, flex: "none", color: "#FFE29A" }} />
+                                <span>
+                                  {isAf
+                                    ? "Memo nog nie beskikbaar nie. "
+                                    : "Memo not yet available. "}
+                                  {current.sourceMemoUrl && (
+                                    <a
+                                      href={current.sourceMemoUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      style={{ color: "#9FF5E8", fontWeight: 700, textDecoration: "underline", textUnderlineOffset: 2 }}
+                                    >
+                                      {isAf ? "Sien amptelike DBE-memo" : "View official DBE memo"}
+                                    </a>
+                                  )}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
+                </div>
+              );
+            })()}
 
-                  <Button
-                    variant={shownMemos.has(current.id) ? "secondary" : "outline"}
-                    size="sm"
-                    onClick={() => toggleMemo(current.id)}
-                    className="w-full gap-2"
-                    data-testid={`button-memo-${current.id}`}
+            {/* ── Jump grid ──────────────────────────────────────── */}
+            <div className="btx-jumpgrid" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 10 }}>
+              {questions.map((q, idx) => {
+                const active = idx === currentIdx;
+                const done = shownMemos.has(q.id);
+                return (
+                  <button
+                    key={q.id}
+                    onClick={() => { setCurrentIdx(idx); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                    className="btx-jump"
+                    style={{
+                      fontFamily: "'Poppins',sans-serif",
+                      padding: "9px 6px", borderRadius: 12, fontSize: 12, fontWeight: 700, cursor: "pointer",
+                      color: active ? "#9FF5E8" : done ? "#94F7C5" : "#fff",
+                      background: active ? "rgba(159,245,232,.12)" : done ? "rgba(148,247,197,.08)" : "rgba(255,255,255,.03)",
+                      border: active ? "1px solid #9FF5E8" : done ? "1px solid rgba(148,247,197,.45)" : "1px solid rgba(255,255,255,.14)",
+                    }}
+                    data-testid={`button-jump-${q.id}`}
                   >
-                    {shownMemos.has(current.id)
-                      ? <><EyeOff className="w-4 h-4" />{isAf ? "Verberg Memo" : "Hide Memo"}</>
-                      : <><Eye className="w-4 h-4" />{isAf ? "Wys Memo / Antwoord" : "Show Memo / Answer"}</>}
-                  </Button>
-
-                  {shownMemos.has(current.id) && (
-                    <div className="animate-in fade-in space-y-2">
-                      {isPatGuidanceMemo(current.memoText) ? (
-                        <PatGuidanceBanner
-                          memoText={current.memoText!}
-                          isAf={isAf}
-                        />
-                      ) : isCreativeWritingGuidanceMemo(current.memoText) ? (
-                        <CreativeWritingGuidanceBanner
-                          memoText={current.memoText!}
-                          isAf={isAf}
-                        />
-                      ) : (
-                        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/40 space-y-2 text-emerald-950 dark:text-emerald-100">
-                          <p className="text-xs font-semibold uppercase tracking-wider opacity-80">
-                            {isAf ? "Memo / Amptelike Antwoord" : "Memo / Official Answer"}
-                          </p>
-                          {current.memoText ? (
-                            <div className="text-sm leading-relaxed" data-testid={`text-memo-${current.id}`}>
-                              <ExamQuestionText text={current.memoText} />
-                            </div>
-                          ) : (
-                            <div className="flex items-center gap-2 text-sm">
-                              <AlertCircle className="w-4 h-4 shrink-0" />
-                              <span>
-                                {isAf
-                                  ? "Memo nog nie beskikbaar nie. "
-                                  : "Memo not yet available. "}
-                                {current.sourceMemoUrl && (
-                                  <a
-                                    href={current.sourceMemoUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="underline underline-offset-2 font-semibold"
-                                  >
-                                    {isAf ? "Sien amptelike DBE-memo" : "View official DBE memo"}
-                                  </a>
-                                )}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
-
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {questions.map((q, idx) => (
-                <button
-                  key={q.id}
-                  onClick={() => { setCurrentIdx(idx); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                  className={`p-2 rounded-xl border text-xs font-medium transition-all ${
-                    idx === currentIdx
-                      ? "border-primary bg-primary/15 text-primary"
-                      : shownMemos.has(q.id)
-                      ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400"
-                      : "border-border bg-card hover:border-primary/40 text-white"
-                  }`}
-                  data-testid={`button-jump-${q.id}`}
-                >
-                  Q{q.questionNumber}
-                  {q.marks != null && <span className="text-[9px] ml-1 opacity-60">({q.marks})</span>}
-                </button>
-              ))}
+                    Q{q.questionNumber}
+                    {q.marks != null && <span style={{ fontSize: 9, marginLeft: 4, opacity: 0.7 }}>({q.marks})</span>}
+                  </button>
+                );
+              })}
             </div>
           </>
         )}

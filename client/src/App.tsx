@@ -579,8 +579,14 @@ function SubscribeRoute({ children }: { children: React.ReactNode }) {
 
 function GlobalFooter() {
   const [location] = useLocation();
-  const hideOn = ["/onboarding", "/subscribe", "/role-select", "/bst-exam", "/activate"];
-  if (hideOn.some(p => location.startsWith(p))) return null;
+  // Whitelist: the handoff redesign gives landing/features/research their own
+  // comp footers, and app surfaces (learner/parent/admin) use their own shells —
+  // the shared PublicFooter only belongs on plain public/legal pages.
+  const showOn = [
+    "/privacy-policy", "/terms-of-service", "/cookie-policy", "/refund-policy",
+    "/about", "/join", "/parent-consent", "/parent-onboarding",
+  ];
+  if (!showOn.some(p => location.startsWith(p))) return null;
   return <PublicFooter />;
 }
 

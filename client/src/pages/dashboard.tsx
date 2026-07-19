@@ -2124,16 +2124,14 @@ export default function DashboardPage() {
       </main>
       </div>
 
-      {/* Responsive collapse: sidebar hides <861px, grids go single-column */}
+      {/* Responsive: the left menu persists at every width (user request —
+          no top-bar fallback); it just slims down on narrow screens. */}
       <style>{`
+        .bt-mobilebar, .bt-mobilemenu { display: none !important; }
         @media (max-width: 860px) {
-          .bt-dash-sidebar { display: none !important; }
-          .bt-dash-main { padding: 20px 16px !important; }
-          .bt-mobilebar { display: flex !important; }
+          .bt-dash-sidebar { width: 200px !important; padding: 18px 10px !important; }
+          .bt-dash-main { padding: 20px 14px !important; }
           .bt-grid-stats, .bt-grid-2col { grid-template-columns: 1fr !important; }
-        }
-        @media (min-width: 861px) {
-          .bt-mobilebar, .bt-mobilemenu { display: none !important; }
         }
         @media (max-width: 1280px) and (min-width: 861px) {
           .bt-grid-stats { grid-template-columns: repeat(2, 1fr) !important; }

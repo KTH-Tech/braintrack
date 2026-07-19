@@ -206,8 +206,8 @@ export function RizzSupportBot() {
         .btr-input:focus { border-color: #9FF5E8 !important; box-shadow: 0 0 0 2px rgba(159,245,232,.25); }
         .btr-preset { transition: background .2s; }
         .btr-preset:hover { background: rgba(159,245,232,.12); }
-        .btr-close { opacity: .8; transition: opacity .2s; }
-        .btr-close:hover { opacity: 1; }
+        .btr-close { opacity: .9; }
+        .btr-close:hover { opacity: 1; border-color: #FF8DA1 !important; color: #FF8DA1 !important; transform: scale(1.08); }
         .btr-cta { transition: transform .2s; }
         .btr-cta:hover { transform: translateY(-2px); }
         @media (prefers-reduced-motion: reduce) { .btr-launcher { animation: none; } }
@@ -277,7 +277,15 @@ export function RizzSupportBot() {
               onClick={() => setOpen(false)}
               className="btr-close"
               data-testid="button-rizz-close"
-              style={{ cursor: "pointer", fontSize: 24, lineHeight: 1, color: "#fff", padding: "4px 8px" }}
+              role="button"
+              aria-label="Close Rizz chat"
+              style={{
+                cursor: "pointer", fontSize: 20, lineHeight: 1, color: "#fff",
+                width: 30, height: 30, display: "flex", alignItems: "center",
+                justifyContent: "center", borderRadius: "50%", flex: "none",
+                border: "1.5px solid rgba(255,255,255,.35)",
+                transition: "all .15s",
+              }}
             >
               ×
             </span>

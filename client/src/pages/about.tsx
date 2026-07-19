@@ -1,11 +1,10 @@
-import { PublicNav } from "@/components/public-nav";
-import { FooterPageNav, FooterPageHomeButton } from "@/components/footer-page-nav";
-
+// BrainTrack about — restyled to the Claude Design handoff
+// "Luxury Street Graffiti EdTech" comp. Sticky blur nav (per features.tsx),
+// marker eyebrow, gradient headline, neon panels, own footer per the comp.
+// Bilingual EN/AF. RESTYLE ONLY — copy, testids and routes preserved.
 import { useLanguage } from "@/lib/language-context";
 import { useAuth } from "@/hooks/use-auth";
 import { useSEO } from "@/hooks/use-seo";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import {
   BookOpen,
   Brain,
@@ -18,15 +17,21 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { Link } from "wouter";
+import iconTransparent from "@/assets/handoff/icon-transparent.png";
+
+const CTA_GRADIENT =
+  "linear-gradient(100deg,#FFB7E5,#FFE29A,#9FF5E8,#C5B3FF,#FFB7E5)";
+const HEADLINE_GRADIENT =
+  "linear-gradient(95deg,#9FD8FF,#9FF5E8,#C5B3FF,#FFB7E5)";
 
 const t = {
   en: {
     title: "About BrainTrack",
     tagline: "South Africa's Grade 12 Platform",
     heroSub: "Smarter Learning. Real Results.",
-    p1: "BrainTrack\u2122 is a South African Grade 12 Matric exam preparation platform designed for CAPS-aligned revision. It combines NSC past exam papers, official-style memos, and a structured weekly revision plan to help learners track progress, find content gaps, and improve exam technique.",
-    p2: "Whether you\u2019re preparing for Matric prelims or final NSC exams, BrainTrack\u2122 provides a clear path from \u201cnot sure\u201d to \u201cexam-ready.\u201d Every question, every lesson, and every study plan is designed to prepare learners for exactly what they will face in their exams.",
-    p3: "We believe every South African learner deserves access to smart, affordable exam preparation. That is why Brain Boost \u2014 our core learning engine \u2014 is available for just R169/month, with no long-term commitment. Parents can track their child\u2019s progress, and schools can partner with us through our Future Ready Schools programme.",
+    p1: "BrainTrack™ is a South African Grade 12 Matric exam preparation platform designed for CAPS-aligned revision. It combines NSC past exam papers, official-style memos, and a structured weekly revision plan to help learners track progress, find content gaps, and improve exam technique.",
+    p2: "Whether you’re preparing for Matric prelims or final NSC exams, BrainTrack™ provides a clear path from “not sure” to “exam-ready.” Every question, every lesson, and every study plan is designed to prepare learners for exactly what they will face in their exams.",
+    p3: "We believe every South African learner deserves access to smart, affordable exam preparation. That is why Brain Boost — our core learning engine — is available for just R169/month, with no long-term commitment. Parents can track their child’s progress, and schools can partner with us through our Future Ready Schools programme.",
     missionTitle: "Our Mission",
     missionDesc: "To empower South African learners with strategic, science-backed study tools that turn effort into results. We are building the future of exam preparation — one learner at a time.",
     f1Title: "Learning Science",
@@ -51,14 +56,22 @@ const t = {
     popia: "Your data is protected under POPIA (Protection of Personal Information Act, 2013). We only collect information necessary for learning and never share it with third parties.",
     cta: "Start Learning Smarter",
     ctaLoggedIn: "Go to My Classroom",
+    tResearch: "Research",
+    tEnter: "Enter the app →",
+    privacyTitle: "Privacy & Security",
+    footMade: "© 2026 — Made in South Africa",
+    footPrivacy: "Privacy",
+    footTerms: "Terms",
+    footPopia: "POPIA",
+    footBilling: "Billing",
   },
   af: {
     title: "Oor BrainTrack",
     tagline: "Suid-Afrika se Graad 12 Platform",
     heroSub: "Slimmer Leer. Regte Resultate.",
-    p1: "BrainTrack\u2122 is 'n Suid-Afrikaanse Graad 12 Matriek eksamenvoorbereidingsplatform vir KABV-belynde hersiening. Dit kombineer NSC vorige eksamenvraestelle, memo-ondersteuning en 'n gestruktureerde weeklikse hersieningsplan om leerders te help om vordering te volg, inhoud-leemtes te identifiseer, en eksamentegniek te verbeter.",
-    p2: "Of dit nou vir voorlopige eksamens of die finale NSC is \u2014 BrainTrack\u2122 gee 'n duidelike, praktiese pad na beter punte. Elke vraag, elke les, en elke studieplan is ontwerp om leerders voor te berei vir presies wat hulle in hul eksamens sal teekom.",
-    p3: "Ons glo elke Suid-Afrikaanse leerder verdien toegang tot slim, bekostigbare eksamenvoorbereiding. Daarom is Brain Boost \u2014 ons kern leer-enjin \u2014 beskikbaar vir slegs R169/maand, sonder langtermyn-verpligting. Ouers kan hul kind se vordering volg, en skole kan met ons vennoot deur ons Future Ready Schools-program.",
+    p1: "BrainTrack™ is 'n Suid-Afrikaanse Graad 12 Matriek eksamenvoorbereidingsplatform vir KABV-belynde hersiening. Dit kombineer NSC vorige eksamenvraestelle, memo-ondersteuning en 'n gestruktureerde weeklikse hersieningsplan om leerders te help om vordering te volg, inhoud-leemtes te identifiseer, en eksamentegniek te verbeter.",
+    p2: "Of dit nou vir voorlopige eksamens of die finale NSC is — BrainTrack™ gee 'n duidelike, praktiese pad na beter punte. Elke vraag, elke les, en elke studieplan is ontwerp om leerders voor te berei vir presies wat hulle in hul eksamens sal teekom.",
+    p3: "Ons glo elke Suid-Afrikaanse leerder verdien toegang tot slim, bekostigbare eksamenvoorbereiding. Daarom is Brain Boost — ons kern leer-enjin — beskikbaar vir slegs R169/maand, sonder langtermyn-verpligting. Ouers kan hul kind se vordering volg, en skole kan met ons vennoot deur ons Future Ready Schools-program.",
     missionTitle: "Ons Missie",
     missionDesc: "Om Suid-Afrikaanse leerders te bemagtig met strategiese, wetenskaplik-ondersteunde studiegereedskap wat inspanning in resultate omskep. Ons bou die toekoms van eksamenvoorbereiding — een leerder op 'n slag.",
     f1Title: "Leerwetenskap",
@@ -83,15 +96,26 @@ const t = {
     popia: "Jou data word beskerm volgens die POPIA-wet (Wet op Beskerming van Persoonlike Inligting, 2013). Ons versamel slegs inligting wat nodig is vir leer en deel dit nooit met derde partye nie.",
     cta: "Begin Slimmer Leer",
     ctaLoggedIn: "My Klaskamer",
+    tResearch: "Navorsing",
+    tEnter: "Betree die app →",
+    privacyTitle: "Privaatheid & Sekuriteit",
+    footMade: "© 2026 — Gemaak in Suid-Afrika",
+    footPrivacy: "Privaatheid",
+    footTerms: "Bepalings",
+    footPopia: "POPIA",
+    footBilling: "Betaling",
   },
 };
 
+// Pastel accent cycle per the comp.
 const pillars = [
-  { icon: Brain, titleKey: "f1Title" as const, descKey: "f1Desc" as const, color: "text-cyan-600", bg: "bg-cyan-500/10" },
-  { icon: BarChart3, titleKey: "f2Title" as const, descKey: "f2Desc" as const, color: "text-cyan-600", bg: "bg-cyan-500/10" },
-  { icon: BookOpen, titleKey: "f3Title" as const, descKey: "f3Desc" as const, color: "text-emerald-600", bg: "bg-emerald-500/10" },
-  { icon: Target, titleKey: "f4Title" as const, descKey: "f4Desc" as const, color: "text-pink-600", bg: "bg-pink-500/10" },
+  { icon: Brain,     titleKey: "f1Title" as const, descKey: "f1Desc" as const, color: "#9FF5E8", chipBg: "rgba(159,245,232,.14)", glow: "rgba(159,245,232,.25)", tilt: -1 },
+  { icon: BarChart3, titleKey: "f2Title" as const, descKey: "f2Desc" as const, color: "#9FD8FF", chipBg: "rgba(159,216,255,.14)", glow: "rgba(159,216,255,.25)", tilt: 1 },
+  { icon: BookOpen,  titleKey: "f3Title" as const, descKey: "f3Desc" as const, color: "#94F7C5", chipBg: "rgba(148,247,197,.14)", glow: "rgba(148,247,197,.25)", tilt: -1 },
+  { icon: Target,    titleKey: "f4Title" as const, descKey: "f4Desc" as const, color: "#FFB7E5", chipBg: "rgba(255,183,229,.14)", glow: "rgba(255,183,229,.25)", tilt: 1 },
 ];
+
+const WHY_COLORS = ["#9FF5E8", "#9FD8FF", "#FFB7E5", "#C5B3FF", "#FFE29A", "#94F7C5", "#9FF5E8", "#FFB7E5"];
 
 const whyPoints = ["why1", "why2", "why3", "why4", "why5", "why6", "why7", "why8"] as const;
 
@@ -104,8 +128,17 @@ const aboutBreadcrumb = {
   ],
 };
 
+// Executive panel chrome shared by the content cards.
+const panelStyle: React.CSSProperties = {
+  background: "linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015))",
+  border: "1px solid rgba(255,255,255,.09)",
+  borderRadius: 22,
+  padding: 28,
+  textAlign: "left",
+};
+
 export default function AboutPage() {
-  const { language } = useLanguage();
+  const { language, toggleLanguage } = useLanguage();
   const { isAuthenticated } = useAuth();
   useSEO({
     title: "About BrainTrack™ | Grade 12 CAPS Matric Revision Platform",
@@ -117,133 +150,249 @@ export default function AboutPage() {
     jsonLd: aboutBreadcrumb,
   });
   const c = t[language];
+  const en = language === "en";
 
   const ctaHref = isAuthenticated ? "/classroom" : "/subscribe";
   const ctaLabel = isAuthenticated ? c.ctaLoggedIn : c.cta;
 
   return (
-    <div className="dark min-h-screen bg-black text-white">
-      <PublicNav />
-      <main className="relative pt-14 pb-16">
+    <div style={{ minHeight: "100vh", background: "#050508", overflowX: "hidden", color: "#fff" }}>
+      <style>{`
+        .bta-nav-link { color:#fff; cursor:pointer; transition:color .2s; }
+        .bta-nav-link:hover { color:#9FD8FF; }
+        .bta-nav-cta { transition: transform .2s; }
+        .bta-nav-cta:hover { transform: translateY(-2px); }
+        .bta-cta { transition: transform .2s; }
+        .bta-cta:hover { transform: translateY(-3px); }
+        .bta-panel { transition: transform .25s, box-shadow .25s, border-color .25s; }
+        .bta-panel:hover { transform: translateY(-8px) rotate(var(--tilt, 0deg)); box-shadow: 0 20px 50px var(--glow); border-color: var(--c) !important; }
+        .bta-logo-img { transition: transform .25s; }
+        .bta-logo-img:hover { transform: scale(1.15) rotate(-4deg); }
+        .bta-foot-link { color:#fff; cursor:pointer; transition:color .2s; }
+        .bta-foot-link:hover { color: var(--h, #9FD8FF); }
+        @media (max-width: 860px) {
+          .bta-nav-links { display: none !important; }
+          .bta-head { font-size: 38px !important; letter-spacing: -1px !important; }
+          .bta-grid2 { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
+
+      {/* ── Nav (per features.tsx) ──────────────────────────── */}
+      <div
+        style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          gap: 32, padding: "16px 48px", position: "sticky", top: 0, zIndex: 50,
+          background: "rgba(5,5,8,.82)", backdropFilter: "blur(14px)",
+          borderBottom: "1px solid rgba(255,255,255,.06)",
+        }}
+      >
+        <Link href="/">
+          <div style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }}>
+            <img src={iconTransparent} alt="BrainTrack" className="bta-logo-img" style={{ width: 56, height: 56, objectFit: "contain" }} />
+            <span className="bt-wordmark" style={{ fontSize: 22, letterSpacing: "-.5px" }}>BrainTrack</span>
+          </div>
+        </Link>
+        <div style={{ display: "flex", alignItems: "center", gap: 26, fontSize: 14, fontWeight: 600, flex: "none" }}>
+          <span className="bta-nav-links" style={{ display: "flex", alignItems: "center", gap: 26 }}>
+            <Link href="/research"><span className="bta-nav-link">{c.tResearch}</span></Link>
+          </span>
+          <span
+            onClick={toggleLanguage}
+            data-testid="lang-toggle"
+            style={{
+              display: "flex", alignItems: "center", gap: 2, fontSize: 12, fontWeight: 800,
+              border: "1.5px solid rgba(255,255,255,.2)", borderRadius: 8,
+              overflow: "hidden", cursor: "pointer", userSelect: "none",
+            }}
+          >
+            <span style={{ padding: "6px 10px", background: en ? "#9FF5E8" : "transparent", color: en ? "#050508" : "#fff" }}>EN</span>
+            <span style={{ padding: "6px 10px", background: en ? "transparent" : "#9FF5E8", color: en ? "#fff" : "#050508" }}>AF</span>
+          </span>
+          <a href="/api/login">
+            <button
+              className="bta-nav-cta"
+              data-testid="button-nav-enter"
+              style={{
+                fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 14,
+                color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
+                animation: "bt-rainbow 6s linear infinite", border: "none",
+                borderRadius: 10, padding: "11px 24px", whiteSpace: "nowrap",
+                cursor: "pointer",
+              }}
+            >
+              {c.tEnter}
+            </button>
+          </a>
+        </div>
+      </div>
+
+      {/* ── Content ─────────────────────────────────────────── */}
+      <main style={{ position: "relative", maxWidth: 980, margin: "0 auto", padding: "64px 32px 40px" }}>
         <div
           aria-hidden
-          className="pointer-events-none absolute top-0 left-0 w-[420px] h-[420px] rounded-full opacity-40 blur-3xl"
-          style={{ background: "radial-gradient(circle, rgba(110,231,249,0.35), transparent 70%)" }}
+          style={{
+            position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)",
+            width: 860, height: 420, maxWidth: "100vw",
+            background: "radial-gradient(ellipse,rgba(255,183,229,.07),rgba(159,216,255,.04) 55%,transparent 75%)",
+            filter: "blur(30px)", pointerEvents: "none",
+          }}
         />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute top-10 right-0 w-[420px] h-[420px] rounded-full opacity-40 blur-3xl"
-          style={{ background: "radial-gradient(circle, rgba(255,183,229,0.3), transparent 70%)" }}
-        />
-        <section className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
-          <div className="text-center mb-10">
-            <p className="text-[11px] font-black uppercase tracking-[0.2em] mb-3" style={{ color: "#6EE7F9", textShadow: "0 0 8px rgba(110,231,249,0.5)" }} data-testid="text-about-tagline">
-              {c.tagline}
-            </p>
-            <h1 className="font-black text-3xl sm:text-4xl leading-tight text-white mb-4" data-testid="text-about-title">
-              <span className="gradient-text">{c.title}</span>
-            </h1>
-            <p className="text-white font-medium max-w-2xl mx-auto" data-testid="text-about-hero-sub">
-              {c.heroSub}
-            </p>
+        {/* Hero */}
+        <div style={{ position: "relative", textAlign: "center", marginBottom: 52 }}>
+          <div
+            data-testid="text-about-tagline"
+            style={{ fontFamily: "'Permanent Marker',cursive", color: "#9FF5E8", fontSize: 18, transform: "rotate(-2deg)" }}
+          >
+            {c.tagline}
           </div>
-
-          <Card className="mb-8 shadow-sm rounded-2xl" data-testid="card-about-description">
-            <div className="h-1 bg-gradient-to-r from-blue-500 via-cyan-500 to-pink-500 rounded-t-2xl" />
-            <CardContent className="p-5 space-y-4">
-              <p className="text-white leading-relaxed font-medium" data-testid="text-about-p1">{c.p1}</p>
-              <p className="text-white leading-relaxed font-medium" data-testid="text-about-p2">{c.p2}</p>
-              <p className="text-white leading-relaxed font-medium" data-testid="text-about-p3">{c.p3}</p>
-            </CardContent>
-          </Card>
-
-          <Card className="mb-8 shadow-sm rounded-2xl" data-testid="card-mission">
-            <CardContent className="p-5 text-center">
-              <GraduationCap className="h-8 w-8 text-cyan-600 mx-auto mb-3" />
-              <h2 className="font-semibold mb-3 text-white" data-testid="text-mission-title">
-                <span className="gradient-text">{c.missionTitle}</span>
-              </h2>
-              <p className="text-white font-medium leading-relaxed max-w-2xl mx-auto" data-testid="text-mission-desc">
-                {c.missionDesc}
-              </p>
-            </CardContent>
-          </Card>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-            {pillars.map((f, i) => {
-              const Icon = f.icon;
-              return (
-                <Card key={i} className="hover-elevate rounded-2xl" data-testid={`card-pillar-${i}`}>
-                  <CardContent className="p-5 space-y-3">
-                    <div className={`w-10 h-10 rounded-xl ${f.bg} border border-cyan-500/25 flex items-center justify-center`}>
-                      <Icon className={`h-5 w-5 ${f.color}`} />
-                    </div>
-                    <h3 className="font-semibold text-white" data-testid={`text-pillar-title-${i}`}>
-                      {c[f.titleKey]}
-                    </h3>
-                    <p className="text-white font-medium leading-relaxed" data-testid={`text-pillar-desc-${i}`}>
-                      {c[f.descKey]}
-                    </p>
-                  </CardContent>
-                </Card>
-              );
-            })}
+          <div
+            role="heading"
+            aria-level={1}
+            className="bta-head"
+            data-testid="text-about-title"
+            style={{ fontSize: 52, fontWeight: 900, letterSpacing: "-2px", margin: "8px 0 14px", fontFamily: "'Poppins',sans-serif", color: "#fff" }}
+          >
+            <span
+              style={{
+                background: HEADLINE_GRADIENT,
+                WebkitBackgroundClip: "text", backgroundClip: "text",
+                color: "transparent", WebkitTextFillColor: "transparent",
+              }}
+            >
+              {c.title}
+            </span>
           </div>
-
-          <Card className="mb-8 shadow-sm rounded-2xl" data-testid="card-why-different">
-            <CardContent className="p-5">
-              <h2 className="font-semibold mb-5 text-center text-white" data-testid="text-why-title">
-                <span className="gradient-text">{c.whyTitle}</span>
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {whyPoints.map((key, i) => (
-                  <div key={i} className="flex items-start gap-3" data-testid={`text-why-point-${i}`}>
-                    <CheckCircle className="h-5 w-5 text-accent shrink-0 mt-0.5" />
-                    <span className="text-white font-medium">{c[key as keyof typeof c]}</span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="mb-8 shadow-sm rounded-2xl" data-testid="card-schools">
-            <CardContent className="p-5 flex items-start gap-4">
-              <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0 border border-cyan-500/25">
-                <Users className="h-5 w-5 text-blue-600" />
-              </div>
-              <div className="space-y-1">
-                <p className="font-semibold text-white" data-testid="text-schools-title">{c.schoolsTitle}</p>
-                <p className="text-white font-medium leading-relaxed" data-testid="text-schools-desc">{c.schoolsDesc}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-sm mb-8 rounded-2xl" data-testid="card-popia-notice">
-            <CardContent className="p-5 flex items-start gap-4">
-              <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center shrink-0 border border-cyan-500/25">
-                <Shield className="h-5 w-5 text-white" />
-              </div>
-              <div className="space-y-1">
-                <p className="font-semibold text-white">Privacy & Security</p>
-                <p className="text-white font-medium leading-relaxed" data-testid="text-popia-notice">{c.popia}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="text-center">
-            <Link href={ctaHref} data-testid="link-signup-child">
-              <Button size="lg" className="px-8 font-semibold rounded-2xl shadow-lg">
-                {ctaLabel}
-                <ArrowRight className="ml-2 w-4 h-4" />
-              </Button>
-            </Link>
+          <div data-testid="text-about-hero-sub" style={{ fontSize: 17, color: "#fff", opacity: 0.94, maxWidth: 640, margin: "0 auto", lineHeight: 1.6, fontWeight: 500 }}>
+            {c.heroSub}
           </div>
+        </div>
 
-          <FooterPageHomeButton />
-
+        {/* Story */}
+        <section data-testid="card-about-description" style={{ ...panelStyle, marginBottom: 26, overflow: "hidden", position: "relative" }}>
+          <div aria-hidden style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: CTA_GRADIENT }} />
+          <div style={{ display: "flex", flexDirection: "column", gap: 16, fontSize: 15.5, lineHeight: 1.7, color: "#fff" }}>
+            <p data-testid="text-about-p1" style={{ margin: 0 }}>{c.p1}</p>
+            <p data-testid="text-about-p2" style={{ margin: 0 }}>{c.p2}</p>
+            <p data-testid="text-about-p3" style={{ margin: 0 }}>{c.p3}</p>
+          </div>
         </section>
+
+        {/* Mission */}
+        <section data-testid="card-mission" style={{ ...panelStyle, marginBottom: 26, textAlign: "center", background: "linear-gradient(150deg,rgba(159,216,255,.1),rgba(255,183,229,.08))", border: "1.5px solid rgba(159,216,255,.3)", boxShadow: "0 0 18px rgba(159,216,255,.08)" }}>
+          <GraduationCap style={{ width: 34, height: 34, color: "#9FF5E8", margin: "0 auto 10px", display: "block" }} />
+          <div role="heading" aria-level={2} data-testid="text-mission-title" style={{ fontSize: 26, fontWeight: 900, letterSpacing: "-.5px", marginBottom: 10 }}>
+            <span style={{ background: HEADLINE_GRADIENT, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>
+              {c.missionTitle}
+            </span>
+          </div>
+          <p data-testid="text-mission-desc" style={{ fontSize: 15.5, lineHeight: 1.7, color: "#fff", maxWidth: 640, margin: "0 auto" }}>
+            {c.missionDesc}
+          </p>
+        </section>
+
+        {/* Pillars */}
+        <div className="bta-grid2" style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 24, marginBottom: 26 }}>
+          {pillars.map((f, i) => {
+            const Icon = f.icon;
+            return (
+              <div
+                key={i}
+                className="bta-panel"
+                data-testid={`card-pillar-${i}`}
+                style={{
+                  "--tilt": `${f.tilt}deg`, "--glow": f.glow, "--c": f.color,
+                  ...panelStyle, cursor: "default",
+                } as React.CSSProperties}
+              >
+                <div style={{ width: 54, height: 54, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", background: f.chipBg, boxShadow: `0 0 22px ${f.glow}`, marginBottom: 18 }}>
+                  <Icon style={{ width: 24, height: 24, color: f.color }} />
+                </div>
+                <div role="heading" aria-level={3} data-testid={`text-pillar-title-${i}`} style={{ fontWeight: 800, fontSize: 18, marginBottom: 8, color: "#fff" }}>
+                  {c[f.titleKey]}
+                </div>
+                <div data-testid={`text-pillar-desc-${i}`} style={{ fontSize: 13.5, lineHeight: 1.6, color: "#fff", opacity: 0.94 }}>
+                  {c[f.descKey]}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Why different */}
+        <section data-testid="card-why-different" style={{ ...panelStyle, marginBottom: 26 }}>
+          <div role="heading" aria-level={2} data-testid="text-why-title" style={{ fontSize: 24, fontWeight: 900, letterSpacing: "-.5px", textAlign: "center", marginBottom: 22 }}>
+            <span style={{ background: HEADLINE_GRADIENT, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>
+              {c.whyTitle}
+            </span>
+          </div>
+          <div className="bta-grid2" style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 14 }}>
+            {whyPoints.map((key, i) => (
+              <div key={i} data-testid={`text-why-point-${i}`} style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                <CheckCircle style={{ width: 20, height: 20, color: WHY_COLORS[i % WHY_COLORS.length], flexShrink: 0, marginTop: 2 }} />
+                <span style={{ color: "#fff", fontWeight: 500, fontSize: 14.5, lineHeight: 1.55 }}>{c[key as keyof typeof c]}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Schools */}
+        <section data-testid="card-schools" style={{ ...panelStyle, marginBottom: 26, display: "flex", alignItems: "flex-start", gap: 18, borderLeft: "3px solid #9FD8FF" }}>
+          <div style={{ width: 46, height: 46, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(159,216,255,.14)", boxShadow: "0 0 22px rgba(159,216,255,.25)", flexShrink: 0 }}>
+            <Users style={{ width: 22, height: 22, color: "#9FD8FF" }} />
+          </div>
+          <div>
+            <p data-testid="text-schools-title" style={{ fontWeight: 800, fontSize: 17, color: "#9FD8FF", margin: "0 0 6px" }}>{c.schoolsTitle}</p>
+            <p data-testid="text-schools-desc" style={{ fontSize: 14.5, lineHeight: 1.65, color: "#fff", margin: 0 }}>{c.schoolsDesc}</p>
+          </div>
+        </section>
+
+        {/* POPIA */}
+        <section data-testid="card-popia-notice" style={{ ...panelStyle, marginBottom: 40, display: "flex", alignItems: "flex-start", gap: 18, borderLeft: "3px solid #94F7C5" }}>
+          <div style={{ width: 46, height: 46, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(148,247,197,.14)", boxShadow: "0 0 22px rgba(148,247,197,.25)", flexShrink: 0 }}>
+            <Shield style={{ width: 22, height: 22, color: "#94F7C5" }} />
+          </div>
+          <div>
+            <p style={{ fontWeight: 800, fontSize: 17, color: "#94F7C5", margin: "0 0 6px" }}>{c.privacyTitle}</p>
+            <p data-testid="text-popia-notice" style={{ fontSize: 14.5, lineHeight: 1.65, color: "#fff", margin: 0 }}>{c.popia}</p>
+          </div>
+        </section>
+
+        {/* CTA */}
+        <div style={{ textAlign: "center" }}>
+          <Link href={ctaHref} data-testid="link-signup-child">
+            <button
+              className="bta-cta"
+              style={{
+                fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 16,
+                color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
+                animation: "bt-rainbow 5s linear infinite", border: "none",
+                borderRadius: 10, padding: "16px 40px", whiteSpace: "nowrap",
+                cursor: "pointer", boxShadow: "0 0 30px rgba(255,183,229,.4)",
+                display: "inline-flex", alignItems: "center", gap: 8,
+              }}
+            >
+              {ctaLabel}
+              <ArrowRight style={{ width: 16, height: 16 }} />
+            </button>
+          </Link>
+        </div>
       </main>
+
+      {/* ── Footer (own footer per the comp) ────────────────── */}
+      <div style={{ marginTop: 70, borderTop: "1px solid rgba(255,255,255,.08)", padding: "44px 48px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 20 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <img src={iconTransparent} alt="" style={{ width: 52, height: 52, objectFit: "contain" }} />
+          <span className="bt-wordmark" style={{ fontSize: 16, letterSpacing: "-.5px" }}>BrainTrack</span>
+          <span style={{ fontSize: 14, color: "#fff", marginLeft: 10 }}>{c.footMade}</span>
+        </div>
+        <div style={{ display: "flex", gap: 26, fontSize: 13, fontWeight: 600, flexWrap: "wrap" }}>
+          <Link href="/privacy-policy"><span className="bta-foot-link" style={{ "--h": "#9FD8FF" } as React.CSSProperties}>{c.footPrivacy}</span></Link>
+          <Link href="/terms-of-service"><span className="bta-foot-link" style={{ "--h": "#FFB7E5" } as React.CSSProperties}>{c.footTerms}</span></Link>
+          <Link href="/privacy-policy"><span className="bta-foot-link" style={{ "--h": "#C5B3FF" } as React.CSSProperties}>{c.footPopia}</span></Link>
+          <Link href="/refund-policy"><span className="bta-foot-link" style={{ "--h": "#FFE29A" } as React.CSSProperties}>{c.footBilling}</span></Link>
+        </div>
+      </div>
     </div>
   );
 }
