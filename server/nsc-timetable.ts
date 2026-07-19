@@ -247,12 +247,25 @@ async function seedSubjectMappings(): Promise<void> {
  */
 export async function buildLearnerSchedule(userId: string): Promise<LearnerExamSchedule[]> {
   try {
-    // Get learner's selected subjects
-    const [onboarding] = await db.select()
-      .from(onboardingResults)
-      .where(eq(onboardingResults.userId, userId));
+    // Get learner's selected subjects.
+    // users.selected_subjects is the authoritative live list — PATCH /api/user/subjects
+    // writes there, so onboarding_results can lag behind. Fall back to onboarding only
+    // for learners whose user row was never populated.
+    const [[userRow], [onboarding]] = await Promise.all([
+      db.select({ selectedSubjects: users.selectedSubjects })
+        .from(users)
+        .where(eq(users.id, userId)),
+      db.select()
+        .from(onboardingResults)
+        .where(eq(onboardingResults.userId, userId)),
+    ]);
 
-    const selectedSubjectIds: number[] = onboarding?.selectedSubjects || [];
+    const fromUser = Array.isArray(userRow?.selectedSubjects)
+      ? (userRow!.selectedSubjects as number[])
+      : [];
+    const selectedSubjectIds: number[] = fromUser.length > 0
+      ? fromUser
+      : (onboarding?.selectedSubjects || []);
     if (selectedSubjectIds.length === 0) return [];
 
     // Get the mappings for those subject IDs
@@ -311,14 +324,21 @@ export async function buildLearnerSchedule(userId: string): Promise<LearnerExamS
       };
     });
 
-    // Delete existing schedule for this user (safe refresh)
-    await db.delete(learnerExamSchedule)
-      .where(eq(learnerExamSchedule.userId, userId));
+    // Replace the schedule atomically. Without a transaction two concurrent rebuilds
+    // interleave as delete/delete/insert/insert and leave every exam duplicated.
+    await db.transaction(async (tx) => {
+      // The advisory lock is what actually serialises this. Under READ COMMITTED a
+      // second rebuild's DELETE takes its snapshot before the first one commits, so
+      // it deletes nothing and then inserts a duplicate set on top.
+      await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${userId}))`);
 
-    // Insert new schedule
-    if (scheduleRows.length > 0) {
-      await db.insert(learnerExamSchedule).values(scheduleRows);
-    }
+      await tx.delete(learnerExamSchedule)
+        .where(eq(learnerExamSchedule.userId, userId));
+
+      if (scheduleRows.length > 0) {
+        await tx.insert(learnerExamSchedule).values(scheduleRows);
+      }
+    });
 
     // Update onboarding scheduleLastUpdatedAt
     await db.update(onboardingResults)

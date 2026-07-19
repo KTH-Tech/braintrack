@@ -2,7 +2,18 @@
 // up on :5433, then boots the app on :5001 with the local test env.
 // Run from the braintrack repo root: node _dev-launch.mjs
 import net from "net";
+import fs from "fs";
 import { spawn } from "child_process";
+
+// Load the real OpenAI key from outside the repo (C:\dev\bt-openai.env) so the
+// preview-launched server gets working AI features; .env's stub would override
+// it, so these are injected as child env vars which win over --env-file.
+const keyEnv = {};
+try {
+  const keyFile = fs.readFileSync("C:/dev/bt-openai.env", "utf8");
+  for (const m of keyFile.matchAll(/^export\s+([A-Z_]+)=(.+)$/gm)) keyEnv[m[1]] = m[2].trim();
+  if (keyEnv.OPENAI_API_KEY) console.log("[launch] real OpenAI key loaded from bt-openai.env");
+} catch { /* no key file — stub key from .env applies */ }
 
 const PG_PORT = 5433;
 const APP_PORT = process.env.PORT || "5001";
@@ -37,6 +48,7 @@ const child = spawn(
     stdio: "inherit",
     env: {
       ...process.env,
+      ...keyEnv,
       NODE_ENV: "development",
       TEST_MODE: "true",
       PORT: APP_PORT,

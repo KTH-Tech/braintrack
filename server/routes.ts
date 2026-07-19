@@ -1808,6 +1808,20 @@ export async function registerRoutes(
         .update(users)
         .set({ selectedSubjects: merged, updatedAt: new Date() })
         .where(eq(users.id, userId));
+
+      // Keep onboarding_results in sync and rebuild the NSC exam schedule — without
+      // this the study calendar keeps showing exams for the old subject list.
+      await db
+        .update(onboardingResults)
+        .set({ selectedSubjects: merged })
+        .where(eq(onboardingResults.userId, userId));
+
+      import("./nsc-timetable").then(({ buildLearnerSchedule }) => {
+        buildLearnerSchedule(userId).catch(err =>
+          console.error("[NSC Timetable] Schedule rebuild after subject patch failed:", err)
+        );
+      }).catch(() => {});
+
       emitSubjectsChanged(userId);
       res.json({ selectedSubjects: merged });
     } catch (error) {
