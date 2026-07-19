@@ -25,7 +25,7 @@ const COPY = {
     tResearch: "Research",
     tSubjects: "Subjects",
     tPricing: "Pricing",
-    tEnter: "Enter BrainTrack",
+    tEnter: "Log on",
     heroHead1: "The learning platform that ",
     heroAccent: "doesn't feel like school",
     heroTail: ".",
@@ -116,7 +116,7 @@ const COPY = {
     tResearch: "Navorsing",
     tSubjects: "Vakke",
     tPricing: "Pryse",
-    tEnter: "Betree BrainTrack",
+    tEnter: "Meld aan",
     heroHead1: "Die leerplatform wat ",
     heroAccent: "nie soos skool voel nie",
     heroTail: ".",
@@ -312,68 +312,6 @@ const groupDigits = (n: number, sep: string) =>
   n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, sep);
 
 /** Big pastel numeral that counts up the first time it scrolls into view. */
-function ProofStat({
-  value, suffix, label, detail, color, glow, sep, delay,
-}: {
-  value: number; suffix: string; label: string; detail: string;
-  color: string; glow: string; sep: string; delay: number;
-}) {
-  const [ref, inView] = useInView<HTMLDivElement>();
-  const [shown, setShown] = useState(0);
-  const rafRef = useRef<number>(0);
-
-  useEffect(() => {
-    if (!inView) return;
-    if (prefersReducedMotion()) {
-      setShown(value);
-      return;
-    }
-    const duration = 1500;
-    const startAt = performance.now() + delay;
-    const tick = (now: number) => {
-      const p = Math.min(1, Math.max(0, (now - startAt) / duration));
-      setShown(Math.round(value * (1 - Math.pow(1 - p, 3))));
-      if (p < 1) rafRef.current = requestAnimationFrame(tick);
-    };
-    rafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafRef.current);
-  }, [inView, value, delay]);
-
-  return (
-    <div
-      ref={ref}
-      className="btl-proof-cell"
-      style={{
-        position: "relative",
-        padding: "30px 22px 28px",
-        textAlign: "center",
-        borderRadius: 20,
-        border: "1px solid rgba(255,255,255,.09)",
-        background: "linear-gradient(170deg,rgba(255,255,255,.055),rgba(255,255,255,.012))",
-        animation: inView ? `bt-fadeup .8s cubic-bezier(.22,.75,.3,1) ${delay}ms both` : undefined,
-        opacity: inView ? undefined : 0,
-        "--c": color,
-        "--glow": glow,
-      } as React.CSSProperties}
-    >
-      <div
-        className="btl-proof-num"
-        style={{
-          fontSize: 52, fontWeight: 900, lineHeight: 1, letterSpacing: "-2.5px",
-          color, textShadow: `0 0 34px ${glow}`, fontVariantNumeric: "tabular-nums",
-        }}
-      >
-        {groupDigits(shown, sep)}{suffix}
-      </div>
-      <div style={{ marginTop: 12, fontSize: 13, fontWeight: 800, letterSpacing: "1.6px", textTransform: "uppercase", color: "#fff" }}>
-        {label}
-      </div>
-      <div style={{ marginTop: 8, fontSize: 13.5, lineHeight: 1.55, color: "#fff", opacity: 0.82 }}>
-        {detail}
-      </div>
-    </div>
-  );
-}
 
 export default function LandingPage() {
   const { language, toggleLanguage } = useLanguage();
@@ -665,23 +603,30 @@ export default function LandingPage() {
             </div>
             <div className="btl-sec-sub" style={{ marginTop: 16, fontSize: 16.5, lineHeight: 1.68, color: "#fff", opacity: 0.9 }}>{t.proofSub}</div>
           </Reveal>
+          {/* Static figures — no count-up animation (owner request). The
+              numbers carry the weight on their own. */}
           <div
             className="btl-proof-grid"
             data-testid="proof-band"
             style={{ position: "relative", display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 18 }}
           >
             {t.proof.map((p, i) => (
-              <ProofStat
-                key={p.label}
-                value={p.value}
-                suffix={p.suffix}
-                label={p.label}
-                detail={p.detail}
-                color={p.color}
-                glow={p.glow}
-                sep={en ? "," : " "}
-                delay={i * 110}
-              />
+              <Reveal key={p.label} delay={i * 90}>
+                <div
+                  style={{
+                    position: "relative", padding: "26px 18px", textAlign: "center",
+                    borderRadius: 22, border: "1.5px solid " + p.color,
+                    background: "linear-gradient(160deg,rgba(255,255,255,.06),rgba(5,5,8,.5))",
+                    boxShadow: "0 10px 34px " + p.glow,
+                  }}
+                >
+                  <div style={{ fontSize: 40, fontWeight: 900, color: p.color, letterSpacing: "-1.5px", lineHeight: 1, fontVariantNumeric: "tabular-nums", textShadow: "0 0 22px " + p.glow }}>
+                    {p.value.toLocaleString(en ? "en-ZA" : "af-ZA")}{p.suffix}
+                  </div>
+                  <div style={{ marginTop: 10, fontSize: 13, fontWeight: 800, letterSpacing: "1.2px", textTransform: "uppercase", color: "#fff" }}>{p.label}</div>
+                  <div style={{ marginTop: 5, fontSize: 12.5, lineHeight: 1.45, color: "#fff", opacity: 0.86 }}>{p.detail}</div>
+                </div>
+              </Reveal>
             ))}
           </div>
           <Reveal delay={260} style={{ position: "relative", textAlign: "center", marginTop: 34 }}>

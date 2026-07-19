@@ -14,7 +14,7 @@ const HEADLINE_GRADIENT = "linear-gradient(95deg,#9FD8FF,#9FF5E8,#C5B3FF,#FFB7E5
 const COPY = {
   en: {
     eyebrow: "welcome back",
-    signInTitle: "Sign in to ",
+    signInTitle: "Log on to ",
     signInAccent: "BrainTrack",
     signUpTitle: "Create your ",
     signUpAccent: "BrainTrack account",
@@ -25,14 +25,14 @@ const COPY = {
     iAmA: "I am a",
     learner: "Learner",
     parent: "Parent",
-    signIn: "Sign in",
+    signIn: "Log on",
     signUp: "Create account",
-    signingIn: "Signing in…",
+    signingIn: "Logging on…",
     creating: "Creating account…",
     noAccount: "New to BrainTrack?",
     createOne: "Create an account",
     haveAccount: "Already have an account?",
-    signInInstead: "Sign in",
+    signInInstead: "Log on",
     passwordHint: "At least 10 characters.",
     backHome: "← Back to home",
   },
@@ -82,7 +82,12 @@ export default function SignInPage() {
   const qc = useQueryClient();
 
   const [mode, setMode] = useState<"signin" | "signup">("signin");
-  const [email, setEmail] = useState("");
+  // Prefill from THIS DEVICE's last successful login only. Deliberately not
+  // hardcoded — baking an admin email into the public bundle would hand every
+  // visitor the exact account to attack.
+  const [email, setEmail] = useState(() => {
+    try { return localStorage.getItem("bt:last-email") ?? ""; } catch { return ""; }
+  });
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -113,8 +118,16 @@ export default function SignInPage() {
     },
     onSuccess: (data: any) => {
       qc.invalidateQueries();
+      try { localStorage.setItem("bt:last-email", email); } catch { /* private mode */ }
       const userRole = data?.user?.role ?? role;
-      navigate(userRole === "parent" ? "/parent" : "/classroom");
+      // Honour ?returnTo= (e.g. the footer Admin link) before role defaults.
+      const params = new URLSearchParams(window.location.search);
+      const returnTo = params.get("returnTo");
+      if (returnTo && returnTo.startsWith("/") && !returnTo.startsWith("//")) {
+        navigate(returnTo);
+        return;
+      }
+      navigate(userRole === "admin" ? "/learn/admin" : userRole === "parent" ? "/parent" : "/classroom");
     },
     onError: (e: any) => setError(e?.message ?? "Something went wrong."),
   });
