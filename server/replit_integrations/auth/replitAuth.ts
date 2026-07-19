@@ -207,6 +207,12 @@ export async function setupAuth(app: Express) {
       "[auth] REPL_ID not set — Replit OIDC sign-in disabled. Set REPL_ID + " +
         "REPLIT_DOMAINS to enable it, or configure an alternative auth provider.",
     );
+    // These must still be registered on this path: without them passport
+    // cannot persist a session, and any other login mechanism (e.g. the native
+    // email+password routes) fails with "Failed to serialize user into session".
+    passport.serializeUser((user: Express.User, cb) => cb(null, user));
+    passport.deserializeUser((user: Express.User, cb) => cb(null, user));
+
     app.get("/api/login", (_req, res) => {
       res.status(503).json({
         error: "sign_in_unavailable",
