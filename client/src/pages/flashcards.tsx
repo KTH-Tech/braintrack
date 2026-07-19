@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
   ArrowLeft,
-  BookOpen,
   Brain,
   LogOut,
   Layers,
@@ -887,25 +886,22 @@ export default function FlashcardsPage() {
       <header className="sticky top-0 z-50 bg-black/90 " style={{ borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 gap-4">
-            <div className="flex items-center gap-3">
-              <nav className="hidden md:flex items-center gap-0.5">
-                <Link href="/dashboard">
-                  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white hover:bg-white/5 transition-all">
-                    <BookOpen className="w-3.5 h-3.5" />
-                    {isAf ? "Tuis" : "Home"}
-                  </button>
-                </Link>
-                <Link href="/subjects">
-                  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white hover:bg-white/5 transition-all">
-                    <Layers className="w-3.5 h-3.5" />
-                    {isAf ? "Vakke" : "Subjects"}
-                  </button>
-                </Link>
-                <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary/10 text-primary transition-all">
-                  <Brain className="w-3.5 h-3.5" />
-                  {isAf ? "Flitskaarte" : "Flashcards"}
+            <div className="flex items-center gap-3 min-w-0">
+              <Link href="/dashboard">
+                <button
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[.03] text-xs font-bold hover:bg-white/10 shrink-0"
+                  style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  {isAf ? "Tuis" : "Home"}
                 </button>
-              </nav>
+              </Link>
+              <span
+                className="hidden sm:inline truncate"
+                style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#94F7C5", transform: "rotate(-2deg)", textShadow: "0 0 10px rgba(148,247,197,.45)" }}
+              >
+                {isAf ? "Flitskaarte" : "Flashcards"}
+              </span>
             </div>
 
             <div className="flex items-center gap-1.5">

@@ -17,8 +17,8 @@ rules:
       If this line has already been reviewed and approved, add a trailing
       // nosemgrep: no-raw-window-location-href-variable comment.
 
-      See client/src/components/notifications-panel.tsx and nova-bot.tsx for
-      reference implementations of the isSafeInternalPath() pattern.
+      See client/src/components/notifications-panel.tsx for a reference
+      implementation of the isSafeInternalPath() pattern.
     metadata:
       category: security
       cwe: "CWE-601: URL Redirection to Untrusted Site ('Open Redirect')"

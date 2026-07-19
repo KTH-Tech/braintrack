@@ -24,8 +24,6 @@ import {
   HelpCircle,
   ChevronDown,
   Globe,
-  Menu,
-  X,
   Home,
   ArrowLeft,
   Layers,
@@ -572,7 +570,6 @@ export default function DashboardPage() {
   const t = T[language];
   const [, navigate] = useLocation();
   const [location] = useLocation();
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [popupBadge, setPopupBadge] = useState<string | null>(null);
   const dismissPopup = useCallback(() => setPopupBadge(null), []);
 
@@ -842,79 +839,6 @@ export default function DashboardPage() {
         <span aria-hidden style={{ position: "absolute", top: 300, right: 24, fontFamily: "'Permanent Marker',cursive", fontSize: 26, color: "rgba(255,183,229,.45)", transform: "rotate(-8deg)", pointerEvents: "none" }}>⚡</span>
         <span aria-hidden style={{ position: "absolute", bottom: 140, right: 80, fontFamily: "'Permanent Marker',cursive", fontSize: 24, color: "rgba(197,179,255,.45)", transform: "rotate(6deg)", pointerEvents: "none" }}>✦</span>
         <span aria-hidden style={{ position: "absolute", top: "60%", left: 8, fontFamily: "'Permanent Marker',cursive", fontSize: 22, color: "rgba(159,216,255,.4)", transform: "rotate(-14deg)", pointerEvents: "none" }}>👑</span>
-
-        {/* ── Mobile top bar (<861px) ── */}
-        <div className="bt-mobilebar" style={{ display: "none", alignItems: "center", justifyContent: "space-between", marginBottom: 18, position: "relative", zIndex: 2 }}>
-          <Link href="/dashboard" style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <img src={btIcon} alt="BrainTrack" style={{ width: 40, height: 40, objectFit: "contain" }} />
-            <span className="bt-wordmark" style={{ fontSize: 15 }}>BrainTrack</span>
-          </Link>
-          <button
-            onClick={() => setMobileOpen(v => !v)}
-            aria-label="Menu"
-            style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, borderRadius: 14, background: "transparent", border: "1px solid #9FF5E8", color: "#9FF5E8", cursor: "pointer" }}
-          >
-            {mobileOpen ? <X style={{ width: 18, height: 18 }} /> : <Menu style={{ width: 18, height: 18 }} />}
-          </button>
-        </div>
-        {mobileOpen && (
-          <div className="bt-mobilemenu" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8, marginBottom: 18, position: "relative", zIndex: 2 }}>
-            {navLinks.map(({ href, icon: Icon, label }, idx) => {
-              const active = location === href;
-              const col = PASTELS[idx % PASTELS.length];
-              return (
-                <Link key={href} href={href}>
-                  <button
-                    onClick={() => setMobileOpen(false)}
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      gap: 4,
-                      width: "100%",
-                      padding: "8px 4px",
-                      borderRadius: 14,
-                      fontSize: 10,
-                      fontWeight: 900,
-                      textTransform: "uppercase",
-                      letterSpacing: ".04em",
-                      cursor: "pointer",
-                      background: active ? col : "transparent",
-                      color: active ? "#050508" : col,
-                      border: `1px solid ${col}`,
-                    }}
-                  >
-                    <Icon style={{ width: 16, height: 16 }} />
-                    <span style={{ lineHeight: 1 }}>{label.slice(0, 8)}</span>
-                  </button>
-                </Link>
-              );
-            })}
-            <button
-              onClick={() => logout()}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 4,
-                width: "100%",
-                padding: "8px 4px",
-                borderRadius: 14,
-                fontSize: 10,
-                fontWeight: 900,
-                textTransform: "uppercase",
-                letterSpacing: ".04em",
-                cursor: "pointer",
-                background: "transparent",
-                color: "#FF8DA1",
-                border: "1px solid #FF8DA1",
-              }}
-            >
-              <LogOut style={{ width: 16, height: 16 }} />
-              <span style={{ lineHeight: 1 }}>{t.signOutLabel.slice(0, 8)}</span>
-            </button>
-          </div>
-        )}
 
         {/* ── Header row ── */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap", marginBottom: 30, position: "relative", zIndex: 1 }}>
@@ -2132,7 +2056,6 @@ export default function DashboardPage() {
       {/* Responsive: the left menu persists at every width (user request —
           no top-bar fallback); it just slims down on narrow screens. */}
       <style>{`
-        .bt-mobilebar, .bt-mobilemenu { display: none !important; }
         @media (max-width: 860px) {
           .bt-dash-sidebar { width: 200px !important; padding: 18px 10px !important; }
           .bt-dash-main { padding: 20px 14px !important; }

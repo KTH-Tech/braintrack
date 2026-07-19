@@ -8,10 +8,9 @@ import {
   BookOpen,
   Search,
   ChevronRight,
-  Languages,
+  ArrowLeft,
   LogOut,
   Settings,
-  Layers,
   GraduationCap,
   Sparkles,
   ArrowUpDown,
@@ -361,42 +360,24 @@ export default function SubjectsPage() {
       <header className="sticky top-0 z-50 border-b" style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "rgba(255,255,255,.08)" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 gap-4">
-            <nav className="flex items-center gap-1.5">
+            <div className="flex items-center gap-3 min-w-0">
               <Link href="/dashboard">
                 <button
                   data-testid="link-home"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0"
                   style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
                 >
-                  <BookOpen className="w-4 h-4" />
+                  <ArrowLeft className="w-4 h-4" />
                   <span className="hidden md:inline">{t.homeLabel}</span>
                 </button>
               </Link>
-              <Link href="/subjects">
-                <button
-                  data-testid="link-subjects"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold"
-                  style={{ background: "#9FF5E8", color: "#0a0a0a" }}
-                >
-                  <Languages className="w-4 h-4" />
-                  <span className="hidden md:inline">
-                    {t.subjectsLabel}
-                  </span>
-                </button>
-              </Link>
-              <Link href="/flashcards">
-                <button
-                  data-testid="link-flashcards"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
-                  style={{ color: "#94F7C5", border: "1.5px solid #94F7C5" }}
-                >
-                  <Layers className="w-4 h-4" />
-                  <span className="hidden md:inline">
-                    {t.flashcardsLabel}
-                  </span>
-                </button>
-              </Link>
-            </nav>
+              <span
+                className="hidden sm:inline truncate"
+                style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", textShadow: "0 0 10px rgba(159,245,232,.45)" }}
+              >
+                {t.subjectsLabel}
+              </span>
+            </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => toggleLanguage()}

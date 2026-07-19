@@ -1061,23 +1061,21 @@ export default function SubjectDetailPage() {
       <header className="sticky top-0 z-50 bg-background/95 relative" style={{ borderBottom: "2px solid rgba(110,231,249,0.5)" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 gap-4 flex-wrap">
-            <div className="flex items-center gap-3">
-              <span className="font-semibold text-xl gradient-text hidden sm:inline">{isAf ? "Klaskamer" : "Classroom"}</span>
-            </div>
-            <nav className="flex items-center gap-1.5 flex-wrap">
+            <div className="flex items-center gap-3 min-w-0">
               <Link href="/dashboard">
-                <button className="px-4 py-2 rounded-xl bg-background text-sm font-bold" style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }} data-testid="link-home">
-                  {isAf ? "Dashboard" : "Dashboard"}
+                <button className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-background text-sm font-bold shrink-0" style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }} data-testid="link-home">
+                  <ArrowLeft className="w-4 h-4" />
+                  <span className="hidden md:inline">{isAf ? "Dashboard" : "Dashboard"}</span>
                 </button>
               </Link>
-              <Link href="/exam-mode">
-                <button className="px-4 py-2 rounded-xl bg-background text-sm font-bold" style={{ color: "#FFE29A", border: "1.5px solid #FFE29A" }} data-testid="link-crunch-time">{isAf ? "Eksamentyd" : "Crunch Time"}</button>
-              </Link>
-              <Link href="/flashcards">
-                <button className="px-4 py-2 rounded-xl bg-background text-sm font-bold" style={{ color: "#94F7C5", border: "1.5px solid #94F7C5" }} data-testid="link-flashcards">
-                  {isAf ? "Flitskaarte" : "Flashcards"}
-                </button>
-              </Link>
+              <span
+                className="hidden sm:inline truncate"
+                style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", textShadow: "0 0 10px rgba(159,245,232,.45)" }}
+              >
+                {isAf ? "Klaskamer" : "Classroom"}
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5">
               <button onClick={toggleLanguage} className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-background text-sm font-bold transition-colors" style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }} data-testid="button-language-toggle">
                 <Globe className="h-4 w-4" />
                 <span>{language === "en" ? "EN" : "AF"}</span>
@@ -1086,7 +1084,7 @@ export default function SubjectDetailPage() {
                 <LogOut className="w-4 h-4 mr-1" />
                 {isAf ? "Uitteken" : "Sign Out"}
               </button>
-            </nav>
+            </div>
           </div>
         </div>
       </header>
