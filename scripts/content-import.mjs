@@ -36,7 +36,9 @@ for (const file of files) {
       const params = entries.map(([, v]) =>
         v !== null && typeof v === "object" ? JSON.stringify(v) : v,
       );
-      const conflict = hasHash ? " ON CONFLICT (content_hash) DO NOTHING" : " ON CONFLICT DO NOTHING";
+      // Bare DO NOTHING covers whichever unique constraint the table actually
+      // has; the column-specific form errors on tables with no such index.
+      const conflict = " ON CONFLICT DO NOTHING";
       try {
         await c.query(`INSERT INTO ${table} (${cols}) VALUES (${vals})${conflict}`, params);
         total++;

@@ -140,8 +140,22 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // React core — smallest possible initial chunk
-          if (id.includes("node_modules/react/") || id.includes("node_modules/react-dom/")) {
+          // React core. `scheduler` and the react-is/prop-types family MUST sit
+          // in this chunk too: they are React's own CJS dependencies, so leaving
+          // them in vendor-misc makes vendor-react and vendor-misc depend on each
+          // other. That cycle let vendor-misc initialise first in production and
+          // crashed the whole app with
+          //   "Cannot set properties of undefined (setting 'Children')".
+          // Dev never caught it — Vite does not chunk in dev.
+          if (
+            id.includes("node_modules/react/") ||
+            id.includes("node_modules/react-dom/") ||
+            id.includes("node_modules/scheduler/") ||
+            id.includes("node_modules/react-is/") ||
+            id.includes("node_modules/prop-types/") ||
+            id.includes("node_modules/object-assign/") ||
+            id.includes("node_modules/use-sync-external-store/")
+          ) {
             return "vendor-react";
           }
           // Routing + data fetching
