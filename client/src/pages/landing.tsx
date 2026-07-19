@@ -260,10 +260,18 @@ function useInView<T extends HTMLElement>(): [React.RefObject<T>, boolean] {
           io.disconnect();
         }
       },
-      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" },
+      // Reveal EARLY: any sliver of the element within 25% below the viewport
+      // triggers it. The old 12%-visible/-8% margin made sections fade in only
+      // once well inside the viewport, so fast scrollers (and short mobile
+      // viewports) saw stretches of blank page.
+      { threshold: 0.01, rootMargin: "0px 0px 25% 0px" },
     );
     io.observe(el);
-    return () => io.disconnect();
+    // Fail-safe: nothing may ever stay invisible. If the observer hasn't
+    // fired within 4s of mount (odd embed, throttled tab, exotic browser),
+    // reveal regardless.
+    const failSafe = window.setTimeout(() => setInView(true), 4000);
+    return () => { io.disconnect(); window.clearTimeout(failSafe); };
   }, []);
   return [ref, inView];
 }
