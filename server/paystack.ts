@@ -155,6 +155,11 @@ export function registerPaystackRoutes(app: Express, isAuthenticated: any) {
         body: JSON.stringify({
           email: user.email,
           plan: planCode(),
+          // Paystack requires a non-zero amount on initialize even when a plan
+          // is supplied ("Invalid Amount Sent" otherwise). The plan's own
+          // amount takes precedence for the actual charge; this is in minor
+          // units (R169.00 = 16900 cents).
+          amount: 16900,
           currency: "ZAR",
           callback_url: `${appUrl}/subscribe?paystack=return`,
           metadata: { userId, product: "BrainTrack Premium" },
