@@ -252,9 +252,15 @@ export async function fetchAndParsePDF(url: string, retries = 2): Promise<string
           try {
             const ocrText = await ocrPdfWithOpenAI(buffer, url);
             const ocrAlpha = (ocrText.match(/[A-Za-z]/g) || []).length;
-            // Accept OCR result if it has materially more alphabetic content
-            // than the pdf-parse output (guards against hallucinated empties).
-            if (ocrText && ocrAlpha > Math.max(alphaCount, 80)) {
+            // Reject model refusals ("I'm unable to transcribe…"): short,
+            // first-person, and previously stored as if they were real paper
+            // content — which produced exactly one junk question per paper.
+            const isRefusal =
+              ocrText.length < 1500 &&
+              /\b(I'?m sorry|I'?m unable|I cannot|I can'?t|unable to (assist|transcribe|help)|can'?t help with)\b/i.test(ocrText);
+            if (isRefusal) {
+              console.warn(`[OCR] Model refused to transcribe (${ocrText.length} chars) for ${url}`);
+            } else if (ocrText && ocrAlpha > Math.max(alphaCount, 80)) {
               console.log(
                 `[OCR] Fallback recovered ${ocrText.length} chars (alpha ${ocrAlpha} vs ${alphaCount}) for ${url}`,
               );
@@ -309,8 +315,12 @@ export async function ocrPdfWithOpenAI(buffer: Buffer, sourceUrl: string): Promi
   const dataUrl = `data:application/pdf;base64,${buffer.toString("base64")}`;
   const filename = (sourceUrl.split("/").pop() || "memo.pdf").replace(/[^A-Za-z0-9._-]/g, "_").slice(0, 60);
 
+  // gpt-4.1 is the model that actually transcribes DBE PDFs. Measured on
+  // Mathematics P1 Nov 2025: gpt-4.1 returned 11,255 chars of clean text,
+  // while gpt-4o and gpt-4o-mini both refused (~180 chars, "I'm unable to
+  // transcribe…"). Do not downgrade without re-running that comparison.
   const resp = await (client as any).responses.create({
-    model: "gpt-4o-mini",
+    model: "gpt-4.1",
     input: [
       {
         role: "user",

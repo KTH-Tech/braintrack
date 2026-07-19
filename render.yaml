@@ -24,7 +24,9 @@ services:
     region: frankfurt  # closest to South Africa; change to 'ohio' if latency differs
     plan: standard     # upgrade to 'pro' at 63+ schools
     buildCommand: npm install && npm run build
-    startCommand: node dist/index.js
+    # The build emits dist/index.cjs (see script/build.ts) — starting
+    # dist/index.js crashes the service on boot with MODULE_NOT_FOUND.
+    startCommand: npm run start
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
@@ -37,6 +39,31 @@ services:
       maxInstances: 3
       targetMemoryPercent: 80
       targetCPUPercent: 70
+
+  # ── DBE content ingestion (manual trigger) ─────────────────────────────────
+  # A cron scheduled far in the future so it never self-runs — trigger it by
+  # hand from the Render dashboard ("Run job") when you want to ingest or
+  # re-ingest DBE papers. Runs on Linux with a real OPENAI_API_KEY, which is
+  # where the OCR fallback for scanned PDFs (Maths, technical subjects) works.
+  # Content de-dupes on content_hash, so re-runs are safe.
+  - type: cron
+    name: braintrack-dbe-ingestion
+    runtime: node
+    region: frankfurt
+    schedule: "0 3 29 2 *"  # 29 Feb — effectively manual-only
+    buildCommand: npm install
+    startCommand: npx tsx server/scripts/ingest-all.ts
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: ENABLE_OCR_FALLBACK
+        value: "1"
+      - key: NODE_OPTIONS
+        value: "--max-old-space-size=4096"
+      - key: SESSION_SECRET
+        sync: false
 
   # ── Cron: Streak Reminders — runs daily at 17:00 SAST (15:00 UTC) ──────────
   - type: cron
