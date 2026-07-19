@@ -598,7 +598,7 @@ export default function TutorPage() {
       <GraffitiSplats variant="corner" opacity={0.35} />
       <header
         className="sticky top-0 z-50 bg-background/95 relative"
-        style={{ borderBottom: "2px solid rgba(127,239,255,0.5)" }}
+        style={{ borderBottom: "2px solid rgba(110,231,249,0.5)" }}
       >
         <div className="max-w-4xl mx-auto px-2 min-[375px]:px-4">
           <div className="flex items-center justify-between h-14 gap-2 min-[375px]:gap-4">
@@ -606,14 +606,14 @@ export default function TutorPage() {
               <Link href="/dashboard">
                 <button
                   className="inline-flex items-center gap-1.5 px-2 min-[375px]:px-4 py-2 rounded-xl bg-background text-sm font-bold shrink-0"
-                  style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF" }}
+                  style={{ color: "#6EE7F9", border: "1.5px solid #6EE7F9" }}
                   data-testid="link-back"
                 >
                   <ArrowLeft className="h-3.5 w-3.5 shrink-0" />
                   <span className="max-[374px]:hidden">{t.homeLabel}</span>
                 </button>
               </Link>
-              <span className="hidden sm:inline text-base tracking-tight graffiti-hand" style={{ color: "#C6A4FF", textShadow: "0 0 8px rgba(198,164,255,0.45)" }}>
+              <span className="hidden sm:inline text-base tracking-tight graffiti-hand" style={{ color: "#C5B3FF", textShadow: "0 0 8px rgba(197,179,255,0.45)" }}>
                 Rizz
               </span>
             </div>
@@ -621,7 +621,7 @@ export default function TutorPage() {
               <button
                 onClick={toggleLanguage}
                 className="inline-flex items-center gap-1 min-[375px]:gap-1.5 px-2 min-[375px]:px-4 py-2 rounded-xl bg-background text-sm font-bold"
-                style={{ color: "#C6A4FF", border: "1.5px solid #C6A4FF" }}
+                style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
                 data-testid="button-language-toggle"
                 aria-label={language === "en" ? "EN" : "AF"}
               >
@@ -631,7 +631,7 @@ export default function TutorPage() {
               <button
                 onClick={() => logout()}
                 className="inline-flex items-center gap-1 min-[375px]:gap-1.5 px-2 min-[375px]:px-4 py-2 rounded-xl bg-background text-sm font-bold"
-                style={{ color: "#FF9FE5", border: "1.5px solid #FF9FE5" }}
+                style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}
                 data-testid="button-logout"
                 aria-label={t.signOut}
               >
@@ -644,14 +644,14 @@ export default function TutorPage() {
       </header>
 
       <div className="max-w-4xl mx-auto w-full px-4 pt-4 flex flex-col sm:flex-row sm:items-center gap-3">
-        <div className="flex flex-wrap gap-1.5 p-1 rounded-xl bg-background w-full sm:w-auto" style={{ border: "1px solid rgba(198,164,255,0.4)", boxShadow: "inset 0 0 12px rgba(0,0,0,0.6)" }}>
+        <div className="flex flex-wrap gap-1.5 p-1 rounded-xl bg-background w-full sm:w-auto" style={{ border: "1px solid rgba(197,179,255,0.4)", boxShadow: "inset 0 0 12px rgba(0,0,0,0.6)" }}>
           <button
             onClick={() => setMode("chat")}
             className="inline-flex flex-1 sm:flex-none items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-none"
             style={
               mode === "chat"
-                ? { background: "#7FEFFF", color: "#0a0a0a" }
-                : { color: "#C6A4FF", border: "1.5px solid #C6A4FF", background: "#000" }
+                ? { background: "#6EE7F9", color: "#0a0a0a" }
+                : { color: "#C5B3FF", border: "1.5px solid #C5B3FF", background: "#000" }
             }
             data-testid="button-mode-chat"
           >
@@ -663,8 +663,8 @@ export default function TutorPage() {
             className="inline-flex flex-1 sm:flex-none items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-none"
             style={
               mode === "notes"
-                ? { background: "#7FEFFF", color: "#0a0a0a" }
-                : { color: "#7FEFFF", border: "1.5px solid #7FEFFF", background: "#000" }
+                ? { background: "#6EE7F9", color: "#0a0a0a" }
+                : { color: "#6EE7F9", border: "1.5px solid #6EE7F9", background: "#000" }
             }
             data-testid="button-mode-notes"
           >
@@ -676,16 +676,16 @@ export default function TutorPage() {
         <div className="flex items-center gap-1.5 flex-wrap sm:ml-auto">
           <div
             className="flex flex-wrap items-center gap-1 p-1 rounded-lg bg-background"
-            style={{ border: "1px solid rgba(127,239,255,0.4)" }}
+            style={{ border: "1px solid rgba(110,231,249,0.4)" }}
             title={t.voiceLabel}
           >
-            <Volume2 className="w-3.5 h-3.5 ml-1" style={{ color: "#7FEFFF" }} />
+            <Volume2 className="w-3.5 h-3.5 ml-1" style={{ color: "#6EE7F9" }} />
             <button
               onClick={() => setVoiceGender("female")}
               className="px-4 py-2 rounded-xl text-sm font-bold transition-none"
               style={voiceGender === "female"
-                ? { background: "#93FFB8", color: "#0a0a0a" }
-                : { color: "#FF9FE5", border: "1.5px solid #FF9FE5", background: "#000" }}
+                ? { background: "#94F7C5", color: "#0a0a0a" }
+                : { color: "#FFB7E5", border: "1.5px solid #FFB7E5", background: "#000" }}
               data-testid="button-voice-female"
             >
               {t.voiceGirlLabel}
@@ -694,8 +694,8 @@ export default function TutorPage() {
               onClick={() => setVoiceGender("male")}
               className="px-4 py-2 rounded-xl text-sm font-bold transition-none"
               style={voiceGender === "male"
-                ? { background: "#93FFB8", color: "#0a0a0a" }
-                : { color: "#6FA8FF", border: "1.5px solid #6FA8FF", background: "#000" }}
+                ? { background: "#94F7C5", color: "#0a0a0a" }
+                : { color: "#9FD8FF", border: "1.5px solid #9FD8FF", background: "#000" }}
               data-testid="button-voice-male"
             >
               {t.voiceBoyLabel}
@@ -703,7 +703,7 @@ export default function TutorPage() {
           </div>
           <div
             className="flex flex-wrap items-center gap-0.5 p-1 rounded-lg bg-background"
-            style={{ border: "1px solid rgba(255,242,158,0.4)" }}
+            style={{ border: "1px solid rgba(255,226,154,0.4)" }}
             title={t.speechSpeedLabel}
           >
             {(["slow", "normal", "fast"] as const).map(r => (
@@ -712,8 +712,8 @@ export default function TutorPage() {
                 onClick={() => setVoiceRate(r)}
                 className="px-4 py-2 rounded-xl text-sm font-bold transition-none"
                 style={voiceRate === r
-                  ? { background: "#93FFB8", color: "#0a0a0a" }
-                  : { color: "#FFF29E", border: "1.5px solid #FFF29E", background: "#000" }}
+                  ? { background: "#94F7C5", color: "#0a0a0a" }
+                  : { color: "#FFE29A", border: "1.5px solid #FFE29A", background: "#000" }}
                 data-testid={`button-voice-rate-${r}`}
               >
                 {r === "slow" ? t.slowLabel : r === "fast" ? t.fastLabel : t.normalLabel}
@@ -734,18 +734,18 @@ export default function TutorPage() {
                 <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
                   <h2 className="text-xl text-white tracking-tight graffiti-hand">
                     <span className="spray-title graffiti-hand">
-                      <SpraySmear color="#7FEFFF" />
+                      <SpraySmear color="#6EE7F9" />
                       {t.generateStudyNotesHeading}
                     </span>
                   </h2>
                   {profile?.learningStyle === "visual" && (
-                    <div className="flex items-center gap-1 p-1 rounded-lg bg-background" style={{ border: "1px solid rgba(198,164,255,0.4)" }}>
+                    <div className="flex items-center gap-1 p-1 rounded-lg bg-background" style={{ border: "1px solid rgba(197,179,255,0.4)" }}>
                       <button
                         onClick={() => setNotesView("notes")}
                         className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-none"
                         style={notesView === "notes"
-                          ? { background: "#7FEFFF", color: "#0a0a0a" }
-                          : { color: "#7FEFFF", border: "1.5px solid #7FEFFF", background: "#000" }}
+                          ? { background: "#6EE7F9", color: "#0a0a0a" }
+                          : { color: "#6EE7F9", border: "1.5px solid #6EE7F9", background: "#000" }}
                         data-testid="button-notes-view-notes"
                       >
                         <NotebookPen className="w-3.5 h-3.5" />{t.notesViewLabel}
@@ -754,8 +754,8 @@ export default function TutorPage() {
                         onClick={() => setNotesView("mindmap")}
                         className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-none"
                         style={notesView === "mindmap"
-                          ? { background: "#7FEFFF", color: "#0a0a0a" }
-                          : { color: "#C6A4FF", border: "1.5px solid #C6A4FF", background: "#000" }}
+                          ? { background: "#6EE7F9", color: "#0a0a0a" }
+                          : { color: "#C5B3FF", border: "1.5px solid #C5B3FF", background: "#000" }}
                         data-testid="button-notes-view-mindmap"
                       >
                         <Network className="w-3.5 h-3.5" />{t.mindmapViewLabel}
@@ -770,7 +770,7 @@ export default function TutorPage() {
                       <Select value={selectedSubject} onValueChange={setSelectedSubject}>
                         <SelectTrigger
                           className="bg-background"
-                          style={{ border: "1px solid rgba(198,164,255,0.5)", color: "#fff" }}
+                          style={{ border: "1px solid rgba(197,179,255,0.5)", color: "#fff" }}
                           data-testid="select-subject-mindmap"
                         >
                           <SelectValue placeholder={t.selectSubjectMindmapPlaceholder} />
@@ -792,7 +792,7 @@ export default function TutorPage() {
                       />
                     ) : (
                       <div className="text-center py-8" style={{ color:"#ffffff" }}>
-                        <Network className="w-8 h-8 mx-auto mb-2" style={{ color: "#C6A4FF" }} />
+                        <Network className="w-8 h-8 mx-auto mb-2" style={{ color: "#C5B3FF" }} />
                         <p className="text-sm">{t.selectSubjectFirst}</p>
                       </div>
                     )}
@@ -827,12 +827,12 @@ export default function TutorPage() {
                     >
                       <div
                         className="w-9 h-9 rounded-lg bg-background flex items-center justify-center flex-shrink-0 mt-0.5"
-                        style={{ border: "1px solid #C6A4FF", boxShadow: "0 0 10px rgba(198,164,255,0.5)" }}
+                        style={{ border: "1px solid #C5B3FF", boxShadow: "0 0 10px rgba(197,179,255,0.5)" }}
                       >
-                        <StyleIcon className="w-5 h-5" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 3px #C6A4FF)" }} />
+                        <StyleIcon className="w-5 h-5" style={{ color: "#C5B3FF", filter: "drop-shadow(0 0 3px #C5B3FF)" }} />
                       </div>
                       <div>
-                        <p className="text-sm font-black mb-0.5" style={{ color: "#C6A4FF" }}>{isAf ? meta.af : meta.en}</p>
+                        <p className="text-sm font-black mb-0.5" style={{ color: "#C5B3FF" }}>{isAf ? meta.af : meta.en}</p>
                         <p className="text-xs leading-relaxed" style={{ color:"#ffffff" }}>{isAf ? meta.descAf : meta.descEn}</p>
                         {(focusMin || timeLabel) && (
                           <p className="text-xs mt-1" style={{ color:"#ffffff" }}>
@@ -850,7 +850,7 @@ export default function TutorPage() {
                   <Select value={selectedSubject} onValueChange={setSelectedSubject}>
                     <SelectTrigger
                       className="bg-background"
-                      style={{ border: "1px solid rgba(127,239,255,0.5)", color: "#fff" }}
+                      style={{ border: "1px solid rgba(110,231,249,0.5)", color: "#fff" }}
                       data-testid="select-subject-notes"
                     >
                       <SelectValue placeholder={t.selectSubjectPlaceholder} />
@@ -866,12 +866,12 @@ export default function TutorPage() {
 
                   {selectedSubject && capsTopics && capsTopics.length > 0 && (
                     <div>
-                      <p className="text-[11px] font-black mb-2 uppercase tracking-[0.22em]" style={{ color: "#FFF29E" }}>
+                      <p className="text-[11px] font-black mb-2 uppercase tracking-[0.22em]" style={{ color: "#FFE29A" }}>
                         {t.capsTopicsLabel}
                       </p>
                       <div className="flex flex-wrap gap-1.5">
                         {capsTopics.map((topic, i) => {
-                          const palette = ["#7FEFFF", "#6FA8FF", "#C6A4FF", "#C6A4FF", "#FF9FE5", "#FFF29E", "#FFC48F", "#FFF29E"];
+                          const palette = ["#6EE7F9", "#9FD8FF", "#C5B3FF", "#C5B3FF", "#FFB7E5", "#FFE29A", "#FFE29A", "#FFE29A"];
                           const hex = palette[i % palette.length];
                           const isSelected = notesTopic === (isAf ? topic.nameAfrikaans : topic.name);
                           return (
@@ -886,7 +886,7 @@ export default function TutorPage() {
                             >
                               {isAf ? topic.nameAfrikaans : topic.name}
                               {topic.capsWeighting === "high" && (
-                                <span className="ml-1" style={{ color: "#FFF29E" }} title={t.highExamWeighting}>★</span>
+                                <span className="ml-1" style={{ color: "#FFE29A" }} title={t.highExamWeighting}>★</span>
                               )}
                             </button>
                           );
@@ -900,14 +900,14 @@ export default function TutorPage() {
                     onChange={(e) => setNotesTopic(e.target.value)}
                     placeholder={t.topicNotesPlaceholder}
                     className="min-h-[80px] bg-background"
-                    style={{ border: "1.5px solid rgba(127,239,255,0.5)", boxShadow: "0 0 14px rgba(127,239,255,0.2), inset 0 0 10px rgba(0,0,0,0.5)", color: "#fff" }}
+                    style={{ border: "1.5px solid rgba(110,231,249,0.5)", boxShadow: "0 0 14px rgba(110,231,249,0.2), inset 0 0 10px rgba(0,0,0,0.5)", color: "#fff" }}
                     data-testid="input-notes-topic"
                   />
                   <button 
                     onClick={handleGenerateNotes} 
                     disabled={notesMutation.isPending || !notesTopic.trim()}
                     className="inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 font-bold text-sm transition-none disabled:opacity-40"
-                    style={{ background: "#7FEFFF", color: "#0a0a0a" }}
+                    style={{ background: "#6EE7F9", color: "#0a0a0a" }}
                     data-testid="button-generate-notes"
                   >
                     {notesMutation.isPending ? (
@@ -917,7 +917,7 @@ export default function TutorPage() {
                       </>
                     ) : (
                       <>
-                        <Sparkles className="w-4 h-4" style={{ filter: "drop-shadow(0 0 4px #FF9FE5)" }} />
+                        <Sparkles className="w-4 h-4" style={{ filter: "drop-shadow(0 0 4px #FFB7E5)" }} />
                         {t.generateNotesBtn}
                       </>
                     )}
@@ -929,7 +929,7 @@ export default function TutorPage() {
                       style={{ background: "rgba(220,38,38,0.08)", border: "1.5px solid rgba(248,113,113,0.55)", color: "#fff" }}
                       data-testid="notes-generation-error"
                     >
-                      <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "#FFC48F" }} />
+                      <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "#FFE29A" }} />
                       <div className="flex-1 leading-snug">
                         <p className="font-bold">
                           {t.couldNotGenerateNotes}
@@ -945,7 +945,7 @@ export default function TutorPage() {
                         onClick={handleGenerateNotes}
                         disabled={notesMutation.isPending || !notesTopic.trim()}
                         className="flex-shrink-0 inline-flex items-center gap-1 rounded-xl px-4 py-2 text-sm font-bold bg-black disabled:opacity-40"
-                        style={{ border: "1.5px solid #FFC48F", color: "#FFC48F" }}
+                        style={{ border: "1.5px solid #FFE29A", color: "#FFE29A" }}
                         data-testid="button-retry-notes"
                       >
                         <RotateCcw className="w-3 h-3" />
@@ -961,13 +961,13 @@ export default function TutorPage() {
             {generatedNotes && (
               <div
                 className="flex-1 overflow-hidden rounded-2xl bg-background"
-                style={{ border: "1.5px solid #FF9FE5", boxShadow: "0 0 0 1px rgba(255,159,229,0.25), 0 0 28px rgba(255,159,229,0.28), inset 0 0 20px rgba(0,0,0,0.6)" }}
+                style={{ border: "1.5px solid #FFB7E5", boxShadow: "0 0 0 1px rgba(255,183,229,0.25), 0 0 28px rgba(255,183,229,0.28), inset 0 0 20px rgba(0,0,0,0.6)" }}
               >
                 <div className="p-4 h-full flex flex-col">
                   <div className="mb-3 flex items-center justify-between gap-2 flex-wrap">
                     <h3 className="text-lg text-white tracking-tight graffiti-hand">
                       <span className="spray-title graffiti-hand">
-                        <SpraySmear color="#FF9FE5" />
+                        <SpraySmear color="#FFB7E5" />
                         {t.studyNotesHeading}
                       </span>
                     </h3>
@@ -975,7 +975,7 @@ export default function TutorPage() {
                       <button
                         type="button"
                         className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black text-sm font-bold"
-                        style={{ color: "#93FFB8", border: "1.5px solid #93FFB8" }}
+                        style={{ color: "#94F7C5", border: "1.5px solid #94F7C5" }}
                         onClick={() => {
                           if (isSpeaking) {
                             window.speechSynthesis.cancel();
@@ -1018,7 +1018,7 @@ export default function TutorPage() {
                       <button
                         type="button"
                         className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black text-sm font-bold"
-                        style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF" }}
+                        style={{ color: "#6EE7F9", border: "1.5px solid #6EE7F9" }}
                         onClick={() => {
                           const printWindow = window.open('', '_blank');
                           if (!printWindow) return;
@@ -1326,7 +1326,7 @@ export default function TutorPage() {
                   </div>
                   <ScrollArea className="flex-1 pr-4">
                     <div
-                      className="text-sm text-foreground leading-relaxed prose prose-invert prose-sm max-w-none [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm [&_h1]:font-bold [&_h2]:font-bold [&_h3]:font-semibold [&_ul]:pl-4 [&_ol]:pl-4 [&_li]:mb-0.5 [&_strong]:text-[#7FEFFF] [&_code]:bg-white/10 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs [&_blockquote]:border-l-2 [&_blockquote]:border-white/20 [&_blockquote]:pl-3 [&_blockquote]:text-foreground"
+                      className="text-sm text-foreground leading-relaxed prose prose-invert prose-sm max-w-none [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm [&_h1]:font-bold [&_h2]:font-bold [&_h3]:font-semibold [&_ul]:pl-4 [&_ol]:pl-4 [&_li]:mb-0.5 [&_strong]:text-[#6EE7F9] [&_code]:bg-white/10 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs [&_blockquote]:border-l-2 [&_blockquote]:border-white/20 [&_blockquote]:pl-3 [&_blockquote]:text-foreground"
                       data-testid="text-generated-notes"
                       onContextMenu={e => e.preventDefault()}
                       data-nosnippet
@@ -1343,12 +1343,12 @@ export default function TutorPage() {
             <div
               aria-hidden
               className="pointer-events-none absolute top-0 left-0 w-[360px] h-[360px] rounded-full opacity-35 blur-3xl"
-              style={{ background: "radial-gradient(circle, rgba(198,164,255,0.45), transparent 70%)" }}
+              style={{ background: "radial-gradient(circle, rgba(197,179,255,0.45), transparent 70%)" }}
             />
             <div
               aria-hidden
               className="pointer-events-none absolute bottom-0 right-0 w-[360px] h-[360px] rounded-full opacity-35 blur-3xl"
-              style={{ background: "radial-gradient(circle, rgba(127,239,255,0.4), transparent 70%)" }}
+              style={{ background: "radial-gradient(circle, rgba(110,231,249,0.4), transparent 70%)" }}
             />
             {(() => {
               const learningStyle = profile?.learningStyle || "mixed";
@@ -1358,24 +1358,24 @@ export default function TutorPage() {
                 <div
                   className="relative w-20 h-20 rounded-2xl bg-background flex items-center justify-center mb-6"
                   style={{
-                    border: "1.5px solid #C6A4FF",
-                    boxShadow: "0 0 0 1px rgba(198,164,255,0.3), 0 0 28px rgba(198,164,255,0.55), inset 0 0 18px rgba(0,0,0,0.6)",
+                    border: "1.5px solid #C5B3FF",
+                    boxShadow: "0 0 0 1px rgba(197,179,255,0.3), 0 0 28px rgba(197,179,255,0.55), inset 0 0 18px rgba(0,0,0,0.6)",
                   }}
                 >
-                  <TutorIcon className="w-10 h-10" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 6px #C6A4FF)" }} />
+                  <TutorIcon className="w-10 h-10" style={{ color: "#C5B3FF", filter: "drop-shadow(0 0 6px #C5B3FF)" }} />
                 </div>
               );
             })()}
             <span
               className="relative inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.28em] px-4 py-1.5 rounded-full bg-background mb-4"
-              style={{ color: "#7FEFFF", border: "1px solid rgba(127,239,255,0.55)", boxShadow: "0 0 14px rgba(127,239,255,0.35)" }}
+              style={{ color: "#6EE7F9", border: "1px solid rgba(110,231,249,0.55)", boxShadow: "0 0 14px rgba(110,231,249,0.35)" }}
             >
-              <Sparkles className="w-3.5 h-3.5" style={{ filter: "drop-shadow(0 0 4px #7FEFFF)" }} />
+              <Sparkles className="w-3.5 h-3.5" style={{ filter: "drop-shadow(0 0 4px #6EE7F9)" }} />
               {t.tutorHeading}
             </span>
             <h1 className="relative text-3xl sm:text-4xl md:text-5xl text-white tracking-tight leading-[1.05] mb-3 graffiti-hand">
               <span className="spray-title graffiti-hand">
-                <SpraySmear color="#C6A4FF" />
+                <SpraySmear color="#C5B3FF" />
                 {t.askMeAnything}
               </span>
             </h1>
@@ -1386,12 +1386,12 @@ export default function TutorPage() {
             <div className="relative w-full max-w-lg space-y-3">
               {selectedSubject && capsTopics && capsTopics.length > 0 ? (
                 <>
-                  <p className="text-[11px] font-black uppercase tracking-[0.22em]" style={{ color: "#FFF29E" }}>
+                  <p className="text-[11px] font-black uppercase tracking-[0.22em]" style={{ color: "#FFE29A" }}>
                     {t.topicsHeading}
                   </p>
                   <div className="flex flex-wrap gap-2 justify-center">
                     {capsTopics.map((topic, i) => {
-                      const palette = ["#7FEFFF", "#6FA8FF", "#C6A4FF", "#C6A4FF", "#FF9FE5", "#FFF29E", "#FFC48F"];
+                      const palette = ["#6EE7F9", "#9FD8FF", "#C5B3FF", "#C5B3FF", "#FFB7E5", "#FFE29A", "#FFE29A"];
                       const hex = palette[i % palette.length];
                       return (
                         <button
@@ -1407,7 +1407,7 @@ export default function TutorPage() {
                         >
                           <BookOpen className="w-3.5 h-3.5" style={{ filter: `drop-shadow(0 0 3px ${hex})` }} />
                           {isAf ? topic.nameAfrikaans : topic.name}
-                          {topic.capsWeighting === "high" && <span className="ml-0.5" style={{ color: "#FFF29E" }}>★</span>}
+                          {topic.capsWeighting === "high" && <span className="ml-0.5" style={{ color: "#FFE29A" }}>★</span>}
                         </button>
                       );
                     })}
@@ -1415,12 +1415,12 @@ export default function TutorPage() {
                 </>
               ) : (
                 <>
-                  <p className="text-[11px] font-black uppercase tracking-[0.22em]" style={{ color: "#FFF29E" }}>
+                  <p className="text-[11px] font-black uppercase tracking-[0.22em]" style={{ color: "#FFE29A" }}>
                     {t.trySuggestions}
                   </p>
                   <div className="grid gap-2">
                     {suggestedQuestions.map((q, i) => {
-                      const palette = ["#7FEFFF", "#C6A4FF", "#FF9FE5", "#FFF29E"];
+                      const palette = ["#6EE7F9", "#C5B3FF", "#FFB7E5", "#FFE29A"];
                       const hex = palette[i % palette.length];
                       return (
                         <button
@@ -1456,23 +1456,23 @@ export default function TutorPage() {
                     {msg.role === "assistant" && (
                       <div
                         className="w-8 h-8 rounded-lg bg-background flex items-center justify-center flex-shrink-0"
-                        style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 10px rgba(198,164,255,0.5)" }}
+                        style={{ border: "1.5px solid #C5B3FF", boxShadow: "0 0 10px rgba(197,179,255,0.5)" }}
                       >
-                        <TutorIcon className="w-4 h-4" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 3px #C6A4FF)" }} />
+                        <TutorIcon className="w-4 h-4" style={{ color: "#C5B3FF", filter: "drop-shadow(0 0 3px #C5B3FF)" }} />
                       </div>
                     )}
                     <div className="flex flex-col gap-1 min-w-0 max-w-[calc(100%-44px)] sm:max-w-[80%]">
                       <div
                         className="rounded-2xl px-4 py-3 bg-background"
                         style={msg.role === "user"
-                          ? { border: "1.5px solid #7FEFFF", boxShadow: "0 0 18px rgba(127,239,255,0.35), inset 0 0 10px rgba(0,0,0,0.6)", color: "#fff" }
-                          : { border: "1.5px solid rgba(198,164,255,0.6)", boxShadow: "0 0 18px rgba(198,164,255,0.3), inset 0 0 10px rgba(0,0,0,0.6)" }
+                          ? { border: "1.5px solid #6EE7F9", boxShadow: "0 0 18px rgba(110,231,249,0.35), inset 0 0 10px rgba(0,0,0,0.6)", color: "#fff" }
+                          : { border: "1.5px solid rgba(197,179,255,0.6)", boxShadow: "0 0 18px rgba(197,179,255,0.3), inset 0 0 10px rgba(0,0,0,0.6)" }
                         }
                         data-testid={`message-${msg.role}-${i}`}
                         onContextMenu={msg.role === "assistant" ? e => e.preventDefault() : undefined}
                         data-nosnippet={msg.role === "assistant" ? "" : undefined}
                       >
-                        <div className="break-words text-sm leading-relaxed prose prose-invert prose-sm max-w-none [&_h1]:text-sm [&_h2]:text-sm [&_h3]:text-xs [&_h1]:font-bold [&_h2]:font-bold [&_h3]:font-semibold [&_ul]:pl-4 [&_ol]:pl-4 [&_li]:mb-0.5 [&_strong]:text-[#7FEFFF] [&_p]:mb-1 [&_p:last-child]:mb-0 [&_code]:bg-white/10 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs [&_blockquote]:border-l-2 [&_blockquote]:border-white/20 [&_blockquote]:pl-3 [&_blockquote]:text-foreground">
+                        <div className="break-words text-sm leading-relaxed prose prose-invert prose-sm max-w-none [&_h1]:text-sm [&_h2]:text-sm [&_h3]:text-xs [&_h1]:font-bold [&_h2]:font-bold [&_h3]:font-semibold [&_ul]:pl-4 [&_ol]:pl-4 [&_li]:mb-0.5 [&_strong]:text-[#6EE7F9] [&_p]:mb-1 [&_p:last-child]:mb-0 [&_code]:bg-white/10 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs [&_blockquote]:border-l-2 [&_blockquote]:border-white/20 [&_blockquote]:pl-3 [&_blockquote]:text-foreground">
                           <ReactMarkdown>{msg.content}</ReactMarkdown>
                         </div>
                       </div>
@@ -1480,16 +1480,16 @@ export default function TutorPage() {
                         <div
                           className="mt-2 rounded-xl bg-background px-3 py-2.5"
                           style={{
-                            border: "1px solid rgba(255,242,158,0.45)",
-                            boxShadow: "0 0 10px rgba(255,242,158,0.18), inset 0 0 8px rgba(0,0,0,0.5)",
+                            border: "1px solid rgba(255,226,154,0.45)",
+                            boxShadow: "0 0 10px rgba(255,226,154,0.18), inset 0 0 8px rgba(0,0,0,0.5)",
                           }}
                           data-testid={`citations-${i}`}
                         >
                           <div className="flex items-center gap-1.5 mb-1.5">
-                            <BookOpen className="w-3 h-3 shrink-0" style={{ color: "#FFF29E" }} />
+                            <BookOpen className="w-3 h-3 shrink-0" style={{ color: "#FFE29A" }} />
                             <span
                               className="text-[10px] font-black uppercase tracking-widest"
-                              style={{ color: "#FFF29E" }}
+                              style={{ color: "#FFE29A" }}
                             >
                               {isAf ? "Uit jou studieaantekeninge" : "From your study notes"}
                             </span>
@@ -1507,7 +1507,7 @@ export default function TutorPage() {
                                   style={{ color: "#fff" }}
                                   data-testid={`citation-${i}-${ci}`}
                                 >
-                                  <span className="font-semibold" style={{ color: "#FFF29E" }}>{label}</span>
+                                  <span className="font-semibold" style={{ color: "#FFE29A" }}>{label}</span>
                                   {quoted ? (
                                     <>
                                       {": "}
@@ -1522,7 +1522,7 @@ export default function TutorPage() {
                             <Link href={msg.studyNotesUrl}>
                               <a
                                 className="mt-2 inline-flex items-center gap-1 text-[11px] font-bold transition-colors hover:underline"
-                                style={{ color: "#FFF29E" }}
+                                style={{ color: "#FFE29A" }}
                                 data-testid={`citation-link-${i}`}
                               >
                                 {isAf
@@ -1539,15 +1539,15 @@ export default function TutorPage() {
                             <div
                               key={di}
                               className="rounded-xl overflow-hidden bg-background"
-                              style={{ border: "1px solid rgba(127,239,255,0.45)", boxShadow: "0 0 12px rgba(127,239,255,0.18), inset 0 0 8px rgba(0,0,0,0.5)" }}
+                              style={{ border: "1px solid rgba(110,231,249,0.45)", boxShadow: "0 0 12px rgba(110,231,249,0.18), inset 0 0 8px rgba(0,0,0,0.5)" }}
                               data-testid={`diagram-${i}-${di}`}
                             >
                               <div
                                 className="px-3 py-1.5 flex items-center gap-2"
-                                style={{ borderBottom: "1px solid rgba(127,239,255,0.25)", background: "rgba(127,239,255,0.07)" }}
+                                style={{ borderBottom: "1px solid rgba(110,231,249,0.25)", background: "rgba(110,231,249,0.07)" }}
                               >
-                                <BookOpen className="w-3 h-3 shrink-0" style={{ color: "#7FEFFF" }} />
-                                <span className="text-[11px] font-black uppercase tracking-widest" style={{ color: "#7FEFFF" }}>
+                                <BookOpen className="w-3 h-3 shrink-0" style={{ color: "#6EE7F9" }} />
+                                <span className="text-[11px] font-black uppercase tracking-widest" style={{ color: "#6EE7F9" }}>
                                   {diagram.label}
                                 </span>
                               </div>
@@ -1560,7 +1560,7 @@ export default function TutorPage() {
                               {diagram.caption && (
                                 <div
                                   className="px-3 py-1.5 text-[11px] leading-snug"
-                                  style={{ borderTop: "1px solid rgba(127,239,255,0.2)", color: "#fff" }}
+                                  style={{ borderTop: "1px solid rgba(110,231,249,0.2)", color: "#fff" }}
                                 >
                                   {diagram.caption}
                                 </div>
@@ -1576,8 +1576,8 @@ export default function TutorPage() {
                             className="flex items-center gap-1 text-sm font-bold px-4 py-2 rounded-xl bg-black transition-colors"
                             style={
                               speakingMessageIndex === i
-                                ? { background: "#7FEFFF", color: "#0a0a0a" }
-                                : { color: "#7FEFFF", border: "1.5px solid #7FEFFF" }
+                                ? { background: "#6EE7F9", color: "#0a0a0a" }
+                                : { color: "#6EE7F9", border: "1.5px solid #6EE7F9" }
                             }
                             data-testid={`button-speak-${i}`}
                           >
@@ -1599,7 +1599,7 @@ export default function TutorPage() {
                               <button
                                 onClick={() => handleFeedback(i, 1)}
                                 className="w-9 h-9 flex items-center justify-center rounded-xl bg-black transition-colors"
-                                style={{ color: "#93FFB8", border: "1.5px solid #93FFB8" }}
+                                style={{ color: "#94F7C5", border: "1.5px solid #94F7C5" }}
                                 title={t.helpfulLabel}
                                 data-testid={`button-feedback-up-${i}`}
                               >
@@ -1608,7 +1608,7 @@ export default function TutorPage() {
                               <button
                                 onClick={() => handleFeedback(i, -1)}
                                 className="w-9 h-9 flex items-center justify-center rounded-xl bg-black transition-colors"
-                                style={{ color: "#FF9FE5", border: "1.5px solid #FF9FE5" }}
+                                style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}
                                 title={t.notHelpfulLabel}
                                 data-testid={`button-feedback-down-${i}`}
                               >
@@ -1629,7 +1629,7 @@ export default function TutorPage() {
                                 value={feedbackText[i] || ""}
                                 onChange={(e) => setFeedbackText(prev => ({ ...prev, [i]: e.target.value }))}
                                 className="resize-none text-xs h-16 bg-background"
-                style={{ border: "1px solid rgba(198,164,255,0.3)", color: "#fff" }}
+                style={{ border: "1px solid rgba(197,179,255,0.3)", color: "#fff" }}
                                 data-testid={`textarea-feedback-suggestion-${i}`}
                               />
                               <div className="flex items-center gap-2">
@@ -1637,7 +1637,7 @@ export default function TutorPage() {
                                   type="button"
                                   onClick={() => submitFeedback(i, false)}
                                   className="px-4 py-2 rounded-xl text-sm font-bold disabled:opacity-40"
-                                  style={{ background: "#7FEFFF", color: "#0a0a0a" }}
+                                  style={{ background: "#6EE7F9", color: "#0a0a0a" }}
                                   disabled={feedbackMutation.isPending}
                                   data-testid={`button-feedback-submit-${i}`}
                                 >
@@ -1646,7 +1646,7 @@ export default function TutorPage() {
                                 <button
                                   onClick={() => submitFeedback(i, true)}
                                   className="px-4 py-2 rounded-xl bg-black text-sm font-bold transition-colors disabled:opacity-40"
-                                  style={{ color: "#C6A4FF", border: "1.5px solid #C6A4FF" }}
+                                  style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
                                   disabled={feedbackMutation.isPending}
                                   data-testid={`button-feedback-skip-${i}`}
                                 >
@@ -1667,9 +1667,9 @@ export default function TutorPage() {
                     {msg.role === "user" && (
                       <div
                         className="w-8 h-8 rounded-lg bg-background flex items-center justify-center flex-shrink-0"
-                        style={{ border: "1.5px solid #7FEFFF", boxShadow: "0 0 10px rgba(127,239,255,0.5)" }}
+                        style={{ border: "1.5px solid #6EE7F9", boxShadow: "0 0 10px rgba(110,231,249,0.5)" }}
                       >
-                        <User className="w-4 h-4" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 3px #7FEFFF)" }} />
+                        <User className="w-4 h-4" style={{ color: "#6EE7F9", filter: "drop-shadow(0 0 3px #6EE7F9)" }} />
                       </div>
                     )}
                   </div>
@@ -1684,17 +1684,17 @@ export default function TutorPage() {
                     return (
                       <div
                         className="w-8 h-8 rounded-lg bg-background flex items-center justify-center"
-                        style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 10px rgba(198,164,255,0.5)" }}
+                        style={{ border: "1.5px solid #C5B3FF", boxShadow: "0 0 10px rgba(197,179,255,0.5)" }}
                       >
-                        <TutorIcon className="w-4 h-4" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 3px #C6A4FF)" }} />
+                        <TutorIcon className="w-4 h-4" style={{ color: "#C5B3FF", filter: "drop-shadow(0 0 3px #C5B3FF)" }} />
                       </div>
                     );
                   })()}
                   <div
                     className="rounded-2xl px-4 py-3 bg-background"
-                    style={{ border: "1.5px solid rgba(198,164,255,0.6)", boxShadow: "0 0 18px rgba(198,164,255,0.3)" }}
+                    style={{ border: "1.5px solid rgba(197,179,255,0.6)", boxShadow: "0 0 18px rgba(197,179,255,0.3)" }}
                   >
-                    <div className="flex items-center gap-2 text-sm" style={{ color: "#C6A4FF" }}>
+                    <div className="flex items-center gap-2 text-sm" style={{ color: "#C5B3FF" }}>
                       <Loader2 className="w-4 h-4 animate-spin" />
                       <span>{t.thinkingLabel}</span>
                     </div>
@@ -1705,13 +1705,13 @@ export default function TutorPage() {
           </ScrollArea>
         )}
 
-        <div className="pt-4 mt-auto" style={{ borderTop: "1px solid rgba(198,164,255,0.3)" }}>
+        <div className="pt-4 mt-auto" style={{ borderTop: "1px solid rgba(197,179,255,0.3)" }}>
           <div className="flex flex-wrap items-center gap-2 mb-2">
-            <BookOpen className="w-4 h-4 shrink-0" style={{ color: "#FFF29E" }} />
+            <BookOpen className="w-4 h-4 shrink-0" style={{ color: "#FFE29A" }} />
             <Select value={selectedSubject} onValueChange={setSelectedSubject}>
               <SelectTrigger
                 className="w-full sm:w-48 h-8 text-xs bg-background"
-                style={{ border: "1px solid rgba(255,242,158,0.4)", color: "#FFF29E" }}
+                style={{ border: "1px solid rgba(255,226,154,0.4)", color: "#FFE29A" }}
                 data-testid="select-subject"
               >
                 <SelectValue placeholder={t.selectSubjectBottomPlaceholder} />
@@ -1728,7 +1728,7 @@ export default function TutorPage() {
           {selectedSubject && capsTopics && capsTopics.length > 0 && messages.length > 0 && (
             <div className="flex gap-1.5 overflow-x-auto pb-2 mb-2 scrollbar-thin">
               {capsTopics.slice(0, 8).map((topic, i) => {
-                const palette = ["#7FEFFF", "#6FA8FF", "#C6A4FF", "#C6A4FF", "#FF9FE5", "#FFF29E", "#FFC48F", "#FFF29E"];
+                const palette = ["#6EE7F9", "#9FD8FF", "#C5B3FF", "#C5B3FF", "#FFB7E5", "#FFE29A", "#FFE29A", "#FFE29A"];
                 const hex = palette[i % palette.length];
                 return (
                   <button
@@ -1757,8 +1757,8 @@ export default function TutorPage() {
               placeholder={t.chatPlaceholder}
               className="min-h-[60px] max-h-32 resize-none bg-background flex-1"
               style={{
-                border: "1.5px solid rgba(127,239,255,0.5)",
-                boxShadow: "0 0 14px rgba(127,239,255,0.2), inset 0 0 10px rgba(0,0,0,0.5)",
+                border: "1.5px solid rgba(110,231,249,0.5)",
+                boxShadow: "0 0 14px rgba(110,231,249,0.2), inset 0 0 10px rgba(0,0,0,0.5)",
                 color: "#fff",
               }}
               disabled={askMutation.isPending}
@@ -1768,7 +1768,7 @@ export default function TutorPage() {
               onClick={handleSend}
               disabled={!inputValue.trim() || askMutation.isPending}
               className="shrink-0 w-12 sm:w-auto sm:px-5 rounded-xl font-bold text-sm transition-none disabled:opacity-40 flex items-center justify-center"
-              style={{ background: "#7FEFFF", color: "#0a0a0a" }}
+              style={{ background: "#6EE7F9", color: "#0a0a0a" }}
               data-testid="button-send"
             >
               {askMutation.isPending ? (

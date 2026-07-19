@@ -10,7 +10,7 @@ import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { LanguageProvider, useLanguage } from "@/lib/language-context";
 import { Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
-import { NovaBot } from "@/components/nova-bot";
+import { RizzSupportBot } from "@/components/rizz-support-bot";
 import { PublicFooter } from "@/components/public-footer";
 import { CosmicBackground } from "@/components/neural-bg";
 import { InstallBanner } from "@/components/install-banner";
@@ -602,8 +602,10 @@ function GlobalNova() {
     }
   }, [isAuthenticated, user, setTheme]);
 
-  const userType = !isAuthenticated ? "visitor" : user?.role === "parent" ? "parent" : "learner";
-  return <NovaBot userType={userType} />;
+  // Old NovaBot launcher retired — RizzSupportBot (handoff redesign) is the
+  // single floating assistant. This component still enforces the non-learner
+  // theme, which is why it stays mounted.
+  return null;
 }
 
 function GlobalSocketConnector() {
@@ -1018,6 +1020,7 @@ function App() {
           <Router />
           <GlobalFooter />
           <GlobalNova />
+          <RizzSupportBot />
           <BottomBanners />
           <AppRatingPrompt />
           <GlobalCookieBanner />

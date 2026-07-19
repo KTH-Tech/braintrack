@@ -96,14 +96,14 @@ export default function MyNotesPage() {
 
         <div
           className="rounded-2xl bg-black p-5"
-          style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 18px #C6A4FF55, inset 0 0 12px rgba(198,164,255,0.10)" }}
+          style={{ border: "1.5px solid #C5B3FF", boxShadow: "0 0 18px #C5B3FF55, inset 0 0 12px rgba(197,179,255,0.10)" }}
         >
           <div className="flex items-center gap-2 mb-2">
-            <Mic className="w-5 h-5" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 4px #C6A4FF)" }} />
+            <Mic className="w-5 h-5" style={{ color: "#C5B3FF", filter: "drop-shadow(0 0 4px #C5B3FF)" }} />
             <h2 className="text-lg font-black uppercase tracking-[0.14em]">
               {isAf ? "Klanknotas" : "Voice Notes"}
             </h2>
-            <span className="ml-auto text-[10px] font-black px-2 py-0.5 rounded-full bg-black uppercase tracking-[0.14em]" style={{ color: "#C6A4FF", border: "1px solid #C6A4FF" }}>
+            <span className="ml-auto text-[10px] font-black px-2 py-0.5 rounded-full bg-black uppercase tracking-[0.14em]" style={{ color: "#C5B3FF", border: "1px solid #C5B3FF" }}>
               {notes.length}
             </span>
           </div>
@@ -136,7 +136,7 @@ export default function MyNotesPage() {
             <Link href="/subjects">
               <button
                 className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-[0.14em] bg-black"
-                style={{ color: "#C6A4FF", border: "1.5px solid #C6A4FF", boxShadow: "0 0 12px #C6A4FF55" }}
+                style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF", boxShadow: "0 0 12px #C5B3FF55" }}
                 data-testid="button-go-subjects"
               >
                 <BookOpen className="w-3.5 h-3.5" />
@@ -153,19 +153,19 @@ export default function MyNotesPage() {
                   <li
                     key={note.id}
                     className="flex items-center gap-3 p-3 rounded-xl bg-black"
-                    style={{ border: "1px solid #C6A4FF44" }}
+                    style={{ border: "1px solid #C5B3FF44" }}
                     data-testid={`my-note-${note.id}`}
                   >
                     <button
                       onClick={() => togglePlay(note)}
                       className="w-10 h-10 rounded-full bg-black flex items-center justify-center transition-all hover:scale-105 shrink-0"
-                      style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 10px #C6A4FF55" }}
+                      style={{ border: "1.5px solid #C5B3FF", boxShadow: "0 0 10px #C5B3FF55" }}
                       aria-label={playingId === note.id ? "Pause" : "Play"}
                       data-testid={`button-play-mynote-${note.id}`}
                     >
                       {playingId === note.id
-                        ? <Pause className="w-4 h-4" style={{ color: "#C6A4FF" }} />
-                        : <Play className="w-4 h-4 ml-0.5" style={{ color: "#C6A4FF" }} />}
+                        ? <Pause className="w-4 h-4" style={{ color: "#C5B3FF" }} />
+                        : <Play className="w-4 h-4 ml-0.5" style={{ color: "#C5B3FF" }} />}
                     </button>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-white font-medium truncate">
@@ -182,10 +182,10 @@ export default function MyNotesPage() {
                       {note.transcriptStatus === "ready" && note.transcript && (
                         <p
                           className="mt-2 text-[11px] leading-relaxed text-white whitespace-pre-wrap rounded-md p-2 bg-black/40"
-                          style={{ border: "1px dashed #C6A4FF33" }}
+                          style={{ border: "1px dashed #C5B3FF33" }}
                           data-testid={`mynote-transcript-${note.id}`}
                         >
-                          <span className="font-bold uppercase tracking-[0.14em] text-[9px] text-[#C6A4FF] block mb-1">
+                          <span className="font-bold uppercase tracking-[0.14em] text-[9px] text-[#C5B3FF] block mb-1">
                             {isAf ? "Transkripsie" : "Transcript"}
                           </span>
                           {note.transcript}
@@ -206,7 +206,7 @@ export default function MyNotesPage() {
                       <Link href={`/subject/${note.subjectId}#audio`}>
                         <button
                           className="text-[10px] font-bold px-2 py-1 rounded-md bg-black uppercase tracking-[0.14em] hover:scale-[1.04] transition-all"
-                          style={{ color: "#7FEFFF", border: "1px solid #7FEFFF55" }}
+                          style={{ color: "#6EE7F9", border: "1px solid #6EE7F955" }}
                           data-testid={`button-open-topic-${note.id}`}
                         >
                           {isAf ? "Open" : "Open"}

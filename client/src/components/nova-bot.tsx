@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { X, Send, User, ArrowRight, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/language-context";
@@ -889,7 +889,7 @@ export function NovaBot({ userType = "visitor" }: { userType?: "learner" | "pare
           <button
             type="button"
             className="pointer-events-auto inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-bold hover:scale-[1.04] active:scale-[0.97] transition-transform"
-            style={{ background: "#000", border: "1.5px solid #7FEFFF", color: "#7FEFFF" }}
+            style={{ background: "#000", border: "1.5px solid #6EE7F9", color: "#6EE7F9" }}
             onClick={() => setIsOpen(true)}
             data-testid="button-rizz-float-trigger"
             aria-label="Chat with Rizz"

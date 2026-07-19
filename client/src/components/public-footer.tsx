@@ -9,14 +9,14 @@ const COPY = {
     copyright: "© 2026 BrainTrack™ · KTH Projects (Pty) Ltd",
     popia: "POPIA-compliant · Built in SA 🇿🇦",
     legal: [
-      { href: "/privacy-policy",    label: "Privacy",  color: "#6FA8FF" },
-      { href: "/terms-of-service",  label: "Terms",    color: "#93FFB8" },
-      { href: "/refund-policy",     label: "Refunds",  color: "#FFC48F" },
+      { href: "/privacy-policy",    label: "Privacy",  color: "#9FD8FF" },
+      { href: "/terms-of-service",  label: "Terms",    color: "#94F7C5" },
+      { href: "/refund-policy",     label: "Refunds",  color: "#FFE29A" },
     ],
     nav: [
-      { href: "/research",  label: "Research",  color: "#7FEFFF" },
-      { href: "/features",  label: "Features",  color: "#C6A4FF" },
-      { href: "/subscribe", label: "Pricing",   color: "#FF9FE5" },
+      { href: "/research",  label: "Research",  color: "#6EE7F9" },
+      { href: "/features",  label: "Features",  color: "#C5B3FF" },
+      { href: "/subscribe", label: "Pricing",   color: "#FFB7E5" },
     ],
   },
   af: {
@@ -24,14 +24,14 @@ const COPY = {
     copyright: "© 2026 BrainTrack™ · KTH Projects (Pty) Ltd",
     popia: "POPIA-nakoming · Trots SA 🇿🇦",
     legal: [
-      { href: "/privacy-policy",    label: "Privaatheid",  color: "#6FA8FF" },
-      { href: "/terms-of-service",  label: "Bepalings",    color: "#93FFB8" },
-      { href: "/refund-policy",     label: "Terugbetalings", color: "#FFC48F" },
+      { href: "/privacy-policy",    label: "Privaatheid",  color: "#9FD8FF" },
+      { href: "/terms-of-service",  label: "Bepalings",    color: "#94F7C5" },
+      { href: "/refund-policy",     label: "Terugbetalings", color: "#FFE29A" },
     ],
     nav: [
-      { href: "/research",  label: "Navorsing", color: "#7FEFFF" },
-      { href: "/features",  label: "Kenmerke",  color: "#C6A4FF" },
-      { href: "/subscribe", label: "Pryse",     color: "#FF9FE5" },
+      { href: "/research",  label: "Navorsing", color: "#6EE7F9" },
+      { href: "/features",  label: "Kenmerke",  color: "#C5B3FF" },
+      { href: "/subscribe", label: "Pryse",     color: "#FFB7E5" },
     ],
   },
 } as const;
@@ -57,7 +57,7 @@ export function PublicFooter() {
                 key={l.href}
                 href={l.href}
                 data-testid={`footer-link-${l.href.replace(/^\//, "")}`}
-                className="text-[12px] font-medium text-white transition-colors hover:text-[#7FEFFF]"
+                className="text-[12px] font-medium text-white transition-colors hover:text-[#6EE7F9]"
               >
                 {l.label}
               </Link>
@@ -74,7 +74,7 @@ export function PublicFooter() {
                 href={`mailto:${SUPPORT_EMAIL}`}
                 data-testid="footer-email-support"
                 className="text-[12px] font-bold transition-colors hover:text-white"
-                style={{ color: "#7FEFFF" }}
+                style={{ color: "#6EE7F9" }}
               >
                 {isAf ? "Kontak Ons" : "Contact Us"}
               </a>
@@ -84,7 +84,7 @@ export function PublicFooter() {
                 rel="noopener noreferrer"
                 data-testid="footer-linkedin"
                 className="text-[12px] font-bold transition-colors hover:text-white"
-                style={{ color: "#6FA8FF" }}
+                style={{ color: "#9FD8FF" }}
               >
                 LinkedIn
               </a>
@@ -92,7 +92,7 @@ export function PublicFooter() {
                 href="/partner-schools"
                 data-testid="footer-partners"
                 className="text-[12px] font-bold transition-colors hover:text-white"
-                style={{ color: "#93FFB8" }}
+                style={{ color: "#94F7C5" }}
               >
                 {isAf ? "Vennote" : "Partners"}
               </Link>

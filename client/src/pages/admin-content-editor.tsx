@@ -121,10 +121,10 @@ interface NewLitNote {
 
 // ── Colour palette ───────────────────────────────────────────────────────────
 const HEX = {
-  cyan: "#7FEFFF",
-  violet: "#C6A4FF",
-  pink: "#FF9FE5",
-  amber: "#FFF29E",
+  cyan: "#6EE7F9",
+  violet: "#C5B3FF",
+  pink: "#FFB7E5",
+  amber: "#FFE29A",
   green: "#34d399",
 } as const;
 

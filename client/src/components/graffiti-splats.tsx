@@ -3,7 +3,7 @@
 // crowns, sparkles) and short hype words. Bright, small, fun, decorative.
 // pointer-events-none, aria-hidden, behind content.
 
-const PASTEL = ["#6FA8FF", "#7FEFFF", "#93FFB8", "#FFF29E", "#FFC48F", "#FF9FE5", "#C6A4FF"];
+const PASTEL = ["#9FD8FF", "#6EE7F9", "#94F7C5", "#FFE29A", "#FFE29A", "#FFB7E5", "#C5B3FF"];
 
 // vibey teen emoji set
 const EMOJI = ["🔥", "⚡", "💯", "⭐", "🎯", "🧠", "✌️", "👑", "💎", "🚀", "✨", "📚", "🏆", "💪"];
@@ -100,7 +100,7 @@ export function GraffitiSplats({
 
 // Kept for callers that still import it (legal page headings). A soft pastel
 // smear behind a heading word.
-export function SpraySmear({ color = "#FF9FE5" }: { color?: string }) {
+export function SpraySmear({ color = "#FFB7E5" }: { color?: string }) {
   return (
     <svg aria-hidden viewBox="0 0 220 60" preserveAspectRatio="none"
       style={{ position: "absolute", left: "-6%", top: "-18%", width: "112%", height: "136%", zIndex: -1, pointerEvents: "none" }}

@@ -73,7 +73,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "User, parent, learner & school analytics",
         descAf: "Gebruiker-, ouer-, leerder- en skoolontleding",
         Icon: BarChart3,
-        color: "#7FEFFF",
+        color: "#6EE7F9",
       },
       {
         key: "billing",
@@ -83,7 +83,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "Trials, recurring failures, lapsed subscribers",
         descAf: "Proewe, mislukkings en vervalde intekeninge",
         Icon: CreditCard,
-        color: "#93FFB8",
+        color: "#94F7C5",
       },
     ],
   },
@@ -99,7 +99,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "Plans, products and availability",
         descAf: "Planne, produkte en beskikbaarheid",
         Icon: Package,
-        color: "#FFC48F",
+        color: "#FFE29A",
       },
       {
         key: "content-editor",
@@ -109,7 +109,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "Edit topic notes, flashcards, literature",
         descAf: "Wysig notas, flitskaarte en literatuur",
         Icon: FileEdit,
-        color: "#FFF29E",
+        color: "#FFE29A",
       },
       {
         key: "content-studio",
@@ -119,7 +119,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "DBE pipeline: papers, memos and ingestion",
         descAf: "DBE-pyplyn: vraestelle, memo's en ingestie",
         Icon: Database,
-        color: "#6FA8FF",
+        color: "#9FD8FF",
       },
       {
         key: "topic-audio",
@@ -129,7 +129,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "Preview, regenerate and replace MP3s",
         descAf: "Voorskou, hergenereer en vervang MP3's",
         Icon: Headphones,
-        color: "#C6A4FF",
+        color: "#C5B3FF",
       },
     ],
   },
@@ -145,7 +145,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "Preview and test-send transactional emails",
         descAf: "Voorskou en toets-stuur e-posse",
         Icon: Mail,
-        color: "#FF9FE5",
+        color: "#FFB7E5",
       },
       {
         key: "partner-branding",
@@ -155,7 +155,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "Partner name, logo and report schedule",
         descAf: "Vennootnaam, logo en verslagskedule",
         Icon: Handshake,
-        color: "#7FEFFF",
+        color: "#6EE7F9",
       },
       {
         key: "qr",
@@ -165,7 +165,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "Turn any link into a branded, downloadable QR code",
         descAf: "Maak enige skakel 'n QR-kode om af te laai",
         Icon: QrCode,
-        color: "#93FFB8",
+        color: "#94F7C5",
       },
     ],
   },
@@ -181,7 +181,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "Open the learner-facing classroom view",
         descAf: "Maak die leerder-klaskamer oop",
         Icon: GraduationCap,
-        color: "#FFF29E",
+        color: "#FFE29A",
       },
       {
         key: "parent",
@@ -191,7 +191,7 @@ const NAV_GROUPS: NavGroup[] = [
         descEn: "Jump to the parent dashboard",
         descAf: "Gaan na die ouerpaneel",
         Icon: Users,
-        color: "#FFC48F",
+        color: "#FFE29A",
       },
     ],
   },
@@ -213,8 +213,8 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
       style={{
         background: "#000",
         borderBottom: "3px solid transparent",
-        borderImage: "linear-gradient(90deg,#C6A4FF,#FF9FE5,#6FA8FF,#7FEFFF,#93FFB8,#FFF29E,#FFC48F) 1",
-        boxShadow: "0 0 28px rgba(198,164,255,0.25), 0 4px 20px rgba(0,0,0,0.8)",
+        borderImage: "linear-gradient(90deg,#C5B3FF,#FFB7E5,#9FD8FF,#6EE7F9,#94F7C5,#FFE29A,#FFE29A) 1",
+        boxShadow: "0 0 28px rgba(197,179,255,0.25), 0 4px 20px rgba(0,0,0,0.8)",
       }}
       data-testid="admin-top-nav"
     >
@@ -223,15 +223,15 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
           <div
             className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
             style={{
-              background: "rgba(198,164,255,0.15)",
-              border: "2px solid #C6A4FF",
-              boxShadow: "0 0 18px rgba(198,164,255,0.5)",
+              background: "rgba(197,179,255,0.15)",
+              border: "2px solid #C5B3FF",
+              boxShadow: "0 0 18px rgba(197,179,255,0.5)",
             }}
           >
-            <ShieldAlert className="w-4.5 h-4.5" style={{ color: "#C6A4FF" }} />
+            <ShieldAlert className="w-4.5 h-4.5" style={{ color: "#C5B3FF" }} />
           </div>
           <div className="min-w-0 hidden sm:block">
-            <p className="text-[9px] font-black uppercase tracking-[0.3em]" style={{ color: "#C6A4FF" }}>
+            <p className="text-[9px] font-black uppercase tracking-[0.3em]" style={{ color: "#C5B3FF" }}>
               BrainTrack
             </p>
             <p className="text-[15px] font-black text-white leading-none tracking-tight">
@@ -246,14 +246,14 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
             data-testid="admin-nav-dashboard"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all hover:scale-105"
             style={dashboardActive ? {
-              background: "#C6A4FF",
+              background: "#C5B3FF",
               color: "#fff",
-              border: "2px solid #C6A4FF",
-              boxShadow: "0 0 16px rgba(198,164,255,0.55)",
+              border: "2px solid #C5B3FF",
+              boxShadow: "0 0 16px rgba(197,179,255,0.55)",
             } : {
-              background: "rgba(198,164,255,0.1)",
-              color: "#C6A4FF",
-              border: "1.5px solid rgba(198,164,255,0.4)",
+              background: "rgba(197,179,255,0.1)",
+              color: "#C5B3FF",
+              border: "1.5px solid rgba(197,179,255,0.4)",
             }}
           >
             <LayoutDashboard className="w-3.5 h-3.5" />
@@ -265,14 +265,14 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
             data-testid="admin-nav-emails-top"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all hover:scale-105"
             style={current === "emails" ? {
-              background: "#FF9FE5",
+              background: "#FFB7E5",
               color: "#fff",
-              border: "2px solid #FF9FE5",
-              boxShadow: "0 0 16px rgba(255,159,229,0.55)",
+              border: "2px solid #FFB7E5",
+              boxShadow: "0 0 16px rgba(255,183,229,0.55)",
             } : {
-              background: "rgba(255,159,229,0.1)",
-              color: "#FF9FE5",
-              border: "1.5px solid rgba(255,159,229,0.4)",
+              background: "rgba(255,183,229,0.1)",
+              color: "#FFB7E5",
+              border: "1.5px solid rgba(255,183,229,0.4)",
             }}
           >
             <Mail className="w-3.5 h-3.5" />
@@ -286,9 +286,9 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
                 data-testid="admin-nav-menu-trigger"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all hover:scale-105"
                 style={{
-                  background: "rgba(127,239,255,0.1)",
-                  color: "#7FEFFF",
-                  border: "1.5px solid rgba(127,239,255,0.4)",
+                  background: "rgba(110,231,249,0.1)",
+                  color: "#6EE7F9",
+                  border: "1.5px solid rgba(110,231,249,0.4)",
                 }}
               >
                 {isAf ? "Spyskaart" : "All Tools"}
@@ -301,8 +301,8 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
               className="w-80 max-h-[80vh] overflow-y-auto"
               style={{
                 background: "#050508",
-                border: "2px solid rgba(198,164,255,0.4)",
-                boxShadow: "0 0 40px rgba(198,164,255,0.2), 0 20px 60px rgba(0,0,0,0.8)",
+                border: "2px solid rgba(197,179,255,0.4)",
+                boxShadow: "0 0 40px rgba(197,179,255,0.2), 0 20px 60px rgba(0,0,0,0.8)",
               }}
               data-testid="admin-nav-menu-content"
             >
@@ -366,7 +366,7 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
           <Link
             href="/"
             className="hidden sm:inline-flex items-center justify-center w-9 h-9 rounded-xl transition-all hover:scale-105"
-            style={{ background: "rgba(127,239,255,0.08)", border: "1.5px solid rgba(127,239,255,0.35)", color: "#7FEFFF" }}
+            style={{ background: "rgba(110,231,249,0.08)", border: "1.5px solid rgba(110,231,249,0.35)", color: "#6EE7F9" }}
             data-testid="admin-nav-home"
             title={isAf ? "Tuis" : "Home"}
           >
@@ -376,10 +376,10 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
             href="/api/auth/logout"
             className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-xl transition-all hover:scale-105"
             style={{
-              background: "rgba(255,159,229,0.1)",
-              border: "1.5px solid #FF9FE5",
-              color: "#FF9FE5",
-              boxShadow: "0 0 12px rgba(255,159,229,0.2)",
+              background: "rgba(255,183,229,0.1)",
+              border: "1.5px solid #FFB7E5",
+              color: "#FFB7E5",
+              boxShadow: "0 0 12px rgba(255,183,229,0.2)",
             }}
             data-testid="admin-nav-logout"
           >

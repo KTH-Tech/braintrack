@@ -5,10 +5,10 @@ import { calcReadiness, readinessBand } from "@/lib/readiness";
 import type { DailyDirective } from "@/types/daily-directive";
 
 const URGENCY_HEX: Record<string, { hex: string; halo: string }> = {
-  final_sprint:     { hex: "#FF9FE5", halo: "rgba(255,159,229,0.45)" },
-  exam_prep_mode:   { hex: "#FFC48F", halo: "rgba(255,196,143,0.45)" },
-  focused_revision: { hex: "#FFF29E", halo: "rgba(255,242,158,0.45)" },
-  build_mastery:    { hex: "#C6A4FF", halo: "rgba(198,164,255,0.45)" },
+  final_sprint:     { hex: "#FFB7E5", halo: "rgba(255,183,229,0.45)" },
+  exam_prep_mode:   { hex: "#FFE29A", halo: "rgba(255,226,154,0.45)" },
+  focused_revision: { hex: "#FFE29A", halo: "rgba(255,226,154,0.45)" },
+  build_mastery:    { hex: "#C5B3FF", halo: "rgba(197,179,255,0.45)" },
 };
 
 interface WeakTopic {
@@ -38,9 +38,9 @@ interface StudyPlanProps {
 }
 
 const BAND_NEON: Record<string, { hex: string; glow: string; text: string }> = {
-  red:   { hex: "#FF9FE5", glow: "rgba(255,159,229,0.55)", text: "#f5a8cc" },
-  amber: { hex: "#FFF29E", glow: "rgba(255,242,158,0.55)", text: "#ffe98a" },
-  green: { hex: "#7FEFFF", glow: "rgba(127,239,255,0.55)", text: "#a8ecf3" },
+  red:   { hex: "#FFB7E5", glow: "rgba(255,183,229,0.55)", text: "#f5a8cc" },
+  amber: { hex: "#FFE29A", glow: "rgba(255,226,154,0.55)", text: "#ffe98a" },
+  green: { hex: "#6EE7F9", glow: "rgba(110,231,249,0.55)", text: "#a8ecf3" },
 };
 
 function bandNeon(band: string) {
@@ -114,7 +114,7 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
     .sort(([, a], [, b]) => a - b)
     .slice(0, 3);
 
-  const NEON_CYAN = "#7FEFFF";
+  const NEON_CYAN = "#6EE7F9";
 
   return (
     <div
@@ -122,7 +122,7 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
       data-testid="study-plan-widget"
       style={{
         border: `1.5px solid ${NEON_CYAN}`,
-        boxShadow: `0 0 22px rgba(127,239,255,0.35), inset 0 0 14px rgba(0,0,0,0.55)`,
+        boxShadow: `0 0 22px rgba(110,231,249,0.35), inset 0 0 14px rgba(0,0,0,0.55)`,
       }}
     >
       {/* corner brackets */}
@@ -134,13 +134,13 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
       <div
         aria-hidden
         className="absolute top-0 left-0 right-0 h-[2px]"
-        style={{ background: "linear-gradient(90deg,#FFC48F,#FFC48F,#FFF29E,#FFF29E,#7FEFFF,#6FA8FF,#C6A4FF,#C6A4FF,#FF9FE5)" }}
+        style={{ background: "linear-gradient(90deg,#FFE29A,#FFE29A,#FFE29A,#FFE29A,#6EE7F9,#9FD8FF,#C5B3FF,#C5B3FF,#FFB7E5)" }}
       />
 
-      <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid rgba(127,239,255,0.25)" }}>
+      <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid rgba(110,231,249,0.25)" }}>
         <div className="flex items-center gap-2">
           <Target className="w-4 h-4" style={{ color: NEON_CYAN, filter: `drop-shadow(0 0 6px ${NEON_CYAN})` }} />
-          <h2 className="text-sm font-black uppercase tracking-[0.18em]" style={{ color: NEON_CYAN, textShadow: `0 0 8px rgba(127,239,255,0.6)` }}>
+          <h2 className="text-sm font-black uppercase tracking-[0.18em]" style={{ color: NEON_CYAN, textShadow: `0 0 8px rgba(110,231,249,0.6)` }}>
             {isAf ? "Studieplan" : "Study Plan"}
           </h2>
         </div>
@@ -236,7 +236,7 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
             <div
               key={i}
               className="h-16 rounded-xl animate-pulse"
-              style={{ background: "rgba(127,239,255,0.06)", border: "1px solid rgba(127,239,255,0.15)" }}
+              style={{ background: "rgba(110,231,249,0.06)", border: "1px solid rgba(110,231,249,0.15)" }}
             />
           ))
         ) : topics.length === 0 ? (
@@ -244,9 +244,9 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
             <div
               className="w-12 h-12 mx-auto mb-3 rounded-2xl flex items-center justify-center"
               style={{
-                background: "rgba(127,239,255,0.10)",
+                background: "rgba(110,231,249,0.10)",
                 border: `1px solid ${NEON_CYAN}55`,
-                boxShadow: `0 0 14px rgba(127,239,255,0.35)`,
+                boxShadow: `0 0 14px rgba(110,231,249,0.35)`,
               }}
             >
               <TrendingUp className="w-6 h-6" style={{ color: NEON_CYAN, filter: `drop-shadow(0 0 6px ${NEON_CYAN})` }} />
@@ -320,7 +320,7 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
         )}
 
         {(readinessEntries.length > 0 || overallReadiness > 0) && (
-          <div className="pt-3 mt-1 space-y-2" style={{ borderTop: "1px solid rgba(127,239,255,0.18)" }} data-testid="readiness-summary">
+          <div className="pt-3 mt-1 space-y-2" style={{ borderTop: "1px solid rgba(110,231,249,0.18)" }} data-testid="readiness-summary">
             <div className="flex items-center justify-between gap-2">
               <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: NEON_CYAN }}>
                 <ShieldCheck className="w-3.5 h-3.5" style={{ filter: `drop-shadow(0 0 4px ${NEON_CYAN})` }} />

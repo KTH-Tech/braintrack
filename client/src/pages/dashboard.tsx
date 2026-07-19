@@ -44,7 +44,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import type { UserBadge } from "@shared/schema";
 import { LEARNING_STYLE_INFO, type LearningStyle } from "@/lib/constants";
-import rizzAvatar from "@assets/rizz-nav-transparent.png";
+import rizzAvatar from "@/assets/handoff/rizz-avatar.png";
+import btIcon from "@/assets/handoff/icon-transparent.png";
 import { BrainTrackLogo } from "@/components/braintrack-logo";
 import { TrialEndingBanner } from "@/components/TrialEndingBanner";
 import { RescuePackAlert } from "@/components/performance-packs";
@@ -117,7 +118,7 @@ function CountdownBox({
       <span
         className="text-[28px] sm:text-[34px] font-black tabular-nums leading-none"
         style={{
-          fontFamily: '"JetBrains Mono", "Sora", monospace',
+          fontFamily: "'Poppins', sans-serif",
           color: hex,
           textShadow: `0 0 10px ${hex}88, 0 0 22px ${hex}44`,
         }}
@@ -190,6 +191,72 @@ function LiveCounter({
     </span>
   );
 }
+
+/* ── Luxury Street Graffiti pastel cycle ─────────────────────────── */
+const PASTELS = ["#9FF5E8", "#FFB7E5", "#C5B3FF", "#FFE29A", "#9FD8FF", "#94F7C5"];
+
+const CHIP_ACCENTS = [
+  { hex: "#9FF5E8", tint: "rgba(159,245,232,.12)" },
+  { hex: "#FFB7E5", tint: "rgba(255,183,229,.12)" },
+  { hex: "#C5B3FF", tint: "rgba(197,179,255,.12)" },
+  { hex: "#FFE29A", tint: "rgba(255,226,154,.12)" },
+];
+
+/* Live [Nd][Nh][Nm][Ns] countdown chips — isolated 1 s tick so only this
+   small subtree re-renders (same pattern as CountdownDigits, Task #819). */
+function LiveCountdownChips({
+  target,
+  tinted = false,
+  size = 18,
+}: {
+  target: Date;
+  tinted?: boolean;
+  size?: number;
+}) {
+  const calcParts = () => {
+    const diff = Math.max(0, target.getTime() - Date.now());
+    return {
+      d: Math.floor(diff / 86400000),
+      h: Math.floor((diff % 86400000) / 3600000),
+      m: Math.floor((diff % 3600000) / 60000),
+      s: Math.floor((diff % 60000) / 1000),
+    };
+  };
+  const [cd, setCd] = useState(calcParts);
+  useEffect(() => {
+    setCd(calcParts());
+    const id = setInterval(() => setCd(calcParts()), 1000);
+    return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [target.getTime()]);
+  const parts = [
+    { v: cd.d, u: "d" },
+    { v: cd.h, u: "h" },
+    { v: cd.m, u: "m" },
+    { v: cd.s, u: "s" },
+  ];
+  return (
+    <div style={{ display: "flex", gap: 8, fontWeight: 900, fontSize: size }}>
+      {parts.map((p, i) => (
+        <span
+          key={p.u}
+          className="tabular-nums"
+          style={{
+            background: tinted ? CHIP_ACCENTS[i].tint : "rgba(5,5,8,.5)",
+            border: `1px solid ${CHIP_ACCENTS[i].hex}`,
+            color: CHIP_ACCENTS[i].hex,
+            borderRadius: 8,
+            padding: "6px 10px",
+          }}
+        >
+          {p.v}
+          {p.u}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 
 const T = {
   en: {
@@ -329,6 +396,16 @@ const T = {
     daysLeft: "days left",
     statusManageLabel: "Manage",
     prelimsFallback: "Aug – Sept (provincial)",
+    claimXp: "⚡ Claim daily XP 💰",
+    startRevision: "Start revision — practise now →",
+    runIt: "Run it →",
+    nextMissionTitle: "Next mission 🎯",
+    freshDropsTitle: "Fresh drops 🏆✨",
+    examCountdownHeading: "Exam countdown — DBE 2026 ⏳",
+    keepPushing: "keep pushing ↗ 💪",
+    streakNudge: "Don't break it now — keep the fire going.",
+    worthLabel: "worth",
+    prelimNote: "Prelim dates are set by your school/province (typically Aug–mid Sep). Finals per the official DBE NSC Oct/Nov 2026 timetable.",
   },
   af: {
     signOut: "Uitteken",
@@ -467,6 +544,16 @@ const T = {
     daysLeft: "dae oor",
     statusManageLabel: "Sien meer",
     prelimsFallback: "Aug – Sept (per provinsie)",
+    claimXp: "⚡ Eis daaglikse XP 💰",
+    startRevision: "Begin hersiening — oefen nou →",
+    runIt: "Doen dit →",
+    nextMissionTitle: "Volgende missie 🎯",
+    freshDropsTitle: "Nuwe wenne 🏆✨",
+    examCountdownHeading: "Eksamen-aftelling — DBE 2026 ⏳",
+    keepPushing: "hou aan druk ↗ 💪",
+    streakNudge: "Moenie dit nou breek nie — hou die vuur brandend.",
+    worthLabel: "werd",
+    prelimNote: "Vooreksamendatums word deur jou skool/provinsie bepaal (gewoonlik Aug tot middel Sep). Finale eksamens volg die amptelike DBE NSC Okt/Nov 2026-rooster.",
   },
 } as const;
 
@@ -583,10 +670,10 @@ export default function DashboardPage() {
   const prepStatus = getPrepStatus();
 
   const accentMap: Record<string, { hex: string; halo: string }> = {
-    cyan:   { hex: "#7FEFFF", halo: "rgba(127,239,255,0.28)" },
-    blue:   { hex: "#6FA8FF", halo: "rgba(111,168,255,0.28)" },
-    yellow: { hex: "#FFF29E", halo: "rgba(255,242,158,0.28)" },
-    pink:   { hex: "#FF9FE5", halo: "rgba(255,159,229,0.28)" },
+    cyan:   { hex: "#9FF5E8", halo: "rgba(159,245,232,0.28)" },
+    blue:   { hex: "#9FD8FF", halo: "rgba(159,216,255,0.28)" },
+    yellow: { hex: "#FFE29A", halo: "rgba(255,226,154,0.28)" },
+    pink:   { hex: "#FFB7E5", halo: "rgba(255,183,229,0.28)" },
   };
   const ac = accentMap[prepStatus.accent];
 
@@ -604,119 +691,289 @@ export default function DashboardPage() {
 
   const navLinks = NAV_LINKS(t);
 
+  const streakVal = stats?.studyStreak ?? 0;
+  const readiness = calcReadiness({
+    accuracy: stats?.accuracy ?? 0,
+    studyStreak: streakVal,
+    questionsAnswered: stats?.questionsAnswered ?? 0,
+  });
+  const firstName = user?.firstName || t.legendLabel;
+  const avatarBg = PASTELS[(firstName.charCodeAt(0) || 0) % PASTELS.length];
+  const daysTo = (d: Date) => Math.max(0, Math.ceil((d.getTime() - Date.now()) / 86400000));
+
+  // Next-exam target for the hero + countdown chips: personal NSC timetable
+  // entry first, then the earliest prelim, then the official DBE finals date.
+  const nextExamEntry = examWidgets?.nextExam ?? null;
+  const heroTarget: Date = (() => {
+    if (nextExamEntry?.examDate) {
+      const withTime = new Date(`${nextExamEntry.examDate}T${nextExamEntry.startTime || "09:00"}:00+02:00`);
+      if (!isNaN(withTime.getTime())) return withTime;
+      const dateOnly = new Date(`${nextExamEntry.examDate}T09:00:00+02:00`);
+      if (!isNaN(dateOnly.getTime())) return dateOnly;
+    }
+    return targetDate ?? FINALS_DATE;
+  })();
+  const heroName = nextExamEntry
+    ? `${nextExamEntry.subjectName} · ${t.paperLabel} ${nextExamEntry.paperNumber}`
+    : earliestPrelim
+    ? `${earliestPrelim.subjectName} · ${t.paperLabel} ${earliestPrelim.paperNumber}`
+    : `DBE NSC · ${t.finalsLabel}`;
+  const heroWhen = heroTarget.toLocaleDateString(isAf ? "af-ZA" : "en-ZA", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+
+
   return (
-    <div className="min-h-screen relative bg-background">
-      {/* Graffiti splats behind the entire dashboard */}
-      <GraffitiSplats variant="hero" opacity={0.35} />
-      <div className="relative z-10">
+    <div className="bt-dash-root" style={{ minHeight: "100vh", background: "#050508", display: "flex" }}>
       <BadgePopup badgeCode={popupBadge} isAf={isAf} onDismiss={dismissPopup} />
-      <header
-        className="sticky top-0 z-50"
+
+      {/* ── Sidebar (desktop ≥861px) ── */}
+      <aside
+        className="bt-dash-sidebar"
         style={{
-          background: "#000",
-          borderBottom: "3px solid transparent",
-          borderImage: "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5) 1",
-          boxShadow: "0 0 28px rgba(127,239,255,0.18), 0 4px 20px rgba(0,0,0,0.8)",
+          width: 240,
+          flex: "none",
+          borderRight: "1px solid rgba(255,255,255,.07)",
+          padding: "26px 18px",
+          display: "flex",
+          flexDirection: "column",
+          gap: 8,
+          position: "sticky",
+          top: 0,
+          height: "100vh",
+          boxSizing: "border-box",
+          overflowY: "auto",
         }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-14 gap-4">
-            <div className="flex items-center gap-2">
-              <nav className="hidden md:flex items-center gap-1.5">
-                {navLinks.map(({ href, icon: Icon, label }, idx) => {
-                  const active = location === href;
-                  const NEONS = ["#6FA8FF","#7FEFFF","#93FFB8","#FFF29E","#FFC48F","#FF9FE5","#C6A4FF"];
-                  const col = NEONS[idx % NEONS.length];
-                  return (
-                    <Link key={href} href={href}>
-                      <button
-                        title={label}
-                        aria-label={label}
-                        data-testid={`nav-icon-${href.replace(/\//g, "")}`}
-                        className="flex items-center justify-center w-9 h-9 rounded-xl transition-all hover:scale-110"
-                        style={active ? {
-                          background: col,
-                          border: `1.5px solid ${col}`,
-                          color: "#0a0a0a",
-                        } : {
-                          background: "#000",
-                          border: `1.5px solid ${col}`,
-                          color: col,
-                        }}
-                      >
-                        <Icon className="w-4 h-4" />
-                      </button>
-                    </Link>
-                  );
-                })}
-              </nav>
-            </div>
-
-            <div className="flex items-center gap-1.5">
-              <NotificationsPanel isAf={isAf} />
-              <button
-                onClick={toggleLanguage}
-                className="text-sm font-bold px-4 py-2 rounded-xl transition-all hover:scale-105"
-                style={{ background: "#000", border: "1.5px solid #C6A4FF", color: "#C6A4FF" }}
-                data-testid="button-language-toggle"
+        <Link href="/dashboard" style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 10px 22px", cursor: "pointer" }}>
+          <img src={btIcon} alt="BrainTrack" style={{ width: 56, height: 56, objectFit: "contain" }} />
+          <span className="bt-wordmark" style={{ fontSize: 17 }}>BrainTrack</span>
+        </Link>
+        {navLinks.map(({ href, icon: Icon, label }) => {
+          const active = location === href;
+          return (
+            <Link key={href} href={href}>
+              <div
+                data-testid={`nav-icon-${href.replace(/\//g, "")}`}
+                title={label}
+                aria-label={label}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  padding: "11px 14px",
+                  borderRadius: 14,
+                  cursor: "pointer",
+                  fontWeight: 600,
+                  fontSize: 14,
+                  color: active ? "#9FF5E8" : "#fff",
+                  background: active ? "rgba(159,245,232,.12)" : "transparent",
+                  border: active ? "1px solid #9FF5E8" : "1px solid transparent",
+                  transition: "all .2s",
+                }}
+                onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = "rgba(255,255,255,.05)"; }}
+                onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = "transparent"; }}
               >
-                {language === "en" ? "EN" : "AF"}
-              </button>
-              <button
-                onClick={() => logout()}
-                className="flex items-center justify-center w-9 h-9 rounded-xl transition-all hover:scale-105"
-                style={{ background: "#000", border: "1.5px solid #FF9FE5", color: "#FF9FE5" }}
-                data-testid="button-logout"
-                title={t.signOutLabel}
-              >
-                <LogOut className="w-3.5 h-3.5" />
-              </button>
-              <button
-                className="md:hidden flex items-center justify-center w-9 h-9 rounded-xl transition-all hover:scale-105"
-                style={{ background: "#000", border: "1.5px solid #7FEFFF", color: "#7FEFFF" }}
-                onClick={() => setMobileOpen(v => !v)}
-              >
-                {mobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-              </button>
-            </div>
+                <Icon style={{ width: 16, height: 16, flex: "none" }} />
+                <span style={{ flex: 1 }}>{label}</span>
+              </div>
+            </Link>
+          );
+        })}
+        <div
+          data-testid="streak-badge"
+          style={{
+            marginTop: "auto",
+            background: "linear-gradient(140deg,rgba(255,183,229,.14),rgba(197,179,255,.12))",
+            border: "1px solid rgba(255,183,229,.3)",
+            borderRadius: 18,
+            padding: 16,
+          }}
+        >
+          <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#FFB7E5" }}>{t.studyStreak} 🔥🔥🔥</div>
+          <div className="tabular-nums" style={{ fontSize: 24, fontWeight: 900, color: "#fff", marginTop: 2 }}>
+            {streakVal} <span style={{ fontSize: 14 }}>{streakVal === 1 ? t.dayLabel : t.streakDays}</span>
           </div>
+          <div style={{ fontSize: 13, color: "#fff", lineHeight: 1.5 }}>{t.streakNudge}</div>
         </div>
+        <button
+          onClick={() => logout()}
+          data-testid="button-logout"
+          title={t.signOutLabel}
+          style={{
+            marginTop: 10,
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            width: "100%",
+            fontFamily: "'Poppins',sans-serif",
+            fontWeight: 700,
+            fontSize: 14,
+            color: "#fff",
+            background: "transparent",
+            border: "1px solid rgba(255,255,255,.14)",
+            borderRadius: 14,
+            padding: "11px 14px",
+            cursor: "pointer",
+            transition: "all .2s",
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#FF8DA1"; e.currentTarget.style.color = "#FF8DA1"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,.14)"; e.currentTarget.style.color = "#fff"; }}
+        >
+          <LogOut style={{ width: 16, height: 16 }} />
+          {t.signOutLabel}
+        </button>
+      </aside>
 
-        {mobileOpen && (
-          <div
-            className="md:hidden px-4 py-3 grid grid-cols-4 gap-2"
-            style={{ background: "#050508", borderTop: "2px solid rgba(127,239,255,0.2)" }}
+      {/* ── Main ── */}
+      <div className="bt-dash-main" style={{ flex: 1, padding: "34px 40px", minWidth: 0, position: "relative", overflow: "hidden" }}>
+        {/* Decorative blurred glows + graffiti scatter glyphs */}
+        <div aria-hidden style={{ position: "absolute", top: -40, right: -40, width: 340, height: 340, background: "radial-gradient(circle,rgba(255,183,229,.12),transparent 65%)", filter: "blur(24px)", pointerEvents: "none" }} />
+        <div aria-hidden style={{ position: "absolute", bottom: "10%", left: -60, width: 300, height: 300, background: "radial-gradient(circle,rgba(159,245,232,.1),transparent 65%)", filter: "blur(24px)", pointerEvents: "none" }} />
+        <span aria-hidden style={{ position: "absolute", top: 110, right: 60, fontFamily: "'Permanent Marker',cursive", fontSize: 30, color: "rgba(255,226,154,.5)", transform: "rotate(12deg)", pointerEvents: "none" }}>★</span>
+        <span aria-hidden style={{ position: "absolute", top: 300, right: 24, fontFamily: "'Permanent Marker',cursive", fontSize: 26, color: "rgba(255,183,229,.45)", transform: "rotate(-8deg)", pointerEvents: "none" }}>⚡</span>
+        <span aria-hidden style={{ position: "absolute", bottom: 140, right: 80, fontFamily: "'Permanent Marker',cursive", fontSize: 24, color: "rgba(197,179,255,.45)", transform: "rotate(6deg)", pointerEvents: "none" }}>✦</span>
+        <span aria-hidden style={{ position: "absolute", top: "60%", left: 8, fontFamily: "'Permanent Marker',cursive", fontSize: 22, color: "rgba(159,216,255,.4)", transform: "rotate(-14deg)", pointerEvents: "none" }}>👑</span>
+
+        {/* ── Mobile top bar (<861px) ── */}
+        <div className="bt-mobilebar" style={{ display: "none", alignItems: "center", justifyContent: "space-between", marginBottom: 18, position: "relative", zIndex: 2 }}>
+          <Link href="/dashboard" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <img src={btIcon} alt="BrainTrack" style={{ width: 40, height: 40, objectFit: "contain" }} />
+            <span className="bt-wordmark" style={{ fontSize: 15 }}>BrainTrack</span>
+          </Link>
+          <button
+            onClick={() => setMobileOpen(v => !v)}
+            aria-label="Menu"
+            style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, borderRadius: 14, background: "transparent", border: "1px solid #9FF5E8", color: "#9FF5E8", cursor: "pointer" }}
           >
+            {mobileOpen ? <X style={{ width: 18, height: 18 }} /> : <Menu style={{ width: 18, height: 18 }} />}
+          </button>
+        </div>
+        {mobileOpen && (
+          <div className="bt-mobilemenu" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8, marginBottom: 18, position: "relative", zIndex: 2 }}>
             {navLinks.map(({ href, icon: Icon, label }, idx) => {
               const active = location === href;
-              const NEONS = ["#6FA8FF","#7FEFFF","#93FFB8","#FFF29E","#FFC48F","#FF9FE5","#C6A4FF"];
-              const col = NEONS[idx % NEONS.length];
+              const col = PASTELS[idx % PASTELS.length];
               return (
                 <Link key={href} href={href}>
                   <button
                     onClick={() => setMobileOpen(false)}
-                    className="flex flex-col items-center gap-1 w-full py-2 px-1 rounded-xl text-[10px] font-black uppercase tracking-wide transition-all"
-                    style={active ? {
-                      background: col,
-                      color: "#0a0a0a",
-                      border: `1.5px solid ${col}`,
-                    } : {
-                      background: "#000",
-                      color: col,
-                      border: `1.5px solid ${col}`,
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: 4,
+                      width: "100%",
+                      padding: "8px 4px",
+                      borderRadius: 14,
+                      fontSize: 10,
+                      fontWeight: 900,
+                      textTransform: "uppercase",
+                      letterSpacing: ".04em",
+                      cursor: "pointer",
+                      background: active ? col : "transparent",
+                      color: active ? "#050508" : col,
+                      border: `1px solid ${col}`,
                     }}
                   >
-                    <Icon className="w-4 h-4" />
-                    <span className="leading-none">{label.slice(0, 6)}</span>
+                    <Icon style={{ width: 16, height: 16 }} />
+                    <span style={{ lineHeight: 1 }}>{label.slice(0, 8)}</span>
                   </button>
                 </Link>
               );
             })}
+            <button
+              onClick={() => logout()}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 4,
+                width: "100%",
+                padding: "8px 4px",
+                borderRadius: 14,
+                fontSize: 10,
+                fontWeight: 900,
+                textTransform: "uppercase",
+                letterSpacing: ".04em",
+                cursor: "pointer",
+                background: "transparent",
+                color: "#FF8DA1",
+                border: "1px solid #FF8DA1",
+              }}
+            >
+              <LogOut style={{ width: 16, height: 16 }} />
+              <span style={{ lineHeight: 1 }}>{t.signOutLabel.slice(0, 8)}</span>
+            </button>
           </div>
         )}
-      </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        {/* ── Header row ── */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap", marginBottom: 30, position: "relative", zIndex: 1 }}>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 12px rgba(159,245,232,.5)" }}>
+              {getGreeting()} ⚡
+            </div>
+            <div role="heading" aria-level={1} style={{ fontSize: 32, fontWeight: 900, letterSpacing: -1, color: "#fff" }}>
+              {firstName} <span style={{ fontSize: 24 }}>🎧🔥</span>
+            </div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+            <NotificationsPanel isAf={isAf} />
+            <button
+              onClick={toggleLanguage}
+              data-testid="button-language-toggle"
+              style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 14, color: "#C5B3FF", background: "transparent", border: "1px solid #C5B3FF", borderRadius: 10, padding: "10px 16px", cursor: "pointer" }}
+            >
+              {language === "en" ? "EN" : "AF"}
+            </button>
+            <Link href="/daily-challenge">
+              <button
+                data-testid="button-claim-daily-xp"
+                style={{
+                  fontFamily: "'Poppins',sans-serif",
+                  fontWeight: 700,
+                  fontSize: 15,
+                  color: "#050508",
+                  background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
+                  border: "none",
+                  borderRadius: 10,
+                  padding: "12px 22px",
+                  cursor: "pointer",
+                  boxShadow: "0 0 20px rgba(159,245,232,.35)",
+                  transition: "transform .2s",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
+                onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
+              >
+                {t.claimXp}
+              </button>
+            </Link>
+            <div
+              aria-hidden
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: "50%",
+                background: avatarBg,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: 800,
+                fontSize: 15,
+                color: "#050508",
+                boxShadow: "0 0 18px rgba(255,183,229,.4)",
+              }}
+            >
+              {firstName.charAt(0).toUpperCase()}
+            </div>
+          </div>
+        </div>
+
+      <main style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", gap: 24 }}>
         <RescuePackAlert isAf={isAf} />
 
         {/* ─── ≤48 h urgent trial-ending banner (dismissible per session) ─── */}
@@ -734,7 +991,7 @@ export default function DashboardPage() {
             : null;
           const dayWord = daysLeft === 1 ? t.trialBannerDay : t.trialBannerDays;
           const urgent = daysLeft !== null && daysLeft <= 3;
-          const hex = urgent ? "#FF9FE5" : "#FFF29E";
+          const hex = urgent ? "#FFB7E5" : "#FFE29A";
           return (
             <div
               data-testid="subscription-trial-banner"
@@ -757,7 +1014,7 @@ export default function DashboardPage() {
                 <button
                   className="rounded-xl px-4 py-2 text-sm font-bold transition-all"
                   style={{
-                    background: "#7FEFFF",
+                    background: "#9FF5E8",
                     color: "#0a0a0a",
                   }}
                 >
@@ -773,14 +1030,14 @@ export default function DashboardPage() {
             data-testid="subscription-lapsed-banner"
             className="flex flex-wrap items-center justify-between gap-3 rounded-2xl px-5 py-3.5"
             style={{
-              background: "linear-gradient(135deg, rgba(255,159,229,0.10) 0%, transparent 60%), #000",
-              border: "1px solid rgba(255,159,229,0.45)",
-              boxShadow: "0 0 18px rgba(255,159,229,0.15)",
+              background: "linear-gradient(135deg, rgba(255,183,229,0.10) 0%, transparent 60%), #000",
+              border: "1px solid rgba(255,183,229,0.45)",
+              boxShadow: "0 0 18px rgba(255,183,229,0.15)",
             }}
           >
             <div className="flex items-center gap-3">
-              <AlertTriangle className="w-4 h-4 shrink-0 text-pink-400" />
-              <span className="text-sm font-semibold text-pink-400">
+              <AlertTriangle className="w-4 h-4 shrink-0 text-[#FFB7E5]" />
+              <span className="text-sm font-semibold text-[#FFB7E5]">
                 {t.lapsedBannerMsg}
               </span>
             </div>
@@ -788,7 +1045,7 @@ export default function DashboardPage() {
               <button
                 className="rounded-xl px-4 py-2 text-sm font-bold transition-all"
                 style={{
-                  background: "#7FEFFF",
+                  background: "#9FF5E8",
                   color: "#0a0a0a",
                 }}
               >
@@ -799,268 +1056,315 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* ═══ Premium Command Bridge Hero ═══ */}
-        {(() => {
-          const acc = stats?.accuracy ?? 0;
-          const streak = stats?.studyStreak ?? 0;
-          const qAnswered = stats?.questionsAnswered ?? 0;
-          const papers = stats?.papersCompleted ?? 0;
-          const readiness = calcReadiness({ accuracy: acc, studyStreak: streak, questionsAnswered: qAnswered });
-          const tier =
-            readiness >= 85 ? { label: t.tierPlatinum, hex: "#7FEFFF" } :
-            readiness >= 65 ? { label: t.tierGold,     hex: "#FFF29E" } :
-            readiness >= 40 ? { label: t.tierSilver,   hex: "#C6A4FF" } :
-                              { label: t.tierBronze,   hex: "#FFC48F" };
-          const R = 48;
-          const C = 2 * Math.PI * R;
-          const offset = C - (readiness / 100) * C;
-          const firstName = user?.firstName || t.legendLabel;
-          const h = new Date().getHours();
-          const tod = h < 12 ? t.greetingMorning : h < 17 ? t.greetingAfternoon : t.greetingEvening;
-          const subline = h < 12
-            ? t.greetingSubMorning
-            : h < 17
-            ? t.greetingSubAfternoon
-            : t.greetingSubEvening;
+        {/* ═══ Next-exam hero ═══ */}
+        <div
+          data-testid="learner-command-hero"
+          style={{
+            background: "linear-gradient(120deg,rgba(255,183,229,.12),rgba(159,216,255,.1))",
+            border: "1.5px solid rgba(255,183,229,.3)",
+            borderRadius: 20,
+            padding: "20px 26px",
+            display: "flex",
+            alignItems: "center",
+            gap: 22,
+            flexWrap: "wrap",
+            position: "relative",
+          }}
+        >
+          <div style={{ flex: 1, minWidth: 220 }}>
+            <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.5, textTransform: "uppercase", color: "#FFB7E5" }}>{t.nextExam} ⏰</div>
+            <div style={{ fontSize: 22, fontWeight: 900, letterSpacing: -0.5, marginTop: 2, color: "#fff" }}>{heroName}</div>
+            <div style={{ fontSize: 13, color: "#fff" }}>
+              {heroWhen} · {t.readinessLabel.toLowerCase()}{" "}
+              <b style={{ color: "#9FF5E8" }}>
+                <span data-testid="hero-readiness-value">{readiness}</span>%
+              </b>
+            </div>
+          </div>
+          <LiveCountdownChips target={heroTarget} />
+          <Link href="/exam/mini-mock">
+            <button
+              style={{
+                fontFamily: "'Poppins',sans-serif",
+                fontWeight: 800,
+                fontSize: 14,
+                color: "#050508",
+                background: "linear-gradient(100deg,#FFB7E5,#C5B3FF)",
+                border: "none",
+                borderRadius: 10,
+                padding: "13px 26px",
+                whiteSpace: "nowrap",
+                cursor: "pointer",
+                transition: "transform .2s",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
+            >
+              {t.startRevision}
+            </button>
+          </Link>
+        </div>
 
-          /* Next-tier distance hint */
-          const nextTierAt = readiness >= 85 ? null : readiness >= 65 ? 85 : readiness >= 40 ? 65 : 40;
-          const nextTierLabel = readiness >= 65 ? t.tierPlatinum
-                              : readiness >= 40 ? t.tierGold
-                              : t.tierSilver;
-          const distance = nextTierAt !== null ? nextTierAt - readiness : 0;
+        {/* ── Stat stickers ── */}
+        <div className="bt-grid-stats" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 20 }}>
+          {[
+            { label: t.studyStreak,       value: stats?.studyStreak ?? 0,       suffix: "",  sub: t.daysInARow,     Icon: Flame,         hex: "#FFB7E5", tilt: -1.2, testid: "card-stat-streak",    statTestid: "stat-streak"    },
+            { label: t.questionsAnswered, value: stats?.questionsAnswered ?? 0, suffix: "",  sub: t.answeredLabel,  Icon: Zap,           hex: "#9FF5E8", tilt: 0.8,  testid: "card-stat-questions", statTestid: "stat-questions" },
+            { label: t.accuracy,          value: stats?.accuracy ?? 0,          suffix: "%", sub: t.averageLabel,   Icon: Target,        hex: "#C5B3FF", tilt: -0.8, testid: "card-stat-accuracy",  statTestid: "stat-accuracy"  },
+            { label: t.papersCompleted,   value: stats?.papersCompleted ?? 0,   suffix: "",  sub: t.completedLabel, Icon: CalendarCheck, hex: "#FFE29A", tilt: 1.2,  testid: "card-stat-papers",    statTestid: "stat-papers"    },
+          ].map(({ label, value, suffix, sub, Icon, hex, tilt, testid, statTestid }) => (
+            <div
+              key={label}
+              data-testid={testid}
+              style={{
+                background: "linear-gradient(160deg,rgba(255,255,255,.055),rgba(255,255,255,.015))",
+                border: `1.5px solid ${hex}`,
+                borderRadius: 20,
+                padding: "20px 22px",
+                transform: `rotate(${tilt}deg)`,
+                boxShadow: `0 10px 30px ${hex}40`,
+                transition: "transform .25s",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.transform = "rotate(0deg) translateY(-6px)")}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = `rotate(${tilt}deg)`)}
+            >
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", color: "#fff" }}>{label}</div>
+                <Icon style={{ width: 18, height: 18, flex: "none", color: hex }} />
+              </div>
+              <LiveCounter
+                value={typeof value === "number" ? value : 0}
+                suffix={suffix}
+                className="block"
+                style={{ fontSize: 30, fontWeight: 900, color: hex, marginTop: 6, lineHeight: 1.15 }}
+                testid={statTestid}
+              />
+              <div style={{ fontSize: 13.5, color: "#fff" }}>{sub}</div>
+            </div>
+          ))}
+        </div>
 
-          return (
-              <div
-                className="relative overflow-hidden rounded-3xl bg-black p-6 sm:p-7"
-                style={{
-                  border: `1px solid ${tier.hex}55`,
-                  boxShadow: `0 0 0 1px ${tier.hex}22, 0 18px 50px -22px ${tier.hex}66`,
-                }}
-                data-testid="learner-command-hero"
-              >
-                {/* Rainbow hairline */}
-                <div
-                  aria-hidden
-                  className="absolute top-0 left-0 right-0 h-[2px]"
-                  style={{ background: "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)" }}
-                />
-                {/* Subtle tier aura */}
-                <div
-                  aria-hidden
-                  className="absolute -right-16 -top-12 w-[280px] h-[280px] rounded-full blur-3xl pointer-events-none"
-                  style={{ background: `radial-gradient(circle, ${tier.hex}26, transparent 70%)` }}
-                />
-
-                {/* ── Meta row ── */}
-                <div className="relative flex flex-wrap items-center justify-between gap-3 mb-5">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <div
-                      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
-                      style={{ border: `1px solid ${tier.hex}`, boxShadow: `0 0 12px ${tier.hex}44` }}
-                    >
-                      <span className="w-1 h-1 rounded-full" style={{ background: tier.hex, boxShadow: `0 0 6px ${tier.hex}` }} />
-                      <span className="text-[10px] font-black uppercase tracking-[0.22em]" style={{ color: tier.hex }}>
-                        {tier.label}
-                      </span>
-                    </div>
-                    {streak > 0 && (() => {
-                      const sHex =
-                        streak >= 30 ? "#FF9FE5" :
-                        streak >= 14 ? "#FFC48F" :
-                        streak >= 7  ? "#FFC48F" :
-                        streak >= 3  ? "#FFF29E" : "#FFF29E";
-                      return (
-                        <div
-                          className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
-                          style={{ border: `1px solid ${sHex}`, boxShadow: `0 0 12px ${sHex}55` }}
-                          data-testid="streak-badge"
-                        >
-                          <Flame className="w-3 h-3" style={{ color: sHex, filter: `drop-shadow(0 0 4px ${sHex})` }} />
-                          <span className="text-[11px] font-black tabular-nums leading-none" style={{ color: sHex }}>
-                            {streak}
-                          </span>
-                          <span className="text-[9px] font-black uppercase tracking-[0.2em]" style={{ color: sHex }}>
-                            {streak === 1 ? t.dayLabel : t.daysLabel}
-                          </span>
+        {/* ── Two-column: Subject mastery + Next mission / Fresh drops ── */}
+        <div className="bt-grid-2col" style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr", gap: 24 }}>
+          {/* Subject mastery */}
+          <div style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.08)", borderRadius: 24, padding: 26 }}>
+            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10, flexWrap: "wrap", marginBottom: 20 }}>
+              <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 18, color: "#fff" }}>{t.subjectsHeading} 📈</div>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#9FF5E8", textShadow: "0 0 10px rgba(159,245,232,.5)" }}>{t.keepPushing}</span>
+                <Link href="/settings">
+                  <button
+                    data-testid="link-manage-subjects"
+                    style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 12, color: "#fff", background: "transparent", border: "1px solid rgba(255,255,255,.14)", borderRadius: 10, padding: "6px 12px", cursor: "pointer" }}
+                  >
+                    {t.manageLabel}
+                  </button>
+                </Link>
+              </div>
+            </div>
+            {subjectsLoading ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+                {[1, 2, 3].map(i => <div key={i} className="animate-pulse" style={{ height: 40, borderRadius: 12, background: "rgba(255,255,255,.05)" }} />)}
+              </div>
+            ) : filteredSubjects && filteredSubjects.length > 0 ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+                {filteredSubjects.map((subject: any, idx: number) => {
+                  const hex = PASTELS[idx % PASTELS.length];
+                  const hex2 = PASTELS[(idx + 1) % PASTELS.length];
+                  const fa = focusAreasData?.focusAreas.find(f => f.subjectId === subject.id);
+                  const pct = Math.max(0, Math.min(100, Math.round(fa ? fa.masteryScore : (stats?.accuracy ?? 0))));
+                  const initial = (subject.name || "?").trim().charAt(0).toUpperCase();
+                  return (
+                    <Link key={subject.id} href={`/subject/${subject.id}`}>
+                      <div data-testid={`subject-card-${subject.id}`} style={{ display: "flex", alignItems: "center", gap: 16, cursor: "pointer" }}>
+                        <div style={{ width: 40, height: 40, flex: "none", borderRadius: 12, background: `${hex}26`, color: hex, fontWeight: 800, fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 14px ${hex}40` }}>
+                          {initial}
                         </div>
-                      );
-                    })()}
-                  </div>
-                  <div className="inline-flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full progress-hero-pulse" style={{ background: "#7FEFFF", boxShadow: "0 0 6px #7FEFFF" }} />
-                    <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-white">
-                      {t.liveSession}
-                    </span>
-                  </div>
-                </div>
-
-                {/* ── Greeting + compact dial ── */}
-                <div className="relative grid gap-5 sm:grid-cols-[1fr_auto] items-center">
-                  <div className="min-w-0">
-                    <p className="text-white font-semibold text-[11px] sm:text-xs uppercase tracking-[0.22em] mb-1.5">
-                      {tod}
-                    </p>
-                    <h1
-                      className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-[1.02]"
-                      style={{
-                        background: "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)",
-                        WebkitBackgroundClip: "text",
-                        WebkitTextFillColor: "transparent",
-                        backgroundClip: "text",
-                      }}
-                    >
-                      {firstName}.
-                    </h1>
-                    <p className="text-white font-medium text-sm sm:text-base mt-2 max-w-xl leading-relaxed">
-                      {subline}
-                      {nextTierAt !== null && distance > 0 && (
-                        <>
-                          {" "}
-                          <span className="font-black" style={{ color: tier.hex }}>
-                            {distance}%
-                          </span>{" "}
-                          <span className="text-white">
-                            {`${t.toLabel} ${nextTierLabel}.`}
-                          </span>
-                        </>
-                      )}
-                    </p>
-                  </div>
-
-                  {/* Compact readiness dial — 132×132 */}
-                  {(() => {
-                    const cx = 66, cy = 66;
-                    const rInner = 52;
-                    const cInner = 2 * Math.PI * rInner;
-                    const innerOffset = cInner - (readiness / 100) * cInner;
-                    return (
-                      <div className="relative mx-auto sm:mx-0 flex-shrink-0">
-                        <svg width="132" height="132" viewBox="0 0 132 132" role="presentation" aria-hidden="true">
-                          <defs>
-                            <linearGradient id="dashReadinessStrokeMini" x1="0%" y1="0%" x2="100%" y2="100%">
-                              <stop offset="0%"   stopColor="#FFC48F" />
-                              <stop offset="25%"  stopColor="#FFF29E" />
-                              <stop offset="55%"  stopColor="#7FEFFF" />
-                              <stop offset="80%"  stopColor="#C6A4FF" />
-                              <stop offset="100%" stopColor="#FF9FE5" />
-                            </linearGradient>
-                            <filter id="dashReadinessGlowMini" x="-50%" y="-50%" width="200%" height="200%">
-                              <feGaussianBlur stdDeviation="2.5" result="b" />
-                              <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
-                            </filter>
-                          </defs>
-                          {/* track */}
-                          <circle cx={cx} cy={cy} r={rInner} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="6" />
-                          {/* progress */}
-                          <circle
-                            cx={cx} cy={cy} r={rInner}
-                            fill="none"
-                            stroke="url(#dashReadinessStrokeMini)"
-                            strokeWidth="6"
-                            strokeLinecap="round"
-                            strokeDasharray={cInner}
-                            strokeDashoffset={innerOffset}
-                            transform={`rotate(-90 ${cx} ${cy})`}
-                            filter="url(#dashReadinessGlowMini)"
-                            style={{ transition: "stroke-dashoffset 900ms ease-out" }}
-                          />
-                          {/* centre value */}
-                          <text x={cx} y={cy + 6} textAnchor="middle"
-                            data-testid="hero-readiness-value"
-                            style={{
-                              fontFamily: '"JetBrains Mono", "Sora", monospace',
-                              fontSize: "30px", fontWeight: 900, fill: tier.hex,
-                              filter: `drop-shadow(0 0 10px ${tier.hex}cc)`,
-                            }}>
-                            {readiness}
-                          </text>
-                          <text x={cx} y={cy + 22} textAnchor="middle"
-                            style={{ fontFamily: "Sora, sans-serif", fontSize: "8px", fontWeight: 800, letterSpacing: "0.24em", fill: "#ffffff" }}>
-                            {t.readinessLabel}
-                          </text>
-                        </svg>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", gap: 8, fontSize: 15, fontWeight: 700, marginBottom: 6, color: "#fff" }}>
+                            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{subject.name}</span>
+                            <span className="tabular-nums" style={{ color: hex, flex: "none" }}>{pct}%</span>
+                          </div>
+                          <div style={{ height: 9, borderRadius: 999, background: "rgba(255,255,255,.08)", overflow: "hidden" }}>
+                            <div style={{ height: "100%", width: `${pct}%`, borderRadius: 999, background: `linear-gradient(90deg,${hex},${hex2})`, boxShadow: `0 0 12px ${hex}40` }} />
+                          </div>
+                        </div>
                       </div>
-                    );
-                  })()}
-                </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            ) : (
+              <div style={{ textAlign: "center", padding: "40px 0" }}>
+                <div role="heading" aria-level={3} style={{ fontWeight: 800, fontSize: 18, color: "#fff", marginBottom: 4 }}>{t.selectSubjectsHeading}</div>
+                <p style={{ color: "#fff", fontSize: 14, marginBottom: 20 }}>{t.selectSubjectsDesc}</p>
+                <Link href="/settings">
+                  <button
+                    data-testid="button-select-subjects"
+                    style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 14, color: "#050508", background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", border: "none", borderRadius: 10, padding: "12px 22px", cursor: "pointer" }}
+                  >
+                    {t.selectSubjectsBtn}
+                  </button>
+                </Link>
+              </div>
+            )}
+          </div>
 
-                {/* ── Slim countdown row — Days only ── */}
-                <div className="relative mt-5 grid gap-3 sm:grid-cols-2">
-                  {([
-                    {
-                      label: t.prelimsLabel,
-                      sub: earliestPrelim
-                        ? new Date(earliestPrelim.examDate + "T00:00:00").toLocaleDateString(isAf ? "af-ZA" : "en-ZA", { day: "numeric", month: "short", year: "numeric" })
-                        : hasAnyPrelimData
-                        ? (isAf ? "Vooreksamens voltooi" : "Prelims complete")
-                        : t.prelimsFallback,
-                      hex: "#7FEFFF",
-                      target: PRELIMS_DATE,
-                      testid: "countdown-prelims",
-                      // Only show the Settings CTA when there is genuinely no prelim data.
-                      // When all prelims are past, PRELIMS_DATE is a past-date sentinel
-                      // (not null) so CountdownDigits shows 0 days — no Settings prompt.
-                      empty: !hasAnyPrelimData && !PRELIMS_DATE,
-                    },
-                    { label: t.finalsLabel, sub: FINALS_DATE.toLocaleDateString(isAf ? "af-ZA" : "en-ZA", { day: "numeric", month: "short", year: "numeric" }), hex: "#FFC48F", target: FINALS_DATE, testid: "countdown-finals", empty: false },
-                  ] as const).map(({ label, sub, hex, target, testid, empty }) => {
-                    if (empty || !target) {
-                      return (
-                        <Link
-                          key={label}
-                          href="/settings"
-                          className="relative rounded-xl bg-black p-3 flex items-center justify-between gap-3"
-                          style={{
-                            border: `1px solid ${hex}44`,
-                            boxShadow: `0 0 14px ${hex}1a`,
-                          }}
-                          data-testid={`${testid}-empty`}
-                        >
-                          <div className="flex flex-col">
-                            <span className="text-[10px] font-black uppercase tracking-[0.22em]" style={{ color: hex }}>
-                              {label}
-                            </span>
-                            <span className="text-[11px] text-white mt-0.5">{sub}</span>
-                          </div>
-                          <span className="text-[10px] font-black uppercase tracking-[0.18em] px-2.5 py-1 rounded-full bg-black" style={{ color: hex, border: `1px solid ${hex}` }}>
-                            {t.setupLink}
-                          </span>
-                        </Link>
-                      );
-                    }
+          {/* Right column */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+            {/* Next mission */}
+            {(() => {
+              const fa = focusAreasData?.focusAreas?.[0] ?? null;
+              const missionTitle = fa
+                ? (language === "af" && fa.topicNameAfrikaans ? fa.topicNameAfrikaans : fa.topicName)
+                : t.miniMockTitle;
+              const missionSub = fa
+                ? `${language === "af" && fa.subjectNameAfrikaans ? fa.subjectNameAfrikaans : fa.subjectName} · ${t.masteryLabel} ${fa.masteryScore}%`
+                : t.miniMockSub;
+              const missionHref = fa ? `/subject/${fa.subjectId}?topicId=${fa.topicId}` : "/exam/mini-mock";
+              return (
+                <div style={{ background: "linear-gradient(150deg,rgba(159,245,232,.12),rgba(197,179,255,.1))", border: "1px solid rgba(159,245,232,.28)", borderRadius: 24, padding: 24 }}>
+                  <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 16, color: "#fff", marginBottom: 4 }}>{t.nextMissionTitle}</div>
+                  <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFE29A", marginBottom: 10 }}>{missionTitle}</div>
+                  <div style={{ fontSize: 14, lineHeight: 1.6, color: "#fff" }}>
+                    {missionSub} · {t.worthLabel} <b style={{ color: "#9FF5E8" }}>+250 XP</b>
+                  </div>
+                  <Link href={missionHref}>
+                    <button
+                      style={{ marginTop: 16, width: "100%", fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 14, color: "#050508", background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", border: "none", borderRadius: 10, padding: 13, cursor: "pointer", transition: "all .2s" }}
+                      onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(159,245,232,.35)"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}
+                    >
+                      {t.runIt}
+                    </button>
+                  </Link>
+                </div>
+              );
+            })()}
+
+            {/* Fresh drops — recent achievements */}
+            <div style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.08)", borderRadius: 24, padding: 24, flex: 1 }}>
+              <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 16, color: "#fff", marginBottom: 16 }}>{t.freshDropsTitle}</div>
+              {badges && badges.length > 0 ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                  {badges.slice(0, 3).map((badge: any, idx: number) => {
+                    const info = BADGE_INFO[badge.badgeCode];
+                    if (!info) return null;
+                    const Icon = info.icon;
+                    const hex = PASTELS[idx % PASTELS.length];
                     return (
-                      <div
-                        key={label}
-                        className="relative rounded-xl bg-black p-3 flex items-center justify-between gap-3"
-                        style={{
-                          border: `1px solid ${hex}55`,
-                          boxShadow: `0 0 14px ${hex}1f`,
-                        }}
-                        data-testid={testid}
-                      >
-                        <div className="flex flex-col">
-                          <div className="flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 rounded-full" style={{ background: hex, boxShadow: `0 0 6px ${hex}` }} />
-                            <span className="text-[10px] font-black uppercase tracking-[0.22em]" style={{ color: hex }}>
-                              {label}
-                            </span>
-                          </div>
-                          <span className="text-[11px] text-white mt-1">{sub}</span>
+                      <div key={badge.id} data-testid={`badge-${badge.badgeCode}`} style={{ display: "flex", alignItems: "center", gap: 13 }}>
+                        <div style={{ width: 42, height: 42, flex: "none", borderRadius: "50%", background: `${hex}26`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 16px ${hex}40` }}>
+                          <Icon style={{ width: 20, height: 20, color: hex }} />
                         </div>
-                        <CountdownDigits
-                          target={target}
-                          hex={hex}
-                          dayLabel={t.dayLabel}
-                          daysLabel={t.daysLabel}
-                        />
+                        <div style={{ minWidth: 0 }}>
+                          <div style={{ fontSize: 15, fontWeight: 700, color: "#fff" }}>{isAf ? info.nameAfrikaans : info.name}</div>
+                          <div style={{ fontSize: 13, color: "#fff" }}>
+                            {badge.earnedAt ? formatDate(String(badge.earnedAt), language, { day: "numeric", month: "short" }) : t.achievementsHeading}
+                          </div>
+                        </div>
                       </div>
                     );
                   })}
                 </div>
+              ) : (
+                <p style={{ color: "#fff", fontSize: 13, lineHeight: 1.5 }}>{t.startLearningToUnlock}</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* ── Exam countdown — DBE 2026 ── */}
+        <div style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.08)", borderRadius: 24, padding: 26 }}>
+          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 8 }}>
+            <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 18, color: "#fff" }}>{t.examCountdownHeading}</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5" }}>{heroName}</span>
+              <LiveCountdownChips target={heroTarget} tinted size={20} />
+            </div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 16 }}>
+            {/* Prelims tile */}
+            {!hasAnyPrelimData && !PRELIMS_DATE ? (
+              <Link href="/settings">
+                <div
+                  data-testid="countdown-prelims-empty"
+                  style={{ height: "100%", background: "rgba(5,5,8,.6)", border: "1.5px solid #9FF5E8", borderRadius: 16, padding: "16px 18px", boxShadow: "0 0 20px rgba(159,245,232,.25)", cursor: "pointer", transition: "transform .2s" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-4px)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
+                >
+                  <div style={{ display: "inline-block", fontSize: 10, fontWeight: 800, letterSpacing: 1.5, padding: "3px 8px", borderRadius: 6, background: "rgba(159,245,232,.12)", color: "#9FF5E8", textTransform: "uppercase" }}>{t.prelimsLabel}</div>
+                  <div style={{ fontSize: 26, fontWeight: 900, color: "#9FF5E8", marginTop: 10 }}>{t.setupLink}</div>
+                  <div style={{ fontSize: 13, color: "#fff", marginTop: 2 }}>{t.addPrelimDates}</div>
+                </div>
+              </Link>
+            ) : (
+              <div
+                data-testid="countdown-prelims"
+                style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #9FF5E8", borderRadius: 16, padding: "16px 18px", boxShadow: "0 0 20px rgba(159,245,232,.25)", transition: "transform .2s" }}
+                onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-4px)")}
+                onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
+              >
+                <div style={{ display: "inline-block", fontSize: 10, fontWeight: 800, letterSpacing: 1.5, padding: "3px 8px", borderRadius: 6, background: "rgba(159,245,232,.12)", color: "#9FF5E8", textTransform: "uppercase" }}>{t.prelimsLabel}</div>
+                <div className="tabular-nums" style={{ fontSize: 26, fontWeight: 900, color: "#9FF5E8", marginTop: 10 }}>
+                  {PRELIMS_DATE ? daysTo(PRELIMS_DATE) : 0}{t.daysShort}
+                </div>
+                <div style={{ fontSize: 14, fontWeight: 700, marginTop: 2, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {earliestPrelim ? earliestPrelim.subjectName : (isAf ? "Vooreksamens voltooi" : "Prelims complete")}
+                </div>
+                <div style={{ fontSize: 13, color: "#fff" }}>
+                  {earliestPrelim
+                    ? formatDate(earliestPrelim.examDate + "T00:00:00", language, { day: "numeric", month: "short", year: "numeric" })
+                    : t.prelimsFallback}
+                </div>
               </div>
-            );
-          })()}
+            )}
+            {/* Finals tile */}
+            <div
+              data-testid="countdown-finals"
+              style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #FFB7E5", borderRadius: 16, padding: "16px 18px", boxShadow: "0 0 20px rgba(255,183,229,.25)", transition: "transform .2s" }}
+              onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-4px)")}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
+            >
+              <div style={{ display: "inline-block", fontSize: 10, fontWeight: 800, letterSpacing: 1.5, padding: "3px 8px", borderRadius: 6, background: "rgba(255,183,229,.12)", color: "#FFB7E5", textTransform: "uppercase" }}>{t.finalsLabel}</div>
+              <div className="tabular-nums" style={{ fontSize: 26, fontWeight: 900, color: "#FFB7E5", marginTop: 10 }}>
+                {daysTo(FINALS_DATE)}{t.daysShort}
+              </div>
+              <div style={{ fontSize: 14, fontWeight: 700, marginTop: 2, color: "#fff" }}>DBE NSC 2026</div>
+              <div style={{ fontSize: 13, color: "#fff" }}>
+                {FINALS_DATE.toLocaleDateString(isAf ? "af-ZA" : "en-ZA", { day: "numeric", month: "short", year: "numeric" })}
+              </div>
+            </div>
+            {/* Upcoming subject tiles from the learner's NSC timetable */}
+            {examWidgets?.subjectPriorityQueue?.length > 0 && (
+              <div data-testid="subject-priority-queue" style={{ display: "contents" }}>
+                {examWidgets.subjectPriorityQueue.slice(0, 6).map((item: any, i: number) => {
+                  const hex = PASTELS[(i + 2) % PASTELS.length];
+                  return (
+                    <div
+                      key={i}
+                      style={{ background: "rgba(5,5,8,.6)", border: `1.5px solid ${hex}`, borderRadius: 16, padding: "16px 18px", boxShadow: `0 0 20px ${hex}40`, transition: "transform .2s" }}
+                      onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-4px)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
+                    >
+                      <div style={{ display: "inline-block", fontSize: 10, fontWeight: 800, letterSpacing: 1.5, padding: "3px 8px", borderRadius: 6, background: `${hex}1F`, color: hex, textTransform: "uppercase" }}>
+                        {t.paperLabel} {item.nextPaperNumber}
+                      </div>
+                      <div className="tabular-nums" style={{ fontSize: 26, fontWeight: 900, color: hex, marginTop: 10 }}>
+                        {item.daysRemaining}{t.daysShort}
+                      </div>
+                      <div style={{ fontSize: 14, fontWeight: 700, marginTop: 2, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.subjectName}</div>
+                      <div style={{ fontSize: 13, color: "#fff" }}>
+                        {item.examDate ? formatDate(item.examDate + "T00:00:00", language, { day: "numeric", month: "short" }) : ""}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+          <div style={{ marginTop: 14, fontSize: 13, color: "#fff" }}>{t.prelimNote}</div>
+        </div>
 
         {/* Prep status banner — cosmic neon */}
         <div
@@ -1117,10 +1421,10 @@ export default function DashboardPage() {
         {subscription && (() => {
           const status = subscription.status;
           const statusConfig: Record<string, { label: string; labelAf: string; hex: string; halo: string }> = {
-            active: { label: "Active",       labelAf: "Aktief",         hex: "#7FEFFF", halo: "rgba(127,239,255,0.22)"  },
-            trial:  { label: "Free Trial",   labelAf: "Gratis Proef",   hex: "#FFF29E", halo: "rgba(255,242,158,0.22)"  },
-            grace:  { label: "Grace Period", labelAf: "Grasietydperk",  hex: "#FFC48F", halo: "rgba(255,196,143,0.22)"  },
-            lapsed: { label: "Lapsed",       labelAf: "Verval",         hex: "#FF9FE5", halo: "rgba(255,159,229,0.22)"  },
+            active: { label: "Active",       labelAf: "Aktief",         hex: "#9FF5E8", halo: "rgba(159,245,232,0.22)"  },
+            trial:  { label: "Free Trial",   labelAf: "Gratis Proef",   hex: "#FFE29A", halo: "rgba(255,226,154,0.22)"  },
+            grace:  { label: "Grace Period", labelAf: "Grasietydperk",  hex: "#94F7C5", halo: "rgba(148,247,197,0.22)"  },
+            lapsed: { label: "Lapsed",       labelAf: "Verval",         hex: "#FFB7E5", halo: "rgba(255,183,229,0.22)"  },
           };
           const sc = statusConfig[status] ?? statusConfig["lapsed"];
 
@@ -1168,7 +1472,7 @@ export default function DashboardPage() {
                   </span>
                   {trialDaysLeft !== null && (
                     <span className="text-[11px] text-white flex items-center gap-1">
-                      <Clock className="w-3 h-3" style={{ color: "#FFF29E" }} />
+                      <Clock className="w-3 h-3" style={{ color: "#FFE29A" }} />
                       {trialDaysLeft} {trialDaysLeft === 1 ? t.dayLeft : t.daysLeft}
                     </span>
                   )}
@@ -1187,65 +1491,6 @@ export default function DashboardPage() {
             (elevated above stat cards so it's the primary actionable element) */}
         <LearnerStudyPlan isAf={isAf} />
 
-        {/* Stat cards — pure black with hex-neon per wordmark stop (LIVE) */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            { label: t.studyStreak,      value: stats?.studyStreak ?? 0,       suffix: "",  sub: t.daysInARow,   Icon: Flame,         hex: "#FFC48F", halo: "rgba(255,196,143,0.32)", testid: "card-stat-streak",     statTestid: "stat-streak"     },
-            { label: t.questionsAnswered, value: stats?.questionsAnswered ?? 0, suffix: "",  sub: t.answeredLabel, Icon: Zap,           hex: "#6FA8FF", halo: "rgba(111,168,255,0.30)", testid: "card-stat-questions",  statTestid: "stat-questions"  },
-            { label: t.accuracy,          value: stats?.accuracy ?? 0,          suffix: "%", sub: t.averageLabel,  Icon: Target,        hex: "#C6A4FF", halo: "rgba(198,164,255,0.32)", testid: "card-stat-accuracy",   statTestid: "stat-accuracy"   },
-            { label: t.papersCompleted,   value: stats?.papersCompleted ?? 0,   suffix: "",  sub: t.completedLabel, Icon: CalendarCheck, hex: "#C6A4FF", halo: "rgba(198,164,255,0.30)", testid: "card-stat-papers",     statTestid: "stat-papers"     },
-          ].map(({ label, value, suffix, sub, Icon, hex, halo, testid, statTestid }) => (
-            <div
-              key={label}
-              className="relative overflow-hidden rounded-2xl bg-black p-3 sm:p-5"
-              style={{
-                border: `1.5px solid ${hex}`,
-                boxShadow: `0 0 0 1px ${hex}44, 0 0 20px ${halo}, inset 0 0 16px rgba(0,0,0,0.55)`,
-              }}
-              data-testid={testid}
-            >
-              {/* neon top bar */}
-              <div aria-hidden className="absolute top-0 left-0 right-0 h-[2px]"
-                style={{ background: hex, boxShadow: `0 0 8px ${hex}` }} />
-              {/* corner brackets */}
-              <span aria-hidden className="absolute top-1.5 left-1.5 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: hex }} />
-              <span aria-hidden className="absolute bottom-1.5 right-1.5 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: hex }} />
-              {/* soft aura */}
-              <div aria-hidden className="absolute -top-10 -right-10 w-32 h-32 rounded-full blur-3xl pointer-events-none"
-                style={{ background: `radial-gradient(circle, ${halo}, transparent 70%)` }} />
-
-              <div className="relative flex items-start gap-3">
-                <div
-                  className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-black flex items-center justify-center shrink-0"
-                  style={{
-                    border: `1.5px solid ${hex}`,
-                    boxShadow: `0 0 14px ${halo}, inset 0 0 10px ${halo}`,
-                    color: hex,
-                    filter: `drop-shadow(0 0 4px ${halo})`,
-                  }}
-                >
-                  <Icon className="w-5 h-5 sm:w-[26px] sm:h-[26px]" style={{ color: hex }} />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.18em] sm:tracking-[0.22em] mb-1"
-                    style={{ color: hex, textShadow: `0 0 8px ${halo}` }}>
-                    {label}
-                  </p>
-                  <LiveCounter
-                    value={typeof value === "number" ? value : 0}
-                    suffix={suffix}
-                    className="text-2xl sm:text-4xl font-black text-white leading-none block"
-                    style={{ textShadow: `0 0 14px ${halo}` }}
-                    testid={statTestid}
-                  />
-                  <p className="text-[10px] sm:text-[11px] text-white mt-1">{sub}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* ── Goal Progress ────────────────────────────────────── */}
         <GoalProgress isAf={isAf} />
 
         {/* ===== EXAM-AWARE WIDGETS (T114) ===== */}
@@ -1254,10 +1499,10 @@ export default function DashboardPage() {
             {/* Urgency Banner — cosmic neon, wordmark palette */}
             {examWidgets.urgencyBanner && (() => {
               const urgencyColor: Record<string, { hex: string; halo: string }> = {
-                red:     { hex: "#FF9FE5", halo: "rgba(255,159,229,0.28)" }, // pink = final sprint
-                amber:   { hex: "#FFC48F", halo: "rgba(255,196,143,0.28)" }, // orange = exam prep
-                blue:    { hex: "#FFF29E", halo: "rgba(255,242,158,0.28)" }, // gold = focused
-                emerald: { hex: "#C6A4FF", halo: "rgba(198,164,255,0.28)" },// violet = build
+                red:     { hex: "#FFB7E5", halo: "rgba(255,183,229,0.28)" }, // pink = final sprint
+                amber:   { hex: "#94F7C5", halo: "rgba(148,247,197,0.28)" }, // orange = exam prep
+                blue:    { hex: "#FFE29A", halo: "rgba(255,226,154,0.28)" }, // gold = focused
+                emerald: { hex: "#C5B3FF", halo: "rgba(197,179,255,0.28)" },// violet = build
               };
               const u = urgencyColor[examWidgets.urgencyBanner.color] ?? urgencyColor.emerald;
               const Icon =
@@ -1303,16 +1548,16 @@ export default function DashboardPage() {
               {examWidgets.nextExam && (
                 <div
                   className="relative rounded-2xl bg-black overflow-hidden"
-                  style={{ border: "1.5px solid #7FEFFF", boxShadow: "0 0 0 1px rgba(127,239,255,0.22), 0 0 22px rgba(127,239,255,0.22)" }}
+                  style={{ border: "1.5px solid #9FF5E8", boxShadow: "0 0 0 1px rgba(159,245,232,0.22), 0 0 22px rgba(159,245,232,0.22)" }}
                   data-testid="next-exam-card"
                 >
-                  <span aria-hidden className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: "#7FEFFF" }} />
-                  <span aria-hidden className="absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2" style={{ borderColor: "#7FEFFF" }} />
-                  <span aria-hidden className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2" style={{ borderColor: "#7FEFFF" }} />
-                  <span aria-hidden className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: "#7FEFFF" }} />
-                  <div className="flex items-center gap-2 px-5 py-4 border-b" style={{ borderColor: "rgba(127,239,255,0.25)" }}>
-                    <GraduationCap className="w-4 h-4" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 4px rgba(127,239,255,0.6))" }} />
-                    <h3 className="font-bold text-sm" style={{ color: "#7FEFFF", textShadow: "0 0 8px rgba(127,239,255,0.4)" }}>
+                  <span aria-hidden className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: "#9FF5E8" }} />
+                  <span aria-hidden className="absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2" style={{ borderColor: "#9FF5E8" }} />
+                  <span aria-hidden className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2" style={{ borderColor: "#9FF5E8" }} />
+                  <span aria-hidden className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: "#9FF5E8" }} />
+                  <div className="flex items-center gap-2 px-5 py-4 border-b" style={{ borderColor: "rgba(159,245,232,0.25)" }}>
+                    <GraduationCap className="w-4 h-4" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px rgba(159,245,232,0.6))" }} />
+                    <h3 className="font-bold text-sm" style={{ color: "#9FF5E8", textShadow: "0 0 8px rgba(159,245,232,0.4)" }}>
                       {t.nextExam}
                     </h3>
                   </div>
@@ -1324,9 +1569,9 @@ export default function DashboardPage() {
                     <div className="flex items-center gap-3">
                       <div
                         className="flex-1 rounded-xl p-3 text-center bg-black"
-                        style={{ border: "1px solid rgba(127,239,255,0.4)", boxShadow: "inset 0 0 12px rgba(127,239,255,0.15)" }}
+                        style={{ border: "1px solid rgba(159,245,232,0.4)", boxShadow: "inset 0 0 12px rgba(159,245,232,0.15)" }}
                       >
-                        <p className="text-2xl font-bold tabular-nums" style={{ color: "#7FEFFF", textShadow: "0 0 10px rgba(127,239,255,0.5)" }} data-testid="next-exam-days">
+                        <p className="text-2xl font-bold tabular-nums" style={{ color: "#9FF5E8", textShadow: "0 0 10px rgba(159,245,232,0.5)" }} data-testid="next-exam-days">
                           {examWidgets.nextExam.daysRemaining}
                         </p>
                         <p className="text-[10px] font-semibold text-white uppercase">{t.daysUnit}</p>
@@ -1345,27 +1590,27 @@ export default function DashboardPage() {
               {/* This Week Exams — cosmic neon, orange accent */}
               <div
                 className="relative rounded-2xl bg-black overflow-hidden"
-                style={{ border: "1.5px solid #FFC48F", boxShadow: "0 0 0 1px rgba(255,196,143,0.22), 0 0 22px rgba(255,196,143,0.22)" }}
+                style={{ border: "1.5px solid #94F7C5", boxShadow: "0 0 0 1px rgba(148,247,197,0.22), 0 0 22px rgba(148,247,197,0.22)" }}
                 data-testid="this-week-exams-card"
               >
-                <span aria-hidden className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: "#FFC48F" }} />
-                <span aria-hidden className="absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2" style={{ borderColor: "#FFC48F" }} />
-                <span aria-hidden className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2" style={{ borderColor: "#FFC48F" }} />
-                <span aria-hidden className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: "#FFC48F" }} />
-                <div className="flex items-center gap-2 px-5 py-4 border-b" style={{ borderColor: "rgba(255,196,143,0.25)" }}>
-                  <CalendarDays className="w-4 h-4" style={{ color: "#FFC48F", filter: "drop-shadow(0 0 4px rgba(255,196,143,0.6))" }} />
-                  <h3 className="font-bold text-sm" style={{ color: "#FFC48F", textShadow: "0 0 8px rgba(255,196,143,0.4)" }}>{t.thisWeek}</h3>
+                <span aria-hidden className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: "#94F7C5" }} />
+                <span aria-hidden className="absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2" style={{ borderColor: "#94F7C5" }} />
+                <span aria-hidden className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2" style={{ borderColor: "#94F7C5" }} />
+                <span aria-hidden className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: "#94F7C5" }} />
+                <div className="flex items-center gap-2 px-5 py-4 border-b" style={{ borderColor: "rgba(148,247,197,0.25)" }}>
+                  <CalendarDays className="w-4 h-4" style={{ color: "#94F7C5", filter: "drop-shadow(0 0 4px rgba(148,247,197,0.6))" }} />
+                  <h3 className="font-bold text-sm" style={{ color: "#94F7C5", textShadow: "0 0 8px rgba(148,247,197,0.4)" }}>{t.thisWeek}</h3>
                 </div>
                 <div className="p-5">
                   {examWidgets.thisWeekExams?.length > 0 ? (
                     <div className="space-y-2">
                       {examWidgets.thisWeekExams.slice(0, 3).map((e: any, i: number) => (
-                        <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl bg-black" style={{ border: "1px solid rgba(255,196,143,0.35)" }}>
+                        <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl bg-black" style={{ border: "1px solid rgba(148,247,197,0.35)" }}>
                           <div
                             className="w-8 h-8 rounded-lg bg-black flex items-center justify-center shrink-0"
-                            style={{ border: "1px solid #FFC48F", boxShadow: "0 0 10px rgba(255,196,143,0.35)" }}
+                            style={{ border: "1px solid #94F7C5", boxShadow: "0 0 10px rgba(148,247,197,0.35)" }}
                           >
-                            <span className="text-xs font-bold" style={{ color: "#FFC48F" }}>P{e.paperNumber}</span>
+                            <span className="text-xs font-bold" style={{ color: "#94F7C5" }}>P{e.paperNumber}</span>
                           </div>
                           <div className="min-w-0 flex-1">
                             <p className="text-xs font-semibold text-white truncate">{e.subjectName}</p>
@@ -1373,7 +1618,7 @@ export default function DashboardPage() {
                               {formatDate(e.examDate + "T00:00:00", language, { weekday: "short", day: "numeric", month: "short" })}
                             </p>
                           </div>
-                          <span className="text-[10px] font-bold shrink-0" style={{ color: "#FFC48F" }}>
+                          <span className="text-[10px] font-bold shrink-0" style={{ color: "#94F7C5" }}>
                             {e.daysRemaining}{t.daysShort}
                           </span>
                         </div>
@@ -1389,72 +1634,6 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Subject Priority Queue — cosmic neon, wordmark palette */}
-            {examWidgets.subjectPriorityQueue?.length > 0 && (
-              <div
-                className="relative rounded-2xl bg-black overflow-hidden"
-                style={{ border: "1.5px solid #FFF29E", boxShadow: "0 0 0 1px rgba(255,242,158,0.22), 0 0 22px rgba(255,242,158,0.22)" }}
-                data-testid="subject-priority-queue"
-              >
-                <span aria-hidden className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: "#FFF29E" }} />
-                <span aria-hidden className="absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2" style={{ borderColor: "#FFF29E" }} />
-                <span aria-hidden className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2" style={{ borderColor: "#FFF29E" }} />
-                <span aria-hidden className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: "#FFF29E" }} />
-                <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: "rgba(255,242,158,0.25)" }}>
-                  <div className="flex items-center gap-2">
-                    <ListOrdered className="w-4 h-4" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 4px rgba(255,242,158,0.6))" }} />
-                    <h3 className="font-bold text-sm" style={{ color: "#FFF29E", textShadow: "0 0 8px rgba(255,242,158,0.4)" }}>
-                      {t.subjectPriority}
-                    </h3>
-                  </div>
-                  <Link href="/study-calendar">
-                    <button
-                      className="px-4 py-2 rounded-xl bg-black text-sm font-bold transition-colors"
-                      style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF" }}
-                    >
-                      {t.fullPlan} →
-                    </button>
-                  </Link>
-                </div>
-                <div className="p-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                    {examWidgets.subjectPriorityQueue.slice(0, 6).map((item: any, i: number) => {
-                      const urgencyHex: Record<string, { c: string; h: string }> = {
-                        final_sprint:     { c: "#FF9FE5", h: "rgba(255,159,229,0.28)" },
-                        exam_prep_mode:   { c: "#FFC48F", h: "rgba(255,196,143,0.28)" },
-                        focused_revision: { c: "#FFF29E", h: "rgba(255,242,158,0.28)" },
-                        build_mastery:    { c: "#C6A4FF", h: "rgba(198,164,255,0.26)"},
-                      };
-                      const u = urgencyHex[item.urgencyState] ?? urgencyHex.build_mastery;
-                      return (
-                        <div
-                          key={i}
-                          className="flex items-center gap-2.5 p-2.5 rounded-xl bg-black"
-                          style={{ border: `1px solid ${u.c}`, boxShadow: `0 0 10px ${u.h}, inset 0 0 10px rgba(0,0,0,0.5)` }}
-                        >
-                          <div
-                            className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 bg-black"
-                            style={{ border: `1px solid ${u.c}`, boxShadow: `0 0 6px ${u.h}` }}
-                          >
-                            <span className="text-[9px] font-bold" style={{ color: u.c }}>{i + 1}</span>
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-xs font-bold text-white truncate">{item.subjectName}</p>
-                            <p className="text-[9px] text-white">
-                              {item.daysRemaining} {t.daysAbbr} · P{item.nextPaperNumber}
-                            </p>
-                          </div>
-                          <div
-                            className="w-2 h-2 rounded-full shrink-0"
-                            style={{ background: u.c, boxShadow: `0 0 6px ${u.c}` }}
-                          />
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         )}
 
@@ -1462,13 +1641,13 @@ export default function DashboardPage() {
         {varkStyle && (
           <div
             className="relative flex items-center gap-3 px-4 py-3 rounded-2xl bg-black w-fit overflow-hidden"
-            style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 0 1px rgba(198,164,255,0.22), 0 0 18px rgba(198,164,255,0.22)" }}
+            style={{ border: "1.5px solid #C5B3FF", boxShadow: "0 0 0 1px rgba(197,179,255,0.22), 0 0 18px rgba(197,179,255,0.22)" }}
             data-testid="vark-style-badge"
           >
-            <span aria-hidden className="absolute inset-y-3 left-0 w-[2px] rounded-r" style={{ background: "#C6A4FF", boxShadow: "0 0 8px #C6A4FF" }} />
+            <span aria-hidden className="absolute inset-y-3 left-0 w-[2px] rounded-r" style={{ background: "#C5B3FF", boxShadow: "0 0 8px #C5B3FF" }} />
             <span className="text-2xl pl-1">{varkStyle.icon}</span>
             <div>
-              <p className="text-xs uppercase font-semibold tracking-widest" style={{ color: "#C6A4FF", textShadow: "0 0 8px rgba(198,164,255,0.45)" }}>
+              <p className="text-xs uppercase font-semibold tracking-widest" style={{ color: "#C5B3FF", textShadow: "0 0 8px rgba(197,179,255,0.45)" }}>
                 {t.yourStyleLabel}
               </p>
               <p className="font-bold text-white text-sm">
@@ -1486,8 +1665,8 @@ export default function DashboardPage() {
             className="flex items-start gap-4 px-5 py-4 rounded-2xl border"
             style={{
               background: "#000",
-              borderColor: "rgba(127,239,255,0.45)",
-              boxShadow: "0 0 18px rgba(127,239,255,0.22)",
+              borderColor: "rgba(159,245,232,0.45)",
+              boxShadow: "0 0 18px rgba(159,245,232,0.22)",
             }}
           >
             <span className="text-2xl flex-shrink-0 mt-0.5">
@@ -1505,7 +1684,7 @@ export default function DashboardPage() {
                     : `Your study history shows you perform best with ${varkInsights.dominantStyle} content.`}
               </p>
               {varkInsights.autoUpdated && (
-                <p className="text-xs font-semibold mt-1.5" style={{ color: "#7FEFFF" }}>
+                <p className="text-xs font-semibold mt-1.5" style={{ color: "#9FF5E8" }}>
                   {t.profileAutoUpdated}
                 </p>
               )}
@@ -1513,7 +1692,7 @@ export default function DashboardPage() {
             <Link href="/settings" className="flex-shrink-0">
               <button
                 className="text-sm font-bold px-4 py-2 rounded-xl bg-black"
-                style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF" }}
+                style={{ color: "#9FF5E8", border: "1.5px solid #9FF5E8" }}
               >
                 {t.viewLabel}
               </button>
@@ -1527,21 +1706,21 @@ export default function DashboardPage() {
             const allCards = [
               {
                 href: "/tutor", testid: "link-smart-tutor", varkKey: "auditory",
-                hex: "#C6A4FF", halo: "rgba(198,164,255,",
-                head: <img src={rizzAvatar} alt="Rizz" className="w-14 h-14 rounded-2xl object-cover" style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 14px rgba(198,164,255,0.45)" }} />,
+                hex: "#C5B3FF", halo: "rgba(197,179,255,",
+                head: <img src={rizzAvatar} alt="Rizz" className="w-14 h-14 rounded-2xl object-cover" style={{ border: "1.5px solid #C5B3FF", boxShadow: "0 0 14px rgba(197,179,255,0.45)" }} />,
                 title: "Rizz",
                 sub: t.tutorCardSub,
                 cta: t.tutorCardCta,
               },
               {
                 href: "/exam-mode", testid: "link-exam-mode", varkKey: "kinesthetic",
-                hex: "#6FA8FF", halo: "rgba(111,168,255,",
+                hex: "#9FD8FF", halo: "rgba(159,216,255,",
                 head: (
                   <div
                     className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center"
-                    style={{ border: "1.5px solid #6FA8FF", boxShadow: "0 0 14px rgba(111,168,255,0.45), inset 0 0 10px rgba(111,168,255,0.25)" }}
+                    style={{ border: "1.5px solid #9FD8FF", boxShadow: "0 0 14px rgba(159,216,255,0.45), inset 0 0 10px rgba(159,216,255,0.25)" }}
                   >
-                    <Shield className="w-7 h-7" style={{ color: "#6FA8FF", filter: "drop-shadow(0 0 4px rgba(111,168,255,0.55))" }} />
+                    <Shield className="w-7 h-7" style={{ color: "#9FD8FF", filter: "drop-shadow(0 0 4px rgba(159,216,255,0.55))" }} />
                   </div>
                 ),
                 title: t.crunchTitle,
@@ -1550,13 +1729,13 @@ export default function DashboardPage() {
               },
               {
                 href: "/progress", testid: "link-progress-card", varkKey: "visual",
-                hex: "#C6A4FF", halo: "rgba(198,164,255,",
+                hex: "#C5B3FF", halo: "rgba(197,179,255,",
                 head: (
                   <div
                     className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center"
-                    style={{ border: "1.5px solid #C6A4FF", boxShadow: "0 0 14px rgba(198,164,255,0.45), inset 0 0 10px rgba(198,164,255,0.25)" }}
+                    style={{ border: "1.5px solid #C5B3FF", boxShadow: "0 0 14px rgba(197,179,255,0.45), inset 0 0 10px rgba(197,179,255,0.25)" }}
                   >
-                    <TrendingUp className="w-7 h-7" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 4px rgba(198,164,255,0.55))" }} />
+                    <TrendingUp className="w-7 h-7" style={{ color: "#C5B3FF", filter: "drop-shadow(0 0 4px rgba(197,179,255,0.55))" }} />
                   </div>
                 ),
                 title: t.progressCardTitle,
@@ -1565,13 +1744,13 @@ export default function DashboardPage() {
               },
               {
                 href: "/daily-challenge", testid: "link-daily-challenge", varkKey: "read",
-                hex: "#FFC48F", halo: "rgba(255,196,143,",
+                hex: "#94F7C5", halo: "rgba(148,247,197,",
                 head: (
                   <div
                     className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center"
-                    style={{ border: "1.5px solid #FFC48F", boxShadow: "0 0 14px rgba(255,196,143,0.45), inset 0 0 10px rgba(255,196,143,0.25)" }}
+                    style={{ border: "1.5px solid #94F7C5", boxShadow: "0 0 14px rgba(148,247,197,0.45), inset 0 0 10px rgba(148,247,197,0.25)" }}
                   >
-                    <Sparkles className="w-7 h-7" style={{ color: "#FFC48F", filter: "drop-shadow(0 0 4px rgba(255,196,143,0.55))" }} />
+                    <Sparkles className="w-7 h-7" style={{ color: "#94F7C5", filter: "drop-shadow(0 0 4px rgba(148,247,197,0.55))" }} />
                   </div>
                 ),
                 title: t.dailyChallengeTitle,
@@ -1630,9 +1809,9 @@ export default function DashboardPage() {
             {
               href: "/exam/mini-mock",
               testid: "link-mini-mock",
-              hex: "#7FEFFF",
-              halo: "rgba(127,239,255,",
-              icon: <Zap className="w-7 h-7" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 4px rgba(127,239,255,0.55))" }} />,
+              hex: "#9FF5E8",
+              halo: "rgba(159,245,232,",
+              icon: <Zap className="w-7 h-7" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px rgba(159,245,232,0.55))" }} />,
               title: t.miniMockTitle,
               sub: t.miniMockSub,
               cta: t.miniMockCta,
@@ -1640,9 +1819,9 @@ export default function DashboardPage() {
             {
               href: "/exam/full",
               testid: "link-full-exam",
-              hex: "#FF9FE5",
-              halo: "rgba(255,159,229,",
-              icon: <GraduationCap className="w-7 h-7" style={{ color: "#FF9FE5", filter: "drop-shadow(0 0 4px rgba(255,159,229,0.55))" }} />,
+              hex: "#FFB7E5",
+              halo: "rgba(255,183,229,",
+              icon: <GraduationCap className="w-7 h-7" style={{ color: "#FFB7E5", filter: "drop-shadow(0 0 4px rgba(255,183,229,0.55))" }} />,
               title: t.fullExamTitle,
               sub: t.fullExamSub,
               cta: t.fullExamCta,
@@ -1689,23 +1868,23 @@ export default function DashboardPage() {
           <div
             className="relative rounded-2xl bg-black overflow-hidden"
             style={{
-              border: "1.5px solid #FFC48F",
-              boxShadow: "0 0 0 1px rgba(255,196,143,0.28), 0 0 28px rgba(255,196,143,0.28), inset 0 0 22px rgba(0,0,0,0.55)",
+              border: "1.5px solid #94F7C5",
+              boxShadow: "0 0 0 1px rgba(148,247,197,0.28), 0 0 28px rgba(148,247,197,0.28), inset 0 0 22px rgba(0,0,0,0.55)",
             }}
             data-testid="panel-focus-areas"
           >
-            <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FFC48F" }} />
-            <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#FFC48F" }} />
-            <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#FFC48F" }} />
-            <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#FFC48F" }} />
+            <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#94F7C5" }} />
+            <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#94F7C5" }} />
+            <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#94F7C5" }} />
+            <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#94F7C5" }} />
 
             <div
               className="flex items-center justify-between px-6 py-5 gap-3"
-              style={{ borderBottom: "1px solid rgba(255,196,143,0.35)" }}
+              style={{ borderBottom: "1px solid rgba(148,247,197,0.35)" }}
             >
               <div className="min-w-0">
                 <h2 className="flex items-center gap-2 text-lg font-bold text-white">
-                  <Target className="w-5 h-5" style={{ color: "#FFC48F", filter: "drop-shadow(0 0 6px rgba(255,196,143,0.8))" }} />
+                  <Target className="w-5 h-5" style={{ color: "#94F7C5", filter: "drop-shadow(0 0 6px rgba(148,247,197,0.8))" }} />
                   {t.focusAreasHeading}
                 </h2>
                 <p className="text-xs text-white mt-1">{t.focusAreasSubtitle}</p>
@@ -1715,9 +1894,9 @@ export default function DashboardPage() {
               <div className="p-6 text-center">
                 <div
                   className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-black flex items-center justify-center"
-                  style={{ border: "1.5px solid #FFC48F", boxShadow: "0 0 14px rgba(255,196,143,0.4)" }}
+                  style={{ border: "1.5px solid #94F7C5", boxShadow: "0 0 14px rgba(148,247,197,0.4)" }}
                 >
-                  <Sparkles className="w-7 h-7" style={{ color: "#FFC48F", filter: "drop-shadow(0 0 5px #FFC48F)" }} />
+                  <Sparkles className="w-7 h-7" style={{ color: "#94F7C5", filter: "drop-shadow(0 0 5px #94F7C5)" }} />
                 </div>
                 <p className="text-sm text-white" data-testid="text-focus-areas-empty">{t.focusAreasEmpty}</p>
               </div>
@@ -1725,8 +1904,8 @@ export default function DashboardPage() {
             <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {focusAreasData.focusAreas.map((fa) => {
                 const isRed = fa.masteryBand === "red";
-                const hex = isRed ? "#ff5b6e" : "#FFF29E";
-                const halo = isRed ? "rgba(255,91,110,0.28)" : "rgba(255,242,158,0.28)";
+                const hex = isRed ? "#FF8DA1" : "#FFE29A";
+                const halo = isRed ? "rgba(255,141,161,0.28)" : "rgba(255,226,154,0.28)";
                 const bandLabel = isRed ? t.focusBandCatchUp : t.focusBandBuilding;
                 const topicName = language === "af" && fa.topicNameAfrikaans ? fa.topicNameAfrikaans : fa.topicName;
                 const subjectName = language === "af" && fa.subjectNameAfrikaans ? fa.subjectNameAfrikaans : fa.subjectName;
@@ -1764,197 +1943,28 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Subjects + Achievements — cosmic neon */}
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Subjects panel */}
-          <div
-            className="lg:col-span-2 relative rounded-2xl bg-black overflow-hidden"
-            style={{
-              border: "1.5px solid #6FA8FF",
-              boxShadow: "0 0 0 1px rgba(111,168,255,0.28), 0 0 28px rgba(111,168,255,0.28), inset 0 0 22px rgba(0,0,0,0.55)",
-            }}
-          >
-            <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#6FA8FF" }} />
-            <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#6FA8FF" }} />
-            <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#6FA8FF" }} />
-            <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#6FA8FF" }} />
-
-            <div
-              className="flex items-center justify-between px-6 py-5"
-              style={{ borderBottom: "1px solid rgba(111,168,255,0.35)" }}
-            >
-              <h2 className="flex items-center gap-2 text-lg font-bold text-white">
-                <BookOpen className="w-5 h-5" style={{ color: "#6FA8FF", filter: "drop-shadow(0 0 6px rgba(111,168,255,0.8))" }} />
-                {t.subjectsHeading}
-              </h2>
-              <Link href="/settings">
-                <button
-                  className="text-sm font-bold px-4 py-2 rounded-xl bg-black"
-                  style={{ color: "#6FA8FF", border: "1.5px solid #6FA8FF" }}
-                  data-testid="link-manage-subjects"
-                >
-                  <Settings className="w-3.5 h-3.5 inline mr-1" />{t.manageLabel}
-                </button>
-              </Link>
-            </div>
-            <div className="p-6">
-              {subjectsLoading ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {[1, 2, 3].map(i => <div key={i} className="h-20 rounded-2xl bg-white/5 animate-pulse" />)}
-                </div>
-              ) : filteredSubjects && filteredSubjects.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {(() => {
-                    const stops = ["#FFC48F", "#FFF29E", "#7FEFFF", "#6FA8FF", "#C6A4FF", "#C6A4FF", "#FF9FE5"];
-                    return filteredSubjects.map((subject: any, idx: number) => {
-                      const hex = stops[idx % stops.length];
-                      const haloHex = `${hex}55`;
-                      const initial = (subject.name || "?").trim().charAt(0).toUpperCase();
-                      return (
-                        <Link key={subject.id} href={`/subject/${subject.id}`}>
-                          <div
-                            className="group relative rounded-2xl bg-black p-4 cursor-pointer transition-all hover:-translate-y-0.5"
-                            style={{ border: `1px solid ${hex}66`, boxShadow: `0 0 12px ${haloHex}` }}
-                            onMouseEnter={(e) => { e.currentTarget.style.borderColor = hex; e.currentTarget.style.boxShadow = `0 0 22px ${hex}99`; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.borderColor = `${hex}66`; e.currentTarget.style.boxShadow = `0 0 12px ${haloHex}`; }}
-                            data-testid={`subject-card-${subject.id}`}
-                          >
-                            <div className="flex items-center gap-3">
-                              <div
-                                className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shrink-0 font-bold text-base"
-                                style={{
-                                  color: hex,
-                                  border: `1.5px solid ${hex}`,
-                                  boxShadow: `0 0 12px ${haloHex}, inset 0 0 8px ${haloHex}`,
-                                  textShadow: `0 0 8px ${haloHex}`,
-                                }}
-                              >
-                                {initial}
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <p className="font-bold text-white text-sm truncate">{subject.name}</p>
-                                <p className="text-[10px] text-white mt-0.5 uppercase tracking-wider">{subject.category}</p>
-                              </div>
-                              <ChevronRight className="w-4 h-4 text-white group-hover:text-white transition-colors shrink-0" style={{}} />
-                            </div>
-                          </div>
-                        </Link>
-                      );
-                    });
-                  })()}
-                </div>
-              ) : (
-                <div className="text-center py-10">
-                  <div
-                    className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-black flex items-center justify-center"
-                    style={{ border: "1.5px solid #6FA8FF", boxShadow: "0 0 14px rgba(111,168,255,0.4)" }}
-                  >
-                    <BookOpen className="w-8 h-8" style={{ color: "#6FA8FF", filter: "drop-shadow(0 0 5px #6FA8FF)" }} />
-                  </div>
-                  <h3 className="font-bold text-white text-lg mb-1">{t.selectSubjectsHeading}</h3>
-                  <p className="text-white text-sm mb-6">{t.selectSubjectsDesc}</p>
-                  <Link href="/settings">
-                    <button
-                      className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl font-bold text-sm"
-                      style={{ background: "#7FEFFF", color: "#0a0a0a" }}
-                      data-testid="button-select-subjects"
-                    >
-                      {t.selectSubjectsBtn}
-                    </button>
-                  </Link>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Achievements panel */}
-          <div
-            className="relative rounded-2xl bg-black overflow-hidden flex flex-col"
-            style={{
-              border: "1.5px solid #FFF29E",
-              boxShadow: "0 0 0 1px rgba(255,242,158,0.28), 0 0 28px rgba(255,242,158,0.28), inset 0 0 22px rgba(0,0,0,0.55)",
-            }}
-          >
-            <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FFF29E" }} />
-            <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#FFF29E" }} />
-            <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#FFF29E" }} />
-            <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#FFF29E" }} />
-
-            <div
-              className="flex items-center gap-2 px-6 py-5"
-              style={{ borderBottom: "1px solid rgba(255,242,158,0.35)" }}
-            >
-              <Award className="w-5 h-5" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 6px rgba(255,242,158,0.85))" }} />
-              <h2 className="text-lg font-bold text-white">{t.achievementsHeading}</h2>
-            </div>
-            <div className="p-5 flex-1 overflow-y-auto">
-              {badges && badges.length > 0 ? (
-                <div className="grid grid-cols-2 gap-3">
-                  {(() => {
-                    const stops = ["#FFC48F", "#FFF29E", "#7FEFFF", "#6FA8FF", "#C6A4FF", "#C6A4FF", "#FF9FE5", "#FFC48F"];
-                    return badges.slice(0, 8).map((badge: any, idx: number) => {
-                      const info = BADGE_INFO[badge.badgeCode];
-                      if (!info) return null;
-                      const Icon = info.icon;
-                      const hex = stops[idx % stops.length];
-                      return (
-                        <div
-                          key={badge.id}
-                          className="flex flex-col items-center gap-2 p-3 rounded-2xl bg-black cursor-default transition-all hover:-translate-y-0.5"
-                          style={{ border: `1px solid ${hex}66`, boxShadow: `0 0 10px ${hex}44` }}
-                          data-testid={`badge-${badge.badgeCode}`}
-                        >
-                          <div
-                            className="w-11 h-11 rounded-xl bg-black flex items-center justify-center"
-                            style={{ border: `1.5px solid ${hex}`, boxShadow: `0 0 12px ${hex}66, inset 0 0 8px ${hex}55` }}
-                          >
-                            <Icon className="w-5 h-5" style={{ color: hex, filter: `drop-shadow(0 0 4px ${hex})` }} />
-                          </div>
-                          <span className="text-[9px] font-semibold text-white text-center leading-tight">
-                            {isAf ? info.nameAfrikaans : info.name}
-                          </span>
-                        </div>
-                      );
-                    });
-                  })()}
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center h-full text-center py-8">
-                  <div
-                    className="w-16 h-16 mx-auto mb-3 rounded-2xl bg-black flex items-center justify-center"
-                    style={{ border: "1.5px solid #FFF29E", boxShadow: "0 0 14px rgba(255,242,158,0.4)" }}
-                  >
-                    <Trophy className="w-8 h-8" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 5px #FFF29E)" }} />
-                  </div>
-                  <p className="text-white font-semibold text-sm">{t.startLearningToUnlock}</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
         {/* Recommended + Your Vibe — cosmic neon */}
         <div className="grid lg:grid-cols-2 gap-6">
           <div
             className="relative rounded-2xl bg-black overflow-hidden"
             style={{
-              border: "1.5px solid #7FEFFF",
-              boxShadow: "0 0 0 1px rgba(127,239,255,0.28), 0 0 28px rgba(127,239,255,0.28), inset 0 0 22px rgba(0,0,0,0.55)",
+              border: "1.5px solid #9FF5E8",
+              boxShadow: "0 0 0 1px rgba(159,245,232,0.28), 0 0 28px rgba(159,245,232,0.28), inset 0 0 22px rgba(0,0,0,0.55)",
             }}
           >
-            <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#7FEFFF" }} />
-            <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#7FEFFF" }} />
-            <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#7FEFFF" }} />
-            <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#7FEFFF" }} />
-            <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(127,239,255,0.35)" }}>
-              <Sparkles className="w-5 h-5" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 6px rgba(127,239,255,0.85))" }} />
+            <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#9FF5E8" }} />
+            <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#9FF5E8" }} />
+            <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#9FF5E8" }} />
+            <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#9FF5E8" }} />
+            <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(159,245,232,0.35)" }}>
+              <Sparkles className="w-5 h-5" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 6px rgba(159,245,232,0.85))" }} />
               <h2 className="text-lg font-bold text-white">{t.recommendedHeading}</h2>
             </div>
             <div className="p-5 space-y-3">
               {(() => {
                 const items = [
-                  { href: "/tutor", num: 1, hex: "#7FEFFF", label: t.tryRizz },
-                  { href: "/subjects",    num: 2, hex: "#C6A4FF", label: t.completePractice },
+                  { href: "/tutor", num: 1, hex: "#9FF5E8", label: t.tryRizz },
+                  { href: "/subjects",    num: 2, hex: "#C5B3FF", label: t.completePractice },
                 ];
                 return items.map(({ href, num, hex, label }) => (
                   <Link key={href} href={href}>
@@ -1982,16 +1992,16 @@ export default function DashboardPage() {
           <div
             className="relative rounded-2xl bg-black overflow-hidden"
             style={{
-              border: "1.5px solid #C6A4FF",
-              boxShadow: "0 0 0 1px rgba(198,164,255,0.3), 0 0 28px rgba(198,164,255,0.3), inset 0 0 22px rgba(0,0,0,0.55)",
+              border: "1.5px solid #C5B3FF",
+              boxShadow: "0 0 0 1px rgba(197,179,255,0.3), 0 0 28px rgba(197,179,255,0.3), inset 0 0 22px rgba(0,0,0,0.55)",
             }}
           >
-            <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#C6A4FF" }} />
-            <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#C6A4FF" }} />
-            <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#C6A4FF" }} />
-            <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#C6A4FF" }} />
-            <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(198,164,255,0.35)" }}>
-              <Brain className="w-5 h-5" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 6px rgba(198,164,255,0.85))" }} />
+            <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#C5B3FF" }} />
+            <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#C5B3FF" }} />
+            <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#C5B3FF" }} />
+            <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#C5B3FF" }} />
+            <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(197,179,255,0.35)" }}>
+              <Brain className="w-5 h-5" style={{ color: "#C5B3FF", filter: "drop-shadow(0 0 6px rgba(197,179,255,0.85))" }} />
               <h2 className="text-lg font-bold text-white">{t.yourVibeHeading}</h2>
             </div>
             <div className="p-5">
@@ -1999,9 +2009,9 @@ export default function DashboardPage() {
                 <div className="grid grid-cols-2 gap-3">
                   <div
                     className="p-4 rounded-2xl bg-black"
-                    style={{ border: "1px solid rgba(198,164,255,0.55)", boxShadow: "0 0 14px rgba(198,164,255,0.3)" }}
+                    style={{ border: "1px solid rgba(197,179,255,0.55)", boxShadow: "0 0 14px rgba(197,179,255,0.3)" }}
                   >
-                    <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: "#C6A4FF" }}>{t.learningStyleLabel}</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: "#C5B3FF" }}>{t.learningStyleLabel}</p>
                     <p className="font-bold text-white text-base">
                       {isAf
                         ? LEARNING_STYLE_INFO[profile.learningStyle as LearningStyle]?.nameAfrikaans
@@ -2010,9 +2020,9 @@ export default function DashboardPage() {
                   </div>
                   <div
                     className="p-4 rounded-2xl bg-black"
-                    style={{ border: "1px solid rgba(255,242,158,0.5)", boxShadow: "0 0 14px rgba(255,242,158,0.25)" }}
+                    style={{ border: "1px solid rgba(255,226,154,0.5)", boxShadow: "0 0 14px rgba(255,226,154,0.25)" }}
                   >
-                    <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: "#FFF29E" }}>{t.bestTimeLabel}</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: "#FFE29A" }}>{t.bestTimeLabel}</p>
                     <p className="font-bold text-white text-base capitalize">{profile.studyPreference}</p>
                   </div>
                 </div>
@@ -2031,22 +2041,22 @@ export default function DashboardPage() {
           <div
             className="relative rounded-2xl bg-black p-6 sm:p-7 flex flex-col md:flex-row items-start md:items-center gap-5"
             style={{
-              border: "1.5px solid #FFF29E",
+              border: "1.5px solid #FFE29A",
               boxShadow:
-                "0 0 18px rgba(255,242,158,0.35), 0 0 36px rgba(255,242,158,0.20), inset 0 0 22px rgba(255,242,158,0.10)",
+                "0 0 18px rgba(255,226,154,0.35), 0 0 36px rgba(255,226,154,0.20), inset 0 0 22px rgba(255,226,154,0.10)",
             }}
             data-testid="pro-tip-banner"
           >
             <span
               className="inline-flex h-12 w-12 rounded-xl items-center justify-center bg-black shrink-0"
               style={{
-                border: "1.5px solid #FFF29E",
-                boxShadow: "0 0 14px rgba(255,242,158,0.55), inset 0 0 12px rgba(255,242,158,0.25)",
+                border: "1.5px solid #FFE29A",
+                boxShadow: "0 0 14px rgba(255,226,154,0.55), inset 0 0 12px rgba(255,226,154,0.25)",
               }}
             >
               <Lightbulb
                 className="w-6 h-6"
-                style={{ color: "#FFF29E", filter: "drop-shadow(0 0 6px #FFF29E)" }}
+                style={{ color: "#FFE29A", filter: "drop-shadow(0 0 6px #FFE29A)" }}
               />
             </span>
             <div className="flex-1 space-y-1.5">
@@ -2057,9 +2067,9 @@ export default function DashboardPage() {
                 <span
                   className="text-[10px] font-bold tracking-[0.12em] uppercase px-2 py-0.5 rounded-full bg-black"
                   style={{
-                    color: "#FFF29E",
-                    border: "1px solid #FFF29E",
-                    boxShadow: "0 0 8px rgba(255,242,158,0.45)",
+                    color: "#FFE29A",
+                    border: "1px solid #FFE29A",
+                    boxShadow: "0 0 8px rgba(255,226,154,0.45)",
                   }}
                 >
                   {profile.learningStyle}
@@ -2077,7 +2087,7 @@ export default function DashboardPage() {
                 className="shrink-0 inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold"
                 style={{
                   color: "#0a0a0a",
-                  background: "#7FEFFF",
+                  background: "#9FF5E8",
                 }}
                 data-testid="button-pro-tip-learn-more"
               >
@@ -2091,9 +2101,9 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
           {(() => {
             const sections = [
-              { title: t.nextMilestoneTitle, hex: "#FFC48F", Widget: NextMilestoneWidget },
-              { title: t.thisWeek,          hex: "#7FEFFF", Widget: YouVsYouChart },
-              { title: t.personalBestsTitle, hex: "#FFF29E", Widget: PersonalBestsWidget },
+              { title: t.nextMilestoneTitle, hex: "#94F7C5", Widget: NextMilestoneWidget },
+              { title: t.thisWeek,          hex: "#9FF5E8", Widget: YouVsYouChart },
+              { title: t.personalBestsTitle, hex: "#FFE29A", Widget: PersonalBestsWidget },
             ];
             return sections.map(({ title, hex, Widget }) => (
               <div key={title} className="flex flex-col gap-4 h-full">
@@ -2113,6 +2123,22 @@ export default function DashboardPage() {
 
       </main>
       </div>
+
+      {/* Responsive collapse: sidebar hides <861px, grids go single-column */}
+      <style>{`
+        @media (max-width: 860px) {
+          .bt-dash-sidebar { display: none !important; }
+          .bt-dash-main { padding: 20px 16px !important; }
+          .bt-mobilebar { display: flex !important; }
+          .bt-grid-stats, .bt-grid-2col { grid-template-columns: 1fr !important; }
+        }
+        @media (min-width: 861px) {
+          .bt-mobilebar, .bt-mobilemenu { display: none !important; }
+        }
+        @media (max-width: 1280px) and (min-width: 861px) {
+          .bt-grid-stats { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+      `}</style>
     </div>
   );
 }
@@ -2147,40 +2173,40 @@ function LearnerFAQ({ isAf, faqHeading }: { isAf: boolean; faqHeading: string })
     <div
       className="relative rounded-2xl bg-black overflow-hidden"
       style={{
-        border: "1.5px solid #C6A4FF",
-        boxShadow: "0 0 0 1px rgba(255,159,229,0.25), 0 0 28px rgba(198,164,255,0.3), 0 0 44px rgba(255,159,229,0.22), inset 0 0 22px rgba(0,0,0,0.55)",
+        border: "1.5px solid #C5B3FF",
+        boxShadow: "0 0 0 1px rgba(255,183,229,0.25), 0 0 28px rgba(197,179,255,0.3), 0 0 44px rgba(255,183,229,0.22), inset 0 0 22px rgba(0,0,0,0.55)",
       }}
     >
-      <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FF9FE5" }} />
-      <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#C6A4FF" }} />
-      <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#C6A4FF" }} />
-      <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#FF9FE5" }} />
+      <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FFB7E5" }} />
+      <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#C5B3FF" }} />
+      <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#C5B3FF" }} />
+      <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#FFB7E5" }} />
 
       <div
         className="flex items-center gap-2 px-6 py-5"
-        style={{ borderBottom: "1px solid rgba(198,164,255,0.35)" }}
+        style={{ borderBottom: "1px solid rgba(197,179,255,0.35)" }}
       >
-        <HelpCircle className="w-5 h-5" style={{ color: "#FF9FE5", filter: "drop-shadow(0 0 6px rgba(255,159,229,0.85))" }} />
+        <HelpCircle className="w-5 h-5" style={{ color: "#FFB7E5", filter: "drop-shadow(0 0 6px rgba(255,183,229,0.85))" }} />
         <h2 className="text-lg font-bold text-white">{faqHeading}</h2>
       </div>
-      <div className="divide-y" style={{ borderColor: "rgba(198,164,255,0.2)" }}>
+      <div className="divide-y" style={{ borderColor: "rgba(197,179,255,0.2)" }}>
         {items.map((item, idx) => {
           const isOpen = openIdx === idx;
           return (
-            <div key={idx} style={{ borderTop: idx === 0 ? "none" : "1px solid rgba(198,164,255,0.18)" }}>
+            <div key={idx} style={{ borderTop: idx === 0 ? "none" : "1px solid rgba(197,179,255,0.18)" }}>
               <button
                 onClick={() => setOpenIdx(isOpen ? null : idx)}
                 className="flex items-center justify-between w-full px-6 py-4 text-left text-sm font-semibold transition-colors"
-                style={{ color: isOpen ? "#C6A4FF" : "rgb(var(--foreground) / 1)" }}
+                style={{ color: isOpen ? "#C5B3FF" : "rgb(var(--foreground) / 1)" }}
                 data-testid={`faq-q-${idx}`}
               >
                 <span className={isOpen ? "" : "text-white"}>{item.q}</span>
                 <ChevronDown
                   className="w-4 h-4 shrink-0 transition-transform duration-200 ml-3"
                   style={{
-                    color: isOpen ? "#C6A4FF" : "rgba(255,255,255,0.45)",
+                    color: isOpen ? "#C5B3FF" : "#ffffff",
                     transform: isOpen ? "rotate(180deg)" : undefined,
-                    filter: isOpen ? "drop-shadow(0 0 4px #C6A4FF)" : undefined,
+                    filter: isOpen ? "drop-shadow(0 0 4px #C5B3FF)" : undefined,
                   }}
                 />
               </button>

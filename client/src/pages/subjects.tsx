@@ -95,13 +95,13 @@ function getSubjectLucide(name: string): LucideIcon {
 }
 
 const RAINBOW = [
-  "#6FA8FF",
-  "#7FEFFF",
-  "#93FFB8",
-  "#FFF29E",
-  "#FFC48F",
-  "#FF9FE5",
-  "#C6A4FF",
+  "#9FD8FF",
+  "#6EE7F9",
+  "#94F7C5",
+  "#FFE29A",
+  "#FFE29A",
+  "#FFB7E5",
+  "#C5B3FF",
 ];
 
 type SortMode = "alpha" | "weak" | "practiced";
@@ -367,7 +367,7 @@ export default function SubjectsPage() {
                 <button
                   data-testid="link-home"
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black text-sm font-bold hover:bg-white/5"
-                  style={{ color: "#6FA8FF", border: "1.5px solid #6FA8FF" }}
+                  style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
                 >
                   <BookOpen className="w-4 h-4" />
                   <span className="hidden md:inline">{t.homeLabel}</span>
@@ -377,7 +377,7 @@ export default function SubjectsPage() {
                 <button
                   data-testid="link-subjects"
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold"
-                  style={{ background: "#7FEFFF", color: "#0a0a0a" }}
+                  style={{ background: "#6EE7F9", color: "#0a0a0a" }}
                 >
                   <Languages className="w-4 h-4" />
                   <span className="hidden md:inline">
@@ -389,7 +389,7 @@ export default function SubjectsPage() {
                 <button
                   data-testid="link-flashcards"
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black text-sm font-bold hover:bg-white/5"
-                  style={{ color: "#93FFB8", border: "1.5px solid #93FFB8" }}
+                  style={{ color: "#94F7C5", border: "1.5px solid #94F7C5" }}
                 >
                   <Layers className="w-4 h-4" />
                   <span className="hidden md:inline">
@@ -402,7 +402,7 @@ export default function SubjectsPage() {
               <button
                 onClick={() => toggleLanguage()}
                 className="px-4 py-2 rounded-xl bg-black text-sm font-bold hover:bg-white/5"
-                style={{ color: "#C6A4FF", border: "1.5px solid #C6A4FF" }}
+                style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
                 data-testid="button-language-toggle"
               >
                 {isAf ? "AF" : "EN"}
@@ -411,7 +411,7 @@ export default function SubjectsPage() {
                 onClick={() => logout()}
                 data-testid="button-logout"
                 className="inline-flex items-center px-4 py-2 rounded-xl bg-black text-sm font-bold hover:bg-white/5"
-                style={{ color: "#FF9FE5", border: "1.5px solid #FF9FE5" }}
+                style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 {t.signOut}
@@ -426,12 +426,12 @@ export default function SubjectsPage() {
         <div
           aria-hidden
           className="pointer-events-none absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full blur-[120px] opacity-40"
-          style={{ background: "#7FEFFF" }}
+          style={{ background: "#6EE7F9" }}
         />
         <div
           aria-hidden
           className="pointer-events-none absolute top-40 -right-24 w-[380px] h-[380px] rounded-full blur-[120px] opacity-30"
-          style={{ background: "#FF9FE5" }}
+          style={{ background: "#FFB7E5" }}
         />
 
         {/* Cosmic hero */}
@@ -439,20 +439,20 @@ export default function SubjectsPage() {
           <div
             className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-background"
             style={{
-              border: "1px solid #7FEFFF",
-              boxShadow: "0 0 12px rgba(127,239,255,0.45)",
+              border: "1px solid #6EE7F9",
+              boxShadow: "0 0 12px rgba(110,231,249,0.45)",
             }}
           >
             <GraduationCap
               className="w-3.5 h-3.5"
               style={{
-                color: "#7FEFFF",
-                filter: "drop-shadow(0 0 4px #7FEFFF)",
+                color: "#6EE7F9",
+                filter: "drop-shadow(0 0 4px #6EE7F9)",
               }}
             />
             <span
               className="text-[10px] font-black uppercase tracking-[0.28em]"
-              style={{ color: "#7FEFFF" }}
+              style={{ color: "#6EE7F9" }}
             >
               {t.capsLabel}
             </span>
@@ -464,7 +464,7 @@ export default function SubjectsPage() {
                 className="font-black leading-[0.95] tracking-tight text-3xl sm:text-4xl md:text-5xl"
                 style={{
                   backgroundImage:
-                    "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)",
+                    "linear-gradient(90deg, #FFE29A, #FFE29A, #94F7C5, #6EE7F9, #9FD8FF, #C5B3FF, #FFB7E5)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
@@ -491,13 +491,13 @@ export default function SubjectsPage() {
                 style={
                   showBrowseAll
                     ? {
-                        background: "#7FEFFF",
+                        background: "#6EE7F9",
                         color: "#0a0a0a",
                       }
                     : {
                         background: "#000",
-                        border: "1.5px solid #7FEFFF",
-                        color: "#7FEFFF",
+                        border: "1.5px solid #6EE7F9",
+                        color: "#6EE7F9",
                       }
                 }
               >
@@ -527,14 +527,14 @@ export default function SubjectsPage() {
               className="absolute top-0 left-0 right-0 h-[2px]"
               style={{
                 background:
-                  "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)",
+                  "linear-gradient(90deg, #FFE29A, #FFE29A, #94F7C5, #6EE7F9, #9FD8FF, #C5B3FF, #FFB7E5)",
               }}
             />
             <Settings
               className="w-6 h-6 shrink-0"
               style={{
-                color: "#FFF29E",
-                filter: "drop-shadow(0 0 6px #FFF29E)",
+                color: "#FFE29A",
+                filter: "drop-shadow(0 0 6px #FFE29A)",
               }}
             />
             <div className="flex-1">
@@ -546,7 +546,7 @@ export default function SubjectsPage() {
                 <Link
                   href="/settings"
                   className="underline underline-offset-2"
-                  style={{ color: "#7FEFFF" }}
+                  style={{ color: "#6EE7F9" }}
                 >
                   {t.settingsLink}
                 </Link>
@@ -558,8 +558,8 @@ export default function SubjectsPage() {
               className="shrink-0 flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all"
               style={{
                 background: "#000",
-                border: "1.5px solid #FFF29E",
-                color: "#FFF29E",
+                border: "1.5px solid #FFE29A",
+                color: "#FFE29A",
               }}
             >
               <Plus className="w-3.5 h-3.5" />
@@ -573,8 +573,8 @@ export default function SubjectsPage() {
           <div
             className="relative rounded-2xl bg-background overflow-hidden mb-10"
             style={{
-              border: "1px solid rgba(127,239,255,0.35)",
-              boxShadow: "0 0 40px rgba(127,239,255,0.08)",
+              border: "1px solid rgba(110,231,249,0.35)",
+              boxShadow: "0 0 40px rgba(110,231,249,0.08)",
             }}
           >
             <div
@@ -582,7 +582,7 @@ export default function SubjectsPage() {
               className="absolute top-0 left-0 right-0 h-[2px]"
               style={{
                 background:
-                  "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)",
+                  "linear-gradient(90deg, #FFE29A, #FFE29A, #94F7C5, #6EE7F9, #9FD8FF, #C5B3FF, #FFB7E5)",
               }}
             />
             <div className="p-6">
@@ -599,7 +599,7 @@ export default function SubjectsPage() {
                   type="button"
                   onClick={() => setShowBrowseAll(false)}
                   className="w-9 h-9 flex items-center justify-center rounded-xl bg-black hover:bg-white/5 transition-colors"
-                  style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF" }}
+                  style={{ color: "#6EE7F9", border: "1.5px solid #6EE7F9" }}
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -609,14 +609,14 @@ export default function SubjectsPage() {
               <div className="relative mb-5">
                 <Search
                   className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4"
-                  style={{ color: "#7FEFFF" }}
+                  style={{ color: "#6EE7F9" }}
                 />
                 <Input
                   placeholder={t.searchBrowsePlaceholder}
                   value={browseSearch}
                   onChange={(e) => setBrowseSearch(e.target.value)}
                   data-testid="input-browse-search"
-                  className="pl-11 h-12 bg-background border-white/15 text-white placeholder:text-white rounded-xl focus-visible:border-[#7FEFFF] focus-visible:ring-[#7FEFFF]/30"
+                  className="pl-11 h-12 bg-background border-white/15 text-white placeholder:text-white rounded-xl focus-visible:border-[#6EE7F9] focus-visible:ring-[#6EE7F9]/30"
                 />
               </div>
 
@@ -711,13 +711,13 @@ export default function SubjectsPage() {
               <div className="relative flex-1">
                 <Search
                   className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4"
-                  style={{ color: "#7FEFFF" }}
+                  style={{ color: "#6EE7F9" }}
                 />
                 <Input
                   placeholder={t.searchPlaceholder}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-11 h-12 bg-background border-white/15 text-white placeholder:text-white rounded-xl focus-visible:border-[#7FEFFF] focus-visible:ring-[#7FEFFF]/30"
+                  className="pl-11 h-12 bg-background border-white/15 text-white placeholder:text-white rounded-xl focus-visible:border-[#6EE7F9] focus-visible:ring-[#6EE7F9]/30"
                   data-testid="input-search"
                 />
               </div>
@@ -731,21 +731,21 @@ export default function SubjectsPage() {
                 <SortChip
                   active={sortMode === "alpha"}
                   label={t.sortAlpha}
-                  hex="#FFF29E"
+                  hex="#FFE29A"
                   onClick={() => setSortMode("alpha")}
                   testId="sort-alpha"
                 />
                 <SortChip
                   active={sortMode === "weak"}
                   label={t.sortWeak}
-                  hex="#FF9FE5"
+                  hex="#FFB7E5"
                   onClick={() => setSortMode("weak")}
                   testId="sort-weak"
                 />
                 <SortChip
                   active={sortMode === "practiced"}
                   label={t.sortPracticed}
-                  hex="#7FEFFF"
+                  hex="#6EE7F9"
                   onClick={() => setSortMode("practiced")}
                   testId="sort-practiced"
                 />
@@ -838,8 +838,8 @@ export default function SubjectsPage() {
                 <Sparkles
                   className="w-12 h-12 mx-auto mb-4"
                   style={{
-                    color: "#C6A4FF",
-                    filter: "drop-shadow(0 0 10px #C6A4FF)",
+                    color: "#C5B3FF",
+                    filter: "drop-shadow(0 0 10px #C5B3FF)",
                   }}
                 />
                 <p className="text-lg text-white font-semibold">
@@ -902,8 +902,8 @@ export default function SubjectsPage() {
             <Sparkles
               className="w-12 h-12 mx-auto mb-4"
               style={{
-                color: "#C6A4FF",
-                filter: "drop-shadow(0 0 10px #C6A4FF)",
+                color: "#C5B3FF",
+                filter: "drop-shadow(0 0 10px #C5B3FF)",
               }}
             />
             <p className="text-lg text-white font-semibold">
@@ -1022,10 +1022,10 @@ function SubjectNeonCard({
 
   const strengthHex =
     !hasProgress ? "rgba(255,255,255,0.25)"
-    : pct >= 75 ? "#7FEFFF"
-    : pct >= 55 ? "#FFF29E"
-    : pct >= 35 ? "#FFC48F"
-    : "#FF9FE5";
+    : pct >= 75 ? "#6EE7F9"
+    : pct >= 55 ? "#FFE29A"
+    : pct >= 35 ? "#FFE29A"
+    : "#FFB7E5";
   const strengthLabel =
     !hasProgress ? t.notStarted
     : pct >= 75 ? t.strong
@@ -1138,7 +1138,7 @@ function SubjectNeonCard({
             {(curatedTopicCount ?? 0) > 0 && (
               <span
                 className="flex items-center gap-1 text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-[0.12em]"
-                style={{ color: "#7FEFFF", border: "1px solid #7FEFFF55", background: "#7FEFFF10" }}
+                style={{ color: "#6EE7F9", border: "1px solid #6EE7F955", background: "#6EE7F910" }}
                 data-testid={`${testId}-curated`}
               >
                 <Sparkles className="w-2.5 h-2.5" />

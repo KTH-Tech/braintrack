@@ -1,123 +1,215 @@
-// BrainTrack landing — rebuilt from scratch (2026-07-17).
-// Dark graffiti wall: one fixed emoji/doodle/hype-word scatter behind
-// everything, wall-written content (no cards), black-on-pastel callout
-// headings, rectangle buttons, Poppins body + marker accents. Bilingual.
-import { PublicNav } from "@/components/public-nav";
-import { GraffitiSplats } from "@/components/graffiti-splats";
+// BrainTrack landing — rebuilt to pixel-match the Claude Design handoff
+// "Luxury Street Graffiti EdTech" comp (BrainTrack.dc.html, LANDING section).
+// Near-black #050508 ground, rainbow wordmark, graffiti mural hero with
+// Permanent Marker scatter, marquee, neon feature cards, ecosystem split,
+// XP strip, Meet-Rizz strip, footer. Bilingual EN/AF.
+import { Link } from "wouter";
 import { useSEO } from "@/hooks/use-seo";
 import { useLanguage } from "@/lib/language-context";
 import { useRolePromptNav } from "@/components/role-prompt-modal";
-import { useState } from "react";
-import {
-  ArrowRight, BookOpen, Brain, CalendarDays, ChevronDown, LineChart, Users, Check,
-} from "lucide-react";
+import iconTransparent from "@/assets/handoff/icon-transparent.png";
+import muralTransparent from "@/assets/handoff/mural-transparent.png";
+import rizzAvatar from "@/assets/handoff/rizz-avatar.png";
 
-const PASTEL = ["#6FA8FF", "#7FEFFF", "#93FFB8", "#FFF29E", "#FFC48F", "#FF9FE5", "#C6A4FF"];
+const RAINBOW =
+  "linear-gradient(95deg,#FFB7E5,#FFE29A,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)";
+const CTA_GRADIENT =
+  "linear-gradient(100deg,#FFB7E5,#FFE29A,#9FF5E8,#C5B3FF,#FFB7E5)";
+const HEADLINE_GRADIENT =
+  "linear-gradient(95deg,#9FD8FF,#9FF5E8,#C5B3FF,#FFB7E5)";
 
 const COPY = {
   en: {
-    eyebrow: "Grade 12 · CAPS · R169/mo",
-    titleBase: "Matric prep that actually moves your",
-    titleAccent: "marks.",
-    subtitle:
-      "A weekly plan that maps to CAPS, 10 years of real NSC papers with memos, an AI tutor that actually gets you, and parent reports that don't collect dust.",
-    urgency: "Prelims are around the corner. Don't wing it.",
-    cta: "Start my 14 free days",
-    tagTop: "This is",
-    tagBig: "Matric.",
-    tagA: "Every mark ",
-    tagB: "counts.",
-    stats: [
-      { k: "Subjects", v: "24+", c: "#7FEFFF" },
-      { k: "Papers", v: "10y", c: "#FFF29E" },
-      { k: "AI Tutor", v: "24/7", c: "#C6A4FF" },
+    tFeatures: "Features",
+    tResearch: "Research",
+    tSubjects: "Subjects",
+    tPricing: "Pricing",
+    tEnter: "Enter BrainTrack",
+    heroHead1: "The learning platform that ",
+    heroAccent: "doesn't feel like school",
+    heroTail: ".",
+    heroSub:
+      "Not another quiz app. A CAPS-aligned matric readiness ecosystem — DBE-data diagnostics, dynamic study plans, parent visibility and school fundraising in one.",
+    ctaStart: "Start free — 14 days",
+    marquee: [
+      { text: "CAPS-aligned ✦", color: "#9FF5E8" },
+      { text: "10 years of DBE data ★", color: "#FFB7E5" },
+      { text: "EN + AF ⚡", color: "#FFE29A" },
+      { text: "real NSC papers ✦", color: "#9FD8FF" },
+      { text: "AI tutor 24/7 ★", color: "#C5B3FF" },
+      { text: "parent reports ⚡", color: "#94F7C5" },
+      { text: "streaks + XP ✦", color: "#FFB7E5" },
+      { text: "school fundraising ★", color: "#9FF5E8" },
+      { text: "weak-spot radar ⚡", color: "#FFE29A" },
+      { text: "matric ready ✦", color: "#9FD8FF" },
     ],
-    featuresTitle: "Everything you need to nail Matric",
+    tDrop: "the full toolkit",
+    tDropHead1: "Everything you need to ",
+    tDropHead2: "move real marks",
     features: [
-      { icon: CalendarDays, c: "#7FEFFF", t: "Weekly Study Plan", d: "A real Grade 12 roadmap — small daily reps, no last-minute panic." },
-      { icon: BookOpen, c: "#93FFB8", t: "Real NSC Papers + Memos", d: "Practise the exam, not the textbook. See exactly where marks leak." },
-      { icon: LineChart, c: "#FFC48F", t: "Weak-Spot Tracker", d: "Flags the topics costing you marks and tells you what to do next." },
-      { icon: Brain, c: "#FF9FE5", t: "Rizz — Your AI Tutor", d: "CAPS-aligned help, 24/7. Explains the tough bits until they click." },
-      { icon: Users, c: "#C6A4FF", t: "Parent Loop-In", d: "Weekly progress reports parents actually read." },
-      { icon: Check, c: "#FFF29E", t: "Exam Technique Drills", d: "Stop leaving easy marks on the table." },
+      { icon: "📅", color: "#9FF5E8", chipBg: "rgba(159,245,232,.14)", glow: "rgba(159,245,232,.25)", tilt: -1, title: "Dynamic study plans", body: "A weekly CAPS roadmap rebuilt daily around what you actually got wrong — not a static timetable." },
+      { icon: "📊", color: "#9FD8FF", chipBg: "rgba(159,216,255,.14)", glow: "rgba(159,216,255,.25)", tilt: 1, title: "DBE-data diagnostics", body: "Ten years of NSC exam trends show exactly where matrics lose marks — and where you will." },
+      { icon: "📝", color: "#FFB7E5", chipBg: "rgba(255,183,229,.14)", glow: "rgba(255,183,229,.25)", tilt: -1, title: "Real past papers + memos", body: "Verbatim DBE questions with marking memos, drilled by topic until the marks stick." },
+      { icon: "🤖", color: "#C5B3FF", chipBg: "rgba(197,179,255,.14)", glow: "rgba(197,179,255,.25)", tilt: 1, title: "Rizz — your AI tutor", body: "CAPS-aligned help in English and Afrikaans, 24/7. Explains it until it clicks." },
+      { icon: "👀", color: "#FFE29A", chipBg: "rgba(255,226,154,.14)", glow: "rgba(255,226,154,.25)", tilt: -1, title: "Parent visibility", body: "Weekly executive reports parents actually read — progress, risks, next steps." },
+      { icon: "🏆", color: "#94F7C5", chipBg: "rgba(148,247,197,.14)", glow: "rgba(148,247,197,.25)", tilt: 1, title: "XP, streaks & rewards", body: "Confetti when you nail a paper. Crowns when you hold a streak. Dopamine, but productive." },
     ],
-    pricingTitle: "One plan. Real Matric marks.",
-    price: "R169",
-    period: "/month",
-    trial: "14 days free",
-    planChecks: [
-      "Real NSC papers + memos (2015–2025)",
-      "Rizz — your AI tutor, CAPS-aligned",
-      "Progress tracking that makes sense",
-      "Exam-time drills that adapt to you",
-      "Study calendar that fits your week",
-      "Cancel anytime",
+    tPosEye: "one ecosystem",
+    tPosHead1: "Stop juggling apps. ",
+    tPosHead2: "BrainTrack connects it all",
+    tOtherTools: "Other tools",
+    tOtherRows: [
+      { a: "Quiz apps", b: "drills without diagnosis" },
+      { a: "Past-paper PDFs", b: "no memos, no tracking" },
+      { a: "Tutor WhatsApps", b: "expensive, unaccountable" },
+      { a: "School reports", b: "arrive when it's too late" },
+      { a: "Study guides", b: "generic, not CAPS-precise" },
+      { a: "Spreadsheet plans", b: "abandoned by week 2" },
     ],
-    faqTitle: "Ask away",
-    faq: [
-      { q: "So what is BrainTrack, exactly?", a: "A Grade 12 study app built for CAPS and the NSC exam. Weekly plan, 10 years of real past papers with memos, an AI tutor called Rizz, and weekly parent reports — all aimed at shifting your Matric marks." },
-      { q: "How much does it cost?", a: "R169 per month with 14 days free. It unlocks every subject, the AI tutor, full past-paper practice and parent reports. Cancel anytime in the app." },
-      { q: "Is it CAPS-aligned?", a: "Yes. Every plan, note, flashcard and quiz is built around the official CAPS curriculum for the NSC — the same exams written nationally in October/November." },
-      { q: "Werk dit in Afrikaans?", a: "Ja — alles is volledig tweetalig. Vraestelle, memo's, notas en Rizz werk in Engels én Afrikaans." },
+    tFragmented: "fragmented. expensive. too late.",
+    tConnects: "BrainTrack connects",
+    tAskLine:
+      "Ask one question: does your matric tool know which topics cost South African learners the most marks last November? BrainTrack does — verbatim, per subject, in both languages.",
+    tQuote:
+      "“BrainTrack is not a quiz app. It is a matric readiness ecosystem built on ten years of real DBE outcomes — designed so that no learner walks into the NSC exams blind.”",
+    xpEye: "dopamine, but productive",
+    xpHead1: "Every session drops ",
+    xpHead2: "XP, streaks",
+    xpHead3: " and reward reveals",
+    xpBody:
+      "Confetti when you nail a paper. Crowns when you hold a streak. And while you put in the work, parents and schools get clean, executive reports.",
+    xpStats: [
+      { value: "+120", label: "XP / session", color: "#9FF5E8", glow: "rgba(159,245,232,.25)" },
+      { value: "21🔥", label: "day streak", color: "#FFB7E5", glow: "rgba(255,183,229,.25)" },
+      { value: "12", label: "crowns", color: "#FFE29A", glow: "rgba(255,226,154,.25)" },
     ],
-    finalTitle: "Your marks won't move themselves.",
-    finalCta: "Start free — takes 2 minutes",
+    rizzEye: "meet rizz 🤖",
+    rizzHead: "Try our AI study buddy — free, right now",
+    rizzBody:
+      "Parents, test-drive Rizz before you sign up. Ask about CAPS subjects, exam tips or how BrainTrack works. Afrikaans toggle included. 💬",
+    rizzCta: "Chat with Rizz →",
+    footMade: "© 2026 — Made in South Africa",
+    footPrivacy: "Privacy",
+    footTerms: "Terms",
+    footPopia: "POPIA",
+    footBilling: "Billing",
+    footSafeguarding: "Safeguarding",
+    footAskRizz: "Ask Rizz 🤖",
   },
   af: {
-    eyebrow: "Graad 12 · KABV · R169/maand",
-    titleBase: "Matriekvoorbereiding wat regtig jou punte laat",
-    titleAccent: "skuif.",
-    subtitle:
-      "'n Weeklikse plan wat by KABV pas, 10 jaar se regte NSS-vraestelle met memo's, 'n KI-tutor wat jou regtig verstaan, en ouerverslae wat nie stof vergader nie.",
-    urgency: "Proewe is om die draai. Moenie improviseer nie.",
-    cta: "Begin my 14 gratis dae",
-    tagTop: "Dit is",
-    tagBig: "Matriek.",
-    tagA: "Elke punt ",
-    tagB: "tel.",
-    stats: [
-      { k: "Vakke", v: "24+", c: "#7FEFFF" },
-      { k: "Vraestelle", v: "10j", c: "#FFF29E" },
-      { k: "KI-Tutor", v: "24/7", c: "#C6A4FF" },
+    tFeatures: "Funksies",
+    tResearch: "Navorsing",
+    tSubjects: "Vakke",
+    tPricing: "Pryse",
+    tEnter: "Betree BrainTrack",
+    heroHead1: "Die leerplatform wat ",
+    heroAccent: "nie soos skool voel nie",
+    heroTail: ".",
+    heroSub:
+      "Nie nog 'n vasvra-app nie. 'n KABV-belynde matriekgereedheid-ekosisteem — DBE-datadiagnostiek, dinamiese studieplanne, ouersigbaarheid en skoolfondsinsameling in een.",
+    ctaStart: "Begin gratis — 14 dae",
+    marquee: [
+      { text: "KABV-belyn ✦", color: "#9FF5E8" },
+      { text: "10 jaar DBE-data ★", color: "#FFB7E5" },
+      { text: "AF + EN ⚡", color: "#FFE29A" },
+      { text: "regte NSS-vraestelle ✦", color: "#9FD8FF" },
+      { text: "KI-tutor 24/7 ★", color: "#C5B3FF" },
+      { text: "ouerverslae ⚡", color: "#94F7C5" },
+      { text: "reekse + XP ✦", color: "#FFB7E5" },
+      { text: "skoolfondsinsameling ★", color: "#9FF5E8" },
+      { text: "swakplek-radar ⚡", color: "#FFE29A" },
+      { text: "matriek gereed ✦", color: "#9FD8FF" },
     ],
-    featuresTitle: "Alles wat jy nodig het om Matriek te klop",
+    tDrop: "die volle gereedskapstel",
+    tDropHead1: "Alles wat jy nodig het om ",
+    tDropHead2: "regte punte te skuif",
     features: [
-      { icon: CalendarDays, c: "#7FEFFF", t: "Weeklikse Studieplan", d: "'n Regte Graad 12-padkaart — klein daaglikse stappe, geen paniek nie." },
-      { icon: BookOpen, c: "#93FFB8", t: "Regte NSS-vraestelle + Memo's", d: "Oefen die eksamen, nie die handboek nie." },
-      { icon: LineChart, c: "#FFC48F", t: "Swakplek-naspoorder", d: "Wys die onderwerpe wat jou punte kos en wat om volgende te doen." },
-      { icon: Brain, c: "#FF9FE5", t: "Rizz — Jou KI-Tutor", d: "KABV-belyn, 24/7. Verduidelik die moeilike dele totdat dit klik." },
-      { icon: Users, c: "#C6A4FF", t: "Ouers Ingesluit", d: "Weeklikse verslae wat ouers regtig lees." },
-      { icon: Check, c: "#FFF29E", t: "Eksamentegniek-drille", d: "Hou op om maklike punte op die tafel te los." },
+      { icon: "📅", color: "#9FF5E8", chipBg: "rgba(159,245,232,.14)", glow: "rgba(159,245,232,.25)", tilt: -1, title: "Dinamiese studieplanne", body: "'n Weeklikse KABV-padkaart wat daagliks herbou word rondom wat jy verkeerd gekry het." },
+      { icon: "📊", color: "#9FD8FF", chipBg: "rgba(159,216,255,.14)", glow: "rgba(159,216,255,.25)", tilt: 1, title: "DBE-datadiagnostiek", body: "Tien jaar se NSS-eksamenneigings wys presies waar matrieks punte verloor — en waar jy sal." },
+      { icon: "📝", color: "#FFB7E5", chipBg: "rgba(255,183,229,.14)", glow: "rgba(255,183,229,.25)", tilt: -1, title: "Regte vraestelle + memo's", body: "Woordelikse DBE-vrae met nasienmemo's, per onderwerp gedril totdat die punte vassit." },
+      { icon: "🤖", color: "#C5B3FF", chipBg: "rgba(197,179,255,.14)", glow: "rgba(197,179,255,.25)", tilt: 1, title: "Rizz — jou KI-tutor", body: "KABV-belynde hulp in Afrikaans en Engels, 24/7. Verduidelik totdat dit klik." },
+      { icon: "👀", color: "#FFE29A", chipBg: "rgba(255,226,154,.14)", glow: "rgba(255,226,154,.25)", tilt: -1, title: "Ouersigbaarheid", body: "Weeklikse uitvoerende verslae wat ouers regtig lees — vordering, risiko's, volgende stappe." },
+      { icon: "🏆", color: "#94F7C5", chipBg: "rgba(148,247,197,.14)", glow: "rgba(148,247,197,.25)", tilt: 1, title: "XP, reekse & belonings", body: "Konfetti as jy 'n vraestel klop. Krone as jy 'n reeks hou. Dopamien, maar produktief." },
     ],
-    pricingTitle: "Een plan. Regte Matriekpunte.",
-    price: "R169",
-    period: "/maand",
-    trial: "14 dae gratis",
-    planChecks: [
-      "Regte NSS-vraestelle + memo's (2015–2025)",
-      "Rizz — jou KI-tutor, KABV-belyn",
-      "Vorderingsnaspoor wat sin maak",
-      "Eksamentyd-drille wat by jou aanpas",
-      "Studiekalender wat by jou week pas",
-      "Kanselleer enige tyd",
+    tPosEye: "een ekosisteem",
+    tPosHead1: "Hou op om apps te jongleer. ",
+    tPosHead2: "BrainTrack verbind alles",
+    tOtherTools: "Ander gereedskap",
+    tOtherRows: [
+      { a: "Vasvra-apps", b: "drille sonder diagnose" },
+      { a: "Vraestel-PDF's", b: "geen memo's, geen naspoor" },
+      { a: "Tutor-WhatsApps", b: "duur, onverantwoordbaar" },
+      { a: "Skoolverslae", b: "kom wanneer dit te laat is" },
+      { a: "Studiegidse", b: "generies, nie KABV-presies nie" },
+      { a: "Sigblad-planne", b: "teen week 2 laat vaar" },
     ],
-    faqTitle: "Vra weg",
-    faq: [
-      { q: "Wat is BrainTrack presies?", a: "'n Graad 12-studie-app vir KABV en die NSS-eksamen. Weeklikse plan, 10 jaar se regte vraestelle met memo's, 'n KI-tutor genaamd Rizz, en weeklikse ouerverslae — alles gemik op beter Matriekpunte." },
-      { q: "Hoeveel kos dit?", a: "R169 per maand met 14 dae gratis. Alle vakke, die KI-tutor, volle vraestel-oefening en ouerverslae. Kanselleer enige tyd in die app." },
-      { q: "Is dit KABV-belyn?", a: "Ja. Elke plan, nota, flitskaart en toets is gebou rondom die amptelike KABV-kurrikulum vir die NSS." },
-      { q: "Does it work in English?", a: "Yes — everything is fully bilingual. Papers, memos, notes and Rizz work in both English and Afrikaans." },
+    tFragmented: "gefragmenteer. duur. te laat.",
+    tConnects: "BrainTrack verbind",
+    tAskLine:
+      "Vra een vraag: weet jou matriekhulpmiddel watter onderwerpe Suid-Afrikaanse leerders verlede November die meeste punte gekos het? BrainTrack weet — woordeliks, per vak, in albei tale.",
+    tQuote:
+      "“BrainTrack is nie 'n vasvra-app nie. Dit is 'n matriekgereedheid-ekosisteem gebou op tien jaar se regte DBE-uitkomste — ontwerp sodat geen leerder blind by die NSS-eksamens instap nie.”",
+    xpEye: "dopamien, maar produktief",
+    xpHead1: "Elke sessie laat val ",
+    xpHead2: "XP, reekse",
+    xpHead3: " en beloningsonthullings",
+    xpBody:
+      "Konfetti as jy 'n vraestel klop. Krone as jy 'n reeks hou. En terwyl jy die werk insit, kry ouers en skole skoon, uitvoerende verslae.",
+    xpStats: [
+      { value: "+120", label: "XP / sessie", color: "#9FF5E8", glow: "rgba(159,245,232,.25)" },
+      { value: "21🔥", label: "dae-reeks", color: "#FFB7E5", glow: "rgba(255,183,229,.25)" },
+      { value: "12", label: "krone", color: "#FFE29A", glow: "rgba(255,226,154,.25)" },
     ],
-    finalTitle: "Jou punte gaan nie hulself skuif nie.",
-    finalCta: "Begin gratis — vat 2 minute",
+    rizzEye: "ontmoet rizz 🤖",
+    rizzHead: "Probeer ons KI-studiemaat — gratis, nou dadelik",
+    rizzBody:
+      "Ouers, toets Rizz voordat julle inteken. Vra oor KABV-vakke, eksamenwenke of hoe BrainTrack werk. Afrikaanse skakel ingesluit. 💬",
+    rizzCta: "Gesels met Rizz →",
+    footMade: "© 2026 — Gemaak in Suid-Afrika",
+    footPrivacy: "Privaatheid",
+    footTerms: "Bepalings",
+    footPopia: "POPIA",
+    footBilling: "Betaling",
+    footSafeguarding: "Beskerming",
+    footAskRizz: "Vra Rizz 🤖",
   },
 } as const;
 
+// Permanent Marker scatter marks around the hero — positions from the comp.
+const SCATTER: Array<{
+  glyph: string; color: string; size: number; rotate: number;
+  style: React.CSSProperties;
+}> = [
+  { glyph: "★", color: "rgba(255,226,154,.85)", size: 38, rotate: -14, style: { top: 38, left: "7%" } },
+  { glyph: "⚡", color: "rgba(159,245,232,.85)", size: 34, rotate: 10, style: { top: 110, right: "8%" } },
+  { glyph: "✦", color: "rgba(197,179,255,.85)", size: 30, rotate: 8, style: { bottom: 230, left: "5%" } },
+  { glyph: "☻", color: "rgba(255,183,229,.85)", size: 30, rotate: -8, style: { bottom: 150, right: "6%" } },
+  { glyph: "👑", color: "rgba(159,216,255,.85)", size: 28, rotate: -6, style: { top: 200, left: "12%" } },
+  { glyph: "🔥", color: "rgba(255,183,229,.8)", size: 32, rotate: 12, style: { top: 300, right: "13%" } },
+  { glyph: "✏", color: "rgba(148,247,197,.8)", size: 24, rotate: -10, style: { top: 70, left: "26%" } },
+  { glyph: "⚡", color: "rgba(255,226,154,.8)", size: 26, rotate: 6, style: { bottom: 120, left: "22%" } },
+  { glyph: "★", color: "rgba(197,179,255,.8)", size: 22, rotate: -14, style: { top: 150, right: "24%" } },
+  { glyph: "✦", color: "rgba(159,245,232,.75)", size: 24, rotate: 9, style: { bottom: 260, right: "18%" } },
+  { glyph: "✱", color: "rgba(255,183,229,.75)", size: 22, rotate: -4, style: { top: 250, left: "4%" } },
+  { glyph: "↗", color: "rgba(159,216,255,.8)", size: 26, rotate: -12, style: { bottom: 80, right: "9%" } },
+];
+
+function RainbowWordmark({ size = 24 }: { size?: number }) {
+  return (
+    <span
+      className="bt-wordmark"
+      style={{ fontSize: size, letterSpacing: "-.5px" }}
+    >
+      BrainTrack
+    </span>
+  );
+}
+
 export default function LandingPage() {
-  const { language } = useLanguage();
+  const { language, toggleLanguage } = useLanguage();
   const t = COPY[language];
   const { handleCta, modal } = useRolePromptNav();
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const en = language === "en";
 
   useSEO({
     title: "BrainTrack™ | Grade 12 Matric Past Papers, Memos & AI Tutor — South Africa",
@@ -127,206 +219,317 @@ export default function LandingPage() {
     ogTitle: "Matric Past Papers, Memos & AI Tutor for Grade 12 SA | BrainTrack™",
     ogDescription:
       "10 years of NSC past papers + memos, CAPS-aligned weekly revision, AI tutor and parent reports. R169/month — 14 days free.",
-    jsonLd: [
-      {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        mainEntity: COPY.en.faq.slice(0, 3).map((f) => ({
-          "@type": "Question",
-          name: f.q,
-          acceptedAnswer: { "@type": "Answer", text: f.a },
-        })),
-      },
-    ],
   });
 
-  const primaryBtn =
-    "inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold transition-transform hover:scale-[1.03] active:scale-[0.97]";
+  const openRizz = () => {
+    window.dispatchEvent(new CustomEvent("bt:rizz-toggle"));
+  };
 
   return (
-    <div className="min-h-screen relative bg-background text-white overflow-x-hidden">
-      {/* One graffiti scatter behind the whole page */}
-      <div aria-hidden className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
-        <GraffitiSplats variant="full" opacity={0.9} />
+    <div style={{ minHeight: "100vh", background: "#050508", overflowX: "hidden" }}>
+      <style>{`
+        .btl-nav-link { color:#fff; cursor:pointer; transition:color .2s; }
+        .btl-nav-link:hover { color: var(--h, #9FF5E8); }
+        .btl-cta { transition: transform .2s; }
+        .btl-cta:hover { transform: translateY(-3px) rotate(-1deg); }
+        .btl-nav-cta:hover { transform: translateY(-2px); }
+        .btl-feature { transition: transform .25s, box-shadow .25s, border-color .25s; }
+        .btl-feature:hover { transform: translateY(-8px) rotate(var(--tilt, 0deg)); box-shadow: 0 20px 50px var(--glow); border-color: var(--c) !important; }
+        .btl-logo-img { transition: transform .25s; }
+        .btl-logo-img:hover { transform: scale(1.15) rotate(-4deg); }
+        .btl-foot-link { color:#fff; cursor:pointer; transition:color .2s; }
+        .btl-foot-link:hover { color: var(--h, #9FD8FF); }
+        @media (max-width: 860px) {
+          .btl-nav-links { display: none !important; }
+          .btl-hero-head { font-size: 38px !important; letter-spacing: -1px !important; }
+          .btl-grid3 { grid-template-columns: 1fr !important; }
+          .btl-grid2 { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
+
+      {/* ── Nav ─────────────────────────────────────────────── */}
+      <div
+        style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          gap: 32, padding: "16px 48px", position: "sticky", top: 0, zIndex: 50,
+          background: "rgba(5,5,8,.82)", backdropFilter: "blur(14px)",
+          borderBottom: "1px solid rgba(255,255,255,.06)",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flex: "none" }}>
+          <img src={iconTransparent} alt="BrainTrack" className="btl-logo-img" style={{ width: 56, height: 56, objectFit: "contain" }} />
+          <RainbowWordmark size={24} />
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 22, fontSize: 14, fontWeight: 600, flex: "none" }}>
+          <span className="btl-nav-links" style={{ display: "flex", alignItems: "center", gap: 22 }}>
+            <Link href="/features"><span className="btl-nav-link" style={{ "--h": "#9FF5E8" } as React.CSSProperties}>{t.tFeatures}</span></Link>
+            <Link href="/research"><span className="btl-nav-link" style={{ "--h": "#9FD8FF" } as React.CSSProperties}>{t.tResearch}</span></Link>
+            <Link href="/features"><span className="btl-nav-link" style={{ "--h": "#FFB7E5" } as React.CSSProperties}>{t.tSubjects}</span></Link>
+            <Link href="/subscribe"><span className="btl-nav-link" style={{ "--h": "#FFE29A" } as React.CSSProperties}>{t.tPricing}</span></Link>
+          </span>
+          <span
+            onClick={toggleLanguage}
+            data-testid="lang-toggle"
+            style={{
+              display: "flex", alignItems: "center", gap: 2, fontSize: 12, fontWeight: 800,
+              border: "1.5px solid rgba(255,255,255,.2)", borderRadius: 8,
+              overflow: "hidden", cursor: "pointer", userSelect: "none",
+            }}
+          >
+            <span style={{ padding: "6px 10px", background: en ? "#9FF5E8" : "transparent", color: en ? "#050508" : "#fff" }}>EN</span>
+            <span style={{ padding: "6px 10px", background: en ? "transparent" : "#9FF5E8", color: en ? "#fff" : "#050508" }}>AF</span>
+          </span>
+          <a href="/api/login">
+            <button
+              className="btl-nav-cta"
+              data-testid="button-nav-enter"
+              style={{
+                fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 14,
+                color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
+                animation: "bt-rainbow 6s linear infinite", border: "none",
+                borderRadius: 10, padding: "11px 26px", whiteSpace: "nowrap",
+                cursor: "pointer", boxShadow: "0 0 12px rgba(255,183,229,.22)",
+                transition: "transform .2s",
+              }}
+            >
+              {t.tEnter}
+            </button>
+          </a>
+        </div>
       </div>
 
-      <PublicNav />
-
-      <main className="relative z-10 pt-16">
-        {/* ── HERO ─────────────────────────────────────────────── */}
-        <section className="relative max-w-5xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 pb-14 text-center">
-          {/* Giant graffiti wordmark + crown */}
-          <div className="bt-rise bt-rise-1 relative inline-block">
-            <span
-              className="rainbow-text graffiti-hand leading-[0.85] block"
-              style={{ fontSize: "clamp(3.2rem, 10vw + 1rem, 8rem)", textShadow: "0 4px 0 rgba(0,0,0,0.55)" }}
-            >
-              BrainTrack
-            </span>
-            <svg aria-hidden viewBox="0 0 100 100" className="absolute -top-7 -right-4 w-12 h-12 sm:w-16 sm:h-16" style={{ color: "#fff", transform: "rotate(14deg)" }}>
-              <path d="M14 70 L22 34 L40 54 L50 24 L60 54 L78 34 L86 70" stroke="currentColor" strokeWidth={7} fill="none" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M18 80 L82 80" stroke="currentColor" strokeWidth={7} fill="none" strokeLinecap="round" />
-            </svg>
-          </div>
-
-          <p className="bt-rise bt-rise-2 mt-4 text-[11px] font-black uppercase tracking-[0.28em] text-white">
-            {t.eyebrow}
-          </p>
-
-          <h1
+      {/* ── Hero ────────────────────────────────────────────── */}
+      <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", padding: "72px 24px 40px", textAlign: "center" }}>
+        <div
+          aria-hidden
+          style={{
+            position: "absolute", top: "10%", left: "50%", transform: "translateX(-50%)",
+            width: 900, height: 520, maxWidth: "100vw",
+            background: "radial-gradient(ellipse,rgba(255,183,229,.07),rgba(159,216,255,.04) 55%,transparent 75%)",
+            filter: "blur(30px)", pointerEvents: "none",
+            animation: "bt-glowpulse 5s ease-in-out infinite",
+          }}
+        />
+        {SCATTER.map((s, i) => (
+          <span
+            key={i}
+            aria-hidden
+            style={{
+              position: "absolute", fontFamily: "'Permanent Marker',cursive",
+              fontSize: s.size, color: s.color, transform: `rotate(${s.rotate}deg)`,
+              zIndex: 1, pointerEvents: "none", ...s.style,
+            }}
+          >
+            {s.glyph}
+          </span>
+        ))}
+        <img
+          src={muralTransparent}
+          alt="BrainTrack graffiti mural"
+          style={{
+            width: "min(920px,94vw)", position: "relative", zIndex: 2,
+            animation: "bt-float 7s ease-in-out infinite",
+            filter: "drop-shadow(0 24px 44px rgba(255,110,199,.12))",
+          }}
+        />
+        <div style={{ maxWidth: 760, marginTop: 28, position: "relative", zIndex: 2 }}>
+          <div
+            role="heading"
+            aria-level={1}
+            className="btl-hero-head"
             data-testid="hero-title"
-            className="bt-rise bt-rise-2 mt-5 font-black tracking-tight leading-[1.05] text-white mx-auto max-w-3xl text-[clamp(1.9rem,4.2vw+1rem,4rem)]"
+            style={{ fontSize: 58, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-2px", margin: 0, fontFamily: "'Poppins',sans-serif", color: "#fff" }}
           >
-            {t.titleBase} <span className="callout-hl">{t.titleAccent}</span>
-          </h1>
-
-          <p className="bt-rise bt-rise-3 mt-5 text-white leading-relaxed max-w-2xl mx-auto" style={{ fontSize: "clamp(1rem, 1.1vw + 0.6rem, 1.2rem)" }}>
-            {t.subtitle}
-          </p>
-
-          <p
-            className="bt-rise bt-rise-3 graffiti-hand mt-5 text-lg -rotate-1"
-            style={{ color: "#FFF29E", textShadow: "0 2px 0 rgba(0,0,0,0.6)" }}
-          >
-            {t.urgency}
-          </p>
-
-          <div className="bt-rise bt-rise-4 mt-7 flex justify-center">
+            {t.heroHead1}
+            <span
+              style={{
+                background: HEADLINE_GRADIENT,
+                WebkitBackgroundClip: "text", backgroundClip: "text",
+                color: "transparent", WebkitTextFillColor: "transparent",
+              }}
+            >
+              {t.heroAccent}
+            </span>
+            {t.heroTail}
+          </div>
+          <div style={{ marginTop: 18, fontSize: 17, lineHeight: 1.65, color: "#fff", maxWidth: 620, marginLeft: "auto", marginRight: "auto" }}>
+            {t.heroSub}
+          </div>
+          <div style={{ display: "flex", gap: 16, justifyContent: "center", marginTop: 32 }}>
             <button
               onClick={handleCta}
+              className="btl-cta"
               data-testid="button-hero-cta"
-              className={primaryBtn}
-              style={{ background: "#7FEFFF", color: "#0a0a0a" }}
+              style={{
+                fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 16,
+                color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
+                animation: "bt-rainbow 5s linear infinite", border: "none",
+                borderRadius: 10, padding: "16px 36px", whiteSpace: "nowrap",
+                cursor: "pointer", boxShadow: "0 0 16px rgba(255,183,229,.28)",
+              }}
             >
-              {t.cta}
-              <ArrowRight className="w-4 h-4" />
+              {t.ctaStart}
             </button>
           </div>
+        </div>
+      </div>
 
-          {/* This is Matric. tag */}
-          <div className="bt-rise bt-rise-5 mt-12 -rotate-2 select-none">
-            <p className="graffiti-hand text-white leading-[1]" style={{ fontSize: "clamp(1.6rem, 3vw + 0.5rem, 2.6rem)", textShadow: "0 2px 0 rgba(0,0,0,0.6)" }}>
-              {t.tagTop}
-            </p>
-            <p className="graffiti-hand leading-[1.2] mt-1">
-              <span className="callout-hl" style={{ fontSize: "clamp(2.6rem, 5.5vw + 0.5rem, 4.8rem)" }}>{t.tagBig}</span>
-            </p>
-            <p className="graffiti-hand mt-3 leading-[1.4]" style={{ fontSize: "clamp(1.2rem, 2vw + 0.4rem, 1.9rem)" }}>
-              <span className="text-white">{t.tagA}</span>
-              <span className="callout-hl">{t.tagB}</span>
-            </p>
+      {/* ── Marquee ─────────────────────────────────────────── */}
+      <div style={{ overflow: "hidden", borderTop: "1px solid rgba(255,255,255,.07)", borderBottom: "1px solid rgba(255,255,255,.07)", padding: "14px 0", margin: "40px 0 0" }}>
+        <div
+          style={{
+            display: "flex", gap: 48, width: "max-content",
+            animation: "bt-marquee 22s linear infinite",
+            fontFamily: "'Permanent Marker',cursive", fontSize: 18, whiteSpace: "nowrap",
+          }}
+        >
+          {[...t.marquee, ...t.marquee].map((mq, i) => (
+            <span key={i} style={{ color: mq.color }}>{mq.text}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Features ────────────────────────────────────────── */}
+      <div style={{ maxWidth: 1100, margin: "90px auto 0", padding: "0 32px" }}>
+        <div style={{ textAlign: "center", marginBottom: 52 }}>
+          <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#FFB7E5", fontSize: 16, transform: "rotate(-2deg)" }}>{t.tDrop}</div>
+          <div style={{ fontSize: 38, fontWeight: 900, letterSpacing: "-1px" }}>
+            {t.tDropHead1}
+            <span style={{ color: "#9FD8FF" }}>{t.tDropHead2}</span>
           </div>
+        </div>
+        <div className="btl-grid3" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 26 }}>
+          {t.features.map((f) => (
+            <div
+              key={f.title}
+              className="btl-feature"
+              style={{
+                "--tilt": `${f.tilt}deg`, "--glow": f.glow, "--c": f.color,
+                background: "linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015))",
+                border: "1px solid rgba(255,255,255,.09)", borderRadius: 22,
+                padding: 28, cursor: "default",
+              } as React.CSSProperties}
+            >
+              <div style={{ width: 54, height: 54, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", background: f.chipBg, boxShadow: `0 0 22px ${f.glow}`, marginBottom: 18, fontSize: 24 }}>
+                {f.icon}
+              </div>
+              <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 8 }}>{f.title}</div>
+              <div style={{ fontSize: 15, lineHeight: 1.6, color: "#fff" }}>{f.body}</div>
+            </div>
+          ))}
+        </div>
+      </div>
 
-          {/* stats */}
-          <div data-testid="stats-strip" className="bt-rise bt-rise-5 mt-12 flex items-start justify-center gap-10 sm:gap-16">
-            {t.stats.map(({ k, v, c }) => (
-              <div key={k} className="text-center">
-                <div className="graffiti-hand text-3xl sm:text-4xl tabular-nums leading-none" style={{ color: c, textShadow: "0 2px 0 rgba(0,0,0,0.6)" }}>
-                  {v}
+      {/* ── Positioning: the ecosystem ──────────────────────── */}
+      <div style={{ maxWidth: 1100, margin: "100px auto 0", padding: "0 32px" }}>
+        <div style={{ textAlign: "center", marginBottom: 52 }}>
+          <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#9FF5E8", fontSize: 16, transform: "rotate(-2deg)" }}>{t.tPosEye}</div>
+          <div style={{ fontSize: 38, fontWeight: 900, letterSpacing: "-1px" }}>
+            {t.tPosHead1}
+            <span style={{ background: HEADLINE_GRADIENT, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>{t.tPosHead2}</span>
+          </div>
+        </div>
+        <div className="btl-grid2" style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: 26, alignItems: "stretch" }}>
+          <div style={{ background: "rgba(255,255,255,.025)", border: "1px solid rgba(255,255,255,.08)", borderRadius: 22, padding: 30 }}>
+            <div style={{ fontWeight: 800, fontSize: 17, marginBottom: 18, color: "#9FD8FF" }}>{t.tOtherTools}</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, fontSize: 15 }}>
+              {t.tOtherRows.map((r) => (
+                <div key={r.a} style={{ display: "flex", justifyContent: "space-between", gap: 12, borderBottom: "1px solid rgba(255,255,255,.06)", paddingBottom: 10 }}>
+                  <span style={{ fontWeight: 700, color: "#fff" }}>{r.a}</span>
+                  <span style={{ color: "#C5B3FF" }}>{r.b}</span>
                 </div>
-                <div className="mt-1.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] text-white">{k}</div>
+              ))}
+            </div>
+            <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5", marginTop: 20, transform: "rotate(-1.5deg)" }}>{t.tFragmented}</div>
+          </div>
+          <div style={{ background: "linear-gradient(150deg,rgba(159,216,255,.1),rgba(255,183,229,.08))", border: "1.5px solid rgba(159,216,255,.3)", borderRadius: 22, padding: 30, boxShadow: "0 0 18px rgba(159,216,255,.08)" }}>
+            <div style={{ fontWeight: 800, fontSize: 17, marginBottom: 18 }}>{t.tConnects}</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+              {[
+                { l: "CAPS", c: "#9FF5E8" },
+                { l: "NSC data", c: "#9FD8FF" },
+                { l: "10 years of DBE trends", c: "#FFB7E5" },
+                { l: en ? "Dynamic study plans" : "Dinamiese studieplanne", c: "#C5B3FF" },
+                { l: en ? "Exam readiness" : "Eksamengereedheid", c: "#FFE29A" },
+                { l: en ? "Parent visibility" : "Ouersigbaarheid", c: "#9FF5E8" },
+                { l: en ? "School reporting" : "Skoolverslae", c: "#FFB7E5" },
+                { l: en ? "Cohort analytics" : "Kohort-analise", c: "#9FD8FF" },
+                { l: en ? "Fundraising" : "Fondsinsameling", c: "#FFE29A" },
+                { l: en ? "Gamification" : "Spelifisering", c: "#C5B3FF" },
+                { l: en ? "Referral growth" : "Verwysingsgroei", c: "#9FF5E8" },
+                { l: "Afrikaans + English", c: "#FFB7E5" },
+                { l: en ? "POPIA-aware reporting" : "POPIA-bewuste verslae", c: "#9FD8FF" },
+              ].map((chip) => (
+                <span key={chip.l} style={{ fontSize: 13.5, fontWeight: 700, color: chip.c, border: `1.5px solid ${chip.c}`, borderRadius: 8, padding: "8px 14px" }}>
+                  {chip.l}
+                </span>
+              ))}
+            </div>
+            <div style={{ marginTop: 22, fontSize: 15, lineHeight: 1.7, color: "#fff" }}>{t.tAskLine}</div>
+          </div>
+        </div>
+        <div style={{ marginTop: 26, background: "rgba(255,255,255,.025)", borderLeft: "3px solid #9FD8FF", borderRadius: "0 16px 16px 0", padding: "24px 30px", fontSize: 16, lineHeight: 1.75, fontStyle: "italic", color: "#fff" }}>
+          {t.tQuote}
+        </div>
+      </div>
+
+      {/* ── XP strip ────────────────────────────────────────── */}
+      <div style={{ maxWidth: 1100, margin: "100px auto 0", padding: "0 32px" }}>
+        <div style={{ background: "linear-gradient(120deg,rgba(255,183,229,.1),rgba(159,216,255,.09),rgba(197,179,255,.1))", border: "1px solid rgba(255,255,255,.1)", borderRadius: 28, padding: 48, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 40, flexWrap: "wrap" }}>
+          <div style={{ maxWidth: 480 }}>
+            <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#9FF5E8", fontSize: 16, transform: "rotate(-2deg)" }}>{t.xpEye}</div>
+            <div style={{ fontSize: 32, fontWeight: 900, letterSpacing: "-1px", lineHeight: 1.2, marginTop: 6 }}>
+              {t.xpHead1}<span style={{ color: "#9FD8FF" }}>{t.xpHead2}</span>{t.xpHead3}
+            </div>
+            <div style={{ marginTop: 12, fontSize: 16, lineHeight: 1.65, color: "#fff" }}>{t.xpBody}</div>
+          </div>
+          <div style={{ display: "flex", gap: 18, flexWrap: "wrap" }}>
+            {t.xpStats.map((s) => (
+              <div key={s.label} style={{ background: "rgba(5,5,8,.6)", border: `1.5px solid ${s.color}`, borderRadius: 20, padding: "22px 26px", textAlign: "center", minWidth: 110, boxShadow: `0 0 26px ${s.glow}`, animation: "bt-wiggle 6s ease-in-out infinite" }}>
+                <div style={{ fontSize: 30, fontWeight: 900, color: s.color }}>{s.value}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: "1.5px", color: "#fff", textTransform: "uppercase" }}>{s.label}</div>
               </div>
             ))}
           </div>
-        </section>
+        </div>
+      </div>
 
-        {/* ── FEATURES ─────────────────────────────────────────── */}
-        <section id="everything" className="relative max-w-5xl mx-auto px-4 sm:px-6 py-16">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-[1.1] text-center">
-            <span className="callout-hl">{t.featuresTitle}</span>
-          </h2>
-          <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-10">
-            {t.features.map((f) => (
-              <div key={f.t} className="flex flex-col items-center text-center gap-2.5">
-                <f.icon className="w-8 h-8" style={{ color: f.c }} />
-                <h3 className="text-base font-extrabold text-white">{f.t}</h3>
-                <p className="text-sm text-white leading-relaxed max-w-[280px]">{f.d}</p>
-              </div>
-            ))}
+      {/* ── Meet Rizz strip ─────────────────────────────────── */}
+      <div style={{ maxWidth: 1100, margin: "100px auto 0", padding: "0 32px" }}>
+        <div style={{ background: "linear-gradient(120deg,rgba(179,136,255,.14),rgba(255,126,198,.1))", border: "1.5px solid rgba(179,136,255,.3)", borderRadius: 24, padding: "34px 40px", display: "flex", alignItems: "center", gap: 26, flexWrap: "wrap" }}>
+          <img src={rizzAvatar} alt="Rizz" style={{ width: 84, height: 84, borderRadius: 20, objectFit: "cover", border: "2px solid #B388FF", boxShadow: "0 0 26px rgba(179,136,255,.45)" }} />
+          <div style={{ flex: 1, minWidth: 240 }}>
+            <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#C5B3FF", transform: "rotate(-2deg)" }}>{t.rizzEye}</div>
+            <div style={{ fontSize: 26, fontWeight: 900, letterSpacing: "-.5px", marginTop: 4 }}>{t.rizzHead}</div>
+            <div style={{ fontSize: 14, lineHeight: 1.6, color: "#fff", opacity: 0.72, marginTop: 6 }}>{t.rizzBody}</div>
           </div>
-        </section>
+          <button
+            onClick={openRizz}
+            data-testid="button-rizz-cta"
+            className="btl-nav-cta"
+            style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 15, color: "#050508", background: "linear-gradient(100deg,#B388FF,#FF7EC6)", border: "none", borderRadius: 12, padding: "15px 30px", whiteSpace: "nowrap", cursor: "pointer", boxShadow: "0 0 24px rgba(179,136,255,.4)", transition: "transform .2s" }}
+          >
+            {t.rizzCta}
+          </button>
+        </div>
+      </div>
 
-        {/* ── PRICING ──────────────────────────────────────────── */}
-        <section id="pricing" className="relative max-w-3xl mx-auto px-4 sm:px-6 py-16 text-center">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-[1.1]">
-            <span className="callout-hl">{t.pricingTitle}</span>
-          </h2>
-
-          <p className="graffiti-hand mt-10 leading-none">
-            <span style={{ color: "#7FEFFF", fontSize: "clamp(3rem, 6vw, 5rem)", textShadow: "0 3px 0 rgba(0,0,0,0.6)" }}>{t.price}</span>
-            <span className="text-white text-lg font-bold ml-2">{t.period}</span>
-          </p>
-          <p className="graffiti-hand mt-2 text-lg" style={{ color: "#FF9FE5" }}>{t.trial}</p>
-
-          <ul className="mt-8 space-y-2.5 inline-block text-left">
-            {t.planChecks.map((c, i) => (
-              <li key={c} className="flex items-start gap-2.5 text-sm text-white">
-                <Check className="w-4 h-4 mt-0.5 shrink-0" style={{ color: PASTEL[i % PASTEL.length] }} />
-                {c}
-              </li>
-            ))}
-          </ul>
-
-          <div className="mt-9 flex justify-center">
-            <button
-              onClick={handleCta}
-              data-testid="button-pricing-cta"
-              className={primaryBtn}
-              style={{ background: "#7FEFFF", color: "#0a0a0a" }}
-            >
-              {t.cta}
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
-        </section>
-
-        {/* ── FAQ ──────────────────────────────────────────────── */}
-        <section id="faq-section" className="relative max-w-2xl mx-auto px-4 sm:px-6 py-16">
-          <h2 className="text-3xl sm:text-4xl font-black tracking-tight leading-[1.1] text-center mb-10">
-            <span className="callout-hl">{t.faqTitle}</span>
-          </h2>
-          {t.faq.map((f, idx) => {
-            const c = PASTEL[idx % PASTEL.length];
-            const open = openFaq === idx;
-            return (
-              <div key={idx} style={{ borderBottom: "1px solid rgba(255,255,255,0.15)" }}>
-                <button
-                  className="w-full text-left py-4 flex items-center gap-3 cursor-pointer"
-                  onClick={() => setOpenFaq(open ? null : idx)}
-                  aria-expanded={open}
-                  aria-controls={`faq-a-${idx}`}
-                >
-                  <span className="text-sm sm:text-base font-extrabold text-white flex-1">{f.q}</span>
-                  <ChevronDown className={`w-4 h-4 shrink-0 transition-transform ${open ? "rotate-180" : ""}`} style={{ color: c }} />
-                </button>
-                <div className="grid transition-all duration-300" style={{ gridTemplateRows: open ? "1fr" : "0fr" }}>
-                  <div className="overflow-hidden" id={`faq-a-${idx}`} role="region">
-                    <p className="pb-5 text-sm text-white leading-relaxed">{f.a}</p>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </section>
-
-        {/* ── FINAL CTA ────────────────────────────────────────── */}
-        <section className="relative max-w-3xl mx-auto px-4 sm:px-6 pt-8 pb-24 text-center">
-          <p className="graffiti-hand -rotate-1 text-2xl sm:text-3xl" style={{ color: "#FFF29E", textShadow: "0 2px 0 rgba(0,0,0,0.6)" }}>
-            {t.finalTitle}
-          </p>
-          <div className="mt-6 flex justify-center">
-            <button
-              onClick={handleCta}
-              data-testid="button-final-cta"
-              className={primaryBtn}
-              style={{ background: "#93FFB8", color: "#0a0a0a" }}
-            >
-              {t.finalCta}
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
-        </section>
-      </main>
+      {/* ── Footer ──────────────────────────────────────────── */}
+      <div style={{ marginTop: 110, borderTop: "1px solid rgba(255,255,255,.08)", padding: "44px 48px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 20 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <img src={iconTransparent} alt="" style={{ width: 52, height: 52, objectFit: "contain" }} />
+          <RainbowWordmark size={16} />
+          <span style={{ fontSize: 14, color: "#fff", marginLeft: 10 }}>{t.footMade}</span>
+        </div>
+        <div style={{ display: "flex", gap: 26, fontSize: 13, fontWeight: 600, flexWrap: "wrap" }}>
+          <Link href="/privacy-policy"><span className="btl-foot-link" style={{ "--h": "#9FD8FF" } as React.CSSProperties}>{t.footPrivacy}</span></Link>
+          <Link href="/terms-of-service"><span className="btl-foot-link" style={{ "--h": "#FFB7E5" } as React.CSSProperties}>{t.footTerms}</span></Link>
+          <Link href="/privacy-policy"><span className="btl-foot-link" style={{ "--h": "#C5B3FF" } as React.CSSProperties}>{t.footPopia}</span></Link>
+          <Link href="/refund-policy"><span className="btl-foot-link" style={{ "--h": "#FFE29A" } as React.CSSProperties}>{t.footBilling}</span></Link>
+          <Link href="/terms-of-service"><span className="btl-foot-link" style={{ "--h": "#94F7C5" } as React.CSSProperties}>{t.footSafeguarding}</span></Link>
+          <span onClick={openRizz} className="btl-foot-link" style={{ color: "#C5B3FF", cursor: "pointer", fontWeight: 800, "--h": "#FF7EC6" } as React.CSSProperties}>{t.footAskRizz}</span>
+        </div>
+      </div>
 
       {modal}
     </div>

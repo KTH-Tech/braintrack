@@ -1,22 +1,12 @@
-import { FileText, Shield, Users, Scale, BookOpen, Lock, RefreshCw, Globe, CreditCard, Undo2, ArrowLeft, Sparkles } from "lucide-react";
-import { FooterPageHomeButton } from "@/components/footer-page-nav";
-import { GraffitiSplats } from "@/components/graffiti-splats";
-import { Link } from "wouter";
+// Chrome restyled to the Claude Design handoff "Luxury Street Graffiti
+// EdTech" comp (LEGAL PAGES section) via LegalShell. Legal copy verbatim.
+import { FileText, Shield, Users, Scale, BookOpen, Lock, RefreshCw, Globe, CreditCard, Undo2, Sparkles } from "lucide-react";
+import { LegalShell, LegalSection } from "@/components/legal-shell";
 import { useLanguage } from "@/lib/language-context";
 import { useSEO } from "@/hooks/use-seo";
 
-const NEON_PALETTE = [
-  "#FFC48F", "#FFC48F", "#FFF29E", "#FFF29E",
-  "#7FEFFF", "#6FA8FF", "#C6A4FF", "#C6A4FF", "#FF9FE5"
-];
-
-function hexToRgba(hex: string, alpha: number) {
-  const h = hex.replace("#", "");
-  const r = parseInt(h.substring(0, 2), 16);
-  const g = parseInt(h.substring(2, 4), 16);
-  const b = parseInt(h.substring(4, 6), 16);
-  return `rgba(${r},${g},${b},${alpha})`;
-}
+// Handoff pastel accents, cycled per section.
+const PASTELS = ["#9FF5E8", "#9FD8FF", "#FFB7E5", "#C5B3FF", "#FFE29A", "#94F7C5"];
 
 export default function TermsOfServicePage() {
   const { language, toggleLanguage } = useLanguage();
@@ -345,161 +335,62 @@ export default function TermsOfServicePage() {
   const currentSections = sections[isAf ? "af" : "en"];
 
   return (
-    <div className="relative min-h-screen bg-background text-white overflow-hidden">
-      <GraffitiSplats variant="full" opacity={0.4} />
-      <header
-        className="sticky top-0 z-50 bg-background/95 border-b-2"
-        style={{ borderBottom: "2px solid rgba(127,239,255,0.4)", boxShadow: "0 0 20px rgba(127,239,255,0.15)" }}
-      >
-        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Link href="/">
-              <button
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black text-xs font-bold"
-                style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF", boxShadow: "0 0 12px rgba(127,239,255,0.4)" }}
-                data-testid="terms-nav-back"
-              >
-                <ArrowLeft className="h-3.5 w-3.5" />
-                {isAf ? "Terug" : "Back"}
-              </button>
-            </Link>
-            <span className="graffiti-hand text-base hidden sm:inline tracking-tight" style={{ color: "#FFF29E", textShadow: "0 0 8px rgba(255,242,158,0.4)" }}>
-              {isAf ? "Diensvoorwaardes" : "Terms & Conditions"}
-            </span>
-          </div>
-          <button
-            onClick={toggleLanguage}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black text-[11px] font-black"
-            style={{ color: "#C6A4FF", border: "1px solid rgba(198,164,255,0.55)", boxShadow: "0 0 10px rgba(198,164,255,0.35)" }}
-            data-testid="button-language-toggle"
-          >
-            <Globe className="h-3.5 w-3.5" />
-            <span>{language === "en" ? "EN" : "AF"}</span>
-          </button>
-        </div>
-      </header>
-
-      <main className="relative z-10 max-w-4xl mx-auto px-4 py-10 space-y-6">
-
-        <div className="relative text-center space-y-4 py-6">
-          <span
-            className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.28em] px-4 py-1.5 rounded-full bg-black"
-            style={{ color: "#7FEFFF", border: "1px solid rgba(127,239,255,0.55)", boxShadow: "0 0 14px rgba(127,239,255,0.35)" }}
-          >
-            <Scale className="w-3.5 h-3.5" style={{ filter: "drop-shadow(0 0 4px #7FEFFF)" }} />
-            {isAf ? "Die Kleingedrukte" : "The Fine Print"}
-          </span>
-          <h1
-            className="graffiti-hand text-3xl sm:text-4xl md:text-5xl tracking-tight leading-[1.05]"
-            data-testid="text-terms-title"
-            style={{
-              background: "linear-gradient(90deg, #FFC48F, #FFF29E, #7FEFFF, #C6A4FF, #FF9FE5)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-              filter: "drop-shadow(0 0 22px rgba(127,239,255,0.28))",
-            }}
-          >
-            {isAf ? "Diensvoorwaardes" : "Terms & Conditions"}
-          </h1>
-          <p className="text-sm sm:text-base text-white max-w-2xl mx-auto">
-            {isAf
-              ? "Alles wat jy moet weet voor jy BrainTrack™ gebruik — reguit en sonder raaisels."
-              : "Everything you need to know before using BrainTrack™ — straight up, no small print games."}
-          </p>
-          <p className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "#FFF29E" }}>
-            {isAf ? "Laas opgedateer: 16 Julie 2026" : "Last updated: 16 July 2026"}
-          </p>
-        </div>
-
-        <div className="relative space-y-4">
-          {currentSections.map((section, index) => {
-            const Icon = section.icon;
-            const hex = NEON_PALETTE[index % NEON_PALETTE.length];
-            return (
-              <div
-                key={index}
-                className="relative rounded-2xl bg-black p-5 sm:p-6"
-                style={{
-                  border: `1.5px solid ${hex}`,
-                  boxShadow: `0 0 0 1px ${hexToRgba(hex, 0.25)}, 0 0 28px ${hexToRgba(hex, 0.3)}, inset 0 0 20px rgba(0,0,0,0.6)`,
-                }}
-                data-testid={`terms-section-${index}`}
-              >
-                <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 rounded-tl-2xl" style={{ borderColor: hex }} />
-                <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 rounded-tr-2xl" style={{ borderColor: hex }} />
-                <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 rounded-bl-2xl" style={{ borderColor: hex }} />
-                <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 rounded-br-2xl" style={{ borderColor: hex }} />
-
-                <div className="flex items-center gap-3 mb-4">
-                  <div
-                    className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shrink-0"
-                    style={{ border: `1.5px solid ${hex}`, boxShadow: `0 0 14px ${hexToRgba(hex, 0.5)}` }}
-                  >
-                    <Icon className="w-5 h-5" style={{ color: hex, filter: `drop-shadow(0 0 4px ${hex})` }} />
-                  </div>
-                  <h2
-                    className="text-base sm:text-lg font-black tracking-tight"
-                    style={{ color: hex, textShadow: `0 0 10px ${hexToRgba(hex, 0.4)}` }}
-                  >
-                    {section.title}
-                  </h2>
-                </div>
-
-                <div className="space-y-3 text-sm sm:text-[15px] leading-relaxed text-white">
-                  {section.content.map((para, i) => (
-                    <p key={i}>{para}</p>
+    <LegalShell
+      title={isAf ? "Diensvoorwaardes" : "Terms & Conditions"}
+      titleTestId="text-terms-title"
+      updated={isAf ? "Laas opgedateer: 16 Julie 2026" : "Last updated: 16 July 2026"}
+      language={language}
+      onToggleLanguage={toggleLanguage}
+      activeHref="/terms-of-service"
+      backTestId="terms-nav-back"
+      lead={
+        <p>
+          {isAf
+            ? "Alles wat jy moet weet voor jy BrainTrack™ gebruik — reguit en sonder raaisels."
+            : "Everything you need to know before using BrainTrack™ — straight up, no small print games."}
+        </p>
+      }
+    >
+      {currentSections.map((section, index) => {
+        const hex = PASTELS[index % PASTELS.length];
+        return (
+          <LegalSection key={index} accent={hex} title={section.title} testId={`terms-section-${index}`}>
+            <div className="space-y-3">
+              {section.content.map((para, i) => (
+                <p key={i}>{para}</p>
+              ))}
+              {(section as any).bullets && (
+                <ul className="space-y-2 mt-2">
+                  {(section as any).bullets.map((b: string, i: number) => (
+                    <li key={i} className="flex items-start gap-2.5">
+                      <span
+                        className="mt-2.5 w-1.5 h-1.5 rounded-full shrink-0"
+                        style={{ background: hex }}
+                      />
+                      <span>{b}</span>
+                    </li>
                   ))}
-                  {(section as any).bullets && (
-                    <ul className="space-y-2 mt-2">
-                      {(section as any).bullets.map((b: string, i: number) => (
-                        <li key={i} className="flex items-start gap-2.5">
-                          <span
-                            className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0"
-                            style={{ background: hex, boxShadow: `0 0 6px ${hex}` }}
-                          />
-                          <span>{b}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                  {(section as any).footer && (
-                    <p
-                      className="mt-3 pt-3 text-xs sm:text-sm font-semibold"
-                      style={{ borderTop: `1px dashed ${hexToRgba(hex, 0.4)}`, color: hex }}
-                    >
-                      {(section as any).footer}
-                    </p>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+                </ul>
+              )}
+              {(section as any).footer && (
+                <p
+                  className="mt-3 pt-3 font-semibold"
+                  style={{ borderTop: "1px dashed rgba(255,255,255,.18)", color: hex }}
+                >
+                  {(section as any).footer}
+                </p>
+              )}
+            </div>
+          </LegalSection>
+        );
+      })}
 
-        <div
-          className="relative rounded-2xl bg-black p-6 text-center space-y-2 mt-8"
-          style={{
-            border: "1.5px solid #FFF29E",
-            boxShadow: "0 0 0 1px rgba(255,242,158,0.25), 0 0 32px rgba(255,242,158,0.35), inset 0 0 24px rgba(0,0,0,0.6)",
-          }}
-        >
-          <div className="flex items-center justify-center gap-2 mb-1">
-            <Sparkles className="w-4 h-4" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 4px #FFF29E)" }} />
-            <p className="text-base font-black tracking-tight" style={{ color: "#FFF29E", textShadow: "0 0 10px rgba(255,242,158,0.45)" }}>
-              BrainTrack™
-            </p>
-            <Sparkles className="w-4 h-4" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 4px #FFF29E)" }} />
-          </div>
-          <p className="text-sm text-white">
-            {isAf ? "Alle regte voorbehou. Suid-Afrika." : "All rights reserved. South Africa."}
-          </p>
+      <div style={{ textAlign: "center", padding: "10px 0 0" }}>
+        <div style={{ fontWeight: 800, fontSize: 16, color: "#fff" }}>BrainTrack™</div>
+        <div style={{ fontSize: 14, color: "#fff", opacity: 0.94, marginTop: 4 }}>
+          {isAf ? "Alle regte voorbehou. Suid-Afrika." : "All rights reserved. South Africa."}
         </div>
-
-        <div className="text-center pt-4">
-          <FooterPageHomeButton />
-        </div>
-      </main>
-    </div>
+      </div>
+    </LegalShell>
   );
 }

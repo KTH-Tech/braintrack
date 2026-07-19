@@ -58,10 +58,10 @@ type BulkJobStatus = {
   items: BulkJobItem[];
 };
 
-const NEON = "#7FEFFF";
-const PINK = "#FF9FE5";
-const GOLD = "#FFF29E";
-const PURPLE = "#C6A4FF";
+const NEON = "#6EE7F9";
+const PINK = "#FFB7E5";
+const GOLD = "#FFE29A";
+const PURPLE = "#C5B3FF";
 const GREEN = "#22c55e";
 
 function fmtDate(s: string | null, isAf: boolean): string {
@@ -631,7 +631,7 @@ export default function AdminTopicAudioPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-5">
         <section
           className="rounded-2xl p-4 bg-black"
-          style={{ border: `1.5px solid ${NEON}`, boxShadow: `0 0 24px rgba(127,239,255,0.25)` }}
+          style={{ border: `1.5px solid ${NEON}`, boxShadow: `0 0 24px rgba(110,231,249,0.25)` }}
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
             <label className="text-xs">
@@ -642,7 +642,7 @@ export default function AdminTopicAudioPage() {
                 value={subjectId}
                 onChange={(e) => setSubjectId(e.target.value)}
                 className="w-full bg-black text-white text-xs px-2 py-1.5 rounded-md"
-                style={{ border: `1px solid rgba(127,239,255,0.45)` }}
+                style={{ border: `1px solid rgba(110,231,249,0.45)` }}
                 data-testid="filter-subject"
               >
                 <option value="">{isAf ? "Alle vakke" : "All subjects"}</option>
@@ -662,7 +662,7 @@ export default function AdminTopicAudioPage() {
                 value={missing}
                 onChange={(e) => setMissing(e.target.value)}
                 className="w-full bg-black text-white text-xs px-2 py-1.5 rounded-md"
-                style={{ border: `1px solid rgba(127,239,255,0.45)` }}
+                style={{ border: `1px solid rgba(110,231,249,0.45)` }}
                 data-testid="filter-missing"
               >
                 <option value="">{isAf ? "Enige status" : "Any status"}</option>
@@ -683,7 +683,7 @@ export default function AdminTopicAudioPage() {
                 onChange={(e) => setOlderThanDays(e.target.value.replace(/[^0-9]/g, ""))}
                 placeholder="0"
                 className="w-full bg-black text-white text-xs px-2 py-1.5 rounded-md"
-                style={{ border: `1px solid rgba(127,239,255,0.45)` }}
+                style={{ border: `1px solid rgba(110,231,249,0.45)` }}
                 data-testid="filter-older"
               />
             </label>
@@ -698,7 +698,7 @@ export default function AdminTopicAudioPage() {
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={isAf ? "onderwerp/vak" : "topic / subject"}
                 className="w-full bg-black text-white text-xs px-2 py-1.5 rounded-md"
-                style={{ border: `1px solid rgba(127,239,255,0.45)` }}
+                style={{ border: `1px solid rgba(110,231,249,0.45)` }}
                 data-testid="filter-search"
               />
             </label>
@@ -765,8 +765,8 @@ export default function AdminTopicAudioPage() {
                         onClick={() => setShowOnlyErrors((v) => !v)}
                         className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.15em] px-3 py-1.5 rounded-lg bg-black hover:bg-white/5"
                         style={{
-                          border: `1.5px solid ${showOnlyErrors ? PINK : "rgba(255,159,229,0.4)"}`,
-                          color: showOnlyErrors ? PINK : "rgba(255,159,229,0.6)",
+                          border: `1.5px solid ${showOnlyErrors ? PINK : "rgba(255,183,229,0.4)"}`,
+                          color: showOnlyErrors ? PINK : "rgba(255,183,229,0.6)",
                         }}
                         data-testid="btn-show-errors-only"
                         title={isAf ? "Wys slegs foutonderwerpe" : "Show only failed topics"}

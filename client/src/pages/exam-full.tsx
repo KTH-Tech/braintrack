@@ -275,12 +275,12 @@ export default function ExamFullPage() {
             <div
               className="rounded-xl bg-black p-3 text-sm flex gap-2"
               style={{
-                border: "1px solid rgba(255,242,158,0.55)",
-                boxShadow: "0 0 14px rgba(255,242,158,0.25), inset 0 0 12px rgba(255,242,158,0.06)",
-                color: "#FFF29E",
+                border: "1px solid rgba(255,226,154,0.55)",
+                boxShadow: "0 0 14px rgba(255,226,154,0.25), inset 0 0 12px rgba(255,226,154,0.06)",
+                color: "#FFE29A",
               }}
             >
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" style={{ filter: "drop-shadow(0 0 4px #FFF29E)" }} />
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" style={{ filter: "drop-shadow(0 0 4px #FFE29A)" }} />
               <p className="text-white">
                 {isAf
                   ? "Hierdie modus simuleer 'n DBE vraestel: getyd, een keer indien aan die einde. Antwoorde word teen die memorandum gemerk."

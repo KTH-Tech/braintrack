@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { TrendingUp, TrendingDown, Minus, Calendar, Target, Zap } from "lucide-react";
 
-const NEON = "#7FEFFF";
-const NEON_GLOW = "rgba(127,239,255,0.35)";
-const DOWN = "#FF9FE5";
+const NEON = "#6EE7F9";
+const NEON_GLOW = "rgba(110,231,249,0.35)";
+const DOWN = "#FFB7E5";
 
 interface WeeklyData {
   accuracy: number;
@@ -71,9 +71,9 @@ export function YouVsYouChart({ isAf = false }: YouVsYouChartProps) {
   const { thisWeek, lastWeek } = data;
 
   const metrics = [
-    { icon: Target,   labelEn: "Accuracy",   labelAf: "Akkuraatheid", now: thisWeek.accuracy,          prev: lastWeek.accuracy,          suffix: "%", hex: "#7FEFFF" },
-    { icon: Zap,      labelEn: "Questions",  labelAf: "Vrae",         now: thisWeek.questionsAnswered, prev: lastWeek.questionsAnswered, suffix: "",  hex: "#FFF29E" },
-    { icon: Calendar, labelEn: "Study Days", labelAf: "Studiedae",    now: thisWeek.studyDays,         prev: lastWeek.studyDays,         suffix: "",  hex: "#C6A4FF" },
+    { icon: Target,   labelEn: "Accuracy",   labelAf: "Akkuraatheid", now: thisWeek.accuracy,          prev: lastWeek.accuracy,          suffix: "%", hex: "#6EE7F9" },
+    { icon: Zap,      labelEn: "Questions",  labelAf: "Vrae",         now: thisWeek.questionsAnswered, prev: lastWeek.questionsAnswered, suffix: "",  hex: "#FFE29A" },
+    { icon: Calendar, labelEn: "Study Days", labelAf: "Studiedae",    now: thisWeek.studyDays,         prev: lastWeek.studyDays,         suffix: "",  hex: "#C5B3FF" },
   ];
 
   return (

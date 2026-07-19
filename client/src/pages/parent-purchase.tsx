@@ -31,7 +31,7 @@ export default function ParentPurchasePage() {
         className="prismglass-panel max-w-lg w-full text-center px-6 py-10 sm:px-10 sm:py-12 relative z-10"
         data-testid="parent-purchase-coming-soon"
       >
-        <div className="absolute -top-3 right-4 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.15em] bg-gradient-to-r from-[#FFC48F] to-[#FF9FE5] text-white border border-[#FFF29E] shadow-lg">
+        <div className="absolute -top-3 right-4 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.15em] bg-gradient-to-r from-[#FFE29A] to-[#FFB7E5] text-white border border-[#FFE29A] shadow-lg">
           ⭐ Early Tester
         </div>
 
@@ -48,8 +48,8 @@ export default function ParentPurchasePage() {
         </h1>
 
         <div className="flex items-center justify-center gap-2 mb-4 text-xs font-bold text-foreground">
-          <Zap className="w-3.5 h-3.5 text-[#FFF29E]" />
-          <span style={{ color: "#7FEFFF" }}>
+          <Zap className="w-3.5 h-3.5 text-[#FFE29A]" />
+          <span style={{ color: "#6EE7F9" }}>
             {isAf ? "Jy kry alles nou — geen wag" : "You get everything now — no waiting"}
           </span>
         </div>

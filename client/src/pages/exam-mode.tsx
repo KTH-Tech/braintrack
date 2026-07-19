@@ -1,26 +1,22 @@
+// BrainTrack Exam Mode hub — restyled to match the Claude Design handoff
+// "Luxury Street Graffiti EdTech" comp (BrainTrack.dc.html, EXAM MODE section).
+// #050508 ground, #0b0b12 accent-bordered cards, Permanent Marker eyebrows,
+// aqua→purple gradient action buttons, pure white text. Bilingual EN/AF.
+// RESTYLE ONLY — all hooks, queries, config and data-testids preserved.
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/hooks/use-auth";
 import {
-  ArrowLeft,
-  BookOpen,
   Brain,
   ChevronRight,
   LogOut,
-  Shield,
-  Star,
   Target,
-  TrendingUp,
   Flame,
   Zap,
   GraduationCap,
   Clock,
-  Sparkles,
   AlertCircle,
   BarChart2,
   ShieldCheck,
@@ -28,13 +24,11 @@ import {
   Home,
   Timer,
 } from "lucide-react";
-import { PageHeader } from "@/components/page-header";
 import { useMemo } from "react";
 import type { Subject, OnboardingResult } from "@shared/schema";
 import { useLanguage } from "@/lib/language-context";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Languages } from "lucide-react";
-import { getSubjectIcon, STATUS_ICONS } from "@/lib/vark";
+import { getSubjectIcon } from "@/lib/vark";
 
 interface SubjectMastery {
   subjectId: number;
@@ -96,7 +90,7 @@ const EXAM_CONFIG: Record<string, {
     papers: [
       { id: "bst-p1", name: "Paper 1 - Business Environments, Operations, Ventures", nameAf: "Vraestel 1 - Sakeomgewings, Bedrywighede, Ondernemings", totalMarks: 150, duration: 180, sections: "A: MCQ (40) | B: Case Studies (80) | C: Essay (30)" },
       { id: "bst-p2", name: "Paper 2 - Business Roles & Operations", nameAf: "Vraestel 2 - Sakerolle & Bedrywighede", totalMarks: 150, duration: 180, sections: "A: MCQ (40) | B: Case Studies (80) | C: Essay (30)" },
-      { id: "bst-p3", name: "Paper 3 - Integrated Topics", nameAf: "Vraestel 3 - Ge\u00EFntegreerde Onderwerpe", totalMarks: 100, duration: 120, sections: "A: MCQ (30) | B: Case Studies (50) | C: Essay (20)" },
+      { id: "bst-p3", name: "Paper 3 - Integrated Topics", nameAf: "Vraestel 3 - Geïntegreerde Onderwerpe", totalMarks: 100, duration: 120, sections: "A: MCQ (30) | B: Case Studies (50) | C: Essay (20)" },
     ],
     active: true,
     route: "/bst-exam",
@@ -121,7 +115,7 @@ const EXAM_CONFIG: Record<string, {
   AFR: {
     papers: [
       { id: "afr-p1", name: "Paper 1 - Taal in Konteks", nameAf: "Vraestel 1 - Taal in Konteks", totalMarks: 80, duration: 120, sections: "Begrip | Opsomming | Taal" },
-      { id: "afr-p2", name: "Paper 2 - Letterkunde", nameAf: "Vraestel 2 - Letterkunde", totalMarks: 80, duration: 120, sections: "Roman | Drama | Po\u00EBsie" },
+      { id: "afr-p2", name: "Paper 2 - Letterkunde", nameAf: "Vraestel 2 - Letterkunde", totalMarks: 80, duration: 120, sections: "Roman | Drama | Poësie" },
       { id: "afr-p3", name: "Paper 3 - Skryfwerk", nameAf: "Vraestel 3 - Skryfwerk", totalMarks: 100, duration: 150, sections: "Opstelle | Transaksionele Skryfwerk" },
     ],
     active: true,
@@ -137,7 +131,7 @@ const EXAM_CONFIG: Record<string, {
   },
   LIF: {
     papers: [
-      { id: "lif-p1", name: "Paper 1 - Life at Molecular, Cell, Tissue & Organ Level", nameAf: "Vraestel 1 - Lewe op Molekul\u00EAre, Sel, Weefsel & Orgaanvlak", totalMarks: 150, duration: 150, sections: "4 Questions (150 marks)" },
+      { id: "lif-p1", name: "Paper 1 - Life at Molecular, Cell, Tissue & Organ Level", nameAf: "Vraestel 1 - Lewe op Molekulêre, Sel, Weefsel & Orgaanvlak", totalMarks: 150, duration: 150, sections: "4 Questions (150 marks)" },
       { id: "lif-p2", name: "Paper 2 - Life Processes, Diversity, Environmental Studies", nameAf: "Vraestel 2 - Lewensprosesse, Diversiteit, Omgewingstudies", totalMarks: 150, duration: 150, sections: "4 Questions (150 marks)" },
     ],
     active: true,
@@ -145,7 +139,7 @@ const EXAM_CONFIG: Record<string, {
   },
   ACC: {
     papers: [
-      { id: "acc-p1", name: "Paper 1 - Financial Accounting", nameAf: "Vraestel 1 - Financi\u00EBle Rekeningkunde", totalMarks: 150, duration: 180, sections: "Financial Statements | Analysis | Ethics" },
+      { id: "acc-p1", name: "Paper 1 - Financial Accounting", nameAf: "Vraestel 1 - Financiële Rekeningkunde", totalMarks: 150, duration: 180, sections: "Financial Statements | Analysis | Ethics" },
       { id: "acc-p2", name: "Paper 2 - Managerial Accounting", nameAf: "Vraestel 2 - Bestuursrekeningkunde", totalMarks: 150, duration: 120, sections: "Cost Accounting | Budgets" },
     ],
     active: true,
@@ -178,7 +172,7 @@ const EXAM_CONFIG: Record<string, {
   AFRH: {
     papers: [
       { id: "afrh-p1", name: "Paper 1 - Taal in Konteks", nameAf: "Vraestel 1 - Taal in Konteks", totalMarks: 80, duration: 120, sections: "Begrip | Opsomming | Taal" },
-      { id: "afrh-p2", name: "Paper 2 - Letterkunde", nameAf: "Vraestel 2 - Letterkunde", totalMarks: 80, duration: 120, sections: "Roman | Drama | Po\u00EBsie" },
+      { id: "afrh-p2", name: "Paper 2 - Letterkunde", nameAf: "Vraestel 2 - Letterkunde", totalMarks: 80, duration: 120, sections: "Roman | Drama | Poësie" },
       { id: "afrh-p3", name: "Paper 3 - Skryfwerk", nameAf: "Vraestel 3 - Skryfwerk", totalMarks: 100, duration: 150, sections: "Opstelle | Transaksionele Skryfwerk" },
     ],
     active: true,
@@ -267,7 +261,7 @@ const EXAM_CONFIG: Record<string, {
   },
   LIFE: {
     papers: [
-      { id: "life-p1", name: "Paper 1 - Molecular, Cell & Organ Level", nameAf: "Vraestel 1 - Molekul\u00EAre, Sel & Orgaanvlak", totalMarks: 150, duration: 150, sections: "4 Questions (150 marks)" },
+      { id: "life-p1", name: "Paper 1 - Molecular, Cell & Organ Level", nameAf: "Vraestel 1 - Molekulêre, Sel & Orgaanvlak", totalMarks: 150, duration: 150, sections: "4 Questions (150 marks)" },
       { id: "life-p2", name: "Paper 2 - Diversity, Ecology, Environment", nameAf: "Vraestel 2 - Diversiteit, Ekologie, Omgewing", totalMarks: 150, duration: 150, sections: "4 Questions (150 marks)" },
     ],
     active: true,
@@ -298,34 +292,39 @@ const EXAM_CONFIG: Record<string, {
   },
 };
 
-// Canonical rainbow stops for per-card accents
+// Comp gradient constants — mirror landing.tsx
+const CTA_GRADIENT =
+  "linear-gradient(100deg,#FFB7E5,#FFE29A,#9FF5E8,#C5B3FF,#FFB7E5)";
+const HEADLINE_GRADIENT =
+  "linear-gradient(95deg,#9FD8FF,#9FF5E8,#C5B3FF,#FFB7E5)";
+const ACTION_GRADIENT = "linear-gradient(100deg,#9FF5E8,#C5B3FF)";
+
+// Comp pastel accents cycled per subject card
 const RAINBOW_ACCENTS: { hex: string; halo: string }[] = [
-  { hex: "#FFC48F", halo: "rgba(255,196,143,0.32)" },
-  { hex: "#FFF29E", halo: "rgba(255,242,158,0.32)" },
-  { hex: "#FFF29E", halo: "rgba(255,242,158,0.32)" },
-  { hex: "#7FEFFF", halo: "rgba(127,239,255,0.32)" },
-  { hex: "#6FA8FF", halo: "rgba(111,168,255,0.32)" },
-  { hex: "#C6A4FF", halo: "rgba(198,164,255,0.32)" },
-  { hex: "#C6A4FF", halo: "rgba(198,164,255,0.32)" },
-  { hex: "#FF9FE5", halo: "rgba(255,159,229,0.32)" },
+  { hex: "#9FF5E8", halo: "rgba(159,245,232,0.28)" },
+  { hex: "#9FD8FF", halo: "rgba(159,216,255,0.28)" },
+  { hex: "#FFB7E5", halo: "rgba(255,183,229,0.28)" },
+  { hex: "#C5B3FF", halo: "rgba(197,179,255,0.28)" },
+  { hex: "#FFE29A", halo: "rgba(255,226,154,0.28)" },
+  { hex: "#94F7C5", halo: "rgba(148,247,197,0.28)" },
 ];
 
 function getBandHex(band: string): { hex: string; halo: string; label: string } {
   switch (band) {
-    case "star":  return { hex: "#FFF29E", halo: "rgba(255,242,158,0.32)",  label: "STAR" };
-    case "green": return { hex: "#7FEFFF", halo: "rgba(127,239,255,0.32)",  label: "GREEN" };
-    case "amber": return { hex: "#FFC48F", halo: "rgba(255,196,143,0.32)",  label: "AMBER" };
-    default:      return { hex: "#FF9FE5", halo: "rgba(255,159,229,0.32)",  label: "RED" };
+    case "star":  return { hex: "#FFE29A", halo: "rgba(255,226,154,0.28)", label: "STAR" };
+    case "green": return { hex: "#94F7C5", halo: "rgba(148,247,197,0.28)", label: "GREEN" };
+    case "amber": return { hex: "#FFB7E5", halo: "rgba(255,183,229,0.28)", label: "AMBER" };
+    default:      return { hex: "#FF8DA1", halo: "rgba(255,141,161,0.28)", label: "RED" };
   }
 }
 
 function getBandIcon(band: string, hex: string) {
-  const style = { color: hex, filter: `drop-shadow(0 0 6px ${hex})` };
+  const style = { color: hex, width: 16, height: 16 };
   switch (band) {
-    case "star":  return <Trophy className="w-4 h-4" style={style} />;
-    case "green": return <ShieldCheck className="w-4 h-4" style={style} />;
-    case "amber": return <BarChart2 className="w-4 h-4" style={style} />;
-    default:      return <AlertCircle className="w-4 h-4" style={style} />;
+    case "star":  return <Trophy style={style} />;
+    case "green": return <ShieldCheck style={style} />;
+    case "amber": return <BarChart2 style={style} />;
+    default:      return <AlertCircle style={style} />;
   }
 }
 
@@ -361,43 +360,55 @@ function SubjectExamCard({ subject, isAf, t, colorIndex }: { subject: Subject; i
 
   return (
     <div
-      className="relative rounded-2xl bg-black p-5 overflow-hidden"
       style={{
-        border: `1.5px solid ${accent.hex}`,
-        boxShadow: `0 0 0 1px ${accent.halo}, 0 0 22px ${accent.halo}, inset 0 0 18px rgba(0,0,0,0.6)`,
+        position: "relative",
+        background: "#0b0b12",
+        border: `1.5px solid ${accent.hex}55`,
+        borderRadius: 22,
+        padding: 24,
+        boxShadow: `0 0 22px ${accent.halo}`,
+        overflow: "hidden",
       }}
       data-testid={`subject-card-${subject.code}`}
     >
-      {/* Corner brackets */}
-      <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: accent.hex }} />
-      <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2" style={{ borderColor: accent.hex }} />
-      <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2" style={{ borderColor: accent.hex }} />
-      <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: accent.hex }} />
+      {/* Accent top rule — comp card marker */}
+      <span
+        aria-hidden
+        style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: accent.hex, boxShadow: `0 0 10px ${accent.halo}` }}
+      />
 
       {/* Header row */}
-      <div className="flex items-start justify-between gap-3 mb-4">
-        <div className="flex items-center gap-3 min-w-0 flex-1">
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0, flex: 1 }}>
           <span
-            className="w-11 h-11 rounded-xl bg-black flex items-center justify-center shrink-0 text-xl"
             style={{
+              width: 46, height: 46, borderRadius: 14, flex: "none",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 22,
+              background: `${accent.hex}24`,
               border: `1.5px solid ${accent.hex}`,
-              boxShadow: `0 0 14px ${accent.halo}, inset 0 0 10px ${accent.halo}`,
+              boxShadow: `0 0 14px ${accent.halo}`,
             }}
           >
             {getSubjectIcon(subject.name)}
           </span>
-          <div className="min-w-0">
-            <h3 className="font-bold text-base text-white leading-tight truncate" style={{ textShadow: `0 0 10px ${accent.halo}` }}>
+          <div style={{ minWidth: 0 }}>
+            <div
+              role="heading"
+              aria-level={3}
+              style={{ fontWeight: 800, fontSize: 16, color: "#fff", lineHeight: 1.2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+            >
               {isAf ? (subject.nameAfrikaans || subject.name) : subject.name}
-            </h3>
-            <div className="flex items-center gap-1.5 mt-1">
-              <span className="text-[9px] font-black uppercase tracking-[0.18em] text-white">{subject.code}</span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 5 }}>
+              <span style={{ fontSize: 10, fontWeight: 900, letterSpacing: "1.5px", color: "#fff", textTransform: "uppercase" }}>{subject.code}</span>
               <span
-                className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.2em] bg-black"
                 style={{
-                  color: isActive ? "#7FEFFF" : "#FFC48F",
-                  border: `1px solid ${isActive ? "#7FEFFF" : "#FFC48F"}`,
-                  boxShadow: `0 0 8px ${isActive ? "rgba(127,239,255,0.45)" : "rgba(255,196,143,0.4)"}`,
+                  display: "inline-flex", alignItems: "center", gap: 5,
+                  borderRadius: 999, padding: "3px 10px",
+                  fontSize: 10, fontWeight: 900, letterSpacing: "1.5px", textTransform: "uppercase",
+                  color: isActive ? "#94F7C5" : "#FFE29A",
+                  border: `1px solid ${isActive ? "#94F7C5" : "#FFE29A"}`,
                 }}
               >
                 {isActive ? t.liveLabel : t.soonLabel}
@@ -407,14 +418,17 @@ function SubjectExamCard({ subject, isAf, t, colorIndex }: { subject: Subject; i
         </div>
         {mastery && (
           <div
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-black shrink-0"
+            title={getBandLabel(band, t)}
             style={{
+              display: "flex", alignItems: "center", gap: 6, flex: "none",
+              padding: "7px 11px", borderRadius: 12,
+              background: "rgba(5,5,8,.6)",
               border: `1.5px solid ${bandMeta.hex}`,
-              boxShadow: `0 0 12px ${bandMeta.halo}, inset 0 0 8px ${bandMeta.halo}`,
+              boxShadow: `0 0 12px ${bandMeta.halo}`,
             }}
           >
             {getBandIcon(band, bandMeta.hex)}
-            <span className="font-black text-base" style={{ color: bandMeta.hex, textShadow: `0 0 8px ${bandMeta.halo}` }}>
+            <span style={{ fontWeight: 900, fontSize: 16, color: bandMeta.hex }}>
               {masteryPct}%
             </span>
           </div>
@@ -423,20 +437,23 @@ function SubjectExamCard({ subject, isAf, t, colorIndex }: { subject: Subject; i
 
       {/* Stat grid */}
       {mastery && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+        <div className="btx-stat4" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8, marginBottom: 16 }}>
           {[
-            { v: mastery.progress.papersCompleted, k: t.examsAbbr, hex: "#FFC48F" },
-            { v: mastery.progress.questionsAttempted, k: t.questionsAbbr, hex: "#FFF29E" },
-            { v: `${mastery.progress.accuracy}%`, k: t.accuracyAbbr, hex: "#C6A4FF" },
-            { v: `${readiness}%`, k: t.readyAbbr, hex: "#7FEFFF" },
+            { v: mastery.progress.papersCompleted, k: t.examsAbbr, hex: "#FFE29A" },
+            { v: mastery.progress.questionsAttempted, k: t.questionsAbbr, hex: "#9FD8FF" },
+            { v: `${mastery.progress.accuracy}%`, k: t.accuracyAbbr, hex: "#C5B3FF" },
+            { v: `${readiness}%`, k: t.readyAbbr, hex: "#9FF5E8" },
           ].map((s, i) => (
             <div
               key={i}
-              className="text-center rounded-xl bg-black py-2"
-              style={{ border: `1px solid ${s.hex}55`, boxShadow: `0 0 8px ${s.hex}26` }}
+              style={{
+                textAlign: "center", borderRadius: 12, padding: "8px 4px",
+                background: "rgba(255,255,255,.03)",
+                border: `1px solid ${s.hex}44`,
+              }}
             >
-              <p className="text-base font-black" style={{ color: s.hex, textShadow: `0 0 6px ${s.hex}66` }}>{s.v}</p>
-              <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-white">{s.k}</p>
+              <div style={{ fontSize: 16, fontWeight: 900, color: s.hex }}>{s.v}</div>
+              <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "1.2px", textTransform: "uppercase", color: "#fff" }}>{s.k}</div>
             </div>
           ))}
         </div>
@@ -444,48 +461,61 @@ function SubjectExamCard({ subject, isAf, t, colorIndex }: { subject: Subject; i
 
       {/* Papers list */}
       {examConfig && (
-        <div className="space-y-2 mb-4">
-          <p className="text-[9px] font-black text-white uppercase tracking-[0.22em]">
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
+          <div style={{ fontSize: 10, fontWeight: 900, letterSpacing: "2px", textTransform: "uppercase", color: "#FFE29A" }}>
             {t.availablePapers}
-          </p>
+          </div>
           {examConfig.papers.map((paper) => (
             <div
               key={paper.id}
-              className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-black"
-              style={{ border: `1px solid ${accent.hex}55` }}
+              style={{
+                display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10,
+                padding: "10px 12px", borderRadius: 12,
+                background: "rgba(255,255,255,.04)",
+                border: "1px solid rgba(255,255,255,.1)",
+              }}
               data-testid={`paper-${paper.id}`}
             >
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-bold text-white truncate">
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                   {isAf ? paper.nameAf : paper.name}
-                </p>
-                <p className="text-[10px] text-white font-medium">
+                </div>
+                <div style={{ fontSize: 11, fontWeight: 600, color: "#fff", opacity: 0.72 }}>
                   {paper.totalMarks} {t.marksUnit} · {paper.duration} min
-                </p>
+                </div>
               </div>
               {isActive ? (
-                <Link href={examConfig.route === "/bst-exam" ? examConfig.route : `${examConfig.route}?subject=${subject.code}&paper=${paper.id}`} className="shrink-0">
+                <Link href={examConfig.route === "/bst-exam" ? examConfig.route : `${examConfig.route}?subject=${subject.code}&paper=${paper.id}`} style={{ flex: "none" }}>
                   <button
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-[0.14em] bg-black"
+                    className="btx-action"
                     style={{
-                      color: accent.hex,
-                      border: `1.5px solid ${accent.hex}`,
-                      boxShadow: `0 0 10px ${accent.halo}`,
-                      textShadow: `0 0 6px ${accent.halo}`,
+                      display: "inline-flex", alignItems: "center", gap: 5,
+                      fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 11,
+                      letterSpacing: "1.2px", textTransform: "uppercase",
+                      color: "#050508", background: ACTION_GRADIENT,
+                      border: "none", borderRadius: 10, padding: "8px 14px",
+                      cursor: "pointer", whiteSpace: "nowrap",
+                      boxShadow: `0 0 12px ${accent.halo}`,
                     }}
                     data-testid={`button-start-${paper.id}`}
                   >
-                    <Zap className="w-3 h-3" />
+                    <Zap style={{ width: 12, height: 12 }} />
                     {t.startBtn}
                   </button>
                 </Link>
               ) : (
                 <button
                   disabled
-                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-[0.14em] bg-black text-white shrink-0"
-                  style={{ border: "1px solid rgba(255,255,255,0.15)" }}
+                  style={{
+                    display: "inline-flex", alignItems: "center", gap: 5, flex: "none",
+                    fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 11,
+                    letterSpacing: "1.2px", textTransform: "uppercase",
+                    color: "#fff", background: "transparent",
+                    border: "2px solid rgba(255,255,255,.22)", borderRadius: 10, padding: "7px 13px",
+                    whiteSpace: "nowrap",
+                  }}
                 >
-                  <Clock className="w-3 h-3" />
+                  <Clock style={{ width: 12, height: 12 }} />
                   {t.soonLabel}
                 </button>
               )}
@@ -495,33 +525,52 @@ function SubjectExamCard({ subject, isAf, t, colorIndex }: { subject: Subject; i
       )}
 
       {!examConfig && (
-        <div className="text-center py-6 mb-4 rounded-xl bg-black" style={{ border: `1px dashed ${accent.hex}55` }}>
-          <Brain className="w-8 h-8 mx-auto mb-2" style={{ color: accent.hex, filter: `drop-shadow(0 0 6px ${accent.halo})` }} />
-          <p className="text-xs text-white font-medium">
+        <div
+          style={{
+            textAlign: "center", padding: "24px 12px", marginBottom: 16,
+            borderRadius: 12, border: `1px dashed ${accent.hex}55`,
+          }}
+        >
+          <Brain style={{ width: 32, height: 32, margin: "0 auto 8px", color: accent.hex }} />
+          <div style={{ fontSize: 12, fontWeight: 600, color: "#fff" }}>
             {t.comingSoon}
-          </p>
+          </div>
         </div>
       )}
 
       {/* Footer links */}
-      <div className="flex gap-2">
-        <Link href={`/subject/${subject.id}`} className="flex-1">
+      <div style={{ display: "flex", gap: 8 }}>
+        <Link href={`/subject/${subject.id}`} style={{ flex: 1 }}>
           <button
-            className="w-full inline-flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-[11px] font-black uppercase tracking-[0.14em] bg-black text-white hover:text-white"
-            style={{ border: "1px solid rgba(255,255,255,0.22)" }}
+            className="btx-ghost"
+            style={{
+              width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 5,
+              fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 11,
+              letterSpacing: "1.2px", textTransform: "uppercase",
+              color: "#fff", background: "transparent",
+              border: "2px solid rgba(255,255,255,.22)", borderRadius: 10, padding: "9px 12px",
+              cursor: "pointer",
+            }}
             data-testid={`button-view-${subject.code}`}
           >
-            <Target className="w-3 h-3" />
+            <Target style={{ width: 12, height: 12 }} />
             {t.masteryBtn}
           </button>
         </Link>
-        <Link href={`/tutor?subject=${subject.id}`} className="flex-1">
+        <Link href={`/tutor?subject=${subject.id}`} style={{ flex: 1 }}>
           <button
-            className="w-full inline-flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-[11px] font-black uppercase tracking-[0.14em] bg-black text-white hover:text-white"
-            style={{ border: "1px solid rgba(255,255,255,0.22)" }}
+            className="btx-ghost"
+            style={{
+              width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 5,
+              fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 11,
+              letterSpacing: "1.2px", textTransform: "uppercase",
+              color: "#fff", background: "transparent",
+              border: "2px solid rgba(255,255,255,.22)", borderRadius: 10, padding: "9px 12px",
+              cursor: "pointer",
+            }}
             data-testid={`button-tutor-${subject.code}`}
           >
-            <Brain className="w-3 h-3" />
+            <Brain style={{ width: 12, height: 12 }} />
             {t.tutorBtn}
           </button>
         </Link>
@@ -542,6 +591,7 @@ const T = {
     heroHeading: "Exam Mode",
     heroSubtitle: "Past papers, timed practice, and full mock exams — all in one place.",
     examSimSubtitle: "CAPS-aligned simulated mock exams for all your subjects — timed, structured, scored.",
+    heroEyebrow: "exam mode · no shortcuts",
     liveLabel: "Live",
     papersLabel: "Papers",
     miniMock: "Mini Mock",
@@ -597,6 +647,7 @@ const T = {
     examSimSubtitle: "KABV-belynde gesimuleerde proefeksamens vir al jou vakke — getyd, gestruktureerd, gemerk.",
     heroHeading: "Eksamenmode",
     heroSubtitle: "Vorige vraestelle, getyde oefening en volle skyneksamens — alles op een plek.",
+    heroEyebrow: "eksamenmode · geen kortpaaie",
     liveLabel: "Lewendig",
     papersLabel: "Vraestelle",
     miniMock: "Mini-Toets",
@@ -674,282 +725,285 @@ export default function ExamModePage() {
   );
 
   return (
-    <div className="min-h-screen relative bg-black text-white">
-      {/* Cosmic wordmark wash */}
+    <div style={{ minHeight: "100vh", background: "#050508", color: "#fff", overflowX: "hidden" }}>
+      <style>{`
+        .btx-action { transition: transform .2s; }
+        .btx-action:hover { transform: translateY(-2px); }
+        .btx-ghost { transition: border-color .2s, transform .2s; }
+        .btx-ghost:hover { border-color: rgba(255,255,255,.5) !important; transform: translateY(-1px); }
+        .btx-mode { transition: transform .25s, box-shadow .25s, border-color .25s; }
+        .btx-mode:hover { transform: translateY(-6px); box-shadow: 0 20px 50px var(--glow) !important; border-color: var(--c) !important; }
+        @media (max-width: 860px) {
+          .btx-grid2 { grid-template-columns: 1fr !important; }
+          .btx-hero-head { font-size: 38px !important; letter-spacing: -1px !important; }
+          .btx-stat4 { grid-template-columns: repeat(2,1fr) !important; }
+        }
+      `}</style>
+
+      {/* ── Sticky header ───────────────────────────────────── */}
       <div
-        aria-hidden
-        className="pointer-events-none fixed inset-0 z-0"
         style={{
-          background:
-            "radial-gradient(ellipse 55% 45% at 12% 8%,  rgba(255,196,143,0.10) 0%, transparent 60%)," +
-            "radial-gradient(ellipse 55% 45% at 88% 6%,  rgba(255,159,229,0.10) 0%, transparent 60%)," +
-            "radial-gradient(ellipse 70% 55% at 50% 100%, rgba(127,239,255,0.10) 0%, transparent 65%)," +
-            "#000",
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          gap: 16, padding: "12px 28px", position: "sticky", top: 0, zIndex: 50,
+          background: "rgba(5,5,8,.82)", backdropFilter: "blur(14px)",
+          borderBottom: "1px solid rgba(255,255,255,.06)",
         }}
-      />
-      <div className="relative z-10">
-        <header
-          className="sticky top-0 z-50 bg-black/80"
-          style={{ borderBottom: "1px solid rgba(255,159,229,0.35)" }}
-        >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-14 gap-4">
-              <div className="flex items-center gap-2">
-                <Timer className="w-4 h-4" style={{ color: "#FF9FE5", filter: "drop-shadow(0 0 4px #FF9FE5)" }} />
-                <span className="font-black text-sm uppercase tracking-[0.18em]" style={{ color: "#FF9FE5" }}>
-                  {t.pageTitle}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <ThemeToggle />
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => toggleLanguage()}
-                  className="text-white font-semibold hover:text-white rounded-2xl"
-                  data-testid="button-language-toggle"
-                >
-                  {isAf ? "AF" : "EN"}
-                </Button>
-                <Link href="/dashboard">
-                  <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:text-white" title={t.homeTitle} data-testid="button-home">
-                    <Home className="w-4 h-4" />
-                  </Button>
-                </Link>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:text-white" onClick={() => logout()} data-testid="button-logout" title={t.signOutTitle}>
-                  <LogOut className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-          {/* ═══ Cinematic Hero ═══ */}
-          <section
-            className="relative overflow-hidden rounded-3xl bg-black p-6 sm:p-10 md:p-12"
-            style={{
-              border: "1.5px solid #FF9FE5",
-              boxShadow:
-                "0 0 0 1px rgba(255,159,229,0.32), 0 0 40px rgba(255,159,229,0.42), inset 0 0 32px rgba(0,0,0,0.65)",
-            }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <Timer style={{ width: 18, height: 18, color: "#FFB7E5" }} />
+          <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 17, color: "#FFB7E5", transform: "rotate(-2deg)" }}>
+            {t.pageTitle}
+          </span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <ThemeToggle />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => toggleLanguage()}
+            className="text-white font-semibold hover:text-white rounded-2xl"
+            data-testid="button-language-toggle"
           >
-            <div
-              aria-hidden
-              className="absolute top-0 left-0 right-0 h-[3px]"
-              style={{
-                background:
-                  "linear-gradient(90deg, #FFC48F, #FFC48F, #FFF29E, #FFF29E, #7FEFFF, #6FA8FF, #C6A4FF, #C6A4FF, #FF9FE5)",
-              }}
-            />
-            <div
-              aria-hidden
-              className="absolute left-0 right-0 h-px pointer-events-none progress-hero-scan"
-              style={{
-                background:
-                  "linear-gradient(90deg, transparent, #FF9FE5 20%, #C6A4FF 50%, #7FEFFF 80%, transparent)",
-                boxShadow: "0 0 14px #FF9FE5, 0 0 28px #C6A4FF",
-              }}
-            />
-            <div aria-hidden className="absolute -top-24 -right-24 w-72 h-72 rounded-full blur-3xl pointer-events-none"
-              style={{ background: "radial-gradient(circle, rgba(255,159,229,0.28), transparent 70%)" }} />
-            <div aria-hidden className="absolute -bottom-24 -left-24 w-72 h-72 rounded-full blur-3xl pointer-events-none"
-              style={{ background: "radial-gradient(circle, rgba(255,196,143,0.22), transparent 70%)" }} />
+            {isAf ? "AF" : "EN"}
+          </Button>
+          <Link href="/dashboard">
+            <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:text-white" title={t.homeTitle} data-testid="button-home">
+              <Home className="w-4 h-4" />
+            </Button>
+          </Link>
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:text-white" onClick={() => logout()} data-testid="button-logout" title={t.signOutTitle}>
+            <LogOut className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
 
-            <span aria-hidden className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2" style={{ borderColor: "#FF9FE5" }} />
-            <span aria-hidden className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2" style={{ borderColor: "#FF9FE5" }} />
-            <span aria-hidden className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2" style={{ borderColor: "#FF9FE5" }} />
-            <span aria-hidden className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2" style={{ borderColor: "#FF9FE5" }} />
-
-            <div className="relative text-center space-y-5">
-              {/* HUD pills */}
-              <div className="flex flex-wrap items-center justify-center gap-2">
-                <div
-                  className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
-                  style={{ border: "1px solid #FF9FE5", boxShadow: "0 0 14px rgba(255,159,229,0.5)" }}
-                >
-                  <Flame className="w-3 h-3" style={{ color: "#FF9FE5", filter: "drop-shadow(0 0 4px #FF9FE5)" }} />
-                  <span className="text-[10px] font-black uppercase tracking-[0.24em]" style={{ color: "#FF9FE5" }}>
-                    {t.examSimulation}
-                  </span>
-                </div>
-                <div
-                  className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
-                  style={{ border: "1px solid rgba(127,239,255,0.65)", boxShadow: "0 0 10px rgba(127,239,255,0.4)" }}
-                >
-                  <span className="w-1.5 h-1.5 rounded-full progress-hero-pulse" style={{ background: "#7FEFFF", boxShadow: "0 0 6px #7FEFFF" }} />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#7FEFFF" }}>
-                    {t.capsLabel}
-                  </span>
-                </div>
-                <div
-                  className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
-                  style={{ border: "1px solid rgba(255,242,158,0.65)", boxShadow: "0 0 10px rgba(255,242,158,0.4)" }}
-                >
-                  <AlertCircle className="w-3 h-3" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 4px #FFF29E)" }} />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#FFF29E" }}>
-                    {t.timedScored}
-                  </span>
-                </div>
-              </div>
-
-              <h1
-                className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-[0.98] max-w-4xl mx-auto"
-                style={{
-                  background:
-                    "linear-gradient(90deg, #FFC48F, #FFC48F, #FFF29E, #FFF29E, #7FEFFF, #6FA8FF, #C6A4FF, #C6A4FF, #FF9FE5)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                  filter: "drop-shadow(0 0 22px rgba(255,159,229,0.32))",
-                }}
-                data-testid="text-crunch-time-title"
-              >
-                {t.pageTitle}
-              </h1>
-              <p className="text-white max-w-2xl mx-auto leading-relaxed text-base sm:text-lg">
-                {t.examSimSubtitle}
-              </p>
-
-              {/* Stat ticker */}
-              <div className="grid grid-cols-3 gap-3 max-w-xl mx-auto pt-1">
-                {[
-                  { k: t.subjectsLabel, v: learnerSubjects.length, hex: "#7FEFFF" },
-                  { k: t.liveLabel, v: liveCount, hex: "#FFF29E" },
-                  { k: t.papersLabel, v: totalPapers, hex: "#FF9FE5" },
-                ].map(({ k, v, hex }) => (
-                  <div
-                    key={k}
-                    className="rounded-xl bg-black px-3 py-2"
-                    style={{ border: `1px solid ${hex}55`, boxShadow: `0 0 10px ${hex}33` }}
-                  >
-                    <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-white">{k}</div>
-                    <div className="text-2xl font-black" style={{ color: hex, textShadow: `0 0 8px ${hex}55` }}>{v}</div>
-                  </div>
-                ))}
-              </div>
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "36px 24px 80px", display: "flex", flexDirection: "column", gap: 32 }}>
+        {/* ── Hero — exam rules card per comp ─────────────────── */}
+        <div
+          style={{
+            position: "relative",
+            background: "#0b0b12",
+            border: "1.5px solid rgba(255,183,229,.3)",
+            borderRadius: 22,
+            padding: "38px 34px",
+            textAlign: "center",
+            overflow: "hidden",
+          }}
+        >
+          <div
+            aria-hidden
+            style={{
+              position: "absolute", inset: 0, pointerEvents: "none",
+              background:
+                "radial-gradient(ellipse 60% 50% at 15% 0%, rgba(255,183,229,.08), transparent 60%)," +
+                "radial-gradient(ellipse 60% 50% at 85% 100%, rgba(159,245,232,.07), transparent 60%)",
+            }}
+          />
+          <div style={{ position: "relative" }}>
+            <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", marginBottom: 10 }}>
+              {t.heroEyebrow}
             </div>
-          </section>
 
-          {/* ═══ Quick Modes — Mini Mock + Full Exam ═══ */}
-          <section className="grid sm:grid-cols-2 gap-5" data-testid="section-exam-quick-modes">
-            {[
-              {
-                href: "/exam/mini-mock",
-                testid: "tile-mini-mock",
-                hex: "#7FEFFF",
-                halo: "rgba(127,239,255,",
-                icon: <Zap className="w-7 h-7" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 6px rgba(127,239,255,0.6))" }} />,
-                title: t.miniMockTitle,
-                tag: t.miniMockTag,
-                sub: t.miniMockSub,
-                cta: t.miniMockCta,
-              },
-              {
-                href: "/exam/full",
-                testid: "tile-full-exam",
-                hex: "#FF9FE5",
-                halo: "rgba(255,159,229,",
-                icon: <GraduationCap className="w-7 h-7" style={{ color: "#FF9FE5", filter: "drop-shadow(0 0 6px rgba(255,159,229,0.6))" }} />,
-                title: t.fullExamTitle,
-                tag: t.fullExamTag,
-                sub: t.fullExamSub,
-                cta: t.fullExamCta,
-              },
-            ].map(({ href, testid, hex, halo, icon, title, tag, sub, cta }) => (
-              <Link key={href} href={href} className="block h-full" data-testid={testid}>
-                <div
-                  className="relative h-full rounded-2xl bg-black p-6 overflow-hidden hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 cursor-pointer group"
+            {/* HUD pills */}
+            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 16 }}>
+              {[
+                { icon: <Flame style={{ width: 12, height: 12, color: "#FFB7E5" }} />, label: t.examSimulation, hex: "#FFB7E5" },
+                { icon: <span style={{ width: 6, height: 6, borderRadius: 999, background: "#9FF5E8", boxShadow: "0 0 6px #9FF5E8", display: "inline-block" }} />, label: t.capsLabel, hex: "#9FF5E8" },
+                { icon: <AlertCircle style={{ width: 12, height: 12, color: "#FFE29A" }} />, label: t.timedScored, hex: "#FFE29A" },
+              ].map((p) => (
+                <span
+                  key={p.label}
                   style={{
-                    border: `1.5px solid ${hex}`,
-                    boxShadow: `0 0 0 1px ${halo}0.22), 0 0 22px ${halo}0.32), inset 0 0 18px rgba(0,0,0,0.55)`,
+                    display: "inline-flex", alignItems: "center", gap: 6,
+                    borderRadius: 999, padding: "5px 12px",
+                    border: `1px solid ${p.hex}`,
+                    fontSize: 10, fontWeight: 900, letterSpacing: "2px", textTransform: "uppercase",
+                    color: p.hex,
                   }}
                 >
-                  <span aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: hex, boxShadow: `0 0 10px ${halo}0.8)` }} />
-                  <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: hex }} />
-                  <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2" style={{ borderColor: hex }} />
-                  <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2" style={{ borderColor: hex }} />
-                  <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: hex }} />
-                  <div className="relative flex items-start gap-4">
-                    <div
-                      className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center flex-shrink-0"
-                      style={{ border: `1.5px solid ${hex}`, boxShadow: `0 0 14px ${halo}0.45), inset 0 0 10px ${halo}0.25)` }}
-                    >
-                      {icon}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <h3 className="text-lg font-black text-white leading-tight" style={{ textShadow: `0 0 10px ${halo}0.4)` }}>{title}</h3>
-                        <span
-                          className="text-[9px] font-black uppercase tracking-[0.18em] px-2 py-0.5 rounded-full bg-black"
-                          style={{ color: hex, border: `1px solid ${hex}`, boxShadow: `0 0 8px ${halo}0.4)` }}
-                        >
-                          {tag}
-                        </span>
-                      </div>
-                      <p className="text-white text-sm leading-relaxed">{sub}</p>
-                      <div
-                        className="mt-3 inline-flex items-center font-black text-xs uppercase tracking-[0.14em] group-hover:translate-x-1 transition-all"
-                        style={{ color: hex, textShadow: `0 0 8px ${halo}0.5)` }}
-                      >
-                        {cta} <ChevronRight className="w-4 h-4 ml-1" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </section>
+                  {p.icon}
+                  {p.label}
+                </span>
+              ))}
+            </div>
 
-          {/* ═══ Subjects Grid ═══ */}
-          {subjectsLoading ? (
-            <div className="grid gap-5 lg:grid-cols-2">
-              {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} className="h-80 rounded-2xl bg-white/5" />
-              ))}
-            </div>
-          ) : learnerSubjects.length > 0 ? (
-            <div className="grid gap-5 lg:grid-cols-2">
-              {learnerSubjects.map((subject, idx) => (
-                <SubjectExamCard key={subject.id} subject={subject} isAf={isAf} t={t} colorIndex={idx} />
-              ))}
-            </div>
-          ) : (
             <div
-              className="relative rounded-2xl bg-black p-12 text-center overflow-hidden"
+              role="heading"
+              aria-level={1}
+              className="btx-hero-head"
+              data-testid="text-crunch-time-title"
               style={{
-                border: "1.5px solid #FFC48F",
-                boxShadow: "0 0 0 1px rgba(255,196,143,0.28), 0 0 26px rgba(255,196,143,0.35), inset 0 0 18px rgba(0,0,0,0.55)",
+                fontFamily: "'Poppins',sans-serif",
+                fontSize: 52, fontWeight: 900, lineHeight: 1.05, letterSpacing: "-2px",
+                background: HEADLINE_GRADIENT,
+                WebkitBackgroundClip: "text", backgroundClip: "text",
+                color: "transparent", WebkitTextFillColor: "transparent",
               }}
             >
-              <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: "#FFC48F" }} />
-              <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2" style={{ borderColor: "#FFC48F" }} />
-              <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2" style={{ borderColor: "#FFC48F" }} />
-              <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: "#FFC48F" }} />
-              <GraduationCap className="w-16 h-16 mx-auto mb-4" style={{ color: "#FFC48F", filter: "drop-shadow(0 0 10px rgba(255,196,143,0.6))" }} />
-              <p className="text-xl font-black text-white">
-                {t.noSubjectsMsg}
-              </p>
-              <p className="text-sm text-white mt-2 font-medium">
-                {t.noSubjectsDesc}
-              </p>
-              <Link href="/onboarding">
-                <button
-                  className="inline-flex items-center gap-2 mt-5 px-6 py-2.5 rounded-xl bg-black font-black uppercase tracking-[0.16em] text-sm"
-                  style={{
-                    color: "#FFC48F",
-                    border: "1.5px solid #FFC48F",
-                    boxShadow: "0 0 14px rgba(255,196,143,0.5)",
-                  }}
-                  data-testid="button-setup-profile"
-                >
-                  {t.setupProfileBtn}
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </Link>
+              {t.pageTitle}
             </div>
-          )}
-        </main>
+            <div style={{ marginTop: 12, fontSize: 16, lineHeight: 1.65, color: "#fff", maxWidth: 620, marginLeft: "auto", marginRight: "auto" }}>
+              {t.examSimSubtitle}
+            </div>
+
+            {/* Stat ticker */}
+            <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap", marginTop: 26 }}>
+              {[
+                { k: t.subjectsLabel, v: learnerSubjects.length, hex: "#9FF5E8", glow: "rgba(159,245,232,.25)" },
+                { k: t.liveLabel, v: liveCount, hex: "#FFE29A", glow: "rgba(255,226,154,.25)" },
+                { k: t.papersLabel, v: totalPapers, hex: "#FFB7E5", glow: "rgba(255,183,229,.25)" },
+              ].map((s) => (
+                <div
+                  key={s.k}
+                  style={{
+                    background: "rgba(5,5,8,.6)",
+                    border: `1.5px solid ${s.hex}`,
+                    borderRadius: 20, padding: "16px 24px",
+                    textAlign: "center", minWidth: 104,
+                    boxShadow: `0 0 22px ${s.glow}`,
+                  }}
+                >
+                  <div style={{ fontSize: 26, fontWeight: 900, color: s.hex }}>{s.v}</div>
+                  <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "1.5px", color: "#fff", textTransform: "uppercase" }}>{s.k}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ── Quick Modes — Mini Mock + Full Exam ─────────────── */}
+        <div className="btx-grid2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 22 }} data-testid="section-exam-quick-modes">
+          {[
+            {
+              href: "/exam/mini-mock",
+              testid: "tile-mini-mock",
+              hex: "#9FF5E8",
+              glow: "rgba(159,245,232,.22)",
+              chipBg: "rgba(159,245,232,.14)",
+              icon: <Zap style={{ width: 26, height: 26, color: "#9FF5E8" }} />,
+              title: t.miniMockTitle,
+              tag: t.miniMockTag,
+              sub: t.miniMockSub,
+              cta: t.miniMockCta,
+            },
+            {
+              href: "/exam/full",
+              testid: "tile-full-exam",
+              hex: "#C5B3FF",
+              glow: "rgba(197,179,255,.22)",
+              chipBg: "rgba(197,179,255,.14)",
+              icon: <GraduationCap style={{ width: 26, height: 26, color: "#C5B3FF" }} />,
+              title: t.fullExamTitle,
+              tag: t.fullExamTag,
+              sub: t.fullExamSub,
+              cta: t.fullExamCta,
+            },
+          ].map(({ href, testid, hex, glow, chipBg, icon, title, tag, sub, cta }) => (
+            <Link key={href} href={href} style={{ display: "block", height: "100%" }} data-testid={testid}>
+              <div
+                className="btx-mode"
+                style={{
+                  "--c": hex, "--glow": glow,
+                  height: "100%",
+                  background: "linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015))",
+                  border: `1.5px solid ${hex}55`,
+                  borderRadius: 22, padding: 26, cursor: "pointer",
+                } as React.CSSProperties}
+              >
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 16 }}>
+                  <div
+                    style={{
+                      width: 54, height: 54, borderRadius: 16, flex: "none",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      background: chipBg, boxShadow: `0 0 22px ${glow}`,
+                    }}
+                  >
+                    {icon}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 6 }}>
+                      <div role="heading" aria-level={2} style={{ fontSize: 18, fontWeight: 800, color: "#fff" }}>{title}</div>
+                      <span
+                        style={{
+                          fontSize: 10, fontWeight: 900, letterSpacing: "1.5px", textTransform: "uppercase",
+                          color: hex, border: `1px solid ${hex}`, borderRadius: 999, padding: "3px 10px",
+                        }}
+                      >
+                        {tag}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: 14, lineHeight: 1.6, color: "#fff" }}>{sub}</div>
+                    <span
+                      className="btx-action"
+                      style={{
+                        display: "inline-flex", alignItems: "center", gap: 4, marginTop: 16,
+                        fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 13,
+                        color: "#050508", background: ACTION_GRADIENT,
+                        borderRadius: 10, padding: "11px 20px", whiteSpace: "nowrap",
+                        boxShadow: `0 0 16px ${glow}`,
+                      }}
+                    >
+                      {cta} <ChevronRight style={{ width: 15, height: 15 }} />
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        {/* ── Subjects grid ───────────────────────────────────── */}
+        {subjectsLoading ? (
+          <div className="btx-grid2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 22 }}>
+            {[1, 2, 3, 4].map((i) => (
+              <Skeleton key={i} className="h-80 rounded-2xl bg-white/5" />
+            ))}
+          </div>
+        ) : learnerSubjects.length > 0 ? (
+          <div className="btx-grid2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 22 }}>
+            {learnerSubjects.map((subject, idx) => (
+              <SubjectExamCard key={subject.id} subject={subject} isAf={isAf} t={t} colorIndex={idx} />
+            ))}
+          </div>
+        ) : (
+          <div
+            style={{
+              position: "relative",
+              background: "#0b0b12",
+              border: "1.5px solid rgba(255,226,154,.4)",
+              borderRadius: 22,
+              padding: "48px 32px",
+              textAlign: "center",
+              boxShadow: "0 0 26px rgba(255,226,154,.14)",
+            }}
+          >
+            <GraduationCap style={{ width: 58, height: 58, margin: "0 auto 14px", color: "#FFE29A", filter: "drop-shadow(0 0 10px rgba(255,226,154,.5))" }} />
+            <div role="heading" aria-level={2} style={{ fontSize: 22, fontWeight: 900, color: "#fff" }}>
+              {t.noSubjectsMsg}
+            </div>
+            <div style={{ fontSize: 14, color: "#fff", marginTop: 8, fontWeight: 500 }}>
+              {t.noSubjectsDesc}
+            </div>
+            <Link href="/onboarding">
+              <button
+                className="btx-action"
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 6, marginTop: 22,
+                  fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 14,
+                  color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
+                  animation: "bt-rainbow 5s linear infinite",
+                  border: "none", borderRadius: 10, padding: "14px 28px",
+                  cursor: "pointer", whiteSpace: "nowrap",
+                  boxShadow: "0 0 16px rgba(255,226,154,.28)",
+                }}
+                data-testid="button-setup-profile"
+              >
+                {t.setupProfileBtn}
+                <ChevronRight style={{ width: 15, height: 15 }} />
+              </button>
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );

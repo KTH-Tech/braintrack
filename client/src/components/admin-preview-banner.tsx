@@ -31,19 +31,19 @@ export function AdminPreviewBanner() {
     <div
       className="fixed top-0 left-0 right-0 z-[100] bg-black px-4 py-2 flex items-center justify-between gap-3"
       style={{
-        borderBottom: "1px solid #FFF29E",
-        boxShadow: "0 0 16px rgba(255,242,158,0.35)",
+        borderBottom: "1px solid #FFE29A",
+        boxShadow: "0 0 16px rgba(255,226,154,0.35)",
       }}
       data-testid="admin-preview-banner"
     >
       <div className="flex items-center gap-2 min-w-0">
         <Eye
           className="w-4 h-4 shrink-0"
-          style={{ color: "#FFF29E", filter: "drop-shadow(0 0 6px #FFF29E)" }}
+          style={{ color: "#FFE29A", filter: "drop-shadow(0 0 6px #FFE29A)" }}
         />
         <span
           className="text-[10px] sm:text-xs font-black uppercase tracking-[0.18em] truncate"
-          style={{ color: "#FFF29E" }}
+          style={{ color: "#FFE29A" }}
         >
           {isAf
             ? "Voorskou-modus · Jy sien die leerderervaring"
@@ -55,9 +55,9 @@ export function AdminPreviewBanner() {
         disabled={exitMutation.isPending}
         className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black text-[10px] font-black uppercase tracking-[0.18em] disabled:opacity-60"
         style={{
-          border: "1px solid #FFF29E",
-          color: "#FFF29E",
-          boxShadow: "0 0 10px rgba(255,242,158,0.3)",
+          border: "1px solid #FFE29A",
+          color: "#FFE29A",
+          boxShadow: "0 0 10px rgba(255,226,154,0.3)",
         }}
         data-testid="button-exit-preview"
       >

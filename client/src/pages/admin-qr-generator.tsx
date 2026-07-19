@@ -9,7 +9,7 @@ import { GraffitiSplats } from "@/components/graffiti-splats";
 import { useLanguage } from "@/lib/language-context";
 import { useSEO } from "@/hooks/use-seo";
 
-const PASTEL = ["#6FA8FF", "#7FEFFF", "#93FFB8", "#FFF29E", "#FFC48F", "#FF9FE5", "#C6A4FF"];
+const PASTEL = ["#9FD8FF", "#6EE7F9", "#94F7C5", "#FFE29A", "#FFE29A", "#FFB7E5", "#C5B3FF"];
 
 // Handy one-tap presets for the links the team shares most.
 const PRESETS = [
@@ -132,12 +132,12 @@ export default function AdminQrGeneratorPage() {
                     data-testid="input-qr-value"
                     placeholder="https://app.braintrack.co.za"
                     className="flex-1 rounded-xl px-3 py-2.5 text-sm text-white outline-none"
-                    style={{ background: "#0a0b12", border: "1.5px solid rgba(127,239,255,0.4)" }}
+                    style={{ background: "#0a0b12", border: "1.5px solid rgba(110,231,249,0.4)" }}
                   />
                   <button
                     onClick={copyLink}
                     className={btnSecondary}
-                    style={{ background: "#000", border: "1.5px solid #7FEFFF", color: "#7FEFFF" }}
+                    style={{ background: "#000", border: "1.5px solid #6EE7F9", color: "#6EE7F9" }}
                     data-testid="button-qr-copy"
                     aria-label={isAf ? "Kopieer skakel" : "Copy link"}
                   >
@@ -146,7 +146,7 @@ export default function AdminQrGeneratorPage() {
                   </button>
                 </div>
                 {error && (
-                  <p className="mt-2 text-xs font-bold" style={{ color: "#FF9FE5" }} data-testid="text-qr-error">
+                  <p className="mt-2 text-xs font-bold" style={{ color: "#FFB7E5" }} data-testid="text-qr-error">
                     {error}
                   </p>
                 )}
@@ -212,8 +212,8 @@ export default function AdminQrGeneratorPage() {
                       className={btnSecondary}
                       style={
                         size === s
-                          ? { background: "#7FEFFF", color: "#0a0a0a", border: "1.5px solid #7FEFFF" }
-                          : { background: "#000", color: "#7FEFFF", border: "1.5px solid #7FEFFF" }
+                          ? { background: "#6EE7F9", color: "#0a0a0a", border: "1.5px solid #6EE7F9" }
+                          : { background: "#000", color: "#6EE7F9", border: "1.5px solid #6EE7F9" }
                       }
                     >
                       {s}px
@@ -226,7 +226,7 @@ export default function AdminQrGeneratorPage() {
                 onClick={download}
                 disabled={!!error}
                 className={btnPrimary}
-                style={{ background: "#93FFB8", color: "#0a0a0a" }}
+                style={{ background: "#94F7C5", color: "#0a0a0a" }}
                 data-testid="button-qr-download"
               >
                 <Download className="w-4 h-4" />
@@ -238,7 +238,7 @@ export default function AdminQrGeneratorPage() {
             <div className="flex flex-col items-center gap-3">
               <div
                 className="rounded-2xl p-4"
-                style={{ background: "#0a0a0a", border: "1.5px solid rgba(127,239,255,0.35)" }}
+                style={{ background: "#0a0a0a", border: "1.5px solid rgba(110,231,249,0.35)" }}
               >
                 <canvas
                   ref={canvasRef}

@@ -314,7 +314,7 @@ export default function StorePage() {
       <header className="sticky top-0 z-50 border-b border-white/10 bg-background/80 ">
         <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-14 gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#7FEFFF] via-[#6FA8FF] to-[#C6A4FF] flex items-center justify-center shadow-lg shadow-[#7FEFFF]/30">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#6EE7F9] via-[#9FD8FF] to-[#C5B3FF] flex items-center justify-center shadow-lg shadow-[#6EE7F9]/30">
               <ShoppingBag className="w-4 h-4 text-white" />
             </div>
             <span className="font-bold text-sm text-white">
@@ -323,7 +323,7 @@ export default function StorePage() {
           </div>
           <div className="flex items-center gap-2">
             <div
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#FFF29E]/10 border border-[#FFF29E]/40 text-xs font-bold text-[#FFF29E]"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#FFE29A]/10 border border-[#FFE29A]/40 text-xs font-bold text-[#FFE29A]"
               data-testid="coin-balance-header"
             >
               <Coins className="w-3.5 h-3.5" />
@@ -332,7 +332,7 @@ export default function StorePage() {
             <button
               onClick={toggleLanguage}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-black transition-colors text-sm font-bold hover:bg-white/5"
-              style={{ color: "#C6A4FF", border: "1.5px solid #C6A4FF" }}
+              style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
               data-testid="button-language-toggle"
             >
               <Globe className="h-3.5 w-3.5" />
@@ -340,14 +340,14 @@ export default function StorePage() {
             </button>
             <button
               className="w-9 h-9 flex items-center justify-center rounded-xl bg-black"
-              style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF" }}
+              style={{ color: "#6EE7F9", border: "1.5px solid #6EE7F9" }}
               onClick={() => navigate("/dashboard")} title={t.homeTitle} data-testid="button-home"
             >
               <Home className="h-4 w-4" />
             </button>
             <button
               className="w-9 h-9 flex items-center justify-center rounded-xl bg-black"
-              style={{ color: "#FF9FE5", border: "1.5px solid #FF9FE5" }}
+              style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}
               onClick={() => logout()} title={t.signOutTitle} data-testid="button-logout"
             >
               <LogOut className="h-4 w-4" />
@@ -375,8 +375,8 @@ export default function StorePage() {
                 className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-all"
                 style={
                   isActive
-                    ? { background: "#7FEFFF", color: "#0a0a0a" }
-                    : { background: "#000", color: "#7FEFFF", border: "1.5px solid #7FEFFF" }
+                    ? { background: "#6EE7F9", color: "#0a0a0a" }
+                    : { background: "#000", color: "#6EE7F9", border: "1.5px solid #6EE7F9" }
                 }
                 data-testid={`tab-${t.key}`}
               >
@@ -403,8 +403,8 @@ export default function StorePage() {
                   className="px-4 py-2 rounded-xl text-sm font-bold transition-colors"
                   style={
                     ownership === o.v
-                      ? { background: "#93FFB8", color: "#0a0a0a" }
-                      : { background: "#000", color: "#93FFB8", border: "1.5px solid #93FFB8" }
+                      ? { background: "#94F7C5", color: "#0a0a0a" }
+                      : { background: "#000", color: "#94F7C5", border: "1.5px solid #94F7C5" }
                   }
                   data-testid={`filter-ownership-${o.v}`}
                 >
@@ -424,8 +424,8 @@ export default function StorePage() {
                   className="px-4 py-2 rounded-xl text-sm font-bold transition-colors"
                   style={
                     sortBy === o.v
-                      ? { background: "#7FEFFF", color: "#0a0a0a" }
-                      : { background: "#000", color: "#7FEFFF", border: "1.5px solid #7FEFFF" }
+                      ? { background: "#6EE7F9", color: "#0a0a0a" }
+                      : { background: "#000", color: "#6EE7F9", border: "1.5px solid #6EE7F9" }
                   }
                   data-testid={`sort-${o.v}`}
                 >
@@ -500,7 +500,7 @@ export default function StorePage() {
           <Link href="/rewards">
             <button
               className="mt-2 px-4 py-2 rounded-xl bg-black text-sm font-bold transition-colors"
-              style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF" }}
+              style={{ color: "#6EE7F9", border: "1.5px solid #6EE7F9" }}
               data-testid="link-to-rewards"
             >
               {t.viewRewards}
@@ -616,12 +616,12 @@ function ItemCard({
 
         <div className="flex items-center justify-between gap-2">
           {requiresSub ? (
-            <Badge variant="outline" className="text-[10px] gap-1 border-[#C6A4FF]/40 text-[#C6A4FF]">
+            <Badge variant="outline" className="text-[10px] gap-1 border-[#C5B3FF]/40 text-[#C5B3FF]">
               <Crown className="w-3 h-3" />
               {t.premiumLabel}
             </Badge>
           ) : item.coinCost > 0 ? (
-            <Badge variant="outline" className="text-[10px] gap-1 border-[#FFF29E]/40 text-[#FFF29E]">
+            <Badge variant="outline" className="text-[10px] gap-1 border-[#FFE29A]/40 text-[#FFE29A]">
               <Coins className="w-3 h-3" />
               {item.coinCost}
             </Badge>
@@ -664,7 +664,7 @@ function PreviewSwatch({
   requiresSub: boolean;
   t: typeof T["en"] | typeof T["af"];
 }) {
-  const fallback = PRODUCT_GRADIENTS[item.key] ?? "from-[#7FEFFF] via-[#6FA8FF] to-[#C6A4FF]";
+  const fallback = PRODUCT_GRADIENTS[item.key] ?? "from-[#6EE7F9] via-[#9FD8FF] to-[#C5B3FF]";
 
   return (
     <div className="h-28 relative overflow-hidden">
@@ -694,7 +694,7 @@ function PreviewSwatch({
         </div>
       )}
       {requiresSub && !owned && (
-        <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/60 text-[10px] font-bold text-[#FFF29E]">
+        <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/60 text-[10px] font-bold text-[#FFE29A]">
           <Crown className="w-3 h-3" />
           {t.premiumLabel}
         </div>
@@ -715,7 +715,7 @@ function TierPill({ tier, isAf }: { tier: StoreItem["tier"]; isAf: boolean }) {
   const lbl = TIER_LABEL[tier];
   if (!lbl) return null;
   const cls =
-    tier === "premium" ? "border-[#C6A4FF]/40 text-[#C6A4FF]" :
+    tier === "premium" ? "border-[#C5B3FF]/40 text-[#C5B3FF]" :
     tier === "free"    ? "border-emerald-500/40 text-emerald-500" :
                          "border-white/15 text-white";
   return (
@@ -754,7 +754,7 @@ function ActionButton({
         <button
           type="button"
           className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold"
-          style={{ background: "#7FEFFF", color: "#0a0a0a" }}
+          style={{ background: "#6EE7F9", color: "#0a0a0a" }}
           onClick={() => onApply(item)}
           data-testid={`btn-apply-${item.key}`}
         >
@@ -776,7 +776,7 @@ function ActionButton({
       <button
         type="button"
         className="px-4 py-2 rounded-xl bg-black text-sm font-bold"
-        style={{ color: "#FFC48F", border: "1.5px solid #FFC48F" }}
+        style={{ color: "#FFE29A", border: "1.5px solid #FFE29A" }}
         onClick={onSubscribe}
         data-testid={`btn-subscribe-${item.key}`}
       >
@@ -789,7 +789,7 @@ function ActionButton({
     <button
       type="button"
       className="px-4 py-2 rounded-xl text-sm font-bold disabled:opacity-40"
-      style={{ background: "#93FFB8", color: "#0a0a0a" }}
+      style={{ background: "#94F7C5", color: "#0a0a0a" }}
       disabled={!affordable || isUnlocking}
       onClick={() => onUnlock(item)}
       data-testid={`btn-unlock-${item.key}`}

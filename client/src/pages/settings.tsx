@@ -32,7 +32,7 @@ import type { Subject, OnboardingResult } from "@shared/schema";
 import { SpraySmear } from "@/components/graffiti-splats";
 import brainLogo from "@/assets/brain-logo.png";
 
-type NeonHex = "#7FEFFF" | "#6FA8FF" | "#FFF29E" | "#FF9FE5" | "#C6A4FF";
+type NeonHex = "#6EE7F9" | "#9FD8FF" | "#FFE29A" | "#FFB7E5" | "#C5B3FF";
 function NeonCard({ color, icon: Icon, title, subtitle, children, testId }: {
   color: NeonHex;
   icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
@@ -539,22 +539,22 @@ export default function SettingsPage() {
         className="pointer-events-none fixed inset-0 z-0"
         style={{
           background:
-            "radial-gradient(ellipse 55% 45% at 12% 8%,  rgba(127,239,255,0.10) 0%, transparent 60%)," +
-            "radial-gradient(ellipse 55% 45% at 88% 6%,  rgba(198,164,255,0.10) 0%, transparent 60%)," +
-            "radial-gradient(ellipse 70% 55% at 50% 100%, rgba(255,242,158,0.08) 0%, transparent 65%)," +
+            "radial-gradient(ellipse 55% 45% at 12% 8%,  rgba(110,231,249,0.10) 0%, transparent 60%)," +
+            "radial-gradient(ellipse 55% 45% at 88% 6%,  rgba(197,179,255,0.10) 0%, transparent 60%)," +
+            "radial-gradient(ellipse 70% 55% at 50% 100%, rgba(255,226,154,0.08) 0%, transparent 65%)," +
             "#000",
         }}
       />
       <div className="relative z-10">
         <header
           className="sticky top-0 z-50 bg-black/80"
-          style={{ borderBottom: "1px solid rgba(127,239,255,0.35)" }}
+          style={{ borderBottom: "1px solid rgba(110,231,249,0.35)" }}
         >
           <div className="max-w-4xl mx-auto px-4 sm:px-6">
             <div className="flex items-center justify-between h-14 gap-4">
               <div className="flex items-center gap-2">
-                <SlidersHorizontal className="w-4 h-4" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 4px #7FEFFF)" }} />
-                <span className="text-sm font-black uppercase tracking-[0.2em]" style={{ color: "#7FEFFF" }}>
+                <SlidersHorizontal className="w-4 h-4" style={{ color: "#6EE7F9", filter: "drop-shadow(0 0 4px #6EE7F9)" }} />
+                <span className="text-sm font-black uppercase tracking-[0.2em]" style={{ color: "#6EE7F9" }}>
                   {t.pageTitle}
                 </span>
               </div>
@@ -562,7 +562,7 @@ export default function SettingsPage() {
                 <button
                   onClick={toggleLanguage}
                   className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 bg-black text-sm font-bold"
-                  style={{ color: "#C6A4FF", border: "1.5px solid #C6A4FF" }}
+                  style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
                   data-testid="button-language-toggle"
                 >
                   <Globe className="h-3.5 w-3.5" />
@@ -572,8 +572,8 @@ export default function SettingsPage() {
                   <button
                     className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 bg-black font-bold text-sm"
                     style={{
-                      color: "#7FEFFF",
-                      border: "1.5px solid #7FEFFF",
+                      color: "#6EE7F9",
+                      border: "1.5px solid #6EE7F9",
                     }}
                     data-testid="button-dashboard"
                   >
@@ -591,9 +591,9 @@ export default function SettingsPage() {
           <section
             className="relative overflow-hidden rounded-3xl bg-black p-6 sm:p-8"
             style={{
-              border: "1.5px solid #7FEFFF",
+              border: "1.5px solid #6EE7F9",
               boxShadow:
-                "0 0 0 1px rgba(127,239,255,0.32), 0 0 34px rgba(127,239,255,0.4), inset 0 0 28px rgba(0,0,0,0.6)",
+                "0 0 0 1px rgba(110,231,249,0.32), 0 0 34px rgba(110,231,249,0.4), inset 0 0 28px rgba(0,0,0,0.6)",
             }}
           >
             <div
@@ -601,18 +601,18 @@ export default function SettingsPage() {
               className="absolute top-0 left-0 right-0 h-[3px]"
               style={{
                 background:
-                  "linear-gradient(90deg, #FFC48F, #FFC48F, #FFF29E, #FFF29E, #7FEFFF, #6FA8FF, #C6A4FF, #C6A4FF, #FF9FE5)",
+                  "linear-gradient(90deg, #FFE29A, #FFE29A, #FFE29A, #FFE29A, #6EE7F9, #9FD8FF, #C5B3FF, #C5B3FF, #FFB7E5)",
               }}
             />
             <div aria-hidden className="absolute -top-20 -right-20 w-60 h-60 rounded-full blur-3xl pointer-events-none"
-              style={{ background: "radial-gradient(circle, rgba(127,239,255,0.28), transparent 70%)" }} />
+              style={{ background: "radial-gradient(circle, rgba(110,231,249,0.28), transparent 70%)" }} />
             <div aria-hidden className="absolute -bottom-20 -left-20 w-60 h-60 rounded-full blur-3xl pointer-events-none"
-              style={{ background: "radial-gradient(circle, rgba(198,164,255,0.22), transparent 70%)" }} />
+              style={{ background: "radial-gradient(circle, rgba(197,179,255,0.22), transparent 70%)" }} />
 
-            <span aria-hidden className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2" style={{ borderColor: "#7FEFFF" }} />
-            <span aria-hidden className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2" style={{ borderColor: "#7FEFFF" }} />
-            <span aria-hidden className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2" style={{ borderColor: "#7FEFFF" }} />
-            <span aria-hidden className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2" style={{ borderColor: "#7FEFFF" }} />
+            <span aria-hidden className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2" style={{ borderColor: "#6EE7F9" }} />
+            <span aria-hidden className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2" style={{ borderColor: "#6EE7F9" }} />
+            <span aria-hidden className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2" style={{ borderColor: "#6EE7F9" }} />
+            <span aria-hidden className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2" style={{ borderColor: "#6EE7F9" }} />
 
             <div className="relative text-center space-y-4">
               <div className="relative mx-auto w-32 sm:w-40 aspect-square">
@@ -621,33 +621,33 @@ export default function SettingsPage() {
                   className="absolute inset-0 rounded-full blur-2xl"
                   style={{
                     background:
-                      "radial-gradient(circle, rgba(127,239,255,0.55) 0%, rgba(198,164,255,0.35) 45%, transparent 75%)",
+                      "radial-gradient(circle, rgba(110,231,249,0.55) 0%, rgba(197,179,255,0.35) 45%, transparent 75%)",
                   }}
                 />
                 <img
                   src={brainLogo}
                   alt="BrainTrack"
                   className="relative w-full h-full object-contain"
-                  style={{ filter: "drop-shadow(0 0 22px rgba(127,239,255,0.5)) drop-shadow(0 0 12px rgba(255,159,229,0.45))" }}
+                  style={{ filter: "drop-shadow(0 0 22px rgba(110,231,249,0.5)) drop-shadow(0 0 12px rgba(255,183,229,0.45))" }}
                   data-testid="img-brain-logo"
                 />
               </div>
               <div className="flex flex-wrap items-center justify-center gap-2">
                 <div
                   className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
-                  style={{ border: "1px solid #7FEFFF", boxShadow: "0 0 14px rgba(127,239,255,0.5)" }}
+                  style={{ border: "1px solid #6EE7F9", boxShadow: "0 0 14px rgba(110,231,249,0.5)" }}
                 >
-                  <SlidersHorizontal className="w-3 h-3" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 4px #7FEFFF)" }} />
-                  <span className="text-[10px] font-black uppercase tracking-[0.24em]" style={{ color: "#7FEFFF" }}>
+                  <SlidersHorizontal className="w-3 h-3" style={{ color: "#6EE7F9", filter: "drop-shadow(0 0 4px #6EE7F9)" }} />
+                  <span className="text-[10px] font-black uppercase tracking-[0.24em]" style={{ color: "#6EE7F9" }}>
                     {t.yourAccount}
                   </span>
                 </div>
                 <div
                   className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-black"
-                  style={{ border: "1px solid rgba(198,164,255,0.65)", boxShadow: "0 0 10px rgba(198,164,255,0.4)" }}
+                  style={{ border: "1px solid rgba(197,179,255,0.65)", boxShadow: "0 0 10px rgba(197,179,255,0.4)" }}
                 >
-                  <Shield className="w-3 h-3" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 4px #C6A4FF)" }} />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#C6A4FF" }}>
+                  <Shield className="w-3 h-3" style={{ color: "#C5B3FF", filter: "drop-shadow(0 0 4px #C5B3FF)" }} />
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#C5B3FF" }}>
                     {t.secure}
                   </span>
                 </div>
@@ -657,11 +657,11 @@ export default function SettingsPage() {
                 className="text-4xl sm:text-5xl font-black tracking-tight leading-[0.98]"
                 style={{
                   background:
-                    "linear-gradient(90deg, #FFC48F, #FFF29E, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)",
+                    "linear-gradient(90deg, #FFE29A, #FFE29A, #6EE7F9, #9FD8FF, #C5B3FF, #FFB7E5)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
-                  filter: "drop-shadow(0 0 22px rgba(127,239,255,0.32))",
+                  filter: "drop-shadow(0 0 22px rgba(110,231,249,0.32))",
                 }}
                 data-testid="text-settings-title"
               >
@@ -675,7 +675,7 @@ export default function SettingsPage() {
 
         <div className="space-y-6">
           <NeonCard
-            color="#7FEFFF"
+            color="#6EE7F9"
             icon={Phone}
             title={t.phoneNumber}
             subtitle={user?.role === "learner" ? t.phoneLearnerSub : t.phoneParentSub}
@@ -683,7 +683,7 @@ export default function SettingsPage() {
             <div className="space-y-4">
               <div
                 className="p-3 rounded-xl bg-black"
-                style={{ border: "1px solid rgba(127,239,255,0.35)" }}
+                style={{ border: "1px solid rgba(110,231,249,0.35)" }}
               >
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white">
                   {t.currentNumber}
@@ -696,12 +696,12 @@ export default function SettingsPage() {
               {user?.role === "learner" && (
                 <div
                   className="flex items-start gap-3 p-3 rounded-xl bg-black"
-                  style={{ border: "1px solid rgba(198,164,255,0.45)", boxShadow: "0 0 12px rgba(198,164,255,0.18)" }}
+                  style={{ border: "1px solid rgba(197,179,255,0.45)", boxShadow: "0 0 12px rgba(197,179,255,0.18)" }}
                   data-testid="phone-parent-lock"
                 >
-                  <Shield className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#C6A4FF", filter: "drop-shadow(0 0 4px rgba(198,164,255,0.7))" }} />
+                  <Shield className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#C5B3FF", filter: "drop-shadow(0 0 4px rgba(197,179,255,0.7))" }} />
                   <div className="text-sm">
-                    <p className="font-black uppercase tracking-[0.16em] text-[11px]" style={{ color: "#C6A4FF" }}>
+                    <p className="font-black uppercase tracking-[0.16em] text-[11px]" style={{ color: "#C5B3FF" }}>
                       {t.managedByParent}
                     </p>
                     <p className="text-white mt-0.5 leading-snug">
@@ -725,7 +725,7 @@ export default function SettingsPage() {
                       inputMode="tel"
                       autoComplete="tel"
                       maxLength={17}
-                      className="bg-black text-white placeholder:text-white border-[#7FEFFF]/40 focus-visible:ring-[#7FEFFF]/50"
+                      className="bg-black text-white placeholder:text-white border-[#6EE7F9]/40 focus-visible:ring-[#6EE7F9]/50"
                       data-testid="input-new-phone"
                     />
                     <p className="text-[11px] text-white">
@@ -735,11 +735,11 @@ export default function SettingsPage() {
 
                   <div
                     className="flex items-start gap-3 p-3 rounded-xl bg-black"
-                    style={{ border: "1px solid rgba(255,242,158,0.45)", boxShadow: "0 0 12px rgba(255,242,158,0.18)" }}
+                    style={{ border: "1px solid rgba(255,226,154,0.45)", boxShadow: "0 0 12px rgba(255,226,154,0.18)" }}
                   >
-                    <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 4px rgba(255,242,158,0.7))" }} />
+                    <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px rgba(255,226,154,0.7))" }} />
                     <div className="text-sm">
-                      <p className="font-black uppercase tracking-[0.16em] text-[11px]" style={{ color: "#FFF29E" }}>
+                      <p className="font-black uppercase tracking-[0.16em] text-[11px]" style={{ color: "#FFE29A" }}>
                         {t.verificationRequired}
                       </p>
                       <p className="text-white mt-0.5 leading-snug">
@@ -753,7 +753,7 @@ export default function SettingsPage() {
                     disabled={!newPhone || requestOtpMutation.isPending}
                     className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm disabled:opacity-40"
                     style={{
-                      background: "#7FEFFF",
+                      background: "#6EE7F9",
                       color: "#0a0a0a",
                     }}
                     data-testid="button-request-otp"
@@ -777,12 +777,12 @@ export default function SettingsPage() {
                 <div className="space-y-4">
                   <div
                     className="flex items-center gap-2 p-3 rounded-xl bg-black"
-                    style={{ border: "1px solid rgba(127,239,255,0.45)", boxShadow: "0 0 12px rgba(127,239,255,0.22)" }}
+                    style={{ border: "1px solid rgba(110,231,249,0.45)", boxShadow: "0 0 12px rgba(110,231,249,0.22)" }}
                   >
-                    <CheckCircle className="w-5 h-5" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 4px rgba(127,239,255,0.7))" }} />
+                    <CheckCircle className="w-5 h-5" style={{ color: "#6EE7F9", filter: "drop-shadow(0 0 4px rgba(110,231,249,0.7))" }} />
                     <p className="text-sm text-white">
                       {t.codeSentTo}{" "}
-                      <strong style={{ color: "#7FEFFF" }}>{pendingPhone}</strong>
+                      <strong style={{ color: "#6EE7F9" }}>{pendingPhone}</strong>
                     </p>
                   </div>
 
@@ -799,7 +799,7 @@ export default function SettingsPage() {
                         if (verifyError) setVerifyError("");
                       }}
                       maxLength={6}
-                      className={`text-center text-2xl tracking-[0.4em] bg-black text-white placeholder:text-white font-black focus-visible:ring-[#7FEFFF]/50 ${verifyError ? "border-red-500/70" : "border-[#7FEFFF]/50"}`}
+                      className={`text-center text-2xl tracking-[0.4em] bg-black text-white placeholder:text-white font-black focus-visible:ring-[#6EE7F9]/50 ${verifyError ? "border-red-500/70" : "border-[#6EE7F9]/50"}`}
                       data-testid="input-otp-code"
                     />
                     {verifyError && (
@@ -816,7 +816,7 @@ export default function SettingsPage() {
                         setOtpCode("");
                       }}
                       className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-black font-bold text-sm"
-                      style={{ color: "#C6A4FF", border: "1.5px solid #C6A4FF" }}
+                      style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
                       data-testid="button-cancel-verify"
                     >
                       {t.cancel}
@@ -826,7 +826,7 @@ export default function SettingsPage() {
                       disabled={otpCode.length !== 6 || verifyOtpMutation.isPending}
                       className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm disabled:opacity-40"
                       style={{
-                        background: "#7FEFFF",
+                        background: "#6EE7F9",
                         color: "#0a0a0a",
                       }}
                       data-testid="button-verify-otp"
@@ -849,7 +849,7 @@ export default function SettingsPage() {
                     onClick={() => requestOtpMutation.mutate(pendingPhone)}
                     disabled={requestOtpMutation.isPending}
                     className="w-full inline-flex items-center justify-center px-4 py-2 rounded-xl bg-black font-bold text-sm disabled:opacity-40"
-                    style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF" }}
+                    style={{ color: "#6EE7F9", border: "1.5px solid #6EE7F9" }}
                     data-testid="button-resend-otp"
                   >
                     {t.resendCode}
@@ -860,7 +860,7 @@ export default function SettingsPage() {
           </NeonCard>
 
           <NeonCard
-            color="#6FA8FF"
+            color="#9FD8FF"
             icon={BookOpen}
             title={t.yourSubjects}
             subtitle={t.yourSubjectsSubtitle}
@@ -872,7 +872,7 @@ export default function SettingsPage() {
                   <div className="space-y-3">
                     {(subjects || []).length === 0 ? (
                       <div className="text-center py-6">
-                        <BookOpen className="w-8 h-8 mx-auto mb-2" style={{ color: "#6FA8FF" }} />
+                        <BookOpen className="w-8 h-8 mx-auto mb-2" style={{ color: "#9FD8FF" }} />
                         <p className="text-sm text-white">
                           {t.loadingSubjects}
                         </p>
@@ -888,16 +888,16 @@ export default function SettingsPage() {
                               onClick={() => toggleSubject(subject.id)}
                               className="flex items-center gap-3 p-3 rounded-xl bg-black text-left transition-all"
                               style={{
-                                border: active ? "1.5px solid #6FA8FF" : "1px solid rgba(255,255,255,0.12)",
+                                border: active ? "1.5px solid #9FD8FF" : "1px solid rgba(255,255,255,0.12)",
                               }}
                               data-testid={`subject-chip-${subject.id}`}
                             >
                               <div
                                 className="w-7 h-7 rounded-lg bg-black flex items-center justify-center shrink-0"
-                                style={{ border: active ? "1.5px solid #6FA8FF" : "1px solid rgba(255,255,255,0.18)" }}
+                                style={{ border: active ? "1.5px solid #9FD8FF" : "1px solid rgba(255,255,255,0.18)" }}
                               >
                                 {active ? (
-                                  <Check className="w-3.5 h-3.5" style={{ color: "#6FA8FF" }} />
+                                  <Check className="w-3.5 h-3.5" style={{ color: "#9FD8FF" }} />
                                 ) : (
                                   <span className="text-[11px] font-black text-white">
                                     {(isAf ? subject.nameAfrikaans : subject.name).charAt(0)}
@@ -928,7 +928,7 @@ export default function SettingsPage() {
                         disabled={!canSave}
                         className="px-5 py-2.5 rounded-xl text-sm font-bold normal-case tracking-normal inline-flex items-center justify-center gap-2 disabled:opacity-40"
                         style={{
-                          background: "#7FEFFF",
+                          background: "#6EE7F9",
                           color: "#0a0a0a",
                         }}
                         data-testid="button-save-subjects"
@@ -950,7 +950,7 @@ export default function SettingsPage() {
 
           {/* Preliminary Exam Dates — Task #359 */}
           <NeonCard
-            color="#7FEFFF"
+            color="#6EE7F9"
             icon={CalendarDays}
             title={t.prelimDates}
             subtitle={t.prelimDatesSubtitle}
@@ -964,7 +964,7 @@ export default function SettingsPage() {
               if (selectedSubjectsList.length === 0) {
                 return (
                   <div className="text-center py-6">
-                    <CalendarDays className="w-8 h-8 mx-auto mb-2" style={{ color: "#7FEFFF" }} />
+                    <CalendarDays className="w-8 h-8 mx-auto mb-2" style={{ color: "#6EE7F9" }} />
                     <p className="text-sm text-white">
                       {t.selectSubjectsFirst}
                     </p>
@@ -979,7 +979,7 @@ export default function SettingsPage() {
                   {hasSchoolPushed && (
                     <div
                       className="rounded-xl bg-black px-3 py-2 text-[11px] text-white"
-                      style={{ border: "1px solid rgba(127,239,255,0.30)" }}
+                      style={{ border: "1px solid rgba(110,231,249,0.30)" }}
                     >
                       {t.schoolPushedNotice}
                     </div>
@@ -994,7 +994,7 @@ export default function SettingsPage() {
                         <div
                           key={subject.id}
                           className="rounded-xl bg-black p-3"
-                          style={{ border: "1px solid rgba(127,239,255,0.20)" }}
+                          style={{ border: "1px solid rgba(110,231,249,0.20)" }}
                           data-testid={`prelim-row-${subject.id}`}
                         >
                           <p className="text-sm font-bold text-white mb-2">
@@ -1044,7 +1044,7 @@ export default function SettingsPage() {
                       disabled={!prelimDirty || updatePrelimsMutation.isPending}
                       className="px-5 py-2.5 rounded-xl text-sm font-bold normal-case tracking-normal inline-flex items-center justify-center gap-2 disabled:opacity-40"
                       style={{
-                        background: "#7FEFFF",
+                        background: "#6EE7F9",
                         color: "#0a0a0a",
                       }}
                       data-testid="button-save-prelims"
@@ -1067,7 +1067,7 @@ export default function SettingsPage() {
           {/* Referral Link Card — learner only */}
           {user?.role === "learner" && (
             <NeonCard
-              color="#FF9FE5"
+              color="#FFB7E5"
               icon={Gift}
               title={t.referAFriend}
               subtitle={t.referAFriendSubtitle}
@@ -1077,21 +1077,21 @@ export default function SettingsPage() {
               <div
                 className="relative rounded-2xl bg-black px-4 py-5 text-center overflow-hidden"
                 style={{
-                  border: "1.5px solid #FF9FE5",
-                  boxShadow: "0 0 0 1px rgba(255,159,229,0.25), 0 0 22px rgba(255,159,229,0.35), inset 0 0 14px rgba(0,0,0,0.55)",
+                  border: "1.5px solid #FFB7E5",
+                  boxShadow: "0 0 0 1px rgba(255,183,229,0.25), 0 0 22px rgba(255,183,229,0.35), inset 0 0 14px rgba(0,0,0,0.55)",
                 }}
               >
-                <span aria-hidden className="absolute top-1 left-1 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: "#FF9FE5" }} />
-                <span aria-hidden className="absolute top-1 right-1 w-2.5 h-2.5 border-t-2 border-r-2" style={{ borderColor: "#FF9FE5" }} />
-                <span aria-hidden className="absolute bottom-1 left-1 w-2.5 h-2.5 border-b-2 border-l-2" style={{ borderColor: "#FF9FE5" }} />
-                <span aria-hidden className="absolute bottom-1 right-1 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: "#FF9FE5" }} />
+                <span aria-hidden className="absolute top-1 left-1 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: "#FFB7E5" }} />
+                <span aria-hidden className="absolute top-1 right-1 w-2.5 h-2.5 border-t-2 border-r-2" style={{ borderColor: "#FFB7E5" }} />
+                <span aria-hidden className="absolute bottom-1 left-1 w-2.5 h-2.5 border-b-2 border-l-2" style={{ borderColor: "#FFB7E5" }} />
+                <span aria-hidden className="absolute bottom-1 right-1 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: "#FFB7E5" }} />
 
                 <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white">
                   {t.yourReferralCode}
                 </p>
                 <p
                   className="mt-1.5 font-mono font-black text-2xl sm:text-3xl tracking-[0.18em]"
-                  style={{ color: "#FF9FE5", textShadow: "0 0 12px rgba(255,159,229,0.75)" }}
+                  style={{ color: "#FFB7E5", textShadow: "0 0 12px rgba(255,183,229,0.75)" }}
                   data-testid="text-referral-code"
                 >
                   {referral?.code ?? "········"}
@@ -1101,7 +1101,7 @@ export default function SettingsPage() {
               {/* Full link row */}
               <div
                 className="rounded-xl bg-black px-3 py-2.5"
-                style={{ border: "1px solid rgba(255,159,229,0.3)" }}
+                style={{ border: "1px solid rgba(255,183,229,0.3)" }}
               >
                 <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white mb-1">
                   {t.yourReferralLink}
@@ -1121,8 +1121,8 @@ export default function SettingsPage() {
                 disabled={!referral}
                 className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-black font-bold text-sm disabled:opacity-40"
                 style={{
-                  color: "#FF9FE5",
-                  border: "1.5px solid #FF9FE5",
+                  color: "#FFB7E5",
+                  border: "1.5px solid #FFB7E5",
                 }}
                 data-testid="button-copy-referral"
               >
@@ -1132,13 +1132,13 @@ export default function SettingsPage() {
               </button>
 
               <div className="flex items-center gap-3">
-                <div className="flex-1 h-2 rounded-full bg-black overflow-hidden" style={{ border: "1px solid rgba(255,159,229,0.3)" }}>
+                <div className="flex-1 h-2 rounded-full bg-black overflow-hidden" style={{ border: "1px solid rgba(255,183,229,0.3)" }}>
                   <div
                     className="h-full rounded-full"
                     style={{
                       width: `${((referral?.thisMonthCount ?? 0) / (referral?.maxPerMonth ?? 2)) * 100}%`,
-                      background: "#FF9FE5",
-                      boxShadow: "0 0 10px rgba(255,159,229,0.6)",
+                      background: "#FFB7E5",
+                      boxShadow: "0 0 10px rgba(255,183,229,0.6)",
                     }}
                   />
                 </div>
@@ -1148,13 +1148,13 @@ export default function SettingsPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 rounded-xl bg-black text-center" style={{ border: "1px solid rgba(255,159,229,0.3)" }}>
-                  <Users className="w-5 h-5 mx-auto mb-1" style={{ color: "#FF9FE5" }} />
+                <div className="p-3 rounded-xl bg-black text-center" style={{ border: "1px solid rgba(255,183,229,0.3)" }}>
+                  <Users className="w-5 h-5 mx-auto mb-1" style={{ color: "#FFB7E5" }} />
                   <p className="text-lg font-bold text-white">{referral?.thisMonthCount ?? 0}</p>
                   <p className="text-[10px] text-white">{t.thisMonth}</p>
                 </div>
-                <div className="p-3 rounded-xl bg-black text-center" style={{ border: "1px solid rgba(255,242,158,0.3)" }}>
-                  <Gift className="w-5 h-5 mx-auto mb-1" style={{ color: "#FFF29E" }} />
+                <div className="p-3 rounded-xl bg-black text-center" style={{ border: "1px solid rgba(255,226,154,0.3)" }}>
+                  <Gift className="w-5 h-5 mx-auto mb-1" style={{ color: "#FFE29A" }} />
                   <p className="text-lg font-bold text-white">{(referral?.maxPerMonth ?? 2) - (referral?.thisMonthCount ?? 0)}</p>
                   <p className="text-[10px] text-white">{t.slotsLeft}</p>
                 </div>
@@ -1170,7 +1170,7 @@ export default function SettingsPage() {
           )}
 
           <NeonCard
-            color="#FFF29E"
+            color="#FFE29A"
             icon={Dumbbell}
             title={t.sportActivities}
             subtitle={t.sportActivitiesSubtitle}
@@ -1187,7 +1187,7 @@ export default function SettingsPage() {
                     setNewActivity("");
                   }
                 }}
-                className="bg-black border-[#FFF29E]/40 text-white placeholder:text-white focus-visible:ring-[#FFF29E]/50"
+                className="bg-black border-[#FFE29A]/40 text-white placeholder:text-white focus-visible:ring-[#FFE29A]/50"
                 data-testid="input-new-activity"
               />
               <button
@@ -1199,7 +1199,7 @@ export default function SettingsPage() {
                 }}
                 disabled={!newActivity.trim()}
                 className="shrink-0 w-9 h-9 rounded-xl bg-black flex items-center justify-center disabled:opacity-50"
-                style={{ color: "#FFF29E", border: "1.5px solid #FFF29E" }}
+                style={{ color: "#FFE29A", border: "1.5px solid #FFE29A" }}
                 data-testid="button-add-activity"
               >
                 <Plus className="w-4 h-4" />
@@ -1212,10 +1212,10 @@ export default function SettingsPage() {
                   <span
                     key={idx}
                     className="flex items-center gap-1 py-1.5 px-3 text-sm rounded-full bg-black text-white"
-                    style={{ border: "1px solid rgba(255,242,158,0.5)" }}
+                    style={{ border: "1px solid rgba(255,226,154,0.5)" }}
                     data-testid={`activity-badge-${idx}`}
                   >
-                    <Dumbbell className="w-3 h-3" style={{ color: "#FFF29E" }} />
+                    <Dumbbell className="w-3 h-3" style={{ color: "#FFE29A" }} />
                     {activity}
                     <button
                       onClick={() => setActivities(activities.filter((_, i) => i !== idx))}
@@ -1231,7 +1231,7 @@ export default function SettingsPage() {
 
             {activities.length === 0 && (
               <div className="text-center py-4 text-white">
-                <Dumbbell className="w-8 h-8 mx-auto mb-2" style={{ color: "#FFF29E" }} />
+                <Dumbbell className="w-8 h-8 mx-auto mb-2" style={{ color: "#FFE29A" }} />
                 <p className="text-sm">{t.noActivities}</p>
               </div>
             )}
@@ -1242,7 +1242,7 @@ export default function SettingsPage() {
               }}
               disabled={activities.length === 0}
               className="px-5 py-2.5 rounded-xl font-bold text-sm inline-flex items-center justify-center gap-2 disabled:opacity-40"
-              style={{ background: "#7FEFFF", color: "#0a0a0a" }}
+              style={{ background: "#6EE7F9", color: "#0a0a0a" }}
               data-testid="button-save-activities"
             >
               <Save className="w-4 h-4" />

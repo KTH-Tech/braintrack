@@ -405,9 +405,9 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
       <div className="flex flex-col items-center justify-center py-12 space-y-6">
         <div
           className="w-20 h-20 rounded-2xl bg-black flex items-center justify-center"
-          style={{ border: "1.5px solid #7FEFFF", boxShadow: "0 0 0 1px rgba(127,239,255,0.25), 0 0 28px rgba(127,239,255,0.55), inset 0 0 18px rgba(0,0,0,0.6)" }}
+          style={{ border: "1.5px solid #6EE7F9", boxShadow: "0 0 0 1px rgba(110,231,249,0.25), 0 0 28px rgba(110,231,249,0.55), inset 0 0 18px rgba(0,0,0,0.6)" }}
         >
-          <Trophy className="w-10 h-10" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 6px #7FEFFF)" }} />
+          <Trophy className="w-10 h-10" style={{ color: "#6EE7F9", filter: "drop-shadow(0 0 6px #6EE7F9)" }} />
         </div>
         <div className="text-center space-y-2">
           <h2 className="text-2xl font-bold text-white">
@@ -529,8 +529,8 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
                   onClick={() => { setSelectedSubject(sub.code); setSelectedTopic("all"); }}
                   className="w-full text-left rounded-xl border transition-all hover:scale-[1.01] active:scale-[0.99] p-4"
                   style={{
-                    background: pct > 0 ? "rgba(127,239,255,0.06)" : "rgba(255,255,255,0.04)",
-                    borderColor: pct > 0 ? "rgba(127,239,255,0.35)" : "rgba(255,255,255,0.10)",
+                    background: pct > 0 ? "rgba(110,231,249,0.06)" : "rgba(255,255,255,0.04)",
+                    borderColor: pct > 0 ? "rgba(110,231,249,0.35)" : "rgba(255,255,255,0.10)",
                   }}
                 >
                   <div className="flex items-center justify-between gap-3 mb-2">
@@ -541,7 +541,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
                       </p>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-xs font-black" style={{ color: pct > 0 ? "#7FEFFF" : "rgba(255,255,255,0.3)" }}>
+                      <span className="text-xs font-black" style={{ color: pct > 0 ? "#6EE7F9" : "rgba(255,255,255,0.3)" }}>
                         {pct}%
                       </span>
                       <ArrowRight className="w-4 h-4" style={{ color: "rgba(255,255,255,0.25)" }} />
@@ -555,8 +555,8 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
                         background: pct >= 80
                           ? "linear-gradient(90deg,#10b981,#34d399)"
                           : pct >= 40
-                            ? "linear-gradient(90deg,#7FEFFF,#C6A4FF)"
-                            : "linear-gradient(90deg,#6FA8FF,#7FEFFF)",
+                            ? "linear-gradient(90deg,#6EE7F9,#C5B3FF)"
+                            : "linear-gradient(90deg,#9FD8FF,#6EE7F9)",
                       }}
                     />
                   </div>
@@ -610,17 +610,17 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
 
         {/* Subject header */}
         <div className="rounded-xl border p-4 space-y-2.5"
-          style={{ background: "rgba(127,239,255,0.06)", borderColor: "rgba(127,239,255,0.3)" }}>
+          style={{ background: "rgba(110,231,249,0.06)", borderColor: "rgba(110,231,249,0.3)" }}>
           <div className="flex items-center justify-between">
             <h2 className="text-base font-black text-white">{selectedSubjectName}</h2>
-            <span className="text-xs font-black" style={{ color: "#7FEFFF" }}>
+            <span className="text-xs font-black" style={{ color: "#6EE7F9" }}>
               {subjectReviewed}/{subjectAllCards.length}
             </span>
           </div>
           <div className="h-2 rounded-full bg-white/10 overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-500"
-              style={{ width: `${subjectPct}%`, background: "linear-gradient(90deg,#7FEFFF,#C6A4FF)" }}
+              style={{ width: `${subjectPct}%`, background: "linear-gradient(90deg,#6EE7F9,#C5B3FF)" }}
             />
           </div>
           {subjectAllCards.length > 0 && (
@@ -669,8 +669,8 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
                   disabled={tot === 0}
                   className="w-full text-left rounded-xl border transition-all hover:scale-[1.01] active:scale-[0.99] p-3.5 disabled:opacity-40"
                   style={{
-                    background: pct === 100 ? "rgba(16,185,129,0.07)" : pct > 0 ? "rgba(127,239,255,0.05)" : "rgba(255,255,255,0.03)",
-                    borderColor: pct === 100 ? "rgba(16,185,129,0.4)" : pct > 0 ? "rgba(127,239,255,0.25)" : "rgba(255,255,255,0.08)",
+                    background: pct === 100 ? "rgba(16,185,129,0.07)" : pct > 0 ? "rgba(110,231,249,0.05)" : "rgba(255,255,255,0.03)",
+                    borderColor: pct === 100 ? "rgba(16,185,129,0.4)" : pct > 0 ? "rgba(110,231,249,0.25)" : "rgba(255,255,255,0.08)",
                   }}
                 >
                   <div className="flex items-center justify-between gap-2 mb-1.5">
@@ -678,7 +678,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
                       <p className="text-sm font-semibold text-white truncate">{topicLabel}</p>
                       {t.hasNotes && (
                         <span className="text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded mt-0.5 inline-block"
-                          style={{ color: "#7FEFFF", border: "1px solid rgba(127,239,255,0.4)", background: "rgba(127,239,255,0.08)" }}>
+                          style={{ color: "#6EE7F9", border: "1px solid rgba(110,231,249,0.4)", background: "rgba(110,231,249,0.08)" }}>
                           {isAf ? "Gekureer" : "Curated"}
                         </span>
                       )}
@@ -697,7 +697,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
                       className="h-full rounded-full transition-all duration-500"
                       style={{
                         width: `${pct}%`,
-                        background: pct === 100 ? "linear-gradient(90deg,#10b981,#34d399)" : "linear-gradient(90deg,#7FEFFF,#C6A4FF)",
+                        background: pct === 100 ? "linear-gradient(90deg,#10b981,#34d399)" : "linear-gradient(90deg,#6EE7F9,#C5B3FF)",
                       }}
                     />
                   </div>

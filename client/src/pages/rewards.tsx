@@ -279,7 +279,7 @@ export default function RewardsPage() {
             <button
               onClick={toggleLanguage}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-black text-sm font-bold transition-colors"
-              style={{ color: "#C6A4FF", border: "1.5px solid #C6A4FF" }}
+              style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
               data-testid="button-language-toggle"
             >
               <Globe className="h-4 w-4" />
@@ -289,7 +289,7 @@ export default function RewardsPage() {
               onClick={() => setLocation("/dashboard")}
               title={t.homeTitle}
               className="w-9 h-9 flex items-center justify-center rounded-xl bg-black transition-colors"
-              style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF" }}
+              style={{ color: "#6EE7F9", border: "1.5px solid #6EE7F9" }}
               data-testid="button-home"
             >
               <Home className="h-4 w-4" />
@@ -298,7 +298,7 @@ export default function RewardsPage() {
               onClick={() => logout()}
               aria-label={t.signOutTitle}
               className="w-9 h-9 flex items-center justify-center rounded-xl bg-black transition-colors"
-              style={{ color: "#FF9FE5", border: "1.5px solid #FF9FE5" }}
+              style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}
               data-testid="button-logout"
             >
               <LogOut className="h-4 w-4" />
@@ -320,9 +320,9 @@ export default function RewardsPage() {
           <div className="relative flex items-center gap-4">
             <div
               className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center shrink-0"
-              style={{ border: "1px solid rgba(255,242,158,0.4)" }}
+              style={{ border: "1px solid rgba(255,226,154,0.4)" }}
             >
-              <Trophy className="w-7 h-7" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 6px #FFF29E)" }} />
+              <Trophy className="w-7 h-7" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 6px #FFE29A)" }} />
             </div>
             <div className="flex-1 min-w-0">
               <h1 className="text-2xl sm:text-3xl graffiti-hand leading-tight">
@@ -337,28 +337,28 @@ export default function RewardsPage() {
 
         {isLoading ? (
           <div className="flex justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#FFF29E" }} />
+            <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#FFE29A" }} />
           </div>
         ) : (
           <>
             {/* Coin Balance + Study Streak */}
             <div className="grid sm:grid-cols-3 gap-4">
-              <CosmicCard hex="#FFF29E" halo="rgba(255,242,158," className="sm:col-span-2" testId="card-coin-balance">
-                <CosmicCardTitle hex="#FFF29E" halo="rgba(255,242,158," icon={Coins}>
+              <CosmicCard hex="#FFE29A" halo="rgba(255,226,154," className="sm:col-span-2" testId="card-coin-balance">
+                <CosmicCardTitle hex="#FFE29A" halo="rgba(255,226,154," icon={Coins}>
                   {t.coinBalance}
                 </CosmicCardTitle>
                 <div className="p-5 pt-3">
                   <div className="flex items-end gap-4 mb-4">
                     <span
                       className="text-5xl tabular-nums"
-                      style={{ color: "#FFF29E", textShadow: "0 0 20px rgba(255,242,158,0.6)", fontWeight: 900 }}
+                      style={{ color: "#FFE29A", textShadow: "0 0 20px rgba(255,226,154,0.6)", fontWeight: 900 }}
                       data-testid="coin-balance"
                     >
                       {coins?.balance ?? 0}
                     </span>
                     <div className="flex flex-col text-xs text-white mb-1 gap-0.5">
-                      <span><span style={{ color: "#7FEFFF" }}>↑</span> {coins?.totalEarned ?? 0} {t.earned}</span>
-                      <span><span style={{ color: "#FF9FE5" }}>↓</span> {coins?.totalSpent ?? 0} {t.spent}</span>
+                      <span><span style={{ color: "#6EE7F9" }}>↑</span> {coins?.totalEarned ?? 0} {t.earned}</span>
+                      <span><span style={{ color: "#FFB7E5" }}>↓</span> {coins?.totalSpent ?? 0} {t.spent}</span>
                     </div>
                   </div>
                   {!txLoading && transactions && transactions.length > 0 && (
@@ -372,7 +372,7 @@ export default function RewardsPage() {
                         return (
                           <div key={i} className="flex justify-between items-center text-sm py-1 border-b last:border-0" style={{ borderColor: "rgba(255,255,255,0.06)" }} data-testid={`tx-row-${i}`}>
                             <span className="text-white truncate max-w-[180px]">{tx.description || tx.reason || ""}</span>
-                            <span className="font-bold tabular-nums" style={{ color: positive ? "#7FEFFF" : "#FF9FE5" }}>
+                            <span className="font-bold tabular-nums" style={{ color: positive ? "#6EE7F9" : "#FFB7E5" }}>
                               {positive ? "+" : ""}{tx.amount ?? 0}
                             </span>
                           </div>
@@ -386,14 +386,14 @@ export default function RewardsPage() {
                 </div>
               </CosmicCard>
 
-              <CosmicCard hex="#FFC48F" halo="rgba(255,196,143," testId="card-streak">
-                <CosmicCardTitle hex="#FFC48F" halo="rgba(255,196,143," icon={Flame}>
+              <CosmicCard hex="#FFE29A" halo="rgba(255,226,154," testId="card-streak">
+                <CosmicCardTitle hex="#FFE29A" halo="rgba(255,226,154," icon={Flame}>
                   {t.studyStreak}
                 </CosmicCardTitle>
                 <div className="p-5 pt-3">
                   <div
                     className="text-5xl font-black tabular-nums mb-1 text-transparent bg-clip-text"
-                    style={{ backgroundImage: "linear-gradient(135deg,#FFC48F,#FFF29E)" }}
+                    style={{ backgroundImage: "linear-gradient(135deg,#FFE29A,#FFE29A)" }}
                     data-testid="streak-count"
                   >
                     {streak}
@@ -409,12 +409,12 @@ export default function RewardsPage() {
                           key={m}
                           className="flex flex-col items-center flex-1 rounded-xl py-2 bg-black/40 transition-all"
                           style={{
-                            border: hit ? "1px solid rgba(255,196,143,0.6)" : "1px solid rgba(255,255,255,0.1)",
+                            border: hit ? "1px solid rgba(255,226,154,0.6)" : "1px solid rgba(255,255,255,0.1)",
                           }}
                           data-testid={`milestone-${m}`}
                         >
-                          <Flame className="w-4 h-4" style={{ color: hit ? "#FFC48F" : "#FFFFFF", filter: hit ? "drop-shadow(0 0 4px #FFC48F)" : undefined }} />
-                          <span className="text-xs font-bold mt-0.5" style={{ color: hit ? "#FFC48F" : "#FFFFFF" }}>{m}</span>
+                          <Flame className="w-4 h-4" style={{ color: hit ? "#FFE29A" : "#FFFFFF", filter: hit ? "drop-shadow(0 0 4px #FFE29A)" : undefined }} />
+                          <span className="text-xs font-bold mt-0.5" style={{ color: hit ? "#FFE29A" : "#FFFFFF" }}>{m}</span>
                         </div>
                       );
                     })}
@@ -431,8 +431,8 @@ export default function RewardsPage() {
             </div>
 
             {/* Earned badges */}
-            <CosmicCard hex="#FFF29E" halo="rgba(255,242,158," testId="card-earned-badges">
-              <CosmicCardTitle hex="#FFF29E" halo="rgba(255,242,158," icon={Trophy} count={earnedBadges.length}>
+            <CosmicCard hex="#FFE29A" halo="rgba(255,226,154," testId="card-earned-badges">
+              <CosmicCardTitle hex="#FFE29A" halo="rgba(255,226,154," icon={Trophy} count={earnedBadges.length}>
                 {t.yourBadges}
               </CosmicCardTitle>
               <div className="p-5 pt-3">
@@ -451,15 +451,15 @@ export default function RewardsPage() {
                           key={badge.id}
                           className="relative flex flex-col items-center gap-2 p-3 rounded-xl bg-black/40 text-center transition-all duration-300 hover:-translate-y-0.5"
                           style={{
-                            border: "1px solid rgba(255,242,158,0.4)",
+                            border: "1px solid rgba(255,226,154,0.4)",
                           }}
                           data-testid={`earned-badge-${badge.badgeCode}`}
                         >
                           <div
                             className="w-11 h-11 rounded-full bg-black flex items-center justify-center"
-                            style={{ border: "1px solid rgba(255,242,158,0.5)" }}
+                            style={{ border: "1px solid rgba(255,226,154,0.5)" }}
                           >
-                            <Icon className="w-5 h-5" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 4px #FFF29E)" }} />
+                            <Icon className="w-5 h-5" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }} />
                           </div>
                           <span className="text-xs font-bold text-white leading-tight">{isAf ? info.nameAf : info.name}</span>
                           {badge.earnedAt && (
@@ -474,8 +474,8 @@ export default function RewardsPage() {
             </CosmicCard>
 
             {/* Locked badges */}
-            <CosmicCard hex="#C6A4FF" halo="rgba(198,164,255," testId="card-locked-badges">
-              <CosmicCardTitle hex="#C6A4FF" halo="rgba(198,164,255," icon={Lock} count={lockedBadges.length}>
+            <CosmicCard hex="#C5B3FF" halo="rgba(197,179,255," testId="card-locked-badges">
+              <CosmicCardTitle hex="#C5B3FF" halo="rgba(197,179,255," icon={Lock} count={lockedBadges.length}>
                 {t.stillToUnlock}
               </CosmicCardTitle>
               <div className="p-5 pt-3">
@@ -508,8 +508,8 @@ export default function RewardsPage() {
             </CosmicCard>
 
             {/* Refer a Friend */}
-            <CosmicCard hex="#7FEFFF" halo="rgba(127,239,255," testId="card-refer-friend">
-              <CosmicCardTitle hex="#7FEFFF" halo="rgba(127,239,255," icon={Users}>
+            <CosmicCard hex="#6EE7F9" halo="rgba(110,231,249," testId="card-refer-friend">
+              <CosmicCardTitle hex="#6EE7F9" halo="rgba(110,231,249," icon={Users}>
                 {t.referHeading}
               </CosmicCardTitle>
               <div className="p-5 pt-3 space-y-4">
@@ -518,9 +518,9 @@ export default function RewardsPage() {
                   <div className="flex flex-col items-center gap-4 py-4 text-center">
                     <div
                       className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center"
-                      style={{ border: "1px solid rgba(127,239,255,0.4)" }}
+                      style={{ border: "1px solid rgba(110,231,249,0.4)" }}
                     >
-                      <Sparkles className="w-7 h-7" style={{ color: "#7FEFFF", filter: "drop-shadow(0 0 6px #7FEFFF)" }} />
+                      <Sparkles className="w-7 h-7" style={{ color: "#6EE7F9", filter: "drop-shadow(0 0 6px #6EE7F9)" }} />
                     </div>
                     <div>
                       <p className="font-bold text-sm text-white mb-1">{t.upgradeToRefer}</p>
@@ -529,7 +529,7 @@ export default function RewardsPage() {
                     <button
                       onClick={() => setLocation("/subscribe")}
                       className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm hover:opacity-90 transition-opacity"
-                      style={{ background: "#7FEFFF", color: "#0a0a0a" }}
+                      style={{ background: "#6EE7F9", color: "#0a0a0a" }}
                       data-testid="button-upgrade-to-refer"
                     >
                       <Sparkles className="w-4 h-4" />
@@ -551,11 +551,11 @@ export default function RewardsPage() {
                       </p>
                       <div
                         className="flex items-center gap-3 p-3 rounded-xl bg-black/40"
-                        style={{ border: "1px solid rgba(127,239,255,0.4)" }}
+                        style={{ border: "1px solid rgba(110,231,249,0.4)" }}
                       >
                         <code
                           className="flex-1 text-base sm:text-lg font-black font-mono tracking-wide"
-                          style={{ color: "#7FEFFF", textShadow: "0 0 12px rgba(127,239,255,0.5)" }}
+                          style={{ color: "#6EE7F9", textShadow: "0 0 12px rgba(110,231,249,0.5)" }}
                           data-testid="referral-code"
                         >
                           {referralCode?.code ?? referral?.code ?? "—"}
@@ -564,8 +564,8 @@ export default function RewardsPage() {
                           onClick={handleCopyCode}
                           disabled={!(referralCode?.code ?? referral?.code)}
                           title={t.copyLinkTitle}
-                          className="inline-flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-bold bg-black text-[#7FEFFF] hover:bg-[#7FEFFF]/10 transition-colors disabled:opacity-50"
-                          style={{ border: "1.5px solid #7FEFFF" }}
+                          className="inline-flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-bold bg-black text-[#6EE7F9] hover:bg-[#6EE7F9]/10 transition-colors disabled:opacity-50"
+                          style={{ border: "1.5px solid #6EE7F9" }}
                           data-testid="button-copy-referral"
                         >
                           {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
@@ -579,7 +579,7 @@ export default function RewardsPage() {
                       <p className="text-[11px] uppercase tracking-[0.2em] text-white font-bold mb-2">
                         {t.shareLink}
                       </p>
-                      <div className="flex items-center gap-2 p-3 rounded-xl bg-black/40" style={{ border: "1px solid rgba(127,239,255,0.25)" }}>
+                      <div className="flex items-center gap-2 p-3 rounded-xl bg-black/40" style={{ border: "1px solid rgba(110,231,249,0.25)" }}>
                         <code className="flex-1 text-xs text-white truncate font-mono" data-testid="referral-link">
                           {referralCode?.link ?? referral?.link ?? "—"}
                         </code>
@@ -587,8 +587,8 @@ export default function RewardsPage() {
                           onClick={handleCopyLink}
                           disabled={!(referralCode?.link ?? referral?.link)}
                           title={t.copyLinkTitle}
-                          className="inline-flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-bold bg-black text-[#7FEFFF] hover:bg-[#7FEFFF]/10 transition-colors disabled:opacity-50 shrink-0"
-                          style={{ border: "1.5px solid #7FEFFF" }}
+                          className="inline-flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-bold bg-black text-[#6EE7F9] hover:bg-[#6EE7F9]/10 transition-colors disabled:opacity-50 shrink-0"
+                          style={{ border: "1.5px solid #6EE7F9" }}
                           data-testid="button-copy-referral-link"
                         >
                           {copiedLink ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
@@ -599,7 +599,7 @@ export default function RewardsPage() {
                           disabled={!(referralCode?.link ?? referral?.link)}
                           title={t.whatsappTitle}
                           className="inline-flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-bold hover:opacity-90 transition-opacity disabled:opacity-50 shrink-0"
-                          style={{ background: "#93FFB8", color: "#0a0a0a" }}
+                          style={{ background: "#94F7C5", color: "#0a0a0a" }}
                           data-testid="button-whatsapp-referral"
                         >
                           <Share2 className="w-3.5 h-3.5" />
@@ -614,7 +614,7 @@ export default function RewardsPage() {
                           {t.progressToReward}
                         </p>
                         <p className="text-sm text-white" data-testid="referral-progress-text">
-                          <span className="font-black text-lg" style={{ color: "#7FEFFF" }}>
+                          <span className="font-black text-lg" style={{ color: "#6EE7F9" }}>
                             {referral?.towardNextReward ?? 0}
                           </span>
                           <span className="text-white"> / {referral?.threshold ?? 2} </span>
@@ -625,7 +625,7 @@ export default function RewardsPage() {
                             className="h-full rounded-full transition-all"
                             style={{
                               width: `${Math.min(100, ((referral?.towardNextReward ?? 0) / (referral?.threshold ?? 2)) * 100)}%`,
-                              background: "linear-gradient(90deg,#7FEFFF,#6FA8FF)",
+                              background: "linear-gradient(90deg,#6EE7F9,#9FD8FF)",
                             }}
                           />
                         </div>
@@ -634,7 +634,7 @@ export default function RewardsPage() {
                         <p className="text-[11px] uppercase tracking-[0.2em] text-white font-bold mb-1">
                           {t.earnedLabel}
                         </p>
-                        <p className="text-2xl font-black tabular-nums" style={{ color: "#7FEFFF" }} data-testid="referral-months-earned">
+                        <p className="text-2xl font-black tabular-nums" style={{ color: "#6EE7F9" }} data-testid="referral-months-earned">
                           {referral?.monthsEarned ?? 0}
                         </p>
                         <p className="text-[10px] text-white leading-tight">
@@ -660,8 +660,8 @@ export default function RewardsPage() {
             </CosmicCard>
 
             {/* Referral Leaderboard */}
-            <CosmicCard hex="#FFF29E" halo="rgba(255,242,158," testId="card-referral-leaderboard">
-              <CosmicCardTitle hex="#FFF29E" halo="rgba(255,242,158," icon={Medal}>
+            <CosmicCard hex="#FFE29A" halo="rgba(255,226,154," testId="card-referral-leaderboard">
+              <CosmicCardTitle hex="#FFE29A" halo="rgba(255,226,154," icon={Medal}>
                 {t.leaderboardHeading}
               </CosmicCardTitle>
               <div className="p-5 pt-3 space-y-3">
@@ -680,20 +680,20 @@ export default function RewardsPage() {
                     <ul className="space-y-1.5" data-testid="leaderboard-list">
                       {leaderboard.top.map((row) => {
                         const isMe = row.isCurrentUser;
-                        const medal = row.rank === 1 ? "#FFF29E" : row.rank === 2 ? "#7FEFFF" : row.rank === 3 ? "#FFC48F" : null;
+                        const medal = row.rank === 1 ? "#FFE29A" : row.rank === 2 ? "#6EE7F9" : row.rank === 3 ? "#FFE29A" : null;
                         return (
                           <li
                             key={`${row.rank}-${row.displayName}`}
                             className="grid grid-cols-[auto_1fr_auto] gap-x-3 items-center px-3 py-2 rounded-lg"
                             style={{
-                              background: isMe ? "rgba(127,239,255,0.12)" : "rgba(255,255,255,0.03)",
-                              border: isMe ? "1px solid rgba(127,239,255,0.5)" : "1px solid rgba(255,255,255,0.06)",
+                              background: isMe ? "rgba(110,231,249,0.12)" : "rgba(255,255,255,0.03)",
+                              border: isMe ? "1px solid rgba(110,231,249,0.5)" : "1px solid rgba(255,255,255,0.06)",
                             }}
                             data-testid={`leaderboard-row-${row.rank}`}
                           >
                             <span
                               className="font-black text-sm tabular-nums min-w-[1.75rem] text-center"
-                              style={{ color: medal ?? (isMe ? "#7FEFFF" : "#FFFFFF"), textShadow: medal ? `0 0 10px ${medal}` : undefined }}
+                              style={{ color: medal ?? (isMe ? "#6EE7F9" : "#FFFFFF"), textShadow: medal ? `0 0 10px ${medal}` : undefined }}
                             >
                               {row.rank}
                             </span>
@@ -702,13 +702,13 @@ export default function RewardsPage() {
                               {isMe && (
                                 <span
                                   className="text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider"
-                                  style={{ background: "rgba(127,239,255,0.2)", color: "#7FEFFF", border: "1px solid rgba(127,239,255,0.5)" }}
+                                  style={{ background: "rgba(110,231,249,0.2)", color: "#6EE7F9", border: "1px solid rgba(110,231,249,0.5)" }}
                                 >
                                   {t.leaderboardYou}
                                 </span>
                               )}
                             </span>
-                            <span className="font-bold text-sm tabular-nums" style={{ color: isMe ? "#7FEFFF" : "#FFF29E" }}>
+                            <span className="font-bold text-sm tabular-nums" style={{ color: isMe ? "#6EE7F9" : "#FFE29A" }}>
                               {row.conversions}
                             </span>
                           </li>
@@ -718,7 +718,7 @@ export default function RewardsPage() {
                     {leaderboard.me && !leaderboard.top.some((r) => r.isCurrentUser) && (
                       <div
                         className="mt-3 px-3 py-2 rounded-lg flex items-center justify-between"
-                        style={{ background: "rgba(127,239,255,0.10)", border: "1px solid rgba(127,239,255,0.5)" }}
+                        style={{ background: "rgba(110,231,249,0.10)", border: "1px solid rgba(110,231,249,0.5)" }}
                         data-testid="leaderboard-you-row"
                       >
                         <span className="text-xs text-white">
@@ -728,7 +728,7 @@ export default function RewardsPage() {
                           </span>
                         </span>
                         <span className="text-xs text-white">
-                          <span className="font-bold tabular-nums" style={{ color: "#7FEFFF" }}>
+                          <span className="font-bold tabular-nums" style={{ color: "#6EE7F9" }}>
                             {leaderboard.me.conversions}
                           </span>{" "}
                           <span className="text-white">{t.paidReferrals}</span>
@@ -746,8 +746,8 @@ export default function RewardsPage() {
             </CosmicCard>
 
             {/* Store CTA */}
-            <CosmicCard hex="#7FEFFF" halo="rgba(127,239,255," testId="card-store-cta">
-              <CosmicCardTitle hex="#7FEFFF" halo="rgba(127,239,255," icon={ShoppingBag}>
+            <CosmicCard hex="#6EE7F9" halo="rgba(110,231,249," testId="card-store-cta">
+              <CosmicCardTitle hex="#6EE7F9" halo="rgba(110,231,249," icon={ShoppingBag}>
                 {t.spendCoins}
               </CosmicCardTitle>
               <div className="p-5 pt-3 flex flex-col sm:flex-row sm:items-center gap-4">
@@ -757,7 +757,7 @@ export default function RewardsPage() {
                 <button
                   onClick={() => setLocation("/store")}
                   className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm hover:opacity-90 transition-opacity shrink-0"
-                  style={{ background: "#93FFB8", color: "#0a0a0a" }}
+                  style={{ background: "#94F7C5", color: "#0a0a0a" }}
                   data-testid="button-go-to-store"
                 >
                   <ShoppingBag className="w-4 h-4" />

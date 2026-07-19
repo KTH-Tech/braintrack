@@ -8,8 +8,8 @@ import { cn } from "@/lib/utils"
 // One flat colour per button. No gradients, no glows, no uppercase shouting.
 // 12px radius everywhere (brand: "all buttons have 12px rounded corners").
 // Variant/size NAMES are unchanged so no call site breaks — only the look.
-// Brand hexes: Blue #6FA8FF · Cyan #7FEFFF · Green #93FFB8 · Yellow #FFF29E
-//              Orange #FFC48F · Pink #FF9FE5 · Purple #C6A4FF
+// Brand hexes: Blue #9FD8FF · Cyan #6EE7F9 · Green #94F7C5 · Yellow #FFE29A
+//              Orange #FFE29A · Pink #FFB7E5 · Purple #C5B3FF
 
 const base =
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-black uppercase tracking-wide" +
@@ -39,31 +39,31 @@ const buttonVariants = cva(base, {
 
       // ── CTA — electric blue sticker ───────────────────────────────────
       cta:
-        "bg-[#6FA8FF] text-white border-2 border-[#6FA8FF] hover:bg-[#0057D6] shadow-[0_0_18px_rgba(111,168,255,0.45)]",
+        "bg-[#9FD8FF] text-white border-2 border-[#9FD8FF] hover:bg-[#0057D6] shadow-[0_0_18px_rgba(159,216,255,0.45)]",
 
       // ── CTA outline — secondary action next to a cta ──────────────────
       "cta-outline":
-        "bg-transparent text-[#6FA8FF] border-2 border-[#6FA8FF] hover:bg-[#6FA8FF]/10" +
-        " dark:text-[#7FEFFF] dark:border-[#7FEFFF] dark:hover:bg-[#7FEFFF]/10",
+        "bg-transparent text-[#9FD8FF] border-2 border-[#9FD8FF] hover:bg-[#9FD8FF]/10" +
+        " dark:text-[#6EE7F9] dark:border-[#6EE7F9] dark:hover:bg-[#6EE7F9]/10",
 
       // ── CTA gold — standout yellow sticker ───────────────────────────
       "cta-gold":
-        "bg-[#FFF29E] text-[#02040A] border-2 border-[#FFF29E] hover:bg-[#E6CF00] shadow-[0_0_18px_rgba(255,242,158,0.45)]",
+        "bg-[#FFE29A] text-[#02040A] border-2 border-[#FFE29A] hover:bg-[#E6CF00] shadow-[0_0_18px_rgba(255,226,154,0.45)]",
 
       // ── Legacy names restyled ─────────────────────────────────────────
       gradient:
-        "bg-[#C6A4FF] text-white border-2 border-[#C6A4FF] hover:brightness-110 shadow-[0_0_18px_rgba(198,164,255,0.4)]",
+        "bg-[#C5B3FF] text-white border-2 border-[#C5B3FF] hover:brightness-110 shadow-[0_0_18px_rgba(197,179,255,0.4)]",
       neon:
-        "bg-transparent text-[#C6A4FF] border-2 border-[#C6A4FF] hover:bg-[#C6A4FF]/10" +
-        " dark:text-[#7FEFFF] dark:border-[#7FEFFF] dark:hover:bg-[#7FEFFF]/10",
+        "bg-transparent text-[#C5B3FF] border-2 border-[#C5B3FF] hover:bg-[#C5B3FF]/10" +
+        " dark:text-[#6EE7F9] dark:border-[#6EE7F9] dark:hover:bg-[#6EE7F9]/10",
 
       // ── Solid brand fills — Gen Z sticker style ───────────────────────
-      cyan:   "bg-[#7FEFFF] text-[#02040A] border-2 border-[#7FEFFF] hover:brightness-110 shadow-[0_0_14px_rgba(127,239,255,0.4)]",
-      blue:   "bg-[#6FA8FF] text-white border-2 border-[#6FA8FF] hover:brightness-110 shadow-[0_0_14px_rgba(111,168,255,0.4)]",
-      pink:   "bg-[#FF9FE5] text-white border-2 border-[#FF9FE5] hover:brightness-110 shadow-[0_0_14px_rgba(255,159,229,0.4)]",
-      green:  "bg-[#93FFB8] text-[#02040A] border-2 border-[#93FFB8] hover:brightness-110 shadow-[0_0_14px_rgba(147,255,184,0.4)]",
-      orange: "bg-[#FFC48F] text-[#02040A] border-2 border-[#FFC48F] hover:brightness-110 shadow-[0_0_14px_rgba(255,196,143,0.4)]",
-      gold:   "bg-[#FFF29E] text-[#02040A] border-2 border-[#FFF29E] hover:brightness-110 shadow-[0_0_14px_rgba(255,242,158,0.4)]",
+      cyan:   "bg-[#6EE7F9] text-[#02040A] border-2 border-[#6EE7F9] hover:brightness-110 shadow-[0_0_14px_rgba(110,231,249,0.4)]",
+      blue:   "bg-[#9FD8FF] text-white border-2 border-[#9FD8FF] hover:brightness-110 shadow-[0_0_14px_rgba(159,216,255,0.4)]",
+      pink:   "bg-[#FFB7E5] text-white border-2 border-[#FFB7E5] hover:brightness-110 shadow-[0_0_14px_rgba(255,183,229,0.4)]",
+      green:  "bg-[#94F7C5] text-[#02040A] border-2 border-[#94F7C5] hover:brightness-110 shadow-[0_0_14px_rgba(148,247,197,0.4)]",
+      orange: "bg-[#FFE29A] text-[#02040A] border-2 border-[#FFE29A] hover:brightness-110 shadow-[0_0_14px_rgba(255,226,154,0.4)]",
+      gold:   "bg-[#FFE29A] text-[#02040A] border-2 border-[#FFE29A] hover:brightness-110 shadow-[0_0_14px_rgba(255,226,154,0.4)]",
     },
     size: {
       // WCAG 2.5.5: minimum 44 × 44 px tap target for school-procurement a11y.

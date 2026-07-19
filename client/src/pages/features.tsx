@@ -1,213 +1,71 @@
+// BrainTrack features — rebuilt to pixel-match the Claude Design handoff
+// "Luxury Street Graffiti EdTech" comp (BrainTrack.dc.html, FEATURES section).
+// Sticky blur nav, marker eyebrow, 52px headline with gradient accent,
+// subject chip wall, 3-col neon feature grid, rainbow trial CTA. Bilingual EN/AF.
 import { Link } from "wouter";
-import { PublicNav } from "@/components/public-nav";
-import { GraffitiSplats } from "@/components/graffiti-splats";
+import { useSEO } from "@/hooks/use-seo";
 import { useLanguage } from "@/lib/language-context";
 import { useAuth } from "@/hooks/use-auth";
-import { useSEO } from "@/hooks/use-seo";
-import {
-  BookOpen,
-  Target,
-  Brain,
-  Globe,
-  Zap,
-  CheckCircle,
-  Calendar,
-  Trophy,
-  Bot,
-  Smartphone,
-  Rocket,
-  LifeBuoy,
-  GraduationCap,
-  TrendingUp,
-  ClipboardCheck,
-} from "lucide-react";
+import iconTransparent from "@/assets/handoff/icon-transparent.png";
 
-const t = {
+const CTA_GRADIENT =
+  "linear-gradient(100deg,#FFB7E5,#FFE29A,#9FF5E8,#C5B3FF,#FFB7E5)";
+const HEADLINE_GRADIENT =
+  "linear-gradient(95deg,#9FD8FF,#9FF5E8,#C5B3FF,#FFB7E5)";
+
+// Pastel accent cycle for the subject chips.
+const CHIP_COLORS = ["#9FF5E8", "#9FD8FF", "#FFB7E5", "#C5B3FF", "#FFE29A", "#94F7C5"];
+
+const COPY = {
   en: {
-    heroPill: "What's Inside",
-    heroEyebrow: "Grade 12 · NSC/CAPS",
-    heroTitle: "Everything BrainTrack gives you, in one place.",
-    heroSubtitle:
+    tResearch: "Research",
+    tEnter: "Enter the app →",
+    eyebrow: "the full toolkit",
+    head1: "One ecosystem. ",
+    headAccent: "Every subject.",
+    sub:
       "A CAPS-aligned study plan built from 10 years of real NSC papers, weak-spot tracking, an AI tutor, and parent reports — plus optional power-ups and rescue packs for exam crunch-time.",
-    heroChip1: "9 Core Features",
-    heroChip2: "5 Power-Ups",
-    heroChip3: "4 Rescue Packs",
-    sectionCore: "Brain Boost",
-    corePriceLabel: "R169/month",
-    corePriceSub: "Cancel anytime · No long-term commitment",
-    coreDesc:
-      "Your complete CAPS-aligned study companion. Brain Boost gives you everything you need to master your subjects, track your progress, and walk into exams confident.",
-    f1: "CAPS-Aligned Content",
-    f1d: "100% curriculum-aligned questions and lessons. No fluff, no filler — only what matters for your exams.",
-    f2: "Real Exam-Style Questions",
-    f2d: "Practice with questions built from 10 years of historical exam patterns. Know exactly what to expect.",
-    f3: "Personalised Daily Study Plans",
-    f3d: "A smart study plan generated just for you, every day. Focus on what you need most.",
-    f4: "Instant Marking & Feedback",
-    f4d: "Get your results immediately with clear explanations. No waiting, no guessing.",
-    f5: "Weak-Area Detection",
-    f5d: "Pinpoints your gaps and builds a targeted improvement roadmap so you get stronger where it counts.",
-    f6: "Gamified Progress",
-    f6d: "Earn XP, level up, and collect achievement badges. Stay motivated with every session.",
-    f7: "Rizz — Smart Support Agent",
-    f7d: "Rizz helps you navigate the platform, explains your next steps, and keeps you on track. Rizz is your support guide — not an academic tutor.",
-    f8: "EN/AF Language Support",
-    f8d: "Switch between English and Afrikaans at any time. All content, feedback, and support in your preferred language.",
-    f9: "Mobile-First Design",
-    f9d: "Built for teens, designed for phones. Fast, intuitive, and modern — with multiple themes.",
-    sectionPowerUps: "Optional Power-Ups",
-    powerUpPill: "Coming Soon",
-    powerUpDesc:
-      "Take your preparation to the next level with add-ons designed for serious results.",
-    pu1: "Exam Mode",
-    pu1d: "Simulated mock exams that feel like the real thing. Timed, structured, and exam-ready.",
-    pu2: "Subject Boost Pack",
-    pu2d: "Extra drills and focused content for subjects where you need the most improvement.",
-    pu3: "Distinction Builder",
-    pu3d: "Advanced questions and strategies designed to push your marks from good to distinction-level.",
-    pu4: "30-Day Exam Sprint",
-    pu4d: "An intensive 30-day programme with daily targets to maximise your readiness before exams.",
-    pu5: "Smart Study System",
-    pu5d: "AI-driven study scheduling that adapts in real-time based on your performance and available time.",
-    sectionRescue: "Rescue Packs",
-    rescuePill: "Emergency Support",
-    rescueDesc: "Falling behind? These targeted interventions get you back on track fast.",
-    rp1: "Topic Rescue",
-    rp1d: "Intensive revision for a single weak topic — concept review, drills, and a mastery check.",
-    rp2: "Subject Rescue",
-    rp2d: "A full recovery plan for an entire subject — structured over multiple weeks.",
-    rp3: "Exam Rescue Sprint",
-    rp3d: "A rapid revision plan across all your subjects in the final weeks before exams.",
-    rp4: "Distinction Rescue Boost",
-    rp4d: "For learners close to distinction — a targeted push on borderline topics.",
-    sectionDiff: "Why BrainTrack Works",
-    diffSubtitle: "This is not harder studying. This is strategic learning.",
-    diff1: "CAPS-aligned content only — no fluff",
-    diff2: "Real exam-style questions from historical patterns",
-    diff3: "Personalised study plans that adapt to you",
-    diff4: "Instant marking with clear feedback",
-    diff5: "Weak-area detection and improvement roadmaps",
-    diff6: "Gamified progress that keeps teens motivated",
-    stat1L: "CAPS-aligned",
-    stat1V: "100%",
-    stat2L: "Years of NSC papers",
-    stat2V: "10",
-    stat3L: "Subjects covered",
-    stat3V: "25+",
-    stat4L: "Memo coverage",
-    stat4V: "Full",
-    cta: "Start Your Free 14-Day Trial",
+    subjects: [
+      "Mathematics", "Mathematical Literacy", "Physical Sciences", "Life Sciences",
+      "Accounting", "Business Studies", "Economics", "Geography", "History",
+      "English HL/FAL", "Afrikaans HL/EAT", "Life Orientation", "CAT", "IT",
+    ],
+    features: [
+      { icon: "📘", color: "#9FF5E8", chipBg: "rgba(159,245,232,.14)", glow: "rgba(159,245,232,.25)", tilt: -1, title: "CAPS-Aligned Content", body: "100% curriculum-aligned questions and lessons. No fluff, no filler — only what matters for your exams." },
+      { icon: "📝", color: "#9FD8FF", chipBg: "rgba(159,216,255,.14)", glow: "rgba(159,216,255,.25)", tilt: 1, title: "Real Exam-Style Questions", body: "Practice with questions built from 10 years of historical exam patterns. Know exactly what to expect." },
+      { icon: "📅", color: "#FFB7E5", chipBg: "rgba(255,183,229,.14)", glow: "rgba(255,183,229,.25)", tilt: -1, title: "Personalised Daily Study Plans", body: "A smart study plan generated just for you, every day. Focus on what you need most." },
+      { icon: "🎯", color: "#C5B3FF", chipBg: "rgba(197,179,255,.14)", glow: "rgba(197,179,255,.25)", tilt: 1, title: "Weak-Area Detection", body: "Pinpoints your gaps and builds a targeted improvement roadmap so you get stronger where it counts." },
+      { icon: "🤖", color: "#FFE29A", chipBg: "rgba(255,226,154,.14)", glow: "rgba(255,226,154,.25)", tilt: -1, title: "Rizz — Smart Support Agent", body: "Rizz helps you navigate the platform, explains your next steps, and keeps you on track. Rizz is your support guide — not an academic tutor." },
+      { icon: "🏆", color: "#94F7C5", chipBg: "rgba(148,247,197,.14)", glow: "rgba(148,247,197,.25)", tilt: 1, title: "Gamified Progress", body: "Earn XP, level up, and collect achievement badges. Stay motivated with every session." },
+    ],
+    cta: "Start your 14-day trial",
     ctaLoggedIn: "Go to My Classroom",
   },
   af: {
-    heroPill: "Wat's Binne",
-    heroEyebrow: "Graad 12 · NSS/KABV",
-    heroTitle: "Alles wat BrainTrack jou gee, op een plek.",
-    heroSubtitle:
+    tResearch: "Navorsing",
+    tEnter: "Betree die app →",
+    eyebrow: "die volle gereedskapstel",
+    head1: "Een ekosisteem. ",
+    headAccent: "Elke vak.",
+    sub:
       "'n KABV-belynde studieplan gebou uit 10 jaar se regte NSS-vraestelle, swakpuntspoor, 'n KI-tutor, en ouerverslae — plus opsionele krag-opgraderings en reddingspakke vir eksamen-crunchtyd.",
-    heroChip1: "9 Kernfunksies",
-    heroChip2: "5 Krag-Opgr.",
-    heroChip3: "4 Reddings",
-    sectionCore: "Brain Boost",
-    corePriceLabel: "R169/maand",
-    corePriceSub: "Kanselleer enige tyd · Geen langtermyn-verpligting",
-    coreDesc:
-      "Jou volledige KABV-belynde studievennoot. Brain Boost gee jou alles wat jy nodig het om jou vakke te bemeester, jou vordering te volg, en vol selfvertroue eksamens binne te stap.",
-    f1: "KABV-Belynde Inhoud",
-    f1d: "100% kurrikulum-belynde vrae en lesse. Geen nonsens nie — net wat saak maak vir jou eksamens.",
-    f2: "Regte Eksamen-Styl Vrae",
-    f2d: "Oefen met vrae gebou uit 10 jaar se vorige eksamenpatrone. Weet presies wat om te verwag.",
-    f3: "Persoonlike Daaglikse Studieplanne",
-    f3d: "'n Slim studieplan wat elke dag net vir jou gemaak word. Fokus op wat jy die meeste nodig het.",
-    f4: "Dadelike Nasien & Terugvoer",
-    f4d: "Kry jou resultate dadelik met duidelike verduidelikings. Geen wag, geen raaiwerk nie.",
-    f5: "Swak-Area Opsporing",
-    f5d: "Spot jou gapings en bou 'n gerigte verbeteringsplan sodat jy sterker word waar dit tel.",
-    f6: "Spel-agtige Vordering",
-    f6d: "Verdien XP, bereik nuwe vlakke, en ontsluit prestasiekentekens. Bly gemotiveerd met elke sessie.",
-    f7: "Rizz — Slim Ondersteuningsagent",
-    f7d: "Rizz help jou om die platform te navigeer, verduidelik jou volgende stappe, en hou jou op koers. Rizz is jou ondersteuningsgids — nie 'n akademiese tutor nie.",
-    f8: "EN/AF Taalondersteuning",
-    f8d: "Wissel enige tyd tussen Engels en Afrikaans. Alle inhoud, terugvoer en ondersteuning in jou voorkeur taal.",
-    f9: "Mobiel-Eerste Ontwerp",
-    f9d: "Gebou vir tieners, gemaak vir fone. Vinnig, intuïtief en modern — met verskeie temas.",
-    sectionPowerUps: "Opsionele Krag-Opgradings",
-    powerUpPill: "Binnekort",
-    powerUpDesc:
-      "Neem jou voorbereiding na die volgende vlak met byvoegings gemaak vir ernstige resultate.",
-    pu1: "Eksamenmodus",
-    pu1d: "Proef-eksamens wat soos die regte ding voel. Tydsgebonde, gestruktureerd en eksamen-gereed.",
-    pu2: "Vak Hupstoot Pakket",
-    pu2d: "Ekstra oefeninge en gefokusde inhoud vir vakke waar jy die meeste verbetering nodig het.",
-    pu3: "Onderskeiding Bouer",
-    pu3d: "Gevorderde vrae en strategieë gemaak om jou punte van goed na onderskeidingsvlak te stoot.",
-    pu4: "30-Dag Eksamen Sprint",
-    pu4d: "'n Intensiewe 30-dag program met daaglikse teikens om jou gereedheid voor eksamens te maksimeer.",
-    pu5: "Slim Studiestelsel",
-    pu5d: "KI-gedrewe studieskedule wat intydse aanpas gebaseer op jou prestasie en beskikbare tyd.",
-    sectionRescue: "Reddingspakkette",
-    rescuePill: "Nood-Ondersteuning",
-    rescueDesc: "Val jy agter? Hierdie gerigte planne kry jou vinnig weer op koers.",
-    rp1: "Onderwerp Redding",
-    rp1d: "Intensiewe hersiening vir 'n enkele swak onderwerp — konsep-hersiening, oefeninge en 'n bemeesteringstoets.",
-    rp2: "Vak Redding",
-    rp2d: "'n Volledige herstelplan vir 'n hele vak — gestruktureerd oor 'n paar weke.",
-    rp3: "Eksamen Redding Sprint",
-    rp3d: "'n Vinnige hersieningsplan oor al jou vakke in die laaste weke voor eksamens.",
-    rp4: "Onderskeiding Redding Hupstoot",
-    rp4d: "Vir leerders naby aan onderskeiding — 'n gerigte stoot op grensgevalle-onderwerpe.",
-    sectionDiff: "Hoekom BrainTrack Werk",
-    diffSubtitle: "Dit is nie harder studeer nie. Dit is strategiese leer.",
-    diff1: "Slegs KABV-belynde inhoud — geen nonsens nie",
-    diff2: "Regte eksamen-styl vrae uit vorige patrone",
-    diff3: "Persoonlike studieplanne wat by jou aanpas",
-    diff4: "Dadelike nasien met duidelike terugvoer",
-    diff5: "Swak-area opsporing en verbeteringsplanne",
-    diff6: "Spel-agtige vordering wat jou gemotiveerd hou",
-    stat1L: "KABV-belyn",
-    stat1V: "100%",
-    stat2L: "Jaar se NSS-vraestelle",
-    stat2V: "10",
-    stat3L: "Vakke gedek",
-    stat3V: "25+",
-    stat4L: "Memo-dekking",
-    stat4V: "Vol",
-    cta: "Begin Jou Gratis 14-Dae Proeftydperk",
+    subjects: [
+      "Wiskunde", "Wiskundige Geletterdheid", "Fisiese Wetenskappe", "Lewenswetenskappe",
+      "Rekeningkunde", "Besigheidstudies", "Ekonomie", "Geografie", "Geskiedenis",
+      "Engels HT/EAT", "Afrikaans HT/EAT", "Lewensoriëntering", "RTT", "IT",
+    ],
+    features: [
+      { icon: "📘", color: "#9FF5E8", chipBg: "rgba(159,245,232,.14)", glow: "rgba(159,245,232,.25)", tilt: -1, title: "KABV-Belynde Inhoud", body: "100% kurrikulum-belynde vrae en lesse. Geen nonsens nie — net wat saak maak vir jou eksamens." },
+      { icon: "📝", color: "#9FD8FF", chipBg: "rgba(159,216,255,.14)", glow: "rgba(159,216,255,.25)", tilt: 1, title: "Regte Eksamen-Styl Vrae", body: "Oefen met vrae gebou uit 10 jaar se vorige eksamenpatrone. Weet presies wat om te verwag." },
+      { icon: "📅", color: "#FFB7E5", chipBg: "rgba(255,183,229,.14)", glow: "rgba(255,183,229,.25)", tilt: -1, title: "Persoonlike Daaglikse Studieplanne", body: "'n Slim studieplan wat elke dag net vir jou gemaak word. Fokus op wat jy die meeste nodig het." },
+      { icon: "🎯", color: "#C5B3FF", chipBg: "rgba(197,179,255,.14)", glow: "rgba(197,179,255,.25)", tilt: 1, title: "Swak-Area Opsporing", body: "Spot jou gapings en bou 'n gerigte verbeteringsplan sodat jy sterker word waar dit tel." },
+      { icon: "🤖", color: "#FFE29A", chipBg: "rgba(255,226,154,.14)", glow: "rgba(255,226,154,.25)", tilt: -1, title: "Rizz — Slim Ondersteuningsagent", body: "Rizz help jou om die platform te navigeer, verduidelik jou volgende stappe, en hou jou op koers. Rizz is jou ondersteuningsgids — nie 'n akademiese tutor nie." },
+      { icon: "🏆", color: "#94F7C5", chipBg: "rgba(148,247,197,.14)", glow: "rgba(148,247,197,.25)", tilt: 1, title: "Spel-agtige Vordering", body: "Verdien XP, bereik nuwe vlakke, en ontsluit prestasiekentekens. Bly gemotiveerd met elke sessie." },
+    ],
+    cta: "Begin jou 14-dae proeftydperk",
     ctaLoggedIn: "My Klaskamer",
   },
-};
-
-// Soft pastel wall palette — icons, marker accents and highlights only.
-const PASTELS = ["#6FA8FF", "#7FEFFF", "#93FFB8", "#FFF29E", "#FFC48F", "#FF9FE5", "#C6A4FF"];
-
-const coreFeatures = [
-  { icon: BookOpen,        titleKey: "f1", descKey: "f1d" },
-  { icon: ClipboardCheck,  titleKey: "f2", descKey: "f2d" },
-  { icon: Calendar,        titleKey: "f3", descKey: "f3d" },
-  { icon: CheckCircle,     titleKey: "f4", descKey: "f4d" },
-  { icon: Target,          titleKey: "f5", descKey: "f5d" },
-  { icon: Trophy,          titleKey: "f6", descKey: "f6d" },
-  { icon: Bot,             titleKey: "f7", descKey: "f7d" },
-  { icon: Globe,           titleKey: "f8", descKey: "f8d" },
-  { icon: Smartphone,      titleKey: "f9", descKey: "f9d" },
-] as const;
-
-const powerUps = [
-  { icon: Zap,             titleKey: "pu1", descKey: "pu1d" },
-  { icon: TrendingUp,      titleKey: "pu2", descKey: "pu2d" },
-  { icon: GraduationCap,   titleKey: "pu3", descKey: "pu3d" },
-  { icon: Rocket,          titleKey: "pu4", descKey: "pu4d" },
-  { icon: Brain,           titleKey: "pu5", descKey: "pu5d" },
-] as const;
-
-const rescuePacks = [
-  { icon: LifeBuoy,   titleKey: "rp1", descKey: "rp1d" },
-  { icon: BookOpen,   titleKey: "rp2", descKey: "rp2d" },
-  { icon: Rocket,     titleKey: "rp3", descKey: "rp3d" },
-  { icon: TrendingUp, titleKey: "rp4", descKey: "rp4d" },
-] as const;
-
-const diffPoints = ["diff1", "diff2", "diff3", "diff4", "diff5", "diff6"] as const;
+} as const;
 
 const featuresBreadcrumb = {
   "@context": "https://schema.org",
@@ -218,44 +76,12 @@ const featuresBreadcrumb = {
   ],
 };
 
-const MARKER_SHADOW = { textShadow: "0 2px 0 rgba(0,0,0,0.6)" } as const;
-
-/** Section heading — BLACK text on a pastel-gradient highlight (callout-hl),
- * with an optional pastel marker eyebrow and plain white subtitle. No boxes. */
-function SectionHeading({
-  accent,
-  eyebrow,
-  title,
-  subtitle,
-}: {
-  accent: string;
-  eyebrow?: string;
-  title: React.ReactNode;
-  subtitle?: string;
-}) {
-  return (
-    <div className="text-center space-y-4">
-      {eyebrow && (
-        <p
-          className="graffiti-hand text-sm uppercase tracking-[0.24em]"
-          style={{ color: accent, ...MARKER_SHADOW }}
-        >
-          {eyebrow}
-        </p>
-      )}
-      <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] text-center">
-        <span className="callout-hl">{title}</span>
-      </h2>
-      {subtitle && (
-        <p className="text-white max-w-2xl mx-auto leading-relaxed">{subtitle}</p>
-      )}
-    </div>
-  );
-}
-
 export default function FeaturesPage() {
-  const { language } = useLanguage();
+  const { language, toggleLanguage } = useLanguage();
   const { isAuthenticated } = useAuth();
+  const t = COPY[language];
+  const en = language === "en";
+
   useSEO({
     title: "Features | BrainTrack™ CAPS Study Plan & NSC Past Papers",
     description:
@@ -267,258 +93,160 @@ export default function FeaturesPage() {
     ogUrl: "https://braintrack.co.za/features",
     jsonLd: featuresBreadcrumb,
   });
-  const c = t[language];
-  const isAf = language === "af";
 
   return (
-    <div className="relative min-h-screen bg-background text-white overflow-hidden">
-      {/* Graffiti filters through the ENTIRE page — one fixed layer behind all
-          content, so paint flows continuously as you scroll (no per-section gaps). */}
-      <div aria-hidden className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
-        <GraffitiSplats variant="full" opacity={0.9} />
+    <div style={{ minHeight: "100vh", background: "#050508", overflowX: "hidden", color: "#fff" }}>
+      <style>{`
+        .btf-nav-link { color:#fff; cursor:pointer; transition:color .2s; }
+        .btf-nav-link:hover { color:#9FD8FF; }
+        .btf-nav-cta { transition: transform .2s; }
+        .btf-nav-cta:hover { transform: translateY(-2px); }
+        .btf-cta { transition: transform .2s; }
+        .btf-cta:hover { transform: translateY(-3px); }
+        .btf-feature { transition: transform .25s, box-shadow .25s, border-color .25s; }
+        .btf-feature:hover { transform: translateY(-8px) rotate(var(--tilt, 0deg)); box-shadow: 0 20px 50px var(--glow); border-color: var(--c) !important; }
+        .btf-logo-img { transition: transform .25s; }
+        .btf-logo-img:hover { transform: scale(1.15) rotate(-4deg); }
+        @media (max-width: 860px) {
+          .btf-nav-links { display: none !important; }
+          .btf-head { font-size: 38px !important; letter-spacing: -1px !important; }
+          .btf-grid3 { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
+
+      {/* ── Nav ─────────────────────────────────────────────── */}
+      <div
+        style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          gap: 32, padding: "16px 48px", position: "sticky", top: 0, zIndex: 50,
+          background: "rgba(5,5,8,.82)", backdropFilter: "blur(14px)",
+          borderBottom: "1px solid rgba(255,255,255,.06)",
+        }}
+      >
+        <Link href="/">
+          <div style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }}>
+            <img src={iconTransparent} alt="BrainTrack" className="btf-logo-img" style={{ width: 56, height: 56, objectFit: "contain" }} />
+            <span className="bt-wordmark" style={{ fontSize: 22, letterSpacing: "-.5px" }}>BrainTrack</span>
+          </div>
+        </Link>
+        <div style={{ display: "flex", alignItems: "center", gap: 26, fontSize: 14, fontWeight: 600, flex: "none" }}>
+          <span className="btf-nav-links" style={{ display: "flex", alignItems: "center", gap: 26 }}>
+            <Link href="/research"><span className="btf-nav-link">{t.tResearch}</span></Link>
+          </span>
+          <span
+            onClick={toggleLanguage}
+            data-testid="lang-toggle"
+            style={{
+              display: "flex", alignItems: "center", gap: 2, fontSize: 12, fontWeight: 800,
+              border: "1.5px solid rgba(255,255,255,.2)", borderRadius: 8,
+              overflow: "hidden", cursor: "pointer", userSelect: "none",
+            }}
+          >
+            <span style={{ padding: "6px 10px", background: en ? "#9FF5E8" : "transparent", color: en ? "#050508" : "#fff" }}>EN</span>
+            <span style={{ padding: "6px 10px", background: en ? "transparent" : "#9FF5E8", color: en ? "#fff" : "#050508" }}>AF</span>
+          </span>
+          <a href="/api/login">
+            <button
+              className="btf-nav-cta"
+              data-testid="button-nav-enter"
+              style={{
+                fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 14,
+                color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
+                animation: "bt-rainbow 6s linear infinite", border: "none",
+                borderRadius: 10, padding: "11px 24px", whiteSpace: "nowrap",
+                cursor: "pointer",
+              }}
+            >
+              {t.tEnter}
+            </button>
+          </a>
+        </div>
       </div>
-      <div className="relative z-10">
-        <PublicNav />
-        <main className="pt-14">
-          {/* ═══ Hero — written straight on the wall ═══ */}
-          <section className="px-4 sm:px-6 lg:px-8 pt-14 pb-20">
-            <div className="max-w-5xl mx-auto text-center">
-              <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 mb-6">
-                <span
-                  className="graffiti-hand text-sm uppercase tracking-[0.24em]"
-                  style={{ color: "#7FEFFF", ...MARKER_SHADOW }}
-                >
-                  {c.heroPill}
-                </span>
-                <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-white">
-                  {c.heroEyebrow}
-                </span>
-              </div>
 
-              <h1
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] text-center max-w-4xl mx-auto"
-                data-testid="text-features-title"
+      {/* ── Content ─────────────────────────────────────────── */}
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "64px 32px 100px", textAlign: "center" }}>
+        <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#9FF5E8", fontSize: 18, transform: "rotate(-2deg)" }}>
+          {t.eyebrow}
+        </div>
+        <div
+          role="heading"
+          aria-level={1}
+          className="btf-head"
+          data-testid="text-features-title"
+          style={{ fontSize: 52, fontWeight: 900, letterSpacing: "-2px", margin: "8px 0 14px", fontFamily: "'Poppins',sans-serif", color: "#fff" }}
+        >
+          {t.head1}
+          <span
+            style={{
+              background: HEADLINE_GRADIENT,
+              WebkitBackgroundClip: "text", backgroundClip: "text",
+              color: "transparent", WebkitTextFillColor: "transparent",
+            }}
+          >
+            {t.headAccent}
+          </span>
+        </div>
+        <div
+          data-testid="text-features-subtitle"
+          style={{ fontSize: 17, color: "#fff", opacity: 0.942, maxWidth: 640, margin: "0 auto 20px", lineHeight: 1.6 }}
+        >
+          {t.sub}
+        </div>
+
+        {/* Subject chips */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center", marginBottom: 52 }}>
+          {t.subjects.map((name, i) => {
+            const c = CHIP_COLORS[i % CHIP_COLORS.length];
+            return (
+              <span
+                key={name}
+                style={{ fontSize: 13.5, fontWeight: 700, color: c, border: `1.5px solid ${c}`, borderRadius: 999, padding: "8px 16px" }}
               >
-                <span className="callout-hl">{c.heroTitle}</span>
-              </h1>
+                {name}
+              </span>
+            );
+          })}
+        </div>
 
-              <p
-                className="text-white max-w-2xl mx-auto leading-relaxed text-lg mt-7"
-                data-testid="text-features-subtitle"
-              >
-                {c.heroSubtitle}
-              </p>
-
-              {/* Count marks — plain wall text with coloured dots, no pills */}
-              <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-7">
-                {[
-                  { label: c.heroChip1, hex: "#7FEFFF" },
-                  { label: c.heroChip2, hex: "#C6A4FF" },
-                  { label: c.heroChip3, hex: "#FF9FE5" },
-                ].map(({ label, hex }) => (
-                  <span key={label} className="inline-flex items-center gap-2 text-sm font-bold text-white">
-                    <span
-                      className="w-2 h-2 rounded-full shrink-0"
-                      style={{ background: hex }}
-                      aria-hidden
-                    />
-                    {label}
-                  </span>
-                ))}
+        {/* Feature cards */}
+        <div className="btf-grid3" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24, textAlign: "left" }}>
+          {t.features.map((f, i) => (
+            <div
+              key={f.title}
+              className="btf-feature"
+              data-testid={`card-feature-${i}`}
+              style={{
+                "--tilt": `${f.tilt}deg`, "--glow": f.glow, "--c": f.color,
+                background: "linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015))",
+                border: "1px solid rgba(255,255,255,.09)", borderRadius: 22,
+                padding: 28, cursor: "default",
+              } as React.CSSProperties}
+            >
+              <div style={{ width: 54, height: 54, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", background: f.chipBg, boxShadow: `0 0 22px ${f.glow}`, marginBottom: 18, fontSize: 24 }}>
+                {f.icon}
               </div>
+              <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 8, color: "#fff" }}>{f.title}</div>
+              <div style={{ fontSize: 13.5, lineHeight: 1.6, color: "#fff", opacity: 0.942 }}>{f.body}</div>
             </div>
-          </section>
+          ))}
+        </div>
 
-          {/* ═══ Core Features — Brain Boost ═══ */}
-          <section className="px-4 sm:px-6 lg:px-8 pb-20">
-            <div className="max-w-5xl mx-auto">
-              <SectionHeading
-                accent="#7FEFFF"
-                eyebrow={isAf ? "Kerninhoud" : "What's Included"}
-                title={c.sectionCore}
-                subtitle={c.coreDesc}
-              />
-
-              {/* Price — big pastel marker, small white label. No box. */}
-              <div className="mt-8 mb-12 text-center">
-                <p
-                  className="graffiti-hand text-4xl sm:text-5xl -rotate-1"
-                  style={{ color: "#FFF29E", ...MARKER_SHADOW }}
-                  data-testid="text-core-price"
-                >
-                  {c.corePriceLabel}
-                </p>
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-white mt-2">
-                  {c.corePriceSub}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-10 gap-y-10">
-                {coreFeatures.map((f, i) => {
-                  const hex = PASTELS[i % PASTELS.length];
-                  const Icon = f.icon;
-                  return (
-                    <div key={i} className="flex items-start gap-3" data-testid={`card-feature-${i}`}>
-                      <Icon className="w-5 h-5 mt-0.5 shrink-0" style={{ color: hex }} />
-                      <div className="min-w-0">
-                        <h3 className="text-base font-bold text-white leading-snug">
-                          {c[f.titleKey as keyof typeof c] as string}
-                        </h3>
-                        <p className="text-sm text-white leading-relaxed mt-1.5">
-                          {c[f.descKey as keyof typeof c] as string}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </section>
-
-          {/* ═══ Power-Ups — big pastel numerals on the wall ═══ */}
-          <section className="px-4 sm:px-6 lg:px-8 pb-20">
-            <div className="max-w-5xl mx-auto">
-              <SectionHeading
-                accent="#C6A4FF"
-                eyebrow={isAf ? "Opsioneel" : "Optional"}
-                title={c.sectionPowerUps}
-                subtitle={c.powerUpDesc}
-              />
-
-              <div className="mt-12 space-y-10 max-w-3xl mx-auto">
-                {powerUps.map((f, i) => {
-                  const hex = PASTELS[(i + 2) % PASTELS.length];
-                  const Icon = f.icon;
-                  return (
-                    <div key={i} className="flex items-start gap-5" data-testid={`card-powerup-${i}`}>
-                      <span
-                        className="graffiti-hand text-4xl md:text-5xl leading-none shrink-0 w-14 md:w-16 -rotate-2"
-                        style={{ color: hex, ...MARKER_SHADOW }}
-                        aria-hidden
-                      >
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <div className="min-w-0">
-                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-1.5">
-                          <Icon className="w-4 h-4 shrink-0" style={{ color: hex }} />
-                          <h3 className="text-lg md:text-xl font-bold text-white leading-tight">
-                            {c[f.titleKey as keyof typeof c] as string}
-                          </h3>
-                          <span
-                            className="graffiti-hand text-xs uppercase tracking-[0.18em]"
-                            style={{ color: hex, ...MARKER_SHADOW }}
-                          >
-                            {c.powerUpPill}
-                          </span>
-                        </div>
-                        <p className="text-sm text-white leading-relaxed max-w-2xl">
-                          {c[f.descKey as keyof typeof c] as string}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </section>
-
-          {/* ═══ Rescue Packs — SOS tags written on the wall ═══ */}
-          <section className="px-4 sm:px-6 lg:px-8 pb-20">
-            <div className="max-w-5xl mx-auto">
-              <SectionHeading
-                accent="#FF9FE5"
-                eyebrow={c.rescuePill}
-                title={c.sectionRescue}
-                subtitle={c.rescueDesc}
-              />
-
-              <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
-                {rescuePacks.map((f, i) => {
-                  const hex = PASTELS[(i + 4) % PASTELS.length];
-                  const Icon = f.icon;
-                  return (
-                    <div key={i} className="flex items-start gap-3" data-testid={`card-rescue-${i}`}>
-                      <Icon className="w-5 h-5 mt-0.5 shrink-0" style={{ color: hex }} />
-                      <div className="min-w-0">
-                        <p
-                          className="graffiti-hand text-xs uppercase tracking-[0.22em] mb-1 -rotate-1"
-                          style={{ color: hex, ...MARKER_SHADOW }}
-                        >
-                          SOS · {String(i + 1).padStart(2, "0")}
-                        </p>
-                        <h3 className="text-base font-bold text-white leading-snug mb-1.5">
-                          {c[f.titleKey as keyof typeof c] as string}
-                        </h3>
-                        <p className="text-sm text-white leading-relaxed">
-                          {c[f.descKey as keyof typeof c] as string}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </section>
-
-          {/* ═══ Why BrainTrack Works — stats + checklist ═══ */}
-          <section className="px-4 sm:px-6 lg:px-8 pb-20">
-            <div className="max-w-5xl mx-auto">
-              <SectionHeading
-                accent="#93FFB8"
-                eyebrow={isAf ? "Strategie" : "Strategy"}
-                title={c.sectionDiff}
-                subtitle={c.diffSubtitle}
-              />
-
-              {/* Stats — big pastel numbers, small white labels. No boxes. */}
-              <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8 text-center">
-                {[
-                  { label: c.stat1L, value: c.stat1V, hex: "#7FEFFF" },
-                  { label: c.stat2L, value: c.stat2V, hex: "#FFF29E" },
-                  { label: c.stat3L, value: c.stat3V, hex: "#C6A4FF" },
-                  { label: c.stat4L, value: c.stat4V, hex: "#FF9FE5" },
-                ].map(({ label, value, hex }) => (
-                  <div key={label}>
-                    <div
-                      className="graffiti-hand text-4xl md:text-5xl leading-none -rotate-1"
-                      style={{ color: hex, ...MARKER_SHADOW }}
-                    >
-                      {value}
-                    </div>
-                    <div className="mt-2 text-[10px] font-bold uppercase tracking-[0.22em] text-white leading-snug">
-                      {label}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Differentiator checklist — small pastel checks, plain white text */}
-              <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 max-w-3xl mx-auto">
-                {diffPoints.map((key, i) => (
-                  <div key={i} className="flex items-center gap-3" data-testid={`text-diff-point-${i}`}>
-                    <CheckCircle
-                      className="w-4 h-4 shrink-0"
-                      style={{ color: PASTELS[i % PASTELS.length] }}
-                    />
-                    <span className="text-white font-medium leading-snug">{c[key as keyof typeof c] as string}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* ONE compact primary CTA — solid pastel fill, black text, no glow */}
-              <div className="mt-14 flex justify-center">
-                <Link
-                  href={isAuthenticated ? "/dashboard" : "/subscribe"}
-                  className="inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-bold"
-                  style={{ background: "#7FEFFF", color: "#0a0a0a" }}
-                  data-testid="button-features-cta"
-                >
-                  {isAuthenticated ? c.ctaLoggedIn : c.cta}
-                </Link>
-              </div>
-            </div>
-          </section>
-        </main>
+        {/* Final CTA */}
+        <Link href={isAuthenticated ? "/dashboard" : "/subscribe"}>
+          <button
+            className="btf-cta"
+            data-testid="button-features-cta"
+            style={{
+              marginTop: 52, fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 16,
+              color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
+              animation: "bt-rainbow 5s linear infinite", border: "none",
+              borderRadius: 10, padding: "16px 40px", whiteSpace: "nowrap",
+              cursor: "pointer", boxShadow: "0 0 30px rgba(255,183,229,.4)",
+            }}
+          >
+            {isAuthenticated ? t.ctaLoggedIn : t.cta}
+          </button>
+        </Link>
       </div>
     </div>
   );

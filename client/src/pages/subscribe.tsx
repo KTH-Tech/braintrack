@@ -1,11 +1,13 @@
+// BrainTrack subscribe — restyled to pixel-match the Claude Design handoff
+// "Luxury Street Graffiti EdTech" comp (BrainTrack.dc.html, PRICING section).
+// All signup/trial/billing logic, form state, API flows, redirects and
+// data-testids are preserved — only the presentation changed.
+// NOTE: billing runs via Netcash (the comp said "Paystack" — copy kept neutral).
 import { useState, useEffect, useRef, type ReactNode } from "react";
-import { useLocation } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { GraffitiSplats } from "@/components/graffiti-splats";
 import {
-  Sparkles,
   ArrowLeft,
   CheckCircle2,
   Loader2,
@@ -23,6 +25,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useSEO } from "@/hooks/use-seo";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import iconTransparent from "@/assets/handoff/icon-transparent.png";
 
 type PageState =
   | "plan"
@@ -43,30 +46,71 @@ interface SmsResult {
   message: string | null;
 }
 
-const MARKER_SHADOW = { textShadow: "0 2px 0 rgba(0,0,0,0.6)" } as const;
+const CTA_GRADIENT =
+  "linear-gradient(100deg,#FFB7E5,#FFE29A,#9FF5E8,#C5B3FF,#FFB7E5)";
+const HEADLINE_GRADIENT =
+  "linear-gradient(95deg,#9FD8FF,#9FF5E8,#C5B3FF,#FFB7E5)";
 
-// Compact CTA sizing — brand max is px-5 py-2.5 text-sm font-bold rounded-xl.
-const CTA_CLASSES = "px-5 py-2.5 text-sm font-bold rounded-xl h-auto";
+// Scoped styles shared by every screen of this page.
+const SCOPED_CSS = `
+  .bts-input { background: rgba(5,5,8,.6) !important; border: 1.5px solid rgba(255,255,255,.18) !important; border-radius: 12px !important; color: #fff !important; }
+  .bts-input:focus, .bts-input:focus-visible { border-color: #9FF5E8 !important; outline: none !important; box-shadow: none !important; }
+  .bts-nav-link { color:#fff; cursor:pointer; transition:color .2s; }
+  .bts-nav-link:hover { color:#9FF5E8; }
+  .bts-nav-cta { transition: transform .2s; }
+  .bts-nav-cta:hover { transform: translateY(-2px); }
+  .bts-outline-btn { transition: border-color .2s, color .2s; }
+  .bts-outline-btn:hover { border-color:#9FF5E8 !important; color:#9FF5E8 !important; }
+  .bts-rainbow-btn { transition: transform .2s; }
+  .bts-rainbow-btn:hover { transform: translateY(-2px); }
+  .bts-method-btn { transition: border-color .2s, transform .2s; }
+  .bts-method-btn:hover { border-color: var(--c) !important; transform: translateY(-2px); }
+  .bts-logo-img { transition: transform .25s; }
+  .bts-logo-img:hover { transform: scale(1.15) rotate(-4deg); }
+  @media (max-width: 860px) {
+    .bts-nav-links { display:none !important; }
+    .bts-head { font-size: 36px !important; letter-spacing: -1px !important; }
+    .bts-grid2 { grid-template-columns: 1fr !important; }
+  }
+`;
 
-/** Dark graffiti wall screen — ONE fixed full-page splat layer behind,
- * content written straight on the wall. */
+const RAINBOW_BTN_STYLE: React.CSSProperties = {
+  fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 15,
+  color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
+  animation: "bt-rainbow 5s linear infinite", border: "none",
+  borderRadius: 12, padding: "15px 24px", cursor: "pointer",
+  boxShadow: "0 0 26px rgba(255,183,229,.4)",
+};
+
+const OUTLINE_BTN_STYLE: React.CSSProperties = {
+  fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 15,
+  color: "#fff", background: "transparent",
+  border: "2px solid rgba(255,255,255,.25)", borderRadius: 12,
+  padding: "14px 24px", cursor: "pointer",
+};
+
+/** Centered dark screen for the flow states (success / payment / errors). */
 function WallScreen({ children, testId }: { children: ReactNode; testId?: string }) {
   return (
-    <div className="relative min-h-screen bg-background text-white overflow-hidden">
-      <div aria-hidden className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
-        <GraffitiSplats variant="full" opacity={0.9} />
-      </div>
-      <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-16">
-        <div className="max-w-lg w-full" data-testid={testId}>{children}</div>
+    <div style={{ minHeight: "100vh", background: "#050508", color: "#fff", overflowX: "hidden" }}>
+      <style>{SCOPED_CSS}</style>
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "64px 16px" }}>
+        <div style={{ maxWidth: 520, width: "100%" }} data-testid={testId}>{children}</div>
       </div>
     </div>
   );
 }
 
-/** Wall callout — 3px pastel left rule + padding, no box. */
+/** Accent callout — pastel left rule on a faint card. */
 function WallCallout({ color, children, className = "" }: { color: string; children: ReactNode; className?: string }) {
   return (
-    <div className={`pl-4 py-1 text-left ${className}`} style={{ borderLeft: `3px solid ${color}` }}>
+    <div
+      className={className}
+      style={{
+        borderLeft: `3px solid ${color}`, background: "rgba(255,255,255,.03)",
+        borderRadius: "0 12px 12px 0", padding: "14px 18px", textAlign: "left",
+      }}
+    >
       {children}
     </div>
   );
@@ -282,137 +326,257 @@ export default function SubscribePage() {
 
   if (pageState === "loading" || authLoading) {
     return (
-      <div className="relative min-h-screen bg-background text-white overflow-hidden flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#7FEFFF" }} />
+      <div style={{ minHeight: "100vh", background: "#050508", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <Loader2 className="animate-spin" style={{ width: 32, height: 32, color: "#9FF5E8" }} />
       </div>
     );
   }
 
+  const trialPerks = isAf
+    ? [
+        "KABV-belynde studieplan, elke dag herbou",
+        "10 jaar se NSS-vraestelle met memo's",
+        "Dadelike nasien & swakpunt-opsporing",
+        "Rizz slim ondersteuning in EN/AF",
+        "Spel-agtige vordering + ouerverslae",
+      ]
+    : [
+        "CAPS-aligned study plan, rebuilt daily",
+        "10 years of NSC past papers with memos",
+        "Instant marking & weak-spot detection",
+        "Rizz smart support in EN/AF",
+        "Gamified progress + parent reports",
+      ];
+
+  const premiumPerks = isAf
+    ? [
+        "Alles in die gratis proeftydperk",
+        "Onbeperkte vraestel-drille & memo's",
+        "Dinamiese studieplan wat by jou aanpas",
+        "Rizz slim ondersteuning, 24/7",
+        "Weeklikse ouerverslae",
+        "XP, reekse & beloningsonthullings",
+      ]
+    : [
+        "Everything in the free trial",
+        "Unlimited past-paper drills & memos",
+        "Dynamic study plan that adapts to you",
+        "Rizz smart support, 24/7",
+        "Weekly parent reports",
+        "XP, streaks & reward reveals",
+      ];
+
   return (
-    <WallScreen testId="subscribe-plan-panel">
-      <div className="text-center mb-10">
-        <Sparkles className="w-9 h-9 mx-auto mb-5" style={{ color: "#FFF29E" }} />
-        {/* Plan name — BLACK text on pastel highlight (callout-hl) */}
-        <h1
-          className="text-3xl sm:text-4xl font-black tracking-tight leading-[1.1] text-center mb-6"
-          data-testid="subscribe-heading"
-        >
-          <span className="callout-hl">
-            {isAf ? "Brain Boost: 14-dae Gratis Proef" : "Brain Boost: 14-day Free Trial"}
-          </span>
-        </h1>
-        {/* Big price — pastel marker lettering, no box */}
-        <p
-          className="graffiti-hand text-5xl sm:text-6xl leading-none -rotate-1 mb-4"
-          style={{ color: "#7FEFFF", ...MARKER_SHADOW }}
-          data-testid="text-subscribe-price"
-        >
-          {isAf ? "R169/maand" : "R169/month"}
-        </p>
-        <p className="text-white text-lg">
-          {isAf
-            ? "Kry volle toegang tot alle kenmerke. R169/maand daarna. Kanselleer enige tyd."
-            : "Get full access to all features. R169/month thereafter. Cancel anytime."}
-        </p>
-      </div>
+    <div style={{ minHeight: "100vh", background: "#050508", overflowX: "hidden", color: "#fff" }}>
+      <style>{SCOPED_CSS}</style>
 
-      {/* What's inside — white list, pastel check marks, no panel */}
-      <ul className="space-y-2.5 mb-10 max-w-sm mx-auto">
-        {(isAf
-          ? [
-              "KABV-belynde studieplan, elke dag herbou",
-              "10 jaar se NSS-vraestelle met memo's",
-              "Dadelike nasien & swakpunt-opsporing",
-              "Rizz slim ondersteuning in EN/AF",
-              "Spel-agtige vordering + ouerverslae",
-            ]
-          : [
-              "CAPS-aligned study plan, rebuilt daily",
-              "10 years of NSC past papers with memos",
-              "Instant marking & weak-spot detection",
-              "Rizz smart support in EN/AF",
-              "Gamified progress + parent reports",
-            ]
-        ).map((item, i) => (
-          <li key={i} className="flex items-start gap-2.5 text-sm text-white text-left">
-            <CheckCircle2
-              className="w-4 h-4 mt-0.5 shrink-0"
-              style={{ color: ["#7FEFFF", "#93FFB8", "#FFF29E", "#FF9FE5", "#C6A4FF"][i % 5] }}
-            />
-            <span>{item}</span>
-          </li>
-        ))}
-      </ul>
-
-      {errorMsg && (
-        <WallCallout color="#FFC48F" className="mb-8 flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#FFC48F" }} />
-          <p className="text-sm text-white">{errorMsg}</p>
-        </WallCallout>
-      )}
-
-      <div className="space-y-6 mb-10">
-        <div className="space-y-2">
-          <label className="text-sm font-bold text-white ml-1">
-            {isAf ? "Ouer se selfoonnommer" : "Parent's cell phone number"}
-          </label>
-          <div className="relative">
-            <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: "#6FA8FF" }} />
-            <Input
-              type="tel"
-              placeholder="082 123 4567"
-              className="pl-12 h-12 text-lg bg-transparent text-white"
-              style={{ borderColor: "#6FA8FF" }}
-              value={parentCell}
-              onChange={(e) => setParentCell(e.target.value)}
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-sm font-bold text-white ml-1">
-            {isAf ? "Leerder se selfoonnommer" : "Learner's cell phone number"}
-          </label>
-          <div className="relative">
-            <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: "#6FA8FF" }} />
-            <Input
-              type="tel"
-              placeholder="071 234 5678"
-              className="pl-12 h-12 text-lg bg-transparent text-white"
-              style={{ borderColor: "#6FA8FF" }}
-              value={learnerCell}
-              onChange={(e) => setLearnerCell(e.target.value)}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* ONE compact CTA — full-strength neon allowed on small CTAs */}
-      <div className="flex justify-center">
-        <Button
-          onClick={handleStartTrial}
-          className={CTA_CLASSES}
-          style={{ background: "#7FEFFF", color: "#0a0a0a" }}
-          data-testid="button-subscribe-cta"
-        >
-          {isAf ? "Begin Gratis Proef" : "Start Free Trial"}
-        </Button>
-      </div>
-
-      <p className="text-center text-white text-xs mt-6 px-4 leading-relaxed">
-        {isAf
-          ? "Deur voort te gaan, stem jy in tot ons Diensvoorwaardes en Privaatheidsbeleid. Ons sal vir jou 'n herinnering stuur voor jou proeftydperk verval."
-          : "By continuing, you agree to our Terms of Service and Privacy Policy. We'll send you a reminder before your trial expires."}
-      </p>
-
-      <button
-        onClick={() => navigate(homeHref)}
-        className="w-full mt-8 flex items-center justify-center gap-2 text-white text-sm font-medium"
+      {/* ── Nav ─────────────────────────────────────────────── */}
+      <div
+        style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          gap: 32, padding: "16px 48px", position: "sticky", top: 0, zIndex: 50,
+          background: "rgba(5,5,8,.82)", backdropFilter: "blur(14px)",
+          borderBottom: "1px solid rgba(255,255,255,.06)",
+        }}
       >
-        <ArrowLeft className="w-4 h-4" />
-        {isAf ? "Terug na tuisblad" : "Back to home"}
-      </button>
-    </WallScreen>
+        <Link href="/">
+          <div style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }}>
+            <img src={iconTransparent} alt="BrainTrack" className="bts-logo-img" style={{ width: 56, height: 56, objectFit: "contain" }} />
+            <span className="bt-wordmark" style={{ fontSize: 22, letterSpacing: "-.5px" }}>BrainTrack</span>
+          </div>
+        </Link>
+        <div style={{ display: "flex", alignItems: "center", gap: 26, fontSize: 14, fontWeight: 600, flex: "none" }}>
+          <span className="bts-nav-links" style={{ display: "flex", alignItems: "center", gap: 26 }}>
+            <Link href="/features"><span className="bts-nav-link">{isAf ? "Funksies" : "Features"}</span></Link>
+            <Link href="/research"><span className="bts-nav-link">{isAf ? "Navorsing" : "Research"}</span></Link>
+          </span>
+          <a href="/api/login">
+            <button
+              className="bts-nav-cta"
+              data-testid="button-nav-enter"
+              style={{
+                fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 14,
+                color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
+                animation: "bt-rainbow 6s linear infinite", border: "none",
+                borderRadius: 10, padding: "11px 24px", whiteSpace: "nowrap",
+                cursor: "pointer",
+              }}
+            >
+              {isAf ? "Betree die app →" : "Enter the app →"}
+            </button>
+          </a>
+        </div>
+      </div>
+
+      {/* ── Pricing ─────────────────────────────────────────── */}
+      <div data-testid="subscribe-plan-panel" style={{ maxWidth: 1000, margin: "0 auto", padding: "64px 32px 100px" }}>
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#FFE29A", fontSize: 18, transform: "rotate(-2deg)" }}>
+            {isAf ? "een plan. alles ontsluit." : "one plan. everything unlocked."}
+          </div>
+          <div
+            role="heading"
+            aria-level={1}
+            className="bts-head"
+            data-testid="subscribe-heading"
+            style={{ fontSize: 52, fontWeight: 900, letterSpacing: "-2px", margin: "8px 0 10px", fontFamily: "'Poppins',sans-serif", color: "#fff" }}
+          >
+            {isAf ? "14 dae op ons. " : "14 days on us. "}
+            <span style={{ background: HEADLINE_GRADIENT, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>
+              {isAf ? "Dan net R169." : "Then just R169."}
+            </span>
+          </div>
+          <div style={{ fontSize: 17, color: "#fff", opacity: 0.942, maxWidth: 560, margin: "0 auto 44px", lineHeight: 1.6 }}>
+            {isAf
+              ? "Volle toegang vir 14 dae, geen kaart nodig om te begin nie. Daarna is dit R169/maand — maandeliks gefaktureer · kanselleer enige tyd in die app."
+              : "Full access for 14 days, no card needed to start. After that it's R169/month — billed monthly · cancel anytime in the app."}
+          </div>
+        </div>
+
+        {errorMsg && (
+          <div style={{ maxWidth: 820, margin: "0 auto 24px" }}>
+            <WallCallout color="#FFE29A">
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                <AlertCircle style={{ width: 20, height: 20, flex: "none", marginTop: 2, color: "#FFE29A" }} />
+                <p style={{ fontSize: 14, color: "#fff", margin: 0 }}>{errorMsg}</p>
+              </div>
+            </WallCallout>
+          </div>
+        )}
+
+        <div className="bts-grid2" style={{ display: "grid", gridTemplateColumns: "1fr 1.15fr", gap: 24, textAlign: "left", maxWidth: 820, margin: "0 auto" }}>
+          {/* ── Free trial card ── */}
+          <div style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.1)", borderRadius: 24, padding: 32, display: "flex", flexDirection: "column" }}>
+            <div style={{ fontWeight: 800, fontSize: 18, color: "#fff" }}>{isAf ? "Gratis proeftydperk" : "Free trial"}</div>
+            <div style={{ fontSize: 46, fontWeight: 900, letterSpacing: "-1px", margin: "8px 0 2px", color: "#fff" }}>{isAf ? "14 dae" : "14 days"}</div>
+            <div style={{ fontSize: 14, color: "#fff", opacity: 0.942, marginBottom: 20 }}>
+              {isAf ? "Volle platform. Geen kaart om te begin nie." : "Full platform. No card to start."}
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, flex: 1 }}>
+              {trialPerks.map((tp) => (
+                <div key={tp} style={{ display: "flex", gap: 10, fontSize: 14, lineHeight: 1.4, color: "#fff" }}>
+                  <span style={{ color: "#9FF5E8", fontWeight: 900 }}>✓</span>
+                  <span>{tp}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Trial signup form — parent + learner cell numbers */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 16, margin: "22px 0" }}>
+              <div>
+                <label style={{ fontSize: 13, fontWeight: 700, color: "#fff", display: "block", marginBottom: 6 }}>
+                  {isAf ? "Ouer se selfoonnommer" : "Parent's cell phone number"}
+                </label>
+                <div style={{ position: "relative" }}>
+                  <Phone style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", width: 18, height: 18, color: "#9FD8FF" }} />
+                  <Input
+                    type="tel"
+                    placeholder="082 123 4567"
+                    className="bts-input pl-11 h-12 text-base"
+                    value={parentCell}
+                    onChange={(e) => setParentCell(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div>
+                <label style={{ fontSize: 13, fontWeight: 700, color: "#fff", display: "block", marginBottom: 6 }}>
+                  {isAf ? "Leerder se selfoonnommer" : "Learner's cell phone number"}
+                </label>
+                <div style={{ position: "relative" }}>
+                  <Phone style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", width: 18, height: 18, color: "#9FD8FF" }} />
+                  <Input
+                    type="tel"
+                    placeholder="071 234 5678"
+                    className="bts-input pl-11 h-12 text-base"
+                    value={learnerCell}
+                    onChange={(e) => setLearnerCell(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={handleStartTrial}
+              className="bts-outline-btn"
+              data-testid="button-subscribe-cta"
+              style={{ ...OUTLINE_BTN_STYLE, width: "100%" }}
+            >
+              {isAf ? "Begin 14-dae gratis proeftydperk" : "Start 14-day free trial"}
+            </button>
+          </div>
+
+          {/* ── Premium card ── */}
+          <div
+            style={{
+              background: "linear-gradient(150deg,rgba(255,183,229,.14),rgba(159,216,255,.12))",
+              border: "1.5px solid #FFB7E5", borderRadius: 24, padding: 32,
+              position: "relative", boxShadow: "0 0 40px rgba(255,183,229,.2)",
+              display: "flex", flexDirection: "column",
+            }}
+          >
+            <span
+              style={{
+                position: "absolute", top: -13, left: 32,
+                fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#050508",
+                background: "linear-gradient(100deg,#9FF5E8,#FFE29A)", borderRadius: 999,
+                padding: "5px 16px", transform: "rotate(-2deg)",
+              }}
+            >
+              {isAf ? "gewildste 👑" : "most popular 👑"}
+            </span>
+            <div style={{ fontWeight: 800, fontSize: 18, color: "#fff" }}>BrainTrack Premium</div>
+            <div data-testid="text-subscribe-price" style={{ display: "flex", alignItems: "baseline", gap: 6, margin: "8px 0 2px" }}>
+              <span style={{ fontSize: 46, fontWeight: 900, letterSpacing: "-1px", color: "#fff" }}>R169</span>
+              <span style={{ fontSize: 16, fontWeight: 700, color: "#fff" }}>{isAf ? "/maand" : "/month"}</span>
+            </div>
+            <div style={{ fontSize: 14, color: "#fff", opacity: 0.942, marginBottom: 20 }}>
+              {isAf
+                ? "Per leerder · maandeliks gefaktureer · kanselleer enige tyd in die app"
+                : "Per learner · billed monthly · cancel anytime in the app"}
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, flex: 1 }}>
+              {premiumPerks.map((pp) => (
+                <div key={pp} style={{ display: "flex", gap: 10, fontSize: 14, lineHeight: 1.4, color: "#fff" }}>
+                  <span style={{ color: "#FFE29A", fontWeight: 900 }}>★</span>
+                  <span>{pp}</span>
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={handleStartTrial}
+              className="bts-rainbow-btn"
+              data-testid="button-subscribe-premium-cta"
+              style={{ ...RAINBOW_BTN_STYLE, width: "100%", marginTop: 22 }}
+            >
+              {isAf ? "Kry Premium — R169/m" : "Get Premium — R169/m"}
+            </button>
+          </div>
+        </div>
+
+        {/* Trust row */}
+        <div style={{ display: "flex", gap: 22, justifyContent: "center", flexWrap: "wrap", marginTop: 36, fontSize: 13.5, color: "#fff", opacity: 0.942 }}>
+          <span>{isAf ? "🔒 Fakturering is ouer-beheer" : "🔒 Billing is parent-owned"}</span>
+          <span>{isAf ? "🇿🇦 Plaaslike pryse, geen buitelandse valuta" : "🇿🇦 Local pricing, no forex"}</span>
+          <span>{isAf ? "🎓 Skool-grootmaatlisensies beskikbaar" : "🎓 School bulk licences available"}</span>
+        </div>
+
+        <p style={{ textAlign: "center", color: "#fff", opacity: 0.94, fontSize: 12, marginTop: 28, padding: "0 16px", lineHeight: 1.7 }}>
+          {isAf
+            ? "Deur voort te gaan, stem jy in tot ons Diensvoorwaardes en Privaatheidsbeleid. Ons sal vir jou 'n herinnering stuur voor jou proeftydperk verval."
+            : "By continuing, you agree to our Terms of Service and Privacy Policy. We'll send you a reminder before your trial expires."}
+        </p>
+
+        <div style={{ display: "flex", justifyContent: "center", marginTop: 24 }}>
+          <button
+            onClick={() => navigate(homeHref)}
+            style={{ display: "flex", alignItems: "center", gap: 8, background: "none", border: "none", color: "#fff", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins',sans-serif" }}
+          >
+            <ArrowLeft style={{ width: 16, height: 16 }} />
+            {isAf ? "Terug na tuisblad" : "Back to home"}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -511,74 +675,93 @@ function PaymentPickerScreen({
 
   return (
     <WallScreen>
-      <div className="text-center mb-8">
-        <CreditCard className="w-9 h-9 mx-auto mb-5" style={{ color: "#7FEFFF" }} />
-        <h1 className="text-2xl sm:text-3xl font-black tracking-tight leading-[1.1] text-center mb-4">
-          <span className="callout-hl">{t.headline}</span>
-        </h1>
-        <p className="text-white">{t.subheadline}</p>
+      <div style={{ textAlign: "center", marginBottom: 32 }}>
+        <CreditCard style={{ width: 36, height: 36, margin: "0 auto 20px", color: "#9FF5E8" }} />
+        <div
+          role="heading"
+          aria-level={1}
+          style={{ fontSize: 32, fontWeight: 900, letterSpacing: "-1px", lineHeight: 1.1, marginBottom: 14, fontFamily: "'Poppins',sans-serif", color: "#fff" }}
+        >
+          <span style={{ background: HEADLINE_GRADIENT, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>
+            {t.headline}
+          </span>
+        </div>
+        <p style={{ color: "#fff", opacity: 0.942, margin: 0 }}>{t.subheadline}</p>
       </div>
 
       {/* Cancelled banner */}
       {showCancelledBanner && (
-        <WallCallout color="#FFC48F" className="mb-6 flex items-start gap-3">
-          <XCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#FFC48F" }} />
-          <div>
-            <p className="text-sm font-bold text-white mb-0.5">{t.cancelledTitle}</p>
-            <p className="text-xs text-white">{t.cancelledDesc}</p>
-          </div>
-        </WallCallout>
+        <div style={{ marginBottom: 20 }}>
+          <WallCallout color="#FFE29A">
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+              <XCircle style={{ width: 20, height: 20, flex: "none", marginTop: 2, color: "#FFE29A" }} />
+              <div>
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#fff", margin: "0 0 2px" }}>{t.cancelledTitle}</p>
+                <p style={{ fontSize: 12, color: "#fff", opacity: 0.94, margin: 0 }}>{t.cancelledDesc}</p>
+              </div>
+            </div>
+          </WallCallout>
+        </div>
       )}
 
       {/* Error banner */}
       {errorMsg && (
-        <WallCallout color="#FFC48F" className="mb-6 flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#FFC48F" }} />
-          <p className="text-sm text-white">{errorMsg}</p>
-        </WallCallout>
+        <div style={{ marginBottom: 20 }}>
+          <WallCallout color="#FFE29A">
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+              <AlertCircle style={{ width: 20, height: 20, flex: "none", marginTop: 2, color: "#FFE29A" }} />
+              <p style={{ fontSize: 14, color: "#fff", margin: 0 }}>{errorMsg}</p>
+            </div>
+          </WallCallout>
+        </div>
       )}
 
-      {/* Charge summary — price in big pastel marker */}
-      <WallCallout color="#FFF29E" className="mb-8">
-        <p className="graffiti-hand text-xs uppercase tracking-[0.22em] mb-1" style={{ color: "#FFF29E", ...MARKER_SHADOW }}>
-          {t.charge}
-        </p>
-        <p className="graffiti-hand text-xl leading-snug" style={{ color: "#FFF29E", ...MARKER_SHADOW }}>
-          {t.chargeDetail}
-        </p>
-      </WallCallout>
+      {/* Charge summary */}
+      <div style={{ marginBottom: 28 }}>
+        <WallCallout color="#FFE29A">
+          <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 12, textTransform: "uppercase", letterSpacing: "2px", color: "#FFE29A", margin: "0 0 4px" }}>
+            {t.charge}
+          </p>
+          <p style={{ fontWeight: 800, fontSize: 17, color: "#FFE29A", margin: 0, lineHeight: 1.5 }}>
+            {t.chargeDetail}
+          </p>
+        </WallCallout>
+      </div>
 
-      {/* Method options — pastel left rules, recommended tagged in marker */}
-      <div className="space-y-6 mb-8">
+      {/* Method options */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 28 }}>
 
         {/* DebiCheck — recommended */}
         <button
           onClick={() => handleMethodSelect("debicheck")}
           disabled={anyLoading}
-          className="w-full text-left pl-4 py-2 group transition-opacity disabled:opacity-60 disabled:cursor-not-allowed"
-          style={{ borderLeft: "3px solid #93FFB8" }}
+          className="bts-method-btn"
+          style={{
+            "--c": "#94F7C5",
+            width: "100%", textAlign: "left", background: "rgba(255,255,255,.03)",
+            border: "1.5px solid rgba(255,255,255,.12)", borderRadius: 18, padding: "18px 20px",
+            cursor: anyLoading ? "not-allowed" : "pointer", opacity: anyLoading ? 0.6 : 1,
+            fontFamily: "'Poppins',sans-serif", color: "#fff",
+          } as React.CSSProperties}
         >
-          <div className="flex items-start gap-4">
-            <div className="w-9 h-9 flex items-center justify-center shrink-0">
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 16 }}>
+            <div style={{ width: 44, height: 44, flex: "none", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(148,247,197,.14)", boxShadow: "0 0 18px rgba(148,247,197,.25)" }}>
               {loadingMethod === "debicheck" ? (
-                <Loader2 className="w-5 h-5 animate-spin" style={{ color: "#93FFB8" }} />
+                <Loader2 className="animate-spin" style={{ width: 20, height: 20, color: "#94F7C5" }} />
               ) : (
-                <Landmark className="w-5 h-5" style={{ color: "#93FFB8" }} />
+                <Landmark style={{ width: 20, height: 20, color: "#94F7C5" }} />
               )}
             </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex flex-wrap items-center gap-2 mb-1">
-                <span className="font-bold text-white">{t.debicheck}</span>
-                <span
-                  className="graffiti-hand text-xs uppercase tracking-[0.15em]"
-                  style={{ color: "#93FFB8", ...MARKER_SHADOW }}
-                >
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                <span style={{ fontWeight: 700, color: "#fff" }}>{t.debicheck}</span>
+                <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 12, textTransform: "uppercase", letterSpacing: "1.5px", color: "#94F7C5" }}>
                   {t.debicheckBadge}
                 </span>
               </div>
-              <p className="text-sm text-white leading-relaxed">{t.debicheckDesc}</p>
+              <p style={{ fontSize: 13.5, color: "#fff", opacity: 0.94, lineHeight: 1.55, margin: 0 }}>{t.debicheckDesc}</p>
             </div>
-            <ChevronRight className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#93FFB8" }} />
+            <ChevronRight style={{ width: 20, height: 20, flex: "none", marginTop: 2, color: "#94F7C5" }} />
           </div>
         </button>
 
@@ -586,35 +769,41 @@ function PaymentPickerScreen({
         <button
           onClick={() => handleMethodSelect("card")}
           disabled={anyLoading}
-          className="w-full text-left pl-4 py-2 group transition-opacity disabled:opacity-60 disabled:cursor-not-allowed"
-          style={{ borderLeft: "3px solid #6FA8FF" }}
+          className="bts-method-btn"
+          style={{
+            "--c": "#9FD8FF",
+            width: "100%", textAlign: "left", background: "rgba(255,255,255,.03)",
+            border: "1.5px solid rgba(255,255,255,.12)", borderRadius: 18, padding: "18px 20px",
+            cursor: anyLoading ? "not-allowed" : "pointer", opacity: anyLoading ? 0.6 : 1,
+            fontFamily: "'Poppins',sans-serif", color: "#fff",
+          } as React.CSSProperties}
         >
-          <div className="flex items-start gap-4">
-            <div className="w-9 h-9 flex items-center justify-center shrink-0">
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 16 }}>
+            <div style={{ width: 44, height: 44, flex: "none", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(159,216,255,.14)", boxShadow: "0 0 18px rgba(159,216,255,.25)" }}>
               {loadingMethod === "card" ? (
-                <Loader2 className="w-5 h-5 animate-spin" style={{ color: "#6FA8FF" }} />
+                <Loader2 className="animate-spin" style={{ width: 20, height: 20, color: "#9FD8FF" }} />
               ) : (
-                <CreditCard className="w-5 h-5" style={{ color: "#6FA8FF" }} />
+                <CreditCard style={{ width: 20, height: 20, color: "#9FD8FF" }} />
               )}
             </div>
-            <div className="flex-1 min-w-0">
-              <span className="font-bold text-white block mb-1">{t.card}</span>
-              <p className="text-sm text-white leading-relaxed">{t.cardDesc}</p>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <span style={{ fontWeight: 700, color: "#fff", display: "block", marginBottom: 4 }}>{t.card}</span>
+              <p style={{ fontSize: 13.5, color: "#fff", opacity: 0.94, lineHeight: 1.55, margin: 0 }}>{t.cardDesc}</p>
             </div>
-            <ChevronRight className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#6FA8FF" }} />
+            <ChevronRight style={{ width: 20, height: 20, flex: "none", marginTop: 2, color: "#9FD8FF" }} />
           </div>
         </button>
       </div>
 
-      <p className="text-center text-white text-xs px-4 leading-relaxed mb-8">
+      <p style={{ textAlign: "center", color: "#fff", opacity: 0.94, fontSize: 12, padding: "0 16px", lineHeight: 1.7, marginBottom: 28 }}>
         {t.secure}
       </p>
 
       <button
         onClick={() => (window.location.href = homeHref)} // nosemgrep: no-raw-window-location-href-variable
-        className="w-full flex items-center justify-center gap-2 text-white text-sm font-medium"
+        style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: "none", border: "none", color: "#fff", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins',sans-serif" }}
       >
-        <ArrowLeft className="w-4 h-4" />
+        <ArrowLeft style={{ width: 16, height: 16 }} />
         {t.back}
       </button>
     </WallScreen>
@@ -776,14 +965,18 @@ function SuccessScreen({
 
   return (
     <WallScreen>
-      <div className="text-center">
-        <CheckCircle2 className="w-14 h-14 mx-auto mb-6" style={{ color: "#93FFB8" }} />
-        <h1 className="text-3xl sm:text-4xl font-black tracking-tight leading-[1.1] text-center mb-6">
-          <span className="callout-hl">
+      <div style={{ textAlign: "center" }}>
+        <CheckCircle2 style={{ width: 56, height: 56, margin: "0 auto 24px", color: "#94F7C5", filter: "drop-shadow(0 0 18px rgba(148,247,197,.45))" }} />
+        <div
+          role="heading"
+          aria-level={1}
+          style={{ fontSize: 36, fontWeight: 900, letterSpacing: "-1px", lineHeight: 1.1, marginBottom: 18, fontFamily: "'Poppins',sans-serif", color: "#fff" }}
+        >
+          <span style={{ background: HEADLINE_GRADIENT, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>
             {isAf ? "Welkom by Brain Boost!" : "Welcome to Brain Boost!"}
           </span>
-        </h1>
-        <p className="text-white text-lg mb-6">
+        </div>
+        <p style={{ color: "#fff", fontSize: 17, marginBottom: 24 }}>
           {isAf
             ? "Jou 14-dae gratis proeftydperk is nou aktief."
             : "Your 14-day free trial is now active."}
@@ -791,70 +984,82 @@ function SuccessScreen({
 
         {/* SMS delivery status */}
         {smsFailed && (
-          <WallCallout color="#FFC48F" className="mb-6 flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#FFC48F" }} />
-            <div>
-              <p className="text-sm font-bold text-white mb-0.5">
-                {isAf ? "WhatsApp-skakel nie gestuur nie" : "WhatsApp link not sent"}
-              </p>
-              <p className="text-xs text-white">
-                {isAf
-                  ? "Die aanmeldingskakels kon nie afgelewer word nie. Gebruik die knoppie hieronder om dit weer te probeer of die nommer reg te stel."
-                  : "The sign-in link could not be delivered. Use the button below to retry or correct the number."}
-              </p>
-            </div>
-          </WallCallout>
+          <div style={{ marginBottom: 20 }}>
+            <WallCallout color="#FFE29A">
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                <AlertCircle style={{ width: 20, height: 20, flex: "none", marginTop: 2, color: "#FFE29A" }} />
+                <div>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: "#fff", margin: "0 0 2px" }}>
+                    {isAf ? "WhatsApp-skakel nie gestuur nie" : "WhatsApp link not sent"}
+                  </p>
+                  <p style={{ fontSize: 12, color: "#fff", opacity: 0.94, margin: 0 }}>
+                    {isAf
+                      ? "Die aanmeldingskakels kon nie afgelewer word nie. Gebruik die knoppie hieronder om dit weer te probeer of die nommer reg te stel."
+                      : "The sign-in link could not be delivered. Use the button below to retry or correct the number."}
+                  </p>
+                </div>
+              </div>
+            </WallCallout>
+          </div>
         )}
 
         {smsSent && !smsFailed && (
-          <WallCallout
-            color={deliveryStatus === "delivered" || deliveryStatus === "opened" ? "#93FFB8" : "#7FEFFF"}
-            className="mb-6 flex items-center gap-2 transition-colors"
-          >
-            {deliveryStatus === "delivered" || deliveryStatus === "opened" ? (
-              <CheckCircle2 className="w-4 h-4 shrink-0" style={{ color: "#93FFB8" }} />
-            ) : (
-              <Loader2 className="w-4 h-4 shrink-0 animate-spin" style={{ color: "#7FEFFF" }} />
-            )}
-            <p className="text-xs text-white">
-              {deliveryStatus === "delivered"
-                ? (isAf ? `Skakel afgelewer aan ${smsResult.to}` : `Link delivered to ${smsResult.to}`)
-                : deliveryStatus === "opened"
-                ? (isAf ? `Leerder het die skakel oopgemaak` : `Learner opened the link`)
-                : (isAf
-                  ? `Aanmeldingskakel gestuur na ${smsResult.to} — kontroleer aflewering…`
-                  : `Sign-in link sent to ${smsResult.to} — checking delivery…`)}
-            </p>
-          </WallCallout>
+          <div style={{ marginBottom: 20 }}>
+            <WallCallout color={deliveryStatus === "delivered" || deliveryStatus === "opened" ? "#94F7C5" : "#9FF5E8"}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                {deliveryStatus === "delivered" || deliveryStatus === "opened" ? (
+                  <CheckCircle2 style={{ width: 16, height: 16, flex: "none", color: "#94F7C5" }} />
+                ) : (
+                  <Loader2 className="animate-spin" style={{ width: 16, height: 16, flex: "none", color: "#9FF5E8" }} />
+                )}
+                <p style={{ fontSize: 12, color: "#fff", margin: 0 }}>
+                  {deliveryStatus === "delivered"
+                    ? (isAf ? `Skakel afgelewer aan ${smsResult.to}` : `Link delivered to ${smsResult.to}`)
+                    : deliveryStatus === "opened"
+                    ? (isAf ? `Leerder het die skakel oopgemaak` : `Learner opened the link`)
+                    : (isAf
+                      ? `Aanmeldingskakel gestuur na ${smsResult.to} — kontroleer aflewering…`
+                      : `Sign-in link sent to ${smsResult.to} — checking delivery…`)}
+                </p>
+              </div>
+            </WallCallout>
+          </div>
         )}
 
         {/* Inline resend feedback */}
         {resendStatus === "success" && resendMsg && (
-          <WallCallout color="#93FFB8" className="mb-4 flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 shrink-0" style={{ color: "#93FFB8" }} />
-            <p className="text-xs text-white">{resendMsg}</p>
-          </WallCallout>
+          <div style={{ marginBottom: 16 }}>
+            <WallCallout color="#94F7C5">
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <CheckCircle2 style={{ width: 16, height: 16, flex: "none", color: "#94F7C5" }} />
+                <p style={{ fontSize: 12, color: "#fff", margin: 0 }}>{resendMsg}</p>
+              </div>
+            </WallCallout>
+          </div>
         )}
         {resendStatus === "error" && resendMsg && (
-          <WallCallout color="#FFC48F" className="mb-4 flex items-start gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "#FFC48F" }} />
-            <p className="text-xs text-white">{resendMsg}</p>
-          </WallCallout>
+          <div style={{ marginBottom: 16 }}>
+            <WallCallout color="#FFE29A">
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                <AlertCircle style={{ width: 16, height: 16, flex: "none", marginTop: 2, color: "#FFE29A" }} />
+                <p style={{ fontSize: 12, color: "#fff", margin: 0 }}>{resendMsg}</p>
+              </div>
+            </WallCallout>
+          </div>
         )}
 
         {/* Corrected cell input (shown on demand) */}
         {showCellInput && (
-          <div className="mb-4 text-left">
-            <label className="text-xs font-bold text-white ml-1 mb-1 block">
+          <div style={{ marginBottom: 16, textAlign: "left" }}>
+            <label style={{ fontSize: 12, fontWeight: 700, color: "#fff", display: "block", marginBottom: 4 }}>
               {isAf ? "Leerder se selfoonnommer" : "Learner's cell number"}
             </label>
-            <div className="relative">
-              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#6FA8FF" }} />
+            <div style={{ position: "relative" }}>
+              <Phone style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, color: "#9FD8FF" }} />
               <Input
                 type="tel"
                 placeholder="071 234 5678"
-                className="pl-10 h-10 text-sm bg-transparent text-white"
-                style={{ borderColor: "#6FA8FF" }}
+                className="bts-input pl-10 h-10 text-sm"
                 value={editCell}
                 onChange={(e) => setEditCell(e.target.value)}
               />
@@ -863,27 +1068,27 @@ function SuccessScreen({
         )}
 
         {/* Resend / correct number actions */}
-        <div className={`flex gap-3 mb-8 ${smsFailed ? "flex-col items-center" : "flex-row justify-center"}`}>
+        <div style={{ display: "flex", gap: 12, marginBottom: 32, flexDirection: smsFailed ? "column" : "row", alignItems: "center", justifyContent: "center" }}>
           {smsFailed ? (
             <>
-              <Button
+              <button
                 onClick={handleResend}
                 disabled={resendLoading || cooldownSecs > 0}
-                className={CTA_CLASSES}
-                style={{ background: "#7FEFFF", color: "#0a0a0a" }}
+                className="bts-rainbow-btn"
+                style={{ ...RAINBOW_BTN_STYLE, display: "inline-flex", alignItems: "center", gap: 8, opacity: resendLoading || cooldownSecs > 0 ? 0.6 : 1, cursor: resendLoading || cooldownSecs > 0 ? "not-allowed" : "pointer" }}
               >
                 {resendLoading ? (
-                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  <Loader2 className="animate-spin" style={{ width: 16, height: 16 }} />
                 ) : (
-                  <Send className="w-4 h-4 mr-2" />
+                  <Send style={{ width: 16, height: 16 }} />
                 )}
                 {cooldownSecs > 0
                   ? (isAf ? `Wag ${cooldownSecs}s...` : `Wait ${cooldownSecs}s...`)
                   : (isAf ? "Stuur skakel weer" : "Resend link")}
-              </Button>
+              </button>
               <button
                 onClick={() => setShowCellInput((v) => !v)}
-                className="text-sm text-white underline underline-offset-2"
+                style={{ background: "none", border: "none", color: "#fff", fontSize: 14, textDecoration: "underline", textUnderlineOffset: 2, cursor: "pointer", fontFamily: "'Poppins',sans-serif" }}
               >
                 {isAf ? "Nommer reg te stel" : "Correct the number"}
               </button>
@@ -896,9 +1101,9 @@ function SuccessScreen({
                 setResendMsg(null);
               }}
               disabled={resendLoading || cooldownSecs > 0}
-              className="flex items-center gap-1.5 text-sm text-white"
+              style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: "none", color: "#fff", fontSize: 14, cursor: resendLoading || cooldownSecs > 0 ? "not-allowed" : "pointer", fontFamily: "'Poppins',sans-serif" }}
             >
-              <RefreshCw className="w-3.5 h-3.5" style={{ color: "#7FEFFF" }} />
+              <RefreshCw style={{ width: 14, height: 14, color: "#9FF5E8" }} />
               {cooldownSecs > 0
                 ? (isAf ? `Wag ${cooldownSecs}s...` : `Wait ${cooldownSecs}s...`)
                 : (isAf ? "Stuur skakel weer" : "Resend link")}
@@ -908,31 +1113,31 @@ function SuccessScreen({
 
         {/* Show resend button when cell input is visible and SMS was previously sent */}
         {showCellInput && smsSent && (
-          <Button
+          <button
             onClick={handleResend}
             disabled={resendLoading || cooldownSecs > 0}
-            className={`${CTA_CLASSES} mb-6`}
-            style={{ border: "1.5px solid #7FEFFF", background: "#0a0a0a", color: "#7FEFFF" }}
+            className="bts-outline-btn"
+            style={{ ...OUTLINE_BTN_STYLE, display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 24, opacity: resendLoading || cooldownSecs > 0 ? 0.6 : 1 }}
           >
             {resendLoading ? (
-              <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              <Loader2 className="animate-spin" style={{ width: 16, height: 16 }} />
             ) : (
-              <Send className="w-4 h-4 mr-2" />
+              <Send style={{ width: 16, height: 16 }} />
             )}
             {cooldownSecs > 0
               ? (isAf ? `Wag ${cooldownSecs}s...` : `Wait ${cooldownSecs}s...`)
               : (isAf ? "Stuur skakel" : "Send link")}
-          </Button>
+          </button>
         )}
 
-        <div className="flex justify-center">
-          <Button
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <button
             onClick={() => navigate("/dashboard")}
-            className={CTA_CLASSES}
-            style={{ background: "#7FEFFF", color: "#0a0a0a" }}
+            className="bts-rainbow-btn"
+            style={RAINBOW_BTN_STYLE}
           >
             {isAf ? "Gaan na Dashboard" : "Go to Dashboard"}
-          </Button>
+          </button>
         </div>
       </div>
     </WallScreen>
@@ -962,66 +1167,72 @@ function PaymentSuccessScreen({
 
   return (
     <WallScreen testId="payment-success-panel">
-      <div className="text-center">
-        <CheckCircle2 className="w-14 h-14 mx-auto mb-6" style={{ color: "#93FFB8" }} />
+      <div style={{ textAlign: "center" }}>
+        <CheckCircle2 style={{ width: 56, height: 56, margin: "0 auto 24px", color: "#94F7C5", filter: "drop-shadow(0 0 18px rgba(148,247,197,.45))" }} />
 
-        <h1
-          className="text-3xl sm:text-4xl font-black tracking-tight leading-[1.1] text-center mb-5"
+        <div
+          role="heading"
+          aria-level={1}
           data-testid="payment-success-heading"
+          style={{ fontSize: 36, fontWeight: 900, letterSpacing: "-1px", lineHeight: 1.1, marginBottom: 16, fontFamily: "'Poppins',sans-serif", color: "#fff" }}
         >
-          <span className="callout-hl">
+          <span style={{ background: HEADLINE_GRADIENT, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>
             {isAf ? "Betaling suksesvol" : "Payment successful"}
           </span>
-        </h1>
-        <p className="text-white text-lg mb-8">
+        </div>
+        <p style={{ color: "#fff", fontSize: 17, marginBottom: 32 }}>
           {isAf
             ? "Brain Boost is nou aktief op jou rekening."
             : "Brain Boost is now active on your account."}
         </p>
 
-        {/* Payment method — pastel left rule, no box */}
-        <WallCallout color="#6FA8FF" className="mb-6">
-          <div className="flex items-start gap-3 mb-2">
-            {isDebicheck ? (
-              <Landmark className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#6FA8FF" }} />
-            ) : (
-              <CreditCard className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#6FA8FF" }} />
-            )}
-            <div className="flex-1 min-w-0">
-              <p className="graffiti-hand text-xs uppercase tracking-[0.22em] mb-0.5" style={{ color: "#6FA8FF", ...MARKER_SHADOW }}>
-                {isAf ? "Betaalmetode" : "Payment method"}
-              </p>
-              <p className="font-bold text-white" data-testid="payment-success-method">
-                {methodLabel}
-              </p>
+        {/* Payment method */}
+        <div style={{ marginBottom: 20 }}>
+          <WallCallout color="#9FD8FF">
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 8 }}>
+              {isDebicheck ? (
+                <Landmark style={{ width: 20, height: 20, flex: "none", marginTop: 2, color: "#9FD8FF" }} />
+              ) : (
+                <CreditCard style={{ width: 20, height: 20, flex: "none", marginTop: 2, color: "#9FD8FF" }} />
+              )}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 12, textTransform: "uppercase", letterSpacing: "2px", color: "#9FD8FF", margin: "0 0 2px" }}>
+                  {isAf ? "Betaalmetode" : "Payment method"}
+                </p>
+                <p style={{ fontWeight: 700, color: "#fff", margin: 0 }} data-testid="payment-success-method">
+                  {methodLabel}
+                </p>
+              </div>
             </div>
-          </div>
-          <p className="text-sm text-white leading-relaxed">
-            {methodDesc}
-          </p>
-        </WallCallout>
+            <p style={{ fontSize: 14, color: "#fff", opacity: 0.94, lineHeight: 1.6, margin: 0 }}>
+              {methodDesc}
+            </p>
+          </WallCallout>
+        </div>
 
-        {/* Billing — price in big pastel marker */}
-        <WallCallout color="#FFF29E" className="mb-8">
-          <p className="graffiti-hand text-xs uppercase tracking-[0.22em] mb-1" style={{ color: "#FFF29E", ...MARKER_SHADOW }}>
-            {isAf ? "Maandeliks gehef" : "Billed monthly"}
-          </p>
-          <p className="graffiti-hand text-xl" style={{ color: "#FFF29E", ...MARKER_SHADOW }}>
-            {isAf
-              ? "R169/maand · Kanselleer enige tyd"
-              : "R169/month · Cancel anytime"}
-          </p>
-        </WallCallout>
+        {/* Billing */}
+        <div style={{ marginBottom: 32 }}>
+          <WallCallout color="#FFE29A">
+            <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 12, textTransform: "uppercase", letterSpacing: "2px", color: "#FFE29A", margin: "0 0 4px" }}>
+              {isAf ? "Maandeliks gehef" : "Billed monthly"}
+            </p>
+            <p style={{ fontWeight: 800, fontSize: 17, color: "#FFE29A", margin: 0 }}>
+              {isAf
+                ? "R169/maand · Kanselleer enige tyd"
+                : "R169/month · Cancel anytime"}
+            </p>
+          </WallCallout>
+        </div>
 
-        <div className="flex justify-center">
-          <Button
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <button
             onClick={() => navigate("/dashboard")}
-            className={CTA_CLASSES}
-            style={{ background: "#7FEFFF", color: "#0a0a0a" }}
+            className="bts-rainbow-btn"
             data-testid="button-payment-success-dashboard"
+            style={RAINBOW_BTN_STYLE}
           >
             {isAf ? "Gaan na Dashboard" : "Go to Dashboard"}
-          </Button>
+          </button>
         </div>
       </div>
     </WallScreen>
@@ -1031,22 +1242,26 @@ function PaymentSuccessScreen({
 function NotConfiguredScreen({ isAf, homeHref }: { isAf: boolean, homeHref: string }) {
   return (
     <WallScreen>
-      <div className="text-center">
-        <AlertCircle className="w-14 h-14 mx-auto mb-6" style={{ color: "#FFC48F" }} />
-        <h1 className="text-2xl sm:text-3xl font-black tracking-tight leading-[1.1] text-center mb-5">
-          <span className="callout-hl">
+      <div style={{ textAlign: "center" }}>
+        <AlertCircle style={{ width: 56, height: 56, margin: "0 auto 24px", color: "#FFE29A", filter: "drop-shadow(0 0 18px rgba(255,226,154,.4))" }} />
+        <div
+          role="heading"
+          aria-level={1}
+          style={{ fontSize: 32, fontWeight: 900, letterSpacing: "-1px", lineHeight: 1.1, marginBottom: 16, fontFamily: "'Poppins',sans-serif", color: "#fff" }}
+        >
+          <span style={{ background: HEADLINE_GRADIENT, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>
             {isAf ? "Betalings nie opgestel nie" : "Payments not configured"}
           </span>
-        </h1>
-        <p className="text-white mb-10">
+        </div>
+        <p style={{ color: "#fff", opacity: 0.94, marginBottom: 40 }}>
           {isAf
             ? "Ons kan nie tans nuwe proeftydperke verwerk nie. Probeer asseblief later weer."
             : "We cannot process new trials at this time. Please try again later."}
         </p>
         <a
           href={homeHref}
-          className="inline-flex items-center justify-center px-5 py-2.5 text-sm font-bold rounded-xl"
-          style={{ border: "1.5px solid #7FEFFF", background: "#0a0a0a", color: "#7FEFFF" }}
+          className="bts-outline-btn"
+          style={{ ...OUTLINE_BTN_STYLE, display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}
         >
           {isAf ? "Terug" : "Back"}
         </a>

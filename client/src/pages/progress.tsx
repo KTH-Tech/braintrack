@@ -67,7 +67,7 @@ export default function ProgressPage() {
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       <GraffitiSplats variant="band" opacity={0.35} />
-      <header className="border-b-2 sticky top-0 z-50 bg-background/95 relative" style={{ borderColor: "rgba(127,239,255,0.5)" }}>
+      <header className="border-b-2 sticky top-0 z-50 bg-background/95 relative" style={{ borderColor: "rgba(110,231,249,0.5)" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 gap-4">
             <div className="flex items-center gap-3">
@@ -75,19 +75,19 @@ export default function ProgressPage() {
             </div>
             <nav className="flex items-center gap-2">
               <Link href="/dashboard">
-                <button data-testid="link-home" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black text-sm font-bold" style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF" }}>
+                <button data-testid="link-home" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black text-sm font-bold" style={{ color: "#6EE7F9", border: "1.5px solid #6EE7F9" }}>
                   <BookOpen className="w-4 h-4" />
                   <span className="hidden md:inline">{isAf ? "Tuis" : "Home"}</span>
                 </button>
               </Link>
               <Link href="/subjects">
-                <button data-testid="link-subjects" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black text-sm font-bold" style={{ color: "#93FFB8", border: "1.5px solid #93FFB8" }}>
+                <button data-testid="link-subjects" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black text-sm font-bold" style={{ color: "#94F7C5", border: "1.5px solid #94F7C5" }}>
                   <Languages className="w-4 h-4" />
                   <span className="hidden md:inline">{isAf ? "Vakke" : "Subjects"}</span>
                 </button>
               </Link>
               <Link href="/progress">
-                <button data-testid="link-progress" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold" style={{ background: "#7FEFFF", color: "#0a0a0a" }}>
+                <button data-testid="link-progress" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold" style={{ background: "#6EE7F9", color: "#0a0a0a" }}>
                   <TrendingUp className="w-4 h-4" />
                   <span className="hidden md:inline">{isAf ? "Vordering" : "Progress"}</span>
                 </button>
@@ -97,7 +97,7 @@ export default function ProgressPage() {
               <button
                 onClick={() => toggleLanguage()}
                 className="px-4 py-2 rounded-xl bg-black text-sm font-bold"
-                style={{ color: "#C6A4FF", border: "1.5px solid #C6A4FF" }}
+                style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
                 data-testid="button-language-toggle"
               >
                 {isAf ? "AF" : "EN"}
@@ -107,7 +107,7 @@ export default function ProgressPage() {
                 data-testid="button-logout"
                 aria-label={isAf ? "Uitteken" : "Sign Out"}
                 className="inline-flex items-center px-4 py-2 rounded-xl bg-black text-sm font-bold"
-                style={{ color: "#FF9FE5", border: "1.5px solid #FF9FE5" }}
+                style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}
               >
                 <LogOut className="w-4 h-4 sm:mr-2" />
                 <span className="hidden sm:inline">{isAf ? "Uitteken" : "Sign Out"}</span>
@@ -120,9 +120,9 @@ export default function ProgressPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
         {/* Cosmic wordmark wash behind the report */}
         <div aria-hidden className="pointer-events-none absolute inset-0 -z-0 opacity-40">
-          <div className="absolute top-[5%] left-[10%] w-[420px] h-[420px] rounded-full blur-3xl" style={{ background: "radial-gradient(circle, rgba(127,239,255,0.22), transparent 70%)" }} />
-          <div className="absolute top-[40%] right-[0%] w-[380px] h-[380px] rounded-full blur-3xl" style={{ background: "radial-gradient(circle, rgba(198,164,255,0.22), transparent 70%)" }} />
-          <div className="absolute bottom-[5%] left-[30%] w-[420px] h-[420px] rounded-full blur-3xl" style={{ background: "radial-gradient(circle, rgba(255,196,143,0.18), transparent 70%)" }} />
+          <div className="absolute top-[5%] left-[10%] w-[420px] h-[420px] rounded-full blur-3xl" style={{ background: "radial-gradient(circle, rgba(110,231,249,0.22), transparent 70%)" }} />
+          <div className="absolute top-[40%] right-[0%] w-[380px] h-[380px] rounded-full blur-3xl" style={{ background: "radial-gradient(circle, rgba(197,179,255,0.22), transparent 70%)" }} />
+          <div className="absolute bottom-[5%] left-[30%] w-[420px] h-[420px] rounded-full blur-3xl" style={{ background: "radial-gradient(circle, rgba(255,226,154,0.18), transparent 70%)" }} />
         </div>
 
         <div className="space-y-8 relative z-10">
@@ -139,8 +139,8 @@ export default function ProgressPage() {
               acc >= 55 ? (isAf ? "Op Koers"    : "On Track") :
               acc >= 40 ? (isAf ? "Bou Momentum": "Building Momentum") :
                           (isAf ? "Ontluik"     : "Emerging");
-            const rankHex = acc >= 70 ? "#7FEFFF" : acc >= 55 ? "#FFF29E" : acc >= 40 ? "#FFC48F" : "#FF9FE5";
-            const readinessHex = readiness >= 75 ? "#7FEFFF" : readiness >= 55 ? "#FFF29E" : readiness >= 40 ? "#FFC48F" : "#FF9FE5";
+            const rankHex = acc >= 70 ? "#6EE7F9" : acc >= 55 ? "#FFE29A" : acc >= 40 ? "#FFE29A" : "#FFB7E5";
+            const readinessHex = readiness >= 75 ? "#6EE7F9" : readiness >= 55 ? "#FFE29A" : readiness >= 40 ? "#FFE29A" : "#FFB7E5";
             const R = 52;
             const C = 2 * Math.PI * R;
             const offset = C - (Math.min(100, Math.max(0, acc)) / 100) * C;
@@ -149,8 +149,8 @@ export default function ProgressPage() {
               <div
                 className="relative overflow-hidden rounded-3xl bg-background p-6 sm:p-8 md:p-10"
                 style={{
-                  border: "1.5px solid #7FEFFF",
-                  boxShadow: "0 0 0 1px rgba(127,239,255,0.28), 0 0 32px rgba(127,239,255,0.35), inset 0 0 28px rgba(0,0,0,0.6)",
+                  border: "1.5px solid #6EE7F9",
+                  boxShadow: "0 0 0 1px rgba(110,231,249,0.28), 0 0 32px rgba(110,231,249,0.35), inset 0 0 28px rgba(0,0,0,0.6)",
                 }}
               >
                 {/* Grid texture */}
@@ -159,7 +159,7 @@ export default function ProgressPage() {
                   className="absolute inset-0 pointer-events-none opacity-[0.08]"
                   style={{
                     backgroundImage:
-                      "linear-gradient(rgba(127,239,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(127,239,255,1) 1px, transparent 1px)",
+                      "linear-gradient(rgba(110,231,249,1) 1px, transparent 1px), linear-gradient(90deg, rgba(110,231,249,1) 1px, transparent 1px)",
                     backgroundSize: "44px 44px",
                     maskImage: "radial-gradient(ellipse at center, black 40%, transparent 80%)",
                     WebkitMaskImage: "radial-gradient(ellipse at center, black 40%, transparent 80%)",
@@ -170,21 +170,21 @@ export default function ProgressPage() {
                   aria-hidden
                   className="absolute left-0 right-0 h-px pointer-events-none progress-hero-scan"
                   style={{
-                    background: "linear-gradient(90deg, transparent, #7FEFFF 20%, #C6A4FF 50%, #FF9FE5 80%, transparent)",
-                    boxShadow: "0 0 14px #7FEFFF, 0 0 28px #C6A4FF",
+                    background: "linear-gradient(90deg, transparent, #6EE7F9 20%, #C5B3FF 50%, #FFB7E5 80%, transparent)",
+                    boxShadow: "0 0 14px #6EE7F9, 0 0 28px #C5B3FF",
                   }}
                 />
                 {/* Rainbow top bar */}
                 <div
                   aria-hidden
                   className="absolute top-0 left-0 right-0 h-[3px]"
-                  style={{ background: "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)" }}
+                  style={{ background: "linear-gradient(90deg, #FFE29A, #FFE29A, #94F7C5, #6EE7F9, #9FD8FF, #C5B3FF, #FFB7E5)" }}
                 />
                 {/* Corner brackets */}
-                <span aria-hidden className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2" style={{ borderColor: "#7FEFFF" }} />
-                <span aria-hidden className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2" style={{ borderColor: "#7FEFFF" }} />
-                <span aria-hidden className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2" style={{ borderColor: "#7FEFFF" }} />
-                <span aria-hidden className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2" style={{ borderColor: "#7FEFFF" }} />
+                <span aria-hidden className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2" style={{ borderColor: "#6EE7F9" }} />
+                <span aria-hidden className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2" style={{ borderColor: "#6EE7F9" }} />
+                <span aria-hidden className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2" style={{ borderColor: "#6EE7F9" }} />
+                <span aria-hidden className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2" style={{ borderColor: "#6EE7F9" }} />
 
                 <div className="relative flex flex-col lg:flex-row lg:items-center gap-8">
                   {/* Left: copy + ticker */}
@@ -192,10 +192,10 @@ export default function ProgressPage() {
                     <div className="flex flex-wrap items-center gap-2">
                       <div
                         className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-background"
-                        style={{ border: "1px solid rgba(127,239,255,0.55)", boxShadow: "0 0 12px rgba(127,239,255,0.4)" }}
+                        style={{ border: "1px solid rgba(110,231,249,0.55)", boxShadow: "0 0 12px rgba(110,231,249,0.4)" }}
                       >
-                        <span className="w-1.5 h-1.5 rounded-full progress-hero-pulse" style={{ background: "#7FEFFF", boxShadow: "0 0 6px #7FEFFF" }} />
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#7FEFFF" }}>
+                        <span className="w-1.5 h-1.5 rounded-full progress-hero-pulse" style={{ background: "#6EE7F9", boxShadow: "0 0 6px #6EE7F9" }} />
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#6EE7F9" }}>
                           {isAf ? "Prestasieverslag" : "Performance Report"}
                         </span>
                       </div>
@@ -209,10 +209,10 @@ export default function ProgressPage() {
                       </div>
                       <div
                         className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-background"
-                        style={{ border: "1px solid rgba(255,196,143,0.55)", boxShadow: "0 0 10px rgba(255,196,143,0.4)" }}
+                        style={{ border: "1px solid rgba(255,226,154,0.55)", boxShadow: "0 0 10px rgba(255,226,154,0.4)" }}
                       >
-                        <Flame className="w-3 h-3" style={{ color: "#FFC48F", filter: "drop-shadow(0 0 4px #FFC48F)" }} />
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#FFC48F" }}>
+                        <Flame className="w-3 h-3" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }} />
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#FFE29A" }}>
                           {streak} {isAf ? (streak === 1 ? "dag" : "dae") : (streak === 1 ? "day" : "days")}
                         </span>
                       </div>
@@ -222,11 +222,11 @@ export default function ProgressPage() {
                       className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-[0.98]"
                       style={{
                         background:
-                          "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)",
+                          "linear-gradient(90deg, #FFE29A, #FFE29A, #94F7C5, #6EE7F9, #9FD8FF, #C5B3FF, #FFB7E5)",
                         WebkitBackgroundClip: "text",
                         WebkitTextFillColor: "transparent",
                         backgroundClip: "text",
-                        filter: "drop-shadow(0 0 18px rgba(127,239,255,0.25))",
+                        filter: "drop-shadow(0 0 18px rgba(110,231,249,0.25))",
                       }}
                     >
                       {isAf ? "Jou Vordering" : "Your Progress"}
@@ -256,8 +256,8 @@ export default function ProgressPage() {
                           style={{
                             width: `${readiness}%`,
                             background:
-                              "linear-gradient(90deg, #FFC48F, #FFF29E, #93FFB8, #7FEFFF, #6FA8FF, #C6A4FF, #FF9FE5)",
-                            boxShadow: "0 0 14px rgba(127,239,255,0.7), 0 0 22px rgba(198,164,255,0.5)",
+                              "linear-gradient(90deg, #FFE29A, #FFE29A, #94F7C5, #6EE7F9, #9FD8FF, #C5B3FF, #FFB7E5)",
+                            boxShadow: "0 0 14px rgba(110,231,249,0.7), 0 0 22px rgba(197,179,255,0.5)",
                           }}
                         />
                       </div>
@@ -266,9 +266,9 @@ export default function ProgressPage() {
                     {/* Mini ticker */}
                     <div className="grid grid-cols-3 gap-2 pt-1">
                       {[
-                        { k: isAf ? "Vraestelle" : "Papers",  v: papers,    hex: "#C6A4FF" },
-                        { k: isAf ? "Vrae"       : "Questions", v: questions, hex: "#FFF29E" },
-                        { k: isAf ? "Streep"     : "Streak",  v: streak,    hex: "#FFC48F" },
+                        { k: isAf ? "Vraestelle" : "Papers",  v: papers,    hex: "#C5B3FF" },
+                        { k: isAf ? "Vrae"       : "Questions", v: questions, hex: "#FFE29A" },
+                        { k: isAf ? "Streep"     : "Streak",  v: streak,    hex: "#FFE29A" },
                       ].map(({ k, v, hex }) => (
                         <div
                           key={k}
@@ -285,7 +285,7 @@ export default function ProgressPage() {
                       <Link href="/dashboard">
                         <button
                           className="px-4 py-2 rounded-xl bg-black font-bold text-sm"
-                          style={{ color: "#7FEFFF", border: "1.5px solid #7FEFFF" }}
+                          style={{ color: "#6EE7F9", border: "1.5px solid #6EE7F9" }}
                           data-testid="button-back"
                         >
                           <ArrowLeft className="w-3.5 h-3.5 inline mr-1.5" />
@@ -305,11 +305,11 @@ export default function ProgressPage() {
                     <svg width="160" height="160" viewBox="0 0 140 140" className="relative">
                       <defs>
                         <linearGradient id="accDialStroke" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" stopColor="#FFC48F" />
-                          <stop offset="25%" stopColor="#FFF29E" />
-                          <stop offset="50%" stopColor="#7FEFFF" />
-                          <stop offset="75%" stopColor="#C6A4FF" />
-                          <stop offset="100%" stopColor="#FF9FE5" />
+                          <stop offset="0%" stopColor="#FFE29A" />
+                          <stop offset="25%" stopColor="#FFE29A" />
+                          <stop offset="50%" stopColor="#6EE7F9" />
+                          <stop offset="75%" stopColor="#C5B3FF" />
+                          <stop offset="100%" stopColor="#FFB7E5" />
                         </linearGradient>
                         <filter id="accDialGlow" x="-50%" y="-50%" width="200%" height="200%">
                           <feGaussianBlur stdDeviation="2.6" result="b" />
@@ -351,7 +351,7 @@ export default function ProgressPage() {
                             y1={y1}
                             x2={x2}
                             y2={y2}
-                            stroke="rgba(127,239,255,0.4)"
+                            stroke="rgba(110,231,249,0.4)"
                             strokeWidth="1"
                           />
                         );
@@ -418,10 +418,10 @@ export default function ProgressPage() {
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 {(() => {
                   const heroStats = [
-                    { label: isAf ? "Studie-reeks" : "Study Streak", value: stats.studyStreak, unit: isAf ? "dae" : "days", icon: Flame,       hex: "#FFC48F", testid: "stat-streak" },
-                    { label: isAf ? "Akkuraatheid" : "Accuracy",     value: stats.overallAccuracy, unit: "%",                icon: Target,      hex: "#7FEFFF", testid: "stat-accuracy" },
-                    { label: isAf ? "Vraestelle"   : "Papers Done",  value: stats.totalPapersCompleted, unit: "",            icon: BookOpen,    hex: "#C6A4FF", testid: "stat-papers" },
-                    { label: isAf ? "Vrae"         : "Questions",    value: stats.totalQuestionsAttempted, unit: "",         icon: CheckCircle, hex: "#FFF29E", testid: "stat-questions" },
+                    { label: isAf ? "Studie-reeks" : "Study Streak", value: stats.studyStreak, unit: isAf ? "dae" : "days", icon: Flame,       hex: "#FFE29A", testid: "stat-streak" },
+                    { label: isAf ? "Akkuraatheid" : "Accuracy",     value: stats.overallAccuracy, unit: "%",                icon: Target,      hex: "#6EE7F9", testid: "stat-accuracy" },
+                    { label: isAf ? "Vraestelle"   : "Papers Done",  value: stats.totalPapersCompleted, unit: "",            icon: BookOpen,    hex: "#C5B3FF", testid: "stat-papers" },
+                    { label: isAf ? "Vrae"         : "Questions",    value: stats.totalQuestionsAttempted, unit: "",         icon: CheckCircle, hex: "#FFE29A", testid: "stat-questions" },
                   ];
                   return heroStats.map(({ label, value, unit, icon: Icon, hex, testid }) => (
                     <div
@@ -457,22 +457,22 @@ export default function ProgressPage() {
                 {/* Subject Progress */}
                 <div
                   className="relative rounded-2xl bg-background overflow-hidden"
-                  style={{ border: "1.5px solid #6FA8FF", boxShadow: "0 0 0 1px rgba(111,168,255,0.28), 0 0 26px rgba(111,168,255,0.3), inset 0 0 22px rgba(0,0,0,0.55)" }}
+                  style={{ border: "1.5px solid #9FD8FF", boxShadow: "0 0 0 1px rgba(159,216,255,0.28), 0 0 26px rgba(159,216,255,0.3), inset 0 0 22px rgba(0,0,0,0.55)" }}
                 >
-                  <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#6FA8FF" }} />
-                  <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#6FA8FF" }} />
-                  <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#6FA8FF" }} />
-                  <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#6FA8FF" }} />
-                  <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(111,168,255,0.35)" }}>
-                    <TrendingUp className="w-5 h-5" style={{ color: "#6FA8FF", filter: "drop-shadow(0 0 6px rgba(111,168,255,0.85))" }} />
+                  <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#9FD8FF" }} />
+                  <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#9FD8FF" }} />
+                  <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#9FD8FF" }} />
+                  <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#9FD8FF" }} />
+                  <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(159,216,255,0.35)" }}>
+                    <TrendingUp className="w-5 h-5" style={{ color: "#9FD8FF", filter: "drop-shadow(0 0 6px rgba(159,216,255,0.85))" }} />
                     <h2 className="text-lg font-bold text-foreground">{isAf ? "Vakvordering" : "Subject Progress"}</h2>
                   </div>
                   <div className="p-5 space-y-3">
                     {stats.subjectProgress.length > 0 ? (
                       stats.subjectProgress.map((subject, idx) => {
-                        const stops = ["#FFC48F", "#FFF29E", "#7FEFFF", "#6FA8FF", "#C6A4FF", "#C6A4FF", "#FF9FE5"];
+                        const stops = ["#FFE29A", "#FFE29A", "#6EE7F9", "#9FD8FF", "#C5B3FF", "#C5B3FF", "#FFB7E5"];
                         const hex = stops[idx % stops.length];
-                        const barColor = subject.accuracy >= 70 ? "#7FEFFF" : subject.accuracy >= 50 ? "#FFF29E" : "#FF9FE5";
+                        const barColor = subject.accuracy >= 70 ? "#6EE7F9" : subject.accuracy >= 50 ? "#FFE29A" : "#FFB7E5";
                         return (
                           <Link key={subject.subjectId} href={`/subject/${subject.subjectId}`}>
                             <div
@@ -522,20 +522,20 @@ export default function ProgressPage() {
                 {/* Areas to Improve */}
                 <div
                   className="relative rounded-2xl bg-background overflow-hidden"
-                  style={{ border: "1.5px solid #FF9FE5", boxShadow: "0 0 0 1px rgba(255,159,229,0.28), 0 0 26px rgba(255,159,229,0.3), inset 0 0 22px rgba(0,0,0,0.55)" }}
+                  style={{ border: "1.5px solid #FFB7E5", boxShadow: "0 0 0 1px rgba(255,183,229,0.28), 0 0 26px rgba(255,183,229,0.3), inset 0 0 22px rgba(0,0,0,0.55)" }}
                 >
-                  <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FF9FE5" }} />
-                  <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#FF9FE5" }} />
-                  <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#FF9FE5" }} />
-                  <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#FF9FE5" }} />
-                  <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(255,159,229,0.35)" }}>
-                    <TrendingDown className="w-5 h-5" style={{ color: "#FF9FE5", filter: "drop-shadow(0 0 6px rgba(255,159,229,0.85))" }} />
+                  <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FFB7E5" }} />
+                  <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#FFB7E5" }} />
+                  <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#FFB7E5" }} />
+                  <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#FFB7E5" }} />
+                  <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(255,183,229,0.35)" }}>
+                    <TrendingDown className="w-5 h-5" style={{ color: "#FFB7E5", filter: "drop-shadow(0 0 6px rgba(255,183,229,0.85))" }} />
                     <h2 className="text-lg font-bold text-foreground">{isAf ? "Areas om te Verbeter" : "Areas to Improve"}</h2>
                   </div>
                   <div className="p-5 space-y-3">
                     {stats.weakTopics.length > 0 ? (
                       stats.weakTopics.slice(0, 5).map((topic) => {
-                        const hex = topic.accuracy >= 50 ? "#FFF29E" : "#FF9FE5";
+                        const hex = topic.accuracy >= 50 ? "#FFE29A" : "#FFB7E5";
                         return (
                           <div
                             key={topic.topicId}
@@ -574,14 +574,14 @@ export default function ProgressPage() {
               {/* Recent Activity */}
               <div
                 className="relative rounded-2xl bg-background overflow-hidden"
-                style={{ border: "1.5px solid #FFF29E", boxShadow: "0 0 0 1px rgba(255,242,158,0.28), 0 0 26px rgba(255,242,158,0.28), inset 0 0 22px rgba(0,0,0,0.55)" }}
+                style={{ border: "1.5px solid #FFE29A", boxShadow: "0 0 0 1px rgba(255,226,154,0.28), 0 0 26px rgba(255,226,154,0.28), inset 0 0 22px rgba(0,0,0,0.55)" }}
               >
-                <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FFF29E" }} />
-                <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#FFF29E" }} />
-                <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#FFF29E" }} />
-                <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#FFF29E" }} />
-                <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(255,242,158,0.35)" }}>
-                  <Calendar className="w-5 h-5" style={{ color: "#FFF29E", filter: "drop-shadow(0 0 6px rgba(255,242,158,0.85))" }} />
+                <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FFE29A" }} />
+                <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#FFE29A" }} />
+                <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#FFE29A" }} />
+                <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#FFE29A" }} />
+                <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(255,226,154,0.35)" }}>
+                  <Calendar className="w-5 h-5" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 6px rgba(255,226,154,0.85))" }} />
                   <h2 className="text-lg font-bold text-foreground">{isAf ? "Onlangse Aktiwiteit" : "Recent Activity"}</h2>
                 </div>
                 <div className="p-6">
@@ -591,7 +591,7 @@ export default function ProgressPage() {
                         const accuracy = day.questionsAnswered > 0
                           ? Math.round((day.correctAnswers / day.questionsAnswered) * 100)
                           : 0;
-                        const hex = accuracy >= 70 ? "#7FEFFF" : accuracy >= 50 ? "#FFF29E" : day.questionsAnswered > 0 ? "#FF9FE5" : "#6FA8FF";
+                        const hex = accuracy >= 70 ? "#6EE7F9" : accuracy >= 50 ? "#FFE29A" : day.questionsAnswered > 0 ? "#FFB7E5" : "#9FD8FF";
                         const intensity = Math.min(1, day.questionsAnswered / 20);
                         return (
                           <div

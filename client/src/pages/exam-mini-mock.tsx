@@ -445,12 +445,12 @@ export default function ExamMiniMockPage() {
           <div
             className="rounded-xl bg-black p-3 text-sm flex gap-2"
             style={{
-              border: "1px solid rgba(255,242,158,0.55)",
-              boxShadow: "0 0 14px rgba(255,242,158,0.25), inset 0 0 12px rgba(255,242,158,0.06)",
-              color: "#FFF29E",
+              border: "1px solid rgba(255,226,154,0.55)",
+              boxShadow: "0 0 14px rgba(255,226,154,0.25), inset 0 0 12px rgba(255,226,154,0.06)",
+              color: "#FFE29A",
             }}
           >
-            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" style={{ filter: "drop-shadow(0 0 4px #FFF29E)" }} />
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" style={{ filter: "drop-shadow(0 0 4px #FFE29A)" }} />
             <p className="text-foreground">
               {isAf
                 ? "Kies 'n vak en onderwerp. Jy kry 5–15 vrae uit DBE-vraestelle, en elke antwoord word onmiddellik teen die memo gemerk."
@@ -559,9 +559,9 @@ export default function ExamMiniMockPage() {
                     style={
                       active
                         ? {
-                            border: "1.5px solid #7FEFFF",
-                            boxShadow: "0 0 14px rgba(127,239,255,0.55), inset 0 0 10px rgba(127,239,255,0.08)",
-                            color: "#7FEFFF",
+                            border: "1.5px solid #6EE7F9",
+                            boxShadow: "0 0 14px rgba(110,231,249,0.55), inset 0 0 10px rgba(110,231,249,0.08)",
+                            color: "#6EE7F9",
                           }
                         : {
                             border: "1.5px solid rgba(255,255,255,0.12)",

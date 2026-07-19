@@ -12,13 +12,13 @@ import {
 } from "lucide-react";
 
 const HEX = {
-  orange: "#FFC48F",
-  amber: "#FFF29E",
-  gold: "#FFF29E",
-  cyan: "#7FEFFF",
-  blue: "#6FA8FF",
-  violet: "#C6A4FF",
-  pink: "#FF9FE5",
+  orange: "#FFE29A",
+  amber: "#FFE29A",
+  gold: "#FFE29A",
+  cyan: "#6EE7F9",
+  blue: "#9FD8FF",
+  violet: "#C5B3FF",
+  pink: "#FFB7E5",
 };
 
 type RunState = "idle" | "running" | "success" | "error";

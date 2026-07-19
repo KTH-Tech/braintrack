@@ -5,9 +5,9 @@ type Role = "learner" | "parent" | "admin";
 type VisibleRole = "learner" | "parent";
 
 const HEX: Record<Role, string> = {
-  learner: "#7FEFFF",
-  parent:  "#FFF29E",
-  admin:   "#FF9FE5",
+  learner: "#6EE7F9",
+  parent:  "#FFE29A",
+  admin:   "#FFB7E5",
 };
 
 const ICON: Record<Role, typeof GraduationCap> = {

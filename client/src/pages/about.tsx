@@ -128,17 +128,17 @@ export default function AboutPage() {
         <div
           aria-hidden
           className="pointer-events-none absolute top-0 left-0 w-[420px] h-[420px] rounded-full opacity-40 blur-3xl"
-          style={{ background: "radial-gradient(circle, rgba(127,239,255,0.35), transparent 70%)" }}
+          style={{ background: "radial-gradient(circle, rgba(110,231,249,0.35), transparent 70%)" }}
         />
         <div
           aria-hidden
           className="pointer-events-none absolute top-10 right-0 w-[420px] h-[420px] rounded-full opacity-40 blur-3xl"
-          style={{ background: "radial-gradient(circle, rgba(255,159,229,0.3), transparent 70%)" }}
+          style={{ background: "radial-gradient(circle, rgba(255,183,229,0.3), transparent 70%)" }}
         />
         <section className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
           <div className="text-center mb-10">
-            <p className="text-[11px] font-black uppercase tracking-[0.2em] mb-3" style={{ color: "#7FEFFF", textShadow: "0 0 8px rgba(127,239,255,0.5)" }} data-testid="text-about-tagline">
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] mb-3" style={{ color: "#6EE7F9", textShadow: "0 0 8px rgba(110,231,249,0.5)" }} data-testid="text-about-tagline">
               {c.tagline}
             </p>
             <h1 className="font-black text-3xl sm:text-4xl leading-tight text-white mb-4" data-testid="text-about-title">
