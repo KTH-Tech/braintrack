@@ -29,6 +29,25 @@ interface SubStatus {
   parentFlow: ParentFlow | null;
 }
 
+/** Privacy-friendly display of the parent's email on a minor's screen:
+    "k****e@g***.com". The raw address never renders; resend still uses the
+    stored address server-side. */
+function maskEmail(email: string): string {
+  const at = email.indexOf("@");
+  if (at <= 0) return "•••";
+  const local = email.slice(0, at);
+  const domain = email.slice(at + 1);
+  const dot = domain.lastIndexOf(".");
+  const domName = dot > 0 ? domain.slice(0, dot) : domain;
+  const tld = dot > 0 ? domain.slice(dot) : "";
+  const maskedLocal =
+    local.length <= 2
+      ? `${local[0]}•`
+      : `${local[0]}${"•".repeat(Math.min(local.length - 2, 5))}${local[local.length - 1]}`;
+  const maskedDomain = `${domName[0] ?? ""}${"•".repeat(Math.min(Math.max(domName.length - 1, 1), 4))}${tld}`;
+  return `${maskedLocal}@${maskedDomain}`;
+}
+
 const T = {
   en: {
     eyebrow: "almost in! 🚀",
@@ -178,7 +197,7 @@ export default function WaitingForParentPage() {
                 {parentEmail && (
                   <p className="text-xs text-white">
                     {t.sentTo}{" "}
-                    <span className="font-bold" style={{ color: "#9FD8FF" }} data-testid="waiting-parent-email">{parentEmail}</span>
+                    <span className="font-bold" style={{ color: "#9FD8FF" }} data-testid="waiting-parent-email">{maskEmail(parentEmail)}</span>
                   </p>
                 )}
 

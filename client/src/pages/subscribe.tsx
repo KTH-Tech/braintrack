@@ -46,6 +46,33 @@ interface SmsResult {
   message: string | null;
 }
 
+// Journey branching — who is looking at /subscribe (task: subscription is a
+// step of the journey, not a standalone page). Shape mirrors
+// GET /api/user/subscription-status.
+interface ParentViewInfo {
+  learnerName: string | null;
+  status: string | null;
+  active: boolean;
+  trialEndsAt: string | null;
+  nextRenewalAt: string | null;
+  cardCaptured: boolean;
+  consentToken: string | null;
+}
+
+interface SubStatusResp {
+  active: boolean;
+  status: string | null;
+  trialEndsAt: string | null;
+  parentFlow: {
+    isMinor: boolean;
+    consentRequested: boolean;
+    consentGranted: boolean;
+    cardCaptured: boolean;
+    pending: boolean;
+  } | null;
+  parentView?: ParentViewInfo | null;
+}
+
 const CTA_GRADIENT =
   "linear-gradient(100deg,#FFB7E5,#FFE29A,#9FF5E8,#C5B3FF,#FFB7E5)";
 const HEADLINE_GRADIENT =
@@ -118,10 +145,11 @@ function WallCallout({ color, children, className = "" }: { color: string; child
 
 export default function SubscribePage() {
   const { language } = useLanguage();
-  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { isAuthenticated, isLoading: authLoading, user } = useAuth();
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const isAf = language === "af";
+  const isParent = (user as any)?.role === "parent";
 
   const [pageState, setPageState] = useState<PageState>("plan");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -167,6 +195,26 @@ export default function SubscribePage() {
     // the success screen so the parent can hit "Resend WhatsApp link".
     if (resendHashRef.current) setPageState("success");
   }, []);
+
+  // Journey branching — role-aware view of /subscribe. Minor learners never
+  // see a checkout (the parent gate owns activation → /waiting-for-parent);
+  // parents subscribe FOR their linked learner; adult learners get the
+  // self-serve checkout framed as the journey's final step.
+  const {
+    data: subStatus,
+    isLoading: subStatusLoading,
+    refetch: refetchSubStatus,
+  } = useQuery<SubStatusResp>({
+    queryKey: ["/api/user/subscription-status"],
+    enabled: !authLoading && isAuthenticated,
+  });
+  const minorPending = Boolean(subStatus?.parentFlow?.pending);
+
+  useEffect(() => {
+    // Minors wait on the parent journey view — same 3-step machinery,
+    // masked parent email, resend + change-email actions.
+    if (minorPending) navigate("/waiting-for-parent");
+  }, [minorPending, navigate]);
 
   useQuery({
     queryKey: ["/api/user/subscription", isAuthenticated],
@@ -214,7 +262,9 @@ export default function SubscribePage() {
       }
       return data;
     },
-    enabled: !authLoading && isAuthenticated,
+    // Parents never run the learner self-serve machinery — their branch reads
+    // the linked learner's state from /api/user/subscription-status instead.
+    enabled: !authLoading && isAuthenticated && !isParent,
     staleTime: 0,
   });
 
@@ -284,6 +334,29 @@ export default function SubscribePage() {
   }
 
   const homeHref = isAuthenticated ? "/dashboard" : "/";
+
+  // ── Journey branching: who is looking at /subscribe? ──────────────
+  // Block rendering for signed-in users until the role-aware status is known
+  // so a minor never gets a flash of the checkout.
+  if (isAuthenticated && (subStatusLoading || minorPending)) {
+    return (
+      <div style={{ minHeight: "100vh", background: "#050508", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <Loader2 className="animate-spin" style={{ width: 32, height: 32, color: "#9FF5E8" }} />
+      </div>
+    );
+  }
+
+  // Parent → subscribes FOR their linked learner (executive restraint view).
+  if (isAuthenticated && isParent) {
+    return (
+      <ParentSubscribeScreen
+        isAf={isAf}
+        navigate={navigate}
+        parentView={subStatus?.parentView ?? null}
+        onRefetch={() => { refetchSubStatus(); }}
+      />
+    );
+  }
 
   if (pageState === "payment_success") {
     return (
@@ -421,8 +494,13 @@ export default function SubscribePage() {
       {/* ── Pricing ─────────────────────────────────────────── */}
       <div data-testid="subscribe-plan-panel" style={{ maxWidth: 1000, margin: "0 auto", padding: "64px 32px 100px" }}>
         <div style={{ textAlign: "center" }}>
+          {/* Adult learner journey rail — /subscribe is the LAST onboarding
+              step, not a standalone pricing page. */}
+          {isAuthenticated && <JourneyRail isAf={isAf} />}
           <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#FFE29A", fontSize: 18, transform: "rotate(-2deg)" }}>
-            {isAf ? "een plan. alles ontsluit." : "one plan. everything unlocked."}
+            {isAuthenticated
+              ? (isAf ? "laaste stap — aktiveer jou 14 gratis dae 🚀" : "last step — activate your 14 free days 🚀")
+              : (isAf ? "een plan. alles ontsluit." : "one plan. everything unlocked.")}
           </div>
           <div
             role="heading"
@@ -1237,6 +1315,356 @@ function NotConfiguredScreen({ isAf, homeHref }: { isAf: boolean, homeHref: stri
           {isAf ? "Terug" : "Back"}
         </a>
       </div>
+    </WallScreen>
+  );
+}
+
+/** Pastel progress rail — the learner journey with /subscribe as its final
+    step. Shown to signed-in adult learners only. */
+function JourneyRail({ isAf }: { isAf: boolean }) {
+  const steps = [
+    { label: isAf ? "Teken aan" : "Sign up", color: "#9FF5E8", done: true },
+    { label: isAf ? "Bou jou profiel" : "Build your profile", color: "#9FD8FF", done: true },
+    { label: isAf ? "Aktiveer jou proeftydperk" : "Activate your trial", color: "#FFB7E5", done: false },
+  ];
+  return (
+    <div
+      data-testid="subscribe-journey-rail"
+      style={{ display: "flex", alignItems: "center", justifyContent: "center", flexWrap: "wrap", rowGap: 10, marginBottom: 24 }}
+    >
+      {steps.map((s, i) => (
+        <div key={s.label} style={{ display: "flex", alignItems: "center" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span
+              style={{
+                width: 26, height: 26, borderRadius: 999, display: "flex", alignItems: "center", justifyContent: "center", flex: "none",
+                fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 12,
+                ...(s.done
+                  ? { background: s.color, color: "#050508", boxShadow: `0 0 14px ${s.color}55` }
+                  : { border: `1.5px solid ${s.color}`, color: s.color, boxShadow: `0 0 18px ${s.color}40` }),
+              }}
+            >
+              {s.done ? "✓" : i + 1}
+            </span>
+            <span style={{ fontSize: 13, fontWeight: s.done ? 600 : 800, color: "#fff" }}>{s.label}</span>
+          </div>
+          {i < steps.length - 1 && (
+            <span
+              aria-hidden
+              style={{
+                width: 34, height: 2, margin: "0 10px", borderRadius: 2,
+                background: `linear-gradient(90deg, ${s.color}, ${steps[i + 1].color})`,
+              }}
+            />
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Parent branch of the /subscribe journey — the parent subscribes FOR their
+    linked learner. Executive restraint per design guidelines: one marker
+    accent, pastel left-rule callouts, no confetti. Card capture reuses the
+    EXISTING /api/parent-consent/card-capture endpoints (R1 verification →
+    trial starts server-side); no new payment path. */
+function ParentSubscribeScreen({
+  isAf,
+  navigate,
+  parentView,
+  onRefetch,
+}: {
+  isAf: boolean;
+  navigate: any;
+  parentView: ParentViewInfo | null;
+  onRefetch: () => void;
+}) {
+  const [ccLoading, setCcLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const learnerName = parentView?.learnerName?.trim() || (isAf ? "jou leerder" : "your learner");
+  const hasSub = Boolean(parentView && (parentView.active || parentView.status === "trial" || parentView.status === "active"));
+
+  const fmtDate = (iso: string | null) =>
+    iso
+      ? new Date(iso).toLocaleDateString(isAf ? "af-ZA" : "en-ZA", { day: "numeric", month: "long", year: "numeric" })
+      : null;
+
+  const perks = isAf
+    ? [
+        "KABV-belynde studieplan, elke dag herbou",
+        "10 jaar se NSS-vraestelle met memo's en onmiddellike nasien",
+        "Rizz slim ondersteuning in EN/AF, 24/7",
+        "Weeklikse ouerverslae reguit na jou",
+      ]
+    : [
+        "CAPS-aligned study plan, rebuilt daily",
+        "10 years of NSC past papers with memos and instant marking",
+        "Rizz smart support in EN/AF, 24/7",
+        "Weekly parent reports straight to you",
+      ];
+
+  async function handleCardCapture() {
+    if (!parentView?.consentToken) return;
+    setCcLoading(true);
+    setErrorMsg(null);
+    try {
+      const res = await apiRequest("POST", "/api/parent-consent/card-capture/initialize", {
+        token: parentView.consentToken,
+      });
+      const data = await res.json() as {
+        authorizationUrl?: string;
+        alreadyCaptured?: boolean;
+        message?: string;
+      };
+      if (data.alreadyCaptured) {
+        onRefetch();
+        return;
+      }
+      if (data.authorizationUrl) {
+        window.location.href = data.authorizationUrl; // ACCEPTED RISK: server-returned Paystack checkout URL, not user-controlled // nosemgrep: no-raw-window-location-href-variable
+        return;
+      }
+      setErrorMsg(
+        data.message ??
+        (isAf ? "Kon nie die kaartverifikasie begin nie. Probeer weer." : "Could not start card verification. Please try again.")
+      );
+    } catch (err: any) {
+      const msg: string = err?.message ?? "";
+      const status = parseInt(msg.split(":")[0] ?? "", 10);
+      setErrorMsg(
+        status === 503
+          ? (isAf
+              ? "Betaling is tans nie beskikbaar op hierdie omgewing nie. Probeer asseblief later weer."
+              : "Payments aren't available on this environment yet. Please try again shortly.")
+          : (isAf ? "Iets het fout gegaan. Probeer asseblief weer." : "Something went wrong. Please try again.")
+      );
+    } finally {
+      setCcLoading(false);
+    }
+  }
+
+  // ── No linked learner yet ──
+  if (!parentView) {
+    return (
+      <WallScreen testId="parent-subscribe-nolearner">
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#FFE29A", fontSize: 16, transform: "rotate(-2deg)", marginBottom: 18 }}>
+            {isAf ? "jou deel van die reis" : "your part of the journey"}
+          </div>
+          <div
+            role="heading"
+            aria-level={1}
+            data-testid="parent-subscribe-heading"
+            style={{ fontSize: 30, fontWeight: 900, letterSpacing: "-1px", lineHeight: 1.15, marginBottom: 14, fontFamily: "'Poppins',sans-serif", color: "#fff" }}
+          >
+            <span style={{ background: HEADLINE_GRADIENT, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>
+              {isAf ? "Koppel eers jou leerder" : "Link your learner first"}
+            </span>
+          </div>
+          <p style={{ color: "#fff", fontSize: 15, lineHeight: 1.6, marginBottom: 32 }}>
+            {isAf
+              ? "Sodra jou kind se rekening aan joune gekoppel is, aktiveer jy hul Brain Boost-proeftydperk hier in een stap."
+              : "Once your child's account is linked to yours, you activate their Brain Boost trial right here in one step."}
+          </p>
+          <button
+            onClick={() => navigate("/parent")}
+            data-testid="button-parent-dashboard"
+            style={{
+              fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 15,
+              color: "#050508", background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
+              border: "none", borderRadius: 12, padding: "15px 28px", cursor: "pointer",
+              boxShadow: "0 0 22px rgba(159,245,232,.3)",
+            }}
+          >
+            {isAf ? "Gaan na ouer-dashboard" : "Go to parent dashboard"}
+          </button>
+        </div>
+      </WallScreen>
+    );
+  }
+
+  // ── Learner already on trial / active — show status, never a checkout ──
+  if (hasSub) {
+    const isTrial = parentView.status === "trial";
+    const nextBillDate = fmtDate(isTrial ? parentView.trialEndsAt : (parentView.nextRenewalAt ?? parentView.trialEndsAt));
+    return (
+      <WallScreen testId="parent-subscribe-panel">
+        <div style={{ textAlign: "center" }}>
+          <CheckCircle2 style={{ width: 48, height: 48, margin: "0 auto 20px", color: "#94F7C5", filter: "drop-shadow(0 0 16px rgba(148,247,197,.4))" }} />
+          <div
+            role="heading"
+            aria-level={1}
+            data-testid="parent-subscribe-heading"
+            style={{ fontSize: 30, fontWeight: 900, letterSpacing: "-1px", lineHeight: 1.15, marginBottom: 12, fontFamily: "'Poppins',sans-serif", color: "#fff" }}
+          >
+            <span style={{ background: HEADLINE_GRADIENT, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>
+              {isAf ? `Brain Boost is aktief vir ${learnerName}` : `Brain Boost is live for ${learnerName}`}
+            </span>
+          </div>
+          <p style={{ color: "#fff", fontSize: 15, marginBottom: 28 }}>
+            {isAf
+              ? "Alles is opgestel — daar is niks verder om te betaal of te aktiveer nie."
+              : "Everything is set up — there's nothing further to pay or activate."}
+          </p>
+
+          <div style={{ marginBottom: 20 }}>
+            <WallCallout color="#94F7C5">
+              <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 12, textTransform: "uppercase", letterSpacing: "2px", color: "#94F7C5", margin: "0 0 4px" }}>
+                {isAf ? "Status" : "Status"}
+              </p>
+              <p style={{ fontWeight: 800, fontSize: 17, color: "#fff", margin: 0 }} data-testid="parent-subscribe-status">
+                {isTrial
+                  ? (isAf ? "14-dae gratis proeftydperk" : "14-day free trial")
+                  : (isAf ? "Aktief — R169/maand" : "Active — R169/month")}
+              </p>
+            </WallCallout>
+          </div>
+
+          {nextBillDate && (
+            <div style={{ marginBottom: 32 }}>
+              <WallCallout color="#9FD8FF">
+                <p style={{ fontSize: 14, color: "#fff", margin: 0, lineHeight: 1.6 }} data-testid="parent-subscribe-next-billing">
+                  {isTrial
+                    ? (isAf
+                        ? `Eerste heffing van R169 op ${nextBillDate} — kanselleer enige tyd voor dan in die app.`
+                        : `First charge of R169 on ${nextBillDate} — cancel anytime before then in the app.`)
+                    : (isAf
+                        ? `Volgende fakturering: ${nextBillDate} · R169 · kanselleer enige tyd in die app.`
+                        : `Next billing: ${nextBillDate} · R169 · cancel anytime in the app.`)}
+                </p>
+              </WallCallout>
+            </div>
+          )}
+
+          <button
+            onClick={() => navigate("/parent")}
+            data-testid="button-parent-dashboard"
+            style={{
+              fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 15,
+              color: "#050508", background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
+              border: "none", borderRadius: 12, padding: "15px 28px", cursor: "pointer",
+              boxShadow: "0 0 22px rgba(159,245,232,.3)",
+            }}
+          >
+            {isAf ? "Gaan na ouer-dashboard" : "Go to parent dashboard"}
+          </button>
+        </div>
+      </WallScreen>
+    );
+  }
+
+  // ── Checkout needed — parent adds the card, trial starts server-side ──
+  return (
+    <WallScreen testId="parent-subscribe-panel">
+      <div style={{ textAlign: "center", marginBottom: 28 }}>
+        <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#FFE29A", fontSize: 16, transform: "rotate(-2deg)", marginBottom: 16 }}>
+          {isAf ? "jou deel van die reis" : "your part of the journey"}
+        </div>
+        <div
+          role="heading"
+          aria-level={1}
+          data-testid="parent-subscribe-heading"
+          style={{ fontSize: 32, fontWeight: 900, letterSpacing: "-1px", lineHeight: 1.15, marginBottom: 12, fontFamily: "'Poppins',sans-serif", color: "#fff" }}
+        >
+          <span style={{ background: HEADLINE_GRADIENT, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>
+            {isAf ? `Ontsluit ${learnerName} se Brain Boost` : `Unlock ${learnerName}'s Brain Boost`}
+          </span>
+        </div>
+        <p style={{ color: "#fff", fontSize: 15, lineHeight: 1.6, margin: 0 }}>
+          {isAf
+            ? "Jou kind het hul deel gedoen — hierdie stap is joune. Voeg een keer 'n kaart by en hul 14-dae gratis proeftydperk begin dadelik."
+            : "Your child did their part — this step is yours. Add a card once and their 14-day free trial starts immediately."}
+        </p>
+      </div>
+
+      {errorMsg && (
+        <div style={{ marginBottom: 20 }}>
+          <WallCallout color="#FFE29A">
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+              <AlertCircle style={{ width: 20, height: 20, flex: "none", marginTop: 2, color: "#FFE29A" }} />
+              <p style={{ fontSize: 14, color: "#fff", margin: 0 }}>{errorMsg}</p>
+            </div>
+          </WallCallout>
+        </div>
+      )}
+
+      {/* What the child gets */}
+      <div style={{ marginBottom: 20 }}>
+        <WallCallout color="#9FD8FF">
+          <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 12, textTransform: "uppercase", letterSpacing: "2px", color: "#9FD8FF", margin: "0 0 8px" }}>
+            {isAf ? `Wat ${learnerName} kry` : `What ${learnerName} gets`}
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {perks.map((p) => (
+              <div key={p} style={{ display: "flex", gap: 10, fontSize: 14, lineHeight: 1.5, color: "#fff" }}>
+                <span style={{ color: "#94F7C5", fontWeight: 900 }}>✓</span>
+                <span>{p}</span>
+              </div>
+            ))}
+          </div>
+        </WallCallout>
+      </div>
+
+      {/* Trial + billing terms */}
+      <div style={{ marginBottom: 28 }}>
+        <WallCallout color="#FFE29A">
+          <p style={{ fontWeight: 800, fontSize: 15, color: "#FFE29A", margin: 0, lineHeight: 1.7 }} data-testid="parent-subscribe-terms">
+            {isAf
+              ? "R1 kaartverifikasie vandag · gratis vir 14 dae · R169/maand vanaf dag 15 · kanselleer enige tyd in die app"
+              : "R1 card verification today · free for 14 days · R169/month from day 15 · cancel anytime in the app"}
+          </p>
+        </WallCallout>
+      </div>
+
+      {parentView.consentToken ? (
+        <button
+          onClick={handleCardCapture}
+          disabled={ccLoading}
+          data-testid="button-parent-card-capture"
+          style={{
+            width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 10,
+            fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 15,
+            color: "#050508", background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
+            border: "none", borderRadius: 12, padding: "16px 24px",
+            cursor: ccLoading ? "not-allowed" : "pointer", opacity: ccLoading ? 0.6 : 1,
+            boxShadow: "0 0 22px rgba(159,245,232,.3)", marginBottom: 20,
+          }}
+        >
+          {ccLoading ? (
+            <Loader2 className="animate-spin" style={{ width: 18, height: 18 }} />
+          ) : (
+            <CreditCard style={{ width: 18, height: 18 }} />
+          )}
+          {isAf
+            ? `Voeg kaart by & begin ${learnerName} se proeftydperk`
+            : `Add card & start ${learnerName}'s trial`}
+        </button>
+      ) : (
+        <div style={{ marginBottom: 20 }}>
+          <WallCallout color="#FFB7E5">
+            <p style={{ fontSize: 14, color: "#fff", margin: 0, lineHeight: 1.6 }}>
+              {isAf
+                ? "Ons kon nie 'n veilige betaalskakel opstel nie. Gebruik asseblief die skakel in die toestemmings-e-pos wat aan jou gestuur is."
+                : "We couldn't set up a secure payment link. Please use the link in the consent email that was sent to you."}
+            </p>
+          </WallCallout>
+        </div>
+      )}
+
+      <p style={{ textAlign: "center", color: "#fff", opacity: 0.94, fontSize: 12, padding: "0 16px", lineHeight: 1.7, marginBottom: 24 }}>
+        {isAf
+          ? "Veilige betaling verwerk deur Paystack. Jy word na Paystack se betaalblad herlei vir die R1-verifikasie."
+          : "Secure payment processed by Paystack. You'll be redirected to Paystack's checkout for the R1 verification."}
+      </p>
+
+      <button
+        onClick={() => navigate("/parent")}
+        style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: "none", border: "none", color: "#fff", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "'Poppins',sans-serif" }}
+      >
+        <ArrowLeft style={{ width: 16, height: 16 }} />
+        {isAf ? "Terug na ouer-dashboard" : "Back to parent dashboard"}
+      </button>
     </WallScreen>
   );
 }

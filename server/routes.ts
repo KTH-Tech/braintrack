@@ -1774,6 +1774,49 @@ export async function registerRoutes(
       if (u?.role === "admin" && (req as any).session?.previewAsLearner) {
         return res.json({ active: false, status: null, trialEndsAt: null, parentFlow: null });
       }
+      // Parent caller: /subscribe is a "subscribe FOR your linked learner"
+      // step, so surface the learner's subscription state (parents never hold
+      // their own subscription) plus — only while checkout is still needed — a
+      // consent token that drives the EXISTING
+      // /api/parent-consent/card-capture endpoints. Booleans/dates/name only;
+      // authorization/customer codes NEVER leave the server.
+      if (u?.role === "parent") {
+        const linked = await storage.getLearnersForParent(userId);
+        const first = linked[0] ?? null;
+        let parentView: Record<string, unknown> | null = null;
+        if (first) {
+          const learnerSub = await storage.getSubscription(first.learnerUserId);
+          const learnerActive = await storage.hasActiveSubscription(first.learnerUserId);
+          const learner = await authStorage.getUser(first.learnerUserId);
+          const learnerCardCaptured = Boolean((learnerSub as any)?.paystackAuthorizationCode);
+          let consentToken: string | null = null;
+          if (!learnerActive && !learnerCardCaptured) {
+            // Same trust artifact the consent email carries — minted here for
+            // the authenticated linked parent so they can complete card
+            // capture in-app without digging up the email.
+            const parentEmail = (u as any)?.email ?? (learner as any)?.parentEmail ?? null;
+            if (parentEmail) {
+              const { mintParentConsentToken } = await import("./parent-consent");
+              consentToken = mintParentConsentToken(first.learnerUserId, String(parentEmail).toLowerCase());
+            }
+          }
+          parentView = {
+            learnerName:
+              first.learnerName
+              || [learner?.firstName, learner?.lastName].filter(Boolean).join(" ").trim()
+              || null,
+            status: learnerSub?.status ?? null,
+            active: learnerActive,
+            trialEndsAt: learnerSub?.trialEndsAt ? learnerSub.trialEndsAt.toISOString() : null,
+            nextRenewalAt: (learnerSub as any)?.nextRenewalAt
+              ? new Date((learnerSub as any).nextRenewalAt).toISOString()
+              : null,
+            cardCaptured: learnerCardCaptured,
+            consentToken,
+          };
+        }
+        return res.json({ active: false, status: null, trialEndsAt: null, parentFlow: null, parentView });
+      }
       const sub = await storage.getSubscription(userId);
       const active = await storage.hasActiveSubscription(userId);
       // Parent consent + card-capture gate (minors only). Booleans only —
