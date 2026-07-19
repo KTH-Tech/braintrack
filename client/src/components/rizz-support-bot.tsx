@@ -93,29 +93,31 @@ export function RizzHeaderButton({ compact = false }: { compact?: boolean }) {
         display: "inline-flex",
         alignItems: "center",
         gap: 8,
-        background: "rgba(179,136,255,.12)",
-        border: `1.5px solid ${RIZZ.purple}`,
+        // Solid pastel fill (owner request): soft pink→purple wash with dark
+        // ink, matching the app's pastel CTA language rather than dark glass.
+        background: "linear-gradient(100deg,#FFB7E5,#C5B3FF)",
+        border: "none",
         borderRadius: 10,
-        padding: compact ? "7px 12px 7px 8px" : "8px 15px 8px 9px",
+        padding: compact ? "8px 13px 8px 9px" : "9px 16px 9px 10px",
         cursor: "pointer",
-        color: RIZZ.white,
+        color: "#050508",
         fontFamily: "'Poppins',sans-serif",
         fontWeight: 800,
         fontSize: 14,
         whiteSpace: "nowrap",
-        // Soft pastel glow using the purple/pink brand colours.
-        boxShadow: "0 0 16px rgba(179,136,255,.45), 0 0 24px rgba(255,126,198,.25)",
+        // Soft pastel glow using the pink/purple brand colours.
+        boxShadow: "0 0 16px rgba(255,183,229,.5), 0 0 26px rgba(197,179,255,.3)",
         transition: "transform .18s, box-shadow .18s",
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = "translateY(-1px)";
         e.currentTarget.style.boxShadow =
-          "0 0 22px rgba(179,136,255,.6), 0 0 34px rgba(255,126,198,.35)";
+          "0 0 22px rgba(255,183,229,.65), 0 0 36px rgba(197,179,255,.4)";
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = "none";
         e.currentTarget.style.boxShadow =
-          "0 0 16px rgba(179,136,255,.45), 0 0 24px rgba(255,126,198,.25)";
+          "0 0 16px rgba(255,183,229,.5), 0 0 26px rgba(197,179,255,.3)";
       }}
     >
       <img
