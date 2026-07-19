@@ -40,7 +40,7 @@ export function InstallBanner() {
     gcTime: 10 * 60 * 1000,
   });
 
-  const threshold = platformConfig?.installNudgeSessionThreshold ?? 2;
+  const threshold = platformConfig?.installNudgeSessionThreshold ?? 1;
 
   useEffect(() => {
     if (!authLoading && isAuthenticated) {

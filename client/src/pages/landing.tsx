@@ -108,6 +108,7 @@ const COPY = {
     footPopia: "POPIA",
     footBilling: "Billing",
     footSafeguarding: "Safeguarding",
+    footAdmin: "Admin",
     footAskRizz: "Ask Rizz 🤖",
   },
   af: {
@@ -198,6 +199,7 @@ const COPY = {
     footPopia: "POPIA",
     footBilling: "Betaling",
     footSafeguarding: "Beskerming",
+    footAdmin: "Admin",
     footAskRizz: "Vra Rizz 🤖",
   },
 } as const;
@@ -809,6 +811,9 @@ export default function LandingPage() {
           <Link href="/refund-policy"><span className="btl-foot-link" style={{ "--h": "#FFE29A" } as React.CSSProperties}>{t.footBilling}</span></Link>
           <Link href="/terms-of-service"><span className="btl-foot-link" style={{ "--h": "#94F7C5" } as React.CSSProperties}>{t.footSafeguarding}</span></Link>
           <span onClick={openRizz} className="btl-foot-link" style={{ color: "#C5B3FF", cursor: "pointer", fontWeight: 800, "--h": "#FF7EC6" } as React.CSSProperties}>{t.footAskRizz}</span>
+          {/* Owner shortcut — the sign-in page grants admin via the
+              ADMIN_EMAILS allowlist, so this is just a convenient door. */}
+          <Link href="/signin?returnTo=/learn/admin"><span className="btl-foot-link" data-testid="link-footer-admin" style={{ "--h": "#FFE29A" } as React.CSSProperties}>{t.footAdmin}</span></Link>
         </div>
       </div>
 

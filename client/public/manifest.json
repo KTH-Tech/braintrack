@@ -4,8 +4,8 @@
   "description": "Matric Made Simple — Grade 12 prep, past papers & study plans.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#121212",
-  "theme_color": "#121212",
+  "background_color": "#050508",
+  "theme_color": "#050508",
   "orientation": "portrait-primary",
   "icons": [
     {
