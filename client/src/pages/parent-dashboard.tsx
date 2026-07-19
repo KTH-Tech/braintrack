@@ -18,7 +18,7 @@ import {
   Download, Activity, Zap, TrendingDown, ShieldAlert, BarChart3,
   RefreshCw, Users, Sparkles, Rocket,
   MessageSquare, CheckCircle2, XCircle, Loader2, Send,
-  Link2, Settings2,
+  Link2, Settings2, CreditCard, ShieldCheck,
 } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { VARK_STYLES } from "@/lib/vark";
@@ -150,6 +150,59 @@ const secondaryFill = (hex: string): React.CSSProperties => ({
   background: "transparent",
   border: `1.5px solid ${hex}`,
 });
+
+/* ── Parent sidebar navigation ───────────────────────────────────────────────
+   Parents previously had no navigation at all — only a back/home pair in the
+   header. This mirrors the learner shell (client/src/pages/dashboard.tsx): a
+   sticky 240px rail (200px under 861px, never a top-bar fallback) with the
+   rainbow .bt-wordmark logo, rounded nav rows with an aqua active state, and
+   the linked-learner card + logout pinned to the bottom. Executive restraint
+   is kept: hairline borders, pastel accents, no graffiti.                    */
+
+const PARENT_NAV_T = {
+  en: {
+    roleChip: "Parent",
+    navHome: "Home",
+    navJourney: "Journey",
+    navBilling: "Billing",
+    navPlan: "Subscription",
+    navConsent: "Consent",
+    navSettings: "Settings",
+    signOut: "Log out",
+    linkedLearner: "Linked learner",
+    lastActive: "Last active",
+    noLearner: "No child linked yet",
+    navLabel: "Parent navigation",
+  },
+  af: {
+    roleChip: "Ouer",
+    navHome: "Tuis",
+    navJourney: "Leerreis",
+    navBilling: "Rekening",
+    navPlan: "Intekening",
+    navConsent: "Toestemming",
+    navSettings: "Instellings",
+    signOut: "Teken uit",
+    linkedLearner: "Gekoppelde leerder",
+    lastActive: "Laas aktief",
+    noLearner: "Nog geen kind gekoppel nie",
+    navLabel: "Ouer-navigasie",
+  },
+} as const;
+
+type ParentNavCopy = Record<keyof (typeof PARENT_NAV_T)["en"], string>;
+
+/** Every destination below is a route that exists in client/src/App.tsx.
+    `match` lists the pathnames that should light the row up — /parent and the
+    legacy /parent-dashboard alias both render this page. */
+const PARENT_NAV_LINKS = (t: ParentNavCopy) => [
+  { href: "/parent",           match: ["/parent", "/parent-dashboard"], icon: Home,        label: t.navHome     },
+  { href: "/journey?parent=1", match: ["/journey"],                     icon: MapPin,      label: t.navJourney  },
+  { href: "/parent-purchase",  match: ["/parent-purchase"],             icon: CreditCard,  label: t.navBilling  },
+  { href: "/subscribe",        match: ["/subscribe"],                   icon: Sparkles,    label: t.navPlan     },
+  { href: "/parent-consent",   match: ["/parent-consent"],              icon: ShieldCheck, label: t.navConsent  },
+  { href: "/settings",         match: ["/settings"],                    icon: Settings2,   label: t.navSettings },
+];
 
 /** Section heading — executive: heavy Poppins white, accent only on the icon. */
 function Heading({
@@ -1330,7 +1383,9 @@ export default function ParentDashboardPage() {
   const { user, logout } = useAuth();
   const { language, toggleLanguage } = useLanguage();
   const isAf = language === "af";
-  const [, navigate] = useLocation();
+  const [location, navigate] = useLocation();
+  const nt = PARENT_NAV_T[isAf ? "af" : "en"];
+  const parentNavLinks = PARENT_NAV_LINKS(nt);
   useSocket();
 
   // All linked children for this parent (drives per-child readiness rendering and the active-child switcher).
@@ -1453,12 +1508,151 @@ export default function ParentDashboardPage() {
     );
   }
 
+  // Sidebar footer card — who this parent is watching. Falls back to the first
+  // linked child when the per-child payload hasn't landed yet.
+  const sidebarLearnerName =
+    childProgress?.learnerName || childrenData?.children?.[0]?.learnerName || "";
+  const sidebarLastActive = childProgress?.lastActiveDate
+    ? formatDate(childProgress.lastActiveDate)
+    : "";
+
   return (
-    <div className="relative min-h-screen text-white overflow-hidden" style={{ background: "#050508" }}>
+    <div className="text-white" style={{ minHeight: "100vh", background: "#050508", display: "flex" }}>
       <style>{`
         .btp-logo { transition: transform .25s; }
         .btp-logo:hover { transform: scale(1.1) rotate(-3deg); }
+        .btp-sidebar { width: 240px; padding: 26px 18px; }
+        @media (max-width: 861px) {
+          .btp-sidebar { width: 200px; padding: 20px 12px; }
+        }
       `}</style>
+
+      {/* ── Parent sidebar — persists at every width, slims under 861px ── */}
+      <aside
+        className="btp-sidebar"
+        aria-label={nt.navLabel}
+        data-testid="parent-sidebar"
+        style={{
+          flex: "none",
+          borderRight: "1px solid rgba(255,255,255,.1)",
+          display: "flex",
+          flexDirection: "column",
+          gap: 6,
+          position: "sticky",
+          top: 0,
+          height: "100vh",
+          boxSizing: "border-box",
+          overflowY: "auto",
+        }}
+      >
+        <Link href="/parent" style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 6px 10px", cursor: "pointer" }}>
+          <img src={iconTransparent} alt="BrainTrack" style={{ width: 44, height: 44, objectFit: "contain" }} />
+          <span className="bt-wordmark" style={{ fontSize: 16 }}>BrainTrack</span>
+        </Link>
+        <span
+          data-testid="parent-role-chip"
+          style={{
+            alignSelf: "flex-start",
+            margin: "0 6px 16px",
+            fontSize: 11,
+            fontWeight: 800,
+            letterSpacing: "0.18em",
+            textTransform: "uppercase",
+            color: PASTEL.blue,
+            border: `1px solid ${PASTEL.blue}`,
+            borderRadius: 8,
+            padding: "3px 9px",
+          }}
+        >
+          {nt.roleChip}
+        </span>
+
+        <nav style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          {parentNavLinks.map(({ href, match, icon: Icon, label }) => {
+            const active = match.includes(location);
+            return (
+              <Link key={href} href={href}>
+                <div
+                  data-testid={`parent-nav-${href.replace(/^\//, "").split("?")[0]}`}
+                  title={label}
+                  aria-label={label}
+                  aria-current={active ? "page" : undefined}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 12,
+                    padding: "11px 14px",
+                    borderRadius: 14,
+                    cursor: "pointer",
+                    fontWeight: 600,
+                    fontSize: 14,
+                    color: active ? PASTEL.cyan : "#fff",
+                    background: active ? "rgba(159,245,232,.12)" : "transparent",
+                    border: active ? `1px solid ${PASTEL.cyan}` : "1px solid transparent",
+                    transition: "all .2s",
+                  }}
+                  onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = "rgba(255,255,255,.05)"; }}
+                  onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = "transparent"; }}
+                >
+                  <Icon className="w-4 h-4 shrink-0" />
+                  <span style={{ flex: 1, minWidth: 0 }}>{label}</span>
+                </div>
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div
+          data-testid="parent-nav-learner"
+          style={{ marginTop: "auto", ...panel(PASTEL.purple), padding: 14 }}
+        >
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: PASTEL.purple }}>
+            {nt.linkedLearner}
+          </p>
+          {sidebarLearnerName ? (
+            <>
+              <p className="text-sm font-bold text-white mt-1 leading-tight">{sidebarLearnerName}</p>
+              {sidebarLastActive && (
+                <p className="text-[11px] text-white mt-1" style={{ opacity: 0.88 }}>
+                  {nt.lastActive}: {sidebarLastActive}
+                </p>
+              )}
+            </>
+          ) : (
+            <p className="text-[11px] text-white mt-1" style={{ opacity: 0.88 }}>{nt.noLearner}</p>
+          )}
+        </div>
+
+        <button
+          onClick={() => logout()}
+          data-testid="button-logout"
+          title={nt.signOut}
+          style={{
+            marginTop: 10,
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            width: "100%",
+            fontFamily: "'Poppins',sans-serif",
+            fontWeight: 700,
+            fontSize: 14,
+            color: "#fff",
+            background: "transparent",
+            border: "1px solid rgba(255,255,255,.14)",
+            borderRadius: 14,
+            padding: "11px 14px",
+            cursor: "pointer",
+            transition: "all .2s",
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.borderColor = PASTEL.pink; e.currentTarget.style.color = PASTEL.pink; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,.14)"; e.currentTarget.style.color = "#fff"; }}
+        >
+          <LogOut className="w-4 h-4 shrink-0" />
+          {nt.signOut}
+        </button>
+      </aside>
+
+      <div className="relative flex-1 min-w-0 overflow-hidden">
 
       <header
         className="sticky top-0 z-50"
@@ -1517,15 +1711,9 @@ export default function ParentDashboardPage() {
               >
                 <Home className="h-4 w-4" />
               </button>
-              <button
-                onClick={() => logout()}
-                className={`${BTN_SECONDARY} w-9 h-9 !px-0`}
-                style={secondaryFill(PASTEL.pink)}
-                data-testid="button-logout"
-                title={isAf ? "Uitteken" : "Sign Out"}
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
+              {/* Sign-out now lives at the bottom of the parent sidebar
+                  (data-testid="button-logout"), mirroring the learner shell —
+                  keeping a second copy here would duplicate the test id. */}
             </div>
           </div>
         </div>
@@ -2254,6 +2442,7 @@ export default function ParentDashboardPage() {
         </section>
 
       </main>
+      </div>
     </div>
   );
 }

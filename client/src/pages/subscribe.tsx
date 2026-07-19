@@ -603,41 +603,32 @@ function PaymentPickerScreen({
     chargeDetail: isAf
       ? "R169/maand · Kanselleer enige tyd · Geen verborgde fooie nie"
       : "R169/month · Cancel anytime · No hidden fees",
-    debicheck: isAf ? "DebiCheck Debietorder" : "DebiCheck Debit Order",
-    debicheckDesc: isAf
-      ? "Jou bank verwerk 'n gemagtigde debietorder elke maand. Geen kaartbesonderhede nodig nie."
-      : "Your bank processes an authorised debit order each month. No card details required.",
-    debicheckBadge: isAf ? "Aanbeveel" : "Recommended",
-    card: isAf ? "Herhalende Kaartbetaling" : "Recurring Card Payment",
-    cardDesc: isAf
-      ? "Jou kaartbesonderhede word veilig gestoor deur Netcash vir maandelikse aftrekkings."
-      : "Your card details are securely stored by Netcash for monthly deductions.",
-    initiate: isAf ? "Kies {method}" : "Choose {method}",
+    paystack: isAf ? "Betaal met Paystack" : "Pay with Paystack",
+    paystackDesc: isAf
+      ? "Veilige betaalblad — kaart, EFT of SnapScan. Jou intekening hernu outomaties elke maand."
+      : "Secure checkout — card, EFT or SnapScan. Your subscription renews automatically each month.",
+    paystackBadge: isAf ? "Veilig" : "Secure",
     loading: isAf ? "Verwerk..." : "Processing...",
     cancelledTitle: isAf ? "Betaling gekanselleer" : "Payment cancelled",
     cancelledDesc: isAf
-      ? "Jy het die Netcash-betaalblad verlaat. Jou intekening is nie geaktiveer nie — kies 'n metode hieronder om te probeer."
-      : "You left the Netcash payment page. Your subscription was not activated — choose a method below to try again.",
+      ? "Jy het die betaalblad verlaat. Jou intekening is nie geaktiveer nie — probeer weer hieronder."
+      : "You left the payment page. Your subscription was not activated — try again below.",
     notConfigured: isAf
       ? "Betaling is tans nie beskikbaar nie. Herhalende fakturering is nog nie geaktiveer op hierdie omgewing nie — probeer asseblief later weer."
       : "Payment not available. Recurring billing isn't active on this environment yet — please try again shortly.",
     back: isAf ? "Terug" : "Back",
     secure: isAf
-      ? "Veilige betaling verwerk deur Netcash. Jy sal na Netcash se betalingsblad herlei word."
-      : "Secure payment processed by Netcash. You will be redirected to the Netcash payment page.",
+      ? "Veilige betaling verwerk deur Paystack. Jy sal na Paystack se betaalblad herlei word."
+      : "Secure payment processed by Paystack. You will be redirected to the Paystack checkout page.",
   };
 
-  async function handleMethodSelect(method: "debicheck" | "card") {
-    setLoadingMethod(method);
+  async function handlePaystackCheckout() {
+    setLoadingMethod("card");
     setErrorMsg(null);
     try {
-      const endpoint =
-        method === "debicheck"
-          ? "/api/subscribe/netcash/debicheck/init"
-          : "/api/subscribe/netcash/card/init";
-      const res = await apiRequest("POST", endpoint, { plan: "brain-boost" });
+      const res = await apiRequest("POST", "/api/paystack/initialize", {});
       const data = await res.json() as {
-        redirectUrl?: string;
+        authorizationUrl?: string;
         alreadyActive?: boolean;
         error?: string;
         message?: string;
@@ -646,8 +637,8 @@ function PaymentPickerScreen({
         onSuccess();
         return;
       }
-      if (data.redirectUrl) {
-        window.location.href = data.redirectUrl; // ACCEPTED RISK: server-returned Netcash payment gateway URL, not user-controlled // nosemgrep: no-raw-window-location-href-variable
+      if (data.authorizationUrl) {
+        window.location.href = data.authorizationUrl; // ACCEPTED RISK: server-returned Paystack checkout URL, not user-controlled // nosemgrep: no-raw-window-location-href-variable
         return;
       }
       setErrorMsg(
@@ -728,14 +719,13 @@ function PaymentPickerScreen({
         </WallCallout>
       </div>
 
-      {/* Method options */}
+      {/* Paystack checkout — sole payment provider */}
       <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 28 }}>
-
-        {/* DebiCheck — recommended */}
         <button
-          onClick={() => handleMethodSelect("debicheck")}
+          onClick={handlePaystackCheckout}
           disabled={anyLoading}
           className="bts-method-btn"
+          data-testid="button-paystack-checkout"
           style={{
             "--c": "#94F7C5",
             width: "100%", textAlign: "left", background: "rgba(255,255,255,.03)",
@@ -746,51 +736,22 @@ function PaymentPickerScreen({
         >
           <div style={{ display: "flex", alignItems: "flex-start", gap: 16 }}>
             <div style={{ width: 44, height: 44, flex: "none", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(148,247,197,.14)", boxShadow: "0 0 18px rgba(148,247,197,.25)" }}>
-              {loadingMethod === "debicheck" ? (
+              {anyLoading ? (
                 <Loader2 className="animate-spin" style={{ width: 20, height: 20, color: "#94F7C5" }} />
               ) : (
-                <Landmark style={{ width: 20, height: 20, color: "#94F7C5" }} />
+                <CreditCard style={{ width: 20, height: 20, color: "#94F7C5" }} />
               )}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                <span style={{ fontWeight: 700, color: "#fff" }}>{t.debicheck}</span>
+                <span style={{ fontWeight: 700, color: "#fff" }}>{t.paystack}</span>
                 <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 12, textTransform: "uppercase", letterSpacing: "1.5px", color: "#94F7C5" }}>
-                  {t.debicheckBadge}
+                  {t.paystackBadge}
                 </span>
               </div>
-              <p style={{ fontSize: 13.5, color: "#fff", opacity: 0.94, lineHeight: 1.55, margin: 0 }}>{t.debicheckDesc}</p>
+              <p style={{ fontSize: 13.5, color: "#fff", opacity: 0.94, lineHeight: 1.55, margin: 0 }}>{t.paystackDesc}</p>
             </div>
             <ChevronRight style={{ width: 20, height: 20, flex: "none", marginTop: 2, color: "#94F7C5" }} />
-          </div>
-        </button>
-
-        {/* Card */}
-        <button
-          onClick={() => handleMethodSelect("card")}
-          disabled={anyLoading}
-          className="bts-method-btn"
-          style={{
-            "--c": "#9FD8FF",
-            width: "100%", textAlign: "left", background: "rgba(255,255,255,.03)",
-            border: "1.5px solid rgba(255,255,255,.12)", borderRadius: 18, padding: "18px 20px",
-            cursor: anyLoading ? "not-allowed" : "pointer", opacity: anyLoading ? 0.6 : 1,
-            fontFamily: "'Poppins',sans-serif", color: "#fff",
-          } as React.CSSProperties}
-        >
-          <div style={{ display: "flex", alignItems: "flex-start", gap: 16 }}>
-            <div style={{ width: 44, height: 44, flex: "none", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(159,216,255,.14)", boxShadow: "0 0 18px rgba(159,216,255,.25)" }}>
-              {loadingMethod === "card" ? (
-                <Loader2 className="animate-spin" style={{ width: 20, height: 20, color: "#9FD8FF" }} />
-              ) : (
-                <CreditCard style={{ width: 20, height: 20, color: "#9FD8FF" }} />
-              )}
-            </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <span style={{ fontWeight: 700, color: "#fff", display: "block", marginBottom: 4 }}>{t.card}</span>
-              <p style={{ fontSize: 13.5, color: "#fff", opacity: 0.94, lineHeight: 1.55, margin: 0 }}>{t.cardDesc}</p>
-            </div>
-            <ChevronRight style={{ width: 20, height: 20, flex: "none", marginTop: 2, color: "#9FD8FF" }} />
           </div>
         </button>
       </div>

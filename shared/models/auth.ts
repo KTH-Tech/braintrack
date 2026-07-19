@@ -24,6 +24,11 @@ export const users = pgTable("users", {
   passwordHash: varchar("password_hash"),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
+  // South African ID number (13 digits) captured during learner onboarding.
+  // SENSITIVE PERSONAL INFORMATION under POPIA — treat like passwordHash:
+  // never select this into any client-facing API response. See
+  // `toPublicUser()` below and its use in server/replit_integrations/auth/routes.ts.
+  idNumber: varchar("id_number"),
   profileImageUrl: varchar("profile_image_url"),
   role: text("role").default("learner"),
   schoolId: integer("school_id"),
@@ -60,3 +65,32 @@ export const users = pgTable("users", {
 
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
+
+/**
+ * Columns on `users` that must NEVER leave the server, even over an
+ * authenticated channel.
+ *  - passwordHash: bcrypt credential material.
+ *  - idNumber: South African ID number — sensitive personal information
+ *    under POPIA. Captured at onboarding for NSC/DBE identity matching and
+ *    read server-side only.
+ * Add any new sensitive column here AND it is stripped everywhere
+ * `toPublicUser()` is used.
+ */
+export const SENSITIVE_USER_FIELDS = ["passwordHash", "idNumber"] as const;
+
+/** A `User` with all sensitive columns removed. */
+export type PublicUser = Omit<User, typeof SENSITIVE_USER_FIELDS[number]>;
+
+/**
+ * Strip sensitive columns from a user row before it is serialised to a
+ * client. Use this at every boundary that returns a full user row.
+ */
+export function toPublicUser<T extends Partial<User>>(
+  user: T
+): Omit<T, typeof SENSITIVE_USER_FIELDS[number]> {
+  const rest: Record<string, unknown> = { ...(user as Record<string, unknown>) };
+  for (const field of SENSITIVE_USER_FIELDS) {
+    delete rest[field];
+  }
+  return rest as Omit<T, typeof SENSITIVE_USER_FIELDS[number]>;
+}

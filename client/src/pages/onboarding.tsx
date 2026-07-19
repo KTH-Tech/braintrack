@@ -26,6 +26,32 @@ interface SubjectMark {
 
 type Answers = Record<string, string | string[] | number>;
 
+// Validate a South African ID number: exactly 13 digits, a valid YYMMDD date
+// in positions 1-6, and a correct Luhn (mod-10) check digit. Citizenship and
+// gender digits are intentionally NOT validated.
+function isValidSaIdNumber(raw: string): boolean {
+  const id = (raw ?? "").trim();
+  if (!/^\d{13}$/.test(id)) return false;
+
+  const month = parseInt(id.slice(2, 4), 10);
+  const day = parseInt(id.slice(4, 6), 10);
+  if (month < 1 || month > 12) return false;
+  if (day < 1 || day > 31) return false;
+
+  let sum = 0;
+  let alternate = false;
+  for (let i = id.length - 1; i >= 0; i--) {
+    let n = id.charCodeAt(i) - 48;
+    if (alternate) {
+      n *= 2;
+      if (n > 9) n -= 9;
+    }
+    sum += n;
+    alternate = !alternate;
+  }
+  return sum % 10 === 0;
+}
+
 function calculateTraits(answers: Answers) {
   const traits: Record<string, string> = {};
 
@@ -182,6 +208,9 @@ type PersistedState = {
   schoolId?: number | null;
   grade?: number | null;
   parentEmail?: string;
+  firstName?: string;
+  lastName?: string;
+  idNumber?: string;
 };
 
 function loadPersistedState(): PersistedState | null {
@@ -238,8 +267,12 @@ function loadPersistedState(): PersistedState | null {
 
     const schoolName = typeof obj.schoolName === "string" ? obj.schoolName : undefined;
     const schoolId = typeof obj.schoolId === "number" ? obj.schoolId : null;
-    const grade = typeof obj.grade === "number" ? obj.grade : null;
+    // BrainTrack is a Grade 12 / NSC product — grade is always 12.
+    const grade = 12;
     const parentEmail = typeof obj.parentEmail === "string" ? obj.parentEmail : undefined;
+    const firstName = typeof obj.firstName === "string" ? obj.firstName : undefined;
+    const lastName = typeof obj.lastName === "string" ? obj.lastName : undefined;
+    const idNumber = typeof obj.idNumber === "string" ? obj.idNumber : undefined;
 
     return {
       currentStep,
@@ -254,6 +287,9 @@ function loadPersistedState(): PersistedState | null {
       schoolId,
       grade,
       parentEmail,
+      firstName,
+      lastName,
+      idNumber,
     };
   } catch {
     return null;
@@ -311,10 +347,21 @@ const T = {
     primaryStyleLabel: "Primary Style (required)",
     secondaryStyleLabel: "Secondary Style (optional)",
     selectSubjectsHeading: "Select Your Subjects",
-    selectSubjectsHint: "Select 4+ subjects and enter your latest marks (%)",
-    schoolGradeHeading: "Your School & Grade",
+    selectSubjectsHint: "Select 6+ subjects and enter your latest marks (%)",
+    schoolGradeHeading: "Your School",
     schoolSearchHint: "Search for your school below. If we don't have it yet, just type the name and we'll add it as pending.",
     schoolNameLabel: "School name",
+    identityHeading: "Your details",
+    firstNameLabel: "First name",
+    firstNamePlaceholder: "First name",
+    lastNameLabel: "Surname",
+    lastNamePlaceholder: "Surname",
+    idNumberLabel: "SA ID number",
+    idNumberPlaceholder: "13-digit ID number",
+    idNumberHint: "We use this to match your NSC results. It's kept private.",
+    firstNameRequired: "Please enter your first name.",
+    lastNameRequired: "Please enter your surname.",
+    idNumberInvalid: "Enter a valid 13-digit South African ID number.",
     schoolSearchingLabel: "Searching…",
     schoolLinkedLabel: "✓ Linked to a partner school",
     schoolPendingLabel: "We'll save this as a pending school until we verify it.",
@@ -390,10 +437,21 @@ const T = {
     primaryStyleLabel: "Primêre Styl (verpligtend)",
     secondaryStyleLabel: "Sekondêre Styl (opsioneel)",
     selectSubjectsHeading: "Kies Jou Vakke",
-    selectSubjectsHint: "Kies 4+ vakke en voer jou nuutste punte (%) in",
-    schoolGradeHeading: "Jou Skool & Graad",
+    selectSubjectsHint: "Kies 6+ vakke en voer jou nuutste punte (%) in",
+    schoolGradeHeading: "Jou Skool",
     schoolSearchHint: "Soek jou skool hieronder. As ons dit nog nie het nie, tik die naam en ons sal dit as hangend byvoeg.",
     schoolNameLabel: "Skoolnaam",
+    identityHeading: "Jou besonderhede",
+    firstNameLabel: "Naam",
+    firstNamePlaceholder: "Naam",
+    lastNameLabel: "Van",
+    lastNamePlaceholder: "Van",
+    idNumberLabel: "SA ID-nommer",
+    idNumberPlaceholder: "13-syfer ID-nommer",
+    idNumberHint: "Ons gebruik dit om jou NSS-uitslae te pas. Dit bly privaat.",
+    firstNameRequired: "Voer asseblief jou naam in.",
+    lastNameRequired: "Voer asseblief jou van in.",
+    idNumberInvalid: "Voer 'n geldige 13-syfer Suid-Afrikaanse ID-nommer in.",
     schoolSearchingLabel: "Soek…",
     schoolLinkedLabel: "✓ Aan 'n vennootskool gekoppel",
     schoolPendingLabel: "Ons sal dit as hangend stoor totdat ons dit verifieer.",
@@ -434,7 +492,11 @@ export default function OnboardingPage() {
   // Task #43 — School linking + parent contact captured during onboarding.
   const [schoolName, setSchoolName] = useState<string>(persisted?.schoolName ?? "");
   const [schoolId, setSchoolId] = useState<number | null>(persisted?.schoolId ?? null);
-  const [grade, setGrade] = useState<number | null>(persisted?.grade ?? 12);
+  // BrainTrack is a Grade 12 / NSC product — grade is a hard constant (no selector).
+  const grade = 12;
+  const [firstName, setFirstName] = useState<string>(persisted?.firstName ?? "");
+  const [lastName, setLastName] = useState<string>(persisted?.lastName ?? "");
+  const [idNumber, setIdNumber] = useState<string>(persisted?.idNumber ?? "");
   const [schoolQuery, setSchoolQuery] = useState<string>(persisted?.schoolName ?? "");
   const [schoolResults, setSchoolResults] = useState<Array<{ id: number; name: string; province: string | null }>>([]);
   const [schoolSearching, setSchoolSearching] = useState(false);
@@ -444,7 +506,15 @@ export default function OnboardingPage() {
   const { language, setLanguage } = useLanguage();
   const isAf = language === "af";
   const t = T[language];
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  // Prefill first name / surname from the authenticated user if we don't have
+  // a value yet (persisted draft or fresh). Does not clobber user edits.
+  useEffect(() => {
+    if (!user) return;
+    setFirstName((prev) => prev || user.firstName || "");
+    setLastName((prev) => prev || user.lastName || "");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
   useEffect(() => {
     // Backend preferredLanguage (synced via LanguageSync in App.tsx) is the
     // source of truth for authenticated users. Only fall back to a persisted
@@ -487,12 +557,15 @@ export default function OnboardingPage() {
         schoolId,
         grade,
         parentEmail,
+        firstName,
+        lastName,
+        idNumber,
       };
       window.localStorage.setItem(ONBOARDING_STORAGE_KEY, JSON.stringify(state));
     } catch {
       // ignore storage errors (quota, private mode)
     }
-  }, [hydrated, currentStep, phase, language, answers, varkPrimary, varkSecondary, subjectMarks, selectedSubjects, schoolName, schoolId, grade, parentEmail]);
+  }, [hydrated, currentStep, phase, language, answers, varkPrimary, varkSecondary, subjectMarks, selectedSubjects, schoolName, schoolId, grade, parentEmail, firstName, lastName, idNumber]);
 
   // Task #43 — Debounced school name search against partnerSchools.
   useEffect(() => {
@@ -555,7 +628,7 @@ export default function OnboardingPage() {
         challenges: [],
         goals: answers.goals || [],
         preferredLanguage: language === "af" ? "afrikaans" : "english",
-        rawAnswersJson: { ...answers, subjectMarks, varkPrimary, varkSecondary, schoolName, schoolId, grade },
+        rawAnswersJson: { ...answers, subjectMarks, varkPrimary, varkSecondary, schoolName, schoolId, grade, firstName, lastName },
         traitsJson: traits,
         recommendationsJson: recommendations,
         varkPrimary: varkPrimary || "kinesthetic",
@@ -565,6 +638,11 @@ export default function OnboardingPage() {
         ...(schoolId ? { schoolId } : {}),
         ...(grade ? { grade } : {}),
         ...(parentEmail.trim() ? { parentEmail: parentEmail.trim() } : {}),
+        // Learner identity. idNumber is sensitive — it is persisted to
+        // users.idNumber server-side and never returned to any client.
+        ...(firstName.trim() ? { firstName: firstName.trim() } : {}),
+        ...(lastName.trim() ? { lastName: lastName.trim() } : {}),
+        ...(idNumber.trim() ? { idNumber: idNumber.trim() } : {}),
       });
     },
     onSuccess: () => {
@@ -625,13 +703,18 @@ export default function OnboardingPage() {
 
   const canProceed = () => {
     if (phase === "subjects") {
-      return subjectMarks.length >= 4;
+      return subjectMarks.length >= 6;
     }
     if (phase === "vark") {
       return varkPrimary !== null;
     }
     if (phase === "school") {
-      return schoolName.trim().length >= 2 && grade !== null;
+      return (
+        schoolName.trim().length >= 2 &&
+        firstName.trim().length >= 1 &&
+        lastName.trim().length >= 1 &&
+        isValidSaIdNumber(idNumber)
+      );
     }
     if (phase === "parent_consent") {
       // POPIA compliance — learner must at minimum send a consent request before
@@ -1054,11 +1137,11 @@ export default function OnboardingPage() {
                 <p className="text-white font-medium">
                   {t.selectSubjectsHint}
                 </p>
-                {subjectMarks.length > 0 && subjectMarks.length < 4 && (
+                {subjectMarks.length > 0 && subjectMarks.length < 6 && (
                   <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-black border border-[#FFE29A]/40 text-sm text-[#FFE29A] font-medium">
                     <span>
                       {(() => {
-                        const n = 4 - subjectMarks.length;
+                        const n = 6 - subjectMarks.length;
                         return t.selectMoreMsg
                           .replace("{count}", String(n))
                           .replace("{plural}", n > 1 ? t.selectMorePlural : "");
@@ -1200,20 +1283,55 @@ export default function OnboardingPage() {
                   )}
                 </div>
 
-                <div className="space-y-2">
-                  <Label className="text-sm font-semibold">{t.gradeLabel}</Label>
-                  <div className="flex gap-2 flex-wrap">
-                    {[10, 11, 12].map((g) => (
-                      <button
-                        key={g}
-                        type="button"
-                        onClick={() => setGrade(g)}
-                        className={`px-5 h-11 rounded-xl border font-semibold ${grade === g ? "border-[#6EE7F9] bg-[#6EE7F9]/10 text-white" : "border-white/15 text-white hover:border-[#6EE7F9]/40"}`}
-                        data-testid={`button-grade-${g}`}
-                      >
-                        {t.gradeLabel} {g}
-                      </button>
-                    ))}
+                <div className="space-y-4 pt-2 border-t border-white/10">
+                  <Label className="text-sm font-semibold uppercase tracking-widest text-white">{t.identityHeading}</Label>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-sm font-semibold" htmlFor="onboarding-first-name">{t.firstNameLabel}</Label>
+                      <Input
+                        id="onboarding-first-name"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        placeholder={t.firstNamePlaceholder}
+                        autoComplete="given-name"
+                        className="h-12 bg-background"
+                        data-testid="input-first-name"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-semibold" htmlFor="onboarding-last-name">{t.lastNameLabel}</Label>
+                      <Input
+                        id="onboarding-last-name"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        placeholder={t.lastNamePlaceholder}
+                        autoComplete="family-name"
+                        className="h-12 bg-background"
+                        data-testid="input-last-name"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-sm font-semibold" htmlFor="onboarding-id-number">{t.idNumberLabel}</Label>
+                    <Input
+                      id="onboarding-id-number"
+                      value={idNumber}
+                      onChange={(e) => setIdNumber(e.target.value.replace(/\D/g, "").slice(0, 13))}
+                      placeholder={t.idNumberPlaceholder}
+                      inputMode="numeric"
+                      maxLength={13}
+                      className="h-12 bg-background"
+                      data-testid="input-id-number"
+                    />
+                    {idNumber.trim().length > 0 && !isValidSaIdNumber(idNumber) ? (
+                      <p className="text-xs text-[#FFB7E5]" data-testid="text-id-number-error">
+                        {t.idNumberInvalid}
+                      </p>
+                    ) : (
+                      <p className="text-xs text-white">{t.idNumberHint}</p>
+                    )}
                   </div>
                 </div>
 

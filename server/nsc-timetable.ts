@@ -16,6 +16,26 @@ import { eq, and, inArray, sql, or, isNull } from "drizzle-orm";
 import { NSC_2026_TIMETABLE, NSC_2026_PRELIMINARY_TIMETABLE, SUBJECT_NAME_MAPPINGS } from "./data/nsc-2026-timetable";
 
 // ============================================
+// DATE HELPERS — all exam day-counting runs in SAST
+// ============================================
+
+/**
+ * Today's date at SAST midnight, expressed as a UTC instant.
+ * South Africa is UTC+2 year-round (no DST). Deriving "today" from the host clock
+ * makes daysRemaining a full day too high between 00:00 and 02:00 SAST whenever the
+ * server runs on UTC, which is what parents saw as a wrong exam countdown.
+ */
+function sastToday(): Date {
+  const nowSast = new Date(Date.now() + 2 * 60 * 60 * 1000);
+  return new Date(Date.UTC(nowSast.getUTCFullYear(), nowSast.getUTCMonth(), nowSast.getUTCDate()));
+}
+
+/** An exam's calendar date at SAST midnight, in the same frame as sastToday(). */
+function examDay(dateStr: string): Date {
+  return new Date(dateStr + "T00:00:00Z");
+}
+
+// ============================================
 // PRELIM EXAMS — School-set preliminary dates (Task #359)
 // ============================================
 
@@ -68,9 +88,8 @@ export async function getEffectivePrelimExams(userId: string): Promise<PrelimExa
  * as a sentinel because prelims are not tied to an `nsc_timetable` row.
  */
 function prelimToSchedule(userId: string, p: PrelimExam): LearnerExamSchedule {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const examDate = new Date(p.examDate + "T00:00:00");
+  const today = sastToday();
+  const examDate = examDay(p.examDate);
   const diffMs = examDate.getTime() - today.getTime();
   const daysRemaining = Math.max(0, Math.floor(diffMs / 86400000));
   const isPast = examDate < today;
@@ -294,12 +313,11 @@ export async function buildLearnerSchedule(userId: string): Promise<LearnerExamS
 
     if (timetableEntries.length === 0) return [];
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const today = sastToday();
 
     // Build schedule rows
     const scheduleRows = timetableEntries.map(entry => {
-      const examDate = new Date(entry.examDate + "T00:00:00");
+      const examDate = examDay(entry.examDate);
       const diffMs = examDate.getTime() - today.getTime();
       const daysRemaining = Math.max(0, Math.floor(diffMs / 86400000));
       const isPast = examDate < today;
@@ -370,10 +388,9 @@ export async function getLearnerSchedule(userId: string): Promise<LearnerExamSch
   }
 
   // Refresh daysRemaining on fetch (cheap computation)
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const today = sastToday();
   const refreshed = baseRows.map(e => {
-    const examDate = new Date(e.examDate + "T00:00:00");
+    const examDate = examDay(e.examDate);
     const diffMs = examDate.getTime() - today.getTime();
     const daysRemaining = Math.max(0, Math.floor(diffMs / 86400000));
     const isPast = examDate < today;
@@ -462,7 +479,7 @@ export async function getExamWidgets(userId: string): Promise<ExamWidgetData> {
   weekEnd.setDate(today.getDate() + 7);
 
   const thisWeekExams = upcoming.filter(e => {
-    const d = new Date(e.examDate + "T00:00:00");
+    const d = examDay(e.examDate);
     return d >= today && d <= weekEnd;
   });
 

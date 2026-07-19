@@ -649,7 +649,12 @@ export const subscriptions = pgTable(
     netcashMandateId: text("netcash_mandate_id"),
     netcashCardToken: text("netcash_card_token"),
     netcashCheckoutRef: text("netcash_checkout_ref"),
-    billingMethod: text("billing_method").default("trial"), // trial | debicheck | card | lapsed
+    // Paystack recurring billing — the active provider. Netcash columns above
+    // are retained so historical records stay readable.
+    paystackCustomerCode: text("paystack_customer_code"),
+    paystackSubscriptionCode: text("paystack_subscription_code"),
+    paystackAuthorizationCode: text("paystack_authorization_code"),
+    billingMethod: text("billing_method").default("trial"), // trial | paystack | debicheck | card | lapsed
     pendingMethod: text("pending_method"), // debicheck | card while awaiting webhook
     trialEndsAt: timestamp("trial_ends_at"),
     nextRenewalAt: timestamp("next_renewal_at"),

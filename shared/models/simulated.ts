@@ -84,6 +84,26 @@ export const simulatedPaperBank = pgTable("simulated_paper_bank", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 });
 
+/**
+ * Payment provider webhook events, recorded once per provider event id.
+ *
+ * This is the idempotency ledger: payment webhooks are retried by the provider
+ * on any non-2xx and can be delivered more than once, so applying an event
+ * twice would double-activate or double-charge state. The unique index on
+ * provider_event_id makes re-application impossible at the database level
+ * rather than relying on application checks.
+ */
+export const paymentEvents = pgTable("payment_events", {
+  id: serial("id").primaryKey(),
+  provider: text("provider").notNull(),
+  providerEventId: text("provider_event_id").notNull(),
+  eventType: text("event_type").notNull(),
+  payload: jsonb("payload"),
+  receivedAt: timestamp("received_at", { withTimezone: true }).defaultNow(),
+}, (t) => ({
+  providerEventUq: uniqueIndex("payment_events_provider_event_uq").on(t.provider, t.providerEventId),
+}));
+
 /** Which papers each learner holds — enforces the ≥8-papers-per-learner rule. */
 export const learnerPaperAllocations = pgTable("learner_paper_allocations", {
   id: serial("id").primaryKey(),

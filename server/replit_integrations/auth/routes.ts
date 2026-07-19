@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { authStorage } from "./storage";
 import { isAuthenticated } from "./replitAuth";
 import { storage } from "../../storage";
+import { toPublicUser } from "@shared/models/auth";
 
 // Register auth-specific routes
 export function registerAuthRoutes(app: Express): void {
@@ -10,10 +11,14 @@ export function registerAuthRoutes(app: Express): void {
     try {
       const userId = req.user.claims.sub;
       const user = await authStorage.getUser(userId);
-      // Never expose credential material to the client. passwordHash is a
-      // bcrypt digest for native email+password sign-in; it must not leave
-      // the server even over an authenticated channel.
-      const safeUser = user ? (({ passwordHash, ...rest }: any) => rest)(user) : user;
+      // Never expose credential material or sensitive personal information to
+      // the client. passwordHash is a bcrypt digest for native email+password
+      // sign-in; idNumber is the learner's South African ID number (POPIA
+      // sensitive personal information). Neither may leave the server, even
+      // over an authenticated channel. toPublicUser() strips every field
+      // listed in SENSITIVE_USER_FIELDS, so new sensitive columns are covered
+      // by adding them there.
+      const safeUser = user ? toPublicUser(user) : user;
       // Admin "Preview as learner" mode: session flag overrides the
       // client-facing role/onboarding flags without touching the DB.
       // Server permissions still read from the real DB row elsewhere.
