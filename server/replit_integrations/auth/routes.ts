@@ -10,18 +10,22 @@ export function registerAuthRoutes(app: Express): void {
     try {
       const userId = req.user.claims.sub;
       const user = await authStorage.getUser(userId);
+      // Never expose credential material to the client. passwordHash is a
+      // bcrypt digest for native email+password sign-in; it must not leave
+      // the server even over an authenticated channel.
+      const safeUser = user ? (({ passwordHash, ...rest }: any) => rest)(user) : user;
       // Admin "Preview as learner" mode: session flag overrides the
       // client-facing role/onboarding flags without touching the DB.
       // Server permissions still read from the real DB row elsewhere.
-      if (user && user.role === "admin" && req.session?.previewAsLearner) {
+      if (safeUser && safeUser.role === "admin" && req.session?.previewAsLearner) {
         return res.json({
-          ...user,
+          ...safeUser,
           role: "learner",
           roleConfirmed: true,
           _previewMode: true,
         });
       }
-      res.json(user);
+      res.json(safeUser);
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
