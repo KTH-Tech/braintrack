@@ -176,11 +176,13 @@ export default function AboutPage() {
           .bta-grid2 { grid-template-columns: 1fr !important; }
         }
         @media (max-width: 480px) {
-          .bta-nav { padding: 12px 14px !important; gap: 10px !important; }
-          .bta-nav-left { gap: 8px !important; }
-          .bta-nav-left img { width: 40px !important; height: 40px !important; }
-          .bta-nav-right { gap: 10px !important; }
-          .bta-nav-cta { padding: 9px 16px !important; font-size: 13px !important; }
+          .bta-nav { padding: 12px 10px !important; gap: 6px !important; }
+          .bta-nav-left { gap: 6px !important; }
+          .bta-nav-left img { width: 34px !important; height: 34px !important; }
+          .bta-nav-left .bt-wordmark { font-size: 17px !important; }
+          .bta-nav-right { gap: 6px !important; }
+          .bta-nav-right [data-testid="lang-toggle"] span { padding: 5px 7px !important; }
+          .bta-nav-cta { padding: 8px 12px !important; font-size: 12px !important; }
         }
       `}</style>
 

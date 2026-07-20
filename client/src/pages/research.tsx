@@ -211,11 +211,13 @@ export default function ResearchPage() {
           .btr-grid2 { grid-template-columns: 1fr !important; }
         }
         @media (max-width: 480px) {
-          .btr-nav { padding: 12px 14px !important; gap: 10px !important; }
-          .btr-nav-left { gap: 8px !important; }
-          .btr-nav-left img { width: 40px !important; height: 40px !important; }
-          .btr-nav-right { gap: 10px !important; }
-          .btr-nav-cta { padding: 9px 16px !important; font-size: 13px !important; }
+          .btr-nav { padding: 12px 10px !important; gap: 6px !important; }
+          .btr-nav-left { gap: 6px !important; }
+          .btr-nav-left img { width: 34px !important; height: 34px !important; }
+          .btr-nav-left .bt-wordmark { font-size: 17px !important; }
+          .btr-nav-right { gap: 6px !important; }
+          .btr-nav-right [data-testid="lang-toggle"] span { padding: 5px 7px !important; }
+          .btr-nav-cta { padding: 8px 12px !important; font-size: 12px !important; }
         }
       `}</style>
 

@@ -215,11 +215,13 @@ export default function FeaturesPage() {
           .btf-grid3 { grid-template-columns: 1fr !important; }
         }
         @media (max-width: 480px) {
-          .btf-nav { padding: 12px 14px !important; gap: 10px !important; }
-          .btf-nav-left { gap: 8px !important; }
-          .btf-nav-left img { width: 40px !important; height: 40px !important; }
-          .btf-nav-right { gap: 10px !important; }
-          .btf-nav-cta { padding: 9px 16px !important; font-size: 13px !important; }
+          .btf-nav { padding: 12px 10px !important; gap: 6px !important; }
+          .btf-nav-left { gap: 6px !important; }
+          .btf-nav-left img { width: 34px !important; height: 34px !important; }
+          .btf-nav-left .bt-wordmark { font-size: 17px !important; }
+          .btf-nav-right { gap: 6px !important; }
+          .btf-nav-right [data-testid="lang-toggle"] span { padding: 5px 7px !important; }
+          .btf-nav-cta { padding: 8px 12px !important; font-size: 12px !important; }
         }
       `}</style>
 
