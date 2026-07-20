@@ -1525,6 +1525,14 @@ export default function ParentDashboardPage() {
         @media (max-width: 861px) {
           .btp-sidebar { width: 200px; padding: 20px 12px; }
         }
+        @media (max-width: 520px) {
+          .btp-sidebar { width: 60px !important; padding: 14px 6px !important; align-items: center !important; }
+          .btp-navlabel { display: none !important; }
+          .btp-navitem { justify-content: center !important; padding: 12px !important; }
+          .btp-logo-link { justify-content: center !important; padding: 0 0 12px !important; }
+          .btp-logo-img { width: 32px !important; height: 32px !important; }
+          .btp-logout { margin-top: auto !important; justify-content: center !important; }
+        }
       `}</style>
 
       {/* ── Parent sidebar — persists at every width, slims under 861px ── */}
@@ -1545,11 +1553,12 @@ export default function ParentDashboardPage() {
           overflowY: "auto",
         }}
       >
-        <Link href="/parent" style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 6px 10px", cursor: "pointer" }}>
-          <img src={iconTransparent} alt="BrainTrack" style={{ width: 44, height: 44, objectFit: "contain" }} />
-          <span className="bt-wordmark" style={{ fontSize: 16 }}>BrainTrack</span>
+        <Link href="/parent" className="btp-logo-link" style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 6px 10px", cursor: "pointer" }}>
+          <img src={iconTransparent} alt="BrainTrack" className="btp-logo-img" style={{ width: 44, height: 44, objectFit: "contain", flex: "none" }} />
+          <span className="bt-wordmark btp-navlabel" style={{ fontSize: 16 }}>BrainTrack</span>
         </Link>
         <span
+          className="btp-navlabel"
           data-testid="parent-role-chip"
           style={{
             alignSelf: "flex-start",
@@ -1573,6 +1582,7 @@ export default function ParentDashboardPage() {
             return (
               <Link key={href} href={href}>
                 <div
+                  className="btp-navitem"
                   data-testid={`parent-nav-${href.replace(/^\//, "").split("?")[0]}`}
                   title={label}
                   aria-label={label}
@@ -1595,7 +1605,7 @@ export default function ParentDashboardPage() {
                   onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = "transparent"; }}
                 >
                   <Icon className="w-4 h-4 shrink-0" />
-                  <span style={{ flex: 1, minWidth: 0 }}>{label}</span>
+                  <span className="btp-navlabel" style={{ flex: 1, minWidth: 0 }}>{label}</span>
                 </div>
               </Link>
             );
@@ -1603,6 +1613,7 @@ export default function ParentDashboardPage() {
         </nav>
 
         <div
+          className="btp-navlabel"
           data-testid="parent-nav-learner"
           style={{ marginTop: "auto", ...panel(PASTEL.purple), padding: 14 }}
         >
@@ -1624,6 +1635,7 @@ export default function ParentDashboardPage() {
         </div>
 
         <button
+          className="btp-logout"
           onClick={() => logout()}
           data-testid="button-logout"
           title={nt.signOut}
@@ -1648,7 +1660,7 @@ export default function ParentDashboardPage() {
           onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,.14)"; e.currentTarget.style.color = "#fff"; }}
         >
           <LogOut className="w-4 h-4 shrink-0" />
-          {nt.signOut}
+          <span className="btp-navlabel">{nt.signOut}</span>
         </button>
       </aside>
 

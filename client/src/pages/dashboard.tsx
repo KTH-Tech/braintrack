@@ -670,15 +670,16 @@ export default function DashboardPage() {
           overflowY: "auto",
         }}
       >
-        <Link href="/dashboard" style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 10px 22px", cursor: "pointer" }}>
-          <img src={btIcon} alt="BrainTrack" style={{ width: 56, height: 56, objectFit: "contain" }} />
-          <span className="bt-wordmark" style={{ fontSize: 17 }}>BrainTrack</span>
+        <Link href="/dashboard" className="bt-dash-logo" style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 10px 22px", cursor: "pointer" }}>
+          <img src={btIcon} alt="BrainTrack" className="bt-dash-logo-img" style={{ width: 56, height: 56, objectFit: "contain", flex: "none" }} />
+          <span className="bt-wordmark bt-dash-navlabel" style={{ fontSize: 17 }}>BrainTrack</span>
         </Link>
         {navLinks.map(({ href, icon: Icon, label }) => {
           const active = location === href;
           return (
             <Link key={href} href={href}>
               <div
+                className="bt-dash-navitem"
                 data-testid={`nav-icon-${href.replace(/\//g, "")}`}
                 title={label}
                 aria-label={label}
@@ -700,12 +701,13 @@ export default function DashboardPage() {
                 onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = "transparent"; }}
               >
                 <Icon style={{ width: 16, height: 16, flex: "none" }} />
-                <span style={{ flex: 1 }}>{label}</span>
+                <span className="bt-dash-navlabel" style={{ flex: 1 }}>{label}</span>
               </div>
             </Link>
           );
         })}
         <div
+          className="bt-dash-streak"
           data-testid="streak-badge"
           style={{
             marginTop: "auto",
@@ -745,8 +747,8 @@ export default function DashboardPage() {
           onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#FF8DA1"; e.currentTarget.style.color = "#FF8DA1"; }}
           onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,.14)"; e.currentTarget.style.color = "#fff"; }}
         >
-          <LogOut style={{ width: 16, height: 16 }} />
-          {t.signOutLabel}
+          <LogOut style={{ width: 16, height: 16, flex: "none" }} />
+          <span className="bt-dash-navlabel">{t.signOutLabel}</span>
         </button>
       </aside>
 
@@ -1649,7 +1651,11 @@ export default function DashboardPage() {
       </div>
 
       {/* Responsive: the left menu persists at every width (user request —
-          no top-bar fallback); it just slims down on narrow screens. */}
+          no top-bar fallback); it just slims down on narrow screens. Below
+          520px a fixed 200px rail was eating over half the screen and
+          crushing every card's content into an unreadable sliver, so it
+          drops to an icon-only rail there instead — still always visible,
+          just without labels that no longer fit. */}
       <style>{`
         @media (max-width: 860px) {
           .bt-dash-sidebar { width: 200px !important; padding: 18px 10px !important; }
@@ -1659,6 +1665,15 @@ export default function DashboardPage() {
         @media (max-width: 1280px) and (min-width: 861px) {
           .bt-grid-stats { grid-template-columns: repeat(2, 1fr) !important; }
           .bt-grid-quick, .bt-grid-focus, .bt-grid-game { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+        @media (max-width: 520px) {
+          .bt-dash-sidebar { width: 60px !important; padding: 14px 6px !important; align-items: center !important; }
+          .bt-dash-navlabel { display: none !important; }
+          .bt-dash-navitem { justify-content: center !important; padding: 12px !important; }
+          .bt-dash-logo { justify-content: center !important; padding: 0 0 16px !important; }
+          .bt-dash-logo-img { width: 32px !important; height: 32px !important; }
+          .bt-dash-streak { display: none !important; }
+          .bt-dash-main { padding: 16px 10px !important; }
         }
       `}</style>
     </div>
