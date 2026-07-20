@@ -334,7 +334,15 @@ export function registerPaystackRoutes(app: Express, isAuthenticated: any) {
             // same charge is never double-applied.
             break;
           }
-          if (userId) {
+          // KTH Tech runs several products/plans through this one Paystack
+          // account. This webhook URL only ever receives BrainTrack events
+          // because it's registered against BrainTrack's own plan-scoped
+          // Paystack integration — but we still render purely off the plan
+          // code rather than trusting an arbitrary userId in metadata, so a
+          // charge for any other KTH Tech plan can never activate a
+          // BrainTrack subscription.
+          const eventPlanCode = d?.plan?.plan_code ?? null;
+          if (userId && eventPlanCode === planCode()) {
             await activateSubscription({
               userId,
               customerCode: d?.customer?.customer_code ?? null,
@@ -347,7 +355,8 @@ export function registerPaystackRoutes(app: Express, isAuthenticated: any) {
         }
         case "subscription.create": {
           const userId = d?.metadata?.userId;
-          if (userId) {
+          const eventPlanCode = d?.plan?.plan_code ?? null;
+          if (userId && eventPlanCode === planCode()) {
             await activateSubscription({
               userId,
               customerCode: d?.customer?.customer_code ?? null,
