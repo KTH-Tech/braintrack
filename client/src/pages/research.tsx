@@ -210,10 +210,18 @@ export default function ResearchPage() {
           .btr-grid4 { grid-template-columns: repeat(2,1fr) !important; }
           .btr-grid2 { grid-template-columns: 1fr !important; }
         }
+        @media (max-width: 480px) {
+          .btr-nav { padding: 12px 14px !important; gap: 10px !important; }
+          .btr-nav-left { gap: 8px !important; }
+          .btr-nav-left img { width: 40px !important; height: 40px !important; }
+          .btr-nav-right { gap: 10px !important; }
+          .btr-nav-cta { padding: 9px 16px !important; font-size: 13px !important; }
+        }
       `}</style>
 
       {/* ── Nav ─────────────────────────────────────────────── */}
       <div
+        className="btr-nav"
         style={{
           display: "flex", alignItems: "center", justifyContent: "space-between",
           gap: 32, padding: "16px 48px", position: "sticky", top: 0, zIndex: 50,
@@ -222,12 +230,12 @@ export default function ResearchPage() {
         }}
       >
         <Link href="/">
-          <div style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }}>
-            <img src={iconTransparent} alt="BrainTrack" className="btr-logo-img" style={{ width: 56, height: 56, objectFit: "contain" }} />
+          <div className="btr-nav-left" style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer", minWidth: 0, flex: "none" }}>
+            <img src={iconTransparent} alt="BrainTrack" className="btr-logo-img" style={{ width: 56, height: 56, objectFit: "contain", flex: "none" }} />
             <span className="bt-wordmark" style={{ fontSize: 22, letterSpacing: "-.5px" }}>BrainTrack</span>
           </div>
         </Link>
-        <div style={{ display: "flex", alignItems: "center", gap: 26, fontSize: 14, fontWeight: 600, flex: "none" }}>
+        <div className="btr-nav-right" style={{ display: "flex", alignItems: "center", gap: 26, fontSize: 14, fontWeight: 600, flex: "none" }}>
           <span className="btr-nav-links" style={{ display: "flex", alignItems: "center", gap: 26 }}>
             <Link href="/features"><span className="btr-nav-link">{t.tFeatures}</span></Link>
           </span>
@@ -237,13 +245,13 @@ export default function ResearchPage() {
             style={{
               display: "flex", alignItems: "center", gap: 2, fontSize: 12, fontWeight: 800,
               border: "1.5px solid rgba(255,255,255,.2)", borderRadius: 8,
-              overflow: "hidden", cursor: "pointer", userSelect: "none",
+              overflow: "hidden", cursor: "pointer", userSelect: "none", flex: "none",
             }}
           >
             <span style={{ padding: "6px 10px", background: en ? "#9FF5E8" : "transparent", color: en ? "#050508" : "#fff" }}>EN</span>
             <span style={{ padding: "6px 10px", background: en ? "transparent" : "#9FF5E8", color: en ? "#fff" : "#050508" }}>AF</span>
           </span>
-          <a href="/signin">
+          <a href="/signin" style={{ flex: "none" }}>
             <button
               className="btr-nav-cta"
               data-testid="button-nav-enter"

@@ -399,10 +399,18 @@ export default function LandingPage() {
           .btl-foot { padding: 36px 22px !important; flex-direction: column; align-items: flex-start !important; }
           .btl-foot-links { gap: 16px 18px !important; }
         }
+        @media (max-width: 480px) {
+          .btl-nav { padding: 12px 14px !important; gap: 10px !important; }
+          .btl-nav-left { gap: 6px !important; }
+          .btl-nav-left img { width: 40px !important; height: 40px !important; }
+          .btl-nav-right { gap: 10px !important; }
+          .btl-nav-cta { padding: 9px 16px !important; font-size: 13px !important; }
+        }
       `}</style>
 
       {/* ── Nav ─────────────────────────────────────────────── */}
       <div
+        className="btl-nav"
         style={{
           display: "flex", alignItems: "center", justifyContent: "space-between",
           gap: 32, padding: "16px 48px", position: "sticky", top: 0, zIndex: 50,
@@ -410,11 +418,11 @@ export default function LandingPage() {
           borderBottom: "1px solid rgba(255,255,255,.06)",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flex: "none" }}>
-          <img src={iconTransparent} alt="BrainTrack" className="btl-logo-img" style={{ width: 56, height: 56, objectFit: "contain" }} />
+        <div className="btl-nav-left" style={{ display: "flex", alignItems: "center", gap: 10, flex: "none", minWidth: 0 }}>
+          <img src={iconTransparent} alt="BrainTrack" className="btl-logo-img" style={{ width: 56, height: 56, objectFit: "contain", flex: "none" }} />
           <RainbowWordmark size={24} />
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 22, fontSize: 14, fontWeight: 600, flex: "none" }}>
+        <div className="btl-nav-right" style={{ display: "flex", alignItems: "center", gap: 22, fontSize: 14, fontWeight: 600, flex: "none" }}>
           <span className="btl-nav-links" style={{ display: "flex", alignItems: "center", gap: 22 }}>
             <Link href="/features"><span className="btl-nav-link" style={{ "--h": "#9FF5E8" } as React.CSSProperties}>{t.tFeatures}</span></Link>
             <Link href="/research"><span className="btl-nav-link" style={{ "--h": "#9FD8FF" } as React.CSSProperties}>{t.tResearch}</span></Link>
@@ -427,13 +435,13 @@ export default function LandingPage() {
             style={{
               display: "flex", alignItems: "center", gap: 2, fontSize: 12, fontWeight: 800,
               border: "1.5px solid rgba(255,255,255,.2)", borderRadius: 8,
-              overflow: "hidden", cursor: "pointer", userSelect: "none",
+              overflow: "hidden", cursor: "pointer", userSelect: "none", flex: "none",
             }}
           >
             <span style={{ padding: "6px 10px", background: en ? "#9FF5E8" : "transparent", color: en ? "#050508" : "#fff" }}>EN</span>
             <span style={{ padding: "6px 10px", background: en ? "transparent" : "#9FF5E8", color: en ? "#fff" : "#050508" }}>AF</span>
           </span>
-          <a href="/signin">
+          <a href="/signin" style={{ flex: "none" }}>
             <button
               className="btl-nav-cta"
               data-testid="button-nav-enter"
