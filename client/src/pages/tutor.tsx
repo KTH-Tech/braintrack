@@ -10,15 +10,13 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useLanguage } from "@/lib/language-context";
 import { formatDate } from "@/lib/formatters";
-import { 
+import {
   Send,
   Loader2,
-  LogOut,
   Sparkles,
   User,
   MessageCircle,
   BookOpen,
-  ArrowLeft,
   Eye,
   Ear,
   Hand,
@@ -27,7 +25,6 @@ import {
   NotebookPen,
   ThumbsUp,
   ThumbsDown,
-  Globe,
   Network,
   AlertCircle,
   RotateCcw
@@ -37,6 +34,7 @@ import { TopicMindmap } from "@/components/topic-mindmap";
 import { GraffitiSplats } from "@/components/graffiti-splats";
 import { RizzFace, RizzWordmark, RizzBrandStyles, RIZZ_USER_GRADIENT, RIZZ_RAINBOW, RIZZ_LINES, type RizzExpression } from "@/components/rizz-brand";
 import brandLogo from "@assets/Logo_01_1779989960628.jpeg";
+import { LearnerHeader } from "@/components/learner-header";
 
 const TUTOR_AVATARS: Record<string, { icon: any }> = {
   visual: { icon: Eye },
@@ -77,7 +75,6 @@ interface ChatMessage {
 const T = {
   en: {
     homeLabel: "Home",
-    signOut: "Sign Out",
     chatTab: "Chat",
     notesTab: "Study Notes",
     pageTitle: "Smart Tutor",
@@ -159,7 +156,6 @@ const T = {
   },
   af: {
     homeLabel: "Tuis",
-    signOut: "Uitteken",
     chatTab: "Gesels",
     notesTab: "Studienotas",
     pageTitle: "Slimmer Tutor",
@@ -242,9 +238,9 @@ const T = {
 } as const;
 
 export default function TutorPage() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
-  const { language, toggleLanguage } = useLanguage();
+  const { language } = useLanguage();
   const isAf = language === "af";
   const t = T[language];
   const searchParams = new URLSearchParams(useSearch());
@@ -481,93 +477,37 @@ export default function TutorPage() {
     <div className="min-h-screen flex flex-col text-white overflow-x-hidden relative" style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}>
       <GraffitiSplats variant="corner" opacity={0.35} />
       <style>{`
-        .tutor-close-btn:hover { border-color: #FF8DA1 !important; color: #FF8DA1 !important; transform: scale(1.08); }
         .tutor-sticker { transition: transform .18s ease, box-shadow .18s ease; }
         .tutor-sticker:hover { transform: rotate(0deg) translateY(-3px) scale(1.02) !important; }
         @media (prefers-reduced-motion: reduce) {
           .tutor-sticker:hover { transform: none !important; }
         }
       `}</style>
-      <header
-        className="sticky top-0 z-50 relative"
-        style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderBottom: "2px solid rgba(110,231,249,0.5)" }}
-      >
-        <div aria-hidden style={{ height: 3, background: RIZZ_RAINBOW, backgroundSize: "200% 100%", animation: "bt-rainbow 6s linear infinite" }} />
-        <div className="max-w-4xl mx-auto px-2 min-[375px]:px-4">
-          <div className="flex items-center justify-between h-14 gap-2 min-[375px]:gap-4">
-            <div className="flex items-center gap-2 min-[375px]:gap-3 min-w-0">
-              <Link href="/dashboard">
-                <button
-                  className="inline-flex items-center gap-1.5 px-2 min-[375px]:px-4 py-2 rounded-xl bg-white/[.03] hover:bg-white/10 text-sm font-bold shrink-0"
-                  style={{ color: "#6EE7F9", border: "1.5px solid #6EE7F9" }}
-                  data-testid="link-back"
-                >
-                  <ArrowLeft className="h-3.5 w-3.5 shrink-0" />
-                  <span className="max-[374px]:hidden">{t.homeLabel}</span>
-                </button>
-              </Link>
-              {/* Rizz, alive — expression tracks whether he's working. */}
-              <RizzBrandStyles />
-              <div className="flex items-center gap-2 min-w-0">
-                <RizzFace
-                  expression={
-                    (askMutation.isPending || notesMutation.isPending
-                      ? "thinking"
-                      : "happy") as RizzExpression
-                  }
-                  size={34}
-                />
-                <span className="hidden sm:inline-flex">
-                  <RizzWordmark size={20} />
-                </span>
-              </div>
+      <div aria-hidden style={{ height: 3, background: RIZZ_RAINBOW, backgroundSize: "200% 100%", animation: "bt-rainbow 6s linear infinite" }} />
+      <LearnerHeader
+        backLabel={t.homeLabel}
+        title={t.pageTitle}
+        maxWidthClassName="max-w-4xl"
+        titleExtra={
+          <>
+            {/* Rizz, alive — expression tracks whether he's working. */}
+            <RizzBrandStyles />
+            <div className="flex items-center gap-2 min-w-0">
+              <RizzFace
+                expression={
+                  (askMutation.isPending || notesMutation.isPending
+                    ? "thinking"
+                    : "happy") as RizzExpression
+                }
+                size={34}
+              />
+              <span className="hidden sm:inline-flex">
+                <RizzWordmark size={20} />
+              </span>
             </div>
-            <div className="flex items-center gap-1 min-[375px]:gap-2 shrink-0">
-              <button
-                onClick={toggleLanguage}
-                className="inline-flex items-center gap-1 min-[375px]:gap-1.5 px-2 min-[375px]:px-4 py-2 rounded-xl bg-white/[.03] hover:bg-white/10 text-sm font-bold"
-                style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
-                data-testid="button-language-toggle"
-                aria-label={language === "en" ? "EN" : "AF"}
-              >
-                <Globe className="h-3.5 w-3.5 shrink-0" />
-                <span className="max-[374px]:hidden">{language === "en" ? "EN" : "AF"}</span>
-              </button>
-              <button
-                onClick={() => logout()}
-                className="inline-flex items-center gap-1 min-[375px]:gap-1.5 px-2 min-[375px]:px-4 py-2 rounded-xl bg-white/[.03] hover:bg-white/10 text-sm font-bold"
-                style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}
-                data-testid="button-logout"
-                aria-label={t.signOut}
-              >
-                <LogOut className="w-3.5 h-3.5 shrink-0" />
-                <span className="max-[374px]:hidden">{t.signOut}</span>
-              </button>
-              {/* Explicit close — always-visible exit back to the dashboard. */}
-              <Link href="/dashboard">
-                <button
-                  type="button"
-                  className="tutor-close-btn inline-flex items-center justify-center rounded-full text-xl font-bold leading-none shrink-0"
-                  style={{
-                    width: 36,
-                    height: 36,
-                    padding: 0,
-                    color: "#fff",
-                    background: "rgba(255,255,255,0.12)",
-                    border: "1.5px solid rgba(255,255,255,0.55)",
-                    transition: "all .15s",
-                  }}
-                  data-testid="button-tutor-close"
-                  title={t.homeLabel}
-                  aria-label={isAf ? "Maak Rizz toe" : "Close Rizz tutor"}
-                >
-                  ×
-                </button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+          </>
+        }
+      />
 
       <div className="max-w-4xl mx-auto w-full px-4 pt-4 flex flex-col sm:flex-row sm:items-center gap-3">
         <div className="flex flex-wrap gap-1.5 p-1 rounded-xl bg-white/[.03] w-full sm:w-auto" style={{ border: "1px solid rgba(197,179,255,0.4)" }}>

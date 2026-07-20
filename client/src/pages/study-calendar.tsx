@@ -5,10 +5,10 @@ import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/language-context";
 import { formatDate } from "@/lib/formatters";
 import {
-  BookOpen, TrendingUp, CalendarDays, Settings, LogOut,
+  BookOpen, TrendingUp, CalendarDays, Settings,
   Clock, Flame, ChevronRight, Target, Zap, Rocket,
   CheckCircle2, Circle, Moon, Sun, Sunset, AlertTriangle,
-  ChevronLeft, GraduationCap, Coffee, ArrowLeft, Sparkles,
+  ChevronLeft, GraduationCap, Coffee, Sparkles,
 } from "lucide-react";
 import { useState } from "react";
 import { useVark } from "@/hooks/use-vark";
@@ -16,6 +16,7 @@ import { getSubjectIcon } from "@/lib/vark";
 import { calcReadiness, readinessBand, readinessBandLabel } from "@/lib/readiness";
 import { useEarliestPrelimDate } from "@/components/exam-countdown";
 import { ShieldCheck } from "lucide-react";
+import { LearnerHeader } from "@/components/learner-header";
 
 /* ─── Day label constants ─────────────────────────────────────────────── */
 
@@ -179,8 +180,8 @@ function RestChip({ isAf }: { isAf: boolean }) {
 /* ─── Main page component ──────────────────────────────────────────────── */
 
 export default function StudyCalendarPage() {
-  const { user, logout } = useAuth();
-  const { language, toggleLanguage } = useLanguage();
+  const { user } = useAuth();
+  const { language } = useLanguage();
   const isAf = language === "af";
 
   /* Week offset: 0 = this week, -1 = last week, +1 = next week, etc. */
@@ -589,50 +590,14 @@ export default function StudyCalendarPage() {
     <div className="min-h-screen overflow-x-hidden" style={{ color:"#ffffff", fontFamily: "'Poppins',sans-serif" }}>
       <SpaceBg />
 
-      {/* ── Sticky street header ── */}
-      <header
-        className="sticky top-0 z-50 border-b"
-        style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "rgba(255,255,255,.08)" }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-14 gap-4">
-            <div className="flex items-center gap-2">
-              <CalendarDays className="w-4 h-4" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px #9FF5E8)" }} />
-              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}>
-                {isAf ? "Studieplan" : "Study Plan"}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={toggleLanguage}
-                className="inline-flex items-center gap-1 rounded-xl px-3 py-1.5 bg-white/[.03] hover:bg-white/10 font-bold"
-                style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
-                data-testid="button-language-toggle"
-              >
-                <span className="text-[10px] font-black uppercase tracking-[0.2em]">{isAf ? "AF" : "EN"}</span>
-              </button>
-              <Link href="/dashboard">
-                <button
-                  className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 bg-white/[.03] hover:bg-white/10 font-black text-[10px] uppercase tracking-[0.2em]"
-                  style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
-                  data-testid="button-home"
-                >
-                  <ArrowLeft className="w-3 h-3" />
-                  {isAf ? "Tuis" : "Home"}
-                </button>
-              </Link>
-              <button
-                onClick={() => logout()}
-                className="inline-flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 bg-white/[.03] hover:bg-white/10 text-white"
-                style={{ border: "1.5px solid rgba(255,255,255,0.2)" }}
-                data-testid="button-logout"
-              >
-                <LogOut className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <LearnerHeader
+        backHref="/dashboard"
+        backLabel={isAf ? "Tuis" : "Home"}
+        title={isAf ? "Studieplan" : "Study Plan"}
+        titleColor="#9FF5E8"
+        maxWidthClassName="max-w-7xl"
+        titleExtra={<CalendarDays className="w-4 h-4" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px #9FF5E8)" }} />}
+      />
 
       {/* ── Sticky TODAY directive banner — surfaces the timetable engine's #1 priority ── */}
       {todayDirective && todayDirective.hasExam && (() => {

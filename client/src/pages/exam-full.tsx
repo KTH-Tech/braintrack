@@ -17,8 +17,8 @@ import { ConfettiBurst } from "@/components/confetti-burst";
 import { useLanguage } from "@/lib/language-context";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { LearnerHeader } from "@/components/learner-header";
 import {
-  ArrowLeft,
   ArrowRight,
   CheckCircle2,
   Clock,
@@ -125,33 +125,21 @@ function StreetShell({ isAf, eyebrow, children }: {
       <div aria-hidden className="pointer-events-none fixed -top-24 -left-24 w-[380px] h-[380px] rounded-full blur-[120px] opacity-20" style={{ background: "#9FF5E8" }} />
       <div aria-hidden className="pointer-events-none fixed -bottom-24 -right-24 w-[340px] h-[340px] rounded-full blur-[120px] opacity-15" style={{ background: "#C5B3FF" }} />
 
-      <header
-        className="sticky top-0 z-50 border-b"
-        style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "rgba(255,255,255,.08)" }}
-      >
-        <div className="max-w-3xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-14 gap-4">
-            <div className="flex items-center gap-2 min-w-0">
-              <GraduationCap className="w-4 h-4 shrink-0" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px #9FF5E8)" }} />
-              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}>
-                {isAf ? "Volle Eksamen" : "Full Exam"}
-              </span>
-              <span className="hidden sm:inline text-[11px] font-bold uppercase tracking-[0.18em] text-white truncate" style={{ opacity: 0.85 }}>
-                · {eyebrow}
-              </span>
-            </div>
-            <Link href="/dashboard">
-              <button
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
-                style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span className="hidden md:inline">{isAf ? "Tuis" : "Home"}</span>
-              </button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <LearnerHeader
+        backHref="/dashboard"
+        backLabel={isAf ? "Tuis" : "Home"}
+        title={isAf ? "Volle Eksamen" : "Full Exam"}
+        titleColor="#9FF5E8"
+        maxWidthClassName="max-w-3xl"
+        titleExtra={
+          <>
+            <GraduationCap className="w-4 h-4 shrink-0" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px #9FF5E8)" }} />
+            <span className="hidden sm:inline text-[11px] font-bold uppercase tracking-[0.18em] text-white truncate" style={{ opacity: 0.85 }}>
+              · {eyebrow}
+            </span>
+          </>
+        }
+      />
 
       <main className="relative max-w-3xl mx-auto px-4 sm:px-6 py-8 space-y-5">{children}</main>
     </div>

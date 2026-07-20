@@ -3,8 +3,9 @@ import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/language-context";
 import { formatDate } from "@/lib/formatters";
 import { useLocation } from "wouter";
-import { Flame, Star, Zap, Target, Trophy, GraduationCap, Award, BookOpen, Coins, Lock, Loader2, Globe, ArrowLeft, LogOut, ShoppingBag, ArrowRight, Users, Copy, Check, Share2, Sparkles, Medal } from "lucide-react";
+import { Flame, Star, Zap, Target, Trophy, GraduationCap, Award, BookOpen, Coins, Lock, Loader2, ShoppingBag, ArrowRight, Users, Copy, Check, Share2, Sparkles, Medal } from "lucide-react";
 import { GraffitiSplats } from "@/components/graffiti-splats";
+import { LearnerHeader } from "@/components/learner-header";
 import { useState } from "react";
 
 const BADGE_INFO: Record<string, {
@@ -37,7 +38,6 @@ const T = {
   en: {
     pageTitle: "Rewards",
     homeTitle: "Home",
-    signOutTitle: "Sign Out",
     heroHeading: "Your Rewards",
     heroSubtitle: "Your coins, badges, and achievements — all in one place.",
     coinBalance: "Coin Balance",
@@ -86,7 +86,6 @@ const T = {
   af: {
     pageTitle: "Belonings",
     homeTitle: "Tuis",
-    signOutTitle: "Uitteken",
     heroHeading: "Jou Belonings",
     heroSubtitle: "Jou punte, kentekens en prestasies — alles op een plek.",
     coinBalance: "Muntsaldo",
@@ -135,8 +134,8 @@ const T = {
 } as const;
 
 export default function RewardsPage() {
-  const { user, logout } = useAuth();
-  const { language, toggleLanguage } = useLanguage();
+  const { user } = useAuth();
+  const { language } = useLanguage();
   const [, setLocation] = useLocation();
   const isAf = language === "af";
   const t = T[language];
@@ -267,48 +266,13 @@ export default function RewardsPage() {
       <div aria-hidden className="pointer-events-none fixed inset-0" style={{ zIndex: 0, opacity: 0.9 }}>
         <GraffitiSplats variant="full" opacity={0.9} />
       </div>
-      <header className="sticky top-0 z-50 py-3" style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-        <div className="max-w-4xl mx-auto px-4 flex items-center justify-between flex-wrap gap-2">
-          <div className="flex items-center gap-3 min-w-0">
-            <button
-              onClick={() => setLocation("/dashboard")}
-              title={t.homeTitle}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
-              style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
-              data-testid="button-home"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span className="hidden md:inline">{t.homeTitle}</span>
-            </button>
-            <span
-              className="hidden sm:inline truncate"
-              style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}
-            >
-              {t.pageTitle}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={toggleLanguage}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
-              style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
-              data-testid="button-language-toggle"
-            >
-              <Globe className="h-4 w-4" />
-              <span>{language === "en" ? "EN" : "AF"}</span>
-            </button>
-            <button
-              onClick={() => logout()}
-              aria-label={t.signOutTitle}
-              className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/[.03] hover:bg-white/10"
-              style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}
-              data-testid="button-logout"
-            >
-              <LogOut className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      </header>
+      <LearnerHeader
+        backHref="/dashboard"
+        backLabel={t.homeTitle}
+        title={t.pageTitle}
+        titleColor="#9FF5E8"
+        maxWidthClassName="max-w-4xl"
+      />
 
       <main className="relative z-10 max-w-4xl mx-auto px-4 py-8 space-y-6">
         {/* Graffiti hero — soft card, marker heading */}

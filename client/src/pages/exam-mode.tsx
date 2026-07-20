@@ -5,13 +5,11 @@
 // RESTYLE ONLY — all hooks, queries, config and data-testids preserved.
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/use-auth";
 import {
   Brain,
   ChevronRight,
-  LogOut,
   Target,
   Flame,
   Zap,
@@ -21,13 +19,13 @@ import {
   BarChart2,
   ShieldCheck,
   Trophy,
-  ArrowLeft,
   Timer,
 } from "lucide-react";
 import { useMemo } from "react";
 import type { Subject, OnboardingResult } from "@shared/schema";
 import { useLanguage } from "@/lib/language-context";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { LearnerHeader } from "@/components/learner-header";
 import { getSubjectIcon } from "@/lib/vark";
 
 interface SubjectMastery {
@@ -630,7 +628,6 @@ const T = {
     amberBand: "Amber",
     redBand: "Red",
     homeTitle: "Home",
-    signOutTitle: "Sign Out",
   },
   af: {
     homeLabel: "Tuis",
@@ -686,12 +683,11 @@ const T = {
     amberBand: "Amber",
     redBand: "Rooi",
     homeTitle: "Tuis",
-    signOutTitle: "Uitteken",
   },
 } as const;
 
 export default function ExamModePage() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const { language, toggleLanguage } = useLanguage();
   const isAf = language === "af";
   const t = T[language];
@@ -737,47 +733,15 @@ export default function ExamModePage() {
       `}</style>
 
       {/* ── Sticky header ───────────────────────────────────── */}
-      <div
-        style={{
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          gap: 16, padding: "12px 28px", position: "sticky", top: 0, zIndex: 50,
-          background: "rgba(5,5,8,.82)", backdropFilter: "blur(14px)",
-          borderBottom: "1px solid rgba(255,255,255,.06)",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <Timer style={{ width: 18, height: 18, color: "#FFB7E5" }} />
-          <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 17, color: "#FFB7E5", transform: "rotate(-2deg)" }}>
-            {t.pageTitle}
-          </span>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <ThemeToggle />
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => toggleLanguage()}
-            className="text-white font-semibold hover:text-white rounded-2xl"
-            data-testid="button-language-toggle"
-          >
-            {isAf ? "AF" : "EN"}
-          </Button>
-          <Link href="/dashboard">
-            <button
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0"
-              style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
-              title={t.homeTitle}
-              data-testid="button-home"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span className="hidden md:inline">{t.homeTitle}</span>
-            </button>
-          </Link>
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:text-white" onClick={() => logout()} data-testid="button-logout" title={t.signOutTitle}>
-            <LogOut className="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
+      <LearnerHeader
+        backHref="/dashboard"
+        backLabel={t.homeTitle}
+        title={t.pageTitle}
+        titleColor="#FFB7E5"
+        maxWidthClassName="max-w-[1100px]"
+        titleExtra={<Timer style={{ width: 18, height: 18, color: "#FFB7E5" }} />}
+        actions={<ThemeToggle />}
+      />
 
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "36px 24px 80px", display: "flex", flexDirection: "column", gap: 32 }}>
         {/* ── Hero — exam rules card per comp ─────────────────── */}

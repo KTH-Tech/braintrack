@@ -1,16 +1,16 @@
 import type { CSSProperties } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/language-context";
 import { formatDate } from "@/lib/formatters";
-import { useLocation, Link } from "wouter";
+import { Link } from "wouter";
 import {
-  Loader2, LogOut, CheckCircle2, Star, Flame,
+  Loader2, CheckCircle2, Star, Flame,
   BookOpen, Trophy, Target, Brain, Rocket, Sparkles, ArrowRight, Lock,
-  ArrowLeft, Calendar, HelpCircle, FileText,
+  Calendar, HelpCircle, FileText,
 } from "lucide-react";
 import rizzAvatar from "@assets/rizz-nav-transparent.png";
 import { rizzMascot } from "@/components/rizz-brand";
+import { LearnerHeader } from "@/components/learner-header";
 
 interface JourneyEvent {
   id: string;
@@ -109,7 +109,6 @@ const T = {
     pageTitle: "Learning Journey",
     parentBadge: "Parent",
     homeTitle: "Home",
-    signOutTitle: "Sign Out",
     backTitle: "Back",
     heroLabel: "Journey",
     heroSubtitle: "Your personal learning journey — every milestone, every spark.",
@@ -135,7 +134,6 @@ const T = {
     pageTitle: "Leerreis",
     parentBadge: "Ouersig",
     homeTitle: "Tuis",
-    signOutTitle: "Teken uit",
     backTitle: "Terug",
     heroLabel: "Leerreis",
     heroSubtitle: "Jou persoonlike leerreis — elke mylpaal, elke vonk.",
@@ -160,13 +158,13 @@ const T = {
 } as const;
 
 export default function JourneyPage() {
-  const { logout } = useAuth();
-  const { language, toggleLanguage } = useLanguage();
-  const [, navigate] = useLocation();
+  const { language } = useLanguage();
   const isAf = language === "af";
   const t = T[language];
   const params = new URLSearchParams(window.location.search);
   const isParentView = params.get("parent") === "1";
+  const backHref = isParentView ? "/parent" : "/dashboard";
+  const backLabel = isParentView ? t.backTitle : t.homeTitle;
 
   const { data: journey, isLoading } = useQuery<JourneyData>({
     queryKey: ["/api/user/journey"],
@@ -182,73 +180,20 @@ export default function JourneyPage() {
       style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}
     >
       {/* ── Sticky street header ── */}
-      <header
-        className="sticky top-0 z-50 border-b"
-        style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "rgba(255,255,255,.08)" }}
-      >
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-16 gap-4">
-            <div className="flex items-center gap-3 min-w-0">
-              {!isParentView ? (
-                <button
-                  onClick={() => navigate("/dashboard")}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0"
-                  style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
-                  title={t.homeTitle}
-                  data-testid="button-home"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  <span className="hidden md:inline">{t.homeTitle}</span>
-                </button>
-              ) : (
-                <button
-                  onClick={() => navigate("/parent")}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0"
-                  style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
-                  title={t.backTitle}
-                  data-testid="button-back"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  <span className="hidden md:inline">{t.backTitle}</span>
-                </button>
-              )}
-              <span className="hidden sm:inline truncate" style={marker("#9FF5E8")}>
-                {t.pageTitle}
-              </span>
-              {isParentView && (
-                <span
-                  className="text-[9px] font-black uppercase tracking-[0.22em] px-2 py-0.5 rounded-full shrink-0"
-                  style={{ color: "#C5B3FF", border: "1px solid #C5B3FF", background: "rgba(255,255,255,.03)" }}
-                >
-                  {t.parentBadge}
-                </span>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={toggleLanguage}
-                className="px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
-                style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
-                data-testid="button-toggle-language"
-              >
-                {language === "en" ? "EN" : "AF"}
-              </button>
-              {!isParentView && (
-                <button
-                  onClick={() => logout()}
-                  className="inline-flex items-center px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
-                  style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}
-                  title={t.signOutTitle}
-                  data-testid="button-logout"
-                >
-                  <LogOut className="w-4 h-4 sm:mr-2" />
-                  <span className="hidden sm:inline">{t.signOutTitle}</span>
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
+      <LearnerHeader
+        backHref={backHref}
+        backLabel={backLabel}
+        title={t.pageTitle}
+        maxWidthClassName="max-w-5xl"
+        titleExtra={isParentView ? (
+          <span
+            className="text-[9px] font-black uppercase tracking-[0.22em] px-2 py-0.5 rounded-full shrink-0"
+            style={{ color: "#C5B3FF", border: "1px solid #C5B3FF", background: "rgba(255,255,255,.03)" }}
+          >
+            {t.parentBadge}
+          </span>
+        ) : undefined}
+      />
 
       <main className="relative max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-8">
         {/* Ambient pastel auras */}

@@ -11,7 +11,6 @@ import {
   BookOpen,
   Brain,
   ChevronRight,
-  LogOut,
   Shield,
   Star,
   Target,
@@ -27,12 +26,12 @@ import {
   ShieldCheck,
   BookMarked,
   Check,
-  Globe,
   FileText,
   Layers,
   RotateCcw,
 } from "lucide-react";
 import { useMemo, useState, useEffect, useRef } from "react";
+import { LearnerHeader } from "@/components/learner-header";
 import { SubjectBoostPack } from "@/components/performance-packs";
 import type { Subject, OnboardingResult, UserBadge } from "@shared/schema";
 import { useLanguage } from "@/lib/language-context";
@@ -782,9 +781,9 @@ function TopicQuizDrawer({
 
 export default function SubjectDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
-  const { language, toggleLanguage } = useLanguage();
+  const { language } = useLanguage();
   const isAf = language === "af";
 
   const { data: subject, isLoading: subjectLoading } = useQuery<Subject>({
@@ -983,36 +982,10 @@ export default function SubjectDetailPage() {
   return (
     <div className="min-h-screen text-white relative overflow-hidden" style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}>
       <GraffitiSplats variant="corner" opacity={0.3} />
-      <header className="sticky top-0 z-50 border-b" style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "rgba(255,255,255,.08)" }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 gap-4 flex-wrap">
-            <div className="flex items-center gap-3 min-w-0">
-              <Link href="/dashboard">
-                <button className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0" style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }} data-testid="link-home">
-                  <ArrowLeft className="w-4 h-4" />
-                  <span className="hidden md:inline">{isAf ? "Tuis" : "Home"}</span>
-                </button>
-              </Link>
-              <span
-                className="hidden sm:inline truncate"
-                style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)" }}
-              >
-                {isAf ? "Klaskamer" : "Classroom"}
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <button onClick={toggleLanguage} className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 transition-colors" style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }} data-testid="button-language-toggle">
-                <Globe className="h-4 w-4" />
-                <span>{language === "en" ? "EN" : "AF"}</span>
-              </button>
-              <button onClick={() => logout()} data-testid="button-logout" className="inline-flex items-center px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10" style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}>
-                <LogOut className="w-4 h-4 mr-1" />
-                {isAf ? "Uitteken" : "Sign Out"}
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <LearnerHeader
+        backLabel={isAf ? "Tuis" : "Home"}
+        title={isAf ? "Klaskamer" : "Classroom"}
+      />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 overflow-x-hidden">
         <div className="space-y-6">

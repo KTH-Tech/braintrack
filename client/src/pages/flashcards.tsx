@@ -1,12 +1,11 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/language-context";
+import { LearnerHeader } from "@/components/learner-header";
 import {
   ArrowLeft,
   Brain,
-  LogOut,
   Layers,
   RotateCcw,
   Zap,
@@ -945,55 +944,18 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
 
 
 export default function FlashcardsPage() {
-  const { logout } = useAuth();
-  const { language, toggleLanguage } = useLanguage();
+  const { language } = useLanguage();
   const isAf = language === "af";
 
   return (
     <div className="min-h-screen text-white" style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}>
-      <header className="sticky top-0 z-50 border-b" style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "rgba(255,255,255,.08)" }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-14 gap-4">
-            <div className="flex items-center gap-3 min-w-0">
-              <Link href="/dashboard">
-                <button
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[.03] text-xs font-bold hover:bg-white/10 shrink-0"
-                  style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
-                  title={isAf ? "Tuis" : "Home"}
-                  data-testid="button-home"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  <span className="hidden md:inline">{isAf ? "Tuis" : "Home"}</span>
-                </button>
-              </Link>
-              <span
-                className="hidden sm:inline truncate"
-                style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)" }}
-              >
-                {isAf ? "Flitskaarte" : "Flashcards"}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-1.5">
-              <button
-                onClick={toggleLanguage}
-                className="px-3 py-1.5 rounded-xl bg-white/[.03] text-xs font-bold hover:bg-white/10 transition-all"
-                style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
-              >
-                {language === "en" ? "EN" : "AF"}
-              </button>
-              <button
-                onClick={() => logout()}
-                className="p-1.5 rounded-xl bg-white/[.03] hover:bg-white/10 transition-colors"
-                style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}
-                title={isAf ? "Uitteken" : "Sign Out"}
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <LearnerHeader
+        backHref="/dashboard"
+        backLabel={isAf ? "Tuis" : "Home"}
+        title={isAf ? "Flitskaarte" : "Flashcards"}
+        titleColor="#9FF5E8"
+        maxWidthClassName="max-w-7xl"
+      />
 
       <main className="max-w-2xl mx-auto px-4 sm:px-6 py-8 space-y-6">
         <div className="space-y-1">

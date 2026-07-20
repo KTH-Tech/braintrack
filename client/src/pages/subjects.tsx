@@ -2,14 +2,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useAuth } from "@/hooks/use-auth";
 import type { OnboardingResult, Subject } from "@shared/schema";
 import {
   BookOpen,
   Search,
   ChevronRight,
-  ArrowLeft,
-  LogOut,
   Settings,
   GraduationCap,
   Sparkles,
@@ -53,6 +50,7 @@ import { useLanguage } from "@/lib/language-context";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { GraffitiSplats } from "@/components/graffiti-splats";
+import { LearnerHeader } from "@/components/learner-header";
 
 function getSubjectLucide(name: string): LucideIcon {
   const n = (name || "").toLowerCase();
@@ -120,7 +118,6 @@ const T = {
     homeLabel: "Home",
     subjectsLabel: "Subjects",
     flashcardsLabel: "Flashcards",
-    signOut: "Sign Out",
     capsLabel: "Grade 12 · CAPS",
     heroHeading: "Your classroom.",
     heroSubtitle: "Pick a subject and jump in. Real NSC papers, memos and practice — all in one place.",
@@ -162,7 +159,6 @@ const T = {
     homeLabel: "Tuis",
     subjectsLabel: "Vakke",
     flashcardsLabel: "Flitskaarte",
-    signOut: "Uitteken",
     capsLabel: "Graad 12 · KABV",
     heroHeading: "Jou klaskamer.",
     heroSubtitle: "Kies 'n vak en duik in. Egte NSS-vraestelle, memos en oefening — alles op een plek.",
@@ -203,8 +199,7 @@ const T = {
 } as const;
 
 export default function SubjectsPage() {
-  const { logout } = useAuth();
-  const { language, toggleLanguage } = useLanguage();
+  const { language } = useLanguage();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const isAf = language === "af";
@@ -356,51 +351,13 @@ export default function SubjectsPage() {
   return (
     <div className="min-h-screen text-white relative overflow-hidden" style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}>
       <GraffitiSplats variant="corner" opacity={0.35} />
-      {/* Header — deep black, no wordmark */}
-      <header className="sticky top-0 z-50 border-b" style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "rgba(255,255,255,.08)" }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 gap-4">
-            <div className="flex items-center gap-3 min-w-0">
-              <Link href="/dashboard">
-                <button
-                  data-testid="link-home"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0"
-                  style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  <span className="hidden md:inline">{t.homeLabel}</span>
-                </button>
-              </Link>
-              <span
-                className="hidden sm:inline truncate"
-                style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)" }}
-              >
-                {t.subjectsLabel}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => toggleLanguage()}
-                className="px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
-                style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
-                data-testid="button-language-toggle"
-              >
-                {isAf ? "AF" : "EN"}
-              </button>
-              <button
-                onClick={() => logout()}
-                data-testid="button-logout"
-                aria-label={t.signOut}
-                className="inline-flex items-center px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
-                style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}
-              >
-                <LogOut className="w-4 h-4 sm:mr-2" />
-                <span className="hidden sm:inline">{t.signOut}</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <LearnerHeader
+        backHref="/dashboard"
+        backLabel={t.homeLabel}
+        title={t.subjectsLabel}
+        titleColor="#9FF5E8"
+        maxWidthClassName="max-w-7xl"
+      />
 
       <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
         {/* Ambient auras */}

@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/language-context";
 import { formatDate } from "@/lib/formatters";
 import { calcReadiness } from "@/lib/readiness";
@@ -12,12 +11,12 @@ import {
   TrendingDown,
   Flame,
   BookOpen,
-  LogOut,
   Calendar,
   CheckCircle
 } from "lucide-react";
 import { getSubjectIcon } from "@/lib/vark";
 import { GraffitiSplats } from "@/components/graffiti-splats";
+import { LearnerHeader } from "@/components/learner-header";
 
 interface SubjectProgress {
   subjectId: number;
@@ -49,8 +48,7 @@ interface ProgressStats {
 }
 
 export default function ProgressPage() {
-  const { logout } = useAuth();
-  const { language, toggleLanguage } = useLanguage();
+  const { language } = useLanguage();
   const isAf = language === "af";
 
   const { data: stats, isLoading } = useQuery<ProgressStats>({
@@ -60,46 +58,13 @@ export default function ProgressPage() {
   return (
     <div className="min-h-screen text-white relative overflow-hidden" style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}>
       <GraffitiSplats variant="band" opacity={0.35} />
-      <header className="border-b sticky top-0 z-50 relative" style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "rgba(255,255,255,.08)" }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 gap-4">
-            <div className="flex items-center gap-3 min-w-0">
-              <Link href="/dashboard">
-                <button data-testid="link-home" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0" style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}>
-                  <ArrowLeft className="w-4 h-4" />
-                  <span className="hidden md:inline">{isAf ? "Tuis" : "Home"}</span>
-                </button>
-              </Link>
-              <span
-                className="hidden sm:inline truncate"
-                style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)" }}
-              >
-                {isAf ? "Vordering" : "Progress"}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => toggleLanguage()}
-                className="px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
-                style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
-                data-testid="button-language-toggle"
-              >
-                {isAf ? "AF" : "EN"}
-              </button>
-              <button
-                onClick={() => logout()}
-                data-testid="button-logout"
-                aria-label={isAf ? "Uitteken" : "Sign Out"}
-                className="inline-flex items-center px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
-                style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}
-              >
-                <LogOut className="w-4 h-4 sm:mr-2" />
-                <span className="hidden sm:inline">{isAf ? "Uitteken" : "Sign Out"}</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <LearnerHeader
+        backHref="/dashboard"
+        backLabel={isAf ? "Tuis" : "Home"}
+        title={isAf ? "Vordering" : "Progress"}
+        titleColor="#9FF5E8"
+        maxWidthClassName="max-w-7xl"
+      />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
         {/* Cosmic wordmark wash behind the report */}

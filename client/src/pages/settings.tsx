@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Link } from "wouter";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
@@ -9,7 +8,6 @@ import { useLanguage } from "@/lib/language-context";
 import { apiRequest } from "@/lib/queryClient";
 import { formatSAPhone } from "@/lib/utils";
 import {
-  ArrowLeft,
   Phone,
   Shield,
   Loader2,
@@ -28,6 +26,7 @@ import {
   LogOut,
   GraduationCap,
 } from "lucide-react";
+import { LearnerHeader } from "@/components/learner-header";
 import type { Subject, OnboardingResult } from "@shared/schema";
 
 /* ── Street-pastel section card ──────────────────────────────────────────
@@ -643,42 +642,11 @@ export default function SettingsPage() {
 
       <div className="relative z-10">
         {/* ── Sticky street header ── */}
-        <header
-          className="sticky top-0 z-50 border-b"
-          style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "rgba(255,255,255,.08)" }}
-        >
-          <div className="max-w-3xl mx-auto px-4 sm:px-6">
-            <div className="flex items-center justify-between h-16 gap-4">
-              <div className="flex items-center gap-3 min-w-0">
-                <Link href="/dashboard">
-                  <button
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0"
-                    style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
-                    data-testid="button-dashboard"
-                  >
-                    <ArrowLeft className="w-4 h-4" />
-                    <span className="hidden sm:inline">{t.dashboardBtn}</span>
-                  </button>
-                </Link>
-                <span
-                  className="hidden sm:inline truncate"
-                  style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)" }}
-                >
-                  {t.pageTitle}
-                </span>
-              </div>
-              <button
-                onClick={toggleLanguage}
-                className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 bg-white/[.03] text-sm font-bold hover:bg-white/10"
-                style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
-                data-testid="button-language-toggle"
-              >
-                <Globe className="h-3.5 w-3.5" />
-                <span>{language === "en" ? "EN" : "AF"}</span>
-              </button>
-            </div>
-          </div>
-        </header>
+        <LearnerHeader
+          backLabel={t.dashboardBtn}
+          title={t.pageTitle}
+          maxWidthClassName="max-w-3xl"
+        />
 
         <main className="max-w-3xl mx-auto px-4 sm:px-6 py-10 space-y-6">
           {/* ── Hero ── */}

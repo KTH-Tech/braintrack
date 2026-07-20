@@ -2,7 +2,6 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useState, useEffect, useCallback, useRef } from "react";
 import type { CSSProperties, ReactNode, MouseEvent as ReactMouseEvent } from "react";
 import { Link } from "wouter";
-import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/language-context";
 import { formatDate } from "@/lib/formatters";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -21,12 +20,11 @@ import {
   Sparkles,
   Target,
   Calendar,
-  LogOut,
   AlertCircle,
   RefreshCw,
-  ArrowLeft,
 } from "lucide-react";
 import type { DailyChallenge, DailyChallengeQuestion } from "@shared/schema";
+import { LearnerHeader } from "@/components/learner-header";
 
 const CHALLENGE_TIME_LIMIT = 300;
 
@@ -95,8 +93,7 @@ function PageShell({ children, center }: { children: ReactNode; center?: boolean
 }
 
 export default function DailyChallengePage() {
-  const { logout } = useAuth();
-  const { language, toggleLanguage } = useLanguage();
+  const { language } = useLanguage();
   const { toast } = useToast();
   const isAf = language === "af";
 
@@ -452,103 +449,68 @@ export default function DailyChallengePage() {
       className="min-h-screen text-white relative overflow-hidden"
       style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}
     >
-      {/* ── Sticky street header ── */}
-      <header
-        className="sticky top-0 z-50 border-b"
-        style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "rgba(255,255,255,.08)" }}
-      >
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-16 gap-3">
-            <div className="flex items-center gap-3 min-w-0">
-              <Link href="/dashboard">
-                <button
-                  className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0"
-                  style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
-                  title={isAf ? "Tuis" : "Home"}
-                  data-testid="button-home"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  <span className="hidden md:inline">{isAf ? "Tuis" : "Home"}</span>
-                </button>
-              </Link>
-              <div className="min-w-0">
-                <span className="block truncate" style={marker("#9FF5E8")} data-testid="text-page-title">
-                  {isAf ? "Daaglikse uitdaging" : "Daily Challenge"}
-                </span>
-                <span className="hidden sm:block text-[10px] font-bold uppercase tracking-[0.18em] text-white" style={{ opacity: 0.85 }}>
-                  {dayLabel} · {dateLabel}
-                </span>
-              </div>
+      <LearnerHeader
+        backHref="/dashboard"
+        backLabel={isAf ? "Tuis" : "Home"}
+        title={isAf ? "Daaglikse uitdaging" : "Daily Challenge"}
+        titleColor="#9FF5E8"
+        maxWidthClassName="max-w-4xl"
+        titleExtra={
+          <span className="hidden sm:block text-[10px] font-bold uppercase tracking-[0.18em] text-white shrink-0" style={{ opacity: 0.85 }}>
+            {dayLabel} · {dateLabel}
+          </span>
+        }
+        actions={
+          <>
+            <div
+              className="hidden min-[400px]:flex items-center gap-1.5 px-3 py-1.5 rounded-full"
+              style={{ background: "rgba(255,255,255,.03)", border: "1px solid #FFE29A" }}
+              data-testid="text-challenge-streak"
+              title={isAf ? "Reeks" : "Streak"}
+            >
+              <Flame className="w-4 h-4" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }} />
+              <span className="text-sm font-extrabold tabular-nums" style={{ color: "#FFE29A" }}>
+                {streak}
+                <span className="hidden sm:inline">&nbsp;{isAf ? "dae" : "days"}</span>
+              </span>
             </div>
-            <div className="flex items-center gap-1.5 min-[375px]:gap-2 shrink-0">
+            {!showResults && !isCompleted && (
               <div
-                className="hidden min-[400px]:flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-                style={{ background: "rgba(255,255,255,.03)", border: "1px solid #FFE29A" }}
-                data-testid="text-challenge-streak"
-                title={isAf ? "Reeks" : "Streak"}
+                className="relative flex items-center gap-1.5 pl-2 pr-3 py-1.5 rounded-full transition-colors"
+                style={{
+                  background: "rgba(255,255,255,.03)",
+                  border: `1px solid ${timerHex}`,
+                  ...(timerUrgent ? { animation: "bt-glowpulse 1.2s ease-in-out infinite" } : {}),
+                }}
+                data-testid="text-challenge-timer"
+                title={isAf ? "Tyd oor" : "Time left"}
               >
-                <Flame className="w-4 h-4" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }} />
-                <span className="text-sm font-extrabold tabular-nums" style={{ color: "#FFE29A" }}>
-                  {streak}
-                  <span className="hidden sm:inline">&nbsp;{isAf ? "dae" : "days"}</span>
+                <div className="relative w-5 h-5">
+                  <svg className="absolute inset-0 w-5 h-5 -rotate-90" viewBox="0 0 20 20" aria-hidden="true">
+                    <circle cx="10" cy="10" r="8" fill="none" stroke="#ffffff" strokeOpacity="0.15" strokeWidth="2" />
+                    <circle
+                      cx="10"
+                      cy="10"
+                      r="8"
+                      fill="none"
+                      stroke={timerHex}
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeDasharray={2 * Math.PI * 8}
+                      strokeDashoffset={2 * Math.PI * 8 * (1 - timerProgress)}
+                      style={{ transition: "stroke-dashoffset 1s linear" }}
+                    />
+                  </svg>
+                  <Clock className="absolute inset-0 m-auto w-2.5 h-2.5" style={{ color: timerHex }} />
+                </div>
+                <span className="text-sm font-extrabold tabular-nums" style={{ color: timerHex }}>
+                  {formatCountdown(remainingSeconds)}
                 </span>
               </div>
-              {!showResults && !isCompleted && (
-                <div
-                  className="relative flex items-center gap-1.5 pl-2 pr-3 py-1.5 rounded-full transition-colors"
-                  style={{
-                    background: "rgba(255,255,255,.03)",
-                    border: `1px solid ${timerHex}`,
-                    ...(timerUrgent ? { animation: "bt-glowpulse 1.2s ease-in-out infinite" } : {}),
-                  }}
-                  data-testid="text-challenge-timer"
-                  title={isAf ? "Tyd oor" : "Time left"}
-                >
-                  <div className="relative w-5 h-5">
-                    <svg className="absolute inset-0 w-5 h-5 -rotate-90" viewBox="0 0 20 20" aria-hidden="true">
-                      <circle cx="10" cy="10" r="8" fill="none" stroke="#ffffff" strokeOpacity="0.15" strokeWidth="2" />
-                      <circle
-                        cx="10"
-                        cy="10"
-                        r="8"
-                        fill="none"
-                        stroke={timerHex}
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeDasharray={2 * Math.PI * 8}
-                        strokeDashoffset={2 * Math.PI * 8 * (1 - timerProgress)}
-                        style={{ transition: "stroke-dashoffset 1s linear" }}
-                      />
-                    </svg>
-                    <Clock className="absolute inset-0 m-auto w-2.5 h-2.5" style={{ color: timerHex }} />
-                  </div>
-                  <span className="text-sm font-extrabold tabular-nums" style={{ color: timerHex }}>
-                    {formatCountdown(remainingSeconds)}
-                  </span>
-                </div>
-              )}
-              <button
-                onClick={toggleLanguage}
-                className="px-3 py-2 rounded-xl bg-white/[.03] text-xs font-extrabold hover:bg-white/10"
-                style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
-                data-testid="button-language-toggle"
-                title={isAf ? "Taal" : "Language"}
-              >
-                {language === "en" ? "EN" : "AF"}
-              </button>
-              <button
-                onClick={() => logout()}
-                className="inline-flex items-center px-3 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
-                style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}
-                title={isAf ? "Uitteken" : "Sign Out"}
-                data-testid="button-logout"
-              >
-                <LogOut className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+            )}
+          </>
+        }
+      />
 
       <main className="relative max-w-3xl mx-auto px-4 py-6 space-y-6">
         {/* Ambient pastel auras */}

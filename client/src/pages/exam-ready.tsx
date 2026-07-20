@@ -5,11 +5,12 @@
 // and data-testids preserved exactly.
 import { useState, useEffect, useRef, useCallback, type CSSProperties } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useLocation, Link } from "wouter";
+import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/language-context";
+import { LearnerHeader } from "@/components/learner-header";
 import {
   AlertTriangle,
   Clock,
@@ -25,7 +26,6 @@ import {
   Send,
   AlertCircle,
   BookOpen,
-  LogOut
 } from "lucide-react";
 import type { ExamPaper, Subject, OnboardingResult } from "@shared/schema";
 
@@ -187,8 +187,8 @@ const detectAIPatterns = (text: string): { isLikelyAI: boolean; flags: string[] 
 export default function ExamReadyPage() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
-  const { user, logout } = useAuth();
-  const { language, toggleLanguage } = useLanguage();
+  const { user } = useAuth();
+  const { language } = useLanguage();
 
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
   const [selectedPaperNum, setSelectedPaperNum] = useState<number | null>(null);
@@ -569,51 +569,13 @@ export default function ExamReadyPage() {
   };
 
   const renderHeader = () => (
-    <header
-      className="sticky top-0 z-50 border-b"
-      style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "rgba(255,255,255,.08)" }}
-    >
-      <div className="max-w-5xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-16 gap-4">
-          <div className="flex items-center gap-3 min-w-0">
-            <Link href="/dashboard">
-              <button
-                data-testid="button-home"
-                title={isAfrikaans ? "Tuis" : "Home"}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0"
-                style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span className="hidden md:inline">{isAfrikaans ? "Tuis" : "Home"}</span>
-              </button>
-            </Link>
-            <span className="hidden sm:inline truncate" style={marker("#9FF5E8", 16)}>
-              {isAfrikaans ? "Eksamen Gereed" : "Exam Ready"}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={toggleLanguage}
-              data-testid="button-language-toggle"
-              className="px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
-              style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
-            >
-              {language === "en" ? "EN" : "AF"}
-            </button>
-            <button
-              onClick={() => logout()}
-              data-testid="button-logout"
-              title={isAfrikaans ? "Uitteken" : "Sign Out"}
-              className="inline-flex items-center px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
-              style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}
-            >
-              <LogOut className="w-4 h-4 md:mr-2" />
-              <span className="hidden md:inline">{isAfrikaans ? "Uitteken" : "Sign Out"}</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </header>
+    <LearnerHeader
+      backHref="/dashboard"
+      backLabel={isAfrikaans ? "Tuis" : "Home"}
+      title={isAfrikaans ? "Eksamen Gereed" : "Exam Ready"}
+      titleColor="#9FF5E8"
+      maxWidthClassName="max-w-5xl"
+    />
   );
 
   if (examState === "violated") {

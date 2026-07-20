@@ -17,8 +17,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   Coins, Lock, Loader2, Check, ShoppingBag, Sparkles,
-  ArrowLeft, LogOut, Globe, Shield, Rocket,
+  Shield, Rocket,
 } from "lucide-react";
+import { LearnerHeader } from "@/components/learner-header";
 
 type MysteryReward = { type: "coins" | "theme"; amount?: number; themeKey?: string; label: string; labelAf: string };
 
@@ -63,7 +64,6 @@ const T = {
     heroTitle: "Power-Up Store",
     heroSubtitle: "Real boosts, earned with real coins. Protect your streak, double your earnings, or roll the Mystery Box.",
     homeTitle: "Home",
-    signOutTitle: "Sign Out",
     purchaseConfirmed: "Purchase confirmed!",
     itemUnlocked: "Item unlocked.",
     notEnoughCoins: "Not enough coins",
@@ -87,7 +87,6 @@ const T = {
     heroTitle: "Hupstoot-Winkel",
     heroSubtitle: "Egte hupstote, verdien met egte munte. Beskerm jou reeks, verdubbel jou munte, of waag die Raaiselkas.",
     homeTitle: "Tuis",
-    signOutTitle: "Uitteken",
     purchaseConfirmed: "Aankoop bevestig!",
     itemUnlocked: "Item ontsluit.",
     notEnoughCoins: "Nie genoeg munte nie",
@@ -108,8 +107,8 @@ const T = {
 } as const;
 
 export default function StorePage() {
-  const { user, logout } = useAuth();
-  const { language, toggleLanguage } = useLanguage();
+  const { user } = useAuth();
+  const { language } = useLanguage();
   const [, navigate] = useLocation();
   const isAf = language === "af";
   const t = T[language];
@@ -207,53 +206,23 @@ export default function StorePage() {
 
   return (
     <div className="min-h-screen text-white relative overflow-hidden" style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}>
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b" style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "rgba(255,255,255,.08)" }}>
-        <div className="max-w-5xl mx-auto px-4 flex items-center justify-between h-16 gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <button
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0"
-              style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
-              onClick={() => navigate("/dashboard")} title={t.homeTitle} data-testid="button-home"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span className="hidden md:inline">{t.homeTitle}</span>
-            </button>
-            <span
-              className="hidden sm:inline truncate"
-              style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}
-            >
-              {t.pageTitle}
-            </span>
+      <LearnerHeader
+        backHref="/dashboard"
+        backLabel={t.homeTitle}
+        title={t.pageTitle}
+        titleColor="#9FF5E8"
+        maxWidthClassName="max-w-5xl"
+        actions={
+          <div
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold tabular-nums"
+            style={{ background: "rgba(255,226,154,.12)", border: "1.5px solid rgba(255,226,154,.5)", color: "#FFE29A" }}
+            data-testid="coin-balance-header"
+          >
+            <Coins className="w-3.5 h-3.5" />
+            {balance}
           </div>
-          <div className="flex items-center gap-2">
-            <div
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold tabular-nums"
-              style={{ background: "rgba(255,226,154,.12)", border: "1.5px solid rgba(255,226,154,.5)", color: "#FFE29A" }}
-              data-testid="coin-balance-header"
-            >
-              <Coins className="w-3.5 h-3.5" />
-              {balance}
-            </div>
-            <button
-              onClick={toggleLanguage}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
-              style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
-              data-testid="button-language-toggle"
-            >
-              <Globe className="h-3.5 w-3.5" />
-              {language === "en" ? "EN" : "AF"}
-            </button>
-            <button
-              className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/[.03] hover:bg-white/10"
-              style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}
-              onClick={() => logout()} title={t.signOutTitle} data-testid="button-logout"
-            >
-              <LogOut className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      </header>
+        }
+      />
 
       <main className="relative max-w-5xl mx-auto px-4 py-10 sm:py-14 space-y-10">
         {/* Ambient auras */}
