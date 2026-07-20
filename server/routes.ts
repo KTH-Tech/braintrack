@@ -11521,54 +11521,79 @@ Return JSON: { "questions": [{ "questionText": "...", "memoText": "...", "marks"
         return res.status(500).json({ error: "Failed to generate any questions" });
       }
 
-      let simQualityScore = 0;
-      if (generated.length > 0) {
-        try {
-          const qualityResponse = await openai.chat.completions.create({
-            model: "gpt-4o-mini",
-            messages: [
-              {
-                role: "system",
-                content: `You are a South African NSC Grade 12 exam quality assessor for ${subject}. Score each AI-generated practice question on these criteria:
+      // Full-coverage QA gate — every generated question gets scored
+      // INDIVIDUALLY (not sampled, not a batch-average). Anything that fails
+      // to score at all, or scores below MIN_QUALITY, is dropped here and
+      // never reaches dbeSimulatedQuestions, examPapers, flashcards, or the
+      // daily challenge. If the scoring call itself fails, we fail CLOSED —
+      // nothing gets published unscored — rather than silently shipping
+      // unverified content to real learners (the previous behaviour: a
+      // failed scoring call defaulted to qualityScore=0 but still inserted
+      // every question anyway).
+      const MIN_QUALITY = 80;
+      let scoredQuestions: any[] = [];
+      try {
+        const qualityResponse = await openai.chat.completions.create({
+          model: "gpt-4o-mini",
+          messages: [
+            {
+              role: "system",
+              content: `You are a South African NSC Grade 12 exam quality assessor for ${subject}. Score EACH AI-generated practice question INDIVIDUALLY on these criteria — do not average across questions, each gets its own scores:
 - curriculum_alignment (0-100): Does it match CAPS Grade 12 curriculum?
 - cognitive_accuracy (0-100): Is the cognitive level label correct?
 - memo_quality (0-100): Is the memo answer correct and complete?
-- exam_style (0-100): Does it match real DBE exam paper style?
+- exam_style (0-100): Does it match real DBE exam paper style, incl. correct mark allocation?
 - difficulty_appropriate (0-100): Is difficulty appropriate for NSC?
-Return JSON: { "scores": [{ "idx": 0, "curriculum_alignment": N, "cognitive_accuracy": N, "memo_quality": N, "exam_style": N, "difficulty_appropriate": N }] }`,
-              },
-              { role: "user", content: JSON.stringify(generated.map((q: any, i: number) => ({ idx: i, questionText: q.questionText, memoText: q.memoText, marks: q.marks, cognitiveLevel: q.cognitiveLevel, topic: q.topic }))) },
-            ],
-            temperature: 0.1,
-            max_tokens: 1000,
-            response_format: { type: "json_object" },
-          });
+Return one entry per question, same order as input. JSON: { "scores": [{ "idx": 0, "curriculum_alignment": N, "cognitive_accuracy": N, "memo_quality": N, "exam_style": N, "difficulty_appropriate": N }] }`,
+            },
+            { role: "user", content: JSON.stringify(generated.map((q: any, i: number) => ({ idx: i, questionText: q.questionText, memoText: q.memoText, marks: q.marks, cognitiveLevel: q.cognitiveLevel, topic: q.topic }))) },
+          ],
+          temperature: 0.1,
+          max_tokens: 3000,
+          response_format: { type: "json_object" },
+        });
 
-          const qRaw = qualityResponse.choices[0]?.message?.content ?? "{}";
-          const qParsed = JSON.parse(qRaw);
-          const scores = qParsed.scores ?? qParsed.data ?? [];
-          if (scores.length > 0) {
-            const avgScores = scores.map((s: any) => {
-              const vals = [s.curriculum_alignment, s.cognitive_accuracy, s.memo_quality, s.exam_style, s.difficulty_appropriate].filter((v: any) => typeof v === "number");
-              return vals.length > 0 ? vals.reduce((a: number, b: number) => a + b, 0) / vals.length : 0;
-            });
-            simQualityScore = Math.round(avgScores.reduce((a: number, b: number) => a + b, 0) / avgScores.length);
-            generated.forEach((q: any, i: number) => {
-              const s = scores.find((sc: any) => sc.idx === i);
-              if (s) q._quality = s;
-            });
-          }
-        } catch (qErr: any) {
-          console.log(`[SIMULATE] Quality scoring failed for ${subject}: ${qErr.message}`);
-        }
+        const qRaw = qualityResponse.choices[0]?.message?.content ?? "{}";
+        const qParsed = JSON.parse(qRaw);
+        const scores: any[] = qParsed.scores ?? qParsed.data ?? [];
+        if (scores.length === 0) throw new Error("quality scorer returned no scores");
+
+        scoredQuestions = generated
+          .map((q: any, i: number) => {
+            const s = scores.find((sc: any) => sc.idx === i);
+            if (!s) return null;
+            const curriculumAlignment = Math.max(0, Math.min(100, Number(s.curriculum_alignment) || 0));
+            const memoQuality = Math.max(0, Math.min(100, Number(s.memo_quality) || 0));
+            const examStyle = Math.max(0, Math.min(100, Number(s.exam_style) || 0));
+            const cognitiveAccuracy = Math.max(0, Math.min(100, Number(s.cognitive_accuracy) || 0));
+            const difficultyAppropriate = Math.max(0, Math.min(100, Number(s.difficulty_appropriate) || 0));
+            const composite = Math.round((curriculumAlignment + memoQuality + examStyle + cognitiveAccuracy + difficultyAppropriate) / 5);
+            return { ...q, _quality: s, _composite: composite, _capsAlignment: curriculumAlignment, _structureScore: examStyle };
+          })
+          .filter((q: any): q is any => q !== null && q._composite >= MIN_QUALITY);
+      } catch (qErr: any) {
+        console.error(`[SIMULATE] Quality scoring failed for ${subject} — publishing NOTHING from this batch: ${qErr.message}`);
+        return res.status(502).json({
+          error: "quality_scoring_failed",
+          message: `Generated ${generated.length} candidate questions but the QA scorer failed, so nothing was published. Retry.`,
+        });
       }
 
       const result = simulateLastResult.get(subject) ?? { generated: 0, errors: [], finishedAt: "", qualityScore: 0, questions: [] };
-      result.generated += generated.length;
+      result.generated += scoredQuestions.length;
       result.finishedAt = new Date().toISOString();
-      result.qualityScore = simQualityScore;
-      result.questions = [...(result.questions || []), ...generated];
+      result.qualityScore = scoredQuestions.length > 0
+        ? Math.round(scoredQuestions.reduce((a: number, q: any) => a + q._composite, 0) / scoredQuestions.length)
+        : 0;
+      result.questions = [...(result.questions || []), ...scoredQuestions];
       simulateLastResult.set(subject, result);
+
+      // generated is now REPLACED with only the questions that individually
+      // passed the quality gate — every step below (dbeSimulatedQuestions,
+      // exam-paper publish, flashcards, quiz, daily challenge) only ever
+      // sees vetted content.
+      const droppedForQuality = generated.length - scoredQuestions.length;
+      generated = scoredQuestions;
 
       // Persist to DB so learners can see them
       const { dbeSimulatedQuestions, examPapers, questions: questionsTable, subjects: subjectsTable, topics: topicsTbl } = await import("@shared/schema");
@@ -11580,7 +11605,9 @@ Return JSON: { "scores": [{ "idx": 0, "curriculum_alignment": N, "cognitive_accu
           marks: q.marks,
           cognitiveLevel: q.cognitiveLevel,
           topic: q.topic,
-          qualityScore: simQualityScore,
+          qualityScore: q._composite,
+          capsAlignment: q._capsAlignment,
+          structureScore: q._structureScore,
           metadata: {
             ...(q._quality || {}),
             markingScheme: Array.isArray(q.markingScheme) ? q.markingScheme : [],
@@ -11756,7 +11783,8 @@ Return JSON: { "scores": [{ "idx": 0, "curriculum_alignment": N, "cognitive_accu
       return res.json({
         subject,
         generated: generated.length,
-        simulationQuality: simQualityScore,
+        droppedForQuality,
+        simulationQuality: result.qualityScore,
         questions: generated,
         highYieldTopicsUsed: highYieldTopicNames.length > 0 ? highYieldTopicNames.slice(0, 6) : null,
         masteryDriven: highYieldTopicNames.length > 0,
@@ -11765,7 +11793,7 @@ Return JSON: { "scores": [{ "idx": 0, "curriculum_alignment": N, "cognitive_accu
         flashcardsCreated,
         quizCreated,
         dailyChallengeCreated,
-        message: `Generated ${generated.length} questions · ${publishedQuestionCount} in learner exam · ${flashcardsCreated} flashcards · ${quizCreated ? "1 quiz" : "no quiz"} · ${dailyChallengeCreated ? "daily challenge ready" : "no daily challenge"} (quality: ${simQualityScore}%)`,
+        message: `${generated.length} questions passed QA (${droppedForQuality} dropped for quality) · ${publishedQuestionCount} in learner exam · ${flashcardsCreated} flashcards · ${quizCreated ? "1 quiz" : "no quiz"} · ${dailyChallengeCreated ? "daily challenge ready" : "no daily challenge"} (avg quality: ${result.qualityScore}%)`,
       });
     } catch (err: any) {
       return res.status(500).json({ error: safeError(err) });
