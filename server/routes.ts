@@ -8718,13 +8718,18 @@ Create comprehensive study notes for the topic provided.`;
         firstName: z.string().trim().min(1).max(80),
         lastName:  z.string().trim().min(1).max(80),
         phone:     z.string().trim().min(9).max(15),
-        grade:     z.number().int().min(8).max(12),
         language:  z.enum(["en", "af"]).default("en"),
         parentEmail: z.string().email().optional().or(z.literal("")),
       }).safeParse(req.body);
       if (!parsed.success) return res.status(400).json(formatZodError(parsed.error));
 
-      const { firstName, lastName, phone, grade, language, parentEmail } = parsed.data;
+      const { firstName, lastName, phone, language, parentEmail } = parsed.data;
+      // BrainTrack is a Grade 12 / NSC product — grade is a hard constant,
+      // never client-supplied (matches the main onboarding flow). A prior
+      // version of this endpoint accepted grade 8-11 from the request body,
+      // letting non-Grade-12 learners sign up into a curriculum that isn't
+      // built for them.
+      const grade = 12;
       const phoneE164 = toE164(phone);
       if (!phoneE164) return res.status(400).json({ error: "invalid_phone", message: "Please enter a valid South African mobile number." });
 

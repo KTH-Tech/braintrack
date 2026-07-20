@@ -27,8 +27,6 @@ const T = {
     lastName: "Last name",
     phone: "Mobile number",
     phonePlaceholder: "e.g. 083 123 4567",
-    grade: "Grade",
-    selectGrade: "Select your grade",
     language: "Preferred language",
     parentEmail: "Parent / guardian email (optional)",
     parentEmailHint: "Required if you are under 18 — for consent and progress updates",
@@ -42,7 +40,6 @@ const T = {
     alreadyHave: "Already have an account?",
     signIn: "Sign in",
     success: "Verified! Taking you to BrainTrack…",
-    grades: ["Grade 8","Grade 9","Grade 10","Grade 11","Grade 12"],
     english: "English",
     afrikaans: "Afrikaans",
   },
@@ -56,8 +53,6 @@ const T = {
     lastName: "Van",
     phone: "Selfoonnommer",
     phonePlaceholder: "bv. 083 123 4567",
-    grade: "Graad",
-    selectGrade: "Kies jou graad",
     language: "Voorkeur taal",
     parentEmail: "Ouer / voog e-pos (opsioneel)",
     parentEmailHint: "Vereis as jy onder 18 is — vir toestemming en vordering",
@@ -71,7 +66,6 @@ const T = {
     alreadyHave: "Het jy reeds 'n rekening?",
     signIn: "Teken in",
     success: "Bevestig! Ons neem jou na BrainTrack…",
-    grades: ["Graad 8","Graad 9","Graad 10","Graad 11","Graad 12"],
     english: "Engels",
     afrikaans: "Afrikaans",
   },
@@ -115,7 +109,7 @@ export default function JoinPage() {
   const { toast } = useToast();
 
   const [step, setStep] = useState<"details" | "otp" | "done">("details");
-  const [form, setForm] = useState({ firstName: "", lastName: "", phone: "", grade: "", language: language, parentEmail: "" });
+  const [form, setForm] = useState({ firstName: "", lastName: "", phone: "", language: language, parentEmail: "" });
   const [otp, setOtp] = useState("");
   const [userId, setUserId] = useState("");
 
@@ -134,7 +128,9 @@ export default function JoinPage() {
       firstName: form.firstName.trim(),
       lastName: form.lastName.trim(),
       phone: form.phone.trim(),
-      grade: parseInt(form.grade),
+      // BrainTrack is a Grade 12 / NSC product — grade is a hard constant,
+      // there is no selector (matches onboarding.tsx's same convention).
+      grade: 12,
       language: form.language,
       parentEmail: form.parentEmail.trim() || undefined,
     }),
@@ -180,8 +176,7 @@ export default function JoinPage() {
   const canSubmitDetails =
     form.firstName.trim().length >= 1 &&
     form.lastName.trim().length >= 1 &&
-    form.phone.trim().length >= 9 &&
-    form.grade !== "";
+    form.phone.trim().length >= 9;
 
   if (schoolLoading) {
     return (
@@ -266,20 +261,12 @@ export default function JoinPage() {
                 </div>
               </InputRow>
 
-              <div className="grid grid-cols-2 gap-3">
-                <InputRow label={t.grade}>
-                  <NeonSelect value={form.grade} onChange={e => setField("grade", e.target.value)}>
-                    <option value="">{t.selectGrade}</option>
-                    {[8,9,10,11,12].map((g,i) => <option key={g} value={g}>{t.grades[i]}</option>)}
-                  </NeonSelect>
-                </InputRow>
-                <InputRow label={t.language}>
-                  <NeonSelect value={form.language} onChange={e => handleLangChange(e.target.value as "en"|"af")}>
-                    <option value="en">{t.english}</option>
-                    <option value="af">{t.afrikaans}</option>
-                  </NeonSelect>
-                </InputRow>
-              </div>
+              <InputRow label={t.language}>
+                <NeonSelect value={form.language} onChange={e => handleLangChange(e.target.value as "en"|"af")}>
+                  <option value="en">{t.english}</option>
+                  <option value="af">{t.afrikaans}</option>
+                </NeonSelect>
+              </InputRow>
 
               <InputRow label={t.parentEmail}>
                 <NeonInput type="email" value={form.parentEmail} onChange={e => setField("parentEmail", e.target.value)} placeholder="parent@email.com" autoComplete="email" />
