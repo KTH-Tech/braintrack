@@ -72,7 +72,7 @@ export default function ProgressPage() {
               </Link>
               <span
                 className="hidden sm:inline truncate"
-                style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", textShadow: "0 0 10px rgba(159,245,232,.45)" }}
+                style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)" }}
               >
                 {isAf ? "Vordering" : "Progress"}
               </span>
@@ -135,7 +135,7 @@ export default function ProgressPage() {
                 style={{
                   background: "rgba(255,255,255,.03)",
                   border: "1.5px solid #9FD8FF",
-                  boxShadow: "0 0 0 1px rgba(159,216,255,0.28), 0 0 32px rgba(159,216,255,0.35), inset 0 0 28px rgba(0,0,0,0.6)",
+                  boxShadow: "0 0 0 1px rgba(159,216,255,0.28)",
                 }}
               >
                 {/* Grid texture */}
@@ -156,7 +156,6 @@ export default function ProgressPage() {
                   className="absolute left-0 right-0 h-px pointer-events-none progress-hero-scan"
                   style={{
                     background: "linear-gradient(90deg, transparent, #9FD8FF 20%, #C5B3FF 50%, #FFB7E5 80%, transparent)",
-                    boxShadow: "0 0 14px #9FD8FF, 0 0 28px #C5B3FF",
                   }}
                 />
                 {/* Rainbow top bar */}
@@ -177,16 +176,16 @@ export default function ProgressPage() {
                     <div className="flex flex-wrap items-center gap-2">
                       <div
                         className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-white/[.03]"
-                        style={{ border: "1px solid rgba(159,216,255,0.55)", boxShadow: "0 0 12px rgba(159,216,255,0.4)" }}
+                        style={{ border: "1px solid rgba(159,216,255,0.55)" }}
                       >
-                        <span className="w-1.5 h-1.5 rounded-full progress-hero-pulse" style={{ background: "#9FD8FF", boxShadow: "0 0 6px #9FD8FF" }} />
+                        <span className="w-1.5 h-1.5 rounded-full progress-hero-pulse" style={{ background: "#9FD8FF" }} />
                         <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#9FD8FF" }}>
                           {isAf ? "Prestasieverslag" : "Performance Report"}
                         </span>
                       </div>
                       <div
                         className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-white/[.03]"
-                        style={{ border: `1px solid ${rankHex}`, boxShadow: `0 0 12px ${rankHex}66` }}
+                        style={{ border: `1px solid ${rankHex}` }}
                       >
                         <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: rankHex }}>
                           {isAf ? "Rang" : "Rank"}: {rank}
@@ -194,7 +193,7 @@ export default function ProgressPage() {
                       </div>
                       <div
                         className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-white/[.03]"
-                        style={{ border: "1px solid rgba(255,226,154,0.55)", boxShadow: "0 0 10px rgba(255,226,154,0.4)" }}
+                        style={{ border: "1px solid rgba(255,226,154,0.55)" }}
                       >
                         <Flame className="w-3 h-3" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }} />
                         <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#FFE29A" }}>
@@ -230,7 +229,7 @@ export default function ProgressPage() {
                         <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">
                           {isAf ? "Missie Gereedheid" : "Mission Readiness"}
                         </span>
-                        <span data-testid="mission-readiness-value" className="text-[11px] font-bold" style={{ color: readinessHex, textShadow: `0 0 8px ${readinessHex}66` }}>
+                        <span data-testid="mission-readiness-value" className="text-[11px] font-bold" style={{ color: readinessHex }}>
                           {readiness}%
                         </span>
                       </div>
@@ -244,7 +243,6 @@ export default function ProgressPage() {
                             width: `${readiness}%`,
                             background:
                               "linear-gradient(90deg, #FFE29A, #FFE29A, #94F7C5, #9FF5E8, #9FD8FF, #C5B3FF, #FFB7E5)",
-                            boxShadow: "0 0 14px rgba(159,216,255,0.7), 0 0 22px rgba(197,179,255,0.5)",
                           }}
                         />
                       </div>
@@ -260,10 +258,10 @@ export default function ProgressPage() {
                         <div
                           key={k}
                           className="rounded-xl bg-white/[.03] px-3 py-2"
-                          style={{ border: `1px solid ${hex}55`, boxShadow: `0 0 10px ${hex}33` }}
+                          style={{ border: `1px solid ${hex}55` }}
                         >
                           <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-white">{k}</div>
-                          <div className="text-lg font-black" style={{ color: hex, textShadow: `0 0 8px ${hex}55` }}>{v}</div>
+                          <div className="text-lg font-black" style={{ color: hex }}>{v}</div>
                         </div>
                       ))}
                     </div>
@@ -414,7 +412,7 @@ export default function ProgressPage() {
                     <div
                       key={label}
                       className="relative rounded-2xl bg-white/[.03] p-5 overflow-hidden transition-all hover:-translate-y-1.5"
-                      style={{ border: `1.5px solid ${hex}`, boxShadow: `0 0 0 1px ${hex}33, 0 0 22px ${hex}44, inset 0 0 18px rgba(0,0,0,0.6)` }}
+                      style={{ border: `1.5px solid ${hex}`, boxShadow: `0 0 0 1px ${hex}33` }}
                     >
                       <span aria-hidden className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: hex }} />
                       <span aria-hidden className="absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2" style={{ borderColor: hex }} />
@@ -423,13 +421,13 @@ export default function ProgressPage() {
                       <div className="flex items-center gap-4">
                         <div
                           className="w-12 h-12 rounded-xl bg-white/[.03] flex items-center justify-center shrink-0"
-                          style={{ border: `1.5px solid ${hex}`, boxShadow: `0 0 14px ${hex}66, inset 0 0 8px ${hex}55` }}
+                          style={{ border: `1.5px solid ${hex}` }}
                         >
                           <Icon className="w-6 h-6" style={{ color: hex, filter: `drop-shadow(0 0 5px ${hex})` }} />
                         </div>
                         <div>
                           <p className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: hex }}>{label}</p>
-                          <p className="text-2xl font-bold" style={{ color: hex, textShadow: `0 0 10px ${hex}55` }} data-testid={testid}>
+                          <p className="text-2xl font-bold" style={{ color: hex }} data-testid={testid}>
                             {value}{unit && <span className="text-sm font-semibold text-white ml-1">{unit}</span>}
                           </p>
                         </div>
@@ -444,7 +442,7 @@ export default function ProgressPage() {
                 {/* Subject Progress */}
                 <div
                   className="relative rounded-2xl bg-white/[.03] overflow-hidden"
-                  style={{ border: "1.5px solid #9FD8FF", boxShadow: "0 0 0 1px rgba(159,216,255,0.28), 0 0 26px rgba(159,216,255,0.3), inset 0 0 22px rgba(0,0,0,0.55)" }}
+                  style={{ border: "1.5px solid #9FD8FF", boxShadow: "0 0 0 1px rgba(159,216,255,0.28)" }}
                 >
                   <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#9FD8FF" }} />
                   <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#9FD8FF" }} />
@@ -464,24 +462,24 @@ export default function ProgressPage() {
                           <Link key={subject.subjectId} href={`/subject/${subject.subjectId}`}>
                             <div
                               className="p-4 rounded-2xl bg-white/[.03] cursor-pointer transition-all hover:-translate-y-1.5"
-                              style={{ border: `1px solid ${hex}55`, boxShadow: `0 0 12px ${hex}33` }}
-                              onMouseEnter={(e) => { e.currentTarget.style.borderColor = hex; e.currentTarget.style.boxShadow = `0 0 22px ${hex}88`; }}
-                              onMouseLeave={(e) => { e.currentTarget.style.borderColor = `${hex}55`; e.currentTarget.style.boxShadow = `0 0 12px ${hex}33`; }}
+                              style={{ border: `1px solid ${hex}55` }}
+                              onMouseEnter={(e) => { e.currentTarget.style.borderColor = hex; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.borderColor = `${hex}55`; }}
                               data-testid={`progress-subject-${subject.subjectId}`}
                             >
-                              <div className="flex items-center justify-between mb-2.5">
-                                <span className="font-bold text-white flex items-center gap-2 text-sm">
-                                  <span className="text-lg">{getSubjectIcon(subject.subjectName)}</span>
-                                  {subject.subjectName}
+                              <div className="flex items-center justify-between mb-2.5 gap-2">
+                                <span className="font-bold text-white flex items-center gap-2 text-sm min-w-0 flex-1">
+                                  <span className="text-lg shrink-0">{getSubjectIcon(subject.subjectName)}</span>
+                                  <span className="truncate">{subject.subjectName}</span>
                                 </span>
-                                <span className="font-bold text-base" style={{ color: barColor, textShadow: `0 0 8px ${barColor}66` }}>
+                                <span className="font-bold text-base shrink-0" style={{ color: barColor }}>
                                   {subject.accuracy}%
                                 </span>
                               </div>
                               <div className="h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
                                 <div
                                   className="h-full rounded-full transition-all"
-                                  style={{ width: `${subject.accuracy}%`, background: barColor, boxShadow: `0 0 10px ${barColor}` }}
+                                  style={{ width: `${subject.accuracy}%`, background: barColor }}
                                 />
                               </div>
                               <div className="flex items-center justify-between mt-2.5 text-[11px] font-semibold text-white uppercase tracking-widest">
@@ -509,7 +507,7 @@ export default function ProgressPage() {
                 {/* Areas to Improve */}
                 <div
                   className="relative rounded-2xl bg-white/[.03] overflow-hidden"
-                  style={{ border: "1.5px solid #FFB7E5", boxShadow: "0 0 0 1px rgba(255,183,229,0.28), 0 0 26px rgba(255,183,229,0.3), inset 0 0 22px rgba(0,0,0,0.55)" }}
+                  style={{ border: "1.5px solid #FFB7E5", boxShadow: "0 0 0 1px rgba(255,183,229,0.28)" }}
                 >
                   <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FFB7E5" }} />
                   <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#FFB7E5" }} />
@@ -527,7 +525,7 @@ export default function ProgressPage() {
                           <div
                             key={topic.topicId}
                             className="flex items-center justify-between p-4 rounded-2xl bg-white/[.03]"
-                            style={{ border: `1px solid ${hex}55`, boxShadow: `0 0 12px ${hex}33` }}
+                            style={{ border: `1px solid ${hex}55` }}
                             data-testid={`weak-topic-${topic.topicId}`}
                           >
                             <div className="min-w-0 flex-1">
@@ -537,7 +535,7 @@ export default function ProgressPage() {
                                 {topic.subjectName}
                               </p>
                             </div>
-                            <span className="font-bold text-base shrink-0 ml-3" style={{ color: hex, textShadow: `0 0 8px ${hex}66` }}>
+                            <span className="font-bold text-base shrink-0 ml-3" style={{ color: hex }}>
                               {topic.accuracy}%
                             </span>
                           </div>
@@ -561,7 +559,7 @@ export default function ProgressPage() {
               {/* Recent Activity */}
               <div
                 className="relative rounded-2xl bg-white/[.03] overflow-hidden"
-                style={{ border: "1.5px solid #FFE29A", boxShadow: "0 0 0 1px rgba(255,226,154,0.28), 0 0 26px rgba(255,226,154,0.28), inset 0 0 22px rgba(0,0,0,0.55)" }}
+                style={{ border: "1.5px solid #FFE29A", boxShadow: "0 0 0 1px rgba(255,226,154,0.28)" }}
               >
                 <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FFE29A" }} />
                 <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 z-10" style={{ borderColor: "#FFE29A" }} />
@@ -586,14 +584,13 @@ export default function ProgressPage() {
                             className="p-3 rounded-2xl bg-white/[.03] text-center transition-all hover:-translate-y-1.5"
                             style={{
                               border: `1px solid ${hex}${day.questionsAnswered > 0 ? "88" : "33"}`,
-                              boxShadow: day.questionsAnswered > 0 ? `0 0 ${10 + intensity * 14}px ${hex}${Math.round(40 + intensity * 60).toString(16)}` : "none",
                             }}
                             data-testid={`activity-${index}`}
                           >
                             <p className="text-[10px] font-bold uppercase tracking-widest text-white mb-1">
                               {formatDate(day.date, language, { weekday: 'short' })}
                             </p>
-                            <p className="text-2xl font-bold" style={{ color: hex, textShadow: day.questionsAnswered > 0 ? `0 0 8px ${hex}88` : "none" }}>
+                            <p className="text-2xl font-bold" style={{ color: hex }}>
                               {day.questionsAnswered}
                             </p>
                             <p className="text-[10px] font-bold uppercase tracking-widest mt-0.5" style={{ color: day.questionsAnswered > 0 ? hex : "#ffffff" }}>

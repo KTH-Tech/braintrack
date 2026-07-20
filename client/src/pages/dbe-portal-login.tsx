@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Loader2, Database, ShieldCheck } from "lucide-react";
-import { BrainTrackLogo } from "@/components/braintrack-logo";
 import { GraffitiSplats } from "@/components/graffiti-splats";
+import iconTransparent from "@/assets/handoff/icon-transparent.png";
 
 export default function DBEPortalLogin() {
   const { user, isLoading, isAuthenticated } = useAuth();
@@ -48,7 +48,7 @@ export default function DBEPortalLogin() {
           background: "#0a0b12",
           border: "1.5px solid rgba(110,231,249,0.35)",
           boxShadow:
-            "0 0 40px rgba(110,231,249,0.18), 0 0 80px rgba(0,0,0,0.8), inset 0 0 30px rgba(0,0,0,0.6)",
+            "0 0 80px rgba(0,0,0,0.8), inset 0 0 30px rgba(0,0,0,0.6)",
         }}
       >
         <div
@@ -61,7 +61,7 @@ export default function DBEPortalLogin() {
 
         <div className="relative space-y-5 text-center">
           <div className="flex justify-center">
-            <BrainTrackLogo className="h-8 w-auto" />
+            <img src={iconTransparent} alt="BrainTrack" className="h-8 w-8 object-contain" />
           </div>
 
           <div>
@@ -78,7 +78,6 @@ export default function DBEPortalLogin() {
             </div>
             <h1
               className="text-xl font-black text-white"
-              style={{ textShadow: "0 0 20px rgba(110,231,249,0.3)" }}
             >
               Content Console
             </h1>
@@ -116,7 +115,7 @@ export default function DBEPortalLogin() {
                 style={{
                   color: "#0a0a0a",
                   background: "linear-gradient(135deg, #6EE7F9 0%, #1aa8b4 100%)",
-                  boxShadow: "0 0 20px rgba(110,231,249,0.45), 0 4px 16px rgba(0,0,0,0.4)",
+                  boxShadow: "0 4px 16px rgba(0,0,0,0.4)",
                 }}
                 data-testid="btn-sign-in"
               >

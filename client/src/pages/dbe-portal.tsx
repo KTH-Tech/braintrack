@@ -1333,7 +1333,7 @@ export default function DBEPortal() {
           <div className="h-7 flex items-center justify-between gap-4 text-[11px] font-semibold text-white" style={{ padding: "0 40px", opacity: 0.9 }}>
             <div className="flex items-center gap-3">
               <span className="flex items-center gap-1.5">
-                <span className="inline-block rounded-full" style={{ width: 6, height: 6, background: "#94F7C5", boxShadow: "0 0 8px #94F7C5" }} />
+                <span className="inline-block rounded-full" style={{ width: 6, height: 6, background: "#94F7C5" }} />
                 Pipeline online
               </span>
               <span>·</span>
@@ -1401,7 +1401,7 @@ export default function DBEPortal() {
         {/* Pipeline running banner */}
         {anyRunning && (
           <div className="flex items-center gap-3 text-sm" style={{ background: "linear-gradient(120deg,rgba(159,216,255,0.1),rgba(197,179,255,0.08))", border: "1.5px solid rgba(159,216,255,0.35)", borderRadius: 18, padding: "14px 20px" }}>
-            <span className="inline-block rounded-full shrink-0" style={{ width: 9, height: 9, background: "#FFE29A", boxShadow: "0 0 10px #FFE29A" }} />
+            <span className="inline-block rounded-full shrink-0" style={{ width: 9, height: 9, background: "#FFE29A" }} />
             <Loader2 className="w-4 h-4 animate-spin shrink-0" style={{ color: "#FFE29A" }} />
             <span className="text-white" style={{ fontWeight: 800, fontSize: 13 }}>Pipeline running — auto-refreshing</span>
           </div>
@@ -1604,7 +1604,7 @@ export default function DBEPortal() {
             <div style={{ background: "linear-gradient(120deg,rgba(159,216,255,0.1),rgba(197,179,255,0.08))", border: "1.5px solid rgba(159,216,255,0.35)", borderRadius: 18, padding: "22px 26px" }} data-testid="sync-production-panel">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <span className="inline-block rounded-full shrink-0" style={{ width: 9, height: 9, background: syncStatus?.status === "failed" ? "#FF8DA1" : "#94F7C5", boxShadow: `0 0 10px ${syncStatus?.status === "failed" ? "#FF8DA1" : "#94F7C5"}` }} />
+                  <span className="inline-block rounded-full shrink-0" style={{ width: 9, height: 9, background: syncStatus?.status === "failed" ? "#FF8DA1" : "#94F7C5" }} />
                   <CloudUpload className="w-5 h-5 shrink-0" style={{ color: "#9FD8FF" }} />
                   <div>
                     <p className="text-white" style={{ fontWeight: 800, fontSize: 16 }}>Sync to Production</p>

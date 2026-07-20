@@ -1,5 +1,4 @@
 import type { Express, Request, Response } from "express";
-import { uploadVoiceNote, getVoiceNoteSignedUrl, uploadTopicAudio, getTopicAudioSignedUrl } from "./supabase-storage";
 import { createServer, type Server } from "http";
 import { createHmac, timingSafeEqual, createHash, randomBytes, scryptSync, randomInt } from "crypto";
 import jwt from "jsonwebtoken";
@@ -10,7 +9,7 @@ import { markAnswer, bubbleToPaperScore } from "./marking-strategies";
 import { extractMcqAnswer } from "./dbe-ingestion";
 import { pool, db } from "./db";
 import { users } from "@shared/models/auth";
-import { subjects, topics, onboardingResults, linkVisits, examPapers, userStreaks, installBannerEvents, studySessions, attempts, topicMastery, userProgress, boostQuizWrongAnswers, learningEvents, learnerGoals, storeItems, userUnlocks, userBadges, parentLinks, voiceNotes, subscriptions, questions as questionsTable, schoolReferrals, onboardingLinkTokens, topicNotes, topicFlashcards, literatureWorks, literatureNotes, partnerSchools, systemConfig, schoolEnquiries, adminBillingReminders, dbeVerbatimQuestions, topicLessonRecordings, pushSubscriptions, phoneOtpCodes, type UserProgress, type Subscription, type PushSubscription } from "@shared/schema";
+import { subjects, topics, onboardingResults, linkVisits, examPapers, userStreaks, installBannerEvents, studySessions, attempts, topicMastery, userProgress, boostQuizWrongAnswers, learningEvents, learnerGoals, storeItems, userUnlocks, userBadges, parentLinks, subscriptions, questions as questionsTable, schoolReferrals, onboardingLinkTokens, topicNotes, topicFlashcards, literatureWorks, literatureNotes, partnerSchools, systemConfig, schoolEnquiries, adminBillingReminders, dbeVerbatimQuestions, pushSubscriptions, phoneOtpCodes, type UserProgress, type Subscription, type PushSubscription } from "@shared/schema";
 import { getCuratedTopicCountsBySubject, bumpCuratedTopicCountVersion } from "./curated-topic-count-cache";
 import { eq, sql, and, desc, asc, isNull, isNotNull, or, gte, lt, lte, count, inArray, notInArray, ilike, type SQL } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
@@ -20,7 +19,6 @@ import { registerPaystackRoutes, isPaystackConfigured, paystackFetch, recordEven
 import { registerRizzRoutes } from "./rizz";
 import { authStorage } from "./replit_integrations/auth/storage";
 import OpenAI from "openai";
-import type { TranscriptionVerbose } from "openai/resources/audio/transcriptions";
 import webpush from "web-push";
 import { z } from "zod";
 import rateLimit from "express-rate-limit";
@@ -5732,37 +5730,9 @@ Respond in JSON format:
 
 The "cited_examples" field is optional — include it ONLY when you actually drew on one of the REFERENCE WORKED EXAMPLES above. Use 1-based indices that match the "Example N" / "Step M" labels in the reference block. Omit "stepIndex" when citing the whole example. If you did not use any reference examples, return an empty array.`;
 
-      // Pull recent voice-note transcripts for this learner + topic so the tutor
-      // can grade their understanding, spot misconceptions, and respond with targeted hints.
-      let voiceNoteContext = "";
-      try {
-        const recentNotes = await db.select({
-          transcript: voiceNotes.transcript,
-          createdAt: voiceNotes.createdAt,
-          durationSeconds: voiceNotes.durationSeconds,
-        })
-          .from(voiceNotes)
-          .where(and(
-            eq(voiceNotes.userId, userId),
-            eq(voiceNotes.topicId, data.topicId),
-            eq(voiceNotes.transcriptStatus, "ready"),
-          ))
-          .orderBy(desc(voiceNotes.createdAt))
-          .limit(3);
-        const usable = recentNotes
-          .map((n) => (n.transcript || "").trim())
-          .filter((t) => t.length > 0);
-        if (usable.length > 0) {
-          voiceNoteContext = `\n\nLEARNER'S RECENT VOICE-NOTE EXPLANATIONS (transcribed from their own recordings on this topic — use them to grade their understanding, spot misconceptions, and reply with targeted hints. Do NOT just repeat their words back):\n` +
-            usable.map((t, i) => `Recording ${i + 1}: """${t.slice(0, 1500)}"""`).join("\n\n");
-        }
-      } catch (e) {
-        console.warn("Voice-note context fetch failed (non-fatal):", e);
-      }
-
       const userContent = `Please ${data.mode} this CAPS topic: ${topic.name}
 
-Learner's question: ${data.message}${voiceNoteContext}`;
+Learner's question: ${data.message}`;
 
       const response = await callOpenAIWithRetry(() =>
         openai.chat.completions.create({
@@ -14216,6 +14186,116 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
     }
   });
 
+  // GET /api/user/high-yield-topics — learner-facing "insider intel" endpoint.
+  // Surfaces the real dbe_topic_frequency data (how often each CAPS topic has
+  // actually appeared in the last ~10 years of NSC papers, and its typical
+  // mark value) directly to the learner. Same tfTable/topics join +
+  // appearancesCount ordering as the admin high-yield query in
+  // POST /api/admin/dbe-ingestion/simulate (~line 11319), but isAuthenticated
+  // only (no admin gate) and scoped to the caller's own subjects.
+  //
+  // Query params:
+  //   ?subject=<Subject Name>  — optional, single subject (matches subjects.name).
+  //   (none)                   — defaults to the caller's selectedSubjects
+  //                               (users.selectedSubjects, falling back to
+  //                               onboardingResults.selectedSubjects — same
+  //                               precedence as GET /api/user/onboarding above).
+  //
+  // Response: { subjects: [{ subjectId, subjectName, subjectNameAfrikaans,
+  //   topics: [{ topicId, topicName, topicNameAfrikaans, capsCode,
+  //     appearancesCount, totalYearsSampled, avgMarksPerAppearance,
+  //     frequencyRank }] (top 12, ordered by appearancesCount desc) }] }
+  // Every requested/selected subject is always included (even with an empty
+  // topics array) so the frontend can render a clean per-subject empty state
+  // instead of guessing why a subject is missing.
+  app.get("/api/user/high-yield-topics", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { dbeTopicFrequency: tfTable } = await import("@shared/schema");
+      const requestedSubject = typeof req.query.subject === "string" ? req.query.subject.trim() : "";
+
+      let targetSubjects: { id: number; name: string; nameAfrikaans: string }[] = [];
+
+      if (requestedSubject) {
+        targetSubjects = await db
+          .select({ id: subjects.id, name: subjects.name, nameAfrikaans: subjects.nameAfrikaans })
+          .from(subjects)
+          .where(ilike(subjects.name, requestedSubject))
+          .limit(1);
+      } else {
+        // No subject specified — scope to the learner's own selected subjects.
+        // Prefer the live users.selectedSubjects column; fall back to the
+        // onboarding snapshot if the learner hasn't touched Settings since.
+        const liveUser = await authStorage.getUser(userId);
+        let selectedIds: number[] = Array.isArray(liveUser?.selectedSubjects)
+          ? (liveUser!.selectedSubjects as number[])
+          : [];
+        if (selectedIds.length === 0) {
+          const onboarding = await storage.getOnboardingResult(userId);
+          selectedIds = onboarding?.selectedSubjects ?? [];
+        }
+        if (selectedIds.length > 0) {
+          targetSubjects = await db
+            .select({ id: subjects.id, name: subjects.name, nameAfrikaans: subjects.nameAfrikaans })
+            .from(subjects)
+            .where(inArray(subjects.id, selectedIds));
+        }
+      }
+
+      if (targetSubjects.length === 0) {
+        return res.json({ subjects: [] });
+      }
+
+      const subjectNames = targetSubjects.map(s => s.name);
+      const TOP_N = 12;
+      const rows = await db
+        .select({
+          subject: tfTable.subject,
+          topicId: tfTable.topicId,
+          topicName: topics.name,
+          topicNameAfrikaans: topics.nameAfrikaans,
+          capsCode: topics.capsCode,
+          appearancesCount: tfTable.appearancesCount,
+          totalYearsSampled: tfTable.totalYearsSampled,
+          avgMarksPerAppearance: tfTable.avgMarksPerAppearance,
+          frequencyRank: tfTable.frequencyRank,
+        })
+        .from(tfTable)
+        .leftJoin(topics, eq(tfTable.topicId, topics.id))
+        .where(inArray(tfTable.subject, subjectNames))
+        .orderBy(desc(tfTable.appearancesCount));
+
+      const bySubjectName = new Map<string, any[]>();
+      for (const row of rows) {
+        if (!row.topicName) continue; // orphaned frequency row with no matching topic — skip
+        const list = bySubjectName.get(row.subject) || [];
+        list.push(row);
+        bySubjectName.set(row.subject, list);
+      }
+
+      const result = targetSubjects.map(s => ({
+        subjectId: s.id,
+        subjectName: s.name,
+        subjectNameAfrikaans: s.nameAfrikaans,
+        topics: (bySubjectName.get(s.name) || []).slice(0, TOP_N).map(r => ({
+          topicId: r.topicId,
+          topicName: r.topicName,
+          topicNameAfrikaans: r.topicNameAfrikaans,
+          capsCode: r.capsCode,
+          appearancesCount: r.appearancesCount,
+          totalYearsSampled: r.totalYearsSampled,
+          avgMarksPerAppearance: r.avgMarksPerAppearance,
+          frequencyRank: r.frequencyRank,
+        })),
+      }));
+
+      return res.json({ subjects: result });
+    } catch (err: any) {
+      console.error("[high-yield-topics] error:", err.message);
+      return res.status(500).json({ error: safeError(err) });
+    }
+  });
+
   // ── Learner-facing DBE endpoints (real ingestion data only) ──────────────
 
   // GET /api/dbe/available — which subjects have real ingested questions
@@ -18594,584 +18674,6 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
     }
   });
 
-  // ============================================
-  // AUDIO LESSONS + LEARNER VOICE NOTES
-  // ============================================
-
-  const TOPICS_AUDIO_DIR = join(process.cwd(), "uploads", "audio", "topics");
-  const VOICE_NOTES_DIR = join(process.cwd(), "uploads", "audio", "voice-notes");
-  await fsMkdir(TOPICS_AUDIO_DIR, { recursive: true }).catch(() => {});
-  await fsMkdir(VOICE_NOTES_DIR, { recursive: true }).catch(() => {});
-
-  // In-memory store for bulk audio generation jobs.
-  // Jobs expire after 2 hours; the map is pruned on each new job creation.
-  type BulkAudioJobItem = {
-    topicId: number;
-    lang: "en" | "af";
-    status: "pending" | "running" | "done" | "error";
-    error?: string;
-    audioUrl?: string;
-  };
-  type BulkAudioJob = {
-    id: string;
-    items: BulkAudioJobItem[];
-    createdAt: number;
-    completedAt?: number;
-  };
-  const bulkAudioJobs = new Map<string, BulkAudioJob>();
-  const BULK_JOB_TTL_MS = 2 * 60 * 60 * 1000;
-
-  // Normalise a stored audio URL so that legacy "/uploads/audio/topics/…" paths
-  // (written before Task #418) are transparently rewritten to the authenticated
-  // streaming path.  New paths are already in the correct form.
-  function normaliseTopicAudioUrl(url: string | null | undefined): string | null {
-    if (!url) return null;
-    // Legacy disk path → authenticated streaming proxy
-    const OLD_PREFIX = "/uploads/audio/topics/";
-    if (url.startsWith(OLD_PREFIX)) {
-      return "/api/audio/topics/" + url.slice(OLD_PREFIX.length);
-    }
-    // Supabase Storage → route through signed-URL endpoint so clients never hold raw keys
-    if (url.startsWith("supabase://topic-audio/")) {
-      const objectPath = url.slice("supabase://topic-audio/".length);
-      return `/api/audio/topics/supabase/${encodeURIComponent(objectPath)}`;
-    }
-    return url;
-  }
-
-  // GET /api/audio/topics/supabase/:objectPath — redirect to Supabase signed URL
-  app.get("/api/audio/topics/supabase/:objectPath", isAuthenticated, async (req: any, res) => {
-    const objectPath = decodeURIComponent(req.params.objectPath);
-    if (!/^[\w\-\/]+\.mp3$/i.test(objectPath)) {
-      return res.status(400).json({ error: "Invalid audio path" });
-    }
-    const signedUrl = await getTopicAudioSignedUrl(`supabase://topic-audio/${objectPath}`);
-    if (!signedUrl) return res.status(404).json({ error: "Audio not available" });
-    return res.redirect(302, signedUrl);
-  });
-
-  // GET /api/audio/topics/:filename — authenticated topic audio stream.
-  // Replaces the public static mount so that learners must hold a valid session
-  // to fetch any MP3.  Filename is validated to prevent path traversal.
-  app.get("/api/audio/topics/:filename", isAuthenticated, async (req: any, res) => {
-    const { filename } = req.params;
-    // Only allow safe filenames — no slashes, no dots in path segments, only
-    // the characters produced by our own filename templates.
-    if (!/^[\w\-]+\.mp3$/i.test(filename)) {
-      return res.status(400).json({ error: "Invalid audio filename" });
-    }
-    const filePath = join(TOPICS_AUDIO_DIR, filename);
-    if (!existsSync(filePath)) {
-      return res.status(404).json({ error: "Audio file not found" });
-    }
-    res.setHeader("Content-Type", "audio/mpeg");
-    res.setHeader("Cache-Control", "private, max-age=3600");
-    const { createReadStream } = await import("fs");
-    const stream = createReadStream(filePath);
-    stream.on("error", (err) => {
-      console.error("Error streaming topic audio:", err);
-      if (!res.headersSent) res.status(500).json({ error: "Failed to stream audio" });
-      else res.destroy();
-    });
-    stream.pipe(res);
-  });
-
-  function buildTopicNarrationText(topic: any, lang: "en" | "af", noteSummary?: string | null): string {
-    const name = lang === "af" ? (topic.nameAfrikaans || topic.name) : topic.name;
-    const topicSummary = lang === "af" ? (topic.summaryAf || topic.summaryEn) : (topic.summaryEn || topic.summaryAf);
-    const summary = noteSummary || topicSummary;
-    const tips = topic.examTips ? String(topic.examTips) : "";
-    const intro = lang === "af"
-      ? `Welkom by 'n klankles oor ${name}.`
-      : `Welcome to your audio lesson on ${name}.`;
-    const wrap = lang === "af"
-      ? "Onthou: hardop herhaling help inligting beter vasleg. Probeer hierdie konsepte saamvat in jou eie woorde."
-      : "Remember: speaking concepts aloud helps them stick. Try summarising these ideas in your own words after listening.";
-    const body = (summary && summary.trim()) || (lang === "af"
-      ? `Hierdie onderwerp dek die kernidees van ${name} soos in die KABV-kurrikulum vereis.`
-      : `This topic covers the core ideas of ${name} as required by the CAPS curriculum.`);
-    return [intro, body, tips, wrap].filter(Boolean).join(" \n\n").slice(0, 3500);
-  }
-
-  // POST /api/admin/topics/:id/generate-audio — admin trigger to (re)generate TTS audio
-  app.post("/api/admin/topics/:id/generate-audio", isAuthenticated, requireRole("admin"), async (req: any, res) => {
-    try {
-      const topicId = parseInt(req.params.id);
-      if (!Number.isFinite(topicId)) return res.status(400).json({ error: "Invalid topic id" });
-      const lang: "en" | "af" = req.body?.language === "af" ? "af" : "en";
-
-      const [topic] = await db.select().from(topics).where(eq(topics.id, topicId)).limit(1);
-      if (!topic) return res.status(404).json({ error: "Topic not found" });
-
-      const [noteRow] = await db.select({ summary: topicNotes.summary })
-        .from(topicNotes)
-        .where(and(eq(topicNotes.topicId, topicId), eq(topicNotes.language, lang)))
-        .limit(1);
-      const text = buildTopicNarrationText(topic, lang, noteRow?.summary || null);
-      const sourceHash = createHash("sha256").update(`${lang}:${text}`).digest("hex").slice(0, 16);
-
-      const filename = `topic-${topicId}-${lang}-${sourceHash}.mp3`;
-      const filePath = join(TOPICS_AUDIO_DIR, filename);
-
-      let buf: Buffer | null = null;
-      // Generate TTS only if not already on disk
-      if (!existsSync(filePath)) {
-        const speech = await callOpenAIWithRetry(() => openai.audio.speech.create({
-          model: "tts-1",
-          voice: "alloy",
-          input: text,
-          response_format: "mp3",
-        }));
-        buf = Buffer.from(await speech.arrayBuffer());
-      } else {
-        const { readFileSync } = await import("fs");
-        buf = readFileSync(filePath);
-      }
-
-      // Try Supabase Storage; fall back to disk
-      const supabaseAudioUrl = await uploadTopicAudio({ buffer: buf!, topicId, lang });
-      let audioUrl: string;
-      if (supabaseAudioUrl) {
-        audioUrl = supabaseAudioUrl;
-      } else {
-        await fsWriteFile(filePath, buf!);
-        audioUrl = `/api/audio/topics/${filename}`;
-      }
-
-      // Admin-triggered regeneration also clears the pin for that language
-      // so the nightly batch script can resume managing it.
-      const now = new Date();
-      const updateFields = lang === "af"
-        ? {
-            audioUrlAf: audioUrl,
-            audioGeneratedAt: now,
-            audioGeneratedAtAf: now,
-            audioSourceHashAf: sourceHash,
-            audioPinnedAf: false,
-            audioOriginAf: "tts",
-          }
-        : {
-            audioUrl: audioUrl,
-            audioGeneratedAt: now,
-            audioGeneratedAtEn: now,
-            audioSourceHashEn: sourceHash,
-            audioPinnedEn: false,
-            audioOriginEn: "tts",
-          };
-      await db.update(topics).set(updateFields).where(eq(topics.id, topicId));
-
-      res.json({ ok: true, audioUrl, language: lang, sourceHash });
-    } catch (err: any) {
-      console.error("Error generating topic audio:", err);
-      res.status(err?.status || 500).json({ error: err?.message || "Failed to generate audio" });
-    }
-  });
-
-  // POST /api/admin/topics/audio/bulk-generate
-  // Kicks off a background job that regenerates TTS audio for a list of
-  // topic/language pairs (non-pinned only — pinned are silently skipped).
-  // Body: { topicIds: number[], languages?: ("en"|"af")[] }
-  // Returns: { jobId: string }
-  app.post(
-    "/api/admin/topics/audio/bulk-generate",
-    isAuthenticated,
-    requireRole("admin"),
-    async (req: any, res) => {
-      try {
-        const rawIds: unknown = req.body?.topicIds;
-        if (!Array.isArray(rawIds) || rawIds.length === 0) {
-          return res.status(400).json({ error: "topicIds must be a non-empty array" });
-        }
-        const topicIds = (rawIds as unknown[])
-          .map((x) => parseInt(String(x), 10))
-          .filter((n) => Number.isFinite(n));
-        if (topicIds.length === 0) return res.status(400).json({ error: "No valid topic ids" });
-        if (topicIds.length > 500) return res.status(400).json({ error: "Max 500 topics per job" });
-
-        const rawLangs: unknown = req.body?.languages;
-        const langs: ("en" | "af")[] = Array.isArray(rawLangs)
-          ? (rawLangs as string[]).filter((l) => l === "en" || l === "af") as ("en" | "af")[]
-          : ["en", "af"];
-        if (langs.length === 0) return res.status(400).json({ error: "No valid languages" });
-
-        // Prune stale jobs
-        const cutoffTs = Date.now() - BULK_JOB_TTL_MS;
-        for (const [k, v] of bulkAudioJobs.entries()) {
-          if (v.createdAt < cutoffTs) bulkAudioJobs.delete(k);
-        }
-
-        const jobId = createHash("sha256")
-          .update(`${Date.now()}-${Math.random()}`)
-          .digest("hex")
-          .slice(0, 16);
-
-        // Fetch topics so we can check pins and build items
-        const topicRows = await db
-          .select({
-            id: topics.id,
-            name: topics.name,
-            nameAfrikaans: topics.nameAfrikaans,
-            summaryEn: topics.summaryEn,
-            summaryAf: topics.summaryAf,
-            examTips: topics.examTips,
-            audioPinnedEn: topics.audioPinnedEn,
-            audioPinnedAf: topics.audioPinnedAf,
-          })
-          .from(topics)
-          .where(inArray(topics.id, topicIds));
-
-        const topicMap = new Map(topicRows.map((t) => [t.id, t]));
-
-        // Fetch note summaries for all requested topics so narration uses real content
-        const bulkNoteRows = await db
-          .select({ topicId: topicNotes.topicId, language: topicNotes.language, summary: topicNotes.summary })
-          .from(topicNotes)
-          .where(inArray(topicNotes.topicId, topicIds));
-        const bulkNoteMap = new Map<string, string>();
-        for (const n of bulkNoteRows) bulkNoteMap.set(`${n.topicId}-${n.language}`, n.summary);
-
-        const items: BulkAudioJobItem[] = [];
-        for (const tid of topicIds) {
-          const t = topicMap.get(tid);
-          if (!t) continue;
-          for (const lang of langs) {
-            const pinned = lang === "en" ? t.audioPinnedEn : t.audioPinnedAf;
-            if (pinned) continue;
-            items.push({ topicId: tid, lang, status: "pending" });
-          }
-        }
-
-        const job: BulkAudioJob = { id: jobId, items, createdAt: Date.now() };
-        bulkAudioJobs.set(jobId, job);
-
-        // Run generation in background (no await)
-        (async () => {
-          const CONCURRENCY = 2;
-          let idx = 0;
-
-          async function processOne(item: BulkAudioJobItem) {
-            item.status = "running";
-            try {
-              const topic = topicMap.get(item.topicId);
-              if (!topic) throw new Error("Topic not found");
-              const bulkNote = bulkNoteMap.get(`${item.topicId}-${item.lang}`) || null;
-              const text = buildTopicNarrationText(topic, item.lang, bulkNote);
-              const sourceHash = createHash("sha256")
-                .update(`${item.lang}:${text}`)
-                .digest("hex")
-                .slice(0, 16);
-              const filename = `topic-${item.topicId}-${item.lang}-${sourceHash}.mp3`;
-              const filePath = join(TOPICS_AUDIO_DIR, filename);
-              const audioUrl = `/api/audio/topics/${filename}`;
-              if (!existsSync(filePath)) {
-                const speech = await callOpenAIWithRetry(() =>
-                  openai.audio.speech.create({
-                    model: "tts-1",
-                    voice: "alloy",
-                    input: text,
-                    response_format: "mp3",
-                  })
-                );
-                const buf = Buffer.from(await speech.arrayBuffer());
-                await fsWriteFile(filePath, buf);
-              }
-              const now = new Date();
-              const updateFields =
-                item.lang === "af"
-                  ? {
-                      audioUrlAf: audioUrl,
-                      audioGeneratedAt: now,
-                      audioGeneratedAtAf: now,
-                      audioSourceHashAf: sourceHash,
-                      audioPinnedAf: false,
-                      audioOriginAf: "tts",
-                    }
-                  : {
-                      audioUrl: audioUrl,
-                      audioGeneratedAt: now,
-                      audioGeneratedAtEn: now,
-                      audioSourceHashEn: sourceHash,
-                      audioPinnedEn: false,
-                      audioOriginEn: "tts",
-                    };
-              await db.update(topics).set(updateFields).where(eq(topics.id, item.topicId));
-              item.status = "done";
-              item.audioUrl = audioUrl;
-            } catch (err: any) {
-              console.error(`[bulk-audio] topic ${item.topicId} ${item.lang} failed:`, err?.message);
-              item.status = "error";
-              item.error = err?.message || "Failed";
-            }
-          }
-
-          async function worker() {
-            while (true) {
-              const i = idx++;
-              if (i >= job.items.length) return;
-              await processOne(job.items[i]);
-            }
-          }
-
-          try {
-            await Promise.all(Array.from({ length: CONCURRENCY }, worker));
-          } finally {
-            job.completedAt = Date.now();
-          }
-        })().catch((err) => {
-          console.error("[bulk-audio] unexpected job error:", err);
-          job.completedAt = Date.now();
-        });
-
-        res.json({ jobId, total: items.length });
-      } catch (err: any) {
-        console.error("Error starting bulk audio job:", err);
-        res.status(500).json({ error: err?.message || "Failed to start bulk job" });
-      }
-    }
-  );
-
-  // GET /api/admin/topics/audio/bulk-job/:jobId — poll bulk generation status
-  app.get(
-    "/api/admin/topics/audio/bulk-job/:jobId",
-    isAuthenticated,
-    requireRole("admin"),
-    async (req: any, res) => {
-      const job = bulkAudioJobs.get(req.params.jobId);
-      if (!job) return res.status(404).json({ error: "Job not found or expired" });
-
-      const done = job.items.filter((i) => i.status === "done").length;
-      const errors = job.items.filter((i) => i.status === "error").length;
-      const running = job.items.filter((i) => i.status === "running").length;
-      const pending = job.items.filter((i) => i.status === "pending").length;
-
-      res.json({
-        jobId: job.id,
-        total: job.items.length,
-        done,
-        errors,
-        running,
-        pending,
-        completedAt: job.completedAt ?? null,
-        items: job.items.map((i) => ({
-          topicId: i.topicId,
-          lang: i.lang,
-          status: i.status,
-          error: i.error ?? null,
-        })),
-      });
-    }
-  );
-
-  // ---------------- Admin Topic Audio Review ----------------
-  //
-  // GET /api/admin/topics/audio — list every topic with its EN + AF audio
-  // metadata so admins can preview and replace MP3s before students hear them.
-  //
-  // Query params (all optional):
-  //   subjectId=NN          — restrict to one subject
-  //   missing=en|af|any     — only topics missing audio in that language
-  //   olderThanDays=N       — only topics whose audio (any lang) is older
-  //                           than N days OR has no generated_at timestamp
-  //   pinned=1              — only admin-pinned rows
-  //   limit=NN  (default 200, max 1000)
-  app.get(
-    "/api/admin/topics/audio",
-    isAuthenticated,
-    requireRole("admin"),
-    async (req: any, res) => {
-      try {
-        const subjectIdRaw = req.query.subjectId
-          ? parseInt(String(req.query.subjectId), 10)
-          : null;
-        const subjectId = Number.isFinite(subjectIdRaw as number) ? subjectIdRaw : null;
-        const missing = String(req.query.missing || "").toLowerCase();
-        const olderThanDays = req.query.olderThanDays
-          ? parseInt(String(req.query.olderThanDays), 10)
-          : null;
-        const pinnedOnly = String(req.query.pinned || "") === "1";
-        const limit = Math.max(
-          1,
-          Math.min(1000, parseInt(String(req.query.limit || "200"), 10) || 200),
-        );
-
-        const audioColumns = {
-          id: topics.id,
-          subjectId: topics.subjectId,
-          name: topics.name,
-          nameAfrikaans: topics.nameAfrikaans,
-          summaryEn: topics.summaryEn,
-          summaryAf: topics.summaryAf,
-          audioUrl: topics.audioUrl,
-          audioUrlAf: topics.audioUrlAf,
-          audioGeneratedAt: topics.audioGeneratedAt,
-          audioGeneratedAtEn: topics.audioGeneratedAtEn,
-          audioGeneratedAtAf: topics.audioGeneratedAtAf,
-          audioSourceHashEn: topics.audioSourceHashEn,
-          audioSourceHashAf: topics.audioSourceHashAf,
-          audioPinnedEn: topics.audioPinnedEn,
-          audioPinnedAf: topics.audioPinnedAf,
-          audioOriginEn: topics.audioOriginEn,
-          audioOriginAf: topics.audioOriginAf,
-        };
-        const rows = subjectId
-          ? await db.select(audioColumns).from(topics).where(eq(topics.subjectId, subjectId))
-          : await db.select(audioColumns).from(topics);
-
-        const subjectRows = await db
-          .select({ id: subjects.id, name: subjects.name })
-          .from(subjects);
-        const subjectName = new Map<number, string>(
-          subjectRows.map((s) => [s.id, s.name]),
-        );
-
-        const cutoff = olderThanDays && olderThanDays > 0
-          ? Date.now() - olderThanDays * 24 * 60 * 60 * 1000
-          : null;
-
-        const matched = rows
-          .filter((r) => {
-            const hasSummary = !!(r.summaryEn?.trim() || r.summaryAf?.trim());
-            if (!hasSummary) return false;
-            if (missing === "en" && r.audioUrl) return false;
-            if (missing === "af" && r.audioUrlAf) return false;
-            if (missing === "any" && r.audioUrl && r.audioUrlAf) return false;
-            if (pinnedOnly && !(r.audioPinnedEn || r.audioPinnedAf)) return false;
-            if (cutoff !== null) {
-              const enT = r.audioGeneratedAtEn ? new Date(r.audioGeneratedAtEn).getTime() : 0;
-              const afT = r.audioGeneratedAtAf ? new Date(r.audioGeneratedAtAf).getTime() : 0;
-              const fallback = r.audioGeneratedAt ? new Date(r.audioGeneratedAt).getTime() : 0;
-              const newest = Math.max(enT, afT, fallback);
-              if (newest > cutoff) return false;
-            }
-            return true;
-          })
-          .sort((a, b) => {
-            const sa = subjectName.get(a.subjectId) || "";
-            const sb = subjectName.get(b.subjectId) || "";
-            if (sa !== sb) return sa.localeCompare(sb);
-            return (a.name || "").localeCompare(b.name || "");
-          });
-
-        const sliced = matched.slice(0, limit).map((r) => ({
-          ...r,
-          subjectName: subjectName.get(r.subjectId) || `subject-${r.subjectId}`,
-          audioUrl: normaliseTopicAudioUrl(r.audioUrl),
-          audioUrlAf: normaliseTopicAudioUrl(r.audioUrlAf),
-        }));
-
-        res.json({
-          rows: sliced,
-          totalMatched: matched.length,
-          truncated: matched.length > sliced.length,
-          subjects: subjectRows
-            .slice()
-            .sort((a, b) => a.name.localeCompare(b.name)),
-        });
-      } catch (err: any) {
-        console.error("Error listing topic audio:", err);
-        res.status(500).json({ error: err?.message || "Failed to list topic audio" });
-      }
-    },
-  );
-
-  // POST /api/admin/topics/:id/upload-audio — upload a human-recorded MP3 and
-  // pin it. The batch script will skip pinned languages going forward.
-  // Multipart form: field "audio" (MP3 only, up to 10 MB) + "language" (en|af).
-  // Other formats are rejected with 415 — storage uses an .mp3 filename and
-  // the learner player assumes audio/mpeg, so transcoding would be required
-  // to support WAV/M4A/OGG safely.
-  const topicAudioUpload = multer({
-    storage: multer.memoryStorage(),
-    limits: { fileSize: 10 * 1024 * 1024 },
-    fileFilter: (_req, file, cb) => {
-      const ok = /^audio\/(mpeg|mp3)$/i.test(file.mimetype) ||
-        /\.mp3$/i.test(file.originalname || "");
-      if (ok) cb(null, true);
-      else cb(new Error("Only MP3 uploads are supported"));
-    },
-  });
-  app.post(
-    "/api/admin/topics/:id/upload-audio",
-    isAuthenticated,
-    requireRole("admin"),
-    topicAudioUpload.single("audio"),
-    async (req: any, res) => {
-      try {
-        const topicId = parseInt(req.params.id, 10);
-        if (!Number.isFinite(topicId)) return res.status(400).json({ error: "Invalid topic id" });
-        if (!req.file) return res.status(400).json({ error: "No audio uploaded" });
-        // Storage uses an .mp3 filename and learner UI assumes audio/mpeg, so
-        // we only accept true MP3 uploads here. Other formats would play
-        // unreliably without server-side transcoding.
-        const mime = String(req.file.mimetype || "").toLowerCase();
-        const isMp3 = mime === "audio/mpeg" || mime === "audio/mp3" ||
-          /\.mp3$/i.test(req.file.originalname || "");
-        if (!isMp3) {
-          return res.status(415).json({ error: "Only MP3 uploads are supported" });
-        }
-        const lang: "en" | "af" = req.body?.language === "af" ? "af" : "en";
-
-        const [topic] = await db.select().from(topics).where(eq(topics.id, topicId)).limit(1);
-        if (!topic) return res.status(404).json({ error: "Topic not found" });
-
-        const sourceHash = createHash("sha256").update(req.file.buffer).digest("hex").slice(0, 16);
-        const filename = `topic-${topicId}-${lang}-upload-${sourceHash}.mp3`;
-        const filePath = join(TOPICS_AUDIO_DIR, filename);
-        const audioUrl = `/api/audio/topics/${filename}`;
-        await fsWriteFile(filePath, req.file.buffer);
-
-        const now = new Date();
-        const updateFields = lang === "af"
-          ? {
-              audioUrlAf: audioUrl,
-              audioGeneratedAt: now,
-              audioGeneratedAtAf: now,
-              audioSourceHashAf: sourceHash,
-              audioPinnedAf: true,
-              audioOriginAf: "upload",
-            }
-          : {
-              audioUrl: audioUrl,
-              audioGeneratedAt: now,
-              audioGeneratedAtEn: now,
-              audioSourceHashEn: sourceHash,
-              audioPinnedEn: true,
-              audioOriginEn: "upload",
-            };
-        await db.update(topics).set(updateFields).where(eq(topics.id, topicId));
-
-        res.json({ ok: true, audioUrl, language: lang, sourceHash, pinned: true });
-      } catch (err: any) {
-        console.error("Error uploading topic audio:", err);
-        res.status(err?.status || 500).json({ error: err?.message || "Failed to upload audio" });
-      }
-    },
-  );
-
-  // POST /api/admin/topics/:id/unpin-audio — clear the pin so the nightly
-  // batch script can manage this language's audio again. Does NOT delete the
-  // current MP3 — the next batch run will overwrite it from the source text.
-  app.post(
-    "/api/admin/topics/:id/unpin-audio",
-    isAuthenticated,
-    requireRole("admin"),
-    async (req: any, res) => {
-      try {
-        const topicId = parseInt(req.params.id, 10);
-        if (!Number.isFinite(topicId)) return res.status(400).json({ error: "Invalid topic id" });
-        const lang: "en" | "af" = req.body?.language === "af" ? "af" : "en";
-        const updateFields = lang === "af"
-          ? { audioPinnedAf: false }
-          : { audioPinnedEn: false };
-        await db.update(topics).set(updateFields).where(eq(topics.id, topicId));
-        res.json({ ok: true, language: lang, pinned: false });
-      } catch (err: any) {
-        console.error("Error unpinning topic audio:", err);
-        res.status(500).json({ error: err?.message || "Failed to unpin audio" });
-      }
-    },
-  );
-
   // ============================================================
   // Task #428 — Per-Topic Content Layer (Notes, Flashcards, Literature)
   // ============================================================
@@ -19415,500 +18917,6 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
     } catch (error: any) {
       console.error("Error fetching subject topic flashcards:", error);
       res.status(500).json({ error: "Failed to fetch topic flashcards" });
-    }
-  });
-
-  // GET /api/topics/:id/audio — current audio URL (auto-generates on first request if missing)
-  app.get("/api/topics/:id/audio", isAuthenticated, async (req: any, res) => {
-    try {
-      const topicId = parseInt(req.params.id);
-      if (!Number.isFinite(topicId)) return res.status(400).json({ error: "Invalid topic id" });
-      const lang: "en" | "af" = req.query.lang === "af" ? "af" : "en";
-
-      const [topic] = await db.select().from(topics).where(eq(topics.id, topicId)).limit(1);
-      if (!topic) return res.status(404).json({ error: "Topic not found" });
-
-      let url = lang === "af" ? topic.audioUrlAf : topic.audioUrl;
-
-      if (!url) {
-        const [onDemandNote] = await db.select({ summary: topicNotes.summary })
-          .from(topicNotes)
-          .where(and(eq(topicNotes.topicId, topicId), eq(topicNotes.language, lang)))
-          .limit(1);
-        const text = buildTopicNarrationText(topic, lang, onDemandNote?.summary || null);
-        const sourceHash = createHash("sha256").update(`${lang}:${text}`).digest("hex").slice(0, 16);
-        const filename = `topic-${topicId}-${lang}-${sourceHash}.mp3`;
-        const filePath = join(TOPICS_AUDIO_DIR, filename);
-        const newUrl = `/api/audio/topics/${filename}`;
-
-        if (!existsSync(filePath)) {
-          const speech = await callOpenAIWithRetry(() => openai.audio.speech.create({
-            model: "tts-1",
-            voice: "alloy",
-            input: text,
-            response_format: "mp3",
-          }));
-          const buf = Buffer.from(await speech.arrayBuffer());
-          await fsWriteFile(filePath, buf);
-        }
-        const now = new Date();
-        const updateFields = lang === "af"
-          ? {
-              audioUrlAf: newUrl,
-              audioGeneratedAt: now,
-              audioGeneratedAtAf: now,
-              audioSourceHashAf: sourceHash,
-              audioOriginAf: "tts",
-            }
-          : {
-              audioUrl: newUrl,
-              audioGeneratedAt: now,
-              audioGeneratedAtEn: now,
-              audioSourceHashEn: sourceHash,
-              audioOriginEn: "tts",
-            };
-        await db.update(topics).set(updateFields).where(eq(topics.id, topicId));
-        url = newUrl;
-      }
-
-      res.json({ topicId, language: lang, audioUrl: normaliseTopicAudioUrl(url) });
-    } catch (err: any) {
-      console.error("Error fetching topic audio:", err);
-      res.status(err?.status || 500).json({ error: err?.message || "Failed to fetch audio" });
-    }
-  });
-
-  // ----- Voice Notes -----
-  // Background Whisper transcription — fire-and-forget after upload.
-  async function transcribeVoiceNoteInBackground(noteId: number, filePath: string) {
-    try {
-      await db.update(voiceNotes)
-        .set({ transcriptStatus: "processing", transcriptError: null })
-        .where(eq(voiceNotes.id, noteId));
-
-      const { createReadStream } = await import("fs");
-      const fileStream = createReadStream(filePath);
-      const result: TranscriptionVerbose = await callOpenAIWithRetry(() =>
-        openai.audio.transcriptions.create({
-          model: "whisper-1",
-          file: fileStream,
-          response_format: "verbose_json",
-        }),
-      );
-
-      const transcript = (result.text ?? "").toString().trim();
-      const language = result.language ?? null;
-
-      await db.update(voiceNotes)
-        .set({
-          transcript: transcript || null,
-          transcriptLang: language,
-          transcriptStatus: transcript ? "ready" : "empty",
-          transcriptError: null,
-          transcribedAt: new Date(),
-        })
-        .where(eq(voiceNotes.id, noteId));
-    } catch (err: any) {
-      console.error("Voice note transcription failed:", noteId, err?.message || err);
-      try {
-        await db.update(voiceNotes)
-          .set({
-            transcriptStatus: "failed",
-            transcriptError: (err?.message || "transcription failed").toString().slice(0, 500),
-          })
-          .where(eq(voiceNotes.id, noteId));
-      } catch {}
-    }
-  }
-
-  const voiceUpload = multer({
-    storage: multer.memoryStorage(),
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB cap (~2 min webm audio)
-    fileFilter: (_req, file, cb) => {
-      const ok = /^audio\/(webm|ogg|mpeg|mp4|wav|aac|x-m4a)/i.test(file.mimetype);
-      if (ok) {
-        cb(null, true);
-      } else {
-        cb(new Error("Unsupported audio format"));
-      }
-    },
-  });
-
-  // POST /api/topics/:id/voice-notes — upload a learner's recording for a topic
-  app.post("/api/topics/:id/voice-notes", isAuthenticated, voiceUpload.single("audio"), async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const topicId = parseInt(req.params.id);
-      if (!Number.isFinite(topicId)) return res.status(400).json({ error: "Invalid topic id" });
-      if (!req.file) return res.status(400).json({ error: "No audio uploaded" });
-
-      const durationSeconds = Math.max(0, Math.min(120, parseInt(req.body?.durationSeconds || "0", 10) || 0));
-      if (durationSeconds > 120) {
-        return res.status(400).json({ error: "Voice notes must be 2 minutes or less" });
-      }
-
-      const [topic] = await db.select().from(topics).where(eq(topics.id, topicId)).limit(1);
-      if (!topic) return res.status(404).json({ error: "Topic not found" });
-
-      const ext = (req.file.mimetype.includes("webm") ? "webm"
-        : req.file.mimetype.includes("ogg") ? "ogg"
-        : req.file.mimetype.includes("mp4") ? "m4a"
-        : req.file.mimetype.includes("mpeg") ? "mp3"
-        : req.file.mimetype.includes("wav") ? "wav" : "webm");
-      const filename = `note-${topicId}-${Date.now()}.${ext}`;
-
-      // Insert DB row first so we have an ID for the Supabase object path
-      const title = (req.body?.title || "").toString().slice(0, 120) || null;
-      const [row] = await db.insert(voiceNotes).values({
-        userId,
-        topicId,
-        subjectId: topic.subjectId,
-        audioUrl: `voice-notes/${userId}/${filename}`, // placeholder updated below
-        durationSeconds,
-        sizeBytes: req.file.size || req.file.buffer.length,
-        title,
-        transcriptStatus: "pending",
-      }).returning();
-
-      // Try Supabase Storage first; fall back to disk
-      const supabaseUrl = await uploadVoiceNote({
-        buffer: req.file.buffer,
-        userId,
-        noteId: row.id,
-        ext,
-        mimetype: req.file.mimetype,
-      });
-
-      let filePath: string | null = null;
-      let storedAudioUrl: string;
-      if (supabaseUrl) {
-        storedAudioUrl = supabaseUrl;
-        await db.update(voiceNotes).set({ audioUrl: supabaseUrl }).where(eq(voiceNotes.id, row.id));
-      } else {
-        // Disk fallback
-        const userDir = join(VOICE_NOTES_DIR, userId);
-        await fsMkdir(userDir, { recursive: true }).catch(() => {});
-        filePath = join(userDir, filename);
-        await fsWriteFile(filePath, req.file.buffer);
-        storedAudioUrl = `voice-notes/${userId}/${filename}`;
-      }
-
-      res.status(201).json({ ...row, audioUrl: `/api/voice-notes/${row.id}/file` });
-
-      // Kick off Whisper transcription in the background — never blocks the upload response.
-      if (filePath) void transcribeVoiceNoteInBackground(row.id, filePath);
-    } catch (err: any) {
-      console.error("Error saving voice note:", err);
-      res.status(err?.status || 500).json({ error: err?.message || "Failed to save voice note" });
-    }
-  });
-
-  // GET /api/topics/:id/voice-notes — list current user's notes for a topic
-  app.get("/api/topics/:id/voice-notes", isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const topicId = parseInt(req.params.id);
-      if (!Number.isFinite(topicId)) return res.status(400).json({ error: "Invalid topic id" });
-      const rows = await db.select().from(voiceNotes)
-        .where(and(eq(voiceNotes.userId, userId), eq(voiceNotes.topicId, topicId)))
-        .orderBy(desc(voiceNotes.createdAt));
-      res.json({ voiceNotes: rows.map(r => ({ ...r, audioUrl: `/api/voice-notes/${r.id}/file` })) });
-    } catch (err) {
-      console.error("Error listing voice notes:", err);
-      res.status(500).json({ error: "Failed to list voice notes" });
-    }
-  });
-
-  // GET /api/voice-notes — all voice notes for the current user (My Notes)
-  app.get("/api/voice-notes", isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const rows = await db
-        .select({
-          id: voiceNotes.id,
-          topicId: voiceNotes.topicId,
-          subjectId: voiceNotes.subjectId,
-          audioUrl: voiceNotes.audioUrl,
-          durationSeconds: voiceNotes.durationSeconds,
-          sizeBytes: voiceNotes.sizeBytes,
-          title: voiceNotes.title,
-          transcript: voiceNotes.transcript,
-          transcriptLang: voiceNotes.transcriptLang,
-          transcriptStatus: voiceNotes.transcriptStatus,
-          transcribedAt: voiceNotes.transcribedAt,
-          createdAt: voiceNotes.createdAt,
-          topicName: topics.name,
-          topicNameAf: topics.nameAfrikaans,
-          subjectName: subjects.name,
-          subjectNameAf: subjects.nameAfrikaans,
-        })
-        .from(voiceNotes)
-        .leftJoin(topics, eq(voiceNotes.topicId, topics.id))
-        .leftJoin(subjects, eq(voiceNotes.subjectId, subjects.id))
-        .where(eq(voiceNotes.userId, userId))
-        .orderBy(desc(voiceNotes.createdAt));
-      res.json({ voiceNotes: rows.map(r => ({ ...r, audioUrl: `/api/voice-notes/${r.id}/file` })) });
-    } catch (err) {
-      console.error("Error listing all voice notes:", err);
-      res.status(500).json({ error: "Failed to list voice notes" });
-    }
-  });
-
-  // GET /api/voice-notes/:id/file — authenticated stream of a private voice note
-  app.get("/api/voice-notes/:id/file", isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const id = parseInt(req.params.id);
-      if (!Number.isFinite(id)) return res.status(400).json({ error: "Invalid id" });
-
-      const [row] = await db.select().from(voiceNotes)
-        .where(and(eq(voiceNotes.id, id), eq(voiceNotes.userId, userId)))
-        .limit(1);
-      if (!row) return res.status(404).json({ error: "Voice note not found" });
-
-      // If stored in Supabase Storage, redirect to signed URL
-      if (row.audioUrl.startsWith("supabase://voice-notes/")) {
-        const signedUrl = await getVoiceNoteSignedUrl(row.audioUrl);
-        if (!signedUrl) return res.status(404).json({ error: "Could not generate audio URL" });
-        return res.redirect(302, signedUrl);
-      }
-
-      // Disk fallback
-      const rel = row.audioUrl.replace(/^\/+/, "");
-      const fullPath = rel.startsWith("uploads/")
-        ? join(process.cwd(), rel)
-        : join(VOICE_NOTES_DIR, "..", rel);
-      if (!existsSync(fullPath)) return res.status(404).json({ error: "File missing" });
-
-      const ext = fullPath.split(".").pop()?.toLowerCase();
-      const mime = ext === "mp3" ? "audio/mpeg"
-        : ext === "ogg" ? "audio/ogg"
-        : ext === "wav" ? "audio/wav"
-        : ext === "m4a" ? "audio/mp4"
-        : "audio/webm";
-      res.setHeader("Content-Type", mime);
-      res.setHeader("Cache-Control", "private, no-store");
-      const { createReadStream } = await import("fs");
-      createReadStream(fullPath).pipe(res);
-    } catch (err) {
-      console.error("Error streaming voice note:", err);
-      res.status(500).json({ error: "Failed to stream voice note" });
-    }
-  });
-
-  // DELETE /api/voice-notes/:id — remove a voice note (file + row)
-  app.delete("/api/voice-notes/:id", isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const id = parseInt(req.params.id);
-      if (!Number.isFinite(id)) return res.status(400).json({ error: "Invalid id" });
-
-      const [row] = await db.select().from(voiceNotes)
-        .where(and(eq(voiceNotes.id, id), eq(voiceNotes.userId, userId)))
-        .limit(1);
-      if (!row) return res.status(404).json({ error: "Voice note not found" });
-
-      // Best-effort file removal — never block deletion if missing
-      try {
-        const rel = row.audioUrl.replace(/^\/+/, "");
-        // Voice notes always live under uploads/audio/<diskRelPath>
-        const fullPath = rel.startsWith("uploads/")
-          ? join(process.cwd(), rel)
-          : join(VOICE_NOTES_DIR, "..", rel);
-        if (existsSync(fullPath)) await fsUnlink(fullPath);
-      } catch (e) {
-        console.warn("Voice note file removal failed (non-fatal):", e);
-      }
-
-      await db.delete(voiceNotes).where(eq(voiceNotes.id, id));
-      res.json({ ok: true });
-    } catch (err) {
-      console.error("Error deleting voice note:", err);
-      res.status(500).json({ error: "Failed to delete voice note" });
-    }
-  });
-
-  // ----- Self-recorded Lesson Narrations (Audio Lesson Player) -----
-  // Per (user, topic, language) — learner reads the notes aloud and the audio
-  // lesson player plays their own recording back.
-  const LESSON_REC_DIR = join(process.cwd(), "uploads", "audio", "lesson-recordings");
-  await fsMkdir(LESSON_REC_DIR, { recursive: true }).catch(() => {});
-
-  // GET /api/topics/:id/lesson-recording?lang=en|af — fetch this learner's
-  // recording metadata for a topic (404 if none). The streamable URL is
-  // /api/lesson-recordings/:id/file.
-  app.get("/api/topics/:id/lesson-recording", isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const topicId = parseInt(req.params.id);
-      if (!Number.isFinite(topicId)) return res.status(400).json({ error: "Invalid topic id" });
-      const lang: "en" | "af" = req.query.lang === "af" ? "af" : "en";
-
-      const [row] = await db.select().from(topicLessonRecordings)
-        .where(and(
-          eq(topicLessonRecordings.userId, userId),
-          eq(topicLessonRecordings.topicId, topicId),
-          eq(topicLessonRecordings.language, lang),
-        ))
-        .limit(1);
-      if (!row) return res.status(404).json({ error: "No recording" });
-      res.json({
-        id: row.id,
-        topicId: row.topicId,
-        language: row.language,
-        durationSeconds: row.durationSeconds,
-        sizeBytes: row.sizeBytes,
-        createdAt: row.createdAt,
-        updatedAt: row.updatedAt,
-        audioUrl: `/api/lesson-recordings/${row.id}/file`,
-      });
-    } catch (err) {
-      console.error("Error fetching lesson recording:", err);
-      res.status(500).json({ error: "Failed to fetch lesson recording" });
-    }
-  });
-
-  // POST /api/topics/:id/lesson-recording — upload (or replace) the learner's
-  // narration. Body: multipart with `audio` file + `language` + `durationSeconds`.
-  app.post("/api/topics/:id/lesson-recording", isAuthenticated, voiceUpload.single("audio"), async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const topicId = parseInt(req.params.id);
-      if (!Number.isFinite(topicId)) return res.status(400).json({ error: "Invalid topic id" });
-      if (!req.file) return res.status(400).json({ error: "No audio uploaded" });
-
-      const lang: "en" | "af" = req.body?.language === "af" ? "af" : "en";
-      const durationSeconds = Math.max(0, Math.min(900, parseInt(req.body?.durationSeconds || "0", 10) || 0));
-
-      const [topic] = await db.select().from(topics).where(eq(topics.id, topicId)).limit(1);
-      if (!topic) return res.status(404).json({ error: "Topic not found" });
-
-      const userDir = join(LESSON_REC_DIR, userId);
-      await fsMkdir(userDir, { recursive: true }).catch(() => {});
-
-      const ext = (req.file.mimetype.includes("webm") ? "webm"
-        : req.file.mimetype.includes("ogg") ? "ogg"
-        : req.file.mimetype.includes("mp4") ? "m4a"
-        : req.file.mimetype.includes("mpeg") ? "mp3"
-        : req.file.mimetype.includes("wav") ? "wav" : "webm");
-      const filename = `lesson-${topicId}-${lang}-${Date.now()}.${ext}`;
-      const filePath = join(userDir, filename);
-      await fsWriteFile(filePath, req.file.buffer);
-      const diskRelPath = `lesson-recordings/${userId}/${filename}`;
-
-      // Remove the prior recording (file + row) for this (user, topic, lang)
-      const [prior] = await db.select().from(topicLessonRecordings)
-        .where(and(
-          eq(topicLessonRecordings.userId, userId),
-          eq(topicLessonRecordings.topicId, topicId),
-          eq(topicLessonRecordings.language, lang),
-        ))
-        .limit(1);
-      if (prior) {
-        try {
-          const priorRel = prior.audioPath.replace(/^\/+/, "");
-          const priorFull = priorRel.startsWith("uploads/")
-            ? join(process.cwd(), priorRel)
-            : join(LESSON_REC_DIR, "..", priorRel);
-          if (existsSync(priorFull)) await fsUnlink(priorFull);
-        } catch (e) {
-          console.warn("Prior lesson recording removal failed (non-fatal):", e);
-        }
-        await db.delete(topicLessonRecordings).where(eq(topicLessonRecordings.id, prior.id));
-      }
-
-      const [row] = await db.insert(topicLessonRecordings).values({
-        userId,
-        topicId,
-        language: lang,
-        audioPath: diskRelPath,
-        durationSeconds,
-        sizeBytes: req.file.size || req.file.buffer.length,
-        mimeType: req.file.mimetype || null,
-      }).returning();
-
-      res.status(201).json({
-        id: row.id,
-        topicId: row.topicId,
-        language: row.language,
-        durationSeconds: row.durationSeconds,
-        sizeBytes: row.sizeBytes,
-        createdAt: row.createdAt,
-        updatedAt: row.updatedAt,
-        audioUrl: `/api/lesson-recordings/${row.id}/file`,
-      });
-    } catch (err: any) {
-      console.error("Error saving lesson recording:", err);
-      res.status(err?.status || 500).json({ error: err?.message || "Failed to save lesson recording" });
-    }
-  });
-
-  // DELETE /api/topics/:id/lesson-recording?lang=en|af — remove the learner's
-  // recording. The player then shows the "no recording yet" prompt.
-  app.delete("/api/topics/:id/lesson-recording", isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const topicId = parseInt(req.params.id);
-      if (!Number.isFinite(topicId)) return res.status(400).json({ error: "Invalid topic id" });
-      const lang: "en" | "af" = req.query.lang === "af" ? "af" : "en";
-
-      const [row] = await db.select().from(topicLessonRecordings)
-        .where(and(
-          eq(topicLessonRecordings.userId, userId),
-          eq(topicLessonRecordings.topicId, topicId),
-          eq(topicLessonRecordings.language, lang),
-        ))
-        .limit(1);
-      if (!row) return res.json({ ok: true });
-
-      try {
-        const rel = row.audioPath.replace(/^\/+/, "");
-        const fullPath = rel.startsWith("uploads/")
-          ? join(process.cwd(), rel)
-          : join(LESSON_REC_DIR, "..", rel);
-        if (existsSync(fullPath)) await fsUnlink(fullPath);
-      } catch (e) {
-        console.warn("Lesson recording file removal failed (non-fatal):", e);
-      }
-      await db.delete(topicLessonRecordings).where(eq(topicLessonRecordings.id, row.id));
-      res.json({ ok: true });
-    } catch (err) {
-      console.error("Error deleting lesson recording:", err);
-      res.status(500).json({ error: "Failed to delete lesson recording" });
-    }
-  });
-
-  // GET /api/lesson-recordings/:id/file — authenticated stream of the owner's recording
-  app.get("/api/lesson-recordings/:id/file", isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const id = parseInt(req.params.id);
-      if (!Number.isFinite(id)) return res.status(400).json({ error: "Invalid id" });
-
-      const [row] = await db.select().from(topicLessonRecordings)
-        .where(and(eq(topicLessonRecordings.id, id), eq(topicLessonRecordings.userId, userId)))
-        .limit(1);
-      if (!row) return res.status(404).json({ error: "Recording not found" });
-
-      const rel = row.audioPath.replace(/^\/+/, "");
-      const fullPath = rel.startsWith("uploads/")
-        ? join(process.cwd(), rel)
-        : join(LESSON_REC_DIR, "..", rel);
-      if (!existsSync(fullPath)) return res.status(404).json({ error: "File missing" });
-
-      const ext = fullPath.split(".").pop()?.toLowerCase();
-      const mime = ext === "mp3" ? "audio/mpeg"
-        : ext === "ogg" ? "audio/ogg"
-        : ext === "wav" ? "audio/wav"
-        : ext === "m4a" ? "audio/mp4"
-        : "audio/webm";
-      res.setHeader("Content-Type", mime);
-      res.setHeader("Cache-Control", "private, no-store");
-      const { createReadStream } = await import("fs");
-      createReadStream(fullPath).pipe(res);
-    } catch (err) {
-      console.error("Error streaming lesson recording:", err);
-      res.status(500).json({ error: "Failed to stream lesson recording" });
     }
   });
 

@@ -44,7 +44,6 @@ const marker = (color: string, size = 16): CSSProperties => ({
   color,
   transform: "rotate(-2deg)",
   display: "inline-block",
-  textShadow: `0 0 10px ${halo(color, 0.45)}`,
 });
 
 const rainbowText: CSSProperties = {
@@ -59,7 +58,6 @@ const cardStyle = (accent?: string, radius = 22): CSSProperties => ({
   background: "rgba(255,255,255,.03)",
   border: accent ? `1.5px solid ${accent}` : "1px solid rgba(255,255,255,.08)",
   borderRadius: radius,
-  ...(accent ? { boxShadow: `0 0 22px ${halo(accent, 0.22)}` } : {}),
 });
 
 const primaryBtnStyle: CSSProperties = {
@@ -327,7 +325,6 @@ export default function RevisionPage() {
                   style={{
                     width: `${((currentIdx + 1) / totalQuestions) * 100}%`,
                     background: RAINBOW_GRADIENT,
-                    boxShadow: "0 0 10px rgba(159,245,232,.5)",
                   }}
                 />
               </div>
@@ -364,9 +361,9 @@ export default function RevisionPage() {
                     const showCorrect = submitted && isCorrect;
 
                     const optionStyle: CSSProperties = showCorrect
-                      ? { background: halo("#94F7C5", 0.1), border: `1.5px solid ${halo("#94F7C5", 0.6)}`, boxShadow: `0 0 14px ${halo("#94F7C5", 0.2)}` }
+                      ? { background: halo("#94F7C5", 0.1), border: `1.5px solid ${halo("#94F7C5", 0.6)}` }
                       : wasWrong
-                      ? { background: halo("#FF8DA1", 0.1), border: `1.5px solid ${halo("#FF8DA1", 0.6)}`, boxShadow: `0 0 14px ${halo("#FF8DA1", 0.2)}` }
+                      ? { background: halo("#FF8DA1", 0.1), border: `1.5px solid ${halo("#FF8DA1", 0.6)}` }
                       : selected
                       ? { background: halo("#9FF5E8", 0.08), border: "1.5px solid #9FF5E8" }
                       : { background: "rgba(255,255,255,.03)", border: "1.5px solid rgba(255,255,255,.08)" };
@@ -451,14 +448,12 @@ export default function RevisionPage() {
                   <button
                     onClick={handleNext}
                     className="w-full py-3 text-sm transition-all"
-                    style={{ ...primaryBtnStyle, boxShadow: "0 0 20px rgba(159,245,232,.35)" }}
+                    style={primaryBtnStyle}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = "translateY(-2px)";
-                      e.currentTarget.style.boxShadow = "0 0 28px rgba(159,245,232,.5)";
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = "none";
-                      e.currentTarget.style.boxShadow = "0 0 20px rgba(159,245,232,.35)";
                     }}
                   >
                     {currentIdx < totalQuestions - 1
@@ -505,14 +500,12 @@ export default function RevisionPage() {
               <Link href={`/subject/${subjectId}`}>
                 <button
                   className="px-6 py-2.5 text-sm transition-all"
-                  style={{ ...primaryBtnStyle, boxShadow: "0 0 20px rgba(159,245,232,.35)" }}
+                  style={primaryBtnStyle}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = "translateY(-2px)";
-                    e.currentTarget.style.boxShadow = "0 0 28px rgba(159,245,232,.5)";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = "none";
-                    e.currentTarget.style.boxShadow = "0 0 20px rgba(159,245,232,.35)";
                   }}
                 >
                   {isAf ? "Terug na Vak" : "Back to Subject"}
@@ -531,7 +524,6 @@ export default function RevisionPage() {
                 style={{
                   background: "rgba(5,5,8,.6)",
                   border: "2px solid #FFE29A",
-                  boxShadow: `0 0 24px ${halo("#FFE29A", 0.35)}`,
                   animation: "bt-float 3s ease-in-out infinite",
                 }}
               >
@@ -549,7 +541,6 @@ export default function RevisionPage() {
                   style={{
                     width: `${scorePct}%`,
                     background: RAINBOW_GRADIENT,
-                    boxShadow: "0 0 12px rgba(159,245,232,.5)",
                   }}
                 />
               </div>
@@ -577,14 +568,12 @@ export default function RevisionPage() {
                 <Link href={`/subject/${subjectId}`}>
                   <button
                     className="inline-flex items-center px-5 py-2.5 text-sm transition-all"
-                    style={{ ...primaryBtnStyle, boxShadow: "0 0 20px rgba(159,245,232,.35)" }}
+                    style={primaryBtnStyle}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = "translateY(-2px)";
-                      e.currentTarget.style.boxShadow = "0 0 28px rgba(159,245,232,.5)";
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = "none";
-                      e.currentTarget.style.boxShadow = "0 0 20px rgba(159,245,232,.35)";
                     }}
                   >
                     <BookOpen className="w-4 h-4 mr-2" />

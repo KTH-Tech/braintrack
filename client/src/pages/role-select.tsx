@@ -177,7 +177,6 @@ export default function RoleSelectPage() {
                 borderRadius: 18, padding: "26px 20px", textAlign: "center",
                 cursor: roleMutation.isPending ? "default" : "pointer",
                 color: "#fff", fontFamily: "'Poppins',sans-serif",
-                boxShadow: isSel ? `0 0 30px ${s.soft}.4)` : `0 0 14px ${s.soft}.18)`,
                 opacity: roleMutation.isPending ? 0.6 : 1,
               }}
             >
@@ -186,7 +185,6 @@ export default function RoleSelectPage() {
                   width: 52, height: 52, margin: "0 auto 12px", borderRadius: 14,
                   background: s.chipBg, display: "flex", alignItems: "center",
                   justifyContent: "center", fontSize: 24,
-                  boxShadow: `0 0 22px ${s.soft}.25)`,
                 }}
               >
                 {s.emoji}
@@ -217,7 +215,6 @@ export default function RoleSelectPage() {
           cursor: !selected || roleMutation.isPending ? "default" : "pointer",
           opacity: !selected || roleMutation.isPending ? 0.45 : 1,
           display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-          boxShadow: "0 0 16px rgba(255,183,229,.28)",
         }}
       >
         {roleMutation.isPending ? (

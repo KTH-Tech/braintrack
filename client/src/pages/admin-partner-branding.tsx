@@ -364,7 +364,7 @@ export default function AdminPartnerBrandingPage() {
                     disabled={saveBrandingMutation.isPending || !isBrandingDirty}
                     data-testid="btn-save-branding"
                     className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-black text-sm uppercase tracking-wider transition disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{ background: "#C5B3FF", color: "#000", boxShadow: "0 0 20px rgba(197,179,255,0.5)" }}
+                    style={{ background: "#C5B3FF", color: "#000" }}
                   >
                     {saveBrandingMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
                     {saveBrandingMutation.isPending ? (isAf ? "Stoor…" : "Saving…") : (isAf ? "Stoor Veranderinge" : "Save Changes")}
@@ -388,7 +388,7 @@ export default function AdminPartnerBrandingPage() {
 
                   <div className="rounded-xl overflow-hidden" style={{ background: "#1e1b4b" }} data-testid="report-header-preview">
                     <div className="px-5 py-4">
-                      <div className="text-2xl font-black text-white" style={{ fontFamily: "serif" }}>BrainTrack™</div>
+                      <div className="text-2xl font-black text-white" style={{ fontFamily: "'Poppins', system-ui, sans-serif" }}>BrainTrack™</div>
                       <div className="text-xs mt-0.5" style={{ color: "#c4b5fd" }}>{isAf ? "Vorderingsverslag" : "Progress Report"}</div>
                       <div className="mt-2 text-[11px] text-white">{isAf ? "Leerder:" : "Learner:"} {isAf ? "U Kind" : "Your Child"}</div>
                       {(partnerName || hasAnyLogo) && (
@@ -568,7 +568,7 @@ export default function AdminPartnerBrandingPage() {
                     disabled={saveScheduleMutation.isPending}
                     data-testid="btn-save-schedule"
                     className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-black text-sm uppercase tracking-wider transition disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{ background: "#FFE29A", color: "#000", boxShadow: "0 0 20px rgba(255,226,154,0.4)" }}
+                    style={{ background: "#FFE29A", color: "#000" }}
                   >
                     {saveScheduleMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
                     {saveScheduleMutation.isPending ? (isAf ? "Stoor…" : "Saving…") : (isAf ? "Stoor Skedule" : "Save Schedule")}
@@ -625,7 +625,7 @@ export default function AdminPartnerBrandingPage() {
                     disabled={sendNowMutation.isPending}
                     data-testid="btn-send-now"
                     className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-black text-sm uppercase tracking-wider transition disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{ background: "rgba(148,247,197,0.15)", color: "#94F7C5", border: "1.5px solid #94F7C5", boxShadow: "0 0 16px rgba(148,247,197,0.25)" }}
+                    style={{ background: "rgba(148,247,197,0.15)", color: "#94F7C5", border: "1.5px solid #94F7C5" }}
                   >
                     {sendNowMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                     {sendNowMutation.isPending ? (isAf ? "Stuur tans…" : "Sending…") : (isAf ? "Stuur Nou aan Alle Ouers" : "Send Now to All Parents")}

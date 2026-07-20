@@ -4,7 +4,6 @@ import {
   BarChart3,
   Package,
   CreditCard,
-  Headphones,
   Handshake,
   FileEdit,
   Mail,
@@ -25,7 +24,6 @@ export type AdminNavKey =
   | "products"
   | "billing"
   | "emails"
-  | "topic-audio"
   | "partner-branding"
   | "content-editor"
   | "content-studio"
@@ -70,7 +68,6 @@ const NAV_GROUPS: NavGroup[] = [
       { key: "content-editor", href: "/learn/admin/content", labelEn: "Content Editor", labelAf: "Inhoudsredigeerder", Icon: FileEdit },
       { key: "content-studio", href: "/admin/content-studio", labelEn: "Content Studio", labelAf: "Inhoudstudio", Icon: Database },
       { key: "dbe-portal", href: "/learn/admin/dbe-portal", labelEn: "DBE Portal", labelAf: "DBE Portaal", Icon: FileText },
-      { key: "topic-audio", href: "/learn/admin/topic-audio", labelEn: "Topic Audio", labelAf: "Onderwerp Klank", Icon: Headphones },
     ],
   },
   {

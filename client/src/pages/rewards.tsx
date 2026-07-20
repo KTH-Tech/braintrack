@@ -282,7 +282,7 @@ export default function RewardsPage() {
             </button>
             <span
               className="hidden sm:inline truncate"
-              style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 10px rgba(159,245,232,.45)" }}
+              style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}
             >
               {t.pageTitle}
             </span>
@@ -328,12 +328,12 @@ export default function RewardsPage() {
           <div className="relative flex items-center gap-4">
             <div
               className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0"
-              style={{ background: "rgba(255,226,154,.15)", border: "1.5px solid #FFE29A", boxShadow: "0 0 16px rgba(255,226,154,.35)" }}
+              style={{ background: "rgba(255,226,154,.15)", border: "1.5px solid #FFE29A" }}
             >
               <Trophy className="w-7 h-7" style={{ color: "#FFE29A" }} />
             </div>
             <div className="flex-1 min-w-0">
-              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFE29A", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 10px rgba(255,226,154,.45)" }}>
+              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFE29A", transform: "rotate(-2deg)", display: "inline-block" }}>
                 {isAf ? "verdien dit, dra dit!" : "earn it, flex it!"} 🏆
               </span>
               <div
@@ -373,7 +373,7 @@ export default function RewardsPage() {
                   <div className="flex items-end gap-4 mb-4">
                     <span
                       className="text-5xl tabular-nums"
-                      style={{ color: "#FFE29A", textShadow: "0 0 20px rgba(255,226,154,0.6)", fontWeight: 900 }}
+                      style={{ color: "#FFE29A", fontWeight: 900 }}
                       data-testid="coin-balance"
                     >
                       {coins?.balance ?? 0}
@@ -415,7 +415,7 @@ export default function RewardsPage() {
                 <div className="p-5 pt-3">
                   <div
                     className="text-5xl font-black tabular-nums mb-1"
-                    style={{ color: "#FFE29A", textShadow: "0 0 20px rgba(255,226,154,0.5)" }}
+                    style={{ color: "#FFE29A" }}
                     data-testid="streak-count"
                   >
                     {streak}
@@ -577,7 +577,7 @@ export default function RewardsPage() {
                       >
                         <code
                           className="flex-1 text-base sm:text-lg font-black font-mono tracking-wide"
-                          style={{ color: "#9FD8FF", textShadow: "0 0 12px rgba(159,216,255,0.5)" }}
+                          style={{ color: "#9FD8FF" }}
                           data-testid="referral-code"
                         >
                           {referralCode?.code ?? referral?.code ?? "—"}
@@ -715,7 +715,7 @@ export default function RewardsPage() {
                           >
                             <span
                               className="font-black text-sm tabular-nums min-w-[1.75rem] text-center"
-                              style={{ color: medal ?? (isMe ? "#9FD8FF" : "#FFFFFF"), textShadow: medal ? `0 0 10px ${medal}` : undefined }}
+                              style={{ color: medal ?? (isMe ? "#9FD8FF" : "#FFFFFF") }}
                             >
                               {row.rank}
                             </span>
@@ -815,7 +815,6 @@ function CosmicCard({
       style={{
         background: "rgba(255,255,255,0.03)",
         border: `1px solid ${hex}44`,
-        boxShadow: `0 0 18px ${halo}0.14)`,
       }}
       data-testid={testId}
     >
@@ -845,7 +844,7 @@ function CosmicCardTitle({
       <Icon className="w-4 h-4" style={{ color: hex }} />
       <span
         className="flex-1"
-        style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: hex, transform: "rotate(-1.5deg)", display: "inline-block", textShadow: `0 0 10px ${halo}0.4)` }}
+        style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: hex, transform: "rotate(-1.5deg)", display: "inline-block" }}
       >
         {children}
       </span>

@@ -229,7 +229,7 @@ export default function SignInPage() {
               fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 16, color: "#050508",
               background: CTA_GRADIENT, backgroundSize: "200% 100%", animation: "bt-rainbow 5s linear infinite",
               border: "none", borderRadius: 12, padding: "15px 20px", cursor: "pointer",
-              boxShadow: "0 0 16px rgba(255,183,229,.28)", marginTop: 4,
+              marginTop: 4,
             }}>
             {submit.isPending ? (isSignIn ? t.signingIn : t.creating) : (isSignIn ? t.signIn : t.signUp)}
           </button>

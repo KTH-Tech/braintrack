@@ -3123,7 +3123,7 @@ html.light .rainbow-wash-full {
 @media (prefers-reduced-motion: reduce) {
   [style*="bt-rainbow"], [style*="bt-marquee"], [style*="bt-float"],
   [style*="bt-glowpulse"], [style*="bt-wiggle"], [style*="bt-bob"],
-  [style*="bt-fadeup"], [style*="bt-flow"],
+  [style*="bt-fadeup"], [style*="bt-flow"], [style*="bt-confetti"],
   .bt-wordmark, .bt-btn, .btr-launcher {
     animation: none !important;
   }
@@ -3343,9 +3343,31 @@ html.light .rainbow-wash-full {
 @keyframes bt-float    { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
 @keyframes bt-glowpulse{ 0%,100%{opacity:.55} 50%{opacity:1} }
 @keyframes bt-wiggle   { 0%,100%{transform:rotate(-2deg)} 50%{transform:rotate(2deg)} }
-@keyframes bt-confetti { 0%{transform:translate(0,0) rotate(0);opacity:1} 100%{transform:translate(var(--cx,0),120px) rotate(560deg);opacity:0} }
 @keyframes bt-marquee  { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 @keyframes bt-fadeup   { 0%{opacity:0;transform:translateY(24px)} 100%{opacity:1;transform:translateY(0)} }
+
+/* ── Fullscreen exam-completion confetti (ConfettiBurst component) ──────
+   Three fall patterns — straight / drifting / fluttering — used together
+   for a natural, non-uniform tumble across the whole viewport. `--cx` is
+   the total horizontal drift in px, set per-particle inline. */
+@keyframes bt-confetti {
+  0%   { transform: translate(0,0) rotate(0deg); opacity: 1; }
+  85%  { opacity: 1; }
+  100% { transform: translate(var(--cx,0), 100vh) rotate(720deg); opacity: 0; }
+}
+@keyframes bt-confetti-2 {
+  0%   { transform: translate(0,0) rotate(0deg); opacity: 1; }
+  50%  { transform: translate(calc(var(--cx,0) * 0.4), 55vh) rotate(-360deg); }
+  85%  { opacity: 1; }
+  100% { transform: translate(var(--cx,0), 105vh) rotate(-760deg); opacity: 0; }
+}
+@keyframes bt-confetti-3 {
+  0%   { transform: translate(0,0) rotate(0deg); opacity: 1; }
+  30%  { transform: translate(calc(var(--cx,0) * -0.5), 25vh) rotate(180deg); }
+  70%  { transform: translate(calc(var(--cx,0) * 0.7), 70vh) rotate(560deg); }
+  85%  { opacity: 1; }
+  100% { transform: translate(var(--cx,0), 108vh) rotate(920deg); opacity: 0; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .bt-wordmark, .bt-btn { animation: none !important; }

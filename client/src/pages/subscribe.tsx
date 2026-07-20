@@ -106,7 +106,6 @@ const RAINBOW_BTN_STYLE: React.CSSProperties = {
   color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
   animation: "bt-rainbow 5s linear infinite", border: "none",
   borderRadius: 12, padding: "15px 24px", cursor: "pointer",
-  boxShadow: "0 0 26px rgba(255,183,229,.4)",
 };
 
 const OUTLINE_BTN_STYLE: React.CSSProperties = {
@@ -598,7 +597,7 @@ export default function SubscribePage() {
             style={{
               background: "linear-gradient(150deg,rgba(255,183,229,.14),rgba(159,216,255,.12))",
               border: "1.5px solid #FFB7E5", borderRadius: 24, padding: 32,
-              position: "relative", boxShadow: "0 0 40px rgba(255,183,229,.2)",
+              position: "relative",
               display: "flex", flexDirection: "column",
             }}
           >
@@ -823,7 +822,7 @@ function PaymentPickerScreen({
           } as React.CSSProperties}
         >
           <div style={{ display: "flex", alignItems: "flex-start", gap: 16 }}>
-            <div style={{ width: 44, height: 44, flex: "none", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(148,247,197,.14)", boxShadow: "0 0 18px rgba(148,247,197,.25)" }}>
+            <div style={{ width: 44, height: 44, flex: "none", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(148,247,197,.14)" }}>
               {anyLoading ? (
                 <Loader2 className="animate-spin" style={{ width: 20, height: 20, color: "#94F7C5" }} />
               ) : (
@@ -1015,7 +1014,7 @@ function SuccessScreen({
   return (
     <WallScreen>
       <div style={{ textAlign: "center" }}>
-        <CheckCircle2 style={{ width: 56, height: 56, margin: "0 auto 24px", color: "#94F7C5", filter: "drop-shadow(0 0 18px rgba(148,247,197,.45))" }} />
+        <CheckCircle2 style={{ width: 56, height: 56, margin: "0 auto 24px", color: "#94F7C5" }} />
         <div
           role="heading"
           aria-level={1}
@@ -1217,7 +1216,7 @@ function PaymentSuccessScreen({
   return (
     <WallScreen testId="payment-success-panel">
       <div style={{ textAlign: "center" }}>
-        <CheckCircle2 style={{ width: 56, height: 56, margin: "0 auto 24px", color: "#94F7C5", filter: "drop-shadow(0 0 18px rgba(148,247,197,.45))" }} />
+        <CheckCircle2 style={{ width: 56, height: 56, margin: "0 auto 24px", color: "#94F7C5" }} />
 
         <div
           role="heading"
@@ -1292,7 +1291,7 @@ function NotConfiguredScreen({ isAf, homeHref }: { isAf: boolean, homeHref: stri
   return (
     <WallScreen>
       <div style={{ textAlign: "center" }}>
-        <AlertCircle style={{ width: 56, height: 56, margin: "0 auto 24px", color: "#FFE29A", filter: "drop-shadow(0 0 18px rgba(255,226,154,.4))" }} />
+        <AlertCircle style={{ width: 56, height: 56, margin: "0 auto 24px", color: "#FFE29A" }} />
         <div
           role="heading"
           aria-level={1}
@@ -1340,8 +1339,8 @@ function JourneyRail({ isAf }: { isAf: boolean }) {
                 width: 26, height: 26, borderRadius: 999, display: "flex", alignItems: "center", justifyContent: "center", flex: "none",
                 fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 12,
                 ...(s.done
-                  ? { background: s.color, color: "#050508", boxShadow: `0 0 14px ${s.color}55` }
-                  : { border: `1.5px solid ${s.color}`, color: s.color, boxShadow: `0 0 18px ${s.color}40` }),
+                  ? { background: s.color, color: "#050508" }
+                  : { border: `1.5px solid ${s.color}`, color: s.color }),
               }}
             >
               {s.done ? "✓" : i + 1}
@@ -1474,7 +1473,6 @@ function ParentSubscribeScreen({
               fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 15,
               color: "#050508", background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
               border: "none", borderRadius: 12, padding: "15px 28px", cursor: "pointer",
-              boxShadow: "0 0 22px rgba(159,245,232,.3)",
             }}
           >
             {isAf ? "Gaan na ouer-dashboard" : "Go to parent dashboard"}
@@ -1491,7 +1489,7 @@ function ParentSubscribeScreen({
     return (
       <WallScreen testId="parent-subscribe-panel">
         <div style={{ textAlign: "center" }}>
-          <CheckCircle2 style={{ width: 48, height: 48, margin: "0 auto 20px", color: "#94F7C5", filter: "drop-shadow(0 0 16px rgba(148,247,197,.4))" }} />
+          <CheckCircle2 style={{ width: 48, height: 48, margin: "0 auto 20px", color: "#94F7C5" }} />
           <div
             role="heading"
             aria-level={1}
@@ -1544,7 +1542,6 @@ function ParentSubscribeScreen({
               fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 15,
               color: "#050508", background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
               border: "none", borderRadius: 12, padding: "15px 28px", cursor: "pointer",
-              boxShadow: "0 0 22px rgba(159,245,232,.3)",
             }}
           >
             {isAf ? "Gaan na ouer-dashboard" : "Go to parent dashboard"}
@@ -1628,7 +1625,7 @@ function ParentSubscribeScreen({
             color: "#050508", background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
             border: "none", borderRadius: 12, padding: "16px 24px",
             cursor: ccLoading ? "not-allowed" : "pointer", opacity: ccLoading ? 0.6 : 1,
-            boxShadow: "0 0 22px rgba(159,245,232,.3)", marginBottom: 20,
+            marginBottom: 20,
           }}
         >
           {ccLoading ? (

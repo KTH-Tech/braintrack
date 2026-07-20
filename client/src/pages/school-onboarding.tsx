@@ -9,7 +9,7 @@ import { useLanguage } from "@/lib/language-context";
 import { apiRequest } from "@/lib/queryClient";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2, School, ArrowRight, Globe, CheckCircle } from "lucide-react";
-import { BrainTrackLogo } from "@/components/braintrack-logo";
+import iconTransparent from "@/assets/handoff/icon-transparent.png";
 
 export default function SchoolOnboardingPage() {
   const { language, toggleLanguage } = useLanguage();
@@ -91,7 +91,7 @@ export default function SchoolOnboardingPage() {
     <div className="min-h-screen flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-2xl space-y-6">
         <div className="flex items-center justify-between">
-          <BrainTrackLogo className="h-8 w-auto" />
+          <img src={iconTransparent} alt="BrainTrack" className="h-8 w-8 object-contain" />
           <button
             onClick={toggleLanguage}
             className="flex items-center gap-1 px-2 py-1.5 rounded-md text-white hover:text-foreground transition-colors"

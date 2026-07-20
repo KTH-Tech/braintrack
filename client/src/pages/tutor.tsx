@@ -19,8 +19,6 @@ import {
   MessageCircle,
   BookOpen,
   ArrowLeft,
-  Volume2,
-  VolumeX,
   Eye,
   Ear,
   Hand,
@@ -37,7 +35,7 @@ import {
 import type { Subject, OnboardingResult, Topic } from "@shared/schema";
 import { TopicMindmap } from "@/components/topic-mindmap";
 import { GraffitiSplats } from "@/components/graffiti-splats";
-import { RizzFace, RizzWordmark, RizzBrandStyles, type RizzExpression } from "@/components/rizz-brand";
+import { RizzFace, RizzWordmark, RizzBrandStyles, RIZZ_USER_GRADIENT, RIZZ_RAINBOW, RIZZ_LINES, type RizzExpression } from "@/components/rizz-brand";
 import brandLogo from "@assets/Logo_01_1779989960628.jpeg";
 
 const TUTOR_AVATARS: Record<string, { icon: any }> = {
@@ -47,6 +45,10 @@ const TUTOR_AVATARS: Record<string, { icon: any }> = {
   reading: { icon: FileText },
   mixed: { icon: Layers },
 };
+
+// Subtle hand-placed tilts for "sticker" chips — small so paragraph-length
+// suggestions stay readable; hover straightens them back out (see .tutor-sticker).
+const STICKER_TILTS = [-1.5, 1, -1, 1.5, -1, 1.5];
 
 interface DiagramEntry {
   label: string;
@@ -74,20 +76,13 @@ interface ChatMessage {
 
 const T = {
   en: {
-    homeLabel: "Dashboard",
+    homeLabel: "Home",
     signOut: "Sign Out",
     chatTab: "Chat",
     notesTab: "Study Notes",
     pageTitle: "Smart Tutor",
     pageSubtitle: "AI-powered help with past paper questions, memos and explanations.",
     subjectPlaceholder: "Select subject...",
-    voiceGenderLabel: "Voice",
-    voiceGirlLabel: "Girl",
-    voiceBoyLabel: "Boy",
-    speedLabel: "Speed",
-    speedSlow: "Slow",
-    speedNormal: "Normal",
-    speedFast: "Fast",
     generateNotes: "Generate Notes",
     generatingNotes: "Generating...",
     topicPlaceholder: "Enter topic name...",
@@ -97,7 +92,6 @@ const T = {
     sendPlaceholder: "Ask a question about your work...",
     sendBtn: "Send",
     feedbackLabel: "Was this helpful?",
-    ttsNotSupported: "Text-to-speech is not supported in your browser.",
     limitReached: "Daily limit reached",
     limitReachedDesc: "You've used all your tutor interactions for today. Come back tomorrow!",
     sessionError: "Session Error",
@@ -106,13 +100,10 @@ const T = {
     notesErrorDesc: "Could not generate notes. Please try again.",
     feedbackSent: "Feedback sent",
     feedbackSentDesc: "Thank you for your feedback!",
-    notSupported: "Not supported",
     oops: "Oops!",
     shortTitle: "Too short!",
     shortDesc: "Type a longer topic",
     shortQuestionDesc: "Type a longer question",
-    stopLabel: "Stop",
-    readAloud: "Read aloud",
     helpfulLabel: "Helpful",
     notHelpfulLabel: "Not helpful",
     tutorHeading: "Your AI Tutor",
@@ -133,11 +124,6 @@ const T = {
     notesGeneratedDesc: "Your study notes are ready",
     thankYouTitle: "Thank you!",
     thankYouDesc: "Your feedback helps us improve.",
-    voiceLabel: "Rizz's voice",
-    speechSpeedLabel: "Speech speed",
-    slowLabel: "Slow",
-    fastLabel: "Fast",
-    normalLabel: "Normal",
     generateStudyNotesHeading: "Generate Study Notes",
     notesViewLabel: "Notes",
     mindmapViewLabel: "Mindmap",
@@ -172,20 +158,13 @@ const T = {
     printPersonalUse: "Generated for personal use only",
   },
   af: {
-    homeLabel: "Tuisbord",
+    homeLabel: "Tuis",
     signOut: "Uitteken",
     chatTab: "Gesels",
     notesTab: "Studienotas",
     pageTitle: "Slimmer Tutor",
     pageSubtitle: "KI-hulp met vorige vraestelvrae, memos en verduidelikings.",
     subjectPlaceholder: "Kies vak...",
-    voiceGenderLabel: "Stem",
-    voiceGirlLabel: "Meisie",
-    voiceBoyLabel: "Seun",
-    speedLabel: "Spoed",
-    speedSlow: "Stadig",
-    speedNormal: "Normaal",
-    speedFast: "Vinnig",
     generateNotes: "Genereer Notas",
     generatingNotes: "Besig...",
     topicPlaceholder: "Voer onderwerpnaam in...",
@@ -195,7 +174,6 @@ const T = {
     sendPlaceholder: "Vra 'n vraag oor jou werk...",
     sendBtn: "Stuur",
     feedbackLabel: "Was dit nuttig?",
-    ttsNotSupported: "Teks-na-spraak word nie in jou blaaier ondersteun nie.",
     limitReached: "Daaglikse limiet bereik",
     limitReachedDesc: "Jy het al jou tutorinteraksies vir vandag gebruik. Kom môre terug!",
     sessionError: "Sessie Fout",
@@ -204,13 +182,10 @@ const T = {
     notesErrorDesc: "Kon nie notas genereer nie. Probeer asseblief weer.",
     feedbackSent: "Terugvoer gestuur",
     feedbackSentDesc: "Dankie vir jou terugvoer!",
-    notSupported: "Nie ondersteun nie",
     oops: "Oeps!",
     shortTitle: "Te kort!",
     shortDesc: "Tik 'n langer onderwerp",
     shortQuestionDesc: "Tik 'n langer vraag",
-    stopLabel: "Stop",
-    readAloud: "Lees voor",
     helpfulLabel: "Nuttig",
     notHelpfulLabel: "Nie nuttig nie",
     tutorHeading: "Jou KI-tutor",
@@ -231,11 +206,6 @@ const T = {
     notesGeneratedDesc: "Jou studienotas is gereed",
     thankYouTitle: "Dankie!",
     thankYouDesc: "Jou terugvoer help ons elke keer beter word.",
-    voiceLabel: "Rizz se stem",
-    speechSpeedLabel: "Spreekspoed",
-    slowLabel: "Stadig",
-    fastLabel: "Vinnig",
-    normalLabel: "Normaal",
     generateStudyNotesHeading: "Genereer Studienotas",
     notesViewLabel: "Notas",
     mindmapViewLabel: "Gedagtekaart",
@@ -283,11 +253,6 @@ export default function TutorPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [selectedSubject, setSelectedSubject] = useState<string>("");
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const [speakingMessageIndex, setSpeakingMessageIndex] = useState<number | null>(null);
-  const [voiceGender, setVoiceGender] = useState<"female" | "male">("female");
-  const [voiceRate, setVoiceRate] = useState<"slow" | "normal" | "fast">("normal");
-  const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [mode, setMode] = useState<"chat" | "notes">("chat");
   const [notesView, setNotesView] = useState<"notes" | "mindmap">("notes");
   const [notesTopic, setNotesTopic] = useState("");
@@ -298,84 +263,6 @@ export default function TutorPage() {
   const [pendingFeedback, setPendingFeedback] = useState<Record<number, number>>({});
   const [feedbackText, setFeedbackText] = useState<Record<number, string>>({});
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!('speechSynthesis' in window)) return;
-    const load = () => setAvailableVoices(window.speechSynthesis.getVoices());
-    load();
-    window.speechSynthesis.onvoiceschanged = load;
-    return () => { window.speechSynthesis.onvoiceschanged = null; };
-  }, []);
-
-  const stripMarkdown = (text: string): string => {
-    return text
-      .replace(/#{1,6}\s+/g, "")
-      .replace(/\*{1,3}([^*]+)\*{1,3}/g, "$1")
-      .replace(/_{1,3}([^_]+)_{1,3}/g, "$1")
-      .replace(/`{1,3}[^`]*`{1,3}/g, "")
-      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-      .replace(/^>\s+/gm, "")
-      .replace(/^[-*+]\s+/gm, "")
-      .replace(/^\d+\.\s+/gm, "")
-      .replace(/---+/g, "")
-      .replace(/\n{3,}/g, "\n\n")
-      .trim();
-  };
-
-  const pickVoice = (lang: string, gender: "female" | "male"): SpeechSynthesisVoice | null => {
-    const femaleKeys = ["female", "woman", "girl", "zira", "hazel", "susan", "samantha", "victoria", "karen", "moira", "fiona", "tessa", "nova"];
-    const maleKeys   = ["male", "man", "boy", "david", "mark", "daniel", "alex", "george", "james", "reed"];
-    const keywords = gender === "female" ? femaleKeys : maleKeys;
-    const exact = availableVoices.filter(v => v.lang === lang);
-    const broad = availableVoices.filter(v => v.lang.startsWith(lang.split("-")[0]));
-    const enFallback = availableVoices.filter(v => v.lang.startsWith("en"));
-    const pool = exact.length ? exact : broad.length ? broad : enFallback;
-    return pool.find(v => keywords.some(k => v.name.toLowerCase().includes(k))) ?? pool[0] ?? null;
-  };
-
-  const speakText = (text: string, messageIndex: number) => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      
-      if (isSpeaking && speakingMessageIndex === messageIndex) {
-        setIsSpeaking(false);
-        setSpeakingMessageIndex(null);
-        return;
-      }
-      
-      const clean = stripMarkdown(text);
-      const rateMap = { slow: 0.7, normal: 0.9, fast: 1.2 };
-      const utterance = new SpeechSynthesisUtterance(clean);
-      utterance.rate = rateMap[voiceRate];
-      utterance.pitch = voiceGender === "female" ? 1.1 : 0.9;
-      utterance.lang = isAf ? 'af-ZA' : 'en-ZA';
-      const voice = pickVoice(isAf ? 'af-ZA' : 'en-ZA', voiceGender);
-      if (voice) utterance.voice = voice;
-      
-      utterance.onstart = () => {
-        setIsSpeaking(true);
-        setSpeakingMessageIndex(messageIndex);
-      };
-      
-      utterance.onend = () => {
-        setIsSpeaking(false);
-        setSpeakingMessageIndex(null);
-      };
-      
-      utterance.onerror = () => {
-        setIsSpeaking(false);
-        setSpeakingMessageIndex(null);
-      };
-      
-      window.speechSynthesis.speak(utterance);
-    } else {
-      toast({
-        title: t.notSupported,
-        description: t.ttsNotSupported,
-        variant: "destructive",
-      });
-    }
-  };
 
   const { data: profile } = useQuery<OnboardingResult>({
     queryKey: ["/api/user/onboarding"],
@@ -595,11 +482,17 @@ export default function TutorPage() {
       <GraffitiSplats variant="corner" opacity={0.35} />
       <style>{`
         .tutor-close-btn:hover { border-color: #FF8DA1 !important; color: #FF8DA1 !important; transform: scale(1.08); }
+        .tutor-sticker { transition: transform .18s ease, box-shadow .18s ease; }
+        .tutor-sticker:hover { transform: rotate(0deg) translateY(-3px) scale(1.02) !important; }
+        @media (prefers-reduced-motion: reduce) {
+          .tutor-sticker:hover { transform: none !important; }
+        }
       `}</style>
       <header
         className="sticky top-0 z-50 relative"
         style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderBottom: "2px solid rgba(110,231,249,0.5)" }}
       >
+        <div aria-hidden style={{ height: 3, background: RIZZ_RAINBOW, backgroundSize: "200% 100%", animation: "bt-rainbow 6s linear infinite" }} />
         <div className="max-w-4xl mx-auto px-2 min-[375px]:px-4">
           <div className="flex items-center justify-between h-14 gap-2 min-[375px]:gap-4">
             <div className="flex items-center gap-2 min-[375px]:gap-3 min-w-0">
@@ -677,7 +570,7 @@ export default function TutorPage() {
       </header>
 
       <div className="max-w-4xl mx-auto w-full px-4 pt-4 flex flex-col sm:flex-row sm:items-center gap-3">
-        <div className="flex flex-wrap gap-1.5 p-1 rounded-xl bg-white/[.03] w-full sm:w-auto" style={{ border: "1px solid rgba(197,179,255,0.4)", boxShadow: "inset 0 0 12px rgba(0,0,0,0.6)" }}>
+        <div className="flex flex-wrap gap-1.5 p-1 rounded-xl bg-white/[.03] w-full sm:w-auto" style={{ border: "1px solid rgba(197,179,255,0.4)" }}>
           <button
             onClick={() => setMode("chat")}
             className="inline-flex flex-1 sm:flex-none items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-none"
@@ -704,55 +597,6 @@ export default function TutorPage() {
             <NotebookPen className="w-4 h-4" />
             {t.notesTab}
           </button>
-        </div>
-
-        <div className="flex items-center gap-1.5 flex-wrap sm:ml-auto">
-          <div
-            className="flex flex-wrap items-center gap-1 p-1 rounded-lg bg-white/[.03]"
-            style={{ border: "1px solid rgba(110,231,249,0.4)" }}
-            title={t.voiceLabel}
-          >
-            <Volume2 className="w-3.5 h-3.5 ml-1" style={{ color: "#6EE7F9" }} />
-            <button
-              onClick={() => setVoiceGender("female")}
-              className="px-4 py-2 rounded-xl text-sm font-bold transition-none"
-              style={voiceGender === "female"
-                ? { background: "#94F7C5", color: "#050508" }
-                : { color: "#FFB7E5", border: "1.5px solid #FFB7E5", background: "#000" }}
-              data-testid="button-voice-female"
-            >
-              {t.voiceGirlLabel}
-            </button>
-            <button
-              onClick={() => setVoiceGender("male")}
-              className="px-4 py-2 rounded-xl text-sm font-bold transition-none"
-              style={voiceGender === "male"
-                ? { background: "#94F7C5", color: "#050508" }
-                : { color: "#9FD8FF", border: "1.5px solid #9FD8FF", background: "#000" }}
-              data-testid="button-voice-male"
-            >
-              {t.voiceBoyLabel}
-            </button>
-          </div>
-          <div
-            className="flex flex-wrap items-center gap-0.5 p-1 rounded-lg bg-white/[.03]"
-            style={{ border: "1px solid rgba(255,226,154,0.4)" }}
-            title={t.speechSpeedLabel}
-          >
-            {(["slow", "normal", "fast"] as const).map(r => (
-              <button
-                key={r}
-                onClick={() => setVoiceRate(r)}
-                className="px-4 py-2 rounded-xl text-sm font-bold transition-none"
-                style={voiceRate === r
-                  ? { background: "#94F7C5", color: "#050508" }
-                  : { color: "#FFE29A", border: "1.5px solid #FFE29A", background: "#000" }}
-                data-testid={`button-voice-rate-${r}`}
-              >
-                {r === "slow" ? t.slowLabel : r === "fast" ? t.fastLabel : t.normalLabel}
-              </button>
-            ))}
-          </div>
         </div>
       </div>
 
@@ -857,7 +701,7 @@ export default function TutorPage() {
                     >
                       <div
                         className="w-9 h-9 rounded-lg bg-white/[.03] flex items-center justify-center flex-shrink-0 mt-0.5"
-                        style={{ border: "1px solid #C5B3FF", boxShadow: "0 0 10px rgba(197,179,255,0.5)" }}
+                        style={{ border: "1px solid #C5B3FF" }}
                       >
                         <StyleIcon className="w-5 h-5" style={{ color: "#C5B3FF", filter: "drop-shadow(0 0 3px #C5B3FF)" }} />
                       </div>
@@ -929,7 +773,7 @@ export default function TutorPage() {
                     onChange={(e) => setNotesTopic(e.target.value)}
                     placeholder={t.topicNotesPlaceholder}
                     className="min-h-[80px]"
-                    style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid rgba(110,231,249,0.5)", boxShadow: "0 0 14px rgba(110,231,249,0.2), inset 0 0 10px rgba(0,0,0,0.5)", color: "#fff" }}
+                    style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid rgba(110,231,249,0.5)", color: "#fff" }}
                     data-testid="input-notes-topic"
                   />
                   <button 
@@ -990,60 +834,17 @@ export default function TutorPage() {
             {generatedNotes && (
               <div
                 className="flex-1 overflow-hidden rounded-2xl bg-white/[.03]"
-                style={{ border: "1.5px solid #FFB7E5", boxShadow: "0 0 0 1px rgba(255,183,229,0.25), 0 0 28px rgba(255,183,229,0.28), inset 0 0 20px rgba(0,0,0,0.6)" }}
+                style={{ border: "1.5px solid #FFB7E5" }}
               >
                 <div className="p-4 h-full flex flex-col">
                   <div className="mb-3 flex items-center justify-between gap-2 flex-wrap">
                     <h3
                       className="text-lg tracking-tight"
-                      style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 18, color: "#FFB7E5", transform: "rotate(-2deg)", textShadow: "0 0 12px rgba(255,183,229,.5)" }}
+                      style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 18, color: "#FFB7E5", transform: "rotate(-2deg)" }}
                     >
                       {t.studyNotesHeading}
                     </h3>
                     <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black text-sm font-bold"
-                        style={{ color: "#94F7C5", border: "1.5px solid #94F7C5" }}
-                        onClick={() => {
-                          if (isSpeaking) {
-                            window.speechSynthesis.cancel();
-                            setIsSpeaking(false);
-                            setSpeakingMessageIndex(null);
-                            return;
-                          }
-                          const clean = stripMarkdown(generatedNotes);
-                          const chunks = clean.match(/[^.!?]+[.!?]+/g) || [clean];
-                          let chunkIndex = 0;
-                          const speakNext = () => {
-                            if (chunkIndex >= chunks.length) {
-                              setIsSpeaking(false);
-                              setSpeakingMessageIndex(null);
-                              return;
-                            }
-                            const rateMap2 = { slow: 0.7, normal: 0.9, fast: 1.2 };
-                            const utterance = new SpeechSynthesisUtterance(chunks[chunkIndex].trim());
-                            utterance.rate = rateMap2[voiceRate];
-                            utterance.pitch = voiceGender === "female" ? 1.1 : 0.9;
-                            utterance.lang = isAf ? 'af-ZA' : 'en-ZA';
-                            const voice = pickVoice(isAf ? 'af-ZA' : 'en-ZA', voiceGender);
-                            if (voice) utterance.voice = voice;
-                            utterance.onend = () => { chunkIndex++; speakNext(); };
-                            utterance.onerror = () => { setIsSpeaking(false); setSpeakingMessageIndex(null); };
-                            window.speechSynthesis.speak(utterance);
-                          };
-                          setIsSpeaking(true);
-                          setSpeakingMessageIndex(-99);
-                          speakNext();
-                        }}
-                        data-testid="button-read-notes"
-                      >
-                        {isSpeaking && speakingMessageIndex === -99 ? (
-                          <><VolumeX className="w-4 h-4" />{t.stopLabel}</>
-                        ) : (
-                          <><Volume2 className="w-4 h-4" />{t.readAloud}</>
-                        )}
-                      </button>
                       <button
                         type="button"
                         className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black text-sm font-bold"
@@ -1384,20 +1185,26 @@ export default function TutorPage() {
               const tutorAvatar = TUTOR_AVATARS[learningStyle] || TUTOR_AVATARS.mixed;
               const TutorIcon = tutorAvatar.icon;
               return (
-                <div
-                  className="relative w-20 h-20 rounded-2xl bg-white/[.03] flex items-center justify-center mb-6"
-                  style={{
-                    border: "1.5px solid #C5B3FF",
-                    boxShadow: "0 0 0 1px rgba(197,179,255,0.3), 0 0 28px rgba(197,179,255,0.55), inset 0 0 18px rgba(0,0,0,0.6)",
-                  }}
-                >
-                  <TutorIcon className="w-10 h-10" style={{ color: "#C5B3FF", filter: "drop-shadow(0 0 6px #C5B3FF)" }} />
+                <div className="relative mb-5">
+                  <RizzFace expression="happy" mascot size={108} radius={30} />
+                  <span
+                    aria-hidden
+                    className="absolute bottom-1 left-1 w-4 h-4 rounded-full"
+                    style={{ background: "#94F7C5", border: "2.5px solid #050508" }}
+                  />
+                  <span
+                    className="absolute -bottom-2 -right-2 w-9 h-9 rounded-lg bg-black flex items-center justify-center"
+                    style={{ border: "1.5px solid #C5B3FF" }}
+                    title={isAf ? "Jou leerstyl" : "Your learning style"}
+                  >
+                    <TutorIcon className="w-4 h-4" style={{ color: "#C5B3FF" }} />
+                  </span>
                 </div>
               );
             })()}
             <span
               className="relative inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.28em] px-4 py-1.5 rounded-full bg-white/[.03] mb-4"
-              style={{ color: "#6EE7F9", border: "1px solid rgba(110,231,249,0.55)", boxShadow: "0 0 14px rgba(110,231,249,0.35)" }}
+              style={{ color: "#6EE7F9", border: "1px solid rgba(110,231,249,0.55)" }}
             >
               <Sparkles className="w-3.5 h-3.5" style={{ filter: "drop-shadow(0 0 4px #6EE7F9)" }} />
               {t.tutorHeading}
@@ -1416,6 +1223,12 @@ export default function TutorPage() {
             >
               {t.askMeAnything}
             </div>
+            <div
+              className="relative mb-3 text-sm sm:text-base"
+              style={{ fontFamily: "'Permanent Marker',cursive", color: "#FFB7E5", transform: "rotate(-2deg)" }}
+            >
+              {RIZZ_LINES[language].tagline}
+            </div>
             <p className="relative text-sm sm:text-base text-white max-w-md mb-8">
               {t.introParagraph}
             </p>
@@ -1430,6 +1243,7 @@ export default function TutorPage() {
                     {capsTopics.map((topic, i) => {
                       const palette = ["#6EE7F9", "#9FD8FF", "#C5B3FF", "#C5B3FF", "#FFB7E5", "#FFE29A", "#FFE29A"];
                       const hex = palette[i % palette.length];
+                      const tilt = STICKER_TILTS[i % STICKER_TILTS.length];
                       return (
                         <button
                           key={topic.id}
@@ -1438,8 +1252,8 @@ export default function TutorPage() {
                             const topicName = isAf ? topic.nameAfrikaans : topic.name;
                             setInputValue(isAf ? `Verduidelik ${topicName} vir ${subjectName}` : `Explain ${topicName} for ${subjectName}`);
                           }}
-                          className="inline-flex items-center gap-1.5 text-sm font-bold px-4 py-2 rounded-xl bg-white/[.03] transition-none"
-                          style={{ color: hex, border: `1.5px solid ${hex}` }}
+                          className="tutor-sticker inline-flex items-center gap-1.5 text-sm font-bold px-4 py-2 rounded-full bg-white/[.03]"
+                          style={{ color: hex, border: `1.5px solid ${hex}`, transform: `rotate(${tilt}deg)`, boxShadow: `0 3px 0 ${hex}44` }}
                           data-testid={`topic-chip-chat-${topic.id}`}
                         >
                           <BookOpen className="w-3.5 h-3.5" style={{ filter: `drop-shadow(0 0 3px ${hex})` }} />
@@ -1455,16 +1269,23 @@ export default function TutorPage() {
                   <p className="text-[11px] font-black uppercase tracking-[0.22em]" style={{ color: "#FFE29A" }}>
                     {t.trySuggestions}
                   </p>
-                  <div className="grid gap-2">
+                  <div className="grid gap-2.5">
                     {suggestedQuestions.map((q, i) => {
                       const palette = ["#6EE7F9", "#C5B3FF", "#FFB7E5", "#FFE29A"];
                       const hex = palette[i % palette.length];
+                      const tilt = STICKER_TILTS[i % STICKER_TILTS.length];
                       return (
                         <button
                           key={i}
                           onClick={() => setInputValue(q)}
-                          className="text-left flex items-start gap-2 p-3 rounded-xl bg-white/[.03] text-sm font-bold transition-none"
-                          style={{ color: "#fff", border: `1.5px solid ${hex}` }}
+                          className="tutor-sticker text-left flex items-start gap-2.5 p-3.5 rounded-2xl text-sm font-bold"
+                          style={{
+                            color: "#fff",
+                            background: `linear-gradient(135deg, ${hex}22, rgba(255,255,255,.02))`,
+                            border: `1.5px solid ${hex}`,
+                            boxShadow: `0 4px 0 ${hex}55, 0 4px 14px rgba(0,0,0,.35)`,
+                            transform: `rotate(${tilt}deg)`,
+                          }}
                           data-testid={`suggested-question-${i}`}
                         >
                           <Sparkles className="w-4 h-4 mt-0.5 shrink-0" style={{ color: hex, filter: `drop-shadow(0 0 4px ${hex})` }} />
@@ -1481,35 +1302,30 @@ export default function TutorPage() {
           <ScrollArea className="flex-1 pr-4" ref={scrollRef}>
             <div className="space-y-4 py-4">
               {messages.map((msg, i) => {
-                const learningStyle = profile?.learningStyle || "mixed";
-                const tutorAvatar = TUTOR_AVATARS[learningStyle] || TUTOR_AVATARS.mixed;
-                const TutorIcon = tutorAvatar.icon;
-                
                 return (
                   <div
                     key={i}
                     className={`flex gap-3 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                   >
                     {msg.role === "assistant" && (
-                      <div
-                        className="w-8 h-8 rounded-lg bg-white/[.03] flex items-center justify-center flex-shrink-0"
-                        style={{ border: "1.5px solid #C5B3FF", boxShadow: "0 0 10px rgba(197,179,255,0.5)" }}
-                      >
-                        <TutorIcon className="w-4 h-4" style={{ color: "#C5B3FF", filter: "drop-shadow(0 0 3px #C5B3FF)" }} />
-                      </div>
+                      <RizzFace expression="happy" size={32} radius={9} />
                     )}
                     <div className="flex flex-col gap-1 min-w-0 max-w-[calc(100%-44px)] sm:max-w-[80%]">
                       <div
-                        className="rounded-2xl px-4 py-3 bg-white/[.03]"
+                        className="px-4 py-3"
                         style={msg.role === "user"
-                          ? { border: "1.5px solid #6EE7F9", boxShadow: "0 0 18px rgba(110,231,249,0.35), inset 0 0 10px rgba(0,0,0,0.6)", color: "#fff" }
-                          : { border: "1.5px solid rgba(197,179,255,0.6)", boxShadow: "0 0 18px rgba(197,179,255,0.3), inset 0 0 10px rgba(0,0,0,0.6)" }
+                          ? { background: RIZZ_USER_GRADIENT, border: "1px solid transparent", borderRadius: "18px 18px 4px 18px" }
+                          : { background: "rgba(179,136,255,.16)", backdropFilter: "blur(6px)", border: "1.5px solid rgba(197,179,255,0.6)", borderRadius: "18px 18px 18px 4px" }
                         }
                         data-testid={`message-${msg.role}-${i}`}
                         onContextMenu={msg.role === "assistant" ? e => e.preventDefault() : undefined}
                         data-nosnippet={msg.role === "assistant" ? "" : undefined}
                       >
-                        <div className="break-words text-sm leading-relaxed prose prose-invert prose-sm max-w-none [&_h1]:text-sm [&_h2]:text-sm [&_h3]:text-xs [&_h1]:font-bold [&_h2]:font-bold [&_h3]:font-semibold [&_ul]:pl-4 [&_ol]:pl-4 [&_li]:mb-0.5 [&_strong]:text-[#6EE7F9] [&_p]:mb-1 [&_p:last-child]:mb-0 [&_code]:bg-white/10 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs [&_blockquote]:border-l-2 [&_blockquote]:border-white/20 [&_blockquote]:pl-3 [&_blockquote]:text-white">
+                        <div className={`break-words text-sm leading-relaxed prose prose-sm max-w-none [&_h1]:text-sm [&_h2]:text-sm [&_h3]:text-xs [&_h1]:font-bold [&_h2]:font-bold [&_h3]:font-semibold [&_ul]:pl-4 [&_ol]:pl-4 [&_li]:mb-0.5 [&_p]:mb-1 [&_p:last-child]:mb-0 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs [&_blockquote]:border-l-2 [&_blockquote]:pl-3 ${
+                          msg.role === "user"
+                            ? "[&_*]:!text-[#0D0D14] [&_code]:bg-black/10 [&_blockquote]:border-black/25"
+                            : "prose-invert [&_strong]:text-[#6EE7F9] [&_code]:bg-white/10 [&_blockquote]:border-white/20 [&_blockquote]:text-white text-white"
+                        }`}>
                           <ReactMarkdown>{msg.content}</ReactMarkdown>
                         </div>
                       </div>
@@ -1518,7 +1334,6 @@ export default function TutorPage() {
                           className="mt-2 rounded-xl bg-white/[.03] px-3 py-2.5"
                           style={{
                             border: "1px solid rgba(255,226,154,0.45)",
-                            boxShadow: "0 0 10px rgba(255,226,154,0.18), inset 0 0 8px rgba(0,0,0,0.5)",
                           }}
                           data-testid={`citations-${i}`}
                         >
@@ -1576,7 +1391,7 @@ export default function TutorPage() {
                             <div
                               key={di}
                               className="rounded-xl overflow-hidden bg-white/[.03]"
-                              style={{ border: "1px solid rgba(110,231,249,0.45)", boxShadow: "0 0 12px rgba(110,231,249,0.18), inset 0 0 8px rgba(0,0,0,0.5)" }}
+                              style={{ border: "1px solid rgba(110,231,249,0.45)" }}
                               data-testid={`diagram-${i}-${di}`}
                             >
                               <div
@@ -1608,29 +1423,6 @@ export default function TutorPage() {
                       )}
                       {msg.role === "assistant" && (
                         <div className="flex items-center gap-2 mt-1 flex-wrap">
-                          <button
-                            onClick={() => speakText(msg.content, i)}
-                            className="flex items-center gap-1 text-sm font-bold px-4 py-2 rounded-xl bg-black transition-colors"
-                            style={
-                              speakingMessageIndex === i
-                                ? { background: "#6EE7F9", color: "#050508" }
-                                : { color: "#6EE7F9", border: "1.5px solid #6EE7F9" }
-                            }
-                            data-testid={`button-speak-${i}`}
-                          >
-                            {speakingMessageIndex === i ? (
-                              <>
-                                <VolumeX className="w-3 h-3" />
-                                <span>{t.stopLabel}</span>
-                              </>
-                            ) : (
-                              <>
-                                <Volume2 className="w-3 h-3" />
-                                <span>{t.readAloud}</span>
-                              </>
-                            )}
-                          </button>
-
                           {sessionId && !feedbackSubmitted[i] && !pendingFeedback[i] && (
                             <div className="flex items-center gap-1 ml-auto">
                               <button
@@ -1704,7 +1496,7 @@ export default function TutorPage() {
                     {msg.role === "user" && (
                       <div
                         className="w-8 h-8 rounded-lg bg-white/[.03] flex items-center justify-center flex-shrink-0"
-                        style={{ border: "1.5px solid #6EE7F9", boxShadow: "0 0 10px rgba(110,231,249,0.5)" }}
+                        style={{ border: "1.5px solid #6EE7F9" }}
                       >
                         <User className="w-4 h-4" style={{ color: "#6EE7F9", filter: "drop-shadow(0 0 3px #6EE7F9)" }} />
                       </div>
@@ -1718,7 +1510,7 @@ export default function TutorPage() {
                   <RizzFace expression="thinking" size={32} radius={9} />
                   <div
                     className="rounded-2xl px-4 py-3 bg-white/[.03]"
-                    style={{ border: "1.5px solid rgba(197,179,255,0.6)", boxShadow: "0 0 18px rgba(197,179,255,0.3)" }}
+                    style={{ border: "1.5px solid rgba(197,179,255,0.6)" }}
                   >
                     <div className="flex items-center gap-2 text-sm" style={{ color: "#C5B3FF" }}>
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -1785,7 +1577,6 @@ export default function TutorPage() {
               style={{
                 background: "rgba(5,5,8,.6)",
                 border: "1.5px solid rgba(110,231,249,0.5)",
-                boxShadow: "0 0 14px rgba(110,231,249,0.2), inset 0 0 10px rgba(0,0,0,0.5)",
                 color: "#fff",
               }}
               disabled={askMutation.isPending}

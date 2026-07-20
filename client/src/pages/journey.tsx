@@ -10,6 +10,7 @@ import {
   ArrowLeft, Calendar, HelpCircle, FileText,
 } from "lucide-react";
 import rizzAvatar from "@assets/rizz-nav-transparent.png";
+import { rizzMascot } from "@/components/rizz-brand";
 
 interface JourneyEvent {
   id: string;
@@ -83,6 +84,26 @@ const marker = (color: string, size = 16): CSSProperties => ({
   textShadow: `0 0 10px ${halo(color, 0.45)}`,
 });
 
+/* Cute sticker callout — small rotated speech-bubble chip, same graffiti
+   language as the landing-page mural stickers (FOCUS/PLAN/ACHIEVE etc.),
+   recreated in CSS since those live baked into the mural artwork. */
+const sticker = (color: string, rotate: number, pos: CSSProperties): CSSProperties => ({
+  position: "absolute",
+  ...pos,
+  transform: `rotate(${rotate}deg)`,
+  fontFamily: "'Permanent Marker',cursive",
+  fontSize: 12,
+  lineHeight: 1.2,
+  color,
+  background: "rgba(5,5,8,.88)",
+  border: `1.5px solid ${color}`,
+  borderRadius: 14,
+  padding: "6px 11px",
+  boxShadow: `0 0 14px ${halo(color, 0.4)}`,
+  whiteSpace: "nowrap",
+  zIndex: 3,
+});
+
 const T = {
   en: {
     pageTitle: "Learning Journey",
@@ -93,6 +114,10 @@ const T = {
     heroLabel: "Journey",
     heroSubtitle: "Your personal learning journey — every milestone, every spark.",
     hypeLine: "Every step counts. Let's get it! 🚀",
+    sticker1: "You've got this!",
+    sticker2: "Momentum building ⚡",
+    sticker3: "Streak mode: ON 🔥",
+    examReadyLink: "Exam Readiness",
     rizzSays: "Rizz says",
     statDays: "Days",
     statBadges: "Badges",
@@ -115,6 +140,10 @@ const T = {
     heroLabel: "Leerreis",
     heroSubtitle: "Jou persoonlike leerreis — elke mylpaal, elke vonk.",
     hypeLine: "Elke tree tel. Kom ons doen dit! 🚀",
+    sticker1: "Jy kan dit doen!",
+    sticker2: "Momentum bou ⚡",
+    sticker3: "Reeks-modus: AAN 🔥",
+    examReadyLink: "Eksamengereedheid",
     rizzSays: "Rizz sê",
     statDays: "Dae",
     statBadges: "Kentekens",
@@ -235,34 +264,76 @@ export default function JourneyPage() {
         />
 
         {/* ── Hero ── */}
-        <section className="relative space-y-4" style={{ animation: "bt-fadeup .5s both" }}>
-          <div className="inline-flex items-center gap-2">
-            <Rocket
-              className="w-4 h-4"
-              style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }}
-            />
-            <span style={marker("#FFE29A")}>{t.heroLabel}</span>
+        <section className="relative" style={{ animation: "bt-fadeup .5s both" }}>
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+            <div className="flex-1 min-w-0 space-y-4">
+              <div className="inline-flex items-center gap-2">
+                <Rocket
+                  className="w-4 h-4"
+                  style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }}
+                />
+                <span style={marker("#FFE29A")}>{t.heroLabel}</span>
+              </div>
+              <div
+                role="heading"
+                aria-level={1}
+                className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-[0.95]"
+                style={{
+                  backgroundImage: `linear-gradient(90deg, ${RAINBOW.join(", ")})`,
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                  color: "transparent",
+                }}
+              >
+                {isAf
+                  ? `${journey?.learnerName ? journey.learnerName : "Jou"} Leerreis`
+                  : `${journey?.learnerName ? journey.learnerName + "'s" : "Your"} Journey`}
+              </div>
+              <p className="text-white font-medium text-sm sm:text-base max-w-2xl leading-relaxed" style={{ opacity: 0.94 }}>
+                {t.heroSubtitle}
+              </p>
+              <span style={marker("#FFB7E5", 15)}>{t.hypeLine}</span>
+            </div>
+
+            {/* Rizz — standing full-body mascot (official handoff art, sneakers and all).
+                Always visible so the journey page reads as Rizz-hosted, not just text;
+                the sticker callouts progressively appear once there's room so nothing
+                crowds the 375px header/hero the way the old dashboard sidebar once did. */}
+            <div
+              className="relative shrink-0 mx-auto lg:mx-0"
+              style={{ width: 160, height: 192 }}
+              data-testid="journey-rizz-mascot"
+            >
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 rounded-full blur-[50px] opacity-60"
+                style={{ background: "#B388FF" }}
+              />
+              <img
+                src={rizzMascot}
+                alt={isAf ? "Rizz, jou studiemaat" : "Rizz, your study buddy"}
+                className="relative"
+                style={{
+                  zIndex: 2,
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain",
+                  animation: "bt-float 6s ease-in-out infinite",
+                  filter: "drop-shadow(0 16px 26px rgba(179,136,255,.35))",
+                }}
+              />
+              <span className="hidden sm:inline-flex" style={sticker("#9FF5E8", -8, { top: -8, left: -14 })}>
+                {t.sticker1}
+              </span>
+              <span className="hidden lg:inline-flex" style={sticker("#FFE29A", 7, { top: 26, right: -60 })}>
+                {t.sticker2}
+              </span>
+              <span className="hidden lg:inline-flex" style={sticker("#FFB7E5", -6, { bottom: 8, left: -34 })}>
+                {t.sticker3}
+              </span>
+            </div>
           </div>
-          <div
-            role="heading"
-            aria-level={1}
-            className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-[0.95]"
-            style={{
-              backgroundImage: `linear-gradient(90deg, ${RAINBOW.join(", ")})`,
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-              color: "transparent",
-            }}
-          >
-            {isAf
-              ? `${journey?.learnerName ? journey.learnerName : "Jou"} Leerreis`
-              : `${journey?.learnerName ? journey.learnerName + "'s" : "Your"} Journey`}
-          </div>
-          <p className="text-white font-medium text-sm sm:text-base max-w-2xl leading-relaxed" style={{ opacity: 0.94 }}>
-            {t.heroSubtitle}
-          </p>
-          <span style={marker("#FFB7E5", 15)}>{t.hypeLine}</span>
         </section>
 
         {isLoading ? (
@@ -381,7 +452,6 @@ export default function JourneyPage() {
                   style={{
                     background: `linear-gradient(to bottom, ${RAINBOW.join(", ")})`,
                     opacity: 0.45,
-                    boxShadow: "0 0 10px rgba(255,255,255,0.08)",
                   }}
                 />
 
@@ -542,29 +612,38 @@ export default function JourneyPage() {
                     {t.ctaDescription}
                   </p>
                 </div>
-                <Link href="/subjects">
-                  <button
-                    className="shrink-0 inline-flex items-center gap-2 px-5 py-3 rounded-xl font-extrabold text-sm transition-all"
-                    style={{
-                      background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
-                      color: "#050508",
-                      border: "none",
-                      boxShadow: "0 0 20px rgba(159,245,232,.35)",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = "translateY(-2px)";
-                      e.currentTarget.style.boxShadow = "0 0 28px rgba(159,245,232,.5)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = "none";
-                      e.currentTarget.style.boxShadow = "0 0 20px rgba(159,245,232,.35)";
-                    }}
-                    data-testid="button-start-studying"
-                  >
-                    {t.ctaButton}
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                </Link>
+                <div className="shrink-0 flex flex-col sm:flex-row items-stretch gap-2.5">
+                  <Link href="/exam-ready">
+                    <button
+                      className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-extrabold text-sm hover:bg-white/10 transition-all"
+                      style={{ background: "rgba(255,255,255,.03)", color: "#fff", border: "1.5px solid rgba(255,255,255,.2)" }}
+                      data-testid="button-exam-readiness"
+                    >
+                      <Target className="w-4 h-4" style={{ color: "#C5B3FF" }} />
+                      {t.examReadyLink}
+                    </button>
+                  </Link>
+                  <Link href="/subjects">
+                    <button
+                      className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-extrabold text-sm transition-all"
+                      style={{
+                        background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
+                        color: "#050508",
+                        border: "none",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = "translateY(-2px)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = "none";
+                      }}
+                      data-testid="button-start-studying"
+                    >
+                      {t.ctaButton}
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </Link>
+                </div>
               </section>
             )}
           </>

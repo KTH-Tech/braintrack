@@ -176,7 +176,7 @@ export default function FeaturesPage() {
         .btf-nav-cta { transition: transform .2s; }
         .btf-nav-cta:hover { transform: translateY(-2px); }
         .btf-cta { transition: transform .2s, box-shadow .2s; }
-        .btf-cta:hover { transform: translateY(-3px) rotate(-1deg); box-shadow: 0 0 44px rgba(255,183,229,.55) !important; }
+        .btf-cta:hover { transform: translateY(-3px) rotate(-1deg); }
         .btf-feature {
           position: relative; overflow: hidden; height: 100%; box-sizing: border-box;
           transition: transform .38s cubic-bezier(.22,.75,.3,1), box-shadow .38s ease,
@@ -206,7 +206,7 @@ export default function FeaturesPage() {
         .btf-fchip { transition: transform .38s cubic-bezier(.22,.75,.3,1), box-shadow .38s ease; }
         .btf-feature:hover .btf-fchip { transform: translateY(-3px) scale(1.07); }
         .btf-chip { transition: transform .25s, box-shadow .25s; }
-        .btf-chip:hover { transform: translateY(-3px) rotate(-1deg); box-shadow: 0 0 18px var(--cg); }
+        .btf-chip:hover { transform: translateY(-3px) rotate(-1deg); }
         .btf-logo-img { transition: transform .25s; }
         .btf-logo-img:hover { transform: scale(1.15) rotate(-4deg); }
         @media (max-width: 860px) {
@@ -332,7 +332,7 @@ export default function FeaturesPage() {
                 <span
                   key={name}
                   className="btf-chip"
-                  style={{ fontSize: 13.5, fontWeight: 700, color: c, border: `1.5px solid ${c}`, borderRadius: 999, padding: "8px 16px", "--cg": `${c}55` } as React.CSSProperties}
+                  style={{ fontSize: 13.5, fontWeight: 700, color: c, border: `1.5px solid ${c}`, borderRadius: 999, padding: "8px 16px" }}
                 >
                   {name}
                 </span>
@@ -355,7 +355,7 @@ export default function FeaturesPage() {
                   padding: 28, cursor: "default", width: "100%",
                 } as React.CSSProperties}
               >
-                <div className="btf-fchip" style={{ width: 54, height: 54, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", background: f.chipBg, boxShadow: `0 0 22px ${f.glow}`, marginBottom: 18, fontSize: 24 }}>
+                <div className="btf-fchip" style={{ width: 54, height: 54, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", background: f.chipBg, marginBottom: 18, fontSize: 24 }}>
                   {f.icon}
                 </div>
                 <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 8, color: "#fff" }}>{f.title}</div>
@@ -376,7 +376,7 @@ export default function FeaturesPage() {
                 color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
                 animation: "bt-rainbow 5s linear infinite", border: "none",
                 borderRadius: 10, padding: "16px 40px", whiteSpace: "nowrap",
-                cursor: "pointer", boxShadow: "0 0 30px rgba(255,183,229,.4)",
+                cursor: "pointer",
               }}
             >
               {isAuthenticated ? t.ctaLoggedIn : t.cta}

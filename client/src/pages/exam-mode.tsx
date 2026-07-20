@@ -21,7 +21,7 @@ import {
   BarChart2,
   ShieldCheck,
   Trophy,
-  Home,
+  ArrowLeft,
   Timer,
 } from "lucide-react";
 import { useMemo } from "react";
@@ -366,7 +366,6 @@ function SubjectExamCard({ subject, isAf, t, colorIndex }: { subject: Subject; i
         border: `1.5px solid ${accent.hex}55`,
         borderRadius: 22,
         padding: 24,
-        boxShadow: `0 0 22px ${accent.halo}`,
         overflow: "hidden",
       }}
       data-testid={`subject-card-${subject.code}`}
@@ -374,7 +373,7 @@ function SubjectExamCard({ subject, isAf, t, colorIndex }: { subject: Subject; i
       {/* Accent top rule — comp card marker */}
       <span
         aria-hidden
-        style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: accent.hex, boxShadow: `0 0 10px ${accent.halo}` }}
+        style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: accent.hex }}
       />
 
       {/* Header row */}
@@ -387,7 +386,6 @@ function SubjectExamCard({ subject, isAf, t, colorIndex }: { subject: Subject; i
               fontSize: 22,
               background: `${accent.hex}24`,
               border: `1.5px solid ${accent.hex}`,
-              boxShadow: `0 0 14px ${accent.halo}`,
             }}
           >
             {getSubjectIcon(subject.name)}
@@ -424,7 +422,6 @@ function SubjectExamCard({ subject, isAf, t, colorIndex }: { subject: Subject; i
               padding: "7px 11px", borderRadius: 12,
               background: "rgba(5,5,8,.6)",
               border: `1.5px solid ${bandMeta.hex}`,
-              boxShadow: `0 0 12px ${bandMeta.halo}`,
             }}
           >
             {getBandIcon(band, bandMeta.hex)}
@@ -495,7 +492,6 @@ function SubjectExamCard({ subject, isAf, t, colorIndex }: { subject: Subject; i
                       color: "#050508", background: ACTION_GRADIENT,
                       border: "none", borderRadius: 10, padding: "8px 14px",
                       cursor: "pointer", whiteSpace: "nowrap",
-                      boxShadow: `0 0 12px ${accent.halo}`,
                     }}
                     data-testid={`button-start-${paper.id}`}
                   >
@@ -731,8 +727,8 @@ export default function ExamModePage() {
         .btx-action:hover { transform: translateY(-2px); }
         .btx-ghost { transition: border-color .2s, transform .2s; }
         .btx-ghost:hover { border-color: rgba(255,255,255,.5) !important; transform: translateY(-1px); }
-        .btx-mode { transition: transform .25s, box-shadow .25s, border-color .25s; }
-        .btx-mode:hover { transform: translateY(-6px); box-shadow: 0 20px 50px var(--glow) !important; border-color: var(--c) !important; }
+        .btx-mode { transition: transform .25s, border-color .25s; }
+        .btx-mode:hover { transform: translateY(-6px); border-color: var(--c) !important; }
         @media (max-width: 860px) {
           .btx-grid2 { grid-template-columns: 1fr !important; }
           .btx-hero-head { font-size: 38px !important; letter-spacing: -1px !important; }
@@ -767,9 +763,15 @@ export default function ExamModePage() {
             {isAf ? "AF" : "EN"}
           </Button>
           <Link href="/dashboard">
-            <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:text-white" title={t.homeTitle} data-testid="button-home">
-              <Home className="w-4 h-4" />
-            </Button>
+            <button
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0"
+              style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
+              title={t.homeTitle}
+              data-testid="button-home"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span className="hidden md:inline">{t.homeTitle}</span>
+            </button>
           </Link>
           <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:text-white" onClick={() => logout()} data-testid="button-logout" title={t.signOutTitle}>
             <LogOut className="w-4 h-4" />
@@ -808,7 +810,7 @@ export default function ExamModePage() {
             <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 16 }}>
               {[
                 { icon: <Flame style={{ width: 12, height: 12, color: "#FFB7E5" }} />, label: t.examSimulation, hex: "#FFB7E5" },
-                { icon: <span style={{ width: 6, height: 6, borderRadius: 999, background: "#9FF5E8", boxShadow: "0 0 6px #9FF5E8", display: "inline-block" }} />, label: t.capsLabel, hex: "#9FF5E8" },
+                { icon: <span style={{ width: 6, height: 6, borderRadius: 999, background: "#9FF5E8", display: "inline-block" }} />, label: t.capsLabel, hex: "#9FF5E8" },
                 { icon: <AlertCircle style={{ width: 12, height: 12, color: "#FFE29A" }} />, label: t.timedScored, hex: "#FFE29A" },
               ].map((p) => (
                 <span
@@ -860,7 +862,6 @@ export default function ExamModePage() {
                     border: `1.5px solid ${s.hex}`,
                     borderRadius: 20, padding: "16px 24px",
                     textAlign: "center", minWidth: 104,
-                    boxShadow: `0 0 22px ${s.glow}`,
                   }}
                 >
                   <div style={{ fontSize: 26, fontWeight: 900, color: s.hex }}>{s.v}</div>
@@ -915,7 +916,7 @@ export default function ExamModePage() {
                     style={{
                       width: 54, height: 54, borderRadius: 16, flex: "none",
                       display: "flex", alignItems: "center", justifyContent: "center",
-                      background: chipBg, boxShadow: `0 0 22px ${glow}`,
+                      background: chipBg,
                     }}
                   >
                     {icon}
@@ -940,7 +941,6 @@ export default function ExamModePage() {
                         fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 13,
                         color: "#050508", background: ACTION_GRADIENT,
                         borderRadius: 10, padding: "11px 20px", whiteSpace: "nowrap",
-                        boxShadow: `0 0 16px ${glow}`,
                       }}
                     >
                       {cta} <ChevronRight style={{ width: 15, height: 15 }} />
@@ -974,7 +974,6 @@ export default function ExamModePage() {
               borderRadius: 22,
               padding: "48px 32px",
               textAlign: "center",
-              boxShadow: "0 0 26px rgba(255,226,154,.14)",
             }}
           >
             <GraduationCap style={{ width: 58, height: 58, margin: "0 auto 14px", color: "#FFE29A", filter: "drop-shadow(0 0 10px rgba(255,226,154,.5))" }} />
@@ -994,7 +993,6 @@ export default function ExamModePage() {
                   animation: "bt-rainbow 5s linear infinite",
                   border: "none", borderRadius: 10, padding: "14px 28px",
                   cursor: "pointer", whiteSpace: "nowrap",
-                  boxShadow: "0 0 16px rgba(255,226,154,.28)",
                 }}
                 data-testid="button-setup-profile"
               >

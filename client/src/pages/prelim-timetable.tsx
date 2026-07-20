@@ -8,7 +8,7 @@ import {
 import { useLanguage } from "@/lib/language-context";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BrainTrackLogo } from "@/components/braintrack-logo";
+import iconTransparent from "@/assets/handoff/icon-transparent.png";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -291,7 +291,7 @@ function CountdownBadge({ days, isAf }: { days: number; isAf: boolean }) {
   }
   if (days === 0) {
     return (
-      <span style={{ fontSize: 9, fontWeight: 900, color: "#FFE29A", background: "rgba(255,226,154,0.18)", borderRadius: 4, padding: "1px 6px", textShadow: "0 0 8px rgba(255,226,154,0.8)" }}>
+      <span style={{ fontSize: 9, fontWeight: 900, color: "#FFE29A", background: "rgba(255,226,154,0.18)", borderRadius: 4, padding: "1px 6px" }}>
         {isAf ? "VANDAG" : "TODAY"}
       </span>
     );
@@ -367,7 +367,7 @@ export default function PrelimTimetablePage() {
                 {isAf ? "Terug" : "Back"}
               </Button>
             </Link>
-            <BrainTrackLogo className="h-7 w-auto" />
+            <img src={iconTransparent} alt="BrainTrack" className="h-7 w-7 object-contain" />
           </div>
           <Button
             size="sm" variant="ghost"
@@ -411,13 +411,13 @@ export default function PrelimTimetablePage() {
                   onClick={() => setActiveWeek(i)}
                   className="relative px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all"
                   style={active
-                    ? { background: "rgba(110,231,249,0.18)", border: "1px solid rgba(110,231,249,0.6)", color: "#6EE7F9", boxShadow: "0 0 12px rgba(110,231,249,0.25)" }
+                    ? { background: "rgba(110,231,249,0.18)", border: "1px solid rgba(110,231,249,0.6)", color: "#6EE7F9" }
                     : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.55)" }
                   }
                 >
                   {w.label}
                   {isCurrent && (
-                    <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full" style={{ background: "#6EE7F9", boxShadow: "0 0 6px #6EE7F9" }} />
+                    <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full" style={{ background: "#6EE7F9" }} />
                   )}
                 </button>
               );
@@ -430,7 +430,7 @@ export default function PrelimTimetablePage() {
               onClick={() => setMySubjectsOnly((v) => !v)}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all"
               style={mySubjectsOnly
-                ? { background: "rgba(255,183,229,0.18)", border: "1px solid rgba(255,183,229,0.6)", color: "#FFB7E5", boxShadow: "0 0 10px rgba(255,183,229,0.2)" }
+                ? { background: "rgba(255,183,229,0.18)", border: "1px solid rgba(255,183,229,0.6)", color: "#FFB7E5" }
                 : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.55)" }
               }
             >
@@ -470,7 +470,6 @@ export default function PrelimTimetablePage() {
                     : isPast
                       ? "rgba(0,0,0,0.4)"
                       : "rgba(0,0,0,0.55)",
-                  boxShadow: isToday ? "0 0 20px rgba(255,226,154,0.15)" : undefined,
                   opacity: isPast ? 0.55 : 1,
                 }}
               >
@@ -560,7 +559,6 @@ export default function PrelimTimetablePage() {
             borderRadius: 16,
             border: "1px solid rgba(255,226,154,0.35)",
             background: "rgba(255,226,154,0.04)",
-            boxShadow: "0 0 18px rgba(255,226,154,0.08)",
           }}
         >
           <div className="flex items-center gap-2 px-4 py-3" style={{ borderBottom: "1px solid rgba(255,226,154,0.15)" }}>
@@ -666,7 +664,6 @@ function SessionColumn({
                 border: isMatch
                   ? `1px solid ${neon}66`
                   : "1px solid rgba(255,255,255,0.08)",
-                boxShadow: isMatch ? `0 0 12px ${neon}22` : undefined,
                 opacity: isPast ? 0.7 : 1,
               }}
             >

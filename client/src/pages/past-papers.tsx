@@ -101,7 +101,6 @@ const PRIMARY_BTN: CSSProperties = {
   border: "none",
   borderRadius: 10,
   fontWeight: 800,
-  boxShadow: "0 0 16px rgba(159,245,232,.3)",
 };
 const SECONDARY_BTN: CSSProperties = {
   background: "transparent",
@@ -116,13 +115,11 @@ const marker = (color: string, size = 15): CSSProperties => ({
   color,
   transform: "rotate(-2deg)",
   display: "inline-block",
-  textShadow: `0 0 10px ${color}55`,
 });
 const accentCard = (hex: string): CSSProperties => ({
   background: "rgba(255,255,255,.03)",
   border: `1.5px solid ${hex}55`,
   borderRadius: 20,
-  boxShadow: `0 0 22px ${hex}1f`,
 });
 const pill = (hex: string): CSSProperties => ({
   display: "inline-flex",
@@ -215,7 +212,7 @@ export default function PastPapersPage() {
       patterns: "10-Year Trends",
       simulated: "Practice Exams",
       science: "The Science",
-      backToApp: "Back to Dashboard",
+      backToApp: "Home",
       selectSubject: "Select a subject to view trends",
       viewOnDBE: "Visit DBE Website for Official Papers",
       disclaimer: "Official papers are available on the DBE website for reference.",
@@ -233,7 +230,7 @@ export default function PastPapersPage() {
       patterns: "10-Jaar Tendense",
       simulated: "Oefeneksamens",
       science: "Die Wetenskap",
-      backToApp: "Terug na Kontroleskerm",
+      backToApp: "Tuis",
       selectSubject: "Kies 'n vak om tendense te sien",
       viewOnDBE: "Besoek DBO Webwerf vir Amptelike Vraestelle",
       disclaimer: "Amptelike vraestelle is beskikbaar op die DBO webwerf vir verwysing.",
@@ -394,7 +391,7 @@ export default function PastPapersPage() {
                 className="py-2"
                 style={
                   activeTab === value
-                    ? { ...PRIMARY_BTN, borderRadius: 12, fontWeight: 800, boxShadow: "0 0 14px rgba(159,245,232,.3)" }
+                    ? { ...PRIMARY_BTN, borderRadius: 12, fontWeight: 800 }
                     : { background: "transparent", color: "#fff", borderRadius: 12, fontWeight: 700 }
                 }
               >
@@ -705,11 +702,9 @@ export default function PastPapersPage() {
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = "rotate(0deg) translateY(-6px)";
-                      e.currentTarget.style.boxShadow = `0 0 28px ${hex}40`;
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = tilt;
-                      e.currentTarget.style.boxShadow = `0 0 22px ${hex}1f`;
                     }}
                   >
                     <div className="flex items-center justify-between mb-3 gap-2">

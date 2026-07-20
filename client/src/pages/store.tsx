@@ -221,7 +221,7 @@ export default function StorePage() {
             </button>
             <span
               className="hidden sm:inline truncate"
-              style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 10px rgba(159,245,232,.45)" }}
+              style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}
             >
               {t.pageTitle}
             </span>
@@ -229,7 +229,7 @@ export default function StorePage() {
           <div className="flex items-center gap-2">
             <div
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold tabular-nums"
-              style={{ background: "rgba(255,226,154,.12)", border: "1.5px solid rgba(255,226,154,.5)", color: "#FFE29A", boxShadow: "0 0 12px rgba(255,226,154,.2)" }}
+              style={{ background: "rgba(255,226,154,.12)", border: "1.5px solid rgba(255,226,154,.5)", color: "#FFE29A" }}
               data-testid="coin-balance-header"
             >
               <Coins className="w-3.5 h-3.5" />
@@ -264,7 +264,7 @@ export default function StorePage() {
         <section className="relative space-y-4 text-center">
           <div className="inline-flex items-center gap-2">
             <ShoppingBag className="w-4 h-4" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }} />
-            <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#FFE29A", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 12px rgba(255,226,154,.5)" }}>
+            <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#FFE29A", transform: "rotate(-2deg)", display: "inline-block" }}>
               {t.heroEyebrow} 💰
             </span>
           </div>
@@ -320,18 +320,17 @@ export default function StorePage() {
                     borderRadius: 22,
                     padding: 22,
                     transform: `rotate(${meta.tilt}deg)`,
-                    boxShadow: `0 10px 28px ${hex}33`,
-                    transition: "transform .25s, box-shadow .25s",
+                    transition: "transform .25s",
                     display: "flex",
                     flexDirection: "column",
                     gap: 14,
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.transform = "rotate(0deg) translateY(-6px)"; e.currentTarget.style.boxShadow = `0 16px 38px ${hex}55`; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.transform = `rotate(${meta.tilt}deg)`; e.currentTarget.style.boxShadow = `0 10px 28px ${hex}33`; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = "rotate(0deg) translateY(-6px)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = `rotate(${meta.tilt}deg)`; }}
                 >
                   <div className="flex items-center justify-between gap-2">
                     <div
-                      style={{ width: 52, height: 52, borderRadius: 16, background: `${hex}26`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 16px ${hex}40` }}
+                      style={{ width: 52, height: 52, borderRadius: 16, background: `${hex}26`, display: "flex", alignItems: "center", justifyContent: "center" }}
                     >
                       <Icon style={{ width: 26, height: 26, color: hex }} />
                     </div>
@@ -367,7 +366,6 @@ export default function StorePage() {
                           border: affordable ? "none" : "1.5px solid rgba(255,255,255,.25)",
                           fontWeight: 800,
                           cursor: affordable ? "pointer" : "not-allowed",
-                          boxShadow: affordable ? "0 0 16px rgba(159,245,232,.3)" : "none",
                           transition: "transform .2s",
                         }}
                         disabled={!affordable || isUnlocking}
@@ -411,7 +409,7 @@ export default function StorePage() {
             className="absolute top-0 left-0 right-0 h-[2px] rounded-t-2xl"
             style={{ background: "linear-gradient(90deg,#FFB7E5,#FFE29A,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)" }}
           />
-          <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#94F7C5", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 10px rgba(148,247,197,.45)" }}>
+          <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#94F7C5", transform: "rotate(-2deg)", display: "inline-block" }}>
             {isAf ? "meer munte = meer hupstote" : "more coins = more power"} ⚡
           </span>
           <p className="text-sm text-white mt-2">{t.earnCoins}</p>

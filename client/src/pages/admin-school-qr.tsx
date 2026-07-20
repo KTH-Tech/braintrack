@@ -63,7 +63,6 @@ function PartnerQRCard({ partner, baseUrl }: { partner: Partner; baseUrl: string
       style={{
         background: "#0a0a0a",
         border: `1px solid ${hexToRgba(NEON, 0.22)}`,
-        boxShadow: `0 0 24px ${hexToRgba(NEON, 0.07)}`,
       }}
     >
       {/* Partner name */}

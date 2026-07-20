@@ -57,7 +57,7 @@ function SectionCard({ color, icon: Icon, eyebrow, title, subtitle, children, te
       data-testid={testId}
     >
       {/* Pastel accent bar */}
-      <div aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: color, boxShadow: `0 0 12px ${color}` }} />
+      <div aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: color }} />
       {/* Soft aura */}
       <div aria-hidden className="pointer-events-none absolute -top-16 -right-16 w-44 h-44 rounded-full blur-3xl opacity-20" style={{ background: color }} />
 
@@ -65,12 +65,12 @@ function SectionCard({ color, icon: Icon, eyebrow, title, subtitle, children, te
         <div className="flex items-start gap-3.5 mb-5">
           <div
             className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
-            style={{ background: "rgba(5,5,8,.6)", border: `1px solid ${color}`, boxShadow: `0 0 14px ${color}44, inset 0 0 10px ${color}22` }}
+            style={{ background: "rgba(5,5,8,.6)", border: `1px solid ${color}` }}
           >
             <Icon className="w-5 h-5" style={{ color, filter: `drop-shadow(0 0 5px ${color})` }} />
           </div>
           <div className="min-w-0">
-            <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 13, color, transform: "rotate(-1.5deg)", display: "inline-block", textShadow: `0 0 10px ${color}66` }}>
+            <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 13, color, transform: "rotate(-1.5deg)", display: "inline-block" }}>
               {eyebrow}
             </div>
             <div role="heading" aria-level={2} className="text-lg font-black text-white leading-tight">
@@ -111,7 +111,6 @@ function PrimaryButton({ children, testId, onClick, disabled, full }: {
         background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
         color: "#050508",
         border: "none",
-        boxShadow: "0 0 20px rgba(159,245,232,.30)",
       }}
       onMouseEnter={(e) => { if (!disabled) e.currentTarget.style.transform = "translateY(-2px)"; }}
       onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}
@@ -152,7 +151,7 @@ function GhostButton({ children, testId, onClick, disabled, color = "#ffffff", f
 const T = {
   en: {
     pageTitle: "Settings",
-    dashboardBtn: "Dashboard",
+    dashboardBtn: "Home",
     yourAccount: "Your Account",
     secure: "Secure",
     heroEyebrow: "Your space, your rules",
@@ -663,7 +662,7 @@ export default function SettingsPage() {
                 </Link>
                 <span
                   className="hidden sm:inline truncate"
-                  style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", textShadow: "0 0 10px rgba(159,245,232,.45)" }}
+                  style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)" }}
                 >
                   {t.pageTitle}
                 </span>
@@ -686,7 +685,7 @@ export default function SettingsPage() {
           <section className="relative mb-2" style={{ animation: "bt-fadeup .5s cubic-bezier(.22,1,.36,1) both" }}>
             <div className="inline-flex items-center gap-2 mb-3">
               <SlidersHorizontal className="w-4 h-4" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px #9FF5E8)" }} />
-              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 12px rgba(159,245,232,.5)" }}>
+              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}>
                 {t.heroEyebrow}
               </span>
             </div>
@@ -760,7 +759,7 @@ export default function SettingsPage() {
               {user?.role === "learner" && (
                 <div
                   className="flex items-start gap-3 p-3 rounded-xl"
-                  style={{ background: "rgba(197,179,255,.06)", border: "1px solid rgba(197,179,255,.4)", boxShadow: "0 0 12px rgba(197,179,255,.12)" }}
+                  style={{ background: "rgba(197,179,255,.06)", border: "1px solid rgba(197,179,255,.4)" }}
                   data-testid="phone-parent-lock"
                 >
                   <Shield className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#C5B3FF", filter: "drop-shadow(0 0 4px rgba(197,179,255,.7))" }} />
@@ -800,7 +799,7 @@ export default function SettingsPage() {
 
                   <div
                     className="flex items-start gap-3 p-3 rounded-xl"
-                    style={{ background: "rgba(255,226,154,.06)", border: "1px solid rgba(255,226,154,.4)", boxShadow: "0 0 12px rgba(255,226,154,.12)" }}
+                    style={{ background: "rgba(255,226,154,.06)", border: "1px solid rgba(255,226,154,.4)" }}
                   >
                     <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px rgba(255,226,154,.7))" }} />
                     <div className="text-sm">
@@ -837,7 +836,7 @@ export default function SettingsPage() {
                 <div className="space-y-4">
                   <div
                     className="flex items-center gap-2 p-3 rounded-xl"
-                    style={{ background: "rgba(159,245,232,.06)", border: "1px solid rgba(159,245,232,.4)", boxShadow: "0 0 12px rgba(159,245,232,.15)" }}
+                    style={{ background: "rgba(159,245,232,.06)", border: "1px solid rgba(159,245,232,.4)" }}
                   >
                     <CheckCircle className="w-5 h-5" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px rgba(159,245,232,.7))" }} />
                     <p className="text-sm text-white">
@@ -949,7 +948,6 @@ export default function SettingsPage() {
                             style={{
                               background: active ? "rgba(159,216,255,.08)" : "rgba(255,255,255,.03)",
                               border: active ? "1.5px solid #9FD8FF" : "1px solid rgba(255,255,255,.1)",
-                              boxShadow: active ? "0 0 14px rgba(159,216,255,.2)" : "none",
                             }}
                             data-testid={`subject-chip-${subject.id}`}
                           >
@@ -1145,7 +1143,6 @@ export default function SettingsPage() {
                     style={{
                       background: active ? "rgba(255,226,154,.08)" : "rgba(255,255,255,.03)",
                       border: active ? "1.5px solid #FFE29A" : "1px solid rgba(255,255,255,.1)",
-                      boxShadow: active ? "0 0 16px rgba(255,226,154,.22)" : "none",
                     }}
                     data-testid={`language-option-${opt.code}`}
                   >
@@ -1193,7 +1190,6 @@ export default function SettingsPage() {
                 style={{
                   background: "rgba(5,5,8,.6)",
                   border: "1.5px solid #FFB7E5",
-                  boxShadow: "0 0 22px rgba(255,183,229,.3), inset 0 0 14px rgba(0,0,0,.5)",
                 }}
               >
                 <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white" style={{ opacity: 0.85 }}>
@@ -1201,7 +1197,7 @@ export default function SettingsPage() {
                 </p>
                 <p
                   className="mt-1.5 font-mono font-black text-2xl sm:text-3xl tracking-[0.18em]"
-                  style={{ color: "#FFB7E5", textShadow: "0 0 12px rgba(255,183,229,.7)" }}
+                  style={{ color: "#FFB7E5" }}
                   data-testid="text-referral-code"
                 >
                   {referral?.code ?? "········"}
@@ -1244,7 +1240,6 @@ export default function SettingsPage() {
                     style={{
                       width: `${((referral?.thisMonthCount ?? 0) / (referral?.maxPerMonth ?? 2)) * 100}%`,
                       background: "#FFB7E5",
-                      boxShadow: "0 0 10px rgba(255,183,229,.6)",
                     }}
                   />
                 </div>

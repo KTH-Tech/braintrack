@@ -12,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Package, CreditCard, Zap, LogOut, CheckCircle, XCircle, ShoppingBag, Settings, Minus, Plus, PlusCircle } from "lucide-react";
 import { Link } from "wouter";
-import { BrainTrackLogo } from "@/components/braintrack-logo";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
@@ -279,7 +278,7 @@ export default function AdminProductsPage() {
               <button
                 onClick={() => { setForm(blankForm); setShowCreateDialog(true); }}
                 className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-[0.12em] transition-transform hover:scale-[1.02]"
-                style={{ background: "linear-gradient(90deg,#9FF5E8,#9FD8FF)", color: "#000", boxShadow: "0 0 18px rgba(159,245,232,0.5)" }}
+                style={{ background: "linear-gradient(90deg,#9FF5E8,#9FD8FF)", color: "#000" }}
                 data-testid="button-add-product"
               >
                 <PlusCircle className="w-3.5 h-3.5" />
@@ -295,7 +294,7 @@ export default function AdminProductsPage() {
                 <button
                   onClick={() => { setForm(blankForm); setShowCreateDialog(true); }}
                   className="mt-3 inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-[0.12em]"
-                  style={{ background: "linear-gradient(90deg,#9FF5E8,#9FD8FF)", color: "#000", boxShadow: "0 0 18px rgba(159,245,232,0.5)" }}
+                  style={{ background: "linear-gradient(90deg,#9FF5E8,#9FD8FF)", color: "#000" }}
                 >
                   <PlusCircle className="w-3.5 h-3.5" />
                   {isAf ? "Skep eerste produk" : "Create first product"}
@@ -545,7 +544,7 @@ export default function AdminProductsPage() {
                 onClick={() => createProductMutation.mutate(form)}
                 disabled={createProductMutation.isPending || !form.nameEn || !form.nameAf || !form.slug || !form.descriptionEn || !form.descriptionAf || !form.category || !form.priceRands}
                 className="inline-flex items-center gap-2 rounded-xl px-5 py-2 text-xs font-black uppercase tracking-[0.12em] disabled:opacity-40 disabled:cursor-not-allowed transition-transform hover:scale-[1.02]"
-                style={{ background: "linear-gradient(90deg,#9FF5E8,#9FD8FF)", color: "#000", boxShadow: "0 0 18px rgba(159,245,232,0.45)" }}
+                style={{ background: "linear-gradient(90deg,#9FF5E8,#9FD8FF)", color: "#000" }}
               >
                 <PlusCircle className="w-3.5 h-3.5" />
                 {createProductMutation.isPending ? (isAf ? "Skep…" : "Creating…") : (isAf ? "Skep Produk" : "Create Product")}

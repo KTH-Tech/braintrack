@@ -34,8 +34,6 @@ import {
 } from "lucide-react";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { SubjectBoostPack } from "@/components/performance-packs";
-import { AudioLessonPlayer } from "@/components/audio-lesson-player";
-import { VoiceNoteRecorder } from "@/components/voice-note-recorder";
 import type { Subject, OnboardingResult, UserBadge } from "@shared/schema";
 import { useLanguage } from "@/lib/language-context";
 import { apiRequest, queryClient as qc } from "@/lib/queryClient";
@@ -121,7 +119,7 @@ function CosmicCard({ children, color = "cyan", className = "" }: { children: Re
   return (
     <div
       className={`relative rounded-2xl bg-white/[.03] overflow-hidden ${className}`}
-      style={{ border: `1.5px solid ${hex}`, boxShadow: `0 0 18px ${hex}55, inset 0 0 14px rgba(0,0,0,0.55)` }}
+      style={{ border: `1.5px solid ${hex}` }}
     >
       <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 pointer-events-none" style={{ borderColor: hex }} />
       <span aria-hidden className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 pointer-events-none" style={{ borderColor: hex }} />
@@ -137,58 +135,10 @@ function NeonBadge({ children, color = "cyan" }: { children: React.ReactNode; co
   return (
     <span
       className="inline-flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-full bg-white/[.03] uppercase tracking-[0.18em]"
-      style={{ color: hex, border: `1px solid ${hex}`, boxShadow: `0 0 10px ${hex}55` }}
+      style={{ color: hex, border: `1px solid ${hex}` }}
     >
       {children}
     </span>
-  );
-}
-
-function TopicMediaPanel({
-  topicId,
-  topicName,
-  isAf,
-  accentHex,
-}: {
-  topicId: number;
-  topicName: string;
-  isAf: boolean;
-  accentHex: string;
-}) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div id={`audio-${topicId}`} className="mt-3">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="w-full inline-flex items-center justify-between gap-2 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold transition-all hover:scale-[1.005]"
-        style={{
-          color: accentHex,
-          border: `1.5px solid ${accentHex}`,
-        }}
-        data-testid={`button-topic-media-${topicId}`}
-        aria-expanded={open}
-      >
-        <span className="flex items-center gap-2">
-          <Zap className="w-3.5 h-3.5" />
-          {isAf ? "Klank & Stemnotas" : "Audio & Voice Notes"}
-        </span>
-        <span className="text-[10px]" aria-hidden>
-          {open ? "▾" : "▸"}
-        </span>
-      </button>
-      {open && (
-        <div className="mt-3 grid grid-cols-1 lg:grid-cols-2 gap-3">
-          <AudioLessonPlayer
-            topicId={topicId}
-            topicName={topicName}
-            language={isAf ? "af" : "en"}
-            isAf={isAf}
-          />
-          <VoiceNoteRecorder topicId={topicId} isAf={isAf} />
-        </div>
-      )}
-    </div>
   );
 }
 
@@ -196,10 +146,10 @@ function NeonStat({ hex, icon: Icon, value, label }: { hex: string; icon: any; v
   return (
     <div
       className="relative rounded-2xl bg-white/[.03] p-4 text-center overflow-hidden"
-      style={{ border: `1px solid ${hex}66`, boxShadow: `0 0 16px ${hex}33, inset 0 0 12px ${hex}15` }}
+      style={{ border: `1px solid ${hex}66` }}
     >
       <Icon className="w-5 h-5 mx-auto mb-1" style={{ color: hex, filter: `drop-shadow(0 0 4px ${hex})` }} />
-      <p className="text-2xl font-bold text-white tabular-nums" style={{ textShadow: `0 0 10px ${hex}aa` }}>{value}</p>
+      <p className="text-2xl font-bold text-white tabular-nums">{value}</p>
       <p className="text-[10px] text-white mt-0.5 uppercase tracking-[0.14em]">{label}</p>
     </div>
   );
@@ -379,14 +329,6 @@ function TopicContentDrawer({
               </p>
             ) : (
               <div className="space-y-4">
-                {/* Audio lesson — sits at the top of the Notes tab so learners can
-                    listen to a spoken version of the same material. */}
-                <AudioLessonPlayer
-                  topicId={topicId}
-                  topicName={topicName}
-                  language={lang}
-                  isAf={isAf}
-                />
                 <p className="text-sm text-white leading-relaxed" data-testid="topic-notes-summary">{notes.summary}</p>
                 {notes.keyConcepts.length > 0 && (
                   <div>
@@ -1048,12 +990,12 @@ export default function SubjectDetailPage() {
               <Link href="/dashboard">
                 <button className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0" style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }} data-testid="link-home">
                   <ArrowLeft className="w-4 h-4" />
-                  <span className="hidden md:inline">{isAf ? "Dashboard" : "Dashboard"}</span>
+                  <span className="hidden md:inline">{isAf ? "Tuis" : "Home"}</span>
                 </button>
               </Link>
               <span
                 className="hidden sm:inline truncate"
-                style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", textShadow: "0 0 10px rgba(159,245,232,.45)" }}
+                style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)" }}
               >
                 {isAf ? "Klaskamer" : "Classroom"}
               </span>
@@ -1100,7 +1042,6 @@ export default function SubjectDetailPage() {
                 className="relative overflow-hidden rounded-3xl border bg-white/[.03] p-6 sm:p-8"
                 style={{
                   borderColor: `${hex}44`,
-                  boxShadow: `0 0 40px ${hex}22, inset 0 0 60px ${hex}08`,
                   animation: "bt-fadeup .5s cubic-bezier(.22,1,.36,1) both",
                 }}
                 data-testid="subject-hero"
@@ -1121,7 +1062,6 @@ export default function SubjectDetailPage() {
                     className="shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center bg-white/[.03]"
                     style={{
                       border: `1.5px solid ${hex}`,
-                      boxShadow: `0 0 24px ${hex}66, inset 0 0 20px ${hex}22`,
                     }}
                   >
                     <Icon
@@ -1139,7 +1079,7 @@ export default function SubjectDetailPage() {
                         {subject.code}
                       </span>
                       <span
-                        style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 10px rgba(159,245,232,.45)" }}
+                        style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}
                       >
                         {isAf ? "Graad 12 NSS" : "Grade 12 NSC"}
                       </span>
@@ -1171,7 +1111,6 @@ export default function SubjectDetailPage() {
                       className="shrink-0 flex flex-col items-center justify-center gap-0.5 px-5 py-3 rounded-2xl bg-white/[.03]"
                       style={{
                         border: `1.5px solid ${masteryHex}`,
-                        boxShadow: `0 0 20px ${masteryHex}66`,
                       }}
                       data-testid="badge-overall-mastery"
                     >
@@ -1179,7 +1118,6 @@ export default function SubjectDetailPage() {
                         {getBandIcon(mastery.overallBand)}
                         <span
                           className="font-black text-2xl text-white tabular-nums leading-none"
-                          style={{ textShadow: `0 0 10px ${masteryHex}aa` }}
                         >
                           {mastery.totalMastery}%
                         </span>
@@ -1218,7 +1156,7 @@ export default function SubjectDetailPage() {
               <Link href={miniMockHref}>
                 <button
                   className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-white/[.03] text-left transition-all hover:-translate-y-1.5"
-                  style={{ border: "1.5px solid #FFE29A", boxShadow: "0 0 18px rgba(255,226,154,.18)" }}
+                  style={{ border: "1.5px solid #FFE29A" }}
                   data-testid="button-mini-mock-shortcut"
                 >
                   <div className="flex items-center gap-3">
@@ -1242,7 +1180,7 @@ export default function SubjectDetailPage() {
               <Link href={`/exam/full?subject=${encodeURIComponent(subject.name)}`}>
                 <button
                   className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-white/[.03] text-left transition-all hover:-translate-y-1.5"
-                  style={{ border: "1.5px solid #C5B3FF", boxShadow: "0 0 18px rgba(197,179,255,.18)" }}
+                  style={{ border: "1.5px solid #C5B3FF" }}
                   data-testid="button-full-exam-shortcut"
                 >
                   <div className="flex items-center gap-3">
@@ -1330,7 +1268,7 @@ export default function SubjectDetailPage() {
                         {isPriority && (
                           <span
                             className="absolute -top-2 -right-1 text-[8px] font-black uppercase tracking-[0.1em] px-1.5 py-0.5 rounded-full"
-                            style={{ background: bandHex, color: "#000", boxShadow: `0 0 6px ${bandHex}99` }}
+                            style={{ background: bandHex, color: "#000" }}
                             data-testid={`chip-priority-badge-${topic.id}`}
                           >
                             {isAf ? "Prioriteit" : "Priority"}
@@ -1377,8 +1315,8 @@ export default function SubjectDetailPage() {
                   </NeonBadge>
                 </div>
                 <div className="grid grid-cols-3 gap-4">
-                  <div className="text-center p-3 rounded-xl bg-white/[.03]" style={{ border: `1px solid ${getBandHex(mastery.overallBand)}55`, boxShadow: `inset 0 0 10px ${getBandHex(mastery.overallBand)}20` }}>
-                    <p className="text-3xl font-black text-white tabular-nums" style={{ textShadow: `0 0 10px ${getBandHex(mastery.overallBand)}aa` }}>{currentScore}%</p>
+                  <div className="text-center p-3 rounded-xl bg-white/[.03]" style={{ border: `1px solid ${getBandHex(mastery.overallBand)}55` }}>
+                    <p className="text-3xl font-black text-white tabular-nums">{currentScore}%</p>
                     <p className="text-[10px] text-white uppercase tracking-[0.14em] mt-1">{isAf ? "Huidige" : "Current"}</p>
                   </div>
                   <div className="flex items-center justify-center">
@@ -1387,13 +1325,13 @@ export default function SubjectDetailPage() {
                       <p className="text-[10px] text-white">{scoreDiff >= 0 ? (isAf ? 'Op Koers' : 'On Track') : (isAf ? 'Moet Verbeter' : 'Needs Work')}</p>
                     </div>
                   </div>
-                  <div className="text-center p-3 rounded-xl bg-white/[.03]" style={{ border: "1px solid #9FF5E855", boxShadow: "inset 0 0 10px #9FF5E820" }}>
-                    <p className="text-3xl font-black text-white tabular-nums" style={{ textShadow: "0 0 10px #9FF5E8aa" }}>{targetScore}%</p>
+                  <div className="text-center p-3 rounded-xl bg-white/[.03]" style={{ border: "1px solid #9FF5E855" }}>
+                    <p className="text-3xl font-black text-white tabular-nums">{targetScore}%</p>
                     <p className="text-[10px] text-white uppercase tracking-[0.14em] mt-1">{isAf ? "Teiken" : "Target"}</p>
                   </div>
                 </div>
                 <div className="h-2 rounded-full bg-white/[.03] overflow-hidden mt-3" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
-                  <div className="h-full rounded-full" style={{ width: `${Math.min(100, Math.max(0, currentScore))}%`, background: "linear-gradient(90deg, #FFE29A, #FFE29A, #94F7C5, #9FF5E8, #9FD8FF, #C5B3FF, #FFB7E5)", boxShadow: "0 0 10px rgba(110,231,249,0.6)" }} />
+                  <div className="h-full rounded-full" style={{ width: `${Math.min(100, Math.max(0, currentScore))}%`, background: "linear-gradient(90deg, #FFE29A, #FFE29A, #94F7C5, #9FF5E8, #9FD8FF, #C5B3FF, #FFB7E5)" }} />
                 </div>
                 <div className="flex justify-between mt-1">
                   <span className="text-[10px] text-white">0%</span>
@@ -1542,7 +1480,6 @@ export default function SubjectDetailPage() {
 
             {/* ── TOPICS tab ── */}
             <TabsContent value="topics" className="mt-6">
-              <div id="audio" />
               <CosmicCard color="cyan" className="p-5">
                 <div className="flex items-center gap-2 mb-4">
                   <Target className="w-5 h-5" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px #9FF5E8)" }} />
@@ -1561,7 +1498,7 @@ export default function SubjectDetailPage() {
                         <div
                           key={topic.id}
                           className="p-4 rounded-xl bg-white/[.03] transition-all duration-200 hover:-translate-y-px"
-                          style={{ border: `1px solid ${tHex}55`, boxShadow: `inset 0 0 12px ${tHex}15` }}
+                          style={{ border: `1px solid ${tHex}55` }}
                           data-testid={`topic-mastery-${topic.id}`}
                         >
                           <div className="flex items-start justify-between gap-4 flex-wrap mb-2">
@@ -1597,7 +1534,7 @@ export default function SubjectDetailPage() {
                               </p>
                             </div>
                             <div className="flex items-center gap-2">
-                              <span className="font-black text-lg text-white tabular-nums" style={{ textShadow: `0 0 8px ${tHex}aa` }}>
+                              <span className="font-black text-lg text-white tabular-nums">
                                 {topic.masteryScore}%
                               </span>
                               <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-white/[.03] uppercase tracking-[0.14em]" style={{ color: tHex, border: `1px solid ${tHex}` }}>
@@ -1606,7 +1543,7 @@ export default function SubjectDetailPage() {
                             </div>
                           </div>
                           <div className="h-1.5 rounded-full bg-white/[.03] overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
-                            <div className="h-full rounded-full transition-all duration-700" style={{ width: `${topic.masteryScore}%`, background: tHex, boxShadow: `0 0 8px ${tHex}aa` }} />
+                            <div className="h-full rounded-full transition-all duration-700" style={{ width: `${topic.masteryScore}%`, background: tHex }} />
                           </div>
                           {topic.confidenceLevel > 0 && (
                             <div className="flex items-center gap-1 mt-2">
@@ -1616,12 +1553,6 @@ export default function SubjectDetailPage() {
                               </span>
                             </div>
                           )}
-                          <TopicMediaPanel
-                            topicId={topic.id}
-                            topicName={isAf ? (topic.nameAfrikaans || topic.name) : topic.name}
-                            isAf={isAf}
-                            accentHex={tHex}
-                          />
                           {(() => {
                             const cards = topic.cardCount ?? 0;
                             const notes = topic.hasNotes ?? false;
@@ -1700,7 +1631,7 @@ export default function SubjectDetailPage() {
                           { hex: "#FFE29A", label: isAf ? "Ster" : "Star", range: "85-100%" },
                         ].map(b => (
                           <div key={b.label} className="flex items-center gap-1.5">
-                            <span className="w-2 h-2 rounded-full" style={{ background: b.hex, boxShadow: `0 0 6px ${b.hex}` }} />
+                            <span className="w-2 h-2 rounded-full" style={{ background: b.hex }} />
                             <span className="text-[10px] text-white">{b.label} <span className="text-white">{b.range}</span></span>
                           </div>
                         ))}
@@ -1739,12 +1670,12 @@ export default function SubjectDetailPage() {
                         <div
                           key={idx}
                           className="flex items-center justify-between gap-3 p-3 rounded-xl bg-white/[.03] transition-all duration-200 hover:-translate-y-px"
-                          style={{ border: `1px solid ${pHex}55`, boxShadow: `inset 0 0 10px ${pHex}15` }}
+                          style={{ border: `1px solid ${pHex}55` }}
                           data-testid={`plan-item-${idx}`}
                         >
                           <div className="flex items-center gap-3 flex-1 min-w-0">
                             <div className="w-10 h-10 rounded-lg flex items-center justify-center text-[10px] font-black shrink-0 bg-white/[.03] uppercase tracking-[0.14em]"
-                              style={{ border: `1.5px solid ${pHex}`, color: pHex, boxShadow: `0 0 10px ${pHex}55` }}>
+                              style={{ border: `1.5px solid ${pHex}`, color: pHex }}>
                               {item.day}
                             </div>
                             <div className="min-w-0">
@@ -1792,7 +1723,7 @@ export default function SubjectDetailPage() {
                         <div
                           key={badge.id}
                           className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[.03]"
-                          style={{ border: "1px solid #FFE29A44", boxShadow: "inset 0 0 8px #FFE29A15" }}
+                          style={{ border: "1px solid #FFE29A44" }}
                           data-testid={`badge-${badge.badgeCode}`}
                         >
                           <IconComp className="w-4 h-4" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 3px #FFE29A)" }} />
@@ -1948,7 +1879,7 @@ export default function SubjectDetailPage() {
                         })}
                       </div>
                       {hasAnySelection && (
-                        <div className="mt-4 p-3 rounded-xl bg-white/[.03]" style={{ border: "1px solid #9FF5E855", boxShadow: "inset 0 0 8px #9FF5E815" }}>
+                        <div className="mt-4 p-3 rounded-xl bg-white/[.03]" style={{ border: "1px solid #9FF5E855" }}>
                           <p className="text-xs text-white flex items-center gap-2">
                             <BookMarked className="w-4 h-4 shrink-0" style={{ color: "#9FF5E8" }} />
                             {isAf
@@ -1979,7 +1910,7 @@ export default function SubjectDetailPage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 p-2.5 rounded-xl bg-white/[.03] text-sm font-semibold text-white hover:text-white transition-all hover:-translate-y-px"
-                      style={{ border: "1px solid #9FD8FF55", boxShadow: "inset 0 0 8px #9FD8FF15" }}
+                      style={{ border: "1px solid #9FD8FF55" }}
                       data-testid={lnk.tid}
                     >
                       <ExternalLink className="w-3 h-3 shrink-0" style={{ color: "#9FD8FF" }} />

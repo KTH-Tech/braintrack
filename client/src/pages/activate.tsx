@@ -10,7 +10,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/lib/language-context";
 import { apiRequest } from "@/lib/queryClient";
 import { Loader2, CheckCircle2, XCircle, Sparkles, BookOpen, Brain, Trophy, Globe } from "lucide-react";
-import { BrainTrackLogo } from "@/components/braintrack-logo";
 
 export default function ActivatePage() {
   const [, navigate] = useLocation();

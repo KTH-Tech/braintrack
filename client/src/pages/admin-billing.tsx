@@ -257,7 +257,7 @@ function LinkHistoryModal({
     >
       <div
         className="w-full max-w-2xl rounded-2xl bg-black flex flex-col max-h-[80vh]"
-        style={{ border: "1.5px solid #9FD8FF55", boxShadow: "0 0 40px #9FD8FF22" }}
+        style={{ border: "1.5px solid #9FD8FF55" }}
       >
         <div className="flex items-center gap-3 px-5 py-4 border-b border-white/10 shrink-0">
           <Link2 className="w-4 h-4 shrink-0" style={{ color: "#9FD8FF" }} />
@@ -707,7 +707,7 @@ export default function AdminBillingPage() {
           <section data-testid="stuck-links-banner">
             <div
               className="rounded-2xl p-4"
-              style={{ border: "1.5px solid #FF8DA188", background: "rgba(255,141,161,0.07)", boxShadow: "0 0 20px #FF8DA122" }}
+              style={{ border: "1.5px solid #FF8DA188", background: "rgba(255,141,161,0.07)" }}
             >
               <div className="flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#FF8DA1" }} />
@@ -765,7 +765,6 @@ export default function AdminBillingPage() {
                     border: `1.5px solid ${active ? color : color + "44"}`,
                     color: active ? color : color + "99",
                     background: active ? `${color}18` : "transparent",
-                    boxShadow: active ? `0 0 14px ${color}44` : "none",
                   }}
                 >
                   {label}

@@ -9,7 +9,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import {
   Activity, AlertTriangle, BarChart3, CheckCircle2, Database, Eye, FileEdit, FileText, Flag,
-  GraduationCap, Gift, Headphones, Layers, Loader2, LogOut, Mail, Package,
+  GraduationCap, Gift, Layers, Loader2, LogOut, Mail, Package,
   ShieldAlert, Store, Users, Zap, Handshake, School, ChevronDown, ChevronUp, QrCode,
 } from "lucide-react";
 
@@ -1018,13 +1018,6 @@ export default function AdminDashboardPage() {
       Icon: Package, testId: "quick-products",
     },
     {
-      href: "/learn/admin/topic-audio", color: "#9FD8FF",
-      title: "Topic Audio", titleAf: "Onderwerp Klank",
-      desc: "Preview, regenerate or upload replacement MP3s before students hear them.",
-      descAf: "Voorskou, hergenereer of laai vervangings-MP3's op voor leerders dit hoor.",
-      Icon: Headphones, testId: "quick-topic-audio",
-    },
-    {
       href: "/partner-schools", color: "#FFE29A",
       title: "Partner Schools", titleAf: "Vennootskole",
       desc: "Manage channels, pipelines, and contacts.",
@@ -1161,7 +1154,7 @@ export default function AdminDashboardPage() {
             >
               {emergencyActive
                 ? <AlertTriangle className="w-3 h-3" style={{ color: "#FFE29A" }} />
-                : <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#94F7C5", boxShadow: "0 0 8px #94F7C5" }} />}
+                : <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#94F7C5" }} />}
               <span className="text-[10px] font-bold uppercase tracking-[0.2em]"
                 style={{ color: emergencyActive ? "#FFE29A" : "#94F7C5" }}>
                 {emergencyActive

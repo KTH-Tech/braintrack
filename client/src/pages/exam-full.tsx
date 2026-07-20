@@ -13,12 +13,14 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { MarkingFeedback, type MarkingResult } from "@/components/exam/marking-feedback";
+import { ConfettiBurst } from "@/components/confetti-burst";
 import { useLanguage } from "@/lib/language-context";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import {
   ArrowLeft,
   ArrowRight,
+  CheckCircle2,
   Clock,
   FileText,
   Loader2,
@@ -31,32 +33,6 @@ import {
 } from "lucide-react";
 
 /* ── Street-pastel building blocks (design-guidelines.md) ───────────────── */
-
-const CONFETTI_COLORS = ["#9FF5E8", "#9FD8FF", "#FFB7E5", "#C5B3FF", "#FFE29A", "#94F7C5"];
-
-function ConfettiBurst() {
-  return (
-    <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-40 overflow-hidden">
-      {Array.from({ length: 16 }).map((_, i) => (
-        <span
-          key={i}
-          style={{
-            position: "absolute",
-            top: -8,
-            left: `${(i * 61) % 100}%`,
-            width: i % 3 === 0 ? 10 : 7,
-            height: i % 2 === 0 ? 12 : 7,
-            borderRadius: i % 2 === 0 ? 2 : "50%",
-            background: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
-            boxShadow: `0 0 8px ${CONFETTI_COLORS[i % CONFETTI_COLORS.length]}66`,
-            ["--cx" as any]: `${((i % 5) - 2) * 26}px`,
-            animation: `bt-confetti ${0.9 + (i % 6) * 0.16}s ease-in ${(i % 8) * 0.07}s both`,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
 
 function PrimaryBtn({ children, onClick, disabled, testId, full, size = "md" }: {
   children: React.ReactNode;
@@ -77,7 +53,6 @@ function PrimaryBtn({ children, onClick, disabled, testId, full, size = "md" }: 
       style={{
         background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
         color: "#050508",
-        boxShadow: "0 0 20px rgba(159,245,232,.30)",
       }}
       onMouseEnter={(e) => { if (!disabled) e.currentTarget.style.transform = "translateY(-2px)"; }}
       onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}
@@ -130,7 +105,6 @@ function GlassCard({ children, accent, className = "", style, testId }: {
         background: "rgba(255,255,255,.03)",
         border: accent ? `1.5px solid ${accent}` : "1px solid rgba(255,255,255,.08)",
         borderRadius: 22,
-        boxShadow: accent ? `0 0 22px ${accent}33` : "none",
         ...style,
       }}
     >
@@ -159,7 +133,7 @@ function StreetShell({ isAf, eyebrow, children }: {
           <div className="flex items-center justify-between h-14 gap-4">
             <div className="flex items-center gap-2 min-w-0">
               <GraduationCap className="w-4 h-4 shrink-0" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px #9FF5E8)" }} />
-              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 10px rgba(159,245,232,.45)" }}>
+              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}>
                 {isAf ? "Volle Eksamen" : "Full Exam"}
               </span>
               <span className="hidden sm:inline text-[11px] font-bold uppercase tracking-[0.18em] text-white truncate" style={{ opacity: 0.85 }}>
@@ -172,7 +146,7 @@ function StreetShell({ isAf, eyebrow, children }: {
                 style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
               >
                 <ArrowLeft className="w-4 h-4" />
-                {isAf ? "Tuis" : "Home"}
+                <span className="hidden md:inline">{isAf ? "Tuis" : "Home"}</span>
               </button>
             </Link>
           </div>
@@ -214,6 +188,44 @@ interface FullPaper {
     cognitiveLevel: string | null;
     mcqOptions: Array<{ letter: string; text: string }> | null;
   }[];
+}
+
+/**
+ * For a wrong MCQ answer, shows the full correct option ("B — text"), not
+ * just a bare letter — mirrors the callout used on the Mini Mock results
+ * screen so the "what was the right answer" explanation reads the same
+ * across both exam modes.
+ */
+function McqCorrectAnswerCallout({
+  paper,
+  questionId,
+  result,
+  isAf,
+}: {
+  paper: FullPaper | null;
+  questionId: number;
+  result: MarkingResult;
+  isAf: boolean;
+}) {
+  const question = paper?.questions.find((pq) => pq.id === questionId);
+  if (!question?.mcqOptions || question.mcqOptions.length === 0) return null;
+  if (result.marksAwarded >= result.marksAvailable) return null;
+  const correctLetter = result.perCriterion[0]?.missed?.[0];
+  if (!correctLetter) return null;
+  const opt = question.mcqOptions.find((o) => o.letter === correctLetter);
+  return (
+    <div
+      className="flex items-start gap-2 rounded-xl px-3 py-2"
+      style={{ background: "rgba(148,247,197,.08)", border: "1px solid rgba(148,247,197,.4)" }}
+    >
+      <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "#94F7C5" }} />
+      <p className="text-sm font-semibold" style={{ color: "#94F7C5" }}>
+        {isAf ? "Korrekte antwoord:" : "Correct answer:"}{" "}
+        <span className="font-bold">{correctLetter}</span>
+        {opt && <span className="font-normal text-white"> — {opt.text}</span>}
+      </p>
+    </div>
+  );
 }
 
 interface FullResult {
@@ -402,7 +414,7 @@ export default function ExamFullPage() {
         <section style={{ animation: "bt-fadeup .5s cubic-bezier(.22,1,.36,1) both" }}>
           <div className="inline-flex items-center gap-2 mb-3">
             <Clock className="w-4 h-4" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }} />
-            <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFE29A", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 12px rgba(255,226,154,.5)" }}>
+            <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFE29A", transform: "rotate(-2deg)", display: "inline-block" }}>
               {isAf ? "Die groot een" : "The big one"}
             </span>
           </div>
@@ -441,7 +453,6 @@ export default function ExamFullPage() {
               style={{
                 background: "rgba(5,5,8,.6)",
                 border: "1px solid rgba(255,226,154,0.55)",
-                boxShadow: "0 0 14px rgba(255,226,154,0.25), inset 0 0 12px rgba(255,226,154,0.06)",
               }}
             >
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }} />
@@ -456,7 +467,7 @@ export default function ExamFullPage() {
               <div className="flex flex-col items-center text-center gap-3 py-4">
                 <div
                   className="w-12 h-12 rounded-2xl flex items-center justify-center"
-                  style={{ background: "rgba(255,141,161,.08)", border: "1.5px solid #FF8DA1", boxShadow: "0 0 16px rgba(255,141,161,.25)" }}
+                  style={{ background: "rgba(255,141,161,.08)", border: "1.5px solid #FF8DA1" }}
                 >
                   <AlertCircle className="w-6 h-6" style={{ color: "#FF8DA1" }} />
                 </div>
@@ -612,7 +623,7 @@ export default function ExamFullPage() {
               </button>
               <span
                 className="inline-flex items-center gap-1.5 font-mono font-bold text-lg tabular-nums"
-                style={{ color: timerHex, textShadow: `0 0 12px ${timerHex}66` }}
+                style={{ color: timerHex }}
               >
                 <Clock className="w-5 h-5" />
                 {formatTime(secondsLeft)}
@@ -646,7 +657,7 @@ export default function ExamFullPage() {
           <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.08)" }}>
             <div
               className="h-full rounded-full transition-all duration-300"
-              style={{ width: `${(answered / paper.questions.length) * 100}%`, background: "linear-gradient(90deg,#9FF5E8,#C5B3FF)", boxShadow: "0 0 8px rgba(159,245,232,.6)" }}
+              style={{ width: `${(answered / paper.questions.length) * 100}%`, background: "linear-gradient(90deg,#9FF5E8,#C5B3FF)" }}
             />
           </div>
 
@@ -681,7 +692,6 @@ export default function ExamFullPage() {
                             style={{
                               background: active ? "rgba(159,245,232,.08)" : "rgba(255,255,255,.02)",
                               border: active ? "1.5px solid #9FF5E8" : "1.5px solid rgba(255,255,255,.12)",
-                              boxShadow: active ? "0 0 14px rgba(159,245,232,.2)" : "none",
                             }}
                           >
                             <span
@@ -763,19 +773,19 @@ export default function ExamFullPage() {
           <div className="relative space-y-3">
             <div
               className="mx-auto w-16 h-16 rounded-2xl flex items-center justify-center"
-              style={{ background: "rgba(5,5,8,.6)", border: `1.5px solid ${gradeHex}`, boxShadow: `0 0 22px ${gradeHex}55` }}
+              style={{ background: "rgba(5,5,8,.6)", border: `1.5px solid ${gradeHex}` }}
             >
               <Trophy className="w-8 h-8" style={{ color: gradeHex, filter: `drop-shadow(0 0 8px ${gradeHex})` }} />
             </div>
-            <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 18, color: gradeHex, transform: "rotate(-1.5deg)", textShadow: `0 0 12px ${gradeHex}66` }}>
+            <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 18, color: gradeHex, transform: "rotate(-1.5deg)" }}>
               {isAf ? "Eksamen-resultate" : "Exam Results"}
             </div>
             <div className="text-5xl font-black tabular-nums text-white">
               {result.marksAwarded} <span className="text-white" style={{ opacity: 0.85 }}>/ {result.marksAvailable}</span>
             </div>
-            <div className="text-2xl font-black tabular-nums" style={{ color: gradeHex, textShadow: `0 0 14px ${gradeHex}66` }}>{result.percentage}%</div>
+            <div className="text-2xl font-black tabular-nums" style={{ color: gradeHex }}>{result.percentage}%</div>
             <div className="h-2.5 rounded-full overflow-hidden mx-auto max-w-sm" style={{ background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.08)" }}>
-              <div className="h-full rounded-full" style={{ width: `${result.percentage}%`, background: `linear-gradient(90deg,#9FF5E8,${gradeHex})`, boxShadow: `0 0 10px ${gradeHex}` }} />
+              <div className="h-full rounded-full" style={{ width: `${result.percentage}%`, background: `linear-gradient(90deg,#9FF5E8,${gradeHex})` }} />
             </div>
             <p className="text-[11px] uppercase tracking-[0.18em] font-bold text-white" style={{ opacity: 0.9 }}>
               {isAf ? "Memo-gedryf merk" : "Memo-driven marking"}
@@ -799,7 +809,7 @@ export default function ExamFullPage() {
                       <span className="tabular-nums" style={{ color: sHex }}>{s.awarded}/{s.available} ({s.percentage}%)</span>
                     </div>
                     <div className="h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.08)" }}>
-                      <div className="h-full rounded-full" style={{ width: `${s.percentage}%`, background: sHex, boxShadow: `0 0 8px ${sHex}aa` }} />
+                      <div className="h-full rounded-full" style={{ width: `${s.percentage}%`, background: sHex }} />
                     </div>
                   </div>
                 );
@@ -811,13 +821,15 @@ export default function ExamFullPage() {
         <div className="space-y-3">
           <p className="text-sm font-black text-white uppercase tracking-[0.14em]">{isAf ? "Per vraag" : "Question by question"}</p>
           {result.perQuestion.map((q) => (
-            <MarkingFeedback
-              key={q.questionId}
-              result={q}
-              isAf={isAf}
-              questionNumber={q.questionNumber}
-              questionText={q.questionText}
-            />
+            <div key={q.questionId} className="space-y-2">
+              <MarkingFeedback
+                result={q}
+                isAf={isAf}
+                questionNumber={q.questionNumber}
+                questionText={q.questionText}
+              />
+              <McqCorrectAnswerCallout paper={paper} questionId={q.questionId} result={q} isAf={isAf} />
+            </div>
           ))}
         </div>
 

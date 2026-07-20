@@ -157,7 +157,7 @@ export default function WaitingForParentPage() {
       <div className="relative z-10 w-full max-w-md">
         <div
           className="rounded-3xl border border-white/10 overflow-hidden"
-          style={{ background: "#050508", boxShadow: "0 0 30px rgba(159,245,232,0.15)", animation: "bt-fadeup .6s cubic-bezier(.22,1,.36,1) both" }}
+          style={{ background: "#050508", animation: "bt-fadeup .6s cubic-bezier(.22,1,.36,1) both" }}
         >
           <div aria-hidden className="h-[3px]" style={{ background: "linear-gradient(95deg,#FFB7E5,#FFE29A,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)" }} />
           <div className="p-8 text-center space-y-5">
@@ -167,7 +167,7 @@ export default function WaitingForParentPage() {
 
             {done ? (
               <>
-                <CheckCircle2 className="w-14 h-14 mx-auto" style={{ color: "#94F7C5", filter: "drop-shadow(0 0 18px rgba(148,247,197,.45))" }} />
+                <CheckCircle2 className="w-14 h-14 mx-auto" style={{ color: "#94F7C5" }} />
                 <h1 className="text-2xl font-black" style={{ fontFamily: "'Poppins',sans-serif" }} data-testid="waiting-done-heading">
                   {t.allDoneSub}
                 </h1>
@@ -180,7 +180,6 @@ export default function WaitingForParentPage() {
                     color: "#050508", background: "linear-gradient(100deg,#FFB7E5,#FFE29A,#9FF5E8,#C5B3FF,#FFB7E5)",
                     backgroundSize: "200% 100%", animation: "bt-rainbow 5s linear infinite",
                     border: "none", borderRadius: 12, padding: "15px 24px", cursor: "pointer",
-                    boxShadow: "0 0 26px rgba(255,183,229,.4)",
                   }}
                 >
                   {t.goDashboard}
@@ -188,7 +187,7 @@ export default function WaitingForParentPage() {
               </>
             ) : (
               <>
-                <Mail className="w-14 h-14 mx-auto" style={{ color: "#FFB7E5", filter: "drop-shadow(0 0 16px rgba(255,183,229,.4))", animation: "bt-float 3s ease-in-out infinite" }} />
+                <Mail className="w-14 h-14 mx-auto" style={{ color: "#FFB7E5", animation: "bt-float 3s ease-in-out infinite" }} />
                 <h1 className="text-2xl font-black leading-tight" style={{ fontFamily: "'Poppins',sans-serif" }} data-testid="waiting-heading">
                   {t.heading}
                 </h1>
@@ -212,7 +211,7 @@ export default function WaitingForParentPage() {
                       <span
                         className="w-6 h-6 rounded-full flex items-center justify-center flex-none"
                         style={step.complete
-                          ? { background: "#94F7C5", color: "#050508", boxShadow: "0 0 12px rgba(148,247,197,.5)" }
+                          ? { background: "#94F7C5", color: "#050508" }
                           : { border: "1.5px solid rgba(255,255,255,.25)", color: "rgba(255,255,255,.9)" }}
                       >
                         {step.complete ? <CheckCircle2 className="w-4 h-4" /> : <span className="text-[11px]">{i + 1}</span>}

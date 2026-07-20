@@ -375,7 +375,7 @@ export default function LandingPage() {
         .btl-proof-cell { transition: transform .35s cubic-bezier(.22,.75,.3,1), border-color .35s, box-shadow .35s; }
         .btl-proof-cell:hover { transform: translateY(-6px); border-color: var(--c) !important; box-shadow: 0 18px 46px var(--glow); }
         .btl-eco-chip { transition: transform .25s, box-shadow .25s, background .25s; }
-        .btl-eco-chip:hover { transform: translateY(-2px); box-shadow: 0 0 18px var(--cg); }
+        .btl-eco-chip:hover { transform: translateY(-2px); }
         .btl-logo-img { transition: transform .25s; }
         .btl-logo-img:hover { transform: scale(1.15) rotate(-4deg); }
         .btl-foot-link { color:#fff; cursor:pointer; transition:color .2s, opacity .2s; }
@@ -452,7 +452,7 @@ export default function LandingPage() {
                 color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
                 animation: "bt-rainbow 6s linear infinite", border: "none",
                 borderRadius: 10, padding: "11px 26px", whiteSpace: "nowrap",
-                cursor: "pointer", boxShadow: "0 0 12px rgba(255,183,229,.22)",
+                cursor: "pointer",
                 transition: "transform .2s",
               }}
             >
@@ -529,7 +529,7 @@ export default function LandingPage() {
                 color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
                 animation: "bt-rainbow 5s linear infinite", border: "none",
                 borderRadius: 10, padding: "16px 36px", whiteSpace: "nowrap",
-                cursor: "pointer", boxShadow: "0 0 16px rgba(255,183,229,.28)",
+                cursor: "pointer",
               }}
             >
               {t.ctaStart}
@@ -574,7 +574,7 @@ export default function LandingPage() {
                   padding: 28, cursor: "default", width: "100%",
                 } as React.CSSProperties}
               >
-                <div className="btl-fchip" style={{ width: 54, height: 54, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", background: f.chipBg, boxShadow: `0 0 22px ${f.glow}`, marginBottom: 18, fontSize: 24 }}>
+                <div className="btl-fchip" style={{ width: 54, height: 54, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", background: f.chipBg, marginBottom: 18, fontSize: 24 }}>
                   {f.icon}
                 </div>
                 <div style={{ fontWeight: 800, fontSize: 18.5, letterSpacing: "-.2px", marginBottom: 9 }}>{f.title}</div>
@@ -618,7 +618,7 @@ export default function LandingPage() {
                 display: "inline-flex", alignItems: "center", gap: 8, marginTop: 18,
                 border: "1.5px solid #94F7C5", borderRadius: 999, padding: "9px 18px",
                 fontSize: 13.5, fontWeight: 700, color: "#94F7C5",
-                background: "rgba(148,247,197,.08)", boxShadow: "0 0 18px rgba(148,247,197,.18)",
+                background: "rgba(148,247,197,.08)",
               }}
             >
               <span aria-hidden>✓</span>
@@ -644,8 +644,8 @@ export default function LandingPage() {
                     boxShadow: "0 10px 34px " + p.glow, width: "100%", boxSizing: "border-box",
                   } as React.CSSProperties}
                 >
-                  <div aria-hidden style={{ fontSize: 30, lineHeight: 1, marginBottom: 12, filter: "drop-shadow(0 0 14px " + p.glow + ")" }}>{p.icon}</div>
-                  <div style={{ fontSize: 17, fontWeight: 900, color: p.color, letterSpacing: "-.4px", lineHeight: 1.3, textShadow: "0 0 22px " + p.glow }}>
+                  <div aria-hidden style={{ fontSize: 30, lineHeight: 1, marginBottom: 12 }}>{p.icon}</div>
+                  <div style={{ fontSize: 17, fontWeight: 900, color: p.color, letterSpacing: "-.4px", lineHeight: 1.3 }}>
                     {p.title}
                   </div>
                   <div style={{ marginTop: 8, fontSize: 12.5, lineHeight: 1.5, color: "#fff", opacity: 0.88 }}>{p.detail}</div>
@@ -681,7 +681,7 @@ export default function LandingPage() {
           </div>
           </Reveal>
           <Reveal delay={140} style={{ display: "flex" }}>
-          <div style={{ width: "100%", boxSizing: "border-box", background: "linear-gradient(150deg,rgba(159,216,255,.1),rgba(255,183,229,.08))", border: "1.5px solid rgba(159,216,255,.3)", borderRadius: 22, padding: 30, boxShadow: "0 0 18px rgba(159,216,255,.08)" }}>
+          <div style={{ width: "100%", boxSizing: "border-box", background: "linear-gradient(150deg,rgba(159,216,255,.1),rgba(255,183,229,.08))", border: "1.5px solid rgba(159,216,255,.3)", borderRadius: 22, padding: 30 }}>
             <div style={{ fontWeight: 800, fontSize: 18, letterSpacing: "-.2px", marginBottom: 18 }}>{t.tConnects}</div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
               {[
@@ -699,7 +699,7 @@ export default function LandingPage() {
                 { l: "Afrikaans + English", c: "#FFB7E5" },
                 { l: en ? "POPIA-aware reporting" : "POPIA-bewuste verslae", c: "#9FD8FF" },
               ].map((chip) => (
-                <span key={chip.l} className="btl-eco-chip" style={{ fontSize: 13.5, fontWeight: 700, color: chip.c, border: `1.5px solid ${chip.c}`, borderRadius: 8, padding: "8px 14px", "--cg": `${chip.c}55` } as React.CSSProperties}>
+                <span key={chip.l} className="btl-eco-chip" style={{ fontSize: 13.5, fontWeight: 700, color: chip.c, border: `1.5px solid ${chip.c}`, borderRadius: 8, padding: "8px 14px" }}>
                   {chip.l}
                 </span>
               ))}
@@ -728,8 +728,8 @@ export default function LandingPage() {
             </div>
             <div className="btl-xp-stats" style={{ display: "flex", gap: 18, flexWrap: "wrap" }}>
               {t.xpStats.map((s) => (
-                <div key={s.label} style={{ background: "rgba(5,5,8,.6)", border: `1.5px solid ${s.color}`, borderRadius: 20, padding: "24px 28px", textAlign: "center", minWidth: 116, boxShadow: `0 0 26px ${s.glow}`, animation: "bt-wiggle 6s ease-in-out infinite" }}>
-                  <div style={{ fontSize: 32, fontWeight: 900, letterSpacing: "-1px", color: s.color, textShadow: `0 0 24px ${s.glow}` }}>{s.value}</div>
+                <div key={s.label} style={{ background: "rgba(5,5,8,.6)", border: `1.5px solid ${s.color}`, borderRadius: 20, padding: "24px 28px", textAlign: "center", minWidth: 116, animation: "bt-wiggle 6s ease-in-out infinite" }}>
+                  <div style={{ fontSize: 32, fontWeight: 900, letterSpacing: "-1px", color: s.color }}>{s.value}</div>
                   <div style={{ fontSize: 12.5, fontWeight: 700, letterSpacing: "1.6px", color: "#fff", textTransform: "uppercase", marginTop: 4 }}>{s.label}</div>
                 </div>
               ))}
@@ -753,7 +753,7 @@ export default function LandingPage() {
                   rel="noopener noreferrer"
                   data-testid={s.testid}
                   className="btl-eco-chip"
-                  style={{ fontSize: 13.5, fontWeight: 700, color: s.color, border: `1.5px solid ${s.color}`, borderRadius: 999, padding: "9px 18px", textDecoration: "none", "--cg": `${s.color}55` } as React.CSSProperties}
+                  style={{ fontSize: 13.5, fontWeight: 700, color: s.color, border: `1.5px solid ${s.color}`, borderRadius: 999, padding: "9px 18px", textDecoration: "none" }}
                 >
                   {s.label}
                 </a>

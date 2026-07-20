@@ -373,7 +373,7 @@ export default function SubjectsPage() {
               </Link>
               <span
                 className="hidden sm:inline truncate"
-                style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", textShadow: "0 0 10px rgba(159,245,232,.45)" }}
+                style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)" }}
               >
                 {t.subjectsLabel}
               </span>
@@ -390,11 +390,12 @@ export default function SubjectsPage() {
               <button
                 onClick={() => logout()}
                 data-testid="button-logout"
+                aria-label={t.signOut}
                 className="inline-flex items-center px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
                 style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}
               >
-                <LogOut className="w-4 h-4 mr-2" />
-                {t.signOut}
+                <LogOut className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">{t.signOut}</span>
               </button>
             </div>
           </div>
@@ -431,7 +432,6 @@ export default function SubjectsPage() {
                 color: "#9FF5E8",
                 transform: "rotate(-2deg)",
                 display: "inline-block",
-                textShadow: "0 0 12px rgba(159,245,232,.5)",
               }}
             >
               {t.capsLabel}
@@ -481,7 +481,6 @@ export default function SubjectsPage() {
                         background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
                         border: "none",
                         color: "#050508",
-                        boxShadow: "0 0 20px rgba(159,245,232,.35)",
                       }
                 }
                 onMouseEnter={(e) => { if (!showBrowseAll) e.currentTarget.style.transform = "translateY(-2px)"; }}
@@ -551,7 +550,6 @@ export default function SubjectsPage() {
                 background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
                 border: "none",
                 color: "#050508",
-                boxShadow: "0 0 20px rgba(159,245,232,.35)",
               }}
               onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
               onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
@@ -570,7 +568,6 @@ export default function SubjectsPage() {
               background: "rgba(255,255,255,.03)",
               border: "1px solid rgba(255,255,255,.08)",
               borderRadius: 24,
-              boxShadow: "0 0 40px rgba(159,245,232,0.08)",
             }}
           >
             <div
@@ -719,7 +716,7 @@ export default function SubjectsPage() {
               </div>
 
               <div
-                className="flex items-center gap-1 rounded-xl bg-white/[.03] p-1"
+                className="flex flex-wrap items-center gap-1 rounded-xl bg-white/[.03] p-1"
                 style={{ border: "1px solid rgba(255,255,255,0.12)" }}
                 data-testid="sort-group"
               >
@@ -987,14 +984,14 @@ function SubjectNeonCard({
         transition: "transform .25s, box-shadow .25s",
         animation: `bt-fadeup .45s cubic-bezier(.22,1,.36,1) ${animDelay}s both`,
       }}
-      onMouseEnter={(e) => (e.currentTarget.style.boxShadow = `0 14px 44px -18px ${hex}, 0 0 24px ${hex}33`)}
+      onMouseEnter={(e) => (e.currentTarget.style.boxShadow = `0 14px 44px -18px ${hex}`)}
       onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
     >
       {/* 2px top bar */}
       <div
         aria-hidden
         className="absolute top-0 left-0 right-0 h-[2px]"
-        style={{ background: hex, boxShadow: `0 0 10px ${hex}` }}
+        style={{ background: hex }}
       />
       {/* Corner brackets */}
       <span aria-hidden className="absolute top-2 left-2 w-3 h-3 border-t border-l" style={{ borderColor: hex }} />
@@ -1016,7 +1013,6 @@ function SubjectNeonCard({
             style={{
               background: "rgba(5,5,8,.6)",
               border: `1px solid ${hex}`,
-              boxShadow: `0 0 14px ${hex}55, inset 0 0 10px ${hex}22`,
             }}
           >
             <Icon
@@ -1028,7 +1024,7 @@ function SubjectNeonCard({
           <div className="flex-1 min-w-0">
             <h3
               className="font-bold text-base sm:text-lg truncate"
-              style={{ color: hex, textShadow: `0 0 10px ${hex}33` }}
+              style={{ color: hex }}
             >
               {title}
             </h3>
@@ -1049,12 +1045,12 @@ function SubjectNeonCard({
         {/* Progress strip */}
         <div>
           <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.2em] font-black mb-1.5">
-            <span style={{ color: strengthHex, textShadow: `0 0 6px ${strengthHex}66` }}>
+            <span style={{ color: strengthHex }}>
               {strengthLabel}
             </span>
             <span
               className="font-black tabular-nums"
-              style={{ color: strengthHex, textShadow: `0 0 8px ${strengthHex}88` }}
+              style={{ color: strengthHex }}
               data-testid={`${testId}-accuracy`}
             >
               {hasProgress ? `${pct}%` : "—"}
@@ -1069,7 +1065,6 @@ function SubjectNeonCard({
               style={{
                 width: hasProgress ? `${pct}%` : "0%",
                 background: strengthHex,
-                boxShadow: hasProgress ? `0 0 8px ${strengthHex}` : "none",
               }}
             />
           </div>

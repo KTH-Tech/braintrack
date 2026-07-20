@@ -321,7 +321,7 @@ export default function ResearchPage() {
                 padding: "26px 20px", textAlign: "center", boxShadow: `0 10px 34px ${rs.glow}`,
               }}
             >
-              <div style={{ fontSize: 44, fontWeight: 900, color: rs.color, textShadow: `0 0 22px ${rs.glow}` }}>{rs.value}</div>
+              <div style={{ fontSize: 44, fontWeight: 900, color: rs.color }}>{rs.value}</div>
               <div style={{ fontSize: 12.5, fontWeight: 600, color: "#fff", opacity: 0.94, lineHeight: 1.4, marginTop: 6 }}>{rs.label}</div>
             </div>
           ))}
@@ -343,7 +343,6 @@ export default function ResearchPage() {
                     style={{
                       height: "100%", width: `${rb.pct}%`, borderRadius: 999,
                       background: `linear-gradient(90deg,${rb.color},${rb.color2})`,
-                      boxShadow: `0 0 12px ${rb.glow}`,
                       transition: "width 1.1s cubic-bezier(.2,.8,.2,1)",
                     }}
                   />
@@ -388,7 +387,7 @@ export default function ResearchPage() {
                 {rp.emoji}
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
-                <div style={{ width: 56, height: 56, flex: "none", borderRadius: 16, background: rp.chipBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, boxShadow: `0 0 20px ${rp.glow}` }}>
+                <div style={{ width: 56, height: 56, flex: "none", borderRadius: 16, background: rp.chipBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28 }}>
                   {rp.emoji}
                 </div>
                 <div>
@@ -414,7 +413,7 @@ export default function ResearchPage() {
           <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "center", gap: 10, marginBottom: 24 }}>
             {t.inputs.map((ri, i) => (
               <span key={ri.label} style={{ display: "contents" }}>
-                <span style={{ fontSize: 13, fontWeight: 800, color: ri.color, border: `1.5px solid ${ri.color}`, borderRadius: 10, padding: "10px 16px", boxShadow: `0 0 16px ${ri.glow}` }}>
+                <span style={{ fontSize: 13, fontWeight: 800, color: ri.color, border: `1.5px solid ${ri.color}`, borderRadius: 10, padding: "10px 16px" }}>
                   {ri.label}
                 </span>
                 {i < t.inputs.length - 1 && (

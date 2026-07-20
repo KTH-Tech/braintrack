@@ -21,7 +21,6 @@ import {
   Sparkles,
   Target,
   Calendar,
-  Home,
   LogOut,
   AlertCircle,
   RefreshCw,
@@ -47,7 +46,6 @@ const marker = (color: string, size = 16): CSSProperties => ({
   color,
   transform: "rotate(-2deg)",
   display: "inline-block",
-  textShadow: `0 0 10px ${halo(color, 0.45)}`,
 });
 
 const rainbowText: CSSProperties = {
@@ -62,7 +60,6 @@ const cardStyle = (accent?: string, radius = 22): CSSProperties => ({
   background: "rgba(255,255,255,.03)",
   border: accent ? `1.5px solid ${accent}` : "1px solid rgba(255,255,255,.08)",
   borderRadius: radius,
-  ...(accent ? { boxShadow: `0 0 22px ${halo(accent, 0.22)}` } : {}),
 });
 
 const primaryBtnStyle: CSSProperties = {
@@ -71,7 +68,6 @@ const primaryBtnStyle: CSSProperties = {
   border: "none",
   borderRadius: 12,
   fontWeight: 800,
-  boxShadow: "0 0 20px rgba(159,245,232,.35)",
 };
 
 const secondaryBtnStyle = (accent = "rgba(255,255,255,.2)", color = "#fff"): CSSProperties => ({
@@ -84,9 +80,6 @@ const secondaryBtnStyle = (accent = "rgba(255,255,255,.2)", color = "#fff"): CSS
 
 function primaryHover(e: ReactMouseEvent<HTMLButtonElement>, on: boolean) {
   e.currentTarget.style.transform = on ? "translateY(-2px)" : "none";
-  e.currentTarget.style.boxShadow = on
-    ? "0 0 28px rgba(159,245,232,.5)"
-    : "0 0 20px rgba(159,245,232,.35)";
 }
 
 /* Full-page shell for standalone states (loading / error / empty). */
@@ -273,7 +266,7 @@ export default function DailyChallengePage() {
         <div className="max-w-md w-full p-10 flex flex-col items-center text-center gap-4" style={cardStyle("#9FD8FF", 24)}>
           <div
             className="w-14 h-14 rounded-2xl flex items-center justify-center"
-            style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #9FD8FF", boxShadow: `0 0 12px ${halo("#9FD8FF", 0.4)}` }}
+            style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #9FD8FF" }}
           >
             <Target className="w-7 h-7" style={{ color: "#9FD8FF" }} />
           </div>
@@ -319,7 +312,7 @@ export default function DailyChallengePage() {
             <div className="p-10 flex flex-col items-center text-center gap-4" style={cardStyle("#FFE29A", 24)} data-testid="daily-challenge-not-ready">
               <div
                 className="w-14 h-14 rounded-2xl flex items-center justify-center"
-                style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #FFE29A", boxShadow: `0 0 12px ${halo("#FFE29A", 0.4)}` }}
+                style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #FFE29A" }}
               >
                 <Target className="w-7 h-7" style={{ color: "#FFE29A" }} />
               </div>
@@ -373,7 +366,7 @@ export default function DailyChallengePage() {
           <div className="p-10 flex flex-col items-center text-center gap-4" style={cardStyle("#FF8DA1", 24)} data-testid="daily-challenge-error">
             <div
               className="w-14 h-14 rounded-2xl flex items-center justify-center"
-              style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #FF8DA1", boxShadow: `0 0 12px ${halo("#FF8DA1", 0.4)}` }}
+              style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #FF8DA1" }}
             >
               <AlertCircle className="w-7 h-7" style={{ color: "#FF8DA1" }} />
             </div>
@@ -418,7 +411,7 @@ export default function DailyChallengePage() {
         <div className="max-w-md w-full p-10 flex flex-col items-center text-center gap-4" style={cardStyle("#FFE29A", 24)} data-testid="daily-challenge-time-up">
           <div
             className="w-14 h-14 rounded-2xl flex items-center justify-center"
-            style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #FFE29A", boxShadow: `0 0 12px ${halo("#FFE29A", 0.4)}` }}
+            style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #FFE29A" }}
           >
             <Clock className="w-7 h-7" style={{ color: "#FFE29A" }} />
           </div>
@@ -475,7 +468,7 @@ export default function DailyChallengePage() {
                   data-testid="button-home"
                 >
                   <ArrowLeft className="w-4 h-4" />
-                  <Home className="w-4 h-4 hidden sm:block" />
+                  <span className="hidden md:inline">{isAf ? "Tuis" : "Home"}</span>
                 </button>
               </Link>
               <div className="min-w-0">
@@ -487,9 +480,9 @@ export default function DailyChallengePage() {
                 </span>
               </div>
             </div>
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-1.5 min-[375px]:gap-2 shrink-0">
               <div
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
+                className="hidden min-[400px]:flex items-center gap-1.5 px-3 py-1.5 rounded-full"
                 style={{ background: "rgba(255,255,255,.03)", border: "1px solid #FFE29A" }}
                 data-testid="text-challenge-streak"
                 title={isAf ? "Reeks" : "Streak"}
@@ -595,7 +588,7 @@ export default function DailyChallengePage() {
                     className="relative h-2.5 min-h-0 p-0 flex-1 rounded-full transition-all duration-300 border-0"
                     style={
                       isCurrent
-                        ? { background: RAINBOW_GRADIENT, boxShadow: "0 0 12px rgba(159,245,232,.6)" }
+                        ? { background: RAINBOW_GRADIENT }
                         : answered
                         ? { background: "#9FF5E8", opacity: 0.7 }
                         : { background: "rgba(255,255,255,.1)" }
@@ -663,7 +656,6 @@ export default function DailyChallengePage() {
                           borderRadius: 18,
                           background: isSelected ? halo("#9FF5E8", 0.08) : "rgba(255,255,255,.03)",
                           border: isSelected ? "2px solid #9FF5E8" : "2px solid rgba(255,255,255,.08)",
-                          boxShadow: isSelected ? `0 0 18px ${halo("#9FF5E8", 0.25)}` : "none",
                         }}
                         onMouseEnter={(e) => {
                           if (!isSelected) e.currentTarget.style.border = "2px solid rgba(159,245,232,.5)";
@@ -824,7 +816,6 @@ function ResultsView({
               style={{
                 background: "rgba(5,5,8,.6)",
                 border: `1.5px solid ${grade.hex}`,
-                boxShadow: `0 0 24px ${halo(grade.hex, 0.35)}`,
                 animation: "bt-float 3s ease-in-out infinite",
               }}
             >
@@ -844,14 +835,14 @@ function ResultsView({
             </span>
             <div className="flex items-center justify-center gap-6 mt-4">
               <div className="text-center" data-testid="text-result-score">
-                <p className="text-5xl font-black text-white tabular-nums" style={{ textShadow: `0 0 16px ${halo(grade.hex, 0.4)}` }}>
+                <p className="text-5xl font-black text-white tabular-nums">
                   {correctCount}/{totalQuestions}
                 </p>
                 <p className="text-sm font-bold text-white">{isAf ? "Korrek" : "Correct"}</p>
               </div>
               <div className="w-px h-12" style={{ background: "rgba(255,255,255,.2)" }} />
               <div className="text-center" data-testid="text-result-percentage">
-                <p className="text-5xl font-black text-white tabular-nums" style={{ textShadow: `0 0 16px ${halo(grade.hex, 0.4)}` }}>
+                <p className="text-5xl font-black text-white tabular-nums">
                   {percentage}%
                 </p>
                 <p className="text-sm font-bold text-white">{isAf ? "Telling" : "Score"}</p>
@@ -963,7 +954,6 @@ function ResultsView({
                   style={{
                     background: dayHex ? halo(dayHex, 0.08) : "rgba(255,255,255,.03)",
                     border: dayHex ? `2px solid ${halo(dayHex, 0.5)}` : "2px solid rgba(255,255,255,.08)",
-                    ...(isToday && dayHex ? { boxShadow: `0 0 14px ${halo(dayHex, 0.35)}` } : {}),
                   }}
                   data-testid={`history-day-${i}`}
                   title={formatDate(date, isAf ? "af" : "en", { weekday: "long", day: "numeric", month: "short" })}
@@ -1027,7 +1017,7 @@ function ResultsView({
                 >
                   <div
                     className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                    style={{ background: rowHex, boxShadow: `0 0 12px ${halo(rowHex, 0.4)}` }}
+                    style={{ background: rowHex }}
                   >
                     {isCorrect ? <Check className="w-4 h-4" style={{ color: "#050508" }} /> : <X className="w-4 h-4" style={{ color: "#050508" }} />}
                   </div>

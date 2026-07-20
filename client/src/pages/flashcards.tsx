@@ -338,12 +338,16 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
     isDragging.current = false;
     setSwipeDelta(0);
     if (!wasDragging) return;
+    // Grading only fires once the card has actually been flipped — swiping
+    // on the front (before the answer is visible) must never silently grade
+    // a card the learner hasn't seen the answer to yet.
+    if (!flipped) return;
     if (delta > SWIPE_THRESHOLD) {
       handleGrade(5);
     } else if (delta < -SWIPE_THRESHOLD) {
       handleGrade(1);
     }
-  }, [swipeDelta, handleGrade]);
+  }, [swipeDelta, flipped, handleGrade]);
 
   useEffect(() => {
     if (!sessionStarted) return;
@@ -366,11 +370,12 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
 
   if (deckLoading) {
     return (
-      <div className="rounded-2xl border border-dashed border-white/10 p-8 text-center space-y-3" style={{ background: "rgba(255,255,255,.03)" }}>
-        <Layers className="w-10 h-10 mx-auto animate-pulse" style={{ color: "#9FD8FF" }} />
+      <div className="rounded-2xl border border-dashed border-white/10 p-8 text-center space-y-3" style={{ background: "rgba(255,255,255,.03)", animation: "bt-fadeup .4s both" }}>
+        <Layers className="w-10 h-10 mx-auto" style={{ color: "#9FD8FF", animation: "bt-pulse 1.6s ease-in-out infinite" }} />
         <p className="text-sm text-white">
           {isAf ? "Laai amptelike DBE-flitskaarte..." : "Loading official DBE flashcards..."}
         </p>
+        <style>{`@keyframes bt-pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }`}</style>
       </div>
     );
   }
@@ -389,7 +394,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
           <button
             type="button"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all"
-            style={{ background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", color: "#050508", fontWeight: 800, boxShadow: "0 0 20px rgba(159,245,232,.35)" }}
+            style={{ background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", color: "#050508", fontWeight: 800 }}
             onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
             onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
           >
@@ -409,13 +414,13 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
       <div className="flex flex-col items-center justify-center py-12 space-y-6" style={{ animation: "bt-fadeup .5s both" }}>
         <div
           className="w-20 h-20 rounded-2xl flex items-center justify-center"
-          style={{ background: "rgba(255,255,255,.03)", border: "1.5px solid #FFE29A", boxShadow: "0 0 0 1px rgba(255,226,154,0.25), 0 0 28px rgba(255,226,154,0.35), inset 0 0 18px rgba(0,0,0,0.6)" }}
+          style={{ background: "rgba(255,255,255,.03)", border: "1.5px solid #FFE29A", boxShadow: "0 0 0 1px rgba(255,226,154,0.25), inset 0 0 18px rgba(0,0,0,0.6)" }}
         >
           <Trophy className="w-10 h-10" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 6px #FFE29A)" }} />
         </div>
         <div className="text-center space-y-2">
           <span
-            style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#94F7C5", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 12px rgba(148,247,197,.5)" }}
+            style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#94F7C5", transform: "rotate(-2deg)", display: "inline-block" }}
           >
             {isAf ? "Jy het dit gekraak! 🔥" : "You smashed it! 🔥"}
           </span>
@@ -434,11 +439,11 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
           )}
         </div>
         <div className="grid grid-cols-2 gap-4 w-full max-w-xs">
-          <div className="rounded-xl p-4 text-center" style={{ background: "rgba(255,255,255,.03)", border: "1.5px solid #94F7C5", boxShadow: "0 0 18px rgba(148,247,197,.25)" }}>
+          <div className="rounded-xl p-4 text-center" style={{ background: "rgba(255,255,255,.03)", border: "1.5px solid #94F7C5" }}>
             <p className="text-3xl font-bold" style={{ color: "#94F7C5" }}>{totalGot}</p>
             <p className="text-xs font-semibold mt-1" style={{ color: "#94F7C5" }}>{isAf ? "Geweet ✓" : "Got it ✓"}</p>
           </div>
-          <div className="rounded-xl p-4 text-center" style={{ background: "rgba(255,255,255,.03)", border: "1.5px solid #FF8DA1", boxShadow: "0 0 18px rgba(255,141,161,.25)" }}>
+          <div className="rounded-xl p-4 text-center" style={{ background: "rgba(255,255,255,.03)", border: "1.5px solid #FF8DA1" }}>
             <p className="text-3xl font-bold" style={{ color: "#FF8DA1" }}>{totalMissed}</p>
             <p className="text-xs font-semibold mt-1" style={{ color: "#FF8DA1" }}>{isAf ? "Gemis ✗" : "Missed ✗"}</p>
           </div>
@@ -454,7 +459,6 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
               style={{
                 width: `${pct}%`,
                 background: pct >= 70 ? "linear-gradient(90deg,#94F7C5,#9FF5E8)" : pct >= 40 ? "linear-gradient(90deg,#FFE29A,#FFB7E5)" : "linear-gradient(90deg,#FF8DA1,#FFB7E5)",
-                boxShadow: pct >= 70 ? "0 0 12px rgba(148,247,197,.6)" : "0 0 12px rgba(255,226,154,.5)",
               }}
             />
           </div>
@@ -487,7 +491,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
             type="button"
             onClick={() => startSession()}
             className="inline-flex items-center px-5 py-2.5 rounded-xl font-bold text-sm transition-all"
-            style={{ background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", color: "#050508", fontWeight: 800, boxShadow: "0 0 20px rgba(159,245,232,.35)" }}
+            style={{ background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", color: "#050508", fontWeight: 800 }}
             onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
             onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
           >
@@ -512,7 +516,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
               { icon: Layers, value: serverStats?.dueTomorrow ?? dueTomorrow,           label: isAf ? "Môre Reg"    : "Due Tomorrow", hex: "#FFB7E5" },
               { icon: Trophy, value: serverStats?.cardsMastered ?? 0,                   label: isAf ? "Bemeester"   : "Mastered",     hex: "#C5B3FF" },
             ] as const).map(({ icon: Icon, value, label, hex }) => (
-              <div key={label} className="rounded-xl p-3 text-center" style={{ background: "rgba(255,255,255,.03)", border: `1px solid ${hex}55`, boxShadow: `0 0 12px ${hex}22` }}>
+              <div key={label} className="rounded-xl p-3 text-center" style={{ background: "rgba(255,255,255,.03)", border: `1px solid ${hex}55` }}>
                 <Icon className="w-4 h-4 mx-auto mb-1" style={{ color: hex, filter: `drop-shadow(0 0 4px ${hex})` }} />
                 <p className="text-xl font-bold text-white">{value}</p>
                 <p className="text-[10px] text-white font-semibold uppercase tracking-wider">{label}</p>
@@ -520,7 +524,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
             ))}
           </div>
           {serverStats && (serverStats.currentStreak > 0 || serverStats.longestStreak > 0) && (
-            <div className="rounded-xl p-3 flex items-center justify-between" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,226,154,.4)", boxShadow: "0 0 12px rgba(255,226,154,.18)" }}>
+            <div className="rounded-xl p-3 flex items-center justify-between" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,226,154,.4)" }}>
               <div className="flex items-center gap-2 text-sm text-white">
                 <Zap className="w-4 h-4" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }} />
                 <span>{isAf ? "Huidige reeks" : "Current streak"}: <strong>{serverStats.currentStreak}</strong> {isAf ? "dae" : "days"} 🔥</span>
@@ -533,13 +537,16 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
 
           {/* Subject cards */}
           <div className="space-y-2">
-            <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFE29A", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 10px rgba(255,226,154,.45)" }}>
+            <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFE29A", transform: "rotate(-2deg)", display: "inline-block" }}>
               {isAf ? "Kies 'n Vak" : "Choose a Subject"}
             </p>
             {subjects.length === 0 ? (
-              <p className="text-sm text-center py-8 text-white">
-                {isAf ? "Geen vakke gereed nie" : "No subjects available"}
-              </p>
+              <div className="rounded-2xl border border-dashed border-white/10 p-6 text-center space-y-1.5" style={{ background: "rgba(255,255,255,.03)" }}>
+                <Layers className="w-7 h-7 mx-auto" style={{ color: "#C5B3FF" }} />
+                <p className="text-sm font-semibold text-white">
+                  {isAf ? "Geen vakke gereed nie" : "No subjects available"}
+                </p>
+              </div>
             ) : subjects.map((sub, subIdx) => {
               void gradeTick;
               const subCards = allCards.filter(c => c.subjectCode === sub.code);
@@ -555,10 +562,9 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
                   style={{
                     background: "rgba(255,255,255,.03)",
                     border: pct > 0 ? `1.5px solid ${hex}` : "1px solid rgba(255,255,255,.08)",
-                    boxShadow: pct > 0 ? `0 0 14px ${hex}33` : "none",
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = `0 0 24px ${hex}55`; e.currentTarget.style.borderColor = hex; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = pct > 0 ? `0 0 14px ${hex}33` : "none"; e.currentTarget.style.borderColor = pct > 0 ? hex : "rgba(255,255,255,.08)"; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.borderColor = hex; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; e.currentTarget.style.borderColor = pct > 0 ? hex : "rgba(255,255,255,.08)"; }}
                 >
                   <div className="flex items-center justify-between gap-3 mb-2">
                     <div>
@@ -582,7 +588,6 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
                         background: pct >= 80
                           ? "linear-gradient(90deg,#94F7C5,#9FF5E8)"
                           : "linear-gradient(90deg,#9FF5E8,#C5B3FF)",
-                        boxShadow: `0 0 8px ${hex}66`,
                       }}
                     />
                   </div>
@@ -636,7 +641,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
 
         {/* Subject header */}
         <div className="rounded-2xl p-4 space-y-2.5"
-          style={{ background: "rgba(255,255,255,.03)", border: "1.5px solid #9FD8FF", boxShadow: "0 0 18px rgba(159,216,255,.22)" }}>
+          style={{ background: "rgba(255,255,255,.03)", border: "1.5px solid #9FD8FF" }}>
           <div className="flex items-center justify-between">
             <h2 className="text-base font-black text-white">{selectedSubjectName}</h2>
             <span className="text-xs font-black" style={{ color: "#9FD8FF" }}>
@@ -646,7 +651,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
           <div className="h-2 rounded-full bg-white/10 overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-500"
-              style={{ width: `${subjectPct}%`, background: "linear-gradient(90deg,#9FF5E8,#C5B3FF)", boxShadow: "0 0 8px rgba(159,245,232,.55)" }}
+              style={{ width: `${subjectPct}%`, background: "linear-gradient(90deg,#9FF5E8,#C5B3FF)" }}
             />
           </div>
           {subjectAllCards.length > 0 && (
@@ -654,7 +659,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
               type="button"
               onClick={() => startSession(subjectAllCards)}
               className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl font-bold text-sm transition-all"
-              style={{ background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", color: "#050508", fontWeight: 800, boxShadow: "0 0 20px rgba(159,245,232,.3)" }}
+              style={{ background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", color: "#050508", fontWeight: 800 }}
               onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
               onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
             >
@@ -668,15 +673,16 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
 
         {/* Topic list */}
         {!dbDeck ? (
-          <div className="py-8 text-center">
-            <Layers className="w-7 h-7 mx-auto mb-2 animate-pulse" style={{ color: "#9FD8FF" }} />
+          <div className="py-8 text-center" style={{ animation: "bt-fadeup .3s both" }}>
+            <Layers className="w-7 h-7 mx-auto mb-2" style={{ color: "#9FD8FF", animation: "bt-pulse 1.6s ease-in-out infinite" }} />
             <p className="text-sm text-white">
               {isAf ? "Laai onderwerpe..." : "Loading topics..."}
             </p>
+            <style>{`@keyframes bt-pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }`}</style>
           </div>
         ) : (
           <div className="space-y-2">
-            <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 10px rgba(255,183,229,.45)" }}>
+            <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
               {isAf ? "Onderwerpe" : "Topics"}
             </p>
             {dbDeck.topics.map(t => {
@@ -704,10 +710,9 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
                   style={{
                     background: "rgba(255,255,255,.03)",
                     border: pct === 100 ? "1.5px solid #94F7C5" : pct > 0 ? "1.5px solid rgba(159,216,255,.55)" : "1px solid rgba(255,255,255,.08)",
-                    boxShadow: pct === 100 ? "0 0 14px rgba(148,247,197,.3)" : "none",
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = pct === 100 ? "0 0 24px rgba(148,247,197,.45)" : "0 0 24px rgba(159,216,255,.35)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = pct === 100 ? "0 0 14px rgba(148,247,197,.3)" : "none"; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-6px)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}
                 >
                   <div className="flex items-center justify-between gap-2 mb-1.5">
                     <div className="min-w-0 flex-1">
@@ -795,7 +800,6 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
                 style={{
                   width: `${((currentIndex + 1) / reviewQueue.length) * 100}%`,
                   background: "linear-gradient(90deg,#9FF5E8,#C5B3FF)",
-                  boxShadow: "0 0 8px rgba(159,245,232,.55)",
                 }}
               />
             </div>
@@ -846,21 +850,27 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
               return drag ? `${flip} ${drag}` : flip;
             })(),
             transition: swipeDelta !== 0 ? "none" : "transform 0.5s ease",
-            minHeight: "280px",
+            minHeight: "300px",
           }}
         >
           <div
-            className="absolute inset-0 rounded-2xl border-2 p-6 sm:p-8 flex flex-col items-center justify-center"
+            className="absolute inset-0 rounded-2xl border-2 p-6 sm:p-8 flex flex-col items-center justify-center overflow-y-auto"
             style={{
-              background: "rgba(5,5,8,.97)",
+              background: "rgba(255,255,255,.03)",
               boxShadow: "inset 0 0 22px rgba(0,0,0,.6)",
               backfaceVisibility: "hidden",
               borderColor: swipeDelta > 30 ? "rgba(148,247,197,0.7)" : swipeDelta < -30 ? "rgba(255,141,161,0.7)" : "rgba(159,245,232,0.45)",
               transition: swipeDelta !== 0 ? "border-color 0.1s" : "border-color 0.3s",
+              WebkitOverflowScrolling: "touch",
             }}
           >
             <div className="absolute top-3 left-3">
-              <span className="text-[10px] font-bold uppercase" style={{ color: "#9FF5E8" }}>{isAf ? "Voorkant" : "Front"}</span>
+              <span
+                className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full"
+                style={{ color: "#9FF5E8", border: "1px solid rgba(159,245,232,.5)", background: "rgba(159,245,232,.1)" }}
+              >
+                {isAf ? "Voorkant" : "Front"}
+              </span>
             </div>
             {currentCard.type === "cloze" && (
               <div className="absolute top-3 right-3">
@@ -870,24 +880,31 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
             <p className="text-lg sm:text-xl font-semibold text-white text-center leading-relaxed whitespace-pre-line">
               {currentCard.front.replace(/\{\{___\}\}/g, "______")}
             </p>
-            <p className="text-xs text-white mt-6">
+            <p className="text-xs text-white mt-6 flex items-center gap-1.5">
+              <RotateCcw className="w-3 h-3" style={{ color: "#9FF5E8" }} />
               {isAf ? "Tik of sleep om te beoordeel" : "Tap to flip · swipe to grade"}
             </p>
           </div>
 
           <div
-            className="absolute inset-0 rounded-2xl border-2 p-6 sm:p-8 flex flex-col items-center justify-center"
+            className="absolute inset-0 rounded-2xl border-2 p-6 sm:p-8 flex flex-col items-center justify-center overflow-y-auto"
             style={{
-              background: "rgba(5,5,8,.97)",
+              background: "rgba(255,255,255,.03)",
               boxShadow: "inset 0 0 22px rgba(0,0,0,.6)",
               backfaceVisibility: "hidden",
               transform: "rotateY(180deg)",
               borderColor: swipeDelta > 30 ? "rgba(148,247,197,0.7)" : swipeDelta < -30 ? "rgba(255,141,161,0.7)" : "rgba(148,247,197,0.5)",
               transition: swipeDelta !== 0 ? "border-color 0.1s" : "border-color 0.3s",
+              WebkitOverflowScrolling: "touch",
             }}
           >
             <div className="absolute top-3 left-3">
-              <span className="text-[10px] font-bold uppercase" style={{ color: "#94F7C5" }}>{isAf ? "Antwoord" : "Answer"}</span>
+              <span
+                className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full"
+                style={{ color: "#94F7C5", border: "1px solid rgba(148,247,197,.5)", background: "rgba(148,247,197,.1)" }}
+              >
+                {isAf ? "Antwoord" : "Answer"}
+              </span>
             </div>
             <p className="text-base sm:text-lg font-medium text-white text-center leading-relaxed whitespace-pre-line">
               {currentCard.back}
@@ -913,8 +930,6 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
                 onClick={() => handleGrade(quality)}
                 className="flex flex-col items-center gap-0.5 p-3 rounded-xl transition-all active:scale-95 hover:scale-[1.02]"
                 style={{ background: "rgba(255,255,255,.03)", border: `2px solid ${hex}` }}
-                onMouseEnter={(e) => (e.currentTarget.style.boxShadow = `0 0 16px ${hex}55`)}
-                onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
               >
                 <span className="font-bold text-sm" style={{ color: hex }}>{label}</span>
                 <span className="text-[10px] text-white">{desc}</span>
@@ -944,14 +959,16 @@ export default function FlashcardsPage() {
                 <button
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[.03] text-xs font-bold hover:bg-white/10 shrink-0"
                   style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
+                  title={isAf ? "Tuis" : "Home"}
+                  data-testid="button-home"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
-                  {isAf ? "Tuis" : "Home"}
+                  <span className="hidden md:inline">{isAf ? "Tuis" : "Home"}</span>
                 </button>
               </Link>
               <span
                 className="hidden sm:inline truncate"
-                style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", textShadow: "0 0 10px rgba(159,245,232,.45)" }}
+                style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)" }}
               >
                 {isAf ? "Flitskaarte" : "Flashcards"}
               </span>
@@ -981,7 +998,7 @@ export default function FlashcardsPage() {
       <main className="max-w-2xl mx-auto px-4 sm:px-6 py-8 space-y-6">
         <div className="space-y-1">
           <span
-            style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 12px rgba(159,245,232,.5)" }}
+            style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}
           >
             {isAf ? "Gespaseerde herhaling" : "Spaced repetition"}
           </span>
@@ -1029,7 +1046,7 @@ export default function FlashcardsPage() {
               <button
                 type="button"
                 className="px-4 py-2 rounded-xl text-sm transition-all"
-                style={{ background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", color: "#050508", fontWeight: 800, boxShadow: "0 0 20px rgba(159,245,232,.3)" }}
+                style={{ background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", color: "#050508", fontWeight: 800 }}
                 onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
                 onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
               >

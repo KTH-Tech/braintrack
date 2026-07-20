@@ -135,7 +135,6 @@ function GlowCard({ accent, children }: { accent: string; children: React.ReactN
       className="relative rounded-2xl bg-black p-5 transition-shadow"
       style={{
         border: `1px solid ${accent}55`,
-        boxShadow: `0 0 0 1px ${accent}22, 0 0 24px -8px ${accent}77`,
       }}
     >
       <span aria-hidden className="pointer-events-none absolute left-0 top-0 h-3 w-3 border-l border-t rounded-tl-2xl" style={{ borderColor: accent }} />

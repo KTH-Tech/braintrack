@@ -4,8 +4,8 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 import { apiRequest } from "@/lib/queryClient";
 import { useLanguage } from "@/lib/language-context";
-import { BrainTrackLogo } from "@/components/braintrack-logo";
 import { useToast } from "@/hooks/use-toast";
+import iconTransparent from "@/assets/handoff/icon-transparent.png";
 import { Loader2, School, CheckCircle2, Phone, User, Hash, Globe, ChevronRight, RotateCcw } from "lucide-react";
 
 const NEON = "#6EE7F9";
@@ -210,7 +210,10 @@ export default function JoinPage() {
 
         {/* Logo */}
         <div className="flex justify-center pt-2">
-          <BrainTrackLogo className="h-9 w-9" wordmark wordmarkClassName="text-lg" />
+          <div className="inline-flex items-center gap-2">
+            <img src={iconTransparent} alt="BrainTrack" className="h-9 w-9 object-contain" />
+            <span className="gradient-text font-bold tracking-tight leading-none text-lg">BrainTrack</span>
+          </div>
         </div>
 
         {/* School banner */}

@@ -27,7 +27,7 @@ import {
   Loader2,
   Download,
   Target,
-  Home,
+  ArrowLeft,
   LogOut,
   Globe,
   Zap,
@@ -348,12 +348,14 @@ export default function BSTExamPage() {
       <Link href="/dashboard">
         <button
           type="button"
-          className="min-h-0 p-1.5 rounded-lg text-foreground hover:bg-white/5 transition-colors border-0 bg-transparent"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0"
+          style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
           title={isAf ? "Tuis" : "Home"}
           aria-label={isAf ? "Tuis" : "Home"}
           data-testid="button-home"
         >
-          <Home className="h-4 w-4" />
+          <ArrowLeft className="h-4 w-4" />
+          <span className="hidden md:inline">{isAf ? "Tuis" : "Home"}</span>
         </button>
       </Link>
       <button

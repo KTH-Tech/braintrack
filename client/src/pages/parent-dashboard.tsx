@@ -143,7 +143,6 @@ const primaryFill = (hex: string): React.CSSProperties => ({
   background: PRIMARY_GRADIENT,
   color: "#050508",
   border: "none",
-  boxShadow: `0 0 14px ${hex}33`,
 });
 const secondaryFill = (hex: string): React.CSSProperties => ({
   color: hex,
@@ -874,7 +873,7 @@ function MonthlySummaryPanel({ summary, isAf }: { summary: MonthlySummary; isAf:
                     <span className="text-xs font-bold" style={{ color: "#9FF5E8" }}>{s.accuracy}%</span>
                   </div>
                   <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.08)" }}>
-                    <div className="h-full rounded-full transition-all duration-700" style={{ width: `${s.accuracy}%`, background: "#9FF5E8", boxShadow: "0 0 10px rgba(159,245,232,.4)" }} />
+                    <div className="h-full rounded-full transition-all duration-700" style={{ width: `${s.accuracy}%`, background: "#9FF5E8" }} />
                   </div>
                 </div>
               </div>
@@ -1311,7 +1310,7 @@ function AnimatedBar({ value, color, delay = 0 }: { value: number; color: string
     <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.08)" }}>
       <div
         className="h-full rounded-full transition-all duration-700 ease-out"
-        style={{ width: `${width}%`, background: fill, boxShadow: `0 0 10px ${fill}66` }}
+        style={{ width: `${width}%`, background: fill }}
       />
     </div>
   );

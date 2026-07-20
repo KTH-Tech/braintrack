@@ -91,7 +91,6 @@ const PRIMARY_BTN: CSSProperties = {
   border: "none",
   borderRadius: 12,
   fontWeight: 800,
-  boxShadow: "0 0 20px rgba(159,245,232,.3)",
 };
 const SECONDARY_BTN: CSSProperties = {
   background: "transparent",
@@ -106,7 +105,6 @@ const marker = (color: string, size = 15): CSSProperties => ({
   color,
   transform: "rotate(-2deg)",
   display: "inline-block",
-  textShadow: `0 0 10px ${color}55`,
 });
 const lift = (e: React.MouseEvent<HTMLButtonElement>) => {
   e.currentTarget.style.transform = "translateY(-2px)";
@@ -628,7 +626,6 @@ export default function ExamReadyPage() {
             style={{
               ...CARD,
               border: `1.5px solid ${ALERT_HEX}66`,
-              boxShadow: `0 0 30px ${ALERT_HEX}30`,
               animation: "bt-fadeup .5s both",
             }}
           >
@@ -700,7 +697,6 @@ export default function ExamReadyPage() {
             style={{
               ...CARD,
               border: "1.5px solid rgba(148,247,197,.5)",
-              boxShadow: "0 0 30px rgba(148,247,197,.22)",
               animation: "bt-fadeup .5s both",
             }}
           >
@@ -818,12 +814,12 @@ export default function ExamReadyPage() {
             {/* Rules card */}
             <div
               className="relative overflow-hidden p-6"
-              style={{ ...CARD, border: "1.5px solid rgba(255,226,154,.45)", boxShadow: "0 0 26px rgba(255,226,154,.12)" }}
+              style={{ ...CARD, border: "1.5px solid rgba(255,226,154,.45)" }}
             >
               <span
                 aria-hidden
                 className="absolute top-0 left-0 right-0 h-[2px]"
-                style={{ background: "#FFE29A", boxShadow: "0 0 10px rgba(255,226,154,.5)" }}
+                style={{ background: "#FFE29A" }}
               />
               <div className="flex items-center gap-2 mb-4">
                 <AlertTriangle className="w-5 h-5" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 6px #FFE29A)" }} />
@@ -900,7 +896,6 @@ export default function ExamReadyPage() {
                                       borderRadius: 14,
                                       background: isSelected ? `${hex}14` : "rgba(255,255,255,.03)",
                                       border: isSelected ? `1.5px solid ${hex}` : "1px solid rgba(255,255,255,.1)",
-                                      boxShadow: isSelected ? `0 0 18px ${hex}40` : "none",
                                     }}
                                     onClick={() => {
                                       setSelectedSubject(paper.subjectCode);
@@ -981,7 +976,6 @@ export default function ExamReadyPage() {
           style={{
             ...CARD,
             border: "1.5px solid rgba(159,216,255,.5)",
-            boxShadow: "0 0 30px rgba(159,216,255,.18)",
             animation: "bt-fadeup .5s both",
           }}
         >
@@ -1049,7 +1043,6 @@ export default function ExamReadyPage() {
               background: "rgba(255,141,161,.08)",
               border: `1.5px solid ${ALERT_HEX}`,
               borderRadius: 24,
-              boxShadow: `0 0 40px ${ALERT_HEX}40`,
             }}
           >
             <AlertCircle
@@ -1101,8 +1094,6 @@ export default function ExamReadyPage() {
             <button
               className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-60 disabled:cursor-not-allowed"
               style={{ background: "transparent", border: `1.5px solid ${ALERT_HEX}`, color: ALERT_HEX }}
-              onMouseEnter={(e) => { e.currentTarget.style.boxShadow = `0 0 16px ${ALERT_HEX}45`; }}
-              onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "none"; }}
               onClick={() => submitExamMutation.mutate()}
               disabled={submitExamMutation.isPending}
               data-testid="button-submit-exam"
@@ -1118,9 +1109,9 @@ export default function ExamReadyPage() {
         </div>
       </header>
 
-      <div className="flex-1 flex">
+      <div className="flex-1 flex flex-col md:flex-row">
         <aside
-          className="w-64 border-r p-4 overflow-y-auto"
+          className="w-full md:w-64 shrink-0 border-b md:border-b-0 md:border-r p-4 overflow-y-auto max-h-48 md:max-h-none"
           style={{ background: "rgba(255,255,255,.02)", borderColor: "rgba(255,255,255,.08)" }}
         >
           <div role="heading" aria-level={2} className="font-bold text-white mb-3">
@@ -1136,7 +1127,7 @@ export default function ExamReadyPage() {
                   className="w-10 h-10 text-sm font-bold transition-colors"
                   style={
                     isCurrent
-                      ? { ...PRIMARY_BTN, borderRadius: 10, boxShadow: "0 0 14px rgba(159,245,232,.35)" }
+                      ? { ...PRIMARY_BTN, borderRadius: 10 }
                       : isAnswered
                       ? { background: "rgba(148,247,197,.1)", color: "#94F7C5", border: "1px solid rgba(148,247,197,.5)", borderRadius: 10 }
                       : { background: "rgba(255,255,255,.05)", color: "#fff", border: "1px solid rgba(255,255,255,.12)", borderRadius: 10 }
@@ -1161,7 +1152,6 @@ export default function ExamReadyPage() {
                 style={{
                   width: `${totalQuestions ? (answeredCount / totalQuestions) * 100 : 0}%`,
                   background: "linear-gradient(90deg,#9FF5E8,#C5B3FF)",
-                  boxShadow: "0 0 10px rgba(159,245,232,.5)",
                 }}
               />
             </div>
@@ -1226,8 +1216,8 @@ export default function ExamReadyPage() {
                     color: "#fff",
                     fontFamily: "'Poppins',sans-serif",
                   }}
-                  onFocus={(e) => { e.currentTarget.style.borderColor = "#9FF5E8"; e.currentTarget.style.boxShadow = "0 0 14px rgba(159,245,232,.2)"; }}
-                  onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,.18)"; e.currentTarget.style.boxShadow = "none"; }}
+                  onFocus={(e) => { e.currentTarget.style.borderColor = "#9FF5E8"; }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,.18)"; }}
                   onPaste={(e) => e.preventDefault()} // Extra paste prevention
                   onCopy={(e) => e.preventDefault()} // Extra copy prevention
                   onCut={(e) => e.preventDefault()} // Extra cut prevention

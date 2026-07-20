@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { ONBOARDING_QUESTIONS, GRADE_12_SUBJECTS } from "@/lib/constants";
 import { ArrowLeft, ArrowRight, Loader2, Globe, Check, Sparkles, Search } from "lucide-react";
-import { BrainTrackLogo } from "@/components/braintrack-logo";
+import iconTransparent from "@/assets/handoff/icon-transparent.png";
 import { GraffitiSplats } from "@/components/graffiti-splats";
 import { type VarkStyle, VARK_STYLES } from "@/lib/vark";
 import { useLanguage } from "@/lib/language-context";
@@ -1234,7 +1234,7 @@ export default function OnboardingPage() {
       >
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2 min-w-0">
-            <BrainTrackLogo className="h-7 w-7" />
+            <img src={iconTransparent} alt="BrainTrack" className="h-7 w-7 object-contain" />
             {phase === "questions" && (
               <button
                 onClick={() => resetRoleMutation.mutate()}

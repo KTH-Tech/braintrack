@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useExamSessionProtection } from "@/hooks/use-exam-session-protection";
+import { ConfettiBurst } from "@/components/confetti-burst";
 import { ExamQuestionText } from "@/components/exam/exam-question-text";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation, useSearch } from "wouter";
@@ -25,32 +26,6 @@ import {
 
 /* ── Street-pastel building blocks (design-guidelines.md) ───────────────── */
 
-const CONFETTI_COLORS = ["#9FF5E8", "#9FD8FF", "#FFB7E5", "#C5B3FF", "#FFE29A", "#94F7C5"];
-
-function ConfettiBurst() {
-  return (
-    <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-40 overflow-hidden">
-      {Array.from({ length: 16 }).map((_, i) => (
-        <span
-          key={i}
-          style={{
-            position: "absolute",
-            top: -8,
-            left: `${(i * 61) % 100}%`,
-            width: i % 3 === 0 ? 10 : 7,
-            height: i % 2 === 0 ? 12 : 7,
-            borderRadius: i % 2 === 0 ? 2 : "50%",
-            background: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
-            boxShadow: `0 0 8px ${CONFETTI_COLORS[i % CONFETTI_COLORS.length]}66`,
-            ["--cx" as any]: `${((i % 5) - 2) * 26}px`,
-            animation: `bt-confetti ${0.9 + (i % 6) * 0.16}s ease-in ${(i % 8) * 0.07}s both`,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
 function PrimaryBtn({ children, onClick, disabled, testId, full, size = "md" }: {
   children: React.ReactNode;
   onClick?: () => void;
@@ -70,7 +45,6 @@ function PrimaryBtn({ children, onClick, disabled, testId, full, size = "md" }: 
       style={{
         background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
         color: "#050508",
-        boxShadow: "0 0 20px rgba(159,245,232,.30)",
       }}
       onMouseEnter={(e) => { if (!disabled) e.currentTarget.style.transform = "translateY(-2px)"; }}
       onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}
@@ -123,7 +97,6 @@ function GlassCard({ children, accent, className = "", style, testId }: {
         background: "rgba(255,255,255,.03)",
         border: accent ? `1.5px solid ${accent}` : "1px solid rgba(255,255,255,.08)",
         borderRadius: 22,
-        boxShadow: accent ? `0 0 22px ${accent}33` : "none",
         ...style,
       }}
     >
@@ -443,7 +416,7 @@ export default function ExamSessionPage() {
             <div className="space-y-4">
               <div
                 className="mx-auto w-16 h-16 rounded-2xl flex items-center justify-center"
-                style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #FFE29A", boxShadow: "0 0 22px rgba(255,226,154,.35)" }}
+                style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #FFE29A" }}
               >
                 <AlertCircle className="w-8 h-8" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 8px #FFE29A)" }} />
               </div>
@@ -494,7 +467,7 @@ export default function ExamSessionPage() {
             <div className="space-y-5">
               <div className="inline-flex items-center gap-2">
                 <Shield className="w-4 h-4" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px #9FF5E8)" }} />
-                <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 12px rgba(159,245,232,.5)" }}>
+                <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}>
                   {isAf ? "Eksamentyd" : "Crunch Time"}
                 </span>
               </div>
@@ -586,7 +559,7 @@ export default function ExamSessionPage() {
             </div>
             <div
               className="flex items-center gap-2 font-mono text-lg font-semibold tabular-nums"
-              style={{ color: timerHex, textShadow: `0 0 12px ${timerHex}66` }}
+              style={{ color: timerHex }}
             >
               <Clock className="w-5 h-5" />
               <span>{formatTime(timeRemaining)}</span>
@@ -596,7 +569,7 @@ export default function ExamSessionPage() {
               <div className="w-24 h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.08)" }}>
                 <div
                   className="h-full rounded-full transition-all duration-300"
-                  style={{ width: `${progressPct}%`, background: "linear-gradient(90deg,#9FF5E8,#C5B3FF)", boxShadow: "0 0 8px rgba(159,245,232,.6)" }}
+                  style={{ width: `${progressPct}%`, background: "linear-gradient(90deg,#9FF5E8,#C5B3FF)" }}
                 />
               </div>
               <PrimaryBtn
@@ -650,7 +623,6 @@ export default function ExamSessionPage() {
                               style={{
                                 background: active ? "rgba(159,245,232,.08)" : "rgba(255,255,255,.02)",
                                 border: active ? "1.5px solid #9FF5E8" : "1.5px solid rgba(255,255,255,.12)",
-                                boxShadow: active ? "0 0 14px rgba(159,245,232,.2)" : "none",
                               }}
                             >
                               <span
@@ -707,17 +679,17 @@ export default function ExamSessionPage() {
               <div className="relative space-y-3">
                 <div
                   className="mx-auto w-16 h-16 rounded-2xl flex items-center justify-center"
-                  style={{ background: "rgba(5,5,8,.6)", border: `1.5px solid ${band.hex}`, boxShadow: `0 0 22px ${band.hex}55` }}
+                  style={{ background: "rgba(5,5,8,.6)", border: `1.5px solid ${band.hex}` }}
                 >
                   <Trophy className="w-8 h-8" style={{ color: band.hex, filter: `drop-shadow(0 0 8px ${band.hex})` }} />
                 </div>
-                <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 18, color: band.hex, transform: "rotate(-1.5deg)", textShadow: `0 0 12px ${band.hex}66` }}>
+                <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 18, color: band.hex, transform: "rotate(-1.5deg)" }}>
                   {isAf ? "Eksamen Voltooi!" : "Exam Complete!"}
                 </div>
                 <p className="text-sm text-white" style={{ opacity: 0.94 }}>
                   {subjectName} — {paperId.toUpperCase()}
                 </p>
-                <div className="text-5xl font-black tabular-nums" style={{ color: band.hex, textShadow: `0 0 14px ${band.hex}66` }}>
+                <div className="text-5xl font-black tabular-nums" style={{ color: band.hex }}>
                   {examResult.percentage}%
                 </div>
                 <p className="text-lg font-semibold text-white tabular-nums">
@@ -725,12 +697,12 @@ export default function ExamSessionPage() {
                 </p>
                 <span
                   className="inline-flex items-center text-xs font-black px-3 py-1 rounded-full uppercase tracking-[0.14em]"
-                  style={{ color: band.hex, border: `1px solid ${band.hex}`, background: "rgba(5,5,8,.6)", boxShadow: `0 0 10px ${band.hex}55` }}
+                  style={{ color: band.hex, border: `1px solid ${band.hex}`, background: "rgba(5,5,8,.6)" }}
                 >
                   {band.label}
                 </span>
                 <div className="h-2.5 rounded-full overflow-hidden mx-auto max-w-sm" style={{ background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.08)" }}>
-                  <div className="h-full rounded-full" style={{ width: `${examResult.percentage}%`, background: `linear-gradient(90deg,#9FF5E8,${band.hex})`, boxShadow: `0 0 10px ${band.hex}` }} />
+                  <div className="h-full rounded-full" style={{ width: `${examResult.percentage}%`, background: `linear-gradient(90deg,#9FF5E8,${band.hex})` }} />
                 </div>
               </div>
             </GlassCard>

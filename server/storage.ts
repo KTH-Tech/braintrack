@@ -1301,8 +1301,19 @@ export class DatabaseStorage implements IStorage {
       subject_mastery: 50, exam_complete: 25, first_paper: 10, high_score: 15,
       exam_champion: 60,
     };
+    // Human-readable names for the coin-transaction ledger — keep in sync with
+    // BADGE_DEFINITIONS in gamification.ts (not imported here to avoid a
+    // storage.ts <-> gamification.ts circular import).
+    const BADGE_NAMES: Record<string, string> = {
+      streak_3: "3-Day Streak", streak_7: "7-Day Streak", streak_14: "14-Day Streak", streak_30: "30-Day Streak",
+      questions_10: "10 Questions", questions_50: "50 Questions", questions_100: "100 Questions", questions_500: "500 Questions",
+      accuracy_70: "70% Accuracy", accuracy_80: "80% Accuracy", accuracy_90: "90% Accuracy",
+      subject_mastery: "Subject Master", exam_complete: "Exam Ready", first_paper: "First Paper", high_score: "80% Club",
+      exam_champion: "Exam Champion",
+    };
     const reward = BADGE_COIN_REWARDS[badgeCode] || 5;
-    await this.awardCoins(userId, reward, "badge_earned", `badge_${badgeCode}`);
+    const badgeName = BADGE_NAMES[badgeCode] || badgeCode.replace(/_/g, " ");
+    await this.awardCoins(userId, reward, "badge_earned", `Badge earned: ${badgeName}`, badgeCode);
     console.log(`[COINS] +${reward} coins for badge "${badgeCode}"`);
 
     return created;

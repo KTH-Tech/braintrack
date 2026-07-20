@@ -289,7 +289,7 @@ export default function AboutPage() {
         </section>
 
         {/* Mission */}
-        <section data-testid="card-mission" style={{ ...panelStyle, marginBottom: 26, textAlign: "center", background: "linear-gradient(150deg,rgba(159,216,255,.1),rgba(255,183,229,.08))", border: "1.5px solid rgba(159,216,255,.3)", boxShadow: "0 0 18px rgba(159,216,255,.08)" }}>
+        <section data-testid="card-mission" style={{ ...panelStyle, marginBottom: 26, textAlign: "center", background: "linear-gradient(150deg,rgba(159,216,255,.1),rgba(255,183,229,.08))", border: "1.5px solid rgba(159,216,255,.3)" }}>
           <GraduationCap style={{ width: 34, height: 34, color: "#9FF5E8", margin: "0 auto 10px", display: "block" }} />
           <div role="heading" aria-level={2} data-testid="text-mission-title" style={{ fontSize: 26, fontWeight: 900, letterSpacing: "-.5px", marginBottom: 10 }}>
             <span style={{ background: HEADLINE_GRADIENT, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>
@@ -315,7 +315,7 @@ export default function AboutPage() {
                   ...panelStyle, cursor: "default",
                 } as React.CSSProperties}
               >
-                <div style={{ width: 54, height: 54, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", background: f.chipBg, boxShadow: `0 0 22px ${f.glow}`, marginBottom: 18 }}>
+                <div style={{ width: 54, height: 54, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", background: f.chipBg, marginBottom: 18 }}>
                   <Icon style={{ width: 24, height: 24, color: f.color }} />
                 </div>
                 <div role="heading" aria-level={3} data-testid={`text-pillar-title-${i}`} style={{ fontWeight: 800, fontSize: 18, marginBottom: 8, color: "#fff" }}>
@@ -348,7 +348,7 @@ export default function AboutPage() {
 
         {/* Schools */}
         <section data-testid="card-schools" style={{ ...panelStyle, marginBottom: 26, display: "flex", alignItems: "flex-start", gap: 18, borderLeft: "3px solid #9FD8FF" }}>
-          <div style={{ width: 46, height: 46, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(159,216,255,.14)", boxShadow: "0 0 22px rgba(159,216,255,.25)", flexShrink: 0 }}>
+          <div style={{ width: 46, height: 46, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(159,216,255,.14)", flexShrink: 0 }}>
             <Users style={{ width: 22, height: 22, color: "#9FD8FF" }} />
           </div>
           <div>
@@ -359,7 +359,7 @@ export default function AboutPage() {
 
         {/* POPIA */}
         <section data-testid="card-popia-notice" style={{ ...panelStyle, marginBottom: 40, display: "flex", alignItems: "flex-start", gap: 18, borderLeft: "3px solid #94F7C5" }}>
-          <div style={{ width: 46, height: 46, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(148,247,197,.14)", boxShadow: "0 0 22px rgba(148,247,197,.25)", flexShrink: 0 }}>
+          <div style={{ width: 46, height: 46, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(148,247,197,.14)", flexShrink: 0 }}>
             <Shield style={{ width: 22, height: 22, color: "#94F7C5" }} />
           </div>
           <div>
@@ -378,7 +378,7 @@ export default function AboutPage() {
                 color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
                 animation: "bt-rainbow 5s linear infinite", border: "none",
                 borderRadius: 10, padding: "16px 40px", whiteSpace: "nowrap",
-                cursor: "pointer", boxShadow: "0 0 30px rgba(255,183,229,.4)",
+                cursor: "pointer",
                 display: "inline-flex", alignItems: "center", gap: 8,
               }}
             >

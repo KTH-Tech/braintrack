@@ -213,7 +213,6 @@ export default function DbePracticePage() {
             borderRadius: 20,
             padding: "42px 36px",
             textAlign: "center",
-            boxShadow: "0 0 26px rgba(255,141,161,.14)",
           }}
         >
           <AlertCircle style={{ width: 48, height: 48, margin: "0 auto 12px", color: "#FF8DA1" }} />
@@ -274,7 +273,7 @@ export default function DbePracticePage() {
             </button>
           </Link>
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", textShadow: "0 0 10px rgba(159,245,232,.45)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+            <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
               {subject}
             </div>
             <div style={{ fontSize: 10, fontWeight: 900, letterSpacing: "2px", textTransform: "uppercase", color: "#fff", opacity: 0.85 }}>
@@ -329,7 +328,6 @@ export default function DbePracticePage() {
                 color: "#FFE29A",
                 transform: "rotate(-2deg)",
                 display: "inline-block",
-                textShadow: "0 0 10px rgba(255,226,154,.5)",
               }}
             >
               {isAf ? "Regte vraestelle. Regte oefening. 🔥" : "Real papers. Real reps. 🔥"}
@@ -374,7 +372,6 @@ export default function DbePracticePage() {
               borderRadius: 20,
               padding: "56px 32px",
               textAlign: "center",
-              boxShadow: "0 0 26px rgba(255,226,154,.14)",
             }}
           >
             <BookOpen style={{ width: 48, height: 48, margin: "0 auto 12px", color: "#FFE29A", filter: "drop-shadow(0 0 10px rgba(255,226,154,.5))" }} />
@@ -524,12 +521,11 @@ export default function DbePracticePage() {
                     border: "1.5px solid rgba(159,216,255,.4)",
                     borderRadius: 20,
                     padding: "18px 20px",
-                    boxShadow: "0 0 22px rgba(159,216,255,.12)",
                     overflow: "hidden",
                   }}
                   data-testid="source-paper-panel"
                 >
-                  <span aria-hidden style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "#9FD8FF", boxShadow: "0 0 10px rgba(159,216,255,.4)" }} />
+                  <span aria-hidden style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "#9FD8FF" }} />
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
                     <div>
                       <div style={{ fontSize: 10, fontWeight: 900, letterSpacing: "2px", textTransform: "uppercase", color: "#9FD8FF" }}>
@@ -579,7 +575,6 @@ export default function DbePracticePage() {
                           color: "#050508", background: ACTION_GRADIENT,
                           border: "none", borderRadius: 10, padding: "9px 14px",
                           cursor: "pointer", whiteSpace: "nowrap",
-                          boxShadow: "0 0 14px rgba(159,245,232,.28)",
                         }}
                         data-testid="button-generate-from-paper"
                       >
@@ -611,12 +606,11 @@ export default function DbePracticePage() {
                     border: `1.5px solid ${srcHex}55`,
                     borderRadius: 20,
                     padding: 22,
-                    boxShadow: `0 0 22px ${srcHalo}`,
                     overflow: "hidden",
                   }}
                   data-testid={`question-card-${current.id}`}
                 >
-                  <span aria-hidden style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: srcHex, boxShadow: `0 0 10px ${srcHalo}` }} />
+                  <span aria-hidden style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: srcHex }} />
 
                   {/* Card header */}
                   <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
@@ -726,7 +720,6 @@ export default function DbePracticePage() {
                           color: "#050508", background: ACTION_GRADIENT,
                           border: "none", borderRadius: 10, padding: "12px 14px",
                           cursor: "pointer",
-                          boxShadow: "0 0 14px rgba(159,245,232,.28)",
                         }}
                         data-testid={`button-memo-${current.id}`}
                       >
@@ -755,7 +748,6 @@ export default function DbePracticePage() {
                               borderRadius: 14,
                               background: "rgba(148,247,197,.08)",
                               border: "1px solid rgba(148,247,197,.45)",
-                              boxShadow: "0 0 16px rgba(148,247,197,.12)",
                               display: "flex", flexDirection: "column", gap: 8,
                             }}
                           >

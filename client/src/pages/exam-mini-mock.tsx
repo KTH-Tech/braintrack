@@ -5,6 +5,7 @@ import { ExamQuestionText } from "@/components/exam/exam-question-text";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { MarkingFeedback, type MarkingResult } from "@/components/exam/marking-feedback";
+import { ConfettiBurst } from "@/components/confetti-burst";
 import { useLanguage } from "@/lib/language-context";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -24,32 +25,6 @@ import {
 
 /* ── Street-pastel building blocks ─────────────────────────────────────── */
 
-const CONFETTI_COLORS = ["#9FF5E8", "#9FD8FF", "#FFB7E5", "#C5B3FF", "#FFE29A", "#94F7C5"];
-
-function ConfettiBurst() {
-  return (
-    <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-40 overflow-hidden">
-      {Array.from({ length: 16 }).map((_, i) => (
-        <span
-          key={i}
-          style={{
-            position: "absolute",
-            top: -8,
-            left: `${(i * 61) % 100}%`,
-            width: i % 3 === 0 ? 10 : 7,
-            height: i % 2 === 0 ? 12 : 7,
-            borderRadius: i % 2 === 0 ? 2 : "50%",
-            background: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
-            boxShadow: `0 0 8px ${CONFETTI_COLORS[i % CONFETTI_COLORS.length]}66`,
-            ["--cx" as any]: `${((i % 5) - 2) * 26}px`,
-            animation: `bt-confetti ${0.9 + (i % 6) * 0.16}s ease-in ${(i % 8) * 0.07}s both`,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
 function PrimaryBtn({ children, onClick, disabled, testId, full, size = "md" }: {
   children: React.ReactNode;
   onClick?: () => void;
@@ -68,7 +43,6 @@ function PrimaryBtn({ children, onClick, disabled, testId, full, size = "md" }: 
       style={{
         background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
         color: "#050508",
-        boxShadow: "0 0 20px rgba(159,245,232,.30)",
       }}
       onMouseEnter={(e) => { if (!disabled) e.currentTarget.style.transform = "translateY(-2px)"; }}
       onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}
@@ -119,7 +93,6 @@ function GlassCard({ children, accent, className = "", style }: {
         background: "rgba(255,255,255,.03)",
         border: accent ? `1.5px solid ${accent}` : "1px solid rgba(255,255,255,.08)",
         borderRadius: 22,
-        boxShadow: accent ? `0 0 22px ${accent}33` : "none",
         ...style,
       }}
     >
@@ -148,7 +121,7 @@ function StreetShell({ isAf, eyebrow, onExit, children }: {
           <div className="flex items-center justify-between h-14 gap-4">
             <div className="flex items-center gap-2 min-w-0">
               <Zap className="w-4 h-4 shrink-0" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px #9FF5E8)" }} />
-              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 10px rgba(159,245,232,.45)" }}>
+              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}>
                 Mini Mock
               </span>
               <span className="hidden sm:inline text-[11px] font-bold uppercase tracking-[0.18em] text-white truncate" style={{ opacity: 0.85 }}>
@@ -171,7 +144,7 @@ function StreetShell({ isAf, eyebrow, onExit, children }: {
                   style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
                 >
                   <ArrowLeft className="w-4 h-4" />
-                  {isAf ? "Tuis" : "Home"}
+                  <span className="hidden md:inline">{isAf ? "Tuis" : "Home"}</span>
                 </button>
               </Link>
             )}
@@ -393,19 +366,19 @@ export default function ExamMiniMockPage() {
           <div className="relative space-y-3">
             <div
               className="mx-auto w-16 h-16 rounded-2xl flex items-center justify-center"
-              style={{ background: "rgba(5,5,8,.6)", border: `1.5px solid ${gradeHex}`, boxShadow: `0 0 22px ${gradeHex}55` }}
+              style={{ background: "rgba(5,5,8,.6)", border: `1.5px solid ${gradeHex}` }}
             >
               <Trophy className="w-8 h-8" style={{ color: gradeHex, filter: `drop-shadow(0 0 8px ${gradeHex})` }} />
             </div>
-            <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 18, color: gradeHex, transform: "rotate(-1.5deg)", textShadow: `0 0 12px ${gradeHex}66` }}>
+            <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 18, color: gradeHex, transform: "rotate(-1.5deg)" }}>
               {isAf ? "Mini Mock voltooi!" : "Mini Mock complete!"}
             </div>
             <div className="text-5xl font-black tabular-nums text-white">
               {totalAwarded} <span className="text-white" style={{ opacity: 0.85 }}>/ {totalAvailable}</span>
             </div>
-            <div className="text-2xl font-black tabular-nums" style={{ color: gradeHex, textShadow: `0 0 14px ${gradeHex}66` }}>{pct}%</div>
+            <div className="text-2xl font-black tabular-nums" style={{ color: gradeHex }}>{pct}%</div>
             <div className="h-2.5 rounded-full overflow-hidden mx-auto max-w-sm" style={{ background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.08)" }}>
-              <div className="h-full rounded-full" style={{ width: `${pct}%`, background: `linear-gradient(90deg,#9FF5E8,${gradeHex})`, boxShadow: `0 0 10px ${gradeHex}` }} />
+              <div className="h-full rounded-full" style={{ width: `${pct}%`, background: `linear-gradient(90deg,#9FF5E8,${gradeHex})` }} />
             </div>
             <p className="text-sm text-white" style={{ opacity: 0.9 }}>
               {isAf
@@ -459,7 +432,7 @@ export default function ExamMiniMockPage() {
           <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.08)" }}>
             <div
               className="h-full rounded-full transition-all duration-300"
-              style={{ width: `${progressPct}%`, background: "linear-gradient(90deg,#9FF5E8,#C5B3FF)", boxShadow: "0 0 8px rgba(159,245,232,.6)" }}
+              style={{ width: `${progressPct}%`, background: "linear-gradient(90deg,#9FF5E8,#C5B3FF)" }}
             />
           </div>
           <span className="text-[11px] font-black tabular-nums px-2 py-0.5 rounded-lg" style={{ color: "#9FF5E8", border: "1px solid rgba(159,245,232,.4)", background: "rgba(159,245,232,.06)" }}>
@@ -469,7 +442,7 @@ export default function ExamMiniMockPage() {
 
         <GlassCard className="p-5 sm:p-6" style={{ animation: "bt-fadeup .4s cubic-bezier(.22,1,.36,1) both" }}>
           {/* Aqua accent line */}
-          <div aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: "#9FF5E8", boxShadow: "0 0 10px #9FF5E8" }} />
+          <div aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: "#9FF5E8" }} />
           <div className="space-y-4">
             <div className="flex items-start justify-between gap-3 flex-wrap">
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-white">
@@ -502,7 +475,6 @@ export default function ExamMiniMockPage() {
                       style={{
                         background: active ? "rgba(159,245,232,.08)" : "rgba(255,255,255,.02)",
                         border: active ? "1.5px solid #9FF5E8" : "1.5px solid rgba(255,255,255,.12)",
-                        boxShadow: active ? "0 0 14px rgba(159,245,232,.2)" : "none",
                       }}
                     >
                       <span
@@ -600,7 +572,7 @@ export default function ExamMiniMockPage() {
       <section style={{ animation: "bt-fadeup .5s cubic-bezier(.22,1,.36,1) both" }}>
         <div className="inline-flex items-center gap-2 mb-3">
           <Brain className="w-4 h-4" style={{ color: "#FFB7E5", filter: "drop-shadow(0 0 4px #FFB7E5)" }} />
-          <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 12px rgba(255,183,229,.5)" }}>
+          <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
             {isAf ? "Toets jouself" : "Test yourself"}
           </span>
         </div>
@@ -640,7 +612,7 @@ export default function ExamMiniMockPage() {
             <div className="flex flex-col items-center text-center gap-3 py-4">
               <div
                 className="w-12 h-12 rounded-2xl flex items-center justify-center"
-                style={{ background: "rgba(255,141,161,.08)", border: "1.5px solid #FF8DA1", boxShadow: "0 0 16px rgba(255,141,161,.25)" }}
+                style={{ background: "rgba(255,141,161,.08)", border: "1.5px solid #FF8DA1" }}
               >
                 <AlertCircle className="w-6 h-6" style={{ color: "#FF8DA1" }} />
               </div>
@@ -749,7 +721,6 @@ export default function ExamMiniMockPage() {
                             background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
                             color: "#050508",
                             border: "none",
-                            boxShadow: "0 0 16px rgba(159,245,232,.35)",
                           }
                         : {
                             background: "rgba(255,255,255,.03)",

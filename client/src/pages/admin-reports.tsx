@@ -38,7 +38,6 @@ import {
   ResponsiveContainer, Legend,
 } from "recharts";
 import { Link } from "wouter";
-import { BrainTrackLogo } from "@/components/braintrack-logo";
 import { apiRequest } from "@/lib/queryClient";
 import { formatSAPhone } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -214,7 +213,6 @@ function TrialCountdown({ expiryDate }: { expiryDate?: string | null }) {
       className="inline-flex items-center gap-1.5 rounded-lg bg-black px-2 py-1 font-mono tabular-nums"
       style={{
         border: `1px solid ${hex}80`,
-        boxShadow: `0 0 8px ${hex}66, inset 0 0 10px ${hex}22`,
       }}
       title={expired ? (isAf ? "Proeflopie verstryk" : "Trial expired") : (isAf ? "Proeflopie-aftelling" : "Trial countdown")}
     >
@@ -222,12 +220,12 @@ function TrialCountdown({ expiryDate }: { expiryDate?: string | null }) {
         <span
           aria-hidden
           className="w-1.5 h-1.5 rounded-full anicon-pulse"
-          style={{ background: hex, boxShadow: `0 0 6px ${hex}` }}
+          style={{ background: hex }}
         />
       )}
       <span
         className="text-[10px] font-bold leading-none"
-        style={{ color: hex, textShadow: `0 0 6px ${hex}99` }}
+        style={{ color: hex }}
       >
         {expired ? "â€“" : ""}{pad(days, 2)}<span className="opacity-60">d</span> {pad(hrs)}:{pad(mins)}:{pad(secs)}
       </span>
@@ -318,7 +316,7 @@ function SchoolOnboardingForm({ onClose, onSuccess }: { onClose: () => void; onS
                   className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black bg-black shrink-0"
                   style={
                     done ? { color: "#000", background: A, border: `1.5px solid ${A}` }
-                    : active ? { color: A, border: `1.5px solid ${A}`, boxShadow: `0 0 8px ${A}55` }
+                    : active ? { color: A, border: `1.5px solid ${A}` }
                     : { color: "rgba(255,255,255,0.85)", border: "1px solid rgba(255,255,255,0.15)" }
                   }
                 >
@@ -505,7 +503,7 @@ function SchoolOnboardingForm({ onClose, onSuccess }: { onClose: () => void; onS
               disabled={!canNext()}
               onClick={() => setStep(s => s + 1)}
               className="inline-flex items-center gap-1.5 rounded-xl px-5 py-2 text-xs font-black uppercase tracking-[0.16em] disabled:opacity-35 transition-transform hover:scale-[1.02]"
-              style={{ background: `linear-gradient(90deg,${A},#9FD8FF)`, color: "#000", boxShadow: `0 0 18px ${A}55` }}
+              style={{ background: `linear-gradient(90deg,${A},#9FD8FF)`, color: "#000" }}
             >
               {isAf ? "Volgende" : "Next"} â†’
             </button>
@@ -514,7 +512,7 @@ function SchoolOnboardingForm({ onClose, onSuccess }: { onClose: () => void; onS
               disabled={createMutation.isPending || !form.schoolName.trim()}
               onClick={() => createMutation.mutate()}
               className="inline-flex items-center gap-1.5 rounded-xl px-5 py-2 text-xs font-black uppercase tracking-[0.16em] disabled:opacity-35 transition-transform hover:scale-[1.02]"
-              style={{ background: `linear-gradient(90deg,${A},#9FD8FF)`, color: "#000", boxShadow: `0 0 18px ${A}55` }}
+              style={{ background: `linear-gradient(90deg,${A},#9FD8FF)`, color: "#000" }}
             >
               {createMutation.isPending
                 ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> {isAf ? "Skepâ€¦" : "Creatingâ€¦"}</>
@@ -828,7 +826,7 @@ function SendTestEmailCard({ language }: { language: string }) {
     <Card className="rounded-2xl border-white/15">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm flex items-center gap-2">
-          <Mail className="w-4 h-4" style={{ color: "#a78bfa", filter: "drop-shadow(0 0 6px #a78bfa)" }} />
+          <Mail className="w-4 h-4" style={{ color: "#a78bfa" }} />
           {isAf ? "E-pos Aflewering" : "Email Delivery"}
         </CardTitle>
       </CardHeader>
@@ -1248,13 +1246,13 @@ export default function AdminReportsPage() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Card className="rounded-2xl border-white/15">
-                    <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><PieChart className="w-4 h-4" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 6px #9FF5E8)" }} /> {language === "af" ? "Gebruikeruitsplitsing" : "User Breakdown"}</CardTitle></CardHeader>
+                    <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><PieChart className="w-4 h-4" style={{ color: "#9FF5E8" }} /> {language === "af" ? "Gebruikeruitsplitsing" : "User Breakdown"}</CardTitle></CardHeader>
                     <CardContent className="p-6 pt-2">
                       <DonutChart learners={stats?.learners ?? 0} parents={stats?.parents ?? 0} admins={stats?.admins ?? 0} />
                     </CardContent>
                   </Card>
                   <Card className="rounded-2xl border-white/15">
-                    <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><Zap className="w-4 h-4" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 6px #FFE29A)" }} /> {language === "af" ? "Sleutel-insigte" : "Key Insights"}</CardTitle></CardHeader>
+                    <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><Zap className="w-4 h-4" style={{ color: "#FFE29A" }} /> {language === "af" ? "Sleutel-insigte" : "Key Insights"}</CardTitle></CardHeader>
                     <CardContent className="p-6 pt-2 space-y-3">
                       <div className="flex items-center gap-3 p-3 rounded-xl bg-blue-500/5 border border-blue-500/10">
                         <div className="w-9 h-9 rounded-lg bg-blue-500/15 flex items-center justify-center flex-shrink-0"><Award className="w-4 h-4 text-white" /></div>
@@ -1288,7 +1286,7 @@ export default function AdminReportsPage() {
             <TabsContent value="learners">
               <Card className="bg-black border-white/15 rounded-2xl">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm flex items-center gap-2"><GraduationCap className="w-4 h-4" style={{ color: "#9FD8FF", filter: "drop-shadow(0 0 6px #9FD8FF)" }} /> {language === "af" ? "Leerderbestuur" : "Learner Management"}</CardTitle>
+                  <CardTitle className="text-sm flex items-center gap-2"><GraduationCap className="w-4 h-4" style={{ color: "#9FD8FF" }} /> {language === "af" ? "Leerderbestuur" : "Learner Management"}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {/* Filters */}
@@ -1429,7 +1427,7 @@ export default function AdminReportsPage() {
             <TabsContent value="parents">
               <Card className="bg-black border-white/15 rounded-2xl">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm flex items-center gap-2"><Users className="w-4 h-4" style={{ color: "#C5B3FF", filter: "drop-shadow(0 0 6px #C5B3FF)" }} /> {language === "af" ? "Ouerrekeninge" : "Parent Accounts"}</CardTitle>
+                  <CardTitle className="text-sm flex items-center gap-2"><Users className="w-4 h-4" style={{ color: "#C5B3FF" }} /> {language === "af" ? "Ouerrekeninge" : "Parent Accounts"}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="relative mb-4">
@@ -1519,7 +1517,7 @@ export default function AdminReportsPage() {
 
                   <Card className="bg-black border-white/15 rounded-2xl">
                     <CardHeader className="pb-3">
-                      <CardTitle className="text-sm flex items-center gap-2"><School className="w-4 h-4" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 6px #9FF5E8)" }} /> {language === "af" ? "Skoolbedrywighede" : "School Operations"}</CardTitle>
+                      <CardTitle className="text-sm flex items-center gap-2"><School className="w-4 h-4" style={{ color: "#9FF5E8" }} /> {language === "af" ? "Skoolbedrywighede" : "School Operations"}</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="overflow-x-auto rounded-xl border border-white/15">
@@ -1611,7 +1609,7 @@ export default function AdminReportsPage() {
                 </div>
               </div>
               <Card className="bg-black border-white/15 rounded-2xl">
-                <CardHeader className="pb-3"><CardTitle className="text-sm flex items-center gap-2"><Handshake className="w-4 h-4" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 6px #FFE29A)" }} /> {language === "af" ? "Vennoot-verwysings & Kommissie" : "Partner Referrals & Commission"}</CardTitle></CardHeader>
+                <CardHeader className="pb-3"><CardTitle className="text-sm flex items-center gap-2"><Handshake className="w-4 h-4" style={{ color: "#FFE29A" }} /> {language === "af" ? "Vennoot-verwysings & Kommissie" : "Partner Referrals & Commission"}</CardTitle></CardHeader>
                 <CardContent>
                   <div className="overflow-x-auto rounded-xl border border-white/15">
                     <Table>
@@ -1662,7 +1660,7 @@ export default function AdminReportsPage() {
                 />
               </div>
               <Card className="bg-black border-white/15 rounded-2xl">
-                <CardHeader className="pb-3"><CardTitle className="text-sm flex items-center gap-2"><MousePointerClick className="w-4 h-4" style={{ color: "#FFB7E5", filter: "drop-shadow(0 0 6px #FFB7E5)" }} /> {language === "af" ? "Vennootskakel-klikke & Proeflopie-toeskrywing" : "Partner Link Clicks & Trial Attribution"}</CardTitle></CardHeader>
+                <CardHeader className="pb-3"><CardTitle className="text-sm flex items-center gap-2"><MousePointerClick className="w-4 h-4" style={{ color: "#FFB7E5" }} /> {language === "af" ? "Vennootskakel-klikke & Proeflopie-toeskrywing" : "Partner Link Clicks & Trial Attribution"}</CardTitle></CardHeader>
                 <CardContent>
                   <div className="overflow-x-auto rounded-xl border border-white/15">
                     <Table>
@@ -1767,7 +1765,7 @@ export default function AdminReportsPage() {
             <DialogTitle className="flex items-center gap-2.5 text-base font-black tracking-tight">
               <span
                 className="inline-flex items-center justify-center w-7 h-7 rounded-md bg-black"
-                style={{ border: "1px solid #9FF5E8", boxShadow: "0 0 8px rgba(159,245,232,0.4)" }}
+                style={{ border: "1px solid #9FF5E8" }}
               >
                 <School className="w-3.5 h-3.5" style={{ color: "#9FF5E8" }} />
               </span>
@@ -1790,7 +1788,7 @@ export default function AdminReportsPage() {
         <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <School className="w-4 h-4" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 6px #9FF5E8)" }} /> {language === "af" ? "Massa-invoer Skole" : "Bulk Import Schools"}
+              <School className="w-4 h-4" style={{ color: "#9FF5E8" }} /> {language === "af" ? "Massa-invoer Skole" : "Bulk Import Schools"}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
@@ -1910,9 +1908,9 @@ export default function AdminReportsPage() {
             <DialogTitle className="flex items-center gap-2 text-base font-black tracking-tight">
               <span
                 className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-black"
-                style={{ border: "1.5px solid #FFE29A", boxShadow: "0 0 12px rgba(255,226,154,0.5)" }}
+                style={{ border: "1.5px solid #FFE29A" }}
               >
-                <Handshake className="w-4 h-4" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }} />
+                <Handshake className="w-4 h-4" style={{ color: "#FFE29A" }} />
               </span>
               <span
                 style={{
@@ -1943,7 +1941,6 @@ export default function AdminReportsPage() {
             const fieldBase = "w-full text-sm rounded-lg px-3 py-2 bg-black text-white placeholder:text-white focus:outline-none transition-none";
             const fieldStyle = (ok: boolean) => ({
               border: ok ? "1px solid rgba(255,226,154,0.35)" : "1px solid #ef4444",
-              boxShadow: ok ? "inset 0 0 8px rgba(0,0,0,0.5)" : "0 0 10px rgba(239,68,68,0.4), inset 0 0 8px rgba(0,0,0,0.5)",
             });
             const labelCls = "text-[10px] font-black uppercase tracking-[0.1em] mb-1.5 block whitespace-nowrap";
             const provinces = [
@@ -2077,7 +2074,7 @@ export default function AdminReportsPage() {
                       onChange={e => setPartnerForm(f => ({ ...f, notes: e.target.value }))}
                       placeholder={language === "af" ? "Enige nuttige inligting oor hierdie vennoot â€” ooreengekome voorwaardes, intro-bron, ens." : "Anything useful about this partner â€” agreed terms, intro source, etc."}
                       className="text-sm min-h-[70px] bg-black text-white placeholder:text-white"
-                      style={{ border: "1px solid rgba(255,183,229,0.35)", boxShadow: "inset 0 0 8px rgba(0,0,0,0.5)" }}
+                      style={{ border: "1px solid rgba(255,183,229,0.35)" }}
                     />
                   </div>
                 </div>
@@ -2086,7 +2083,7 @@ export default function AdminReportsPage() {
                   className="flex items-start gap-2 p-2.5 rounded-lg bg-black"
                   style={{ border: "1px solid rgba(159,245,232,0.35)" }}
                 >
-                  <Sparkles className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 3px #9FF5E8)" }} />
+                  <Sparkles className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: "#9FF5E8" }} />
                   <p className="text-[11px] text-white leading-relaxed">
                     {language === "af" ? "Nadat ons geskep het, sal ons 'n unieke verwysings-URL genereer. Deel dit met die vennoot â€” elke proeflopie-aanmelding vanaf hul skakel verdien hulle die kommissie hierbo." : "After creating, we'll generate a unique referral URL. Share it with the partner â€” every trial signup from their link earns them the commission above."}
                   </p>
@@ -2105,7 +2102,7 @@ export default function AdminReportsPage() {
                     onClick={() => addPartnerMutation.mutate()}
                     data-testid="button-create-partner"
                     className="inline-flex items-center gap-2 rounded-lg bg-black px-4 py-2 text-xs font-black uppercase tracking-[0.18em] transition-none disabled:opacity-40"
-                    style={{ color: "#FFE29A", border: "1.5px solid #FFE29A", boxShadow: "0 0 18px rgba(255,226,154,0.5), inset 0 0 8px rgba(255,226,154,0.18)" }}
+                    style={{ color: "#FFE29A", border: "1.5px solid #FFE29A" }}
                   >
                     {addPartnerMutation.isPending ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> {language === "af" ? "Skepâ€¦" : "Creatingâ€¦"}</> : <><Handshake className="w-3.5 h-3.5" /> {language === "af" ? "Skep vennoot" : "Create partner"}</>}
                   </button>
@@ -2121,7 +2118,7 @@ export default function AdminReportsPage() {
         <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Handshake className="w-4 h-4" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 6px #FFE29A)" }} /> {language === "af" ? "Massa-invoer Vennote" : "Bulk Import Partners"}
+              <Handshake className="w-4 h-4" style={{ color: "#FFE29A" }} /> {language === "af" ? "Massa-invoer Vennote" : "Bulk Import Partners"}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
@@ -2372,7 +2369,7 @@ function GamificationTab() {
           <Card className="rounded-2xl">
             <CardContent className="p-5 space-y-4">
               <div className="flex items-center gap-2">
-                <School className="w-4 h-4" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 6px #9FF5E8)" }} />
+                <School className="w-4 h-4" style={{ color: "#9FF5E8" }} />
                 <h3 className="font-bold text-sm text-white">{language === "af" ? "Gem. Eksamengereedheid per Skool" : "Avg Exam Readiness by School"}</h3>
               </div>
               {readinessData?.length ? (
@@ -2987,9 +2984,9 @@ function ParentRatePromptCard() {
         <CardTitle className="text-sm flex items-center gap-2">
           <span
             className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-black"
-            style={{ border: "1.5px solid #FFE29A", boxShadow: "0 0 10px rgba(255,226,154,0.5)" }}
+            style={{ border: "1.5px solid #FFE29A" }}
           >
-            <Star className="w-3.5 h-3.5" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }} />
+            <Star className="w-3.5 h-3.5" style={{ color: "#FFE29A" }} />
           </span>
           <span
             style={{
@@ -3066,7 +3063,7 @@ function ParentRatePromptCard() {
             disabled={!valid || send.isPending}
             onClick={() => send.mutate()}
             className="inline-flex items-center gap-2 rounded-lg bg-black px-4 py-2 text-xs font-black uppercase tracking-[0.18em] transition-none disabled:opacity-40"
-            style={{ color: "#FFE29A", border: "1.5px solid #FFE29A", boxShadow: "0 0 18px rgba(255,226,154,0.45), inset 0 0 8px rgba(255,226,154,0.15)" }}
+            style={{ color: "#FFE29A", border: "1.5px solid #FFE29A" }}
           >
             {send.isPending ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> {language === "af" ? "Stuurâ€¦" : "Sendingâ€¦"}</> : <><Send className="w-3.5 h-3.5" /> {language === "af" ? "Stuur na alle ouers" : "Blast to all parents"}</>}
           </button>
@@ -3329,7 +3326,7 @@ function DailyFocusPushView() {
       <Card className="bg-black border-white/15 rounded-2xl">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
-            <TrendingUp className="w-4 h-4" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 6px #9FF5E8)" }} />
+            <TrendingUp className="w-4 h-4" style={{ color: "#9FF5E8" }} />
             {trendLabels.title}
           </CardTitle>
         </CardHeader>
@@ -3377,7 +3374,7 @@ function DailyFocusPushView() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
               <CardTitle className="text-sm flex items-center gap-2">
-                <Send className="w-4 h-4" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 6px #9FF5E8)" }} />
+                <Send className="w-4 h-4" style={{ color: "#9FF5E8" }} />
                 {t.title}
               </CardTitle>
               <p className="text-xs text-white mt-1">{t.subtitle}</p>

@@ -765,7 +765,7 @@ export default function DashboardPage() {
         {/* ── Header row ── */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap", marginBottom: 30, position: "relative", zIndex: 1 }}>
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 12px rgba(159,245,232,.5)" }}>
+            <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}>
               {getGreeting()} ⚡
             </div>
             <div role="heading" aria-level={1} style={{ fontSize: 32, fontWeight: 900, letterSpacing: -1, color: "#fff" }}>
@@ -795,7 +795,6 @@ export default function DashboardPage() {
                   borderRadius: 10,
                   padding: "12px 22px",
                   cursor: "pointer",
-                  boxShadow: "0 0 20px rgba(159,245,232,.35)",
                   transition: "transform .2s",
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
@@ -817,7 +816,6 @@ export default function DashboardPage() {
                 fontWeight: 800,
                 fontSize: 15,
                 color: "#050508",
-                boxShadow: "0 0 18px rgba(255,183,229,.4)",
               }}
             >
               {firstName.charAt(0).toUpperCase()}
@@ -851,7 +849,6 @@ export default function DashboardPage() {
               style={{
                 background: `linear-gradient(135deg, ${hex}14 0%, rgba(255,255,255,.03) 60%)`,
                 border: `1.5px solid ${hex}66`,
-                boxShadow: `0 0 18px ${hex}30`,
               }}
             >
               <div className="flex items-center gap-3">
@@ -870,7 +867,6 @@ export default function DashboardPage() {
                     background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
                     color: "#050508",
                     fontWeight: 800,
-                    boxShadow: "0 0 16px rgba(159,245,232,.3)",
                   }}
                   onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
                   onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
@@ -889,7 +885,6 @@ export default function DashboardPage() {
             style={{
               background: "linear-gradient(135deg, rgba(255,183,229,0.12) 0%, rgba(255,255,255,.03) 60%)",
               border: "1.5px solid rgba(255,183,229,0.5)",
-              boxShadow: "0 0 18px rgba(255,183,229,0.25)",
             }}
           >
             <div className="flex items-center gap-3">
@@ -905,7 +900,6 @@ export default function DashboardPage() {
                   background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
                   color: "#050508",
                   fontWeight: 800,
-                  boxShadow: "0 0 16px rgba(159,245,232,.3)",
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
                 onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
@@ -1012,7 +1006,7 @@ export default function DashboardPage() {
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10, flexWrap: "wrap", marginBottom: 20 }}>
               <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 18, color: "#fff" }}>{t.subjectsHeading} 📈</div>
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#9FF5E8", textShadow: "0 0 10px rgba(159,245,232,.5)" }}>{t.keepPushing}</span>
+                <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#9FF5E8" }}>{t.keepPushing}</span>
                 <Link href="/settings">
                   <button
                     data-testid="link-manage-subjects"
@@ -1038,7 +1032,7 @@ export default function DashboardPage() {
                   return (
                     <Link key={subject.id} href={`/subject/${subject.id}`}>
                       <div data-testid={`subject-card-${subject.id}`} style={{ display: "flex", alignItems: "center", gap: 16, cursor: "pointer" }}>
-                        <div style={{ width: 40, height: 40, flex: "none", borderRadius: 12, background: `${hex}26`, color: hex, fontWeight: 800, fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 14px ${hex}40` }}>
+                        <div style={{ width: 40, height: 40, flex: "none", borderRadius: 12, background: `${hex}26`, color: hex, fontWeight: 800, fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>
                           {initial}
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
@@ -1047,7 +1041,7 @@ export default function DashboardPage() {
                             <span className="tabular-nums" style={{ color: hex, flex: "none" }}>{pct}%</span>
                           </div>
                           <div style={{ height: 9, borderRadius: 999, background: "rgba(255,255,255,.08)", overflow: "hidden" }}>
-                            <div style={{ height: "100%", width: `${pct}%`, borderRadius: 999, background: `linear-gradient(90deg,${hex},${hex2})`, boxShadow: `0 0 12px ${hex}40` }} />
+                            <div style={{ height: "100%", width: `${pct}%`, borderRadius: 999, background: `linear-gradient(90deg,${hex},${hex2})` }} />
                           </div>
                         </div>
                       </div>
@@ -1115,7 +1109,7 @@ export default function DashboardPage() {
                     const hex = PASTELS[idx % PASTELS.length];
                     return (
                       <div key={badge.id} data-testid={`badge-${badge.badgeCode}`} style={{ display: "flex", alignItems: "center", gap: 13 }}>
-                        <div style={{ width: 42, height: 42, flex: "none", borderRadius: "50%", background: `${hex}26`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 16px ${hex}40` }}>
+                        <div style={{ width: 42, height: 42, flex: "none", borderRadius: "50%", background: `${hex}26`, display: "flex", alignItems: "center", justifyContent: "center" }}>
                           <Icon style={{ width: 20, height: 20, color: hex }} />
                         </div>
                         <div style={{ minWidth: 0 }}>
@@ -1150,7 +1144,7 @@ export default function DashboardPage() {
               <Link href="/settings">
                 <div
                   data-testid="countdown-prelims-empty"
-                  style={{ height: "100%", background: "rgba(5,5,8,.6)", border: "1.5px solid #9FF5E8", borderRadius: 16, padding: "16px 18px", boxShadow: "0 0 20px rgba(159,245,232,.25)", cursor: "pointer", transition: "transform .2s" }}
+                  style={{ height: "100%", background: "rgba(5,5,8,.6)", border: "1.5px solid #9FF5E8", borderRadius: 16, padding: "16px 18px", cursor: "pointer", transition: "transform .2s" }}
                   onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-4px)")}
                   onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
                 >
@@ -1162,7 +1156,7 @@ export default function DashboardPage() {
             ) : (
               <div
                 data-testid="countdown-prelims"
-                style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #9FF5E8", borderRadius: 16, padding: "16px 18px", boxShadow: "0 0 20px rgba(159,245,232,.25)", transition: "transform .2s" }}
+                style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #9FF5E8", borderRadius: 16, padding: "16px 18px", transition: "transform .2s" }}
                 onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-4px)")}
                 onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
               >
@@ -1183,7 +1177,7 @@ export default function DashboardPage() {
             {/* Finals tile */}
             <div
               data-testid="countdown-finals"
-              style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #FFB7E5", borderRadius: 16, padding: "16px 18px", boxShadow: "0 0 20px rgba(255,183,229,.25)", transition: "transform .2s" }}
+              style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #FFB7E5", borderRadius: 16, padding: "16px 18px", transition: "transform .2s" }}
               onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-4px)")}
               onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
             >
@@ -1204,7 +1198,7 @@ export default function DashboardPage() {
                   return (
                     <div
                       key={i}
-                      style={{ background: "rgba(5,5,8,.6)", border: `1.5px solid ${hex}`, borderRadius: 16, padding: "16px 18px", boxShadow: `0 0 20px ${hex}40`, transition: "transform .2s" }}
+                      style={{ background: "rgba(5,5,8,.6)", border: `1.5px solid ${hex}`, borderRadius: 16, padding: "16px 18px", transition: "transform .2s" }}
                       onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-4px)")}
                       onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
                     >
@@ -1254,13 +1248,12 @@ export default function DashboardPage() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                boxShadow: `0 0 16px ${ac.halo}`,
               }}
             >
               {(() => { const Icon = prepStatus.icon; return <Icon style={{ width: 26, height: 26, color: ac.hex }} />; })()}
             </div>
             <div>
-              <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: ac.hex, transform: "rotate(-2deg)", display: "inline-block", textShadow: `0 0 10px ${ac.halo}` }}>
+              <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: ac.hex, transform: "rotate(-2deg)", display: "inline-block" }}>
                 {t.yourStatus} ✦
               </div>
               <div data-testid="prep-status-label" style={{ fontSize: 26, fontWeight: 900, letterSpacing: -0.5, color: "#fff" }}>
@@ -1326,14 +1319,12 @@ export default function DashboardPage() {
                 alignItems: "center",
                 gap: 16,
                 flexWrap: "wrap",
-                boxShadow: `0 0 22px ${u.halo}`,
               }}
             >
               <div
                 style={{
                   width: 40, height: 40, flex: "none", borderRadius: 12,
                   background: `${u.hex}26`, display: "flex", alignItems: "center", justifyContent: "center",
-                  boxShadow: `0 0 14px ${u.halo}`,
                 }}
               >
                 <Icon style={{ width: 20, height: 20, color: u.hex }} />
@@ -1369,7 +1360,7 @@ export default function DashboardPage() {
         <div>
           <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 16 }}>
             <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 18, color: "#fff" }}>{t.quickActions} 🚀</div>
-            <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#FFE29A", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 10px rgba(255,226,154,.45)" }}>
+            <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#FFE29A", transform: "rotate(-2deg)", display: "inline-block" }}>
               {isAf ? "kies jou missie" : "pick your mission"}
             </span>
           </div>
@@ -1378,7 +1369,7 @@ export default function DashboardPage() {
               const allCards = [
                 {
                   href: "/tutor", testid: "link-smart-tutor", varkKey: "auditory", hex: "#C5B3FF", tilt: -1,
-                  head: <img src={rizzAvatar} alt="Rizz" style={{ width: 46, height: 46, borderRadius: 14, objectFit: "cover" as const, border: "1.5px solid #C5B3FF", boxShadow: "0 0 14px rgba(197,179,255,.4)" }} />,
+                  head: <img src={rizzAvatar} alt="Rizz" style={{ width: 46, height: 46, borderRadius: 14, objectFit: "cover" as const, border: "1.5px solid #C5B3FF" }} />,
                   isImg: true,
                   title: "Rizz", sub: t.tutorCardSub, cta: t.tutorCardCta,
                 },
@@ -1444,7 +1435,7 @@ export default function DashboardPage() {
                   >
                     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                       {isImg ? head : (
-                        <div style={{ width: 46, height: 46, flex: "none", borderRadius: 14, background: `${hex}26`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 14px ${hex}40` }}>
+                        <div style={{ width: 46, height: 46, flex: "none", borderRadius: 14, background: `${hex}26`, display: "flex", alignItems: "center", justifyContent: "center" }}>
                           {head}
                         </div>
                       )}
@@ -1474,7 +1465,7 @@ export default function DashboardPage() {
                 <Target style={{ width: 18, height: 18, color: "#94F7C5" }} />
                 {t.focusAreasHeading} 🎯
               </div>
-              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#94F7C5", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 10px rgba(148,247,197,.45)" }}>
+              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#94F7C5", transform: "rotate(-2deg)", display: "inline-block" }}>
                 {isAf ? "vang hulle vas!" : "lock them down!"}
               </span>
             </div>
@@ -1535,7 +1526,7 @@ export default function DashboardPage() {
         {profile && (
           <div
             data-testid="vark-style-badge"
-            style={{ background: "linear-gradient(150deg,rgba(197,179,255,.12),rgba(255,255,255,.02))", border: "1.5px solid rgba(197,179,255,.5)", borderRadius: 24, padding: 26, boxShadow: "0 0 24px rgba(197,179,255,.18)" }}
+            style={{ background: "linear-gradient(150deg,rgba(197,179,255,.12),rgba(255,255,255,.02))", border: "1.5px solid rgba(197,179,255,.5)", borderRadius: 24, padding: 26 }}
           >
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
               <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 18, color: "#fff", display: "flex", alignItems: "center", gap: 8 }}>
@@ -1543,7 +1534,7 @@ export default function DashboardPage() {
                 {t.yourVibeHeading} {varkStyle ? varkStyle.icon : "🧠"}
               </div>
               {varkStyle && (
-                <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#C5B3FF", transform: "rotate(-2deg)", display: "inline-block", textShadow: "0 0 10px rgba(197,179,255,.45)" }}>
+                <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#C5B3FF", transform: "rotate(-2deg)", display: "inline-block" }}>
                   {isAf ? varkStyle.taglineAf : varkStyle.tagline}
                 </span>
               )}
@@ -1636,7 +1627,7 @@ export default function DashboardPage() {
             ];
             return sections.map(({ title, hex, Widget }) => (
               <div key={title} style={{ display: "flex", flexDirection: "column", gap: 12, height: "100%" }}>
-                <div role="heading" aria-level={2} style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: hex, transform: "rotate(-2deg)", display: "inline-block", textShadow: `0 0 10px ${hex}66` }}>
+                <div role="heading" aria-level={2} style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: hex, transform: "rotate(-2deg)", display: "inline-block" }}>
                   {title}
                 </div>
                 <div style={{ flex: 1 }}>
