@@ -1084,10 +1084,17 @@ export default function StudyCalendarPage() {
                       const isPodium = rank <= 3;
                       const badge = isTop ? "🔥" : isPodium ? "🎯" : null;
                       const name = isAf && t.topicNameAfrikaans ? t.topicNameAfrikaans : t.topicName;
+                      // appearancesCount counts every question-level occurrence
+                      // (a topic can appear more than once within a single
+                      // paper), so it isn't bounded by totalYearsSampled — an
+                      // "X of the last Y sittings" fraction reads as
+                      // impossible once a topic appears twice in one paper.
+                      // State the raw count instead; always true regardless
+                      // of how the two numbers relate.
                       const sittingsLabel = t.totalYearsSampled > 0
                         ? (isAf
-                            ? `Verskyn in ${t.appearancesCount} van laaste ${t.totalYearsSampled} eksamens`
-                            : `Appeared in ${t.appearancesCount} of the last ${t.totalYearsSampled} exam sittings`)
+                            ? `${t.appearancesCount}× voorgekom oor die laaste ${t.totalYearsSampled} jaar se vraestelle`
+                            : `Appeared ${t.appearancesCount}× across the last ${t.totalYearsSampled} years of papers`)
                         : (isAf
                             ? `Verskyn ${t.appearancesCount}× in die DBE-argief`
                             : `Appeared ${t.appearancesCount}× in the DBE archive`);
