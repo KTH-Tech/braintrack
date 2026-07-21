@@ -25,6 +25,7 @@ import {
   UserRound,
   LogOut,
   GraduationCap,
+  KeyRound,
 } from "lucide-react";
 import { LearnerHeader } from "@/components/learner-header";
 import { GraffitiSplats } from "@/components/graffiti-splats";
@@ -243,6 +244,19 @@ const T = {
     emailLabel: "Email",
     roleLabel: "Role",
     signOut: "Sign Out",
+    changePassword: "Change Password",
+    currentPasswordLabel: "Current password",
+    newPasswordLabel: "New password",
+    confirmPasswordLabel: "Confirm new password",
+    newPasswordHint: "At least 10 characters.",
+    passwordMismatch: "Passwords don't match",
+    passwordMismatchDesc: "Your new password and the confirmation must be the same.",
+    savePassword: "Update Password",
+    savingPassword: "Updating…",
+    passwordChanged: "Password Updated",
+    passwordChangedDesc: "Use your new password next time you sign in.",
+    passwordChangeFailed: "Could Not Update Password",
+    cancelPassword: "Cancel",
     selectAtLeast4: "Select at least 4 subjects",
     subjectsSelectedLabel: "subjects selected",
   },
@@ -340,6 +354,19 @@ const T = {
     emailLabel: "E-pos",
     roleLabel: "Rol",
     signOut: "Teken Uit",
+    changePassword: "Verander Wagwoord",
+    currentPasswordLabel: "Huidige wagwoord",
+    newPasswordLabel: "Nuwe wagwoord",
+    confirmPasswordLabel: "Bevestig nuwe wagwoord",
+    newPasswordHint: "Ten minste 10 karakters.",
+    passwordMismatch: "Wagwoorde stem nie ooreen nie",
+    passwordMismatchDesc: "Jou nuwe wagwoord en die bevestiging moet dieselfde wees.",
+    savePassword: "Dateer Wagwoord Op",
+    savingPassword: "Dateer op…",
+    passwordChanged: "Wagwoord Opgedateer",
+    passwordChangedDesc: "Gebruik jou nuwe wagwoord wanneer jy weer aanmeld.",
+    passwordChangeFailed: "Kon Nie Wagwoord Opdateer Nie",
+    cancelPassword: "Kanselleer",
     selectAtLeast4: "Kies minstens 4 vakke",
     subjectsSelectedLabel: "vakke gekies",
   },
@@ -363,6 +390,50 @@ export default function SettingsPage() {
   // Prelim exam dates (Task #359): keyed by `${subjectId}:${paperNumber}` → YYYY-MM-DD
   const [prelimDates, setPrelimDates] = useState<Record<string, string>>({});
   const [prelimDirty, setPrelimDirty] = useState(false);
+  // Change password (launch flow — parent-created learners rotate their
+  // handed-over starter password here; any local-auth account can use it).
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const changePasswordMutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/auth/change-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body?.message || "Could not change the password.");
+      return body;
+    },
+    onSuccess: () => {
+      toast({ title: t.passwordChanged, description: t.passwordChangedDesc });
+      setShowPasswordForm(false);
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    },
+    onError: (err: Error) => {
+      toast({ title: t.passwordChangeFailed, description: err.message, variant: "destructive" });
+    },
+  });
+
+  const canSubmitPassword =
+    currentPassword.length >= 1 &&
+    newPassword.length >= 10 &&
+    confirmPassword.length >= 10 &&
+    !changePasswordMutation.isPending;
+
+  const submitPasswordChange = () => {
+    if (newPassword !== confirmPassword) {
+      toast({ title: t.passwordMismatch, description: t.passwordMismatchDesc, variant: "destructive" });
+      return;
+    }
+    changePasswordMutation.mutate();
+  };
 
   const { data: profile } = useQuery<{ phone?: string }>({
     queryKey: ["/api/user/profile"],
@@ -1262,6 +1333,85 @@ export default function SettingsPage() {
                 </p>
               </div>
             </div>
+
+            {/* ── Change password ─────────────────────────────────────── */}
+            {!showPasswordForm ? (
+              <GhostButton
+                onClick={() => setShowPasswordForm(true)}
+                color="#9FF5E8"
+                testId="button-show-change-password"
+              >
+                <KeyRound className="w-4 h-4" />
+                {t.changePassword}
+              </GhostButton>
+            ) : (
+              <div
+                className="p-4 rounded-xl space-y-3"
+                style={{ background: "rgba(5,5,8,.6)", border: "1px solid rgba(159,245,232,.35)" }}
+                data-testid="change-password-form"
+              >
+                <div className="space-y-1.5">
+                  <Label className="text-white text-xs">{t.currentPasswordLabel}</Label>
+                  <Input
+                    type="password"
+                    autoComplete="current-password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    className={fieldClass}
+                    style={fieldStyle}
+                    data-testid="input-current-password"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-white text-xs">{t.newPasswordLabel}</Label>
+                  <Input
+                    type="password"
+                    autoComplete="new-password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className={fieldClass}
+                    style={fieldStyle}
+                    data-testid="input-new-password"
+                  />
+                  <p className="text-[11px] text-white" style={{ opacity: 0.8 }}>{t.newPasswordHint}</p>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-white text-xs">{t.confirmPasswordLabel}</Label>
+                  <Input
+                    type="password"
+                    autoComplete="new-password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className={fieldClass}
+                    style={fieldStyle}
+                    data-testid="input-confirm-password"
+                  />
+                </div>
+                <div className="flex gap-3 pt-1">
+                  <PrimaryButton
+                    onClick={submitPasswordChange}
+                    disabled={!canSubmitPassword}
+                    testId="button-save-password"
+                  >
+                    {changePasswordMutation.isPending
+                      ? <><Loader2 className="w-4 h-4 animate-spin" />{t.savingPassword}</>
+                      : <><KeyRound className="w-4 h-4" />{t.savePassword}</>}
+                  </PrimaryButton>
+                  <GhostButton
+                    onClick={() => {
+                      setShowPasswordForm(false);
+                      setCurrentPassword("");
+                      setNewPassword("");
+                      setConfirmPassword("");
+                    }}
+                    testId="button-cancel-password"
+                  >
+                    {t.cancelPassword}
+                  </GhostButton>
+                </div>
+              </div>
+            )}
+
             <GhostButton
               onClick={() => logout()}
               color="#FF8DA1"

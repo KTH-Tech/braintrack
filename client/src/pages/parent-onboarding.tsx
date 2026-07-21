@@ -101,6 +101,19 @@ export default function ParentOnboardingPage() {
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </div>
+            {/* Launch flow — the child has NO account yet: the parent creates
+                and activates it directly and gets on-screen credentials. */}
+            <p className="text-sm text-white pt-2 border-t border-border">
+              {isAf
+                ? "Het jou kind nog géén BrainTrack-rekening nie? "
+                : "Doesn't your child have a BrainTrack account yet? "}
+              <a href="/parent/activate-child" className="underline font-semibold" data-testid="link-activate-child">
+                {isAf ? "Skep en aktiveer dit nou" : "Create & activate it now"}
+              </a>
+              {isAf
+                ? " — jy kry hul gebruikersnaam en wagwoord dadelik."
+                : " — you'll get their username and password immediately."}
+            </p>
           </CardContent>
         </Card>
       </div>

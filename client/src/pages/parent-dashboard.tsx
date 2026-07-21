@@ -16,7 +16,7 @@ import {
   HelpCircle, Home, ArrowLeft, LogOut, ChevronRight,
   GraduationCap, MapPin,
   Download, Activity, Zap, TrendingDown, ShieldAlert, BarChart3,
-  RefreshCw, Users, Sparkles, Rocket,
+  RefreshCw, Users, UserPlus, Sparkles, Rocket,
   MessageSquare, CheckCircle2, XCircle, Loader2, Send,
   Link2, Settings2, CreditCard, ShieldCheck,
 } from "lucide-react";
@@ -163,6 +163,7 @@ const PARENT_NAV_T = {
     roleChip: "Parent",
     navHome: "Home",
     navJourney: "Journey",
+    navAddChild: "Add child",
     navBilling: "Billing",
     navPlan: "Subscription",
     navConsent: "Consent",
@@ -177,6 +178,7 @@ const PARENT_NAV_T = {
     roleChip: "Ouer",
     navHome: "Tuis",
     navJourney: "Leerreis",
+    navAddChild: "Voeg kind by",
     navBilling: "Rekening",
     navPlan: "Intekening",
     navConsent: "Toestemming",
@@ -197,6 +199,7 @@ type ParentNavCopy = Record<keyof (typeof PARENT_NAV_T)["en"], string>;
 const PARENT_NAV_LINKS = (t: ParentNavCopy) => [
   { href: "/parent",           match: ["/parent", "/parent-dashboard"], icon: Home,        label: t.navHome     },
   { href: "/journey?parent=1", match: ["/journey"],                     icon: MapPin,      label: t.navJourney  },
+  { href: "/parent/activate-child", match: ["/parent/activate-child"],  icon: UserPlus,    label: t.navAddChild },
   { href: "/parent-purchase",  match: ["/parent-purchase"],             icon: CreditCard,  label: t.navBilling  },
   { href: "/subscribe",        match: ["/subscribe"],                   icon: Sparkles,    label: t.navPlan     },
   { href: "/parent-consent",   match: ["/parent-consent"],              icon: ShieldCheck, label: t.navConsent  },
@@ -1550,12 +1553,27 @@ export default function ParentDashboardPage() {
           </p>
           <p className="text-sm text-white mt-3">
             {isAf
-              ? "Sodra jou kind hul BrainTrack-rekening aan jou koppel, verskyn hul vordering hier."
-              : "Once your child links their BrainTrack account to you, their progress shows up here."}
+              ? "Skep en aktiveer jou kind se rekening in minder as 'n minuut — jy kry hul aanmeldbesonderhede dadelik op die skerm."
+              : "Create and activate your child's account in under a minute — you get their sign-in details on screen immediately."}
+          </p>
+          <Link href="/parent/activate-child">
+            <button
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold mt-5 transition-transform hover:-translate-y-0.5"
+              style={{ background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", color: "#050508", border: "none" }}
+              data-testid="button-activate-child-empty"
+            >
+              <UserPlus className="w-4 h-4" />
+              {isAf ? "Voeg jou kind by / aktiveer" : "Add / activate your child"}
+            </button>
+          </Link>
+          <p className="text-xs text-white mt-4" style={{ opacity: 0.85 }}>
+            {isAf
+              ? "Het jou kind reeds 'n rekening? Sodra hulle dit aan jou koppel, verskyn hul vordering hier."
+              : "Child already has an account? Once they link it to you, their progress shows up here."}
           </p>
           <Link href="/dashboard">
             <button
-              className="inline-flex items-center px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 mt-5"
+              className="inline-flex items-center px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 mt-4"
               style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
               data-testid="link-home"
             >

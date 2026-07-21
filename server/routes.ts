@@ -19,6 +19,7 @@ import { eq, sql, and, desc, asc, isNull, isNotNull, or, gte, lt, lte, count, in
 import { alias } from "drizzle-orm/pg-core";
 import { setupAuth, registerAuthRoutes, isAuthenticated, rotateSigningKey, generateAccessToken, generateRefreshToken } from "./replit_integrations/auth";
 import { registerLocalAuthRoutes } from "./local-auth";
+import { activateChildSchema, activateChild, type ActivationDeps } from "./parent-activation";
 import { registerPaystackRoutes, isPaystackConfigured, paystackFetch, recordEventOnce, applyCardCaptureSuccess } from "./paystack";
 import { registerRizzRoutes } from "./rizz";
 import { authStorage } from "./replit_integrations/auth/storage";
@@ -953,6 +954,19 @@ const activationLimiter = rateLimit({
   message: { error: "Too many activation attempts, please try again in 15 minutes" },
   standardHeaders: true,
   legacyHeaders: false,
+});
+
+// Parent-driven child activation (POST /api/parent/activate-child) — creates
+// real accounts, so keep the ceiling low. 10/15min still lets a parent with
+// several children (or a typo to fix) finish, while stopping scripted abuse.
+// TEST_MODE skip mirrors local-auth's authLimiter so E2E runs aren't throttled.
+const parentActivateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { error: "too_many_attempts", message: "Too many activation attempts. Please try again in 15 minutes." },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: () => process.env.TEST_MODE === "true",
 });
 
 // Referral attribution rate limits — defend against code-stuffing.
@@ -4616,6 +4630,85 @@ export async function registerRoutes(
       if (err instanceof z.ZodError) return res.status(400).json(formatZodError(err));
       console.error("Error in parent onboarding:", err);
       res.status(500).json({ error: "Failed to complete parent onboarding" });
+    }
+  });
+
+  // ── Parent-driven learner activation (launch flow) ────────────────────────
+  // A signed-in parent creates + activates their child's learner account in
+  // one step. The generated password is returned ONCE in this response for
+  // on-screen handover — never stored, logged, mailed or SMS'd. Consent: the
+  // parent performing this action IS the parental consent (POPIA), recorded
+  // on the learner row and in consent_log. Billing is untouched — the learner
+  // hits the normal subscribe/trial gates. Core logic + tests live in
+  // server/parent-activation.ts.
+  app.post("/api/parent/activate-child", isAuthenticated, requireRole("parent"), parentActivateLimiter, async (req: any, res: Response) => {
+    try {
+      const parsed = activateChildSchema.safeParse(req.body);
+      if (!parsed.success) return res.status(400).json(formatZodError(parsed.error));
+      const parentUserId = req.user.claims.sub as string;
+
+      const deps: ActivationDeps = {
+        normalisePhone: (raw) => (isValidSACell(raw) ? normaliseSACell(raw) : null),
+        emailExists: async (email) => {
+          const [row] = await db.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1);
+          return !!row;
+        },
+        linksForParent: (pid) =>
+          db.select({
+            id: parentLinks.id,
+            learnerName: parentLinks.learnerName,
+            learnerUserId: parentLinks.learnerUserId,
+            status: parentLinks.status,
+          }).from(parentLinks).where(eq(parentLinks.parentUserId, pid)),
+        createLearner: async (row) => {
+          await db.insert(users).values(row);
+        },
+        activatePendingLink: async (linkId, learnerUserId, activatedAt) => {
+          await db.update(parentLinks)
+            .set({ learnerUserId, status: "activated", activatedAt })
+            .where(eq(parentLinks.id, linkId));
+        },
+        createActivatedLink: async (row) => {
+          const [inserted] = await db.insert(parentLinks).values(row).returning({ id: parentLinks.id });
+          return inserted.id;
+        },
+        insertConsentLog: async (entry) => {
+          await storage.insertConsentLog(entry);
+        },
+        updateParentContact: async (pid, patch) => {
+          // Fill the parent's own cell only when their profile has none — a
+          // typo in this form must never clobber a previously stored number.
+          const [me] = await db.select({ phone: users.phone }).from(users).where(eq(users.id, pid)).limit(1);
+          if (me && !me.phone) {
+            await db.update(users).set({ phone: patch.phone, updatedAt: new Date() }).where(eq(users.id, pid));
+          }
+        },
+      };
+
+      const ipAddress = (req.headers["x-forwarded-for"] as string | undefined)?.split(",")[0]?.trim()
+        ?? req.socket?.remoteAddress ?? null;
+      const userAgent = (req.headers["user-agent"] as string | undefined) ?? null;
+
+      const result = await activateChild(deps, { parentUserId, ipAddress, userAgent }, parsed.data);
+      if (!result.ok) {
+        return res.status(result.status).json({ error: result.error, message: result.message });
+      }
+
+      // The plaintext password exists ONLY in this response body. Do not add
+      // logging here.
+      return res.status(201).json({
+        ok: true,
+        learnerId: result.learnerId,
+        username: result.username,
+        password: result.password,
+        usernameGenerated: result.usernameGenerated,
+        learnerName: `${parsed.data.childFirstName} ${parsed.data.childLastName}`.trim(),
+      });
+    } catch (err: any) {
+      // Unique-index race on users.email (extremely unlikely) or any other
+      // failure — uniform 500 without echoing internals.
+      console.error("Error in POST /api/parent/activate-child:", err?.message ?? err);
+      return res.status(500).json({ error: "server_error", message: "Could not create the learner account. Please try again." });
     }
   });
 

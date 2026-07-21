@@ -122,6 +122,7 @@ const TermsOfServicePage = lazy(() => import("@/pages/terms-of-service"));
 const SettingsPage = lazy(() => import("@/pages/settings"));
 const PartnerSchoolsPage = lazy(() => import("@/pages/partner-schools"));
 const ParentDashboardPage = lazy(() => import("@/pages/parent-dashboard"));
+const ParentActivateChildPage = lazy(() => import("@/pages/parent-activate-child"));
 const ActivatePage = lazy(() => import("@/pages/activate"));
 const PrintableCalendarPage = lazy(() => import("@/pages/printable-calendar"));
 const PastPapersPage = lazy(() => import("@/pages/past-papers"));
@@ -781,6 +782,14 @@ function Router() {
         <Route path="/parent">
           <RequireParentRoute>
             <ParentDashboardPage />
+          </RequireParentRoute>
+        </Route>
+
+        {/* Launch flow — parent creates + activates their child's learner
+            account and hands over the on-screen credentials. */}
+        <Route path="/parent/activate-child">
+          <RequireParentRoute>
+            <ParentActivateChildPage />
           </RequireParentRoute>
         </Route>
 

@@ -36,6 +36,20 @@ const credentialsSchema = z.object({
   password: z.string().min(1, "Password is required").max(200),
 });
 
+/**
+ * Change-password policy: the CURRENT password is always required — including
+ * for parent-created learner accounts (the learner knows it: the parent handed
+ * it over on the activation screen). New passwords follow the same 10-char
+ * minimum as registration. Exported for tests/unit/parent-activation.test.ts.
+ */
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1, "Current password is required").max(200),
+  newPassword: z
+    .string()
+    .min(10, "New password must be at least 10 characters")
+    .max(200, "Password is too long"),
+});
+
 const registerSchema = credentialsSchema.extend({
   password: z
     .string()
@@ -248,6 +262,58 @@ export function registerLocalAuthRoutes(app: Express) {
     } catch (err: any) {
       console.error("[local-auth] login failed:", err?.message ?? err);
       return res.status(500).json({ error: "server_error", message: "Could not sign in." });
+    }
+  });
+
+  // ── Change password ──────────────────────────────────────────────────────
+  // Session-authenticated. Only for accounts with a local passwordHash (i.e.
+  // native or parent-created accounts) — OIDC accounts have no password here.
+  // Requires the current password; a parent-set starter password is still a
+  // known password, so no bypass exists. Never logs or stores plaintext.
+  app.post("/api/auth/change-password", authLimiter, async (req: Request, res: Response) => {
+    const userId = (req as any).user?.claims?.sub as string | undefined;
+    if (!(req as any).isAuthenticated?.() || !userId) {
+      return res.status(401).json({ error: "unauthorized", message: "Please sign in first." });
+    }
+
+    const parsed = changePasswordSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({
+        error: "invalid_input",
+        message: parsed.error.issues[0]?.message ?? "Invalid input",
+      });
+    }
+    const { currentPassword, newPassword } = parsed.data;
+
+    try {
+      const [user] = await db.select({ id: users.id, passwordHash: users.passwordHash })
+        .from(users).where(eq(users.id, userId));
+
+      if (!user) return res.status(401).json({ error: "unauthorized", message: "Please sign in first." });
+      if (!user.passwordHash) {
+        return res.status(400).json({
+          error: "no_local_password",
+          message: "This account signs in without a password, so there is no password to change here.",
+        });
+      }
+
+      const ok = await bcrypt.compare(currentPassword, user.passwordHash);
+      if (!ok) {
+        return res.status(401).json({
+          error: "invalid_current_password",
+          message: "Your current password is incorrect.",
+        });
+      }
+
+      const newHash = await bcrypt.hash(newPassword, BCRYPT_COST);
+      await db.update(users)
+        .set({ passwordHash: newHash, updatedAt: new Date() })
+        .where(eq(users.id, userId));
+
+      return res.json({ ok: true });
+    } catch (err: any) {
+      console.error("[local-auth] change-password failed:", err?.message ?? err);
+      return res.status(500).json({ error: "server_error", message: "Could not change the password." });
     }
   });
 
