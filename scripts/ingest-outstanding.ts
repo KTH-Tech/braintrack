@@ -53,6 +53,19 @@ async function main() {
   const before = await totals();
   log(`START: ${before.released}/${before.total} released`);
 
+  // Heal the broken-window debris: while migration 0032 was missing, question
+  // inserts failed silently but memo log rows were still written as
+  // "completed" — claiming pairing work that never landed. Question papers
+  // self-heal (a NULL/0 question_count is retried), memos do not: they skip on
+  // status alone. Clear the target subjects' memo logs so memos re-fetch and
+  // re-pair; the operation is cheap and idempotent.
+  const healed = await db.execute(sql`
+    DELETE FROM dbe_ingestion_log
+    WHERE is_memo = true
+      AND subject IN (${sql.join(TARGETS.map((t) => sql`${t}`), sql`, `)})
+  `);
+  log(`cleared ${(healed as any).rowCount ?? 0} stale memo log entries for re-pairing`);
+
   const catalog = ((catalogJson as any).papers ?? catalogJson) as any[];
 
   for (const subject of TARGETS) {
