@@ -9,6 +9,7 @@ import { join } from "path";
 import { pathToFileURL } from "url";
 import OpenAI from "openai";
 import { CAPS_TOPICS } from "../client/src/lib/constants";
+import { cleanMemoText } from "./memo-clean";
 
 // Lazy OpenAI client used by the AI fallback splitter for unstructured language papers.
 let _ingestionOpenAI: OpenAI | null = null;
@@ -522,7 +523,12 @@ interface VerbatimQuestion {
   marks: number | null;
   cognitiveLevel: "knowledge" | "comprehension" | "analysis" | "synthesis";
   mcqOptions: Array<{ letter: "A" | "B" | "C" | "D" | "E"; text: string }> | null;
-  correctOption: "A" | "B" | "C" | "D" | "E" | null;
+  /** Answer letter(s), comma-joined for multi-letter selection items ("A,C"). */
+  correctOption: string | null;
+  /** Verbatim source material the question depends on; shared across a group. */
+  stimulusText: string | null;
+  /** Question references material we could not recover — do not serve as answerable. */
+  needsStimulus: boolean;
 }
 
 /**
@@ -668,6 +674,219 @@ function collectSectionsFromMatches(
   return result;
 }
 
+// ============================================================
+// MEMO ANSWER INDEX — structural pairing of memo answers to question numbers
+// ============================================================
+//
+// DBE marking guidelines are laid out as tables. `pdf-parse` flattens a table
+// cell-by-cell, column-by-column, which breaks the naive "answer follows its
+// number on the same line" assumption in two distinct, very common ways:
+//
+//   (1) PARENT-PREFIX COLUMN. The group number occupies its own table column,
+//       so the first sub-question of every group shares a line with its parent:
+//           "1.1 1.1.1"       "2.2 2.2.1 20 (1)"      "3.4 3.4.1 (a)"
+//       A regex anchored with (?:^|\n)\s*<subnum> can never match the sub-number
+//       here, so EVERY `X.Y.1` row in the paper failed to pair.
+//
+//   (2) COLUMN-FLATTENED BLOCKS. When a group's answers live in a second
+//       column, pdf-parse emits the whole number column first and the whole
+//       answer column after it:
+//           1.1.1 / 1.1.2 / … / 1.1.10 / B / C / D / A / …
+//       so each number is followed by the NEXT number rather than by its answer.
+//
+// Both shapes are generic DBE marking-guideline conventions, not subject
+// specific — they show up in Life Sciences, Physical Sciences, Geography and
+// Mathematics alike. This indexer walks the memo line-by-line, reconstructs the
+// number→answer association for both shapes, and returns a flat lookup keyed by
+// the full sub-question number ("3.2.1"), which the pairing step consults
+// before falling back to the original in-line regex.
+
+/** Page furniture emitted on every DBE page; it interrupts table runs. */
+const MEMO_FURNITURE_RE: RegExp[] = [
+  /^copyright reserved/i,
+  /^please turn over$/i,
+  /^-{2,}\s*\d+\s+of\s+\d+\s*-{2,}$/,
+  /^NSC\s*[–—-]\s*(marking guidelines|memorandum)/i,
+  /^[A-Za-z][A-Za-z\s()]*\/P\d+\s+\d+\s+DBE\//i,
+];
+
+/** A lone mark allocation cell, e.g. "(2)" or "(10 x 2) (20)". */
+const MEMO_MARK_ONLY_RE =
+  /^\(?\s*(?:\d{1,3}\s*[x×]\s*\d{1,3}\s*\)?\s*\(?\s*)?\d{1,3}\s*\)$/;
+
+/**
+ * Structural boundaries that end an answer even though no new question number
+ * follows. Without these, the last answer of a section swallows the section
+ * footer and the next section's heading.
+ */
+const MEMO_BOUNDARY_RE =
+  /^(?:TOTAL\b|GRAND TOTAL\b|SECTION\s+[A-E]\b|QUESTION\s+\d+\b|AFDELING\s+[A-E]\b|VRAAG\s+\d+\b)/i;
+
+/** Leading question-number token, e.g. "3.2.1" (always at least one dot). */
+const MEMO_NUM_TOKEN_RE = /^(\d{1,2}(?:\.\d{1,2}){1,3})(?:\s+|$)/;
+
+interface MemoParsedLine {
+  /** Deepest question number this line introduces, if any. */
+  num: string | null;
+  /** Text remaining on the line after the leading number token(s). */
+  rest: string;
+  isMarkOnly: boolean;
+  /** True when the line is a section/total boundary that terminates an answer. */
+  isBoundary: boolean;
+}
+
+function parseMemoLine(raw: string): MemoParsedLine | null {
+  const line = raw.trim();
+  if (!line) return null;
+  for (const re of MEMO_FURNITURE_RE) if (re.test(line)) return null;
+
+  if (MEMO_BOUNDARY_RE.test(line)) {
+    return { num: null, rest: "", isMarkOnly: false, isBoundary: true };
+  }
+
+  // Peel every leading question-number token. A table row that carries its
+  // group number in a separate column yields several ("1.1", "1.1.1"); the
+  // deepest one is the number the remaining text actually answers.
+  const nums: string[] = [];
+  let rest = line;
+  for (;;) {
+    const m = rest.match(MEMO_NUM_TOKEN_RE);
+    if (!m) break;
+    nums.push(m[1]);
+    rest = rest.slice(m[0].length);
+  }
+
+  return {
+    num: nums.length ? nums[nums.length - 1] : null,
+    rest: rest.trim(),
+    isMarkOnly: nums.length === 0 && MEMO_MARK_ONLY_RE.test(line),
+    isBoundary: false,
+  };
+}
+
+/**
+ * Builds a lookup of question number → verbatim memo answer text from raw
+ * marking-guideline text.
+ *
+ * Handles in-line answers ("2.2.3 The progesterone level is decreasing"),
+ * parent-prefixed rows ("2.2 2.2.1 20"), and column-flattened blocks where a
+ * run of bare numbers is followed by the matching run of answers.
+ */
+export function buildMemoAnswerIndex(memoText: string): Map<string, string> {
+  const index = new Map<string, string>();
+  if (!memoText || !memoText.trim()) return index;
+
+  const lines: MemoParsedLine[] = [];
+  for (const raw of memoText.split(/\r?\n/)) {
+    const parsed = parseMemoLine(raw);
+    if (parsed) lines.push(parsed);
+  }
+
+  // Indices of every line that introduces a question number.
+  const anchors: number[] = [];
+  for (let i = 0; i < lines.length; i++) if (lines[i].num) anchors.push(i);
+
+  const setIfBetter = (num: string, text: string) => {
+    const clean = text.replace(/\s+/g, " ").trim().slice(0, 2000);
+    if (!clean) return;
+    const prev = index.get(num);
+    // Keep the richest answer if a number legitimately appears twice (DBE
+    // memos repeat a question block when an alternative answer is allowed).
+    if (prev === undefined || clean.length > prev.length) index.set(num, clean);
+  };
+
+  for (let a = 0; a < anchors.length; a++) {
+    const start = anchors[a];
+    const nextAnchor = a + 1 < anchors.length ? anchors[a + 1] : lines.length;
+
+    // ── Shape (2): a run of consecutive bare numbers (a flattened number
+    // column). Collect the run, then the answer block that follows it.
+    if (!lines[start].rest) {
+      const run: string[] = [lines[start].num!];
+      let k = a + 1;
+      while (
+        k < anchors.length &&
+        anchors[k] === anchors[k - 1] + 1 &&
+        !lines[anchors[k]].rest
+      ) {
+        run.push(lines[anchors[k]].num!);
+        k++;
+      }
+
+      if (run.length >= 2) {
+        const bodyStart = anchors[k - 1] + 1;
+        let bodyEnd = k < anchors.length ? anchors[k] : lines.length;
+        for (let i = bodyStart; i < bodyEnd; i++) {
+          if (lines[i].isBoundary) { bodyEnd = i; break; }
+        }
+        const body = lines.slice(bodyStart, bodyEnd);
+
+        // Trailing mark cells belong to the table's mark column, not the answer.
+        let end = body.length;
+        while (end > 0 && body[end - 1].isMarkOnly) end--;
+        const content = body.slice(0, end).filter((l) => !l.isMarkOnly);
+
+        if (content.length === run.length) {
+          // Exact 1:1 column zip — the common MCQ / one-word-answer table.
+          for (let i = 0; i < run.length; i++) setIfBetter(run[i], content[i].rest);
+        } else if (content.length > 0) {
+          // Multi-line answers whose internal boundaries pdf-parse did not
+          // preserve. Attribute the group's answer block to each member: it is
+          // the memo content covering those sub-questions, which is what a
+          // printed marking guideline shows in the merged cell anyway.
+          const blockText = content.map((l) => l.rest).join(" ");
+          for (const num of run) setIfBetter(num, blockText);
+        }
+        a = k - 1;
+        continue;
+      }
+    }
+
+    // ── Shape (1) / in-line: answer starts on the anchor line (possibly after
+    // a parent-number prefix) and continues until the next numbered anchor.
+    const parts: string[] = [];
+    if (lines[start].rest) parts.push(lines[start].rest);
+    for (let i = start + 1; i < nextAnchor; i++) {
+      if (lines[i].isBoundary) break;
+      if (lines[i].isMarkOnly) continue;
+      parts.push(lines[i].rest);
+    }
+    setIfBetter(lines[start].num!, parts.join(" "));
+  }
+
+  // ── Parent rollup. Papers expose the group header ("3.1") as its own row
+  // alongside its children ("3.1.1"…). The memo has no separate answer for the
+  // header — its answer is precisely the children's answers — so fill any
+  // childed parent that did not get an answer of its own.
+  const children = new Map<string, string[]>();
+  for (const key of Array.from(index.keys())) {
+    const parent = key.slice(0, key.lastIndexOf("."));
+    if (!parent.includes(".")) {
+      // "3.1" → parent "3": a bare question number is not a paper row here.
+      if (parent.length === 0) continue;
+    }
+    if (!parent) continue;
+    const list = children.get(parent) ?? [];
+    list.push(key);
+    children.set(parent, list);
+  }
+  for (const [parent, keys] of children) {
+    if (index.has(parent)) continue;
+    if (!parent.includes(".")) continue; // only roll up "3.1", never bare "3"
+    if (keys.length < 2) continue;
+    const joined = keys
+      .slice()
+      .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+      .map((k) => `${k} ${index.get(k)}`)
+      .join(" ")
+      .trim()
+      .slice(0, 2000);
+    if (joined) index.set(parent, joined);
+  }
+
+  return index;
+}
+
 /**
  * Extracts sub-questions from a question section block.
  * Matches patterns like "1.1", "1.1.1", "2.3" at the start of a line.
@@ -676,8 +895,11 @@ function collectSectionsFromMatches(
  * returned. If it's a section letter (e.g. "A"), every numeric sub-question
  * inside the section block is returned.
  */
-function extractSubQuestions(sectionText: string, qNum: string): Array<{ num: string; text: string; marks: number | null }> {
-  const results: Array<{ num: string; text: string; marks: number | null }> = [];
+export function extractSubQuestions(
+  sectionText: string,
+  qNum: string,
+): Array<{ num: string; text: string; rawBlock: string; marks: number | null }> {
+  const results: Array<{ num: string; text: string; rawBlock: string; marks: number | null }> = [];
   const isNumericParent = /^\d+[A-Z]?$/.test(qNum);
   // For numeric parents, only match `qNum.X[.Y]`. For non-numeric (section letters),
   // match any `D.D[.D]` numbered sub-item inside the block.
@@ -691,13 +913,19 @@ function extractSubQuestions(sectionText: string, qNum: string): Array<{ num: st
   );
   let sm: RegExpExecArray | null;
   while ((sm = subRe.exec(sectionText)) !== null) {
-    const rawText = sm[2].replace(/\s+/g, " ").trim();
+    // `rawBlock` keeps the ORIGINAL line breaks. They carry the option-table
+    // structure ("A\tGeel vel\nB\tBlou dood\n…"), and collapsing them first —
+    // as this function used to do before returning — destroyed the only signal
+    // `extractMcqOptions` could key on. That single `\s+` collapse is why
+    // `mcq_options` was NULL on every row in the table.
+    const rawBlock = sm[2];
+    const rawText = rawBlock.replace(/\s+/g, " ").trim();
     // Extract marks from trailing [N] or (N)
     const marksMatch = rawText.match(/\[(\d+)\]\s*$|\((\d+)\)\s*$|\((\d+)\s*marks?\)\s*$/i);
     const marks = marksMatch
       ? parseInt(marksMatch[1] ?? marksMatch[2] ?? marksMatch[3], 10)
       : null;
-    results.push({ num: sm[1].trim(), text: rawText, marks });
+    results.push({ num: sm[1].trim(), text: rawText, rawBlock, marks });
   }
   return results;
 }
@@ -743,15 +971,23 @@ async function aiSplitLanguagePaper(
         const memo = q?.memo ? String(q.memo).trim() : null;
         const marksRaw = typeof q?.marks === "number" ? q.marks : Number(q?.marks);
         const marks = Number.isFinite(marksRaw) && marksRaw > 0 && marksRaw <= 150 ? Math.floor(marksRaw) : null;
-        return {
+        const opts = extractMcqOptions(text);
+        const hasOpts = opts.length >= 2;
+        const stem = hasOpts ? stripOptionsFromText(text, opts) : text;
+        const vq: VerbatimQuestion = {
           questionNumber: String(q?.number ?? "1").slice(0, 16) || "1",
-          questionText: text.slice(0, 4000),
+          questionText: stem.slice(0, 4000),
           memoText: memo ? memo.slice(0, 2000) : null,
-          marks,
+          marks: marks ?? recoverMarks(text, memo),
           cognitiveLevel: detectCognitiveLevel(text),
-          mcqOptions: null,
-          correctOption: null,
-        } as VerbatimQuestion;
+          mcqOptions: hasOpts ? opts : null,
+          correctOption: hasOpts ? serialiseCorrectOptions(extractMcqAnswerLetters(memo)) : null,
+          // The AI splitter returns question text only; it does not carry the
+          // surrounding stimulus block, so flag anything that refers to one.
+          stimulusText: null,
+          needsStimulus: questionNeedsStimulus(stem, null, hasOpts),
+        };
+        return vq;
       })
       .filter((q) => q.questionText.length >= 10);
   } catch (err) {
@@ -778,6 +1014,10 @@ export async function extractAndStoreVerbatimQuestions(
 ): Promise<number> {
   const paperSections = splitByQuestionHeaders(paperText);
   const memoSections = memoText ? splitByQuestionHeaders(memoText) : new Map<string, string>();
+  // Structural number→answer map built over the WHOLE memo. This is the primary
+  // pairing source; the per-section regex below remains as a fallback so any
+  // memo shape the indexer does not recognise behaves exactly as it did before.
+  const memoIndex = memoText ? buildMemoAnswerIndex(memoText) : new Map<string, string>();
 
   const toInsert: VerbatimQuestion[] = [];
 
@@ -798,10 +1038,14 @@ export async function extractAndStoreVerbatimQuestions(
         questionNumber: "1",
         questionText: fallbackText,
         memoText: fallbackMemo,
-        marks: null,
+        marks: recoverMarks(fallbackText, fallbackMemo),
         cognitiveLevel: "knowledge",
         mcqOptions: fallbackOpts.length >= 2 ? fallbackOpts : null,
-        correctOption: extractMcqAnswer(fallbackMemo),
+        correctOption: serialiseCorrectOptions(extractMcqAnswerLetters(fallbackMemo)),
+        stimulusText: null,
+        // A whole-paper blob has no reliable stimulus pairing; flag it so it is
+        // never served to a learner as a normal, answerable question.
+        needsStimulus: true,
       });
     }
   } else {
@@ -810,38 +1054,83 @@ export async function extractAndStoreVerbatimQuestions(
       const subs = extractSubQuestions(paperSection, qNum);
 
       if (subs.length === 0) {
-        // No sub-questions detected — store the whole section
-        const memoSubText = memoSection ? memoSection.slice(0, 4000).trim() : null;
+        // No sub-questions detected — store the whole section (falling back to
+        // the structural index when the memo's headers did not split cleanly).
+        const memoSubText = memoSection
+          ? memoSection.slice(0, 4000).trim()
+          : memoIndex.get(qNum) ?? null;
         const sectionText = paperSection.slice(0, 4000).trim();
+        // Extract options from the newline-bearing text, then remove them from
+        // the prose so the UI can render a real option list.
         const sectionOpts = extractMcqOptions(sectionText);
+        const hasOpts = sectionOpts.length >= 2;
+        const sectionStem = hasOpts
+          ? stripOptionsFromText(sectionText, sectionOpts)
+          : sectionText;
         toInsert.push({
           questionNumber: qNum,
-          questionText: sectionText,
+          questionText: sectionStem,
           memoText: memoSubText,
-          marks: null,
+          marks: recoverMarks(sectionText, memoSubText),
           cognitiveLevel: detectCognitiveLevel(paperSection),
-          mcqOptions: sectionOpts.length >= 2 ? sectionOpts : null,
-          correctOption: sectionOpts.length >= 2 ? extractMcqAnswer(memoSubText) : null,
+          mcqOptions: hasOpts ? sectionOpts : null,
+          correctOption: hasOpts
+            ? serialiseCorrectOptions(extractMcqAnswerLetters(memoSubText))
+            : null,
+          stimulusText: null,
+          needsStimulus: questionNeedsStimulus(sectionStem, null, hasOpts),
         });
       } else {
+        // Stimulus is attached per GROUP: "2.1" carries the scenario that
+        // "2.1.1"…"2.1.4" all ask about. Resolved once per group and shared by
+        // its children, so no child is served without its source material.
+        const stimulusByGroup = new Map<string, string | null>();
+        const groupOf = (num: string): string | null => {
+          const parts = num.split(".");
+          return parts.length >= 3 ? parts.slice(0, -1).join(".") : null;
+        };
         for (const sub of subs) {
-          // Find the corresponding memo sub-answer
-          const memoSubRe = new RegExp(
-            `(?:^|\\n)\\s*${sub.num.replace(".", "\\.")}\\s+(.+?)(?=\\n\\s*${qNum}\\.\\d|\\n\\s*QUESTION|\\n\\s*VRAAG|$)`,
-            "is"
-          );
-          const memoSubMatch = memoSection ? memoSection.match(memoSubRe) : null;
-          const memoSubText = memoSubMatch ? memoSubMatch[1].replace(/\s+/g, " ").trim().slice(0, 2000) : null;
-          const subOpts = extractMcqOptions(sub.text);
+          const g = groupOf(sub.num);
+          if (g && !stimulusByGroup.has(g)) {
+            stimulusByGroup.set(g, extractStimulus(paperSection, g));
+          }
+        }
+
+        for (const sub of subs) {
+          const groupStimulus = stimulusByGroup.get(groupOf(sub.num) ?? "") ?? null;
+          // Prefer the structural index; fall back to the original in-line regex.
+          // (`replaceAll` matters here — the old `.replace(".", …)` escaped only
+          // the FIRST dot, leaving later dots as regex wildcards.)
+          let memoSubText = memoIndex.get(sub.num) ?? null;
+          if (!memoSubText) {
+            const memoSubRe = new RegExp(
+              `(?:^|\\n)\\s*${sub.num.replaceAll(".", "\\.")}\\s+(.+?)(?=\\n\\s*${qNum}\\.\\d|\\n\\s*QUESTION|\\n\\s*VRAAG|$)`,
+              "is"
+            );
+            const memoSubMatch = memoSection ? memoSection.match(memoSubRe) : null;
+            memoSubText = memoSubMatch ? memoSubMatch[1].replace(/\s+/g, " ").trim().slice(0, 2000) : null;
+          }
+          // Options are extracted from `rawBlock`, which still has the line
+          // breaks that carry the option-table structure. `sub.text` has had
+          // them collapsed and is what gets stored as the stem.
+          const subOpts = extractMcqOptions(sub.rawBlock);
+          const hasOpts = subOpts.length >= 2;
+          const stem = hasOpts
+            ? stripOptionsFromText(sub.text, subOpts)
+            : sub.text;
 
           toInsert.push({
             questionNumber: sub.num,
-            questionText: sub.text.slice(0, 4000),
+            questionText: stem.slice(0, 4000),
             memoText: memoSubText,
-            marks: sub.marks,
+            marks: sub.marks ?? recoverMarks(sub.text, memoSubText),
             cognitiveLevel: detectCognitiveLevel(sub.text),
-            mcqOptions: subOpts.length >= 2 ? subOpts : null,
-            correctOption: subOpts.length >= 2 ? extractMcqAnswer(memoSubText) : null,
+            mcqOptions: hasOpts ? subOpts : null,
+            correctOption: hasOpts
+              ? serialiseCorrectOptions(extractMcqAnswerLetters(memoSubText))
+              : null,
+            stimulusText: groupStimulus,
+            needsStimulus: questionNeedsStimulus(stem, groupStimulus, hasOpts),
           });
         }
       }
@@ -928,6 +1217,8 @@ export async function extractAndStoreVerbatimQuestions(
       predictiveRating,
       mcqOptions: q.mcqOptions,
       correctOption: q.correctOption,
+      stimulusText: sanitizeText(q.stimulusText),
+      needsStimulus: q.needsStimulus,
       markScheme: markScheme,
     });
   }
@@ -1343,64 +1634,501 @@ export interface McqOption {
   text: string;
 }
 
+const LETTERS = ["A", "B", "C", "D", "E"] as const;
+const VALID_RUNS = new Set(["AB", "ABC", "ABCD", "ABCDE"]);
+
 /**
- * Extracts real A/B/C/D (and occasionally E) options from a question
- * section. Handles the common DBE NSC styles:
- *   "A  apartheid"            (letter then whitespace)
- *   "A.  apartheid"
- *   "A) apartheid"
- *   "(A) apartheid"
- *   "A apartheid\nB ..."
+ * Stem phrases that mark a question as a choice/selection item, in both
+ * languages DBE publishes. Used to gate the riskiest extraction shape
+ * (inline run-on) so flowing prose is never mined for options.
  *
- * Returns ordered options. Caller can attach to question payload so the
- * learner sees the real choices, not generic "Option A/B/C/D".
+ *   "Write only the letter (A–D) next to the question number …"
+ *   "Skryf slegs die letter (A–D) langs die vraagnommer …"
+ *   "Choose the correct answer …" / "Kies die korrekte antwoord …"
+ *
+ * The "(A–D)" / "(A-D)" range hint is itself a reliable cue and covers papers
+ * whose instruction wording differs.
  */
-export function extractMcqOptions(sectionText: string): McqOption[] {
-  if (!sectionText) return [];
-  const out: McqOption[] = [];
-  const seen = new Set<string>();
+const MCQ_CUE_RE =
+  /\(\s*[A-H]\s*[–—-]\s*[A-H]\s*\)|write only the letter|skryf slegs die letter|choose the (?:correct|cocktail|word|term|option)|kies die (?:korrekte|regte)|multiple.?choice|meervoudige.?keuse|select the correct|various options are given/i;
 
-  // Anchored to start of line; stops at the next option letter or end of text.
-  // We use a multiline pattern that captures letter + body until the next option.
-  const pattern =
-    /(^|\n)\s*\(?([A-E])[\.\)]?\s+([^\n][^\n]{0,400}?)(?=(?:\n\s*\(?[A-E][\.\)]?\s+)|\n{2,}|$)/g;
+/** Options must be a contiguous run starting at A. */
+function validRun(out: McqOption[]): McqOption[] | null {
+  return VALID_RUNS.has(out.map((o) => o.letter).join("")) ? out : null;
+}
 
-  let m: RegExpExecArray | null;
-  while ((m = pattern.exec(sectionText)) !== null) {
-    const letter = m[2] as McqOption["letter"];
-    const text = m[3].trim().replace(/\s+/g, " ");
-    if (!text || text.length < 1) continue;
-    if (seen.has(letter)) continue;
-    // Reject if the body looks like a sub-question header rather than an option
-    if (/^(QUESTION|Question|MARKS|TOTAL)\b/.test(text)) continue;
-    seen.add(letter);
-    out.push({ letter, text: text.slice(0, 240) });
-  }
+/** Trailing "(2)" mark cells and tab debris are furniture, not option text. */
+function tidyOptionText(raw: string): string {
+  return raw
+    .replace(/\s*\(\s*\d{1,2}\s*\)\s*$/, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 240);
+}
 
-  // Must have a contiguous A,B,(C[,D[,E]]) — otherwise reject
-  const letters = out.map(o => o.letter).join("");
-  const valid = ["AB", "ABC", "ABCD", "ABCDE"];
-  if (!valid.includes(letters)) return [];
-  return out;
+function plausibleOptionBody(text: string): boolean {
+  if (!text || text.length < 1) return false;
+  if (/^(QUESTION|Question|VRAAG|MARKS|TOTAL|SECTION|AFDELING)\b/.test(text)) return false;
+  // A body that is itself just an option letter is a column artifact, not text.
+  if (/^[A-E][.)]?$/.test(text)) return false;
+  return /\p{L}|\d/u.test(text);
 }
 
 /**
- * Best-effort extraction of the correct MCQ answer letter from a memo block.
- * Looks for patterns like "1.1 C", "1.1  C ✓", "Answer: B".
+ * SHAPE 1 — one option per line, letter and body together:
+ *
+ *     A   Geel vel
+ *     B   Blou dood
+ *     C   Verlies aan eetlus
+ *     D   Lae bloeddruk    (2)
+ *
+ * This is the layout most DBE papers use, and the only shape the original
+ * implementation handled.
  */
-export function extractMcqAnswer(memoText: string | null | undefined): "A" | "B" | "C" | "D" | "E" | null {
-  if (!memoText) return null;
+function extractOptionsLineForm(text: string): McqOption[] | null {
+  const out: McqOption[] = [];
+  const seen = new Set<string>();
+  // One option per line: letter, then the rest of that line. An earlier
+  // lookahead-terminated version required the NEXT line to be another option
+  // (or a blank line / end of text), so the final option was silently dropped
+  // whenever anything else followed it — "D bread." before an "ANSWER:" line
+  // yielded only A, B, C.
+  const pattern = /(^|\n)[ \t]*\(?([A-E])[.)]?[ \t]+([^\n]{1,400})/g;
+
+  let m: RegExpExecArray | null;
+  let maxLen = 0;
+  while ((m = pattern.exec(text)) !== null) {
+    const letter = m[2] as McqOption["letter"];
+    if (seen.has(letter)) continue;
+    // The stem always precedes the options. A match at position 0 is the
+    // question stem itself starting with a capital letter — the paper's worked
+    // example "1.1.11  A good source of vitamin C is …" would otherwise parse
+    // its own stem as option A and shift every real option by one.
+    if (m.index === 0) continue;
+    const body = tidyOptionText(m[3]);
+    if (!plausibleOptionBody(body)) continue;
+    maxLen = Math.max(maxLen, body.length);
+    seen.add(letter);
+    out.push({ letter, text: body });
+  }
+  // A body this long is prose that swallowed the run, not an option.
+  if (maxLen > 200) return null;
+  return validRun(out);
+}
+
+/**
+ * SHAPE 2 — column-flattened. `pdf-parse` emits a two-column option table by
+ * reading the whole letter column first, then the whole text column:
+ *
+ *     A
+ *     B
+ *     C
+ *     D
+ *     Yellow skin
+ *     Blue death
+ *     Loss of appetite
+ *     Low blood pressure   (2)
+ *
+ * This is the exact shape of Hospitality Studies 2025 P1 Q1.4.2 (English),
+ * whose Afrikaans twin uses SHAPE 1 — so the same question is flattened two
+ * different ways depending on the PDF's internal table layout. Zipping the
+ * letter run to the following text run recovers it.
+ */
+function extractOptionsColumnForm(text: string): McqOption[] | null {
+  const lines = text.split(/\r?\n/).map((l) => l.trim());
+
+  for (let i = 0; i < lines.length; i++) {
+    // Collect a run of bare option letters in ascending order from A.
+    const run: string[] = [];
+    let j = i;
+    while (j < lines.length && run.length < 5) {
+      const mm = lines[j].match(/^\(?([A-E])[.)]?$/);
+      if (!mm) break;
+      if (mm[1] !== LETTERS[run.length]) break;
+      run.push(mm[1]);
+      j++;
+    }
+    if (run.length < 2) continue;
+
+    // The next `run.length` non-empty lines are the option bodies.
+    const bodies: string[] = [];
+    let k = j;
+    while (k < lines.length && bodies.length < run.length) {
+      const line = lines[k];
+      k++;
+      if (!line) continue;
+      const body = tidyOptionText(line);
+      if (!plausibleOptionBody(body)) { bodies.length = 0; break; }
+      bodies.push(body);
+    }
+    if (bodies.length !== run.length) continue;
+
+    const out = run.map((letter, idx) => ({
+      letter: letter as McqOption["letter"],
+      text: bodies[idx],
+    }));
+    const ok = validRun(out);
+    if (ok) return ok;
+  }
+  return null;
+}
+
+/**
+ * SHAPE 3 — inline run-on, everything collapsed onto one line:
+ *
+ *     "… in die ANTWOORDEBOEK neer. A Geel vel B Blou dood C Verlies aan
+ *      eetlus D Lae bloeddruk (2)"
+ *
+ * This is what the learner actually saw on screen, because
+ * `extractSubQuestions` collapses newlines before storing `question_text`.
+ * Recovering options from this form is what lets us repair the 38,299 rows
+ * ALREADY in the database without re-reading every source PDF.
+ *
+ * Deliberately conservative: it requires standalone capital letters in strict
+ * ascending order from A, each followed by real text. If two option letters
+ * sit adjacent with no text between them (the collapsed form of SHAPE 2,
+ * "A B C D Yellow skin Blue death …"), the option boundaries are genuinely
+ * unknowable from the string and we return null rather than invent a split.
+ */
+function extractOptionsInlineForm(text: string): McqOption[] | null {
+  // GUARD 1 — only mine text that announces itself as a choice question.
+  // Without this, ordinary prose ("A business must plan. B grade students…")
+  // parses as a two-option MCQ. Every real DBE choice item carries one of
+  // these cues in its stem.
+  if (!MCQ_CUE_RE.test(text)) return null;
+
+  // Candidate positions for every standalone letter, keyed by letter.
+  const candidates = new Map<string, Array<{ start: number; bodyStart: number }>>();
+  const re = /(?:^|[\s(])([A-E])[.)]?[ \t]+/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text)) !== null) {
+    const list = candidates.get(m[1]) ?? [];
+    list.push({ start: m.index, bodyStart: m.index + m[0].length });
+    candidates.set(m[1], list);
+    re.lastIndex = m.index + 1; // allow overlapping scans
+  }
+
+  // Build every viable ascending run and keep the most option-like one.
+  // "A" occurs innocently inside the stem ("…hepatitis A opgedoen het…"), so
+  // the FIRST "A" is usually the wrong anchor; the right run is the one whose
+  // bodies are short, because options are short and stems are long.
+  let best: McqOption[] | null = null;
+  let bestScore = Infinity;
+
+  for (const anchor of candidates.get("A") ?? []) {
+    const run: Array<{ letter: string; start: number; bodyStart: number }> = [
+      { letter: "A", ...anchor },
+    ];
+    for (let li = 1; li < LETTERS.length; li++) {
+      const prev = run[run.length - 1];
+      const next = (candidates.get(LETTERS[li]) ?? []).find((c) => c.start > prev.bodyStart);
+      if (!next) break;
+      run.push({ letter: LETTERS[li], ...next });
+    }
+    // GUARD 2 — inline form demands at least three options. Two-option runs in
+    // flowing prose are almost always coincidence rather than a real MCQ.
+    if (run.length < 3) continue;
+
+    const out: McqOption[] = [];
+    let maxLen = 0;
+    let ok = true;
+    for (let i = 0; i < run.length; i++) {
+      const end = i + 1 < run.length ? run[i + 1].start : text.length;
+      const body = tidyOptionText(text.slice(run[i].bodyStart, end));
+      // Empty body ⇒ adjacent letters ⇒ collapsed column form ⇒ the option
+      // boundaries are genuinely unknowable from this string.
+      if (!plausibleOptionBody(body)) { ok = false; break; }
+      maxLen = Math.max(maxLen, body.length);
+      out.push({ letter: run[i].letter as McqOption["letter"], text: body });
+    }
+    if (!ok) continue;
+    // GUARD 3 — a body longer than this is stem prose that swallowed the run.
+    if (maxLen > 160) continue;
+    const valid = validRun(out);
+    if (valid && maxLen < bestScore) { best = valid; bestScore = maxLen; }
+  }
+  return best;
+}
+
+/**
+ * Extracts real A/B/C/D(/E) options from question text.
+ *
+ * Tries the three shapes DBE PDFs actually produce, in order of confidence:
+ * per-line (SHAPE 1), column-flattened (SHAPE 2), inline run-on (SHAPE 3).
+ * Returns [] when no shape matches, so callers can leave `mcq_options` null.
+ */
+export function extractMcqOptions(sectionText: string): McqOption[] {
+  if (!sectionText) return [];
+  return (
+    extractOptionsLineForm(sectionText) ??
+    extractOptionsColumnForm(sectionText) ??
+    extractOptionsInlineForm(sectionText) ??
+    []
+  );
+}
+
+/**
+ * Removes an extracted option block from the question prose so the stem reads
+ * as a question and the UI can render the options as a selectable list.
+ *
+ * Without this the learner sees the run-on sentence that prompted this work:
+ * "… Skryf slegs die letters (A–D) … neer. A Geel vel B Blou dood C Verlies
+ * aan eetlus D Lae bloeddruk (2)" — with a free-text box under it.
+ */
+export function stripOptionsFromText(text: string, options: McqOption[]): string {
+  if (!text || options.length === 0) return text;
+  const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const first = options[0];
+
+  // Preferred cut: the first option's letter immediately followed by its body
+  // (SHAPE 1 per-line and SHAPE 3 inline both look like this).
+  let cut = -1;
+  const direct = new RegExp(
+    `(?:^|[\\s(\\n])${first.letter}[.)]?[\\s\\n]+${esc(first.text.slice(0, 24))}`,
+  ).exec(text);
+  if (direct) {
+    cut = direct.index;
+  } else {
+    // SHAPE 2 column form: the letters sit in their own block ahead of the
+    // bodies, so cut at the start of the bare letter run instead.
+    const runRe = new RegExp(
+      `(?:^|\\n)[ \\t]*${options.map((o) => `\\(?${o.letter}[.)]?`).join("[ \\t]*\\n[ \\t]*")}[ \\t]*\\n`,
+    );
+    const run = runRe.exec(text);
+    if (run) cut = run.index;
+  }
+  if (cut < 0) return text;
+
+  const head = text.slice(0, cut).trim();
+  // Preserve a trailing mark allocation — it belongs to the stem, not an option.
+  const marksTag = text.match(/\(\s*\d{1,2}\s*\)\s*$/);
+  const stem = marksTag ? `${head} ${marksTag[0].trim()}` : head;
+  // Refuse to gut the question: if stripping leaves almost nothing, the match
+  // was spurious and the original text is safer.
+  return stem.length >= 15 ? stem.replace(/\s+/g, " ").trim() : text;
+}
+
+/**
+ * Best-effort extraction of the correct MCQ answer letter(s) from a memo block.
+ *
+ * Handles both single-answer items ("1.1 C", "Answer: B", "C ✓") and DBE
+ * SELECTION items, whose memo gives several letters to be accepted in any
+ * order — Hospitality 2025 P1 Q1.4.2 is "A C" for 2 marks and Q1.4.1 is
+ * "A C E H" for 4.
+ *
+ * Runs on artifact-cleaned text so a memo like "A C Enige volgorde M194 F37"
+ * yields ["A","C"] and not a letter picked out of the layout codes.
+ *
+ * Returns [] when no answer letter is recoverable.
+ */
+export function extractMcqAnswerLetters(memoText: string | null | undefined): string[] {
+  if (!memoText) return [];
+  const cleaned = cleanMemoText(memoText).replace(/[✓✔√]/g, " ");
+
+  // A bare letter run is the selection-item shape: "A C", "A C E H".
+  // Anchor to a line that contains nothing but letters (and an optional
+  // leading question number / trailing mark cell) so prose is never mined.
+  const runLine = cleaned
+    .split(/\r?\n/)
+    .map((l) =>
+      l
+        .replace(/^\s*\d+(?:\.\d+)*\s+/, "")
+        .replace(/\(\s*\d{1,2}\s*\)\s*$/, "")
+        .trim(),
+    )
+    .find((l) => l.length > 0 && /^[A-H](?:[\s,]+[A-H])*$/.test(l));
+
+  if (runLine) {
+    const letters = runLine.split(/[\s,]+/).filter(Boolean);
+    // De-duplicate while preserving memo order.
+    return Array.from(new Set(letters));
+  }
+
   const patterns = [
     /^\s*\d+(?:\.\d+)*\s+([A-E])\b/m,
     /\bAnswer\s*[:\-]?\s*([A-E])\b/i,
     /\bCorrect\s*[:\-]?\s*([A-E])\b/i,
-    /^\s*([A-E])\s*✓/m,
+    /\bAntwoord\s*[:\-]?\s*([A-E])\b/i,
+    /^\s*([A-E])\s*$/m,
   ];
   for (const p of patterns) {
-    const m = memoText.match(p);
-    if (m) return m[1] as "A" | "B" | "C" | "D" | "E";
+    const m = cleaned.match(p);
+    if (m) return [m[1].toUpperCase()];
   }
+  return [];
+}
+
+/**
+ * Single-letter form kept for callers that only support one answer.
+ * Returns null for multi-letter selection items so they are never silently
+ * truncated to their first letter (which would mark "A C" as just "A").
+ */
+export function extractMcqAnswer(memoText: string | null | undefined): "A" | "B" | "C" | "D" | "E" | null {
+  const letters = extractMcqAnswerLetters(memoText);
+  if (letters.length !== 1) return null;
+  const l = letters[0];
+  return /^[A-E]$/.test(l) ? (l as "A" | "B" | "C" | "D" | "E") : null;
+}
+
+// ============================================================
+// STIMULUS (SOURCE MATERIAL) EXTRACTION
+// ============================================================
+
+/**
+ * Phrases that mean "this question depends on material shown separately".
+ * Used to decide whether a question without stimulus is INCOMPLETE (and must
+ * be flagged) rather than merely self-contained.
+ */
+const STIMULUS_REFERENCE_RE =
+  /\b(?:the (?:extract|passage|paragraph|scenario|case study|table|diagram|figure|graph|picture|image|sketch|source|advertisement|recipe|menu)|die (?:uittreksel|paragraaf|scenario|gevallestudie|tabel|diagram|figuur|grafiek|prent|skets|bron|advertensie|resep|spyskaart))\b|\b(?:below|above|hieronder|bostaande|hierbo|onderstaande|volgende|following)\b|\b(?:refer to|verwys na|bestudeer|study the|read the|lees die|use the)\b/i;
+
+/** Page furniture that must never be mistaken for stimulus content. */
+const STIMULUS_FURNITURE_RE =
+  /^(?:copyright reserved|kopiereg voorbehou|please turn over|blaai om asseblief|NSC|NSS|SC\/NSC|-{2,}\s*\d+\s+of\s+\d+\s*-{2,}|\d+\s*$)/i;
+
+/**
+ * Extracts the stimulus block a question group's sub-questions depend on.
+ *
+ * DBE lays a group out as:
+ *
+ *     2.1    Bestudeer die scenario hieronder en beantwoord die vrae wat volg.
+ *            MTT Hotel is 'n populêre toeriste-onderneming in Suid-Afrika.
+ *            … 8 more lines of scenario …
+ *     2.1.1  Noem die orgaan …                                          (1)
+ *     2.1.2  Stel EEN voorkomende maatreël voor …                       (1)
+ *
+ * Everything between the group header and the FIRST sub-question is the
+ * stimulus. It is returned so it can be attached to every child row — each of
+ * which is otherwise served to a learner with its source material missing.
+ *
+ * Returns null when the preamble is only an instruction line ("Answer the
+ * questions that follow") with no actual source content behind it.
+ */
+export function extractStimulus(sectionText: string, groupNum: string): string | null {
+  if (!sectionText || !groupNum.includes(".")) return null;
+  const escaped = groupNum.replaceAll(".", "\\.");
+
+  // The stimulus lives between the GROUP header ("2.1") and that group's first
+  // child ("2.1.1") — not between the top-level question header and "2.1",
+  // which is where an earlier version of this looked and always found nothing.
+  // nosemgrep: javascript.lang.security.audit.detect-non-literal-regexp -- pattern built from a validated question number, not user input
+  const groupRe = new RegExp(`(?:^|\\n)[ \\t]*${escaped}[ \\t]+`);
+  const groupHit = groupRe.exec(sectionText);
+  if (!groupHit) return null;
+  const afterGroup = groupHit.index + groupHit[0].length;
+
+  // nosemgrep: javascript.lang.security.audit.detect-non-literal-regexp -- validated question number
+  const childRe = new RegExp(`(?:^|\\n)[ \\t]*${escaped}\\.\\d+`);
+  const childHit = childRe.exec(sectionText.slice(afterGroup));
+  if (!childHit) return null;
+
+  const preamble = sectionText.slice(afterGroup, afterGroup + childHit.index);
+
+  const lines = preamble
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0 && !STIMULUS_FURNITURE_RE.test(l));
+  if (lines.length === 0) return null;
+
+  // A lone instruction ("Study the scenario below and answer the questions
+  // that follow.") is not stimulus — the material it points at is missing.
+  const body = lines.join("\n").trim();
+  const withoutInstruction = lines
+    .filter(
+      (l) =>
+        !/^(?:study|read|refer|examine|look at|use|answer|bestudeer|lees|verwys|beantwoord|gebruik|kyk na)\b/i.test(l),
+    )
+    .join("\n")
+    .trim();
+
+  // Require real content beyond the instruction line.
+  if (withoutInstruction.length < 40) return null;
+  return body.slice(0, 4000);
+}
+
+/**
+ * True when a question's wording depends on material we do not have.
+ * These questions are unanswerable as served and must be flagged.
+ */
+export function questionNeedsStimulus(
+  questionText: string,
+  stimulus: string | null,
+  hasOptions: boolean,
+): boolean {
+  if (stimulus && stimulus.length > 0) return false;
+  // An MCQ carries its own choices — "the list below" is satisfied by them.
+  if (hasOptions) return false;
+  return STIMULUS_REFERENCE_RE.test(questionText || "");
+}
+
+// ============================================================
+// MARKS RECOVERY
+// ============================================================
+
+/**
+ * Recovers a question's mark allocation.
+ *
+ * DBE prints marks as a trailing "(2)" on the question, and the marking
+ * guideline repeats it. `marks` was NULL on 43% of released rows because only
+ * the question-text form was ever parsed, and only when it sat at the very end
+ * of the string — a trailing page-furniture token or a stray newline was
+ * enough to lose it.
+ *
+ * Order of preference:
+ *   1. trailing "(2)" / "[2]" on the question text (the paper's own figure)
+ *   2. trailing "(2)" / "[2]" anywhere near the end of the question text
+ *   3. the memo's mark cell
+ *   4. the memo's tick count — DBE convention is one ✓ per mark
+ *
+ * Returns null when no source gives a defensible figure; a wrong mark total is
+ * worse than a missing one because it silently corrupts every percentage.
+ */
+export function recoverMarks(
+  questionText: string | null | undefined,
+  memoText: string | null | undefined,
+): number | null {
+  const sane = (n: number | null): number | null =>
+    n !== null && Number.isFinite(n) && n >= 1 && n <= 150 ? n : null;
+
+  const q = (questionText || "").trim();
+
+  // 1 & 2 — trailing allocation on the question, allowing trailing furniture.
+  const tailWindow = q.slice(-80);
+  const qMatches = [...tailWindow.matchAll(/[(\[](\d{1,3})[)\]]/g)];
+  if (qMatches.length > 0) {
+    const v = sane(parseInt(qMatches[qMatches.length - 1][1], 10));
+    if (v !== null) return v;
+  }
+
+  const memo = cleanMemoText(memoText);
+  if (!memo) return null;
+
+  // 3 — the memo's own mark cell, again taken from the end.
+  const mMatches = [...memo.slice(-120).matchAll(/[(\[](\d{1,3})[)\]]/g)];
+  if (mMatches.length > 0) {
+    const v = sane(parseInt(mMatches[mMatches.length - 1][1], 10));
+    if (v !== null) return v;
+  }
+
+  // 4 — one tick per mark.
+  const ticks = (memo.match(/[✓✔√]/g) ?? []).length;
+  if (ticks > 0) return sane(ticks);
+
   return null;
+}
+
+/** Serialise answer letters for the `correct_option` text column. */
+export function serialiseCorrectOptions(letters: string[]): string | null {
+  return letters.length > 0 ? letters.join(",") : null;
+}
+
+/** Parse the `correct_option` column back into a letter list. */
+export function parseCorrectOptions(stored: string | null | undefined): string[] {
+  if (!stored) return [];
+  return stored
+    .split(/[,\s]+/)
+    .map((s) => s.trim().toUpperCase())
+    .filter((s) => /^[A-H]$/.test(s));
 }
 
 // ============================================================

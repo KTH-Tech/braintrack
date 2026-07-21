@@ -129,6 +129,13 @@ export const adminInputClass =
   "w-full px-3 py-2 rounded-lg bg-black/50 text-white text-xs placeholder-white focus:outline-none";
 export const adminInputStyle: CSSProperties = { border: "1px solid rgba(255,255,255,0.18)" };
 
+/** Multi-line input matching adminInputClass. Admin forms are full of prose and
+ * JSON textareas; without this they each invent their own fill/border/placeholder
+ * and drift off the palette (usually via a faded placeholder, which reads grey). */
+export const adminTextareaClass =
+  "w-full px-3 py-2 rounded-lg bg-black/50 text-white text-xs placeholder-white focus:outline-none resize-y";
+export const adminTextareaStyle: CSSProperties = { border: "1px solid rgba(255,255,255,0.18)" };
+
 /** Native <select> styled to match — kills the default white-box/system
  * chrome look (full restyle of the dropdown popover itself isn't
  * possible with a plain <select>, but the closed control now matches). */

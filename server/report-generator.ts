@@ -14,8 +14,24 @@
  * the "Luxury Street Graffiti" brand system in its *restrained* mode:
  *   - White / near-white page, near-black body text for print legibility.
  *   - Brand pastels used strictly as accents (rules, chips, bars, headings).
- *   - Near-black header band carrying the BrainTrack logo.
+ *   - Near-black masthead band carrying the BrainTrack logo.
  * The dark app UI treatment is deliberately NOT used here.
+ *
+ * TYPOGRAPHY
+ * ----------
+ * All type is Poppins (embedded, see server/brand-fonts.ts) — never Helvetica.
+ * Permanent Marker is the brand display face and is used *sparingly*: the
+ * masthead report title and the closing sign-off, nothing else. It is a marker
+ * face and turns to mush below ~15pt, so it is never used for body copy, data,
+ * labels or anything that must be read at a glance.
+ *
+ * LAYOUT SYSTEM
+ * -------------
+ * A single vertical rhythm (SPACE.*) drives every gap so sections do not drift.
+ * `ensure()` is the page-break guard; `section()` keeps a heading glued to at
+ * least the first row of its content so nothing is orphaned at a page foot.
+ * Every page gets a running footer with "Page n of N" stamped after layout via
+ * pdfkit's buffered-page mode.
  *
  * EMPTINESS CONTRACT
  * ------------------
@@ -31,6 +47,7 @@ import { users } from "@shared/models/auth";
 import { eq, sql } from "drizzle-orm";
 import { attempts } from "@shared/schema";
 import { BRAND_LOGO_BUFFER } from "./brand-assets";
+import { registerBrandFonts, type BrandFontSet } from "./brand-fonts";
 
 export interface PartnerBranding {
   partnerName?: string | null;
@@ -52,7 +69,7 @@ export interface ReportGeneratorOpts {
 
 /* ── Brand palette — Luxury Street Graffiti (executive / print mode) ──────── */
 
-/** Header band — brand near-black. */
+/** Masthead band — brand near-black. */
 const NEAR_BLACK = "#050508";
 /** Body text — near-black, high contrast on white. */
 const INK = "#14141A";
@@ -84,6 +101,54 @@ const TINT_RISK = "#FFF1F4";
 const TRACK = TINT_PURPLE;
 /** Hairline rules — a pastel tint, never grey. */
 const HAIRLINE = "#E7E1F7";
+/** Zebra banding for data tables — the faintest brand tint. */
+const ZEBRA = "#FBF9FF";
+
+/** The masthead accent strip, in brand order. */
+const STRIPE = [AQUA, SKY, PURPLE, PINK, YELLOW, MINT];
+
+/* ── Vertical rhythm ─────────────────────────────────────────────────────── */
+
+const SPACE = {
+  /** Between a label and the thing it labels. */
+  tight: 4,
+  /** Between sibling rows in a list. */
+  row: 8,
+  /** Between a block and the next block inside a section. */
+  block: 14,
+  /** Between the end of one section and the next heading. */
+  section: 26,
+} as const;
+
+/**
+ * Sniff an image buffer's format from its magic bytes. pdfkit's `doc.image()`
+ * understands JPEG and PNG only — everything else (WebP, GIF, SVG, AVIF, HEIC)
+ * throws deep inside the image decoder with an opaque message. Detecting the
+ * format up front lets us tell the operator exactly what is wrong.
+ */
+export function detectImageFormat(buf: Buffer): string {
+  if (buf.length < 12) return "unknown (too short)";
+  if (buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) return "jpeg";
+  if (buf.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))) {
+    return "png";
+  }
+  if (buf.subarray(0, 4).toString("ascii") === "RIFF" && buf.subarray(8, 12).toString("ascii") === "WEBP") {
+    return "webp";
+  }
+  const head = buf.subarray(0, 6).toString("ascii");
+  if (head === "GIF87a" || head === "GIF89a") return "gif";
+  if (buf.subarray(4, 12).toString("ascii") === "ftypavif") return "avif";
+  if (buf.subarray(4, 8).toString("ascii") === "ftyp" && buf.subarray(8, 12).toString("ascii").startsWith("heic")) {
+    return "heic";
+  }
+  if (buf.subarray(0, 2).toString("ascii") === "BM") return "bmp";
+  const text = buf.subarray(0, 300).toString("utf8").trimStart().toLowerCase();
+  if (text.startsWith("<svg") || text.startsWith("<?xml")) return "svg";
+  return "unknown";
+}
+
+/** Formats pdfkit can actually embed. */
+const PDF_EMBEDDABLE_FORMATS = new Set(["jpeg", "png"]);
 
 /**
  * Generate a BrainTrack progress report PDF and return it as a Buffer.
@@ -288,11 +353,86 @@ export async function generateReportPdfBuffer(
     !hasLinkedLearner || (!hasLiveActivity && !hasBaselineSignal);
 
   const partnerDisplayName = (partnerBranding.partnerName ?? "").trim();
-  const hasPartnerLogo = !!partnerBranding.partnerLogoBase64;
-  const headerHeight = partnerDisplayName ? 132 : 112;
+  const generatedAt = new Date();
+  const generatedAtLabel = generatedAt.toLocaleDateString(dateLocale, {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  const reportTitle = isGettingStarted
+    ? t("Getting Started Report", "Aanvangsverslag")
+    : t("Progress Report", "Vorderingsverslag");
+
+  /* ── Partner logo: validate BEFORE we hand it to pdfkit ──────────────────
+     Historically this lived in a bare `try { … } catch {}` inside the layout
+     code, so a WebP upload (or a truncated base64 string) produced a report
+     with no partner logo, no error and no log line — indistinguishable from
+     "no logo configured". Now the buffer is decoded and format-checked here,
+     and every rejection reason is logged.                                  */
+  let partnerLogoBuffer: Buffer | null = null;
+  if (partnerBranding.partnerLogoBase64) {
+    const who = partnerDisplayName || "(unnamed partner)";
+    try {
+      const dataUri = partnerBranding.partnerLogoBase64;
+      const commaIdx = dataUri.indexOf(",");
+      const base64Data =
+        dataUri.startsWith("data:") && commaIdx !== -1
+          ? dataUri.slice(commaIdx + 1)
+          : dataUri;
+      const buf = Buffer.from(base64Data, "base64");
+
+      if (buf.length === 0) {
+        console.warn(
+          `[ReportGenerator] Partner logo for ${who} decoded to 0 bytes — the stored ` +
+            `"partner_branding.partnerLogoBase64" value is empty or not valid base64. Skipping logo.`,
+        );
+      } else {
+        const format = detectImageFormat(buf);
+        if (!PDF_EMBEDDABLE_FORMATS.has(format)) {
+          console.warn(
+            `[ReportGenerator] Partner logo for ${who} is "${format}" (${buf.length} bytes). ` +
+              `PDF embedding supports JPEG and PNG only — re-upload the logo as a PNG ` +
+              `(transparent background preferred, it sits on the near-black masthead). Skipping logo.`,
+          );
+        } else {
+          partnerLogoBuffer = buf;
+        }
+      }
+    } catch (err) {
+      console.warn(
+        `[ReportGenerator] Partner logo for ${who} could not be decoded from base64:`,
+        err instanceof Error ? err.message : String(err),
+      );
+    }
+  }
+
+  const hasPartnerLogo = partnerLogoBuffer !== null;
+  const hasPartnerRow = !!partnerDisplayName || hasPartnerLogo;
+  const HEADER_H = hasPartnerRow ? 178 : 152;
 
   return new Promise<Buffer>((resolve, reject) => {
-    const doc = new PDFDocument({ margin: 50, size: "A4" });
+    const doc = new PDFDocument({
+      margin: 50,
+      size: "A4",
+      // Buffered pages let us stamp "Page n of N" once the total is known.
+      bufferPages: true,
+      info: {
+        Title: `BrainTrack ${reportTitle} — ${learnerName}`,
+        Author: "BrainTrack",
+        Subject: t(
+          "CAPS-aligned NSC exam preparation progress report",
+          "KABV-belynde NSS-eksamenvoorbereiding vorderingsverslag",
+        ),
+        Creator: "BrainTrack Report Generator",
+        Keywords: "BrainTrack, NSC, CAPS, progress report",
+      },
+    });
+
+    /* Embed the brand typefaces. `F` is the resolved name map — every
+       doc.font() call below goes through it, so a missing font file degrades
+       to Helvetica loudly (see brand-fonts.ts) instead of silently. */
+    const F: BrandFontSet = registerBrandFonts(doc);
+
     const chunks: Buffer[] = [];
     doc.on("data", (chunk: Buffer) => chunks.push(chunk));
     doc.on("end", () => resolve(Buffer.concat(chunks)));
@@ -301,7 +441,10 @@ export async function generateReportPdfBuffer(
     const LEFT = 50;
     const RIGHT = doc.page.width - 50;
     const CONTENT_W = RIGHT - LEFT;
-    const PAGE_BOTTOM = 760;
+    /** Top of the running footer furniture. */
+    const FOOTER_TOP = doc.page.height - 62;
+    /** Last y a content block may occupy. */
+    const PAGE_BOTTOM = FOOTER_TOP - 20;
 
     /* ── Layout helpers ─────────────────────────────────────────────────── */
 
@@ -311,20 +454,44 @@ export async function generateReportPdfBuffer(
     };
     paintPage();
 
+    /** Slim brand stripe across the top of every continuation page. */
+    const paintContinuationHeader = () => {
+      const segW = doc.page.width / STRIPE.length;
+      STRIPE.forEach((c, i) => {
+        doc.rect(i * segW, 0, segW + 1, 3).fillColor(c).fill();
+      });
+      doc
+        .fillColor(INK_SOFT)
+        .font(F.medium)
+        .fontSize(7.5)
+        .text(
+          `BrainTrack ${reportTitle} · ${learnerName}`.toUpperCase(),
+          LEFT,
+          20,
+          { width: CONTENT_W, characterSpacing: 0.6, lineBreak: false },
+        );
+    };
+
     let y = 0;
 
-    /** Page-break guard — preserves the original `if (y > N) addPage()` idiom. */
-    const ensure = (needed: number) => {
+    /**
+     * Page-break guard. Returns true when a new page was started, so callers
+     * that own repeating furniture (table headers) can redraw it.
+     */
+    const ensure = (needed: number): boolean => {
       if (y + needed > PAGE_BOTTOM) {
         doc.addPage();
         paintPage();
-        y = 50;
+        paintContinuationHeader();
+        y = 52;
+        return true;
       }
+      return false;
     };
 
-    const rule = (gapAfter = 16) => {
+    const rule = (gapAfter = SPACE.block) => {
       ensure(24);
-      y += 4;
+      y += SPACE.tight;
       doc
         .moveTo(LEFT, y)
         .lineTo(RIGHT, y)
@@ -334,64 +501,112 @@ export async function generateReportPdfBuffer(
       y += gapAfter;
     };
 
-    /** Section heading: pastel accent bar + tracked-out near-black label. */
-    const heading = (label: string, accent: string) => {
-      ensure(52);
-      doc.rect(LEFT, y + 1, 4, 15).fillColor(accent).fill();
+    /**
+     * Section heading: pastel accent bar, tracked-out label, optional
+     * right-aligned note, and a hairline that closes the header off. `needs`
+     * is the height of the first content row so a heading is never left
+     * stranded at the bottom of a page.
+     */
+    const heading = (
+      label: string,
+      accent: string,
+      note?: string,
+      needs = 46,
+    ) => {
+      ensure(34 + needs);
+      doc.roundedRect(LEFT, y + 1, 4, 14, 2).fillColor(accent).fill();
       doc
         .fillColor(INK)
-        .font("Helvetica-Bold")
-        .fontSize(12.5)
-        .text(label.toUpperCase(), LEFT + 13, y + 2, {
-          width: CONTENT_W - 13,
-          characterSpacing: 0.7,
+        .font(F.semibold)
+        .fontSize(11)
+        .text(label.toUpperCase(), LEFT + 14, y, {
+          width: CONTENT_W - 14 - (note ? 150 : 0),
+          characterSpacing: 0.9,
+          lineBreak: false,
         });
-      y += 28;
+      if (note) {
+        doc
+          .fillColor(INK_SOFT)
+          .font(F.regular)
+          .fontSize(8)
+          .text(note, RIGHT - 150, y + 3, {
+            width: 150,
+            align: "right",
+            lineBreak: false,
+          });
+      }
+      y += 19;
+      doc
+        .moveTo(LEFT, y)
+        .lineTo(RIGHT, y)
+        .strokeColor(HAIRLINE)
+        .lineWidth(1)
+        .stroke();
+      y += SPACE.block;
     };
 
-    const para = (text: string, size = 10, color = INK_SOFT, indent = 0) => {
+    const para = (
+      text: string,
+      size = 9.5,
+      color = INK_SOFT,
+      indent = 0,
+      font = F.regular,
+    ) => {
       const w = CONTENT_W - indent;
-      const h = doc.font("Helvetica").fontSize(size).heightOfString(text, { width: w });
-      ensure(h + 10);
+      const h = doc.font(font).fontSize(size).heightOfString(text, {
+        width: w,
+        lineGap: 2,
+      });
+      ensure(h + SPACE.row);
       doc
         .fillColor(color)
-        .font("Helvetica")
+        .font(font)
         .fontSize(size)
         .text(text, LEFT + indent, y, { width: w, lineGap: 2 });
-      y += h + 8;
+      y += h + SPACE.row;
     };
 
     /** Bulleted line with a pastel marker. */
-    const bullet = (text: string, accent = PURPLE, size = 10) => {
-      const w = CONTENT_W - 22;
-      const h = doc.font("Helvetica").fontSize(size).heightOfString(text, { width: w });
+    const bullet = (text: string, accent = PURPLE, size = 9.5) => {
+      const w = CONTENT_W - 24;
+      const h = doc.font(F.regular).fontSize(size).heightOfString(text, {
+        width: w,
+        lineGap: 2,
+      });
       ensure(h + 12);
-      doc.circle(LEFT + 5, y + 5, 2.6).fillColor(accent).fill();
+      doc.circle(LEFT + 5, y + 6, 2.8).fillColor(accent).fill();
       doc
         .fillColor(INK)
-        .font("Helvetica")
+        .font(F.regular)
         .fontSize(size)
-        .text(text, LEFT + 22, y, { width: w, lineGap: 2 });
-      y += h + 8;
+        .text(text, LEFT + 24, y, { width: w, lineGap: 2 });
+      y += h + SPACE.row;
     };
 
     /** Numbered step, used by the getting-started instructions. */
     const step = (n: number, text: string, accent = SKY) => {
-      const w = CONTENT_W - 30;
-      const h = doc.font("Helvetica").fontSize(10).heightOfString(text, { width: w });
-      ensure(Math.max(h, 18) + 12);
-      doc.roundedRect(LEFT, y - 1, 18, 18, 5).fillColor(accent).fill();
+      const w = CONTENT_W - 34;
+      const h = doc.font(F.regular).fontSize(9.5).heightOfString(text, {
+        width: w,
+        lineGap: 2,
+      });
+      ensure(Math.max(h, 20) + 12);
+      doc.roundedRect(LEFT, y, 20, 20, 6).fillColor(accent).fill();
       doc
         .fillColor(INK)
-        .font("Helvetica-Bold")
+        .font(F.bold)
+        .fontSize(9);
+      doc.text(String(n), LEFT, y + (20 - doc.currentLineHeight()) / 2, {
+        width: 20,
+        align: "center",
+        lineBreak: false,
+      });
+      doc
+        .fillColor(INK)
+        .font(F.regular)
         .fontSize(9.5)
-        .text(String(n), LEFT, y + 4, { width: 18, align: "center" });
-      doc
-        .fillColor(INK)
-        .font("Helvetica")
-        .fontSize(10)
-        .text(text, LEFT + 30, y + 1, { width: w, lineGap: 2 });
-      y += Math.max(h, 18) + 10;
+        .text(text, LEFT + 34, y + 2, { width: w, lineGap: 2 });
+      y += Math.max(h + 4, 20) + SPACE.row;
     };
 
     /**
@@ -399,18 +614,21 @@ export async function generateReportPdfBuffer(
      * silently rendering nothing.
      */
     const emptyState = (msg: string, accent = SKY, tint = TINT_SKY) => {
-      const w = CONTENT_W - 30;
-      const th = doc.font("Helvetica-Oblique").fontSize(9.5).heightOfString(msg, { width: w });
-      const h = Math.max(34, th + 20);
-      ensure(h + 14);
-      doc.roundedRect(LEFT, y, CONTENT_W, h, 6).fillColor(tint).fill();
+      const w = CONTENT_W - 34;
+      const th = doc.font(F.italic).fontSize(9).heightOfString(msg, {
+        width: w,
+        lineGap: 1.5,
+      });
+      const h = Math.max(38, th + 24);
+      ensure(h + SPACE.block);
+      doc.roundedRect(LEFT, y, CONTENT_W, h, 7).fillColor(tint).fill();
       doc.roundedRect(LEFT, y, 3.5, h, 1.75).fillColor(accent).fill();
       doc
         .fillColor(INK_SOFT)
-        .font("Helvetica-Oblique")
-        .fontSize(9.5)
-        .text(msg, LEFT + 16, y + 10, { width: w });
-      y += h + 12;
+        .font(F.italic)
+        .fontSize(9)
+        .text(msg, LEFT + 18, y + 12, { width: w, lineGap: 1.5 });
+      y += h + SPACE.block;
     };
 
     const bandColor = (pct: number) =>
@@ -435,90 +653,252 @@ export async function generateReportPdfBuffer(
       }
     };
 
-    /* ── Header band ────────────────────────────────────────────────────── */
+    /**
+     * Shrink `text` to fit `width` on one line: step the size down to `min`,
+     * then truncate with an ellipsis as a last resort. Long CAPS subject names
+     * ("Afrikaans First Additional Language") otherwise wrap and get clipped by
+     * their table row.
+     */
+    const fitOneLine = (
+      text: string,
+      font: string,
+      maxSize: number,
+      minSize: number,
+      width: number,
+      tracking = 0,
+    ): { text: string; size: number } => {
+      doc.font(font);
+      const measure = (s: string, sz: number) =>
+        doc.fontSize(sz).widthOfString(s, { characterSpacing: tracking } as any);
+      let size = maxSize;
+      while (size > minSize && measure(text, size) > width) size -= 0.25;
+      if (measure(text, size) <= width) return { text, size };
+      let out = text;
+      while (out.length > 1 && measure(out + "…", size) > width) {
+        out = out.slice(0, -1);
+      }
+      return { text: out.trimEnd() + "…", size };
+    };
 
-    doc.rect(0, 0, doc.page.width, headerHeight).fillColor(NEAR_BLACK).fill();
+    /** Vertically-centred single-line text inside a box. */
+    const cell = (
+      text: string,
+      x: number,
+      boxY: number,
+      w: number,
+      h: number,
+      o: {
+        font: string;
+        size: number;
+        color: string;
+        align?: "left" | "right" | "center";
+        tracking?: number;
+        minSize?: number;
+      },
+    ) => {
+      const tracking = o.tracking ?? 0;
+      /* pdfkit's `lineBreak: false` does NOT stop a run from wrapping once
+         `characterSpacing` pushes its measured width past `width` — verified
+         against pdfkit directly. A wrapped run then overflows its row and gets
+         clipped (this is what chopped "VERANDERING" in the Afrikaans table).
+         So every cell fits its own text: shrink a little, then ellipsise. */
+      const fitted = fitOneLine(
+        text,
+        o.font,
+        o.size,
+        o.minSize ?? o.size * 0.82,
+        w,
+        tracking,
+      );
+      doc.font(o.font).fontSize(fitted.size).fillColor(o.color);
+      const lh = doc.currentLineHeight();
+      doc.text(fitted.text, x, boxY + (h - lh) / 2, {
+        width: w,
+        align: o.align ?? "left",
+        lineBreak: false,
+        characterSpacing: tracking,
+      });
+    };
+
+    /** Small pill used for deltas and status. */
+    const chip = (
+      text: string,
+      x: number,
+      boxY: number,
+      w: number,
+      rowH: number,
+      fill: string,
+    ) => {
+      const h = 14;
+      const cy = boxY + (rowH - h) / 2;
+      doc.roundedRect(x, cy, w, h, 7).fillColor(fill).fill();
+      cell(text, x, cy, w, h, {
+        font: F.semibold,
+        size: 7.5,
+        color: INK,
+        align: "center",
+      });
+    };
+
+    /** Vector checkmark — Poppins has no U+2713 glyph, so we draw it. */
+    const drawCheck = (x: number, cy: number, size = 7) => {
+      doc
+        .moveTo(x, cy)
+        .lineTo(x + size * 0.35, cy + size * 0.38)
+        .lineTo(x + size, cy - size * 0.45)
+        .strokeColor(INK)
+        .lineWidth(1.6)
+        .lineCap("round")
+        .lineJoin("round")
+        .stroke();
+    };
+
+    /* ── Masthead ───────────────────────────────────────────────────────── */
+
+    doc.rect(0, 0, doc.page.width, HEADER_H).fillColor(NEAR_BLACK).fill();
 
     // Pastel accent strip along the bottom of the band — the brand signature,
     // restrained to a 3pt rule so it reads executive, not loud.
-    const stripe = [AQUA, SKY, PURPLE, PINK, YELLOW, MINT];
-    const segW = doc.page.width / stripe.length;
-    stripe.forEach((c, i) => {
-      doc.rect(i * segW, headerHeight - 3, segW + 1, 3).fillColor(c).fill();
+    const segW = doc.page.width / STRIPE.length;
+    STRIPE.forEach((c, i) => {
+      doc.rect(i * segW, HEADER_H - 3, segW + 1, 3).fillColor(c).fill();
     });
 
     try {
-      doc.image(BRAND_LOGO_BUFFER, LEFT, 22, { fit: [140, 40] });
-    } catch {
-      // Fall back to the wordmark if the logo asset can't be embedded.
+      doc.image(BRAND_LOGO_BUFFER, LEFT, 24, { fit: [146, 38] });
+    } catch (err) {
+      console.warn(
+        "[ReportGenerator] BrainTrack logo could not be embedded — falling back to the wordmark:",
+        err instanceof Error ? err.message : String(err),
+      );
       doc
-        .fillColor("#ffffff")
-        .fontSize(26)
-        .font("Helvetica-Bold")
-        .text("BrainTrack™", LEFT, 30);
+        .fillColor(PAPER)
+        .font(F.bold)
+        .fontSize(24)
+        .text("BrainTrack", LEFT, 30, { lineBreak: false });
     }
 
+    /* Report title — the ONE place Permanent Marker is allowed to shout.
+       Auto-fits down to a 15pt floor; below that a marker face is illegible,
+       so we swap to Poppins Bold rather than print mush. */
+    const TITLE_MIN = 15;
+    let titleSize = 26;
+    doc.font(F.display);
+    while (
+      titleSize > TITLE_MIN &&
+      doc.fontSize(titleSize).widthOfString(reportTitle) > CONTENT_W - 8
+    ) {
+      titleSize -= 0.5;
+    }
+    const titleFitsAsMarker =
+      doc.font(F.display).fontSize(TITLE_MIN).widthOfString(reportTitle) <=
+      CONTENT_W - 8;
     doc
-      .fontSize(10)
-      .font("Helvetica-Bold")
+      .font(titleFitsAsMarker ? F.display : F.bold)
+      .fontSize(titleFitsAsMarker ? titleSize : 22)
       .fillColor(AQUA)
-      .text(
-        isGettingStarted
-          ? t("Getting Started Report", "Aanvangsverslag").toUpperCase()
-          : t("Progress Report", "Vorderingsverslag").toUpperCase(),
-        LEFT,
-        66,
-        { characterSpacing: 1.2 },
-      );
-    doc
-      .fillColor("#ffffff")
-      .fontSize(10)
-      .font("Helvetica")
-      .text(`${t("Learner", "Leerder")}: ${learnerName}`, LEFT, 84);
-    doc
-      .fillColor("#ffffff")
-      .fontSize(10)
-      .font("Helvetica")
-      .text(
-        `${t("Report Date", "Verslagdatum")}: ${new Date().toLocaleDateString(dateLocale, { day: "numeric", month: "long", year: "numeric" })}`,
-        300,
-        84,
-        { width: RIGHT - 300, align: "right" },
-      );
+      .text(reportTitle, LEFT, 74, { width: CONTENT_W, lineBreak: false });
 
-    if (partnerDisplayName || hasPartnerLogo) {
-      const partnerY = 106;
-      if (hasPartnerLogo) {
+    /* Meta row — label above value, left and right stacks. */
+    const metaLabelY = 116;
+    const metaValueY = 127;
+    const metaLabel = (txt: string, x: number, w: number, align: "left" | "right") => {
+      doc
+        .fillColor(SKY)
+        .font(F.medium)
+        .fontSize(6.8)
+        .text(txt.toUpperCase(), x, metaLabelY, {
+          width: w,
+          align,
+          characterSpacing: 1.1,
+          lineBreak: false,
+        });
+    };
+    const metaValue = (txt: string, x: number, w: number, align: "left" | "right") => {
+      // Learner names are unbounded user data — fit rather than let it wrap
+      // out of the masthead band.
+      const fitted = fitOneLine(txt, F.medium, 10, 7.5, w);
+      doc
+        .fillColor(PAPER)
+        .font(F.medium)
+        .fontSize(fitted.size)
+        .text(fitted.text, x, metaValueY, { width: w, align, lineBreak: false });
+    };
+    metaLabel(t("Learner", "Leerder"), LEFT, CONTENT_W / 2 - 10, "left");
+    metaValue(learnerName, LEFT, CONTENT_W / 2 - 10, "left");
+    metaLabel(t("Report Date", "Verslagdatum"), LEFT + CONTENT_W / 2, CONTENT_W / 2, "right");
+    metaValue(generatedAtLabel, LEFT + CONTENT_W / 2, CONTENT_W / 2, "right");
+
+    if (hasPartnerRow) {
+      const partnerY = 150;
+      if (partnerLogoBuffer) {
         try {
-          const dataUri = partnerBranding.partnerLogoBase64!;
-          const base64Data = dataUri.split(",")[1] ?? dataUri;
-          const logoBuffer = Buffer.from(base64Data, "base64");
-          doc.image(logoBuffer, doc.page.width - 120, partnerY - 8, {
-            fit: [60, 22],
+          doc.image(partnerLogoBuffer, RIGHT - 66, partnerY - 6, {
+            fit: [66, 22],
             align: "right",
           });
-        } catch { /* logo embed failed */ }
+        } catch (err) {
+          // Format was validated above, so reaching here means pdfkit rejected
+          // an otherwise well-formed PNG/JPEG (e.g. 16-bit or interlaced PNG,
+          // CMYK JPEG). Say so explicitly — never swallow it.
+          console.warn(
+            `[ReportGenerator] pdfkit rejected the partner logo for ` +
+              `${partnerDisplayName || "(unnamed partner)"} despite a valid ` +
+              `${detectImageFormat(partnerLogoBuffer)} signature ` +
+              `(${partnerLogoBuffer.length} bytes). pdfkit cannot embed 16-bit or ` +
+              `interlaced PNGs, or CMYK/progressive JPEGs — re-save as an 8-bit ` +
+              `non-interlaced PNG. Reason:`,
+            err instanceof Error ? err.message : String(err),
+          );
+        }
       }
       if (partnerDisplayName) {
-        const partnerLabel = t("In partnership with", "In vennootskap met");
+        const partnerW = CONTENT_W - (hasPartnerLogo ? 90 : 10);
+        const fitted = fitOneLine(
+          `${t("In partnership with", "In vennootskap met")}: ${partnerDisplayName}`,
+          F.regular,
+          8,
+          6.5,
+          partnerW,
+        );
         doc
           .fillColor(SKY)
-          .fontSize(8)
-          .font("Helvetica")
-          .text(
-            `${partnerLabel}: ${partnerDisplayName}`,
-            LEFT,
-            partnerY,
-            { width: doc.page.width - 180 },
-          );
+          .font(F.regular)
+          .fontSize(fitted.size)
+          .text(fitted.text, LEFT, partnerY, {
+            width: partnerW,
+            lineBreak: false,
+          });
       }
     }
 
-    y = headerHeight + 26;
+    y = HEADER_H + 24;
+
+    /* ── Standfirst ─────────────────────────────────────────────────────── */
+
+    doc
+      .fillColor(INK_SOFT)
+      .font(F.italic)
+      .fontSize(9)
+      .text(
+        t(
+          `Prepared for the parent or guardian of ${learnerName}. Reporting period: the 30 days to ${generatedAtLabel}.`,
+          `Opgestel vir die ouer of voog van ${learnerName}. Verslagtydperk: die 30 dae tot ${generatedAtLabel}.`,
+        ),
+        LEFT,
+        y,
+        { width: CONTENT_W, lineGap: 1.5 },
+      );
+    y += 26;
 
     /* ── Summary stat cards (always rendered) ───────────────────────────── */
 
-    heading(t("Summary", "Opsomming"), AQUA);
+    heading(
+      t("Summary", "Opsomming"),
+      AQUA,
+      t("At a glance", "Op 'n oogopslag"),
+      78,
+    );
 
     const summaryItems: Array<[string, string, string, string]> = [
       [
@@ -547,42 +927,49 @@ export async function generateReportPdfBuffer(
       ],
     ];
 
-    ensure(80);
-    const gap = 10;
-    const cardW = (CONTENT_W - gap * 3) / 4;
-    const cardH = 62;
+    const cardGap = 11;
+    const cardW = (CONTENT_W - cardGap * 3) / 4;
+    const cardH = 70;
+    ensure(cardH + SPACE.block);
     summaryItems.forEach(([label, value, accent, tint], i) => {
-      const cx = LEFT + i * (cardW + gap);
-      doc.roundedRect(cx, y, cardW, cardH, 7).fillColor(tint).fill();
+      const cx = LEFT + i * (cardW + cardGap);
+      doc.roundedRect(cx, y, cardW, cardH, 8).fillColor(tint).fill();
       doc.roundedRect(cx, y, cardW, 3, 1.5).fillColor(accent).fill();
+
+      /* Auto-fit the figure so "1,234 days" never clips the card. */
+      let vSize = 18;
+      doc.font(F.bold);
+      while (vSize > 10 && doc.fontSize(vSize).widthOfString(value) > cardW - 22) {
+        vSize -= 0.5;
+      }
       doc
         .fillColor(INK)
-        .font("Helvetica-Bold")
-        .fontSize(17)
-        .text(value, cx + 10, y + 15, { width: cardW - 20 });
+        .font(F.bold)
+        .fontSize(vSize)
+        .text(value, cx + 11, y + 18, { width: cardW - 22, lineBreak: false });
       doc
         .fillColor(INK_SOFT)
-        .font("Helvetica")
-        .fontSize(7.5)
-        .text(label.toUpperCase(), cx + 10, y + 41, {
-          width: cardW - 16,
-          characterSpacing: 0.4,
+        .font(F.medium)
+        .fontSize(6.8)
+        .text(label.toUpperCase(), cx + 11, y + 48, {
+          width: cardW - 18,
+          characterSpacing: 0.7,
         });
     });
-    y += cardH + 20;
+    y += cardH + SPACE.section;
 
     if (isGettingStarted) {
       /* ── GETTING STARTED VARIANT ──────────────────────────────────────
          Rendered when there is no linked learner or no recorded activity.
          A parent paying for this product must never receive a blank page. */
 
-      rule();
-
       heading(
         hasLinkedLearner
           ? t("No Activity Recorded Yet", "Nog Geen Aktiwiteit Aangeteken Nie")
           : t("No Learner Linked Yet", "Nog Geen Leerder Gekoppel Nie"),
         YELLOW,
+        undefined,
+        60,
       );
 
       para(
@@ -595,37 +982,43 @@ export async function generateReportPdfBuffer(
               `There is currently no learner linked to your BrainTrack parent account, so we cannot yet report on any results. Linking takes about two minutes — the steps are below. Once a learner is linked, your reports begin automatically on the next scheduled send.`,
               `Daar is tans geen leerder aan u BrainTrack-ouerrekening gekoppel nie, en ons kan dus nog nie oor uitslae verslag doen nie. Koppeling neem ongeveer twee minute — die stappe is hieronder. Sodra 'n leerder gekoppel is, begin u verslae outomaties met die volgende geskeduleerde stuur.`,
             ),
-        10.5,
+        10,
         INK,
       );
 
-      y += 4;
+      y += SPACE.block;
 
       if (!hasLinkedLearner) {
-        heading(t("How to Link Your Learner", "Hoe om U Leerder te Koppel"), SKY);
+        heading(
+          t("How to Link Your Learner", "Hoe om U Leerder te Koppel"),
+          SKY,
+          t("About two minutes", "Ongeveer twee minute"),
+          64,
+        );
         step(1, t(
           "Sign in at app.braintrack.co.za with this same email address and open the Parent Dashboard.",
           "Meld aan by app.braintrack.co.za met hierdie selfde e-posadres en maak die Ouer-paneelbord oop.",
-        ));
+        ), AQUA);
         step(2, t(
           "Choose \"Link a learner\" and enter the activation code from your BrainTrack welcome email.",
           "Kies \"Koppel 'n leerder\" en voer die aktiveringskode uit u BrainTrack-verwelkomings-e-pos in.",
-        ));
+        ), SKY);
         step(3, t(
           "Your child signs in with their own BrainTrack account and confirms the link request.",
           "U kind meld aan met sy/haar eie BrainTrack-rekening en bevestig die koppelingsversoek.",
-        ));
+        ), PURPLE);
         step(4, t(
           "That's it — the link activates immediately and reporting starts from the next scheduled send.",
           "Dis al — die koppeling aktiveer onmiddellik en verslagdoening begin met die volgende geskeduleerde stuur.",
-        ));
-        y += 6;
-        rule();
+        ), MINT);
+        y += SPACE.block;
       }
 
       heading(
         t("What to Expect Once Practice Begins", "Wat om te Verwag Sodra Oefening Begin"),
         MINT,
+        undefined,
+        60,
       );
       para(
         t(
@@ -655,10 +1048,14 @@ export async function generateReportPdfBuffer(
         PURPLE,
       );
 
-      y += 6;
-      rule();
+      y += SPACE.block;
 
-      heading(t("What Your Report Will Contain", "Wat U Verslag Sal Bevat"), PINK);
+      heading(
+        t("What Your Report Will Contain", "Wat U Verslag Sal Bevat"),
+        PINK,
+        undefined,
+        58,
+      );
 
       const contents: Array<[string, string, string, string]> = [
         [
@@ -718,29 +1115,36 @@ export async function generateReportPdfBuffer(
       ];
 
       for (const [label, desc, accent, tint] of contents) {
-        const w = CONTENT_W - 34;
-        const dh = doc.font("Helvetica").fontSize(9).heightOfString(desc, { width: w });
-        const boxH = dh + 30;
-        ensure(boxH + 10);
-        doc.roundedRect(LEFT, y, CONTENT_W, boxH, 6).fillColor(tint).fill();
+        const w = CONTENT_W - 36;
+        const dh = doc.font(F.regular).fontSize(8.5).heightOfString(desc, {
+          width: w,
+          lineGap: 1.5,
+        });
+        const boxH = dh + 32;
+        ensure(boxH + SPACE.row);
+        doc.roundedRect(LEFT, y, CONTENT_W, boxH, 7).fillColor(tint).fill();
         doc.roundedRect(LEFT, y, 3.5, boxH, 1.75).fillColor(accent).fill();
         doc
           .fillColor(INK)
-          .font("Helvetica-Bold")
-          .fontSize(10)
-          .text(label, LEFT + 16, y + 9, { width: w });
+          .font(F.semibold)
+          .fontSize(9.5)
+          .text(label, LEFT + 18, y + 9, { width: w, lineBreak: false });
         doc
           .fillColor(INK_SOFT)
-          .font("Helvetica")
-          .fontSize(9)
-          .text(desc, LEFT + 16, y + 23, { width: w, lineGap: 1.5 });
-        y += boxH + 8;
+          .font(F.regular)
+          .fontSize(8.5)
+          .text(desc, LEFT + 18, y + 24, { width: w, lineGap: 1.5 });
+        y += boxH + SPACE.row;
       }
 
-      y += 6;
-      rule();
+      y += SPACE.block;
 
-      heading(t("Your First Week — A Simple Plan", "U Eerste Week — 'n Eenvoudige Plan"), PURPLE);
+      heading(
+        t("Your First Week — A Simple Plan", "U Eerste Week — 'n Eenvoudige Plan"),
+        PURPLE,
+        undefined,
+        56,
+      );
       bullet(
         t(
           "Aim for 10 questions a day. Short and daily beats long and occasional, every time.",
@@ -770,7 +1174,7 @@ export async function generateReportPdfBuffer(
         PINK,
       );
 
-      y += 6;
+      y += SPACE.tight;
       emptyState(
         t(
           "Need a hand? Reply to this email or contact support@braintrack.co.za and we will help you get set up.",
@@ -782,9 +1186,46 @@ export async function generateReportPdfBuffer(
     } else {
       /* ── FULL DATA VARIANT ────────────────────────────────────────────── */
 
-      rule();
+      /* — Subject performance: a real table, not a stack of loose rows —
+         Columns are fixed so every figure sits on a shared right edge and the
+         eye can run down a column. The header repeats after a page break. */
 
-      heading(t("Subject Performance", "Vakprestasie"), SKY);
+      const COL = {
+        subject: { x: LEFT, w: 176 },
+        bar: { x: LEFT + 184, w: 102 },
+        qs: { x: LEFT + 294, w: 40 },
+        base: { x: LEFT + 340, w: 46 },
+        now: { x: LEFT + 392, w: 44 },
+        chg: { x: LEFT + 442, w: 53 },
+      };
+      const ROW_H = 26;
+      const HEAD_H = 20;
+
+      const subjectTableHeader = () => {
+        doc.rect(LEFT, y, CONTENT_W, HEAD_H).fillColor(TINT_PURPLE).fill();
+        const opt = {
+          font: F.semibold,
+          size: 6.8,
+          color: INK_SOFT,
+          tracking: 0.8,
+        } as const;
+        cell(t("Subject", "Vak").toUpperCase(), COL.subject.x + 8, y, COL.subject.w, HEAD_H, opt);
+        cell(t("Progress", "Vordering").toUpperCase(), COL.bar.x, y, COL.bar.w, HEAD_H, opt);
+        cell(t("Qs", "Vrae").toUpperCase(), COL.qs.x, y, COL.qs.w, HEAD_H, { ...opt, align: "right" });
+        cell(t("Base", "Basis").toUpperCase(), COL.base.x, y, COL.base.w, HEAD_H, { ...opt, align: "right" });
+        cell(t("Now", "Nou").toUpperCase(), COL.now.x, y, COL.now.w, HEAD_H, { ...opt, align: "right" });
+        cell(t("Change", "Verskil").toUpperCase(), COL.chg.x, y, COL.chg.w, HEAD_H, { ...opt, align: "center" });
+        y += HEAD_H;
+      };
+
+      heading(
+        t("Subject Performance", "Vakprestasie"),
+        SKY,
+        subjectData.length > 0
+          ? `${subjectData.length} ${t("subjects", "vakke")}`
+          : undefined,
+        HEAD_H + ROW_H + 10,
+      );
 
       if (subjectData.length === 0) {
         emptyState(
@@ -796,96 +1237,182 @@ export async function generateReportPdfBuffer(
           TINT_SKY,
         );
       } else {
-        for (const subj of subjectData) {
-          ensure(46);
+        subjectTableHeader();
+        subjectData.forEach((subj, idx) => {
+          if (ensure(ROW_H)) subjectTableHeader();
+          if (idx % 2 === 1) {
+            doc.rect(LEFT, y, CONTENT_W, ROW_H).fillColor(ZEBRA).fill();
+          }
           const band = bandColor(subj.accuracy);
-          doc
-            .fillColor(INK)
-            .font("Helvetica-Bold")
-            .fontSize(11)
-            .text(subj.name, LEFT, y, { width: CONTENT_W - 70 });
-          doc
-            .fillColor(INK)
-            .font("Helvetica-Bold")
-            .fontSize(11)
-            .text(`${subj.accuracy}%`, RIGHT - 70, y, {
-              width: 70,
-              align: "right",
-            });
-          y += 15;
-          doc
-            .fillColor(INK_SOFT)
-            .font("Helvetica")
-            .fontSize(8.5)
-            .text(
-              `${t("Questions", "Vrae")}: ${subj.questionsAttempted}   ·   ${t("Baseline", "Basislyn")}: ${subj.baseline}%   ·   ${t("Change", "Verandering")}: ${subj.delta >= 0 ? "+" : ""}${subj.delta}%`,
-              LEFT,
-              y,
-              { width: CONTENT_W },
+
+          cell(subj.name, COL.subject.x + 8, y, COL.subject.w - 14, ROW_H, {
+            font: F.medium,
+            size: 9,
+            minSize: 6.75,
+            color: INK,
+          });
+          drawBar(COL.bar.x, y + (ROW_H - 7) / 2, COL.bar.w, 7, subj.accuracy, band);
+          cell(`${subj.questionsAttempted}`, COL.qs.x, y, COL.qs.w, ROW_H, {
+            font: F.regular,
+            size: 8.5,
+            color: INK_SOFT,
+            align: "right",
+          });
+          cell(
+            subj.baseline > 0 ? `${subj.baseline}%` : "—",
+            COL.base.x, y, COL.base.w, ROW_H,
+            { font: F.regular, size: 8.5, color: INK_SOFT, align: "right" },
+          );
+          cell(`${subj.accuracy}%`, COL.now.x, y, COL.now.w, ROW_H, {
+            font: F.bold,
+            size: 9.5,
+            color: INK,
+            align: "right",
+          });
+          if (subj.baseline > 0) {
+            chip(
+              `${subj.delta >= 0 ? "+" : ""}${subj.delta}%`,
+              COL.chg.x + 5, y, COL.chg.w - 5, ROW_H,
+              subj.delta > 0 ? MINT : subj.delta < 0 ? RISK : TINT_PURPLE,
             );
-          drawBar(LEFT, y + 14, CONTENT_W, 7, subj.accuracy, band);
-          y += 36;
-        }
+          } else {
+            cell("—", COL.chg.x, y, COL.chg.w, ROW_H, {
+              font: F.regular,
+              size: 8.5,
+              color: INK_SOFT,
+              align: "center",
+            });
+          }
+          y += ROW_H;
+          doc
+            .moveTo(LEFT, y)
+            .lineTo(RIGHT, y)
+            .strokeColor(HAIRLINE)
+            .lineWidth(0.5)
+            .stroke();
+        });
+        y += SPACE.tight;
+        const footnote = t(
+          "Base = the mark entered at onboarding. Now = live accuracy across all answered questions. Subjects with fewer than 5 answered questions are still ranked on their baseline under Strengths & Focus Areas — a handful of answers is not yet a reliable signal.",
+          "Basis = die punt wat tydens aanvang ingevoer is. Nou = lewendige akkuraatheid oor alle beantwoorde vrae. Vakke met minder as 5 beantwoorde vrae word steeds op hul basislyn gerangskik onder Sterkpunte & Fokusareas — 'n handjievol antwoorde is nog nie 'n betroubare sein nie.",
+        );
+        const footnoteH = doc
+          .font(F.italic)
+          .fontSize(7.5)
+          .heightOfString(footnote, { width: CONTENT_W, lineGap: 1 });
+        ensure(footnoteH + SPACE.row);
+        doc
+          .fillColor(INK_SOFT)
+          .font(F.italic)
+          .fontSize(7.5)
+          .text(footnote, LEFT, y, { width: CONTENT_W, lineGap: 1 });
+        y += footnoteH;
       }
 
-      rule();
+      y += SPACE.block;
 
-      heading(t("Strengths", "Sterkpunte"), MINT);
-      if (strengths.length === 0) {
-        emptyState(
+      /* — Strengths & focus areas, side by side — */
+
+      const halfW = (CONTENT_W - 16) / 2;
+      const colX = [LEFT, LEFT + halfW + 16];
+      const listRowH = 21;
+
+      const panels: Array<[string, string[], string, string, string]> = [
+        [
+          t("Performing well", "Presteer goed"),
+          strengths,
+          MINT,
+          TINT_MINT,
           t(
             "No clear strengths have emerged yet this period. They will appear as soon as a subject reaches a reliable score.",
             "Nog geen duidelike sterkpunte het hierdie tydperk na vore gekom nie. Hulle sal verskyn sodra 'n vak 'n betroubare punt bereik.",
           ),
-          MINT,
-          TINT_MINT,
-        );
-      } else {
-        for (const s of strengths) {
-          ensure(24);
-          doc.roundedRect(LEFT, y - 1, 14, 14, 4).fillColor(MINT).fill();
-          doc
-            .fillColor(INK)
-            .font("Helvetica-Bold")
-            .fontSize(8)
-            .text("✓", LEFT, y + 2, { width: 14, align: "center" });
-          doc
-            .fillColor(INK)
-            .font("Helvetica")
-            .fontSize(10)
-            .text(s, LEFT + 22, y + 1, { width: CONTENT_W - 22 });
-          y += 20;
-        }
-      }
-      y += 6;
-
-      heading(t("Areas for Improvement", "Verbeteringsareas"), RISK);
-      if (weakAreas.length === 0) {
-        emptyState(
+        ],
+        [
+          t("Needs attention", "Verg aandag"),
+          weakAreas,
+          RISK,
+          TINT_RISK,
           t(
             "No subject is currently flagged for concern. Keep the routine going and we will alert you if that changes.",
             "Geen vak word tans as kommerwekkend gemerk nie. Hou die roetine aan die gang en ons sal u waarsku as dit verander.",
           ),
-          MINT,
-          TINT_MINT,
+        ],
+      ];
+
+      /* Measure both columns BEFORE the heading is drawn, so the heading and
+         its panels are guaranteed to land on the same page. Previously the
+         heading was emitted first with a guessed height and could be left
+         stranded alone at the foot of a page. */
+      const panelH =
+        26 +
+        8 +
+        Math.max(
+          ...panels.map(([, items, , , emptyMsg]) =>
+            items.length > 0
+              ? items.length * listRowH
+              : doc.font(F.italic).fontSize(8).heightOfString(emptyMsg, {
+                  width: halfW - 28,
+                  lineGap: 1.2,
+                }),
+          ),
         );
-      } else {
-        for (const s of weakAreas) {
-          ensure(24);
-          doc.roundedRect(LEFT, y - 1, 14, 14, 4).fillColor(RISK).fill();
+
+      heading(
+        t("Strengths & Focus Areas", "Sterkpunte & Fokusareas"),
+        MINT,
+        undefined,
+        panelH + 6,
+      );
+
+      const panelTop = y;
+
+      panels.forEach(([label, items, accent, tint, emptyMsg], i) => {
+        const px = colX[i];
+        doc.roundedRect(px, panelTop, halfW, panelH, 8).fillColor(tint).fill();
+        doc.roundedRect(px, panelTop, halfW, 3, 1.5).fillColor(accent).fill();
+        cell(label.toUpperCase(), px + 14, panelTop + 6, halfW - 28, 18, {
+          font: F.semibold,
+          size: 7,
+          color: INK_SOFT,
+          tracking: 0.9,
+        });
+        let ry = panelTop + 26;
+        if (items.length === 0) {
           doc
-            .fillColor(INK)
-            .font("Helvetica")
-            .fontSize(10)
-            .text(s, LEFT + 22, y + 1, { width: CONTENT_W - 22 });
-          y += 20;
+            .fillColor(INK_SOFT)
+            .font(F.italic)
+            .fontSize(8)
+            .text(emptyMsg, px + 14, ry, { width: halfW - 28, lineGap: 1.2 });
+        } else {
+          for (const item of items) {
+            if (i === 0) {
+              drawCheck(px + 14, ry + listRowH / 2, 7);
+            } else {
+              doc
+                .circle(px + 17, ry + listRowH / 2, 3.2)
+                .fillColor(RISK)
+                .fill();
+            }
+            cell(item, px + 28, ry, halfW - 42, listRowH, {
+              font: F.regular,
+              size: 9,
+              color: INK,
+            });
+            ry += listRowH;
+          }
         }
-      }
-      y += 6;
+      });
+      y = panelTop + panelH + SPACE.section;
 
-      rule();
+      /* — Recommendations — */
 
-      heading(t("Recommendations", "Aanbevelings"), PURPLE);
+      heading(
+        t("Recommendations", "Aanbevelings"),
+        PURPLE,
+        t("For the week ahead", "Vir die week wat kom"),
+        44,
+      );
       if (recommendations.length === 0) {
         emptyState(
           t(
@@ -896,26 +1423,58 @@ export async function generateReportPdfBuffer(
           TINT_PURPLE,
         );
       } else {
-        for (const r of recommendations) {
-          const w = CONTENT_W - 24;
-          const h = doc.font("Helvetica").fontSize(10).heightOfString(r, { width: w });
-          ensure(h + 14);
-          doc.roundedRect(LEFT, y + 1, 3.5, Math.max(h, 12), 1.75).fillColor(PURPLE).fill();
+        recommendations.forEach((r, i) => {
+          const w = CONTENT_W - 60;
+          const h = doc.font(F.regular).fontSize(9.5).heightOfString(r, {
+            width: w,
+            lineGap: 2,
+          });
+          const boxH = Math.max(h + 20, 38);
+          ensure(boxH + SPACE.row);
+          doc.roundedRect(LEFT, y, CONTENT_W, boxH, 7).fillColor(TINT_PURPLE).fill();
+          doc.roundedRect(LEFT, y, 3.5, boxH, 1.75).fillColor(PURPLE).fill();
+          doc.circle(LEFT + 28, y + 19, 10).fillColor(PURPLE).fill();
+          cell(String(i + 1), LEFT + 18, y + 9, 20, 20, {
+            font: F.bold,
+            size: 9,
+            color: INK,
+            align: "center",
+          });
           doc
             .fillColor(INK)
-            .font("Helvetica")
-            .fontSize(10)
-            .text(r, LEFT + 24, y, { width: w, lineGap: 2 });
-          y += Math.max(18, h + 10);
-        }
+            .font(F.regular)
+            .fontSize(9.5)
+            .text(r, LEFT + 48, y + 10, { width: w, lineGap: 2 });
+          y += boxH + SPACE.row;
+        });
       }
-      y += 4;
 
-      rule();
+      y += SPACE.block;
 
+      /* — Study activity — */
+
+      const shownDays = studyDayRows.slice(-14);
+      const dayRowH = 17;
+      /* Minimum rows that must travel together. Splitting a bar chart 12/2
+         across a page reads as a printing accident; forcing all 14 onto one
+         page wastes half a sheet. Widow control is the middle path — the
+         heading is guaranteed the KPI row plus MIN_CHUNK bars, and the loop
+         below never leaves fewer than MIN_CHUNK bars stranded. */
+      const MIN_CHUNK = 4;
+      const activityBlockH =
+        shownDays.length > 0
+          ? 34 + SPACE.block + Math.min(shownDays.length, MIN_CHUNK) * dayRowH + SPACE.row
+          : 56;
       heading(
         t("Study Activity — Last 30 Days", "Studie-aktiwiteit — Laaste 30 Dae"),
         YELLOW,
+        shownDays.length > 0 && studyDayRows.length > shownDays.length
+          ? t(
+              `Most recent ${shownDays.length} active days`,
+              `Mees onlangse ${shownDays.length} aktiewe dae`,
+            )
+          : undefined,
+        activityBlockH,
       );
       if (studyDayRows.length === 0) {
         emptyState(
@@ -932,51 +1491,84 @@ export async function generateReportPdfBuffer(
           (sum, r) => sum + parseInt(r.q_count || "0", 10),
           0,
         );
-        ensure(30);
-        doc
-          .fillColor(INK_SOFT)
-          .font("Helvetica")
-          .fontSize(9.5)
-          .text(
-            `${t("Active study days", "Aktiewe studiedae")}: ${totalStudyDays}   ·   ${t("Total questions answered", "Totale vrae beantwoord")}: ${totalQuestionsMonth}`,
-            LEFT,
-            y,
-            { width: CONTENT_W },
-          );
-        y += 20;
-        const BAR_W = 400;
+
+        /* Two summary figures, given room to breathe. */
+        const kpiW = (CONTENT_W - 12) / 2;
+        [
+          [t("Active study days", "Aktiewe studiedae"), `${totalStudyDays}`, AQUA],
+          [t("Questions answered", "Vrae beantwoord"), `${totalQuestionsMonth}`, YELLOW],
+        ].forEach(([label, value, accent], i) => {
+          const kx = LEFT + i * (kpiW + 12);
+          doc.roundedRect(kx, y, kpiW, 34, 7).fillColor(TINT_YELLOW).fill();
+          doc.roundedRect(kx, y, 3.5, 34, 1.75).fillColor(accent).fill();
+          cell(label.toUpperCase(), kx + 14, y, kpiW - 80, 34, {
+            font: F.medium,
+            size: 7,
+            color: INK_SOFT,
+            tracking: 0.8,
+          });
+          cell(value, kx + kpiW - 74, y, 60, 34, {
+            font: F.bold,
+            size: 13,
+            color: INK,
+            align: "right",
+          });
+        });
+        y += 34 + SPACE.block;
+
+        const dayLabelW = 52;
+        const dayBarX = LEFT + dayLabelW + 8;
+        const dayBarW = CONTENT_W - dayLabelW - 8 - 44;
         const maxQ = Math.max(
           ...studyDayRows.map((r) => parseInt(r.q_count || "0", 10)),
           1,
         );
-        for (const row of studyDayRows.slice(-14)) {
-          ensure(20);
+        for (let i = 0; i < shownDays.length; i++) {
+          const remaining = shownDays.length - i;
+          const fitsHere = Math.floor((PAGE_BOTTOM - y) / dayRowH);
+          // Break early when carrying on would strand a 1–3 row widow overleaf.
+          if (
+            fitsHere < remaining &&
+            remaining - fitsHere < MIN_CHUNK &&
+            remaining > MIN_CHUNK
+          ) {
+            ensure(PAGE_BOTTOM); // force a page break
+          } else {
+            ensure(dayRowH);
+          }
+          const row = shownDays[i];
           const qCount = parseInt(row.q_count || "0", 10);
           const dateLabel = new Date(row.study_date).toLocaleDateString(
             dateLocale,
             { day: "numeric", month: "short" },
           );
-          doc
-            .fillColor(INK_SOFT)
-            .font("Helvetica")
-            .fontSize(8)
-            .text(dateLabel, LEFT, y + 1, { width: 48 });
-          drawBar(102, y, BAR_W, 8, (qCount / maxQ) * 100, AQUA, TINT_AQUA);
-          doc
-            .fillColor(INK)
-            .font("Helvetica-Bold")
-            .fontSize(8)
-            .text(`${qCount}`, 102 + BAR_W + 8, y + 1, { width: 40 });
-          y += 14;
+          cell(dateLabel, LEFT, y, dayLabelW, dayRowH, {
+            font: F.regular,
+            size: 8,
+            color: INK_SOFT,
+          });
+          drawBar(dayBarX, y + (dayRowH - 8) / 2, dayBarW, 8, (qCount / maxQ) * 100, AQUA, TINT_AQUA);
+          cell(`${qCount}`, RIGHT - 40, y, 40, dayRowH, {
+            font: F.semibold,
+            size: 8.5,
+            color: INK,
+            align: "right",
+          });
+          y += dayRowH;
         }
-        y += 8;
+        y += SPACE.row;
       }
 
-      rule();
+      y += SPACE.block;
 
+      /* — Score trend — */
+
+      const wkRowH = 22;
       heading(
         t("Score Trend — Last 4 Weeks", "Punteneiging — Laaste 4 Weke"),
         PINK,
+        undefined,
+        weeklyRows.length > 0 ? weeklyRows.length * wkRowH + SPACE.row : 50,
       );
       if (weeklyRows.length === 0) {
         emptyState(
@@ -988,8 +1580,11 @@ export async function generateReportPdfBuffer(
           TINT_PINK,
         );
       } else {
+        const wkLabelW = 108;
+        const wkBarX = LEFT + wkLabelW + 8;
+        const wkBarW = CONTENT_W - wkLabelW - 8 - 108;
         for (const row of weeklyRows) {
-          ensure(24);
+          ensure(wkRowH);
           const total = parseInt(row.total || "0", 10);
           const correct = parseInt(row.correct || "0", 10);
           const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
@@ -997,49 +1592,63 @@ export async function generateReportPdfBuffer(
             dateLocale,
             { day: "numeric", month: "short" },
           );
-          doc
-            .fillColor(INK_SOFT)
-            .font("Helvetica")
-            .fontSize(9)
-            .text(`${t("Week of", "Week van")} ${weekDate}`, LEFT, y + 1, {
-              width: 120,
-            });
-          drawBar(174, y, 280, 8, pct, bandColor(pct));
-          doc
-            .fillColor(INK)
-            .font("Helvetica-Bold")
-            .fontSize(9)
-            .text(`${pct}%`, 462, y + 1, { width: 30, align: "right" });
-          doc
-            .fillColor(INK_SOFT)
-            .font("Helvetica")
-            .fontSize(8)
-            .text(`(${correct}/${total})`, 496, y + 1.5, { width: 50 });
-          y += 18;
+          cell(
+            `${t("Week of", "Week van")} ${weekDate}`,
+            LEFT, y, wkLabelW, wkRowH,
+            { font: F.regular, size: 8.5, color: INK_SOFT },
+          );
+          drawBar(wkBarX, y + (wkRowH - 8) / 2, wkBarW, 8, pct, bandColor(pct));
+          cell(`${pct}%`, RIGHT - 104, y, 44, wkRowH, {
+            font: F.bold,
+            size: 9.5,
+            color: INK,
+            align: "right",
+          });
+          cell(`(${correct}/${total})`, RIGHT - 56, y, 56, wkRowH, {
+            font: F.regular,
+            size: 8,
+            color: INK_SOFT,
+            align: "right",
+          });
+          y += wkRowH;
         }
-        y += 8;
+        y += SPACE.row;
       }
     }
 
-    /* ── Footer ─────────────────────────────────────────────────────────── */
+    /* ── Closing block ──────────────────────────────────────────────────── */
 
-    y += 10;
-    ensure(70);
+    y += SPACE.block;
+    ensure(92);
     doc
       .moveTo(LEFT, y)
       .lineTo(RIGHT, y)
       .strokeColor(HAIRLINE)
       .lineWidth(1)
       .stroke();
-    y += 14;
+    y += 18;
+
+    /* The second — and last — Permanent Marker moment: a human sign-off that
+       bookends the masthead. 17pt, well clear of the legibility floor. */
     doc
       .fillColor(INK)
+      .font(F.display)
+      .fontSize(17)
+      .text(t("Keep going.", "Hou aan."), LEFT, y, {
+        width: CONTENT_W,
+        align: "center",
+        lineBreak: false,
+      });
+    y += 26;
+
+    doc
+      .fillColor(INK)
+      .font(F.medium)
       .fontSize(8)
-      .font("Helvetica-Bold")
       .text(
         t(
-          "Generated by BrainTrack™ — CAPS-aligned NSC exam preparation platform.",
-          "Gegenereer deur BrainTrack™ — KABV-belynde NSS-eksamenvoorbereidingsplatform.",
+          "Generated by BrainTrack — CAPS-aligned NSC exam preparation platform.",
+          "Gegenereer deur BrainTrack — KABV-belynde NSS-eksamenvoorbereidingsplatform.",
         ),
         LEFT,
         y,
@@ -1048,8 +1657,8 @@ export async function generateReportPdfBuffer(
     y += 13;
     doc
       .fillColor(INK_SOFT)
+      .font(F.regular)
       .fontSize(8)
-      .font("Helvetica")
       .text(
         t(
           "This report is for parent/guardian use only and is not an official academic transcript.",
@@ -1059,6 +1668,47 @@ export async function generateReportPdfBuffer(
         y,
         { align: "center", width: CONTENT_W },
       );
+
+    /* ── Running footer, stamped once the page total is known ───────────── */
+
+    const range = doc.bufferedPageRange();
+    for (let i = range.start; i < range.start + range.count; i++) {
+      doc.switchToPage(i);
+      // Writing this low would otherwise trip pdfkit's bottom-margin auto-paging.
+      const savedBottom = doc.page.margins.bottom;
+      doc.page.margins.bottom = 0;
+
+      doc
+        .moveTo(LEFT, FOOTER_TOP)
+        .lineTo(RIGHT, FOOTER_TOP)
+        .strokeColor(HAIRLINE)
+        .lineWidth(0.75)
+        .stroke();
+
+      doc
+        .fillColor(INK_SOFT)
+        .font(F.regular)
+        .fontSize(7.5)
+        .text(
+          `BrainTrack · ${reportTitle} · ${generatedAtLabel}`,
+          LEFT,
+          FOOTER_TOP + 8,
+          { width: CONTENT_W - 120, lineBreak: false },
+        );
+
+      doc
+        .fillColor(INK_SOFT)
+        .font(F.medium)
+        .fontSize(7.5)
+        .text(
+          `${t("Page", "Bladsy")} ${i - range.start + 1} ${t("of", "van")} ${range.count}`,
+          RIGHT - 120,
+          FOOTER_TOP + 8,
+          { width: 120, align: "right", lineBreak: false },
+        );
+
+      doc.page.margins.bottom = savedBottom;
+    }
 
     doc.end();
   });

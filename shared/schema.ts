@@ -13,6 +13,7 @@ import {
   uniqueIndex,
   check,
   bigint,
+  numeric,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -2038,14 +2039,29 @@ export const dbeVerbatimQuestions = pgTable(
       .$type<"clean" | "partial" | "garbled" | "unscored">(),
     predictiveRating: integer("predictive_rating").default(0),
     // Structured MCQ payload extracted at ingestion time. `mcqOptions` is null
-    // for non-MCQ questions; `correctOption` is the memo-derived answer letter.
+    // for non-MCQ questions.
     mcqOptions: jsonb("mcq_options").$type<Array<{
       letter: "A" | "B" | "C" | "D" | "E";
       text: string;
     }> | null>(),
-    correctOption: text("correct_option").$type<
-      "A" | "B" | "C" | "D" | "E" | null
-    >(),
+    // Verbatim source material this question depends on — scenario, extract,
+    // paragraph, case study, text-rendered table. DBE attaches one stimulus
+    // block to a parent question and asks several sub-questions about it, so
+    // every sub-question of a group shares the parent's stimulus. NULL when
+    // the question is self-contained.
+    stimulusText: text("stimulus_text"),
+    // TRUE when the question refers to material ("the extract below", "Diagram
+    // 1") that could NOT be recovered from the source PDF — most often because
+    // the stimulus is an image. Such a question is NOT answerable and must be
+    // withheld or shown flagged, never served as a normal question.
+    needsStimulus: boolean("needs_stimulus").notNull().default(false),
+    // Memo-derived answer letter(s). Usually a single letter ("C"), but DBE
+    // selection items legitimately have multi-letter answers marked in any
+    // order — Hospitality 2025 P1 Q1.4.2 is "A C" for 2 marks, and Q1.4.1 is
+    // "A C E H" for 4. Those are stored comma-joined ("A,C") and compared as a
+    // SET, so order does not affect the mark. Parse with
+    // `parseCorrectOptions()` rather than reading the first character.
+    correctOption: text("correct_option"),
     // Question-text accuracy (separate from memo)
     questionQualityScore: integer("question_quality_score").default(0),
     questionAccuracyFlag: text("question_accuracy_flag")
@@ -2181,23 +2197,62 @@ export const dbeSimulatedQuestions = pgTable(
   ],
 );
 
-// Flashcards generated alongside simulated questions — front = question stem,
-// back = memo answer. Surfaces in the learner flashcard reviewer per subject.
+// Humanised, learner-facing flashcards produced by server/flashcard-generator.ts.
+//
+// NOTE: this table used to be filled by copying verbatim question_text → front
+// and memo_text → back straight out of dbe_verbatim_questions. That put the
+// examiner's marking rubric ("Die kandidaat ontwerp…", "KENMERKE •…", "[20]")
+// in front of learners. Rows are now *synthesised* from those sources into
+// atomic second-person recall cards and hard-validated before insert.
+// One row per (card, language) — mirrors the topic_flashcards convention.
 export const flashcards = pgTable(
   "flashcards",
   {
     id: serial("id").primaryKey(),
     subject: text("subject").notNull(),
     topic: text("topic"),
+    language: varchar("language", { length: 8 }).notNull().default("en"),
     front: text("front").notNull(),
     back: text("back").notNull(),
+    cardType: varchar("card_type", { length: 32 }).notNull().default("basic"),
     difficulty: text("difficulty").default("medium"),
     source: text("source").notNull().default("ai"),
+    // Validation score (0–100) recorded at generation time. Cards below
+    // MIN_QUALITY_SCORE are never inserted.
+    qualityScore: integer("quality_score").default(0),
+    // Provenance: the dbe_verbatim_questions row this card was distilled from,
+    // so any card can be traced back to the real paper. Also used for resume.
+    sourceQuestionId: integer("source_question_id"),
     metadata: jsonb("metadata").default({}),
+    // ── Factual verification (server/content-verifier.ts) ────────────────────
+    // `qualityScore` above measures whether a card is well-FORMED. It cannot
+    // tell whether the card is TRUE: card #49 passed it while teaching LIFO as
+    // a South African inventory valuation method, which CAPS does not teach and
+    // IAS 2 prohibits. These columns hold the correctness verdicts. Advisory —
+    // nothing here deletes or unpublishes a card.
+    solverVerified: boolean("solver_verified"),
+    solverAnswerMatch: numeric("solver_answer_match"),
+    solverVerdict: text("solver_verdict").$type<"agree" | "disagree" | "uncertain">(),
+    solverReason: text("solver_reason"),
+    capsVerdict: text("caps_verdict").$type<"on_syllabus" | "off_syllabus" | "uncertain">(),
+    capsConfidence: numeric("caps_confidence"),
+    capsReason: text("caps_reason"),
+    verificationFlag: text("verification_flag").$type<"ok" | "needs_review">(),
+    verificationDetail: jsonb("verification_detail"),
+    verificationModel: text("verification_model"),
+    verifiedAt: timestamp("verified_at", { withTimezone: true }),
     createdAt: timestamp("created_at").defaultNow(),
   },
-  (table) => [index("flashcards_subject_idx").on(table.subject)],
+  (table) => [
+    index("flashcards_subject_idx").on(table.subject),
+    index("flashcards_subject_lang_idx").on(table.subject, table.language),
+    index("flashcards_source_question_idx").on(table.sourceQuestionId),
+    index("flashcards_verification_idx").on(table.verificationFlag, table.capsVerdict),
+  ],
 );
+
+export type Flashcard = typeof flashcards.$inferSelect;
+export type InsertFlashcard = typeof flashcards.$inferInsert;
 
 // Per-subject quiz template — assembled from simulated questions, used by
 // the learner "Quick Quiz" flow. Independent from per-user daily challenges.

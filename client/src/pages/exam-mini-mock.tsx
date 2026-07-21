@@ -190,6 +190,20 @@ interface SubjectEntry {
   subject: string;
   total: number;
   topics: { name: string; count: number }[];
+  /**
+   * Set by the server when this subject has NO questions in the learner's
+   * language — the count above is for the language named here, and starting a
+   * session will explicitly fall back to it.
+   */
+  fallbackLanguage?: "en" | "af" | null;
+}
+
+/** Language block returned alongside learner content — see server/language.ts. */
+interface LanguageMeta {
+  requested: "en" | "af";
+  served: "en" | "af";
+  fellBack: boolean;
+  notice: string | null;
 }
 
 interface MiniMockQuestion {
@@ -231,9 +245,23 @@ export default function ExamMiniMockPage() {
   const [sessionDone, setSessionDone] = useState(false);
   const [loadingStart, setLoadingStart] = useState(false);
   const [startError, setStartError] = useState<string>("");
+  /**
+   * Set when the server had to serve this session in the other language
+   * because the subject has no content in the learner's language. Shown to
+   * the learner so the switch is never silent.
+   */
+  const [languageNotice, setLanguageNotice] = useState<string | null>(null);
 
+  // `language` is part of the queryKey AND the URL: question counts are
+  // per-language, so switching language must refetch rather than serve the
+  // cached other-language list.
   const { data: subjects, isLoading: subjectsLoading, isError: subjectsError, refetch: refetchSubjects, isRefetching: subjectsRefetching } = useQuery<SubjectEntry[]>({
-    queryKey: ["/api/exam/mini-mock/subjects"],
+    queryKey: [`/api/exam/mini-mock/subjects?lang=${language}`, language],
+    queryFn: async () => {
+      const r = await fetch(`/api/exam/mini-mock/subjects?lang=${language}`, { credentials: "include" });
+      if (!r.ok) throw new Error(`subjects ${r.status}`);
+      return (await r.json()) as SubjectEntry[];
+    },
   });
 
   const subjectEntry = useMemo(
@@ -299,7 +327,9 @@ export default function ExamMiniMockPage() {
     setStartError("");
     setLoadingStart(true);
     try {
-      const qs = new URLSearchParams({ subject, count: String(count) });
+      // Language is fixed for the whole session at start. The server picks one
+      // language and serves every question in it — no mid-session switching.
+      const qs = new URLSearchParams({ subject, count: String(count), lang: language });
       if (topic && topic !== "all") qs.set("topic", topic);
       const r = await fetch(`/api/exam/mini-mock/questions?${qs}`, { credentials: "include" });
       if (!r.ok) {
@@ -317,6 +347,8 @@ export default function ExamMiniMockPage() {
         return;
       }
       setQuestions(qs2);
+      // Explicit, visible fallback — never a silent language switch.
+      setLanguageNotice(data.language?.fellBack ? (data.language.notice ?? null) : null);
       setCurrentIdx(0);
       setAnswer("");
       setResults({});
@@ -350,6 +382,7 @@ export default function ExamMiniMockPage() {
     setResults({});
     setSessionDone(false);
     setAnswer("");
+    setLanguageNotice(null);
   };
 
   // ── Results screen ─────────────────────────────────────────
@@ -439,6 +472,19 @@ export default function ExamMiniMockPage() {
             {currentIdx + 1}/{questions.length}
           </span>
         </div>
+
+        {/* Explicit language-fallback notice — the learner is told when this
+            session is not in their chosen language, rather than the app
+            appearing to switch language on its own. */}
+        {languageNotice && (
+          <p
+            data-testid="mini-mock-language-notice"
+            className="text-xs font-semibold px-3 py-2 rounded-lg"
+            style={{ color: "#FFE29A", background: "rgba(255,226,154,.1)", border: "1px solid rgba(255,226,154,.45)" }}
+          >
+            {languageNotice}
+          </p>
+        )}
 
         <GlassCard className="p-5 sm:p-6" style={{ animation: "bt-fadeup .4s cubic-bezier(.22,1,.36,1) both" }}>
           {/* Aqua accent line */}

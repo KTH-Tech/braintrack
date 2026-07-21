@@ -345,8 +345,18 @@ function getReadinessScore(mastery: SubjectMastery | undefined): number {
 }
 
 function SubjectExamCard({ subject, isAf, t, colorIndex }: { subject: Subject; isAf: boolean; t: typeof T["en"] | typeof T["af"]; colorIndex: number }) {
+  // /api/subjects/:id/mastery returns localised band + topic labels, so the
+  // language must be in both the URL and the queryKey. Without it this view
+  // rendered English labels for Afrikaans learners and cached across a
+  // language switch (subject-detail.tsx already passes lang for this endpoint).
+  const lang = isAf ? "af" : "en";
   const { data: mastery } = useQuery<SubjectMastery>({
-    queryKey: ["/api/subjects", subject.id.toString(), "mastery"],
+    queryKey: ["/api/subjects", subject.id.toString(), "mastery", lang],
+    queryFn: async () => {
+      const r = await fetch(`/api/subjects/${subject.id}/mastery?lang=${lang}`, { credentials: "include" });
+      if (!r.ok) throw new Error(`mastery ${r.status}`);
+      return (await r.json()) as SubjectMastery;
+    },
   });
 
   const examConfig = EXAM_CONFIG[subject.code] || null;

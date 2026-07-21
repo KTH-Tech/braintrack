@@ -15,6 +15,7 @@ import {
   computeContentHash,
   computeQualityScore,
   computePredictiveRating,
+  buildMemoAnswerIndex,
 } from "../../server/dbe-ingestion";
 
 describe("isDataAssetSubject", () => {
@@ -163,5 +164,113 @@ describe("computePredictiveRating", () => {
     const rating = computePredictiveRating(2021, null, null, false, noYearCounts);
     expect(typeof rating).toBe("number");
     expect(isNaN(rating)).toBe(false);
+  });
+});
+
+describe("buildMemoAnswerIndex", () => {
+  // Real DBE marking-guideline shapes. pdf-parse flattens the guideline's
+  // table cell-by-cell, which produces the two layouts exercised below.
+
+  it("pairs plain in-line answers (Geography-style flat memo)", () => {
+    const memo = [
+      "QUESTION 1",
+      "1.1.1 A (South Atlantic High) (1)",
+      "1.1.2 B (Kalahari High) (1)",
+      "1.2.1 Melting snow",
+      "1.2.2 Mouth",
+    ].join("\n");
+    const idx = buildMemoAnswerIndex(memo);
+    expect(idx.get("1.1.1")).toBe("A (South Atlantic High) (1)");
+    expect(idx.get("1.1.2")).toBe("B (Kalahari High) (1)");
+    expect(idx.get("1.2.1")).toBe("Melting snow");
+    expect(idx.get("1.2.2")).toBe("Mouth");
+  });
+
+  it("pairs the first sub-question when the group number shares its line", () => {
+    // "2.2 2.2.1 20 (1)" — the group number occupies its own table column, so
+    // a regex anchored at line start can never see the 2.2.1 sub-number.
+    const memo = ["2.2 2.2.1 20 (1)", "2.2.2 FSH (1)"].join("\n");
+    const idx = buildMemoAnswerIndex(memo);
+    expect(idx.get("2.2.1")).toBe("20 (1)");
+    expect(idx.get("2.2.2")).toBe("FSH (1)");
+  });
+
+  it("zips a column-flattened number run onto its answer run", () => {
+    // Life Sciences MCQ block: pdf-parse emits the whole number column, then
+    // the whole answer column.
+    const memo = [
+      "1.1 1.1.1",
+      "1.1.2",
+      "1.1.3",
+      "1.1.4",
+      "B",
+      "C",
+      "D",
+      "A (4 x 2) (8)",
+    ].join("\n");
+    const idx = buildMemoAnswerIndex(memo);
+    expect(idx.get("1.1.1")).toBe("B");
+    expect(idx.get("1.1.2")).toBe("C");
+    expect(idx.get("1.1.3")).toBe("D");
+    expect(idx.get("1.1.4")).toBe("A (4 x 2) (8)");
+  });
+
+  it("shares the block when a flattened run's answers cannot be split 1:1", () => {
+    const memo = [
+      "3.3 3.3.1",
+      "3.3.2",
+      "To ensure the change was due to insulin only",
+      "- It stimulates absorption of glucose",
+      "into the cells",
+      "(2)",
+      "(4)",
+    ].join("\n");
+    const idx = buildMemoAnswerIndex(memo);
+    // Both members get the group's answer block rather than nothing at all.
+    expect(idx.get("3.3.1")).toContain("insulin only");
+    expect(idx.get("3.3.2")).toContain("insulin only");
+    // The mark column is not part of the answer text.
+    expect(idx.get("3.3.1")).not.toMatch(/\(2\)\s*\(4\)/);
+  });
+
+  it("stops an answer at a section/total boundary", () => {
+    const memo = [
+      "1.5.3 ADH/Antidiuretic hormone",
+      "TOTAL SECTION A: 50",
+      "SECTION B",
+      "QUESTION 2",
+      "2.1.1 Fallopian tube",
+    ].join("\n");
+    const idx = buildMemoAnswerIndex(memo);
+    expect(idx.get("1.5.3")).toBe("ADH/Antidiuretic hormone");
+    expect(idx.get("2.1.1")).toBe("Fallopian tube");
+  });
+
+  it("drops repeated page furniture", () => {
+    const memo = [
+      "1.1.1 Cristae",
+      "Life Sciences/P1 5 DBE/November 2024",
+      "NSC – Marking Guidelines",
+      "Copyright reserved Please turn over",
+      "-- 4 of 9 --",
+      "1.1.2 Cochlea",
+    ].join("\n");
+    const idx = buildMemoAnswerIndex(memo);
+    expect(idx.get("1.1.1")).toBe("Cristae");
+    expect(idx.get("1.1.2")).toBe("Cochlea");
+  });
+
+  it("rolls a group header up from its children", () => {
+    const memo = ["3.1.1 Pupil", "3.1.2 Iris"].join("\n");
+    const idx = buildMemoAnswerIndex(memo);
+    expect(idx.get("3.1")).toContain("Pupil");
+    expect(idx.get("3.1")).toContain("Iris");
+    // Never invent an answer for a bare top-level question number.
+    expect(idx.has("3")).toBe(false);
+  });
+
+  it("returns an empty index for blank input", () => {
+    expect(buildMemoAnswerIndex("").size).toBe(0);
+    expect(buildMemoAnswerIndex("   \n  ").size).toBe(0);
   });
 });

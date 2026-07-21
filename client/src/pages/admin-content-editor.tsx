@@ -1,14 +1,13 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { AdminTopNav } from "@/components/admin-top-nav";
-import { NeonShell, AdminBadge, adminSelectClass, adminSelectStyle, type NeonHex } from "@/components/admin-ui";
+import { AdminGround, NeonShell, AdminBadge, adminSelectClass, adminSelectStyle, adminInputClass, adminInputStyle, adminTextareaClass, adminTextareaStyle, type NeonHex } from "@/components/admin-ui";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/lib/language-context";
 import {
-  ArrowLeft, BookOpen, Layers, BookMarked, Search,
+  BookOpen, Layers, BookMarked, Search,
   Pencil, Trash2, Plus, X, Check,
   Loader2, Upload, Download, ChevronDown, ChevronUp, AlertCircle, CheckCircle2,
   Filter,
@@ -144,7 +143,7 @@ function Field({
     <div className="flex flex-col gap-1">
       <label className="text-[10px] font-bold uppercase tracking-widest text-white">{label}</label>
       <textarea
-        className="w-full resize-y rounded-lg bg-white/5 px-3 py-2 text-sm text-white placeholder-white/20 outline-none ring-1 ring-white/10 focus:ring-white/30"
+        className={adminTextareaClass} style={adminTextareaStyle}
         rows={rows}
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -163,7 +162,7 @@ function JsonField({
     <div className="flex flex-col gap-1">
       <label className="text-[10px] font-bold uppercase tracking-widest text-white">{label}</label>
       <textarea
-        className={`w-full resize-y rounded-lg bg-white/5 px-3 py-2 font-mono text-xs text-white placeholder-white/20 outline-none ring-1 focus:ring-white/30 ${err ? "ring-red-500" : "ring-white/10"}`}
+        className={`${adminTextareaClass} font-mono`} style={{ ...adminTextareaStyle, borderColor: err ? "#FFB7E5" : undefined }}
         rows={6}
         value={raw}
         onChange={(e) => {
@@ -176,7 +175,7 @@ function JsonField({
           }
         }}
       />
-      {err && <span className="text-xs text-red-400">{err}</span>}
+      {err && <span className="text-xs text-[#FFB7E5]">{err}</span>}
     </div>
   );
 }
@@ -196,7 +195,7 @@ function SearchBar({
       <div className="relative flex-1">
         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white" />
         <input
-          className="w-full rounded-lg bg-white/5 py-2 pl-8 pr-3 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-white/30 placeholder-white/25"
+          className={`${adminInputClass} pl-8`} style={adminInputStyle}
           placeholder={placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -517,14 +516,14 @@ function BulkImportPanel({
             </label>
             <textarea
               data-testid={`bulk-import-textarea-${type}`}
-              className={`w-full resize-y rounded-lg bg-white/5 px-3 py-2 font-mono text-xs text-white outline-none ring-1 focus:ring-white/30 ${parseError ? "ring-red-500" : "ring-white/10"}`}
+              className={`${adminTextareaClass} font-mono`} style={{ ...adminTextareaStyle, borderColor: parseError ? "#FFB7E5" : undefined }}
               rows={10}
               value={raw}
               placeholder={`Paste JSON array here…`}
               onChange={(e) => { setRaw(e.target.value); setParseError(null); }}
             />
             {parseError && (
-              <div className="flex items-center gap-1.5 text-xs text-red-400">
+              <div className="flex items-center gap-1.5 text-xs text-[#FFB7E5]">
                 <AlertCircle size={12} /> {parseError}
               </div>
             )}
@@ -534,21 +533,21 @@ function BulkImportPanel({
             <div
               className="mb-3 rounded-lg p-3 text-xs"
               style={{
-                background: result.errored > 0 ? "#ff444422" : `${HEX.mint}22`,
-                border: `1px solid ${result.errored > 0 ? "#ff4444" : HEX.mint}44`,
+                background: result.errored > 0 ? "rgba(255,183,229,0.13)" : `${HEX.mint}22`,
+                border: `1px solid ${result.errored > 0 ? "#FFB7E5" : HEX.mint}44`,
               }}
             >
-              <div className="flex items-center gap-2 font-bold mb-1" style={{ color: result.errored > 0 ? "#ff6060" : HEX.mint }}>
+              <div className="flex items-center gap-2 font-bold mb-1" style={{ color: result.errored > 0 ? "#FFB7E5" : HEX.mint }}>
                 {result.errored > 0 ? <AlertCircle size={13} /> : <CheckCircle2 size={13} />}
                 {result.errored > 0 ? "Import completed with errors" : "Import successful"}
               </div>
               <div className="flex gap-4 text-white">
                 <span><span className="font-bold" style={{ color: HEX.mint }}>{result.created}</span> created</span>
                 <span><span className="font-bold" style={{ color: HEX.amber }}>{result.updated}</span> updated</span>
-                <span><span className="text-red-400 font-bold">{result.errored}</span> errored</span>
+                <span><span className="text-[#FFB7E5] font-bold">{result.errored}</span> errored</span>
               </div>
               {result.errors.length > 0 && (
-                <ul className="mt-2 space-y-0.5 text-red-300/80">
+                <ul className="mt-2 space-y-0.5 text-[#FFB7E5]">
                   {result.errors.slice(0, 10).map((e) => (
                     <li key={e.index}>Item [{e.index}]: {e.reason}</li>
                   ))}
@@ -729,7 +728,7 @@ function TopicNotesTab() {
               <div className="flex flex-col gap-1 flex-1">
                 <label className="text-[10px] font-bold uppercase tracking-widest text-white">Topic ID</label>
                 <input
-                  className="rounded-lg bg-white/5 px-3 py-2 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-white/30"
+                  className={adminInputClass} style={adminInputStyle}
                   placeholder="e.g. 42"
                   value={newNote.topicId}
                   onChange={(e) => setNewNote((n) => ({ ...n, topicId: e.target.value }))}
@@ -752,7 +751,7 @@ function TopicNotesTab() {
             <div className="flex flex-col gap-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-white">Key Concepts (JSON array)</label>
               <textarea
-                className="w-full resize-y rounded-lg bg-white/5 px-3 py-2 font-mono text-xs text-white outline-none ring-1 ring-white/10 focus:ring-white/30"
+                className={`${adminTextareaClass} font-mono`} style={adminTextareaStyle}
                 rows={3}
                 value={newNote.keyConcepts}
                 onChange={(e) => setNewNote((n) => ({ ...n, keyConcepts: e.target.value }))}
@@ -761,7 +760,7 @@ function TopicNotesTab() {
             <div className="flex flex-col gap-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-white">Worked Examples (JSON array)</label>
               <textarea
-                className="w-full resize-y rounded-lg bg-white/5 px-3 py-2 font-mono text-xs text-white outline-none ring-1 ring-white/10 focus:ring-white/30"
+                className={`${adminTextareaClass} font-mono`} style={adminTextareaStyle}
                 rows={3}
                 value={newNote.workedExamples}
                 onChange={(e) => setNewNote((n) => ({ ...n, workedExamples: e.target.value }))}
@@ -822,7 +821,7 @@ function TopicNotesTab() {
                     <Pencil size={13} />
                   </Button>
                   <Button
-                    size="sm" variant="ghost" className="text-red-500/50 hover:text-red-400"
+                    size="sm" variant="ghost" className="text-[#FFB7E5] hover:text-[#FFB7E5]"
                     onClick={() => deleteMutation.mutate(row.id)}
                     disabled={deleteMutation.isPending}
                     data-testid={`delete-note-${row.id}`}
@@ -1001,7 +1000,7 @@ function TopicFlashcardsTab() {
               <div className="flex flex-col gap-1 flex-1">
                 <label className="text-[10px] font-bold uppercase tracking-widest text-white">Topic ID</label>
                 <input
-                  className="rounded-lg bg-white/5 px-3 py-2 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-white/30"
+                  className={adminInputClass} style={adminInputStyle}
                   placeholder="e.g. 42"
                   value={newCard.topicId}
                   onChange={(e) => setNewCard((c) => ({ ...c, topicId: e.target.value }))}
@@ -1094,7 +1093,7 @@ function TopicFlashcardsTab() {
                     <Pencil size={13} />
                   </Button>
                   <Button
-                    size="sm" variant="ghost" className="text-red-500/50 hover:text-red-400"
+                    size="sm" variant="ghost" className="text-[#FFB7E5] hover:text-[#FFB7E5]"
                     onClick={() => deleteMutation.mutate(row.id)}
                     disabled={deleteMutation.isPending}
                     data-testid={`delete-card-${row.id}`}
@@ -1129,7 +1128,7 @@ function TopicFlashcardsTab() {
                   <label className="text-[10px] font-bold uppercase tracking-widest text-white">Order</label>
                   <input
                     type="number"
-                    className="rounded-lg bg-white/5 px-3 py-2 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-white/30"
+                    className={adminInputClass} style={adminInputStyle}
                     value={draft.orderIndex}
                     onChange={(e) => setDraft((d) => ({ ...d, orderIndex: Number(e.target.value) }))}
                   />
@@ -1270,7 +1269,7 @@ function LiteratureNotesTab() {
               <div className="flex flex-col gap-1 flex-1">
                 <label className="text-[10px] font-bold uppercase tracking-widest text-white">Work ID</label>
                 <input
-                  className="rounded-lg bg-white/5 px-3 py-2 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-white/30"
+                  className={adminInputClass} style={adminInputStyle}
                   placeholder="e.g. 5"
                   value={newNote.workId}
                   onChange={(e) => setNewNote((n) => ({ ...n, workId: e.target.value }))}
@@ -1344,7 +1343,7 @@ function LiteratureNotesTab() {
                     <Pencil size={13} />
                   </Button>
                   <Button
-                    size="sm" variant="ghost" className="text-red-500/50 hover:text-red-400"
+                    size="sm" variant="ghost" className="text-[#FFB7E5] hover:text-[#FFB7E5]"
                     onClick={() => deleteMutation.mutate(row.id)}
                     disabled={deleteMutation.isPending}
                     data-testid={`delete-lit-${row.id}`}
@@ -1392,11 +1391,11 @@ export default function AdminContentEditorPage() {
   const [tab, setTab] = useState<Tab>("notes");
 
   return (
-    <div className="min-h-screen text-white" style={{ background: "#050508", fontFamily: "'Poppins', system-ui, sans-serif" }}>
+    <AdminGround>
       {/* Header */}
       <AdminTopNav current="content-editor" />
 
-      <main className="mx-auto max-w-4xl px-4 py-8">
+      <main className="mx-auto max-w-6xl px-4 py-8 md:px-6">
         {/* Title */}
         <div className="mb-8">
           <h2 className="text-2xl font-black uppercase tracking-widest text-white">
@@ -1433,6 +1432,6 @@ export default function AdminContentEditorPage() {
         {tab === "flashcards" && <TopicFlashcardsTab />}
         {tab === "literature" && <LiteratureNotesTab />}
       </main>
-    </div>
+    </AdminGround>
   );
 }

@@ -932,7 +932,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getBillingOverview(filter?: { ending?: number; lapsedDays?: number; status?: string }): Promise<Array<Subscription & { userEmail: string | null; userName: string | null }>> {
-    const conditions: SQL<unknown>[] = [];
+    // Demo accounts carry a seeded subscription purely so their dashboards
+    // render. They are never billed and must not appear in billing figures.
+    // The join below becomes an INNER join for the same reason.
+    const conditions: SQL<unknown>[] = [eq(users.isDemo, false)];
     if (filter?.ending != null) {
       const upper = new Date(Date.now() + filter.ending * 24 * 60 * 60 * 1000);
       conditions.push(eq(subscriptions.status, "trial"));
@@ -946,7 +949,7 @@ export class DatabaseStorage implements IStorage {
     if (filter?.status != null && !filter.ending && !filter.lapsedDays) {
       conditions.push(eq(subscriptions.status, filter.status));
     }
-    const where = conditions.length ? and(...conditions) : undefined;
+    const where = and(...conditions);
     let orderCol: any = desc(subscriptions.updatedAt);
     if (filter?.status === "trial") orderCol = subscriptions.trialEndsAt;
     if (filter?.status === "grace") orderCol = subscriptions.gracePeriodEndsAt;
@@ -956,7 +959,7 @@ export class DatabaseStorage implements IStorage {
       firstName: users.firstName,
       lastName: users.lastName,
     }).from(subscriptions)
-      .leftJoin(users, eq(users.id, subscriptions.userId))
+      .innerJoin(users, eq(users.id, subscriptions.userId))
       .where(where as any)
       .orderBy(orderCol)
       .limit(500);
@@ -968,9 +971,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getBillingSummary(): Promise<{ active: number; trial: number; grace: number; lapsed: number; cancelled: number; mrr: number }> {
+    // Demo accounts excluded — MRR in particular must reflect only real revenue.
     const rows = await db
       .select({ status: subscriptions.status, priceRands: subscriptions.priceRands })
-      .from(subscriptions);
+      .from(subscriptions)
+      .innerJoin(users, eq(users.id, subscriptions.userId))
+      .where(eq(users.isDemo, false));
     const counts = { active: 0, trial: 0, grace: 0, lapsed: 0, cancelled: 0, mrr: 0 };
     for (const r of rows) {
       if (r.status === "active") { counts.active++; counts.mrr += (r.priceRands ?? 0); }

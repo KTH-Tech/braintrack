@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
-import iconTransparent from "@/assets/handoff/icon-transparent.png";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -18,12 +17,16 @@ import {
   Play, ShieldCheck, RefreshCw, Search, CheckCircle2, XCircle,
   Loader2, BookOpen, FileText, Eye, GraduationCap,
   Sparkles, ChevronDown, ChevronRight, Zap, BarChart3,
-  Download, AlertTriangle, Wrench, Home, LogOut, Trash2,
+  Download, AlertTriangle, Wrench, Trash2,
   Upload, ExternalLink, FileUp, CheckCheck, CloudUpload, Clock, Calendar, History,
   Database, FileSearch, ChevronUp, X, FileCheck,
 } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
 import { formatDate, formatDateTime, formatTime, formatNumber } from "@/lib/formatters";
+import { AdminTopNav } from "@/components/admin-top-nav";
+import {
+  AdminGround, NeonShell, AdminBadge, AdminButton, halo, type NeonHex,
+} from "@/components/admin-ui";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -125,9 +128,9 @@ interface VerbatimQuestion {
 
 // ─── Shared helpers ───────────────────────────────────────────────────────────
 
-function memoCovColorFor(pct: number | null | undefined): string {
+function memoCovColorFor(pct: number | null | undefined): NeonHex {
   if (pct === null || pct === undefined) return "#9FD8FF";
-  if (pct < 60) return "#FF8DA1";
+  if (pct < 60) return "#FFB7E5";
   if (pct < 90) return "#FFE29A";
   return "#9FF5E8";
 }
@@ -135,35 +138,30 @@ function memoCovColorFor(pct: number | null | undefined): string {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function StatCard({ label, value, sub, icon: Icon, onClick, valueColor }: {
-  label: string; value: string | number; sub?: string; icon?: any; onClick?: () => void; valueColor?: string;
+  label: string; value: string | number; sub?: string; icon?: any; onClick?: () => void; valueColor?: NeonHex;
 }) {
   const { language } = useLanguage();
-  const resolvedColor = valueColor ?? "#9FD8FF";
+  const resolvedColor: NeonHex = valueColor ?? "#9FD8FF";
   return (
-    <div
-      onClick={onClick}
+    <NeonShell
+      color={resolvedColor}
       className={onClick ? "cursor-pointer" : ""}
-      style={{
-        background: "rgba(255,255,255,0.035)",
-        border: "1px solid rgba(255,255,255,0.1)",
-        borderRadius: 14,
-        padding: "16px 18px",
-      }}
-      data-testid={`stat-${label.toLowerCase().replace(/\s/g, "-")}`}
+      style={{ padding: "16px 18px", borderRadius: 14 }}
+      testId={`stat-${label.toLowerCase().replace(/\s/g, "-")}`}
     >
-      <div className="flex items-start justify-between gap-2">
+      <div onClick={onClick} className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <div className="uppercase text-white" style={{ fontSize: 11, fontWeight: 700, letterSpacing: "1px" }}>{label}</div>
           <div style={{ fontSize: 26, fontWeight: 900, color: resolvedColor, marginTop: 4 }}>
             {typeof value === "number" ? formatNumber(value, language) : value}
           </div>
-          {sub && <div className="text-[10px] text-white/90 mt-1 truncate">{sub}</div>}
+          {sub && <div className="text-[10px] text-white mt-1 truncate">{sub}</div>}
         </div>
         {Icon && (
           <Icon className="w-5 h-5 shrink-0" style={{ color: resolvedColor }} />
         )}
       </div>
-    </div>
+    </NeonShell>
   );
 }
 
@@ -271,8 +269,8 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
   const aiBlocked = openaiReady === false;
 
   // Design accent per pipeline state: complete = aqua, in-progress = yellow, failed = alert, idle = sky
-  const accent = isPipelineRunning ? "#FFE29A" : row.pipelinePhase === "failed" || (row.papersFailed > 0 && !hasQuestions) ? "#FF8DA1" : ingestionComplete || hasQuestions ? "#9FF5E8" : "#9FD8FF";
-  const accentChipBg = isPipelineRunning ? "rgba(255,226,154,0.12)" : row.pipelinePhase === "failed" || (row.papersFailed > 0 && !hasQuestions) ? "rgba(255,141,161,0.12)" : ingestionComplete || hasQuestions ? "rgba(159,245,232,0.12)" : "rgba(159,216,255,0.12)";
+  const accent = isPipelineRunning ? "#FFE29A" : row.pipelinePhase === "failed" || (row.papersFailed > 0 && !hasQuestions) ? "#FFB7E5" : ingestionComplete || hasQuestions ? "#9FF5E8" : "#9FD8FF";
+  const accentChipBg = isPipelineRunning ? "rgba(255,226,154,0.12)" : row.pipelinePhase === "failed" || (row.papersFailed > 0 && !hasQuestions) ? "rgba(255,183,229,0.12)" : ingestionComplete || hasQuestions ? "rgba(159,245,232,0.12)" : "rgba(159,216,255,0.12)";
   const statusLabel = isPipelineRunning ? "In progress" : row.pipelinePhase === "failed" ? "Failed" : ingestionComplete ? "Complete" : hasPapers ? "Partial" : "Idle";
 
   const neonBtn = "h-7 text-[11px] gap-1 inline-flex items-center justify-center rounded-[10px] px-2.5 font-extrabold transition-transform hover:-translate-y-[2px] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0";
@@ -309,19 +307,19 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
             )}
             {!isPipelineRunning && hasQuestions && row.memoCoverage !== undefined && (
               <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.1em] rounded-md px-2 py-0.5"
-                style={{ color: (row.memoCoverage ?? 0) === 100 ? "#9FF5E8" : (row.memoCoverage ?? 0) >= 50 ? "#FFE29A" : "#FF8DA1", border: `1px solid ${(row.memoCoverage ?? 0) === 100 ? "rgba(159,245,232,0.5)" : (row.memoCoverage ?? 0) >= 50 ? "rgba(255,226,154,0.5)" : "rgba(255,141,161,0.5)"}` }}
+                style={{ color: (row.memoCoverage ?? 0) === 100 ? "#9FF5E8" : (row.memoCoverage ?? 0) >= 50 ? "#FFE29A" : "#FFB7E5", border: `1px solid ${(row.memoCoverage ?? 0) === 100 ? "rgba(159,245,232,0.5)" : (row.memoCoverage ?? 0) >= 50 ? "rgba(255,226,154,0.5)" : "rgba(255,183,229,0.5)"}` }}
                 title={`Memo: ${row.memoCoverage}% · Marks: ${row.marksCoverage ?? 0}% · Level: ${row.levelCoverage ?? 0}% · Topic: ${row.topicCoverage ?? 0}%`}>
                 {(row.memoCoverage ?? 0) === 100 ? <CheckCircle2 className="w-3 h-3" /> : <AlertTriangle className="w-3 h-3" />}
                 Memo {row.memoCoverage}%
               </span>
             )}
             {!isPipelineRunning && row.pipelinePhase === "failed" && (
-              <span className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.1em] rounded-md px-2 py-0.5" style={{ color: "#FF8DA1", border: "1px solid rgba(255,141,161,0.5)" }}>Failed</span>
+              <span className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.1em] rounded-md px-2 py-0.5" style={{ color: "#FFB7E5", border: "1px solid rgba(255,183,229,0.5)" }}>Failed</span>
             )}
             {row.simulatedCount > 0 && (
               <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.1em] rounded-md px-2 py-0.5" style={{ color: "#C5B3FF", border: "1px solid rgba(197,179,255,0.5)" }}>
                 <Zap className="w-3 h-3" />{row.simulatedCount}
-                {row.simulationQuality > 0 && <span className="opacity-60">·{row.simulationQuality}%</span>}
+                {row.simulationQuality > 0 && <span>·{row.simulationQuality}%</span>}
               </span>
             )}
           </div>
@@ -361,7 +359,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
                   data-testid={`btn-simulate-${row.subject}`}>
                   {isSimulating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
                   Build Questions
-                  {aiBlocked && <span className="ml-1 text-[9px] font-black uppercase tracking-[0.1em] px-1 py-0.5 rounded" style={{ background: "rgba(255,141,161,0.15)", color: "#FF8DA1", border: "1px solid rgba(255,141,161,0.3)" }}>No key</span>}
+                  {aiBlocked && <span className="ml-1 text-[9px] font-black uppercase tracking-[0.1em] px-1 py-0.5 rounded" style={{ background: "rgba(255,183,229,0.15)", color: "#FFB7E5", border: "1px solid rgba(255,183,229,0.3)" }}>No key</span>}
                 </button>
               )}
               {ingestionComplete && (
@@ -375,7 +373,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
                   title={aiBlocked ? "Requires OpenAI API key" : "Generate 10 high-quality AI practice papers in one fast batch for this subject"}
                   data-testid={`btn-crunch-subject-${row.subject}`}>
                   <Zap className="w-3.5 h-3.5" /> Crunch ×10
-                  {aiBlocked && <span className="ml-1 text-[9px] font-black uppercase tracking-[0.1em] px-1 py-0.5 rounded" style={{ background: "rgba(255,141,161,0.15)", color: "#FF8DA1", border: "1px solid rgba(255,141,161,0.3)" }}>No key</span>}
+                  {aiBlocked && <span className="ml-1 text-[9px] font-black uppercase tracking-[0.1em] px-1 py-0.5 rounded" style={{ background: "rgba(255,183,229,0.15)", color: "#FFB7E5", border: "1px solid rgba(255,183,229,0.3)" }}>No key</span>}
                 </button>
               )}
               {hasQuestions && (row.memoCoverage === undefined || (row.memoCoverage ?? 100) < 100) && (
@@ -401,7 +399,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
               {hasPapers && (
                 <button
                   className={ghostBtn}
-                  style={{ color: "#050508", background: "#FF8DA1", border: "none", fontWeight: 800 }}
+                  style={{ color: "#050508", background: "#FFB7E5", border: "none", fontWeight: 800 }}
                   disabled={isPipelineRunning || isRestarting}
                   onClick={(e) => { e.stopPropagation(); onRestart(row.subject); }}
                   title="Clear all ingested data then re-run the full pipeline from scratch"
@@ -412,7 +410,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
               {hasQuestions && (
                 <button
                   className={ghostBtn}
-                  style={{ color: "#050508", background: "#FF8DA1", border: "none", fontWeight: 800 }}
+                  style={{ color: "#050508", background: "#FFB7E5", border: "none", fontWeight: 800 }}
                   disabled={isPipelineRunning || isClearing}
                   onClick={(e) => { e.stopPropagation(); if (confirm(`Clear ALL ingested data for "${row.subject}"?`)) { onClear(row.subject); } }}
                   title="Permanently delete all ingested questions and memo data for this subject — cannot be undone"
@@ -450,19 +448,19 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
                 const hasLocalPaper = (localYr?.papers?.length ?? 0) > 0;
                 const hasLocalMemo = (localYr?.memos?.length ?? 0) > 0;
                 if (!hasAnyCatalog && !hasPaper && !hasMemo && !hasLocalPaper && !hasLocalMemo) return null;
-                const yrBorderColor = hasPaper && hasMemo ? "rgba(159,245,232,0.35)" : hasFailed ? "rgba(255,141,161,0.35)" : hasPaper ? "rgba(255,226,154,0.35)" : "rgba(255,255,255,0.1)";
+                const yrBorderColor = hasPaper && hasMemo ? "rgba(159,245,232,0.35)" : hasFailed ? "rgba(255,183,229,0.35)" : hasPaper ? "rgba(255,226,154,0.35)" : "rgba(255,255,255,0.1)";
                 return (
                   <div key={yr} className="rounded-xl p-2.5 space-y-2" style={{ background: "rgba(255,255,255,0.035)", border: `1px solid ${yrBorderColor}` }} data-testid={`year-card-${row.subject}-${yr}`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-black text-white">{yr}</span>
                         {hasPaper && hasMemo && <CheckCircle2 className="w-3 h-3" style={{ color: "#9FF5E8" }} />}
-                        {hasFailed && !hasPaper && <XCircle className="w-3 h-3 text-[#FF8DA1]" />}
+                        {hasFailed && !hasPaper && <XCircle className="w-3 h-3 text-[#FFB7E5]" />}
                         {yrQuestions > 0 && <span className="text-[10px] font-bold" style={{ color: "#9FF5E8" }}>{yrQuestions}Q</span>}
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] font-black" style={{ color: hasPaper ? "#9FF5E8" : "rgba(255,255,255,0.55)" }}>P{hasPaper ? "✓" : "–"}</span>
-                        <span className="text-[10px] font-black" style={{ color: hasMemo ? "#94F7C5" : "rgba(255,255,255,0.55)" }}>M{hasMemo ? "✓" : "–"}</span>
+                        <span className="text-[10px] font-black" style={{ color: hasPaper ? "#9FF5E8" : "#ffffff" }}>P{hasPaper ? "✓" : "–"}</span>
+                        <span className="text-[10px] font-black" style={{ color: hasMemo ? "#94F7C5" : "#ffffff" }}>M{hasMemo ? "✓" : "–"}</span>
                       </div>
                     </div>
                     <div className="w-full h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)" }}>
@@ -518,8 +516,8 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
             <div className="grid grid-cols-2 gap-2">
               <div className="rounded-xl bg-white/[0.035] p-2.5 text-[11px]" style={{ border: qualityPassed ? "1px solid rgba(159,245,232,0.35)" : "1px solid rgba(255,255,255,0.1)" }}>
                 <div className="flex items-center gap-1.5 mb-1">
-                  <ShieldCheck className="w-3.5 h-3.5" style={{ color: qualityPassed ? "#9FF5E8" : "rgba(255,255,255,0.6)" }} />
-                  <span className="font-black uppercase tracking-[0.1em] text-[10px]" style={{ color: qualityPassed ? "#9FF5E8" : "rgba(255,255,255,0.7)" }}>Verbatim</span>
+                  <ShieldCheck className="w-3.5 h-3.5" style={{ color: qualityPassed ? "#9FF5E8" : "#ffffff" }} />
+                  <span className="font-black uppercase tracking-[0.1em] text-[10px]" style={{ color: qualityPassed ? "#9FF5E8" : "#ffffff" }}>Verbatim</span>
                 </div>
                 <div className="flex items-baseline gap-1.5">
                   <span className="text-white font-bold">{row.questionsExtracted} Qs</span>
@@ -528,8 +526,8 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
               </div>
               <div className="rounded-xl bg-white/[0.035] p-2.5 text-[11px]" style={{ border: row.simulationQuality >= 80 ? "1px solid rgba(197,179,255,0.35)" : "1px solid rgba(255,255,255,0.1)" }}>
                 <div className="flex items-center gap-1.5 mb-1">
-                  <Zap className="w-3.5 h-3.5" style={{ color: row.simulatedCount > 0 ? "#C5B3FF" : "rgba(255,255,255,0.6)" }} />
-                  <span className="font-black uppercase tracking-[0.1em] text-[10px]" style={{ color: row.simulatedCount > 0 ? "#C5B3FF" : "rgba(255,255,255,0.7)" }}>AI Simulated</span>
+                  <Zap className="w-3.5 h-3.5" style={{ color: row.simulatedCount > 0 ? "#C5B3FF" : "#ffffff" }} />
+                  <span className="font-black uppercase tracking-[0.1em] text-[10px]" style={{ color: row.simulatedCount > 0 ? "#C5B3FF" : "#ffffff" }}>AI Simulated</span>
                 </div>
                 <div className="flex items-baseline gap-1.5">
                   <span className="text-white font-bold">{row.simulatedCount} Qs</span>
@@ -875,7 +873,7 @@ function MissingMemosPanel() {
                         <td className="px-3 py-2 text-center text-white uppercase">{r.language || "—"}</td>
                         <td className="px-3 py-2 text-center font-black" style={{ color: "#FFE29A" }}>{r.missing}</td>
                         <td className="px-3 py-2 text-center">
-                          <span className="font-bold" style={{ color: r.memoCoveragePct >= 98 ? "#9FF5E8" : r.memoCoveragePct >= 50 ? "#FFE29A" : "#FF8DA1" }}>{r.memoCoveragePct}%</span>
+                          <span className="font-bold" style={{ color: r.memoCoveragePct >= 98 ? "#9FF5E8" : r.memoCoveragePct >= 50 ? "#FFE29A" : "#FFB7E5" }}>{r.memoCoveragePct}%</span>
                         </td>
                         <td className="px-3 py-2 text-center">
                           <Button size="sm" variant="outline" className="h-6 text-[10px] gap-1 rounded-md border-0 font-extrabold text-[#050508] hover:text-[#050508] hover:-translate-y-[2px] transition-transform" style={{ background: "linear-gradient(100deg,#FFE29A,#FFB7E5)" }} disabled={isRe} onClick={() => reingest.mutate({ subject: r.subject, year: r.year })}>
@@ -897,11 +895,239 @@ function MissingMemosPanel() {
 
 // ─── Main portal component ────────────────────────────────────────────────────
 
+// ─── Triage ──────────────────────────────────────────────────────────────────
+
+type HealthCause =
+  | "healthy" | "never_ingested" | "catalog_thin"
+  | "ocr_needed" | "gate_blocked" | "gate_stale" | "partial";
+
+interface HealthSubject {
+  subject: string;
+  cause: HealthCause;
+  catalogPapers: number;
+  catalogMemos: number;
+  rowsTotal: number;
+  rowsReleased: number;
+  releasedPct: number;
+  avgQuestionLength: number;
+  memoCoveragePct: number;
+  tuples: number;
+  tuplesPassGate: number;
+  tuplesReleased: number;
+}
+
+interface HealthResponse {
+  generatedAt: string;
+  totals: {
+    rowsTotal: number; rowsReleased: number; releasedPct: number;
+    subjectCount: number; byCause: Record<string, number>;
+  };
+  subjects: HealthSubject[];
+}
+
+/**
+ * Each blocked subject is blocked for one of a few genuinely different reasons,
+ * and each reason needs a different remedy. Grouping by cause — rather than
+ * listing every subject in one undifferentiated table — is the whole point:
+ * "no memo" and "no text layer" look identical in a count of released
+ * questions, but one is fixed by a memo backfill and the other by OCR.
+ */
+const CAUSE_META: Record<Exclude<HealthCause, "healthy">, {
+  accent: NeonHex;
+  titleEn: string; titleAf: string;
+  remedyEn: string; remedyAf: string;
+  /** The number that makes this diagnosis legible for a given subject. */
+  metric: (s: HealthSubject, isAf: boolean) => string;
+}> = {
+  gate_blocked: {
+    accent: "#FFE29A",
+    titleEn: "Blocked by the release gate",
+    titleAf: "Geblokkeer deur die vrystellingshek",
+    remedyEn: "Content is ingested but memo coverage sits under the 60% bar, so none of it reaches learners. Fix: backfill memos.",
+    remedyAf: "Inhoud is ingeneem maar memo-dekking is onder die 60%-grens, so niks bereik leerders nie. Oplossing: vul memo's aan.",
+    metric: (s, af) => `${s.memoCoveragePct}% ${af ? "memo-dekking" : "memo coverage"}`,
+  },
+  ocr_needed: {
+    accent: "#FFB7E5",
+    titleEn: "Image-only scans — needs OCR",
+    titleAf: "Slegs-beeld skanderings — benodig OKH",
+    remedyEn: "The source PDFs have no usable text layer, so question text extracts to almost nothing. Fix: OCR the paper PDFs. Memo work will not help.",
+    remedyAf: "Die bron-PDF's het geen bruikbare tekslaag nie, so vraagteks onttrek byna niks. Oplossing: OKH die vraestel-PDF's. Memo-werk sal nie help nie.",
+    metric: (s, af) => `${s.avgQuestionLength} ${af ? "gem. karakters/vraag" : "avg chars/question"}`,
+  },
+  catalog_thin: {
+    accent: "#C5B3FF",
+    titleEn: "Catalogue too thin",
+    titleAf: "Katalogus te dun",
+    remedyEn: "The catalogue barely lists this subject, so there is almost nothing to ingest. Fix the catalogue, not the pipeline.",
+    remedyAf: "Die katalogus lys hierdie vak skaars, so daar is byna niks om in te neem nie. Herstel die katalogus, nie die pyplyn nie.",
+    metric: (s, af) => `${s.catalogPapers} ${af ? "vraestelle in katalogus" : "papers in catalogue"}`,
+  },
+  never_ingested: {
+    accent: "#9FD8FF",
+    titleEn: "Never ingested",
+    titleAf: "Nooit ingeneem nie",
+    remedyEn: "The catalogue lists papers but no questions exist yet. Fix: run ingestion for this subject.",
+    remedyAf: "Die katalogus lys vraestelle maar geen vrae bestaan nog nie. Oplossing: begin inname vir hierdie vak.",
+    metric: (s, af) => `${s.catalogPapers} ${af ? "vraestelle wag" : "papers waiting"}`,
+  },
+  gate_stale: {
+    accent: "#94F7C5",
+    titleEn: "Gate not re-run",
+    titleAf: "Hek nie herloop nie",
+    remedyEn: "Content already clears the gate but has not been stamped released. Cheapest fix on this page: re-run the release gate.",
+    remedyAf: "Inhoud slaag reeds die hek maar is nie as vrygestel gestempel nie. Goedkoopste oplossing: herloop die vrystellingshek.",
+    metric: (s, af) => `${s.tuplesPassGate - s.tuplesReleased} ${af ? "vraestelle gereed" : "papers ready"}`,
+  },
+  partial: {
+    accent: "#9FF5E8",
+    titleEn: "Partially released",
+    titleAf: "Gedeeltelik vrygestel",
+    remedyEn: "Some content is live but under half of it. Worth a closer look per year below.",
+    remedyAf: "Sommige inhoud is regstreeks maar minder as die helfte. Kyk hieronder per jaar.",
+    metric: (s, af) => `${s.releasedPct}% ${af ? "vrygestel" : "released"}`,
+  },
+};
+
+/** Order the groups by how actionable they are, cheapest win first. */
+const CAUSE_ORDER: Array<Exclude<HealthCause, "healthy">> = [
+  "gate_stale", "gate_blocked", "ocr_needed", "never_ingested", "catalog_thin", "partial",
+];
+
+function TriagePanel({ isAf }: { isAf: boolean }) {
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const health = useQuery<HealthResponse>({ queryKey: ["/api/admin/dbe-ingestion/health"] });
+
+  if (health.isLoading) {
+    return (
+      <NeonShell color="#9FD8FF" className="p-6" testId="triage-loading">
+        <div className="flex items-center gap-2 text-sm text-white">
+          <Loader2 className="w-4 h-4 animate-spin" style={{ color: "#9FD8FF" }} />
+          {isAf ? "Ontleed inhoudsbiblioteek…" : "Analysing content library…"}
+        </div>
+      </NeonShell>
+    );
+  }
+
+  if (health.isError) {
+    return (
+      <NeonShell color="#FFB7E5" className="p-6" testId="triage-error">
+        <div className="flex items-center gap-2 text-sm text-white">
+          <AlertTriangle className="w-4 h-4" style={{ color: "#FFB7E5" }} />
+          {isAf ? "Kon nie inhoudsgesondheid laai nie" : "Could not load content health"}
+          <span>— {(health.error as any)?.message ?? ""}</span>
+        </div>
+      </NeonShell>
+    );
+  }
+
+  const subjects = health.data?.subjects ?? [];
+  const totals = health.data?.totals;
+  const blocked = subjects.filter((s) => s.cause !== "healthy");
+
+  if (blocked.length === 0) {
+    return (
+      <NeonShell color="#94F7C5" className="p-6" testId="triage-clear">
+        <div className="flex items-center gap-2 text-sm text-white">
+          <CheckCircle2 className="w-4 h-4" style={{ color: "#94F7C5" }} />
+          {isAf
+            ? "Elke vak is gesond — niks benodig aandag nie."
+            : "Every subject is healthy — nothing needs attention."}
+        </div>
+      </NeonShell>
+    );
+  }
+
+  const groups = CAUSE_ORDER
+    .map((cause) => ({ cause, rows: blocked.filter((s) => s.cause === cause) }))
+    .filter((g) => g.rows.length > 0);
+
+  return (
+    <div className="space-y-3" data-testid="triage-panel">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-white">
+          {isAf ? "Benodig aandag" : "Needs attention"}
+          <span className="ml-2" style={{ color: "#FFE29A" }} data-testid="triage-blocked-count">
+            {blocked.length} {isAf ? "vakke" : "subjects"}
+          </span>
+        </h2>
+        {totals && (
+          <span className="text-xs text-white" data-testid="triage-totals">
+            {formatNumber(totals.rowsReleased, isAf ? "af" : "en")} / {formatNumber(totals.rowsTotal, isAf ? "af" : "en")}{" "}
+            {isAf ? "vrae vrygestel" : "questions released"} · {totals.releasedPct}%
+          </span>
+        )}
+      </div>
+
+      <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))" }}>
+        {groups.map(({ cause, rows }) => {
+          const meta = CAUSE_META[cause];
+          const isOpen = expanded === cause;
+          const shown = isOpen ? rows : rows.slice(0, 4);
+          return (
+            <NeonShell key={cause} color={meta.accent} className="p-5" testId={`triage-group-${cause}`}>
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div
+                    className="text-[11px] font-black uppercase tracking-wider"
+                    style={{ color: meta.accent }}
+                  >
+                    {isAf ? meta.titleAf : meta.titleEn}
+                  </div>
+                  <div className="mt-1 text-2xl font-black tabular-nums text-white">
+                    {rows.length}
+                  </div>
+                </div>
+                <AdminBadge color={meta.accent}>
+                  {rows.length === 1 ? (isAf ? "vak" : "subject") : (isAf ? "vakke" : "subjects")}
+                </AdminBadge>
+              </div>
+
+              <p className="mt-2 text-xs leading-relaxed text-white">
+                {isAf ? meta.remedyAf : meta.remedyEn}
+              </p>
+
+              <div className="mt-3 space-y-1">
+                {shown.map((s) => (
+                  <div
+                    key={s.subject}
+                    className="flex items-center justify-between gap-2 rounded-lg px-2.5 py-1.5 text-xs"
+                    style={{ background: halo(meta.accent, 0.08) }}
+                    data-testid={`triage-subject-${s.subject}`}
+                  >
+                    <span className="min-w-0 truncate font-semibold text-white">{s.subject}</span>
+                    <span className="shrink-0 tabular-nums font-bold" style={{ color: meta.accent }}>
+                      {meta.metric(s, isAf)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {rows.length > 4 && (
+                <button
+                  onClick={() => setExpanded(isOpen ? null : cause)}
+                  className="mt-2 text-[11px] font-bold uppercase tracking-wider"
+                  style={{ color: meta.accent }}
+                  data-testid={`triage-toggle-${cause}`}
+                >
+                  {isOpen
+                    ? (isAf ? "Wys minder" : "Show fewer")
+                    : `+${rows.length - 4} ${isAf ? "meer" : "more"}`}
+                </button>
+              )}
+            </NeonShell>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function DBEPortal() {
   const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const { language, toggleLanguage } = useLanguage();
+  const { language } = useLanguage();
   const [search, setSearch] = useState(() => {
     try { return JSON.parse(localStorage.getItem("braintrack:dbe-portal:ui") ?? "{}").search ?? ""; } catch { return ""; }
   });
@@ -1266,7 +1492,7 @@ export default function DBEPortal() {
       <div className="space-y-2" data-testid={`group-${label.toLowerCase().replace(/\s/g, "-")}`}>
         <div className="flex items-center justify-between px-1">
           <h3 className="text-sm font-semibold text-white uppercase tracking-wider">{label} ({subjects.length})</h3>
-          <span className="text-xs text-white/90">{groupDone}/{groupTotal} papers · {formatNumber(groupQuestions, language)} questions</span>
+          <span className="text-xs text-white">{groupDone}/{groupTotal} papers · {formatNumber(groupQuestions, language)} questions</span>
         </div>
         <div style={{ background: "rgba(255,255,255,0.035)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 20, padding: "8px 24px" }}>
         {subjects.map((row) => (
@@ -1301,52 +1527,31 @@ export default function DBEPortal() {
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <div className="dark min-h-screen text-white" style={{ background: "#050508", fontFamily: "'Poppins', system-ui, sans-serif" }}>
-      {/* Navigation bar */}
-      <nav className="sticky top-0 z-50" style={{ background: "rgba(5,5,8,0.95)", backdropFilter: "blur(8px)" }}>
-        <div className="flex items-center gap-3 flex-wrap" style={{ padding: "16px 40px", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-          <a href="/learn/admin/dbe-portal" className="flex items-center gap-3">
-            <img src={iconTransparent} alt="" className="object-contain" style={{ width: 48, height: 48 }} />
-            <span className="bt-wordmark" style={{ fontSize: 17, fontWeight: 900 }}>BrainTrack</span>
-          </a>
-          <span className="uppercase" style={{ fontSize: 12, fontWeight: 700, letterSpacing: "1px", color: "#FFE29A", border: "1px solid rgba(255,226,154,0.4)", borderRadius: 6, padding: "4px 10px" }}>
-            DBE Content Admin Portal
+    <AdminGround className="dark">
+      <AdminTopNav current="dbe-portal" />
+      {/* Status strip — the portal used to carry its own logo/nav bar, which made
+          it read as a different app from the rest of the admin surface. The
+          shared sidebar now handles navigation; this keeps only the live
+          pipeline summary. */}
+      <div className="sticky top-0 z-40" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)", background: "rgba(5,5,8,0.95)", backdropFilter: "blur(8px)" }}>
+        <div className="flex h-9 flex-wrap items-center justify-between gap-4 text-[11px] font-semibold text-white" style={{ padding: "0 40px" }}>
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="flex items-center gap-1.5">
+              <span className="inline-block rounded-full" style={{ width: 6, height: 6, background: "#94F7C5" }} />
+              {language === "af" ? "Pyplyn aanlyn" : "Pipeline online"}
+            </span>
+            <span>·</span>
+            <span>{allSubjects.length} {language === "af" ? "vakke" : "subjects"}</span>
+            <span>·</span>
+            <span>{formatNumber(totalDone, language)}/{formatNumber(totalPapers, language)} {language === "af" ? "vraestelle" : "papers"}</span>
+            <span>·</span>
+            <span>{formatNumber(totalQuestions, language)} {language === "af" ? "vrae" : "questions"}</span>
+          </div>
+          <span className="hidden md:block" style={{ color: "#FFE29A" }}>
+            {language === "af" ? "DBE Inhoudsportaal" : "DBE Content Portal"}
           </span>
-          <div className="ml-auto flex items-center gap-3">
-            <a href="/learn/admin" className="text-[13px] font-semibold text-white opacity-90 hover:opacity-100 transition-opacity whitespace-nowrap" data-testid="portal-nav-super-admin">← Super Admin</a>
-            <button onClick={toggleLanguage} className="text-[11px] font-bold text-white px-2 py-1 rounded-md border border-white/25 hover:border-[#9FD8FF] transition-colors" data-testid="button-language-toggle">
-              {language === "en" ? "EN" : "AF"}
-            </button>
-            <a href="/" className="text-white hover:text-[#9FD8FF] transition-colors"><Home className="w-3.5 h-3.5" /></a>
-            <a
-              href="/api/auth/logout"
-              onClick={() => {
-                try { localStorage.removeItem("braintrack:dbe-portal:ui"); } catch {}
-              }}
-              className="text-white hover:text-[#FF8DA1] transition-colors"
-              data-testid="portal-nav-logout"
-            ><LogOut className="w-3.5 h-3.5" /></a>
-          </div>
         </div>
-        {/* Status strip */}
-        <div style={{ borderBottom: "1px solid rgba(255,255,255,0.07)", background: "#050508" }}>
-          <div className="h-7 flex items-center justify-between gap-4 text-[11px] font-semibold text-white" style={{ padding: "0 40px", opacity: 0.9 }}>
-            <div className="flex items-center gap-3">
-              <span className="flex items-center gap-1.5">
-                <span className="inline-block rounded-full" style={{ width: 6, height: 6, background: "#94F7C5" }} />
-                Pipeline online
-              </span>
-              <span>·</span>
-              <span>{allSubjects.length} subjects</span>
-              <span>·</span>
-              <span>{formatNumber(totalDone, language)}/{formatNumber(totalPapers, language)} papers</span>
-              <span>·</span>
-              <span>{formatNumber(totalQuestions, language)} questions</span>
-            </div>
-            <span className="hidden md:block">btk-dbe-portal v1</span>
-          </div>
-        </div>
-      </nav>
+      </div>
 
       {/* OpenAI key missing banner */}
       {!openaiReady && !openAiBannerDismissed && (
@@ -1355,16 +1560,16 @@ export default function DBEPortal() {
             <AlertTriangle className="w-4 h-4 text-[#FFE29A] shrink-0 mt-0.5" />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-[#FFE29A]">OpenAI API key not configured</p>
-              <p className="text-xs text-[#FFE29A]/70 mt-0.5">
+              <p className="text-xs text-[#FFE29A] mt-0.5">
                 AI-powered features are disabled — <span className="font-semibold">Build Questions</span>, <span className="font-semibold">Crunch Time</span>, <span className="font-semibold">Generate AI</span>, and <span className="font-semibold">Seed Notes</span> will not work until the key is set.
               </p>
-              <p className="text-xs text-[#FFE29A]/50 mt-1">
+              <p className="text-xs text-[#FFE29A] mt-1">
                 To fix: set the <span className="font-semibold bg-[#FFE29A]/15 px-1 rounded">OPENAI_API_KEY</span> environment variable on the server (e.g. in the Render dashboard) with a valid OpenAI API key, then restart the app.
               </p>
             </div>
             <button
               onClick={() => setOpenAiBannerDismissed(true)}
-              className="shrink-0 text-[#FFE29A]/60 hover:text-[#FFE29A] transition-colors p-0.5 rounded"
+              className="shrink-0 text-[#FFE29A] hover:text-[#FFE29A] transition-colors p-0.5 rounded"
               aria-label="Dismiss banner"
               data-testid="openai-banner-dismiss"
             >
@@ -1381,7 +1586,7 @@ export default function DBEPortal() {
             <div className="text-white" data-testid="page-title" style={{ fontSize: 30, fontWeight: 900, letterSpacing: "-1px" }}>
               Content operations
             </div>
-            <p className="text-white/90 text-[13px] mt-1">
+            <p className="text-white text-[13px] mt-1">
               {allSubjects.length} subjects · {formatNumber(totalDone, language)}/{formatNumber(totalPapers, language)} papers · {formatNumber(totalQuestions, language)} practice questions
             </p>
           </div>
@@ -1406,6 +1611,11 @@ export default function DBEPortal() {
             <span className="text-white" style={{ fontWeight: 800, fontSize: 13 }}>Pipeline running — auto-refreshing</span>
           </div>
         )}
+
+        {/* Triage — which subjects need attention and why. This leads the page
+            because it is the question an admin actually opens the portal to
+            answer; the raw counts below are the supporting detail. */}
+        <TriagePanel isAf={language === "af"} />
 
         {/* Stat cards */}
         <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))", gap: 16 }}>
@@ -1436,7 +1646,7 @@ export default function DBEPortal() {
           <div className="flex items-center gap-3 flex-wrap py-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
             <span className="uppercase text-white w-20 shrink-0" style={{ fontSize: 11, fontWeight: 700, letterSpacing: "1px", opacity: openaiReady ? 1 : 0.9 }}>
               AI & Qs
-              {!openaiReady && <span className="block normal-case tracking-normal font-bold text-[9px] mt-0.5" style={{ color: "#FF8DA1" }}>No key</span>}
+              {!openaiReady && <span className="block normal-case tracking-normal font-bold text-[9px] mt-0.5" style={{ color: "#FFB7E5" }}>No key</span>}
             </span>
             <Button size="sm" variant="outline" className="gap-2 rounded-[10px] border-0 font-extrabold text-[#050508] hover:text-[#050508] hover:-translate-y-[2px] transition-transform disabled:opacity-40"
               style={{ background: "linear-gradient(100deg,#9FD8FF,#C5B3FF)" }}
@@ -1444,7 +1654,7 @@ export default function DBEPortal() {
               title={openaiReady ? "Generate AI practice questions for all subjects with DBE content" : "Requires OpenAI API key — configure AI_INTEGRATIONS_OPENAI_API_KEY"}
               data-testid="btn-generate-ai">
               {generateAi.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />} Generate AI Questions
-              {!openaiReady && <span className="ml-1 text-[9px] px-1 py-0.5 rounded font-black" style={{ background: "rgba(255,141,161,0.15)", color: "#FF8DA1", border: "1px solid rgba(255,141,161,0.3)" }}>Requires key</span>}
+              {!openaiReady && <span className="ml-1 text-[9px] px-1 py-0.5 rounded font-black" style={{ background: "rgba(255,183,229,0.15)", color: "#FFB7E5", border: "1px solid rgba(255,183,229,0.3)" }}>Requires key</span>}
             </Button>
             {/* Crunch Time controls */}
             <div className="inline-flex items-center gap-1.5 px-2.5 py-1.5" style={{ borderRadius: 10, border: `1.5px solid ${openaiReady ? "rgba(159,216,255,0.5)" : "rgba(255,255,255,0.25)"}` }}>
@@ -1458,7 +1668,7 @@ export default function DBEPortal() {
               {simulateAllMutation.isPending || crunchStatus?.running ? <><Loader2 className="w-4 h-4 animate-spin" />{crunchStatus?.running ? "Running…" : "Starting…"}</> : <><Zap className="w-4 h-4 fill-current" />Crunch Time</>}
             </Button>
             {crunchStatus?.running && (
-              <Button size="sm" variant="destructive" className="rounded-[10px] border-0 font-extrabold text-[#050508] hover:text-[#050508]" style={{ background: "#FF8DA1" }} onClick={() => stopSimulateAllMutation.mutate()} disabled={stopSimulateAllMutation.isPending || crunchStatus?.aborted} data-testid="btn-crunch-time-stop">
+              <Button size="sm" variant="destructive" className="rounded-[10px] border-0 font-extrabold text-[#050508] hover:text-[#050508]" style={{ background: "#FFB7E5" }} onClick={() => stopSimulateAllMutation.mutate()} disabled={stopSimulateAllMutation.isPending || crunchStatus?.aborted} data-testid="btn-crunch-time-stop">
                 {crunchStatus?.aborted ? <><Loader2 className="w-3.5 h-3.5 animate-spin" />Stopping…</> : <>⏹ Stop</>}
               </Button>
             )}
@@ -1499,7 +1709,7 @@ export default function DBEPortal() {
               onClick={() => seedNotesMutation.mutate(undefined)} disabled={seedNotesMutation.isPending || seedNotesStatus?.running || !openaiReady}
               title={openaiReady ? "Generate one baseline AI study note per topic for all ingested subjects (skips topics that already have notes)" : "Requires OpenAI API key — configure AI_INTEGRATIONS_OPENAI_API_KEY"}>
               {seedNotesMutation.isPending || seedNotesStatus?.running ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5" />} Seed Notes
-              {!openaiReady && <span className="ml-1 text-[9px] px-1 py-0.5 rounded font-black" style={{ background: "rgba(255,141,161,0.15)", color: "#FF8DA1", border: "1px solid rgba(255,141,161,0.3)" }}>Requires key</span>}
+              {!openaiReady && <span className="ml-1 text-[9px] px-1 py-0.5 rounded font-black" style={{ background: "rgba(255,183,229,0.15)", color: "#FFB7E5", border: "1px solid rgba(255,183,229,0.3)" }}>Requires key</span>}
             </Button>
             {seedNotesStatus && !seedNotesStatus.running && (
               (seedNotesStatus.total > 0 && seedNotesStatus.skipped === seedNotesStatus.total && seedNotesStatus.done === 0) ||
@@ -1511,11 +1721,11 @@ export default function DBEPortal() {
                 disabled={!openaiReady}
                 title={openaiReady ? "All topics already have notes — use Force Re-seed to regenerate all notes from scratch" : "Requires OpenAI API key — configure AI_INTEGRATIONS_OPENAI_API_KEY"}>
                 <RefreshCw className="w-3.5 h-3.5" /> Force Re-seed
-                {!openaiReady && <span className="ml-1 text-[9px] px-1 py-0.5 rounded font-black" style={{ background: "rgba(255,141,161,0.15)", color: "#FF8DA1", border: "1px solid rgba(255,141,161,0.3)" }}>Requires key</span>}
+                {!openaiReady && <span className="ml-1 text-[9px] px-1 py-0.5 rounded font-black" style={{ background: "rgba(255,183,229,0.15)", color: "#FFB7E5", border: "1px solid rgba(255,183,229,0.3)" }}>Requires key</span>}
               </Button>
             )}
             {seedNotesStatus?.running && (
-              <Button size="sm" variant="destructive" className="rounded-[10px] border-0 font-extrabold text-[#050508] hover:text-[#050508]" style={{ background: "#FF8DA1" }} onClick={() => stopSeedNotesMutation.mutate()} disabled={stopSeedNotesMutation.isPending || seedNotesStatus.aborted}>⏹ Stop</Button>
+              <Button size="sm" variant="destructive" className="rounded-[10px] border-0 font-extrabold text-[#050508] hover:text-[#050508]" style={{ background: "#FFB7E5" }} onClick={() => stopSeedNotesMutation.mutate()} disabled={stopSeedNotesMutation.isPending || seedNotesStatus.aborted}>⏹ Stop</Button>
             )}
             {seedNotesStatus?.running && seedNotesStatus.total > 0 && (
               <div className="flex items-center gap-2 flex-wrap">
@@ -1523,7 +1733,7 @@ export default function DBEPortal() {
                   <div className="h-full rounded-full transition-all" style={{ width: `${Math.min(100, Math.round(((seedNotesStatus.done + seedNotesStatus.skipped) / seedNotesStatus.total) * 100))}%`, background: "#94F7C5" }} />
                 </div>
                 <span className="text-[11px] font-bold text-[#94F7C5] tabular-nums">
-                  {Math.min(100, Math.round(((seedNotesStatus.done + seedNotesStatus.skipped) / seedNotesStatus.total) * 100))}% · {seedNotesStatus.done}✓ {seedNotesStatus.skipped}skip{seedNotesStatus.failed > 0 ? <span className="text-[#FF8DA1]"> {seedNotesStatus.failed}fail</span> : null}
+                  {Math.min(100, Math.round(((seedNotesStatus.done + seedNotesStatus.skipped) / seedNotesStatus.total) * 100))}% · {seedNotesStatus.done}✓ {seedNotesStatus.skipped}skip{seedNotesStatus.failed > 0 ? <span className="text-[#FFB7E5]"> {seedNotesStatus.failed}fail</span> : null}
                 </span>
                 {seedNotesStatus.currentSubject && (
                   <span className="text-[11px] text-white truncate max-w-[160px]">{seedNotesStatus.currentSubject}</span>
@@ -1536,7 +1746,7 @@ export default function DBEPortal() {
         {/* Search */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white" />
-          <Input placeholder="Search subjects…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-transparent rounded-[10px] border-white/25 text-white placeholder:text-white/90 focus-visible:border-[#9FD8FF]" data-testid="input-search" />
+          <Input placeholder="Search subjects…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-transparent rounded-[10px] border-white/25 text-white placeholder:text-white focus-visible:border-[#9FD8FF]" data-testid="input-search" />
         </div>
 
         {/* Main tabs */}
@@ -1604,11 +1814,11 @@ export default function DBEPortal() {
             <div style={{ background: "linear-gradient(120deg,rgba(159,216,255,0.1),rgba(197,179,255,0.08))", border: "1.5px solid rgba(159,216,255,0.35)", borderRadius: 18, padding: "22px 26px" }} data-testid="sync-production-panel">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <span className="inline-block rounded-full shrink-0" style={{ width: 9, height: 9, background: syncStatus?.status === "failed" ? "#FF8DA1" : "#94F7C5" }} />
+                  <span className="inline-block rounded-full shrink-0" style={{ width: 9, height: 9, background: syncStatus?.status === "failed" ? "#FFB7E5" : "#94F7C5" }} />
                   <CloudUpload className="w-5 h-5 shrink-0" style={{ color: "#9FD8FF" }} />
                   <div>
                     <p className="text-white" style={{ fontWeight: 800, fontSize: 16 }}>Sync to Production</p>
-                    <p className="text-xs text-white/90">Rebuild mastery scores + topic coverage — marks data as production-ready.</p>
+                    <p className="text-xs text-white">Rebuild mastery scores + topic coverage — marks data as production-ready.</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 flex-wrap">
@@ -1616,7 +1826,7 @@ export default function DBEPortal() {
                     <div className="flex items-center gap-2 text-xs">
                       {syncStatus.status === "running" && <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md font-black uppercase tracking-[0.1em] text-[10px]" style={{ color: "#9FD8FF", border: "1px solid #9FD8FF" }}><Loader2 className="w-3 h-3 animate-spin" /> Running…</span>}
                       {syncStatus.status === "success" && <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md font-black uppercase tracking-[0.1em] text-[10px]" style={{ color: "#94F7C5", border: "1px solid #94F7C5" }}><CheckCircle2 className="w-3 h-3" /> Success — {syncStatus.subjectsSynced} subjects</span>}
-                      {syncStatus.status === "failed" && <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md font-black uppercase tracking-[0.1em] text-[10px]" style={{ color: "#FF8DA1", border: "1px solid #FF8DA1" }}><XCircle className="w-3 h-3" /> Failed</span>}
+                      {syncStatus.status === "failed" && <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md font-black uppercase tracking-[0.1em] text-[10px]" style={{ color: "#FFB7E5", border: "1px solid #FFB7E5" }}><XCircle className="w-3 h-3" /> Failed</span>}
                     </div>
                   )}
                   <Button size="sm" onClick={() => { if (confirm("Trigger Sync to Production? This may take several minutes.")) syncProductionMutation.mutate(); }} disabled={syncProductionMutation.isPending || syncStatus?.status === "running" || anyRunning} className="gap-2 rounded-[10px] border-0 font-extrabold text-[#050508] hover:text-[#050508] hover:-translate-y-[2px] transition-transform" style={{ background: "linear-gradient(100deg,#9FF5E8,#9FD8FF)" }} data-testid="btn-sync-production-panel">
@@ -1633,7 +1843,7 @@ export default function DBEPortal() {
                   <div className="flex items-center gap-2">
                     <History className="w-4 h-4 text-white" />
                     <CardTitle className="text-sm text-white">Sync History</CardTitle>
-                    {syncHistory && syncHistory.length > 0 && <span className="text-xs text-white/90">— last {syncHistory.length} syncs</span>}
+                    {syncHistory && syncHistory.length > 0 && <span className="text-xs text-white">— last {syncHistory.length} syncs</span>}
                   </div>
                   <Button size="sm" variant="ghost" className="h-7 px-2 text-xs gap-1.5 text-white hover:text-white hover:bg-white/[0.06]" onClick={() => refetchSyncHistory()} data-testid="btn-refresh-sync-history">
                     <RefreshCw className="w-3 h-3" /> Refresh
@@ -1665,13 +1875,13 @@ export default function DBEPortal() {
                               {entry.status === "success" ? (
                                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#94F7C5]/10 border border-[#94F7C5]/30 text-[#94F7C5] font-semibold"><CheckCircle2 className="w-3 h-3" /> Success</span>
                               ) : (
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FF8DA1]/10 border border-[#FF8DA1]/30 text-[#FF8DA1] font-semibold"><XCircle className="w-3 h-3" /> Failed</span>
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FFB7E5]/10 border border-[#FFB7E5]/30 text-[#FFB7E5] font-semibold"><XCircle className="w-3 h-3" /> Failed</span>
                               )}
                             </td>
                             <td className="px-4 py-2 tabular-nums text-white">{entry.subjectsSynced ?? "—"}</td>
                             <td className="px-4 py-2 tabular-nums text-white">{entry.questionsSynced != null ? formatNumber(Number(entry.questionsSynced), language) : "—"}</td>
                             <td className="px-4 py-2 text-white max-w-xs truncate">
-                              {entry.error ? <span className="text-[#FF8DA1]" title={entry.error}>{entry.error}</span> : entry.status === "success" ? <span className="text-[#94F7C5]">Completed</span> : "—"}
+                              {entry.error ? <span className="text-[#FFB7E5]" title={entry.error}>{entry.error}</span> : entry.status === "success" ? <span className="text-[#94F7C5]">Completed</span> : "—"}
                             </td>
                           </tr>
                         ))}
@@ -1709,6 +1919,6 @@ export default function DBEPortal() {
           )}
         </DialogContent>
       </Dialog>
-    </div>
+    </AdminGround>
   );
 }

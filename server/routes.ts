@@ -7,6 +7,10 @@ import { storage } from "./storage";
 import { generateReportPdfBuffer } from "./report-generator";
 import { markAnswer, bubbleToPaperScore } from "./marking-strategies";
 import { extractMcqAnswer } from "./dbe-ingestion";
+import {
+  startJob, finishJob, isJobRunning, getCurrentJob, requestStop, shouldAbort,
+  markSubjectStarted, markSubjectFinished, deriveStatus,
+} from "./ingestion-jobs";
 import { pool, db } from "./db";
 import { users } from "@shared/models/auth";
 import { subjects, topics, onboardingResults, linkVisits, examPapers, userStreaks, installBannerEvents, studySessions, attempts, topicMastery, userProgress, boostQuizWrongAnswers, learningEvents, learnerGoals, storeItems, userUnlocks, userBadges, parentLinks, subscriptions, questions as questionsTable, schoolReferrals, onboardingLinkTokens, topicNotes, topicFlashcards, literatureWorks, literatureNotes, partnerSchools, systemConfig, schoolEnquiries, adminBillingReminders, dbeVerbatimQuestions, pushSubscriptions, phoneOtpCodes, type UserProgress, type Subscription, type PushSubscription } from "@shared/schema";
@@ -18,6 +22,7 @@ import { registerLocalAuthRoutes } from "./local-auth";
 import { registerPaystackRoutes, isPaystackConfigured, paystackFetch, recordEventOnce, applyCardCaptureSuccess } from "./paystack";
 import { registerRizzRoutes } from "./rizz";
 import { authStorage } from "./replit_integrations/auth/storage";
+import { parentPreviewMiddleware } from "./parent-preview";
 import OpenAI from "openai";
 import webpush from "web-push";
 import { z } from "zod";
@@ -45,6 +50,7 @@ import {
   validateItnWithPayfast,
 } from "./payfast";
 import { cleanCriterionText } from "./memo-format";
+import { normalizeLang, toDbLanguage, resolveRequestLang, languageMeta, type LangCode } from "./language";
 import { getDesignPatGuidance, isPatGuidanceMemo, stripPatGuidanceMarker } from "./data/design-pat-guidance";
 import { LRUCache } from "lru-cache";
 import multer from "multer";
@@ -1583,6 +1589,13 @@ export async function registerRoutes(
   // RBAC blanket guard — block all /api/admin/* and /api/billing/admin/* for non-admins
   app.use("/api/admin", isAuthenticated as any, requireRole("admin") as any);
   app.use("/api/billing/admin", isAuthenticated as any, requireRole("admin") as any);
+
+  // Admin-only sample-data preview of the parent dashboard. Serves synthetic
+  // payloads (no DB writes, no fake users) so the parent UI can be reviewed on
+  // an account with no linked learners. Self-gating: it verifies admin role +
+  // email allowlist itself and calls next() for everyone else, so non-admin
+  // /api/parent traffic is completely unaffected. See server/parent-preview.ts.
+  app.use("/api/parent", parentPreviewMiddleware as any);
 
   // Health check endpoint (no auth required — for infrastructure monitoring)
   app.get("/api/health", async (_req: Request, res: Response) => {
@@ -6753,10 +6766,12 @@ Create comprehensive study notes for the topic provided.`;
       const { userReferrals } = await import("@shared/schema");
       const rows = await db.select().from(userReferrals);
       // True count of generated links: subscriptions with a persisted referral_code.
+      // Demo accounts excluded — their seeded subscription is not a real link.
       const [{ count: linksGenerated }] = await db
         .select({ count: sql<number>`count(*)::int` })
         .from(subscriptions)
-        .where(sql`${subscriptions.referralCode} is not null`);
+        .innerJoin(users, eq(users.id, subscriptions.userId))
+        .where(and(sql`${subscriptions.referralCode} is not null`, eq(users.isDemo, false)));
       const referrersWithActivity = new Set(rows.map((r) => r.referrerId)).size;
       const pending = rows.filter((r) => r.status === "signed_up").length;
       const converted = rows.filter((r) => r.status === "converted").length;
@@ -9339,10 +9354,30 @@ Create comprehensive study notes for the topic provided.`;
     }
   });
 
-  // GET /api/admin/emergency/status — view current emergency state
+  // GET /api/admin/emergency/status — view current emergency state.
+  //
+  // The admin dashboard renders its system-health badge from `emergency.active`
+  // and its "N disabled" pill from `disabledEndpoints.length +
+  // disabledFeatures.length`. This endpoint previously returned only
+  // `disabledEndpoints`, so both of those client reads resolved to `undefined`
+  // and the badge was pinned to "System Nominal" even while endpoints were
+  // blocked. Return the full shape the client contract expects.
+  //
+  // There is no feature-level kill switch in the codebase (only the
+  // per-endpoint blocklist populated by POST /api/admin/emergency
+  // `disable_endpoint`), so `disabledFeatures` is always an empty array — it is
+  // returned rather than omitted so the client's arithmetic is well defined.
   app.get("/api/admin/emergency/status", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    const blocked = Array.from(disabledEndpoints);
     return res.json({
-      disabledEndpoints: Array.from(disabledEndpoints),
+      emergency: {
+        active: blocked.length > 0,
+        reason: blocked.length > 0
+          ? `${blocked.length} endpoint${blocked.length === 1 ? "" : "s"} blocked via emergency control`
+          : undefined,
+      },
+      disabledEndpoints: blocked,
+      disabledFeatures: [] as string[],
     });
   });
 
@@ -9551,6 +9586,12 @@ Create comprehensive study notes for the topic provided.`;
       // Canonical subject name aliases — collapses older DBE naming into current CAPS names
       const SUBJECT_ALIASES: Record<string, string> = {
         "Digitals": "Digital Electronics",
+        // The catalogue carries case-variant spellings of the same subject.
+        // Without these the portal lists e.g. both "Civil Technology" (70
+        // papers) and "Civil technology" (2) as separate subjects, splitting
+        // one subject's stats across two rows and making it look starved.
+        "Civil technology": "Civil Technology",
+        "Dance studies": "Dance Studies",
       };
 
       // Build per-subject stats from catalog (deduplicated by year+paper+type)
@@ -10364,7 +10405,18 @@ Create comprehensive study notes for the topic provided.`;
         doneMap.set(row.subject as string, Number(row.done));
       }
 
-      let queued = 0;
+      // Refuse to start a second overlapping batch. Two run-alls race each other
+      // over the same subjects and the same rows, and the admin has no way to
+      // tell whose progress they are watching.
+      if (isJobRunning()) {
+        const running = getCurrentJob()!;
+        return res.status(409).json({
+          error: "A batch ingestion is already running",
+          jobId: running.id,
+          startedAt: running.startedAt,
+        });
+      }
+
       let skipped = 0;
       const maxConcurrent = 3;
       const queue: string[] = [];
@@ -10383,50 +10435,327 @@ Create comprehensive study notes for the topic provided.`;
         queue.push(subject);
       }
 
+      // Baseline the log so per-paper progress for THIS run is exactly the rows
+      // written after this point — see server/ingestion-jobs.ts.
+      const baselineRow = await db.execute(sql`SELECT COALESCE(MAX(id), 0) AS max_id FROM dbe_ingestion_log`);
+      const job = startJob({
+        queued: queue,
+        skipped,
+        yearStart,
+        yearEnd,
+        logBaselineId: Number(baselineRow.rows[0]?.max_id ?? 0),
+      });
+
       // Process in background with concurrency limit
       (async () => {
-        for (let i = 0; i < queue.length; i += maxConcurrent) {
-          const batch = queue.slice(i, i + maxConcurrent);
-          await Promise.all(batch.map(async (subject) => {
-            ingestionRunning.set(subject, true);
-            ingestionPhase.set(subject, "ingesting");
-            try {
-              const { runIngestionBatch, rebuildMasteryFromExisting } = await import("./dbe-ingestion");
-              // Pass the year-windowed catalog so all 2015–2025 papers + memos for
-              // this subject get ingested (across every source mirror in the catalog).
-              const summary = await runIngestionBatch(catalog, { subject, force });
-              ingestionLastResult.set(subject, {
-                completed: summary.completed,
-                failed: summary.failed,
-                errors: summary.errors.slice(0, 10),
-                finishedAt: new Date().toISOString(),
-              });
-              ingestionPhase.set(subject, "rebuilding_mastery");
-              try { await rebuildMasteryFromExisting(subject); } catch {}
-              // Task #394 — release-gate stamp after each batch subject completes.
+        try {
+          for (let i = 0; i < queue.length; i += maxConcurrent) {
+            if (shouldAbort(job.id)) break;
+            const batch = queue.slice(i, i + maxConcurrent);
+            await Promise.all(batch.map(async (subject) => {
+              ingestionRunning.set(subject, true);
+              ingestionPhase.set(subject, "ingesting");
+              markSubjectStarted(job.id, subject);
               try {
-                const { releaseEligiblePapers } = await import("./release-gate");
-                await releaseEligiblePapers(subject);
-              } catch (relErr: any) {
-                console.warn(`[release-gate/run-all] ${subject}: ${relErr?.message ?? relErr}`);
+                const { runIngestionBatch, rebuildMasteryFromExisting } = await import("./dbe-ingestion");
+                // Pass the year-windowed catalog so all 2015–2025 papers + memos for
+                // this subject get ingested (across every source mirror in the catalog).
+                const summary = await runIngestionBatch(catalog, { subject, force });
+                const outcome = {
+                  completed: summary.completed,
+                  failed: summary.failed,
+                  errors: summary.errors.slice(0, 10),
+                  finishedAt: new Date().toISOString(),
+                };
+                ingestionLastResult.set(subject, outcome);
+                markSubjectFinished(job.id, subject, outcome);
+                ingestionPhase.set(subject, "rebuilding_mastery");
+                try { await rebuildMasteryFromExisting(subject); } catch {}
+                // Task #394 — release-gate stamp after each batch subject completes.
+                try {
+                  const { releaseEligiblePapers } = await import("./release-gate");
+                  await releaseEligiblePapers(subject);
+                } catch (relErr: any) {
+                  console.warn(`[release-gate/run-all] ${subject}: ${relErr?.message ?? relErr}`);
+                }
+                ingestionPhase.set(subject, "ready");
+              } catch (err: any) {
+                const outcome = {
+                  completed: 0, failed: 1,
+                  errors: [err?.message ?? String(err)],
+                  finishedAt: new Date().toISOString(),
+                };
+                ingestionLastResult.set(subject, outcome);
+                markSubjectFinished(job.id, subject, outcome);
+                ingestionPhase.set(subject, "failed");
+              } finally {
+                ingestionRunning.set(subject, false);
               }
-              ingestionPhase.set(subject, "ready");
-            } catch (err: any) {
-              ingestionLastResult.set(subject, {
-                completed: 0, failed: 1,
-                errors: [err?.message ?? String(err)],
-                finishedAt: new Date().toISOString(),
-              });
-              ingestionPhase.set(subject, "failed");
-            } finally {
-              ingestionRunning.set(subject, false);
-            }
-          }));
+            }));
+          }
+          finishJob(job.id, shouldAbort(job.id) ? "stopped" : "succeeded");
+        } catch (fatal: any) {
+          finishJob(job.id, "failed", fatal?.message ?? String(fatal));
         }
       })();
-      
-      queued = queue.length;
-      return res.json({ message: `Batch ingestion started`, queued, skipped, total: allSubjects.length });
+
+      return res.json({
+        message: `Batch ingestion started`,
+        jobId: job.id,
+        queued: queue.length,
+        skipped,
+        total: allSubjects.length,
+      });
+    } catch (err: any) {
+      return res.status(500).json({ error: safeError(err) });
+    }
+  });
+
+  // GET /api/admin/dbe-ingestion/run-all/status — live progress for the batch
+  // ingest. Combines the in-process job registry (intent, terminal state, the
+  // error) with dbe_ingestion_log (work actually completed), so the admin can
+  // see what it is on right now instead of flying blind for hours.
+  app.get("/api/admin/dbe-ingestion/run-all/status", isAuthenticated, requireRole("admin"), async (_req, res) => {
+    try {
+      const job = getCurrentJob();
+      if (!job) {
+        // No run has been registered in this process. That is genuinely
+        // different from "finished" — say so rather than rendering a zeroed
+        // progress bar that reads as a stalled job.
+        return res.json({ state: "idle", job: null });
+      }
+
+      // Papers this run has actually touched, straight from the log.
+      const progress = await db.execute(sql`
+        SELECT
+          COUNT(*) FILTER (WHERE is_memo = false)::int   AS papers_processed,
+          COUNT(*) FILTER (WHERE is_memo = true)::int    AS memos_processed,
+          COUNT(*) FILTER (WHERE status = 'failed')::int AS papers_failed,
+          COALESCE(SUM(question_count), 0)::int          AS questions_extracted,
+          MAX(ingested_at)                               AS last_log_at
+        FROM dbe_ingestion_log
+        WHERE id > ${job.logBaselineId}
+      `);
+      const row: any = progress.rows[0] ?? {};
+      const lastLogAt = row.last_log_at ? new Date(row.last_log_at) : null;
+      const state = deriveStatus(job, lastLogAt);
+
+      // Most recent papers, so the UI can name what it is working on.
+      const recent = await db.execute(sql`
+        SELECT subject, year, paper_number, is_memo, status, question_count, error_message, ingested_at
+        FROM dbe_ingestion_log
+        WHERE id > ${job.logBaselineId}
+        ORDER BY id DESC
+        LIMIT 8
+      `);
+
+      return res.json({
+        state,
+        job: {
+          id: job.id,
+          startedAt: job.startedAt,
+          finishedAt: job.finishedAt,
+          elapsedMs: Date.now() - new Date(job.startedAt).getTime(),
+          yearStart: job.yearStart,
+          yearEnd: job.yearEnd,
+          totalSubjects: job.queued.length,
+          doneSubjects: job.doneSubjects.length,
+          inFlight: job.inFlight,
+          skipped: job.skipped,
+          error: job.error,
+          perSubject: job.perSubject,
+        },
+        progress: {
+          papersProcessed: Number(row.papers_processed ?? 0),
+          memosProcessed: Number(row.memos_processed ?? 0),
+          papersFailed: Number(row.papers_failed ?? 0),
+          questionsExtracted: Number(row.questions_extracted ?? 0),
+          lastLogAt: lastLogAt ? lastLogAt.toISOString() : null,
+        },
+        recent: recent.rows.map((r: any) => ({
+          subject: r.subject,
+          year: Number(r.year),
+          paperNumber: Number(r.paper_number),
+          isMemo: r.is_memo === true,
+          status: r.status,
+          questionCount: r.question_count === null ? null : Number(r.question_count),
+          errorMessage: r.error_message,
+          ingestedAt: r.ingested_at,
+        })),
+      });
+    } catch (err: any) {
+      return res.status(500).json({ error: safeError(err) });
+    }
+  });
+
+  // POST /api/admin/dbe-ingestion/run-all/stop — cooperative halt. The runner
+  // checks the flag between subjects, so the in-flight subject finishes first.
+  app.post("/api/admin/dbe-ingestion/run-all/stop", isAuthenticated, requireRole("admin"), (_req, res) => {
+    const stopped = requestStop();
+    const job = getCurrentJob();
+    return res.json({
+      stopped,
+      jobId: job?.id ?? null,
+      message: stopped
+        ? "Stop requested — the subject currently in flight will finish first."
+        : "No batch ingestion is running.",
+    });
+  });
+
+  // GET /api/admin/dbe-ingestion/health — the operational triage view.
+  //
+  // The portal's job is to answer "which subjects need attention, and why",
+  // because the three ways a subject can be short of learner-ready content need
+  // completely different remedies and are otherwise indistinguishable from a
+  // table of counts:
+  //
+  //   never_ingested — no rows at all. Run ingestion.
+  //   catalog_thin   — the catalog barely lists this subject, so there is
+  //                    nothing to ingest. Fix the catalog, not the pipeline.
+  //   ocr_needed     — rows exist but the extracted question text is far too
+  //                    short, i.e. the source PDFs are image-only scans with no
+  //                    text layer. Needs OCR on the paper PDFs; memo work will
+  //                    not help.
+  //   gate_blocked   — plenty of content, but memo coverage sits under the
+  //                    release gate's 60% bar so nothing reaches learners.
+  //                    Needs a memo backfill.
+  //   gate_stale     — content already clears the gate but has not been stamped
+  //                    released. Just re-run the release gate; cheapest fix.
+  //
+  // Every underlying number is returned alongside the verdict so an admin can
+  // disagree with the classification rather than having to trust it.
+  app.get("/api/admin/dbe-ingestion/health", isAuthenticated, requireRole("admin"), async (_req, res) => {
+    try {
+      const fullCatalog: any[] = (await import("./data/dbe-papers-catalog.json")).default as any[];
+
+      // The catalog carries case-variant duplicates of the same subject
+      // ("Civil Technology" vs "Civil technology"), which otherwise split one
+      // subject's papers across two rows and make it look starved.
+      const canonical = new Map<string, string>();
+      for (const e of fullCatalog) {
+        const key = String(e.subject).toLowerCase();
+        const existing = canonical.get(key);
+        // Prefer the Title Case spelling as the display name.
+        if (!existing || (e.subject as string) < existing) canonical.set(key, e.subject);
+      }
+      const catalogCounts = new Map<string, { papers: number; memos: number }>();
+      for (const e of fullCatalog) {
+        const name = canonical.get(String(e.subject).toLowerCase()) ?? e.subject;
+        const c = catalogCounts.get(name) ?? { papers: 0, memos: 0 };
+        if (e.isMemo) c.memos++; else c.papers++;
+        catalogCounts.set(name, c);
+      }
+
+      // Per-subject content shape. `avg_qlen` is the OCR signal: a subject whose
+      // questions average well under ~120 characters did not get a usable text
+      // layer out of its PDFs.
+      const contentRows = await db.execute(sql`
+        SELECT
+          subject,
+          COUNT(*)::int                                                  AS rows_total,
+          COUNT(*) FILTER (WHERE released_at IS NOT NULL)::int           AS rows_released,
+          ROUND(AVG(LENGTH(COALESCE(question_text, ''))))::int           AS avg_qlen,
+          COUNT(*) FILTER (WHERE marks IS NULL)::int                     AS marks_null,
+          COUNT(*) FILTER (WHERE topic IS NULL)::int                     AS topic_null
+        FROM dbe_verbatim_questions
+        GROUP BY subject
+      `);
+
+      // Per-paper-tuple gate simulation, mirroring release-gate.ts exactly:
+      // a tuple passes when >= 60% of its rows carry a memo of >= 20 chars.
+      const tupleRows = await db.execute(sql`
+        WITH tup AS (
+          SELECT
+            subject,
+            COUNT(*)::int AS rc,
+            COUNT(*) FILTER (WHERE memo_text IS NOT NULL AND LENGTH(memo_text) >= 20)::int AS memo_rows,
+            MAX(CASE WHEN released_at IS NOT NULL THEN 1 ELSE 0 END)::int AS rel
+          FROM dbe_verbatim_questions
+          GROUP BY subject, year, paper_number, session, language
+        )
+        SELECT
+          subject,
+          COUNT(*)::int                                                       AS tuples,
+          COUNT(*) FILTER (WHERE memo_rows::numeric / rc >= 0.60)::int        AS tuples_pass_gate,
+          COUNT(*) FILTER (WHERE rel = 1)::int                                AS tuples_released,
+          ROUND(100.0 * SUM(memo_rows) / NULLIF(SUM(rc), 0))::int             AS memo_pct
+        FROM tup
+        GROUP BY subject
+      `);
+
+      const contentBySubject = new Map<string, any>();
+      for (const r of contentRows.rows as any[]) contentBySubject.set(r.subject, r);
+      const tuplesBySubject = new Map<string, any>();
+      for (const r of tupleRows.rows as any[]) tuplesBySubject.set(r.subject, r);
+
+      const names = new Set<string>([...catalogCounts.keys(), ...contentBySubject.keys()]);
+      const subjects = [...names].map((subject) => {
+        const cat = catalogCounts.get(subject) ?? { papers: 0, memos: 0 };
+        const c = contentBySubject.get(subject);
+        const t = tuplesBySubject.get(subject);
+
+        const rowsTotal = Number(c?.rows_total ?? 0);
+        const rowsReleased = Number(c?.rows_released ?? 0);
+        const avgQLen = Number(c?.avg_qlen ?? 0);
+        const memoPct = Number(t?.memo_pct ?? 0);
+        const tuplesPassGate = Number(t?.tuples_pass_gate ?? 0);
+        const tuplesReleased = Number(t?.tuples_released ?? 0);
+        const releasedPct = rowsTotal > 0 ? Math.round((rowsReleased / rowsTotal) * 100) : 0;
+
+        // Order matters: report the root cause, not a downstream symptom. A
+        // subject with no text layer is `ocr_needed` even though its memo
+        // coverage is also poor, because OCR is what unblocks it.
+        let cause:
+          | "healthy" | "never_ingested" | "catalog_thin"
+          | "ocr_needed" | "gate_blocked" | "gate_stale" | "partial";
+        if (rowsTotal === 0) cause = cat.papers < 5 ? "catalog_thin" : "never_ingested";
+        else if (cat.papers < 5) cause = "catalog_thin";
+        else if (avgQLen > 0 && avgQLen < 120) cause = "ocr_needed";
+        else if (memoPct < 60 && releasedPct < 50) cause = "gate_blocked";
+        else if (tuplesPassGate > tuplesReleased) cause = "gate_stale";
+        else if (releasedPct >= 50) cause = "healthy";
+        else cause = "partial";
+
+        return {
+          subject,
+          cause,
+          catalogPapers: cat.papers,
+          catalogMemos: cat.memos,
+          rowsTotal,
+          rowsReleased,
+          releasedPct,
+          avgQuestionLength: avgQLen,
+          memoCoveragePct: memoPct,
+          tuples: Number(t?.tuples ?? 0),
+          tuplesPassGate,
+          tuplesReleased,
+          marksNull: Number(c?.marks_null ?? 0),
+          topicNull: Number(c?.topic_null ?? 0),
+        };
+      });
+
+      // Worst first: unreleased volume is the size of the prize.
+      subjects.sort((a, b) => (b.rowsTotal - b.rowsReleased) - (a.rowsTotal - a.rowsReleased));
+
+      const totals = subjects.reduce(
+        (acc, s) => {
+          acc.rowsTotal += s.rowsTotal;
+          acc.rowsReleased += s.rowsReleased;
+          acc.byCause[s.cause] = (acc.byCause[s.cause] ?? 0) + 1;
+          return acc;
+        },
+        { rowsTotal: 0, rowsReleased: 0, byCause: {} as Record<string, number> },
+      );
+
+      return res.json({
+        generatedAt: new Date().toISOString(),
+        totals: {
+          ...totals,
+          releasedPct: totals.rowsTotal > 0 ? Math.round((totals.rowsReleased / totals.rowsTotal) * 100) : 0,
+          subjectCount: subjects.length,
+        },
+        subjects,
+      });
     } catch (err: any) {
       return res.status(500).json({ error: safeError(err) });
     }
@@ -12334,6 +12663,9 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
   // ── Admin Reports ─────────────────────────────────────────────
   app.get("/api/admin/reports/stats", isAuthenticated, requireRole("admin"), async (req: any, res) => {
     try {
+      // `is_demo = false` everywhere below: demo accounts exist so the owner can
+      // review the learner/parent experience and must never be counted as
+      // customers. See migrations/0031_users_is_demo.sql.
       const userCounts = await db.execute(sql`
         SELECT
           COUNT(*) AS total,
@@ -12341,12 +12673,15 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
           COUNT(*) FILTER (WHERE role = 'parent') AS parents,
           COUNT(*) FILTER (WHERE role = 'admin') AS admins
         FROM users
+        WHERE is_demo = false
       `);
       const subCounts = await db.execute(sql`
         SELECT
-          COUNT(*) FILTER (WHERE status = 'active') AS subscribed,
-          COUNT(*) FILTER (WHERE status = 'trial') AS trial
-        FROM subscriptions
+          COUNT(*) FILTER (WHERE s.status = 'active') AS subscribed,
+          COUNT(*) FILTER (WHERE s.status = 'trial') AS trial
+        FROM subscriptions s
+        JOIN users u ON u.id = s.user_id
+        WHERE u.is_demo = false
       `);
       const row = userCounts.rows[0] ?? {};
       const subRow = subCounts.rows[0] ?? {};
@@ -12362,6 +12697,109 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       });
     } catch (err: any) {
       res.status(500).json({ error: safeError(err) });
+    }
+  });
+
+  // GET /api/admin/reports/dbe-coverage — per-subject DBE content coverage.
+  //
+  // Powers the "DBE Content Coverage" report on the admin dashboard: for every
+  // subject present in dbe_verbatim_questions, how many questions have passed
+  // the release gate (released_at IS NOT NULL) versus how many are ingested in
+  // total. Subjects at 0% are the operational signal — those are ingested but
+  // learner-invisible.
+  app.get("/api/admin/reports/dbe-coverage", isAuthenticated, requireRole("admin"), async (_req: any, res) => {
+    try {
+      const result = await db.execute(sql`
+        SELECT
+          subject,
+          COUNT(*)::int                                            AS total,
+          COUNT(*) FILTER (WHERE released_at IS NOT NULL)::int     AS released
+        FROM dbe_verbatim_questions
+        GROUP BY subject
+        ORDER BY
+          (COUNT(*) FILTER (WHERE released_at IS NOT NULL))::float / NULLIF(COUNT(*), 0) ASC NULLS FIRST,
+          COUNT(*) DESC
+      `);
+
+      const subjects = result.rows.map((r: any) => {
+        const total = Number(r.total ?? 0);
+        const released = Number(r.released ?? 0);
+        return {
+          subject: String(r.subject ?? "Unknown"),
+          total,
+          released,
+          pct: total > 0 ? Math.round((released / total) * 1000) / 10 : 0,
+        };
+      });
+
+      const totals = subjects.reduce(
+        (acc, s) => ({ total: acc.total + s.total, released: acc.released + s.released }),
+        { total: 0, released: 0 },
+      );
+
+      return res.json({
+        subjects,
+        totals: {
+          ...totals,
+          pct: totals.total > 0 ? Math.round((totals.released / totals.total) * 1000) / 10 : 0,
+          subjectCount: subjects.length,
+          zeroReleasedCount: subjects.filter((s) => s.released === 0).length,
+        },
+        fetchedAt: new Date().toISOString(),
+      });
+    } catch (err: any) {
+      console.error("[admin/reports/dbe-coverage] error:", err);
+      return res.status(500).json({ error: safeError(err) });
+    }
+  });
+
+  // GET /api/admin/reports/subscription-funnel — subscription status breakdown.
+  //
+  // Powers the "Subscription Funnel" report on the admin dashboard. Every
+  // status actually present in the subscriptions table is returned (nothing is
+  // hardcoded), plus explicit zero rows for the four canonical funnel stages so
+  // the chart keeps its shape when a stage has no rows yet.
+  app.get("/api/admin/reports/subscription-funnel", isAuthenticated, requireRole("admin"), async (_req: any, res) => {
+    try {
+      // Demo accounts excluded — they carry a seeded subscription so the demo
+      // dashboards render, which must not shift the funnel.
+      const result = await db.execute(sql`
+        SELECT s.status, COUNT(*)::int AS count
+        FROM subscriptions s
+        JOIN users u ON u.id = s.user_id
+        WHERE u.is_demo = false
+        GROUP BY s.status
+      `);
+
+      const observed = new Map<string, number>();
+      for (const r of result.rows as any[]) {
+        observed.set(String(r.status ?? "unknown"), Number(r.count ?? 0));
+      }
+
+      // Canonical funnel order. Any status found in the table but not listed
+      // here is appended afterwards so nothing is silently dropped.
+      const CANONICAL = ["trial", "active", "past_due", "cancelled"];
+      const stages = [
+        ...CANONICAL.map((status) => ({ status, count: observed.get(status) ?? 0 })),
+        ...Array.from(observed.entries())
+          .filter(([status]) => !CANONICAL.includes(status))
+          .map(([status, count]) => ({ status, count })),
+      ];
+
+      const total = stages.reduce((n, s) => n + s.count, 0);
+
+      return res.json({
+        stages,
+        total,
+        // Share of all subscriptions that are currently paying.
+        activeRate: total > 0
+          ? Math.round(((observed.get("active") ?? 0) / total) * 1000) / 10
+          : 0,
+        fetchedAt: new Date().toISOString(),
+      });
+    } catch (err: any) {
+      console.error("[admin/reports/subscription-funnel] error:", err);
+      return res.status(500).json({ error: safeError(err) });
     }
   });
 
@@ -12471,7 +12909,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
                     ELSE 0 END AS accuracy
         FROM users u
         LEFT JOIN user_progress up ON up.user_id = u.id
-        WHERE u.role = 'parent'
+        WHERE u.role = 'parent' AND u.is_demo = false
         GROUP BY u.id, u.email, u.first_name, u.last_name, u.created_at
         ORDER BY u.created_at DESC
         LIMIT 100
@@ -12510,7 +12948,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         LEFT JOIN user_progress up ON up.user_id = u.id
         LEFT JOIN user_streaks us ON us.user_id = u.id
         LEFT JOIN user_coins uc ON uc.user_id = u.id
-        WHERE u.role = 'learner'
+        WHERE u.role = 'learner' AND u.is_demo = false
         GROUP BY u.id, u.email, u.first_name, u.last_name, u.role, u.created_at,
                  u.last_login_at, u.theme, u.preferred_language,
                  o.learning_style, o.study_preference, o.focus_duration, o.selected_subjects,
@@ -12544,7 +12982,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
           COALESCE(ROUND(AVG(CASE WHEN up.questions_attempted > 0 THEN up.correct_answers::float / up.questions_attempted * 100 END)), 0)::int AS "avgAccuracy",
           COALESCE(ROUND(AVG(up.questions_attempted)), 0)::int AS "avgQuestionsAnswered"
         FROM partner_schools ps
-        LEFT JOIN users u ON u.school_id = ps.id AND u.role = 'learner'
+        LEFT JOIN users u ON u.school_id = ps.id AND u.role = 'learner' AND u.is_demo = false
         LEFT JOIN user_progress up ON up.user_id = u.id
         GROUP BY ps.id
         ORDER BY "learnerCount" DESC, ps.school_name ASC
@@ -12745,7 +13183,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
           COALESCE(SUM(up.papers_completed), 0)::int AS "totalPapersCompleted"
         FROM users u
         LEFT JOIN user_progress up ON up.user_id = u.id
-        WHERE u.school_id = ${schoolId} AND u.role = 'learner'
+        WHERE u.school_id = ${schoolId} AND u.role = 'learner' AND u.is_demo = false
       `);
       const stats = statsResult.rows[0] as any;
 
@@ -12758,7 +13196,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
           COALESCE(ROUND(AVG(up.questions_attempted)), 0)::int AS "avgQuestionsAnswered"
         FROM users u
         LEFT JOIN user_progress up ON up.user_id = u.id
-        WHERE u.school_id = ${schoolId} AND u.role = 'learner' AND u.grade IS NOT NULL
+        WHERE u.school_id = ${schoolId} AND u.role = 'learner' AND u.is_demo = false AND u.grade IS NOT NULL
         GROUP BY u.grade
         ORDER BY u.grade ASC
       `);
@@ -12769,7 +13207,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
           COUNT(CASE WHEN u.last_active_at > NOW() - INTERVAL '7 days' THEN 1 END)::int AS "activeThisWeek",
           COUNT(CASE WHEN u.last_active_at > NOW() - INTERVAL '14 days' AND u.last_active_at <= NOW() - INTERVAL '7 days' THEN 1 END)::int AS "activeLastWeek"
         FROM users u
-        WHERE u.school_id = ${schoolId} AND u.role = 'learner'
+        WHERE u.school_id = ${schoolId} AND u.role = 'learner' AND u.is_demo = false
       `);
       const activity = recentActivityResult.rows[0] as any;
 
@@ -12865,6 +13303,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         ) gs
         LEFT JOIN users u ON u.school_id = ${schoolId}
           AND u.role = 'learner'
+          AND u.is_demo = false
           AND u.last_active_at >= gs.week_start
           AND u.last_active_at < gs.week_start + INTERVAL '1 week'
         GROUP BY gs.week_label, gs.week_start
@@ -12933,7 +13372,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
           u.last_active_at
         FROM users u
         LEFT JOIN user_progress up ON up.user_id = u.id
-        WHERE u.school_id = ${schoolId} AND u.role = 'learner'
+        WHERE u.school_id = ${schoolId} AND u.role = 'learner' AND u.is_demo = false
         ORDER BY name ASC
       `);
 
@@ -12966,7 +13405,9 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       const limitVal = Math.min(500, parseInt(limitParam) || 200);
 
       const params: any[] = [];
-      const conditions: string[] = ["u.role = 'learner'"];
+      // u.is_demo = false is a base condition, not an optional filter — demo
+      // accounts must never appear in a learner report the owner reads as real.
+      const conditions: string[] = ["u.role = 'learner'", "u.is_demo = false"];
 
       // School-aware search: match name, email, OR school name
       if (search && search.trim()) {
@@ -13091,7 +13532,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
   app.get("/api/admin/learners/export", isAuthenticated, requireRole("admin"), async (req: any, res) => {
     try {
       const { ids } = req.query as any;
-      let whereClause = `WHERE u.role = 'learner'`;
+      let whereClause = `WHERE u.role = 'learner' AND u.is_demo = false`;
       const params: any[] = [];
       if (ids) {
         const idList = String(ids).split(',').map(Number).filter(n => !isNaN(n));
@@ -13433,6 +13874,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         FROM users
         WHERE first_touch_source IS NOT NULL
           AND first_touch_source != ''
+          AND is_demo = false
         GROUP BY first_touch_source
         ORDER BY trial_starts DESC
       `);
@@ -14635,30 +15077,79 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         ? and(sql`${vqT.releasedAt} IS NOT NULL`, inArray(vqT.subject, enrolledSubjectNames))
         : sql`${vqT.releasedAt} IS NOT NULL`;
 
+      // Counts are per language so the learner only sees what they can
+      // actually sit in their own language. `fallbackLanguage` is set when a
+      // subject has no rows in the learner's language — the UI shows an
+      // explicit notice instead of silently serving the other language.
+      const [userRow] = await db
+        .select({ preferredLanguage: users.preferredLanguage })
+        .from(users)
+        .where(eq(users.id, userId));
+      const lang = resolveRequestLang(req.query.lang, userRow?.preferredLanguage);
+      const otherLang: LangCode = lang === "af" ? "en" : "af";
+
       const rows = await db
         .select({
           subject: vqT.subject,
           topic: vqT.topic,
+          language: vqT.language,
           questionCount: sql<number>`COUNT(*)::int`,
         })
         .from(vqT)
         .where(whereClause)
-        .groupBy(vqT.subject, vqT.topic);
+        .groupBy(vqT.subject, vqT.topic, vqT.language);
 
-      const bySubject = new Map<string, { subject: string; total: number; topics: { name: string; count: number }[] }>();
+      const bySubject = new Map<string, {
+        subject: string;
+        total: number;
+        topics: { name: string; count: number }[];
+        fallbackLanguage: LangCode | null;
+      }>();
+      const otherTotals = new Map<string, number>();
+
       for (const r of rows) {
-        const entry = bySubject.get(r.subject) ?? { subject: r.subject, total: 0, topics: [] };
+        if (r.language === toDbLanguage(otherLang)) {
+          otherTotals.set(r.subject, (otherTotals.get(r.subject) ?? 0) + r.questionCount);
+          continue;
+        }
+        // Ignore the African-language rows entirely — the UI is EN/AF only.
+        if (r.language !== toDbLanguage(lang)) continue;
+        const entry = bySubject.get(r.subject)
+          ?? { subject: r.subject, total: 0, topics: [], fallbackLanguage: null };
         entry.total += r.questionCount;
         if (r.topic) entry.topics.push({ name: r.topic, count: r.questionCount });
         bySubject.set(r.subject, entry);
       }
+
+      // Subjects with content ONLY in the other language still appear, flagged.
+      for (const [subjectName, total] of otherTotals) {
+        if (bySubject.has(subjectName) || total === 0) continue;
+        bySubject.set(subjectName, {
+          subject: subjectName,
+          total,
+          topics: [],
+          fallbackLanguage: otherLang,
+        });
+      }
+
       res.json(Array.from(bySubject.values()).sort((a, b) => a.subject.localeCompare(b.subject)));
     } catch (err: any) {
       res.status(500).json({ error: safeError(err) });
     }
   });
 
-  // GET /api/exam/mini-mock/questions?subject=…&topic=…&count=10
+  // GET /api/exam/mini-mock/questions?subject=…&topic=…&count=10&lang=af
+  //
+  // LANGUAGE RULE (see server/language.ts): every question in a session is
+  // served in ONE language. Previously this route applied no language filter
+  // at all, so `ORDER BY RANDOM()` drew from the whole released corpus —
+  // ~18.6k Afrikaans rows vs ~15.5k English — and every learner got a roughly
+  // 50/50 mix that appeared to "jump back to English" mid-session.
+  //
+  // We now pick the language ONCE per session and filter on it. If the subject
+  // has no rows in the learner's language we fall back to the other language
+  // for the WHOLE session (never per-question) and report it via `language`
+  // so the client can show an explicit notice.
   app.get("/api/exam/mini-mock/questions", isAuthenticated, async (req: any, res) => {
     try {
       const subject = String(req.query.subject || "").trim();
@@ -14666,18 +15157,42 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       const count = Math.max(5, Math.min(15, parseInt(String(req.query.count || "10"), 10) || 10));
       if (!subject) return res.status(400).json({ error: "subject required" });
 
+      const userId = req.user.claims.sub;
+      const [userRow] = await db
+        .select({ preferredLanguage: users.preferredLanguage })
+        .from(users)
+        .where(eq(users.id, userId));
+      const requestedLang = resolveRequestLang(req.query.lang, userRow?.preferredLanguage);
+
       const { dbeVerbatimQuestions: vqT } = await import("@shared/schema");
       // Task #394 — release-gate filter: only ≥98% memo+mark-covered rows.
-      const conditions = [
+      const baseConditions = [
         eq(vqT.subject, subject),
         sql`${vqT.releasedAt} IS NOT NULL`,
       ];
-      if (topic) conditions.push(eq(vqT.topic, topic));
+      if (topic) baseConditions.push(eq(vqT.topic, topic));
+
+      // Decide the session language up front from actual availability, so the
+      // whole session is consistent rather than mixed.
+      const availability = await db
+        .select({ language: vqT.language, n: sql<number>`COUNT(*)::int` })
+        .from(vqT)
+        .where(and(...baseConditions))
+        .groupBy(vqT.language);
+      const availableFor = (l: LangCode) =>
+        availability.find((a) => a.language === toDbLanguage(l))?.n ?? 0;
+
+      const servedLang: LangCode =
+        availableFor(requestedLang) > 0
+          ? requestedLang
+          : availableFor(requestedLang === "af" ? "en" : "af") > 0
+            ? (requestedLang === "af" ? "en" : "af")
+            : requestedLang;
 
       const rows = await db
         .select()
         .from(vqT)
-        .where(and(...conditions))
+        .where(and(...baseConditions, eq(vqT.language, toDbLanguage(servedLang))))
         .orderBy(sql`RANDOM()`)
         .limit(count);
 
@@ -14692,7 +15207,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         paperNumber: r.paperNumber,
         mcqOptions: r.mcqOptions,
       }));
-      res.json({ subject, topic, questions });
+      res.json({ subject, topic, questions, language: languageMeta(requestedLang, servedLang) });
     } catch (err: any) {
       res.status(500).json({ error: safeError(err) });
     }
@@ -14750,6 +15265,13 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
           return res.status(422).json({ error: "Memo not parsable for this question" });
         }
         result = markAgainstScheme(answer, scheme, isAf);
+        // The stored scheme sanitised down to nothing — its memo was entirely
+        // examiner furniture (layout codes like "M194 F37", marker instructions
+        // like "Enige volgorde"). There is no answer content to mark against,
+        // so refuse rather than report a meaningless 0 against formatting notes.
+        if (result.unmarkable) {
+          return res.status(422).json({ error: "Memo not parsable for this question" });
+        }
         result = {
           ...result,
           perCriterion: result.perCriterion.map((c: { id: string; marks: number; awarded: number; matched: string[]; missed: string[]; memoExcerpt: string; feedback: string }) => ({
@@ -14920,6 +15442,13 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       let marksAvailable = 0;
       const sectionTotals = new Map<string, { awarded: number; available: number; questions: number }>();
 
+      // Questions whose memo carries no markable content are reported to the
+      // learner but excluded from the score denominator — see `notMarked`
+      // below. Scoring a learner 0/N against a memo we cannot parse
+      // understates their real mark.
+      let notMarkedCount = 0;
+      let notMarkedMarks = 0;
+
       for (const row of rows) {
         const total = row.marks ?? 1;
         marksAvailable += total;
@@ -14949,7 +15478,10 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
           };
         } else {
           const scheme = ensureMarkScheme(row);
-          const rawBreakdown = scheme ? markAgainstScheme(learnerAnswer, scheme, isAf) : null;
+          const marked = scheme ? markAgainstScheme(learnerAnswer, scheme, isAf) : null;
+          // `unmarkable` means every criterion was examiner furniture; treat it
+          // exactly like an unparsable memo rather than scoring against junk.
+          const rawBreakdown = marked && !marked.unmarkable ? marked : null;
           breakdown = rawBreakdown
             ? {
                 ...rawBreakdown,
@@ -14962,6 +15494,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
                 marksAwarded: 0,
                 marksAvailable: total,
                 isCorrect: false,
+                notMarked: true,
                 perCriterion: [],
                 examinerNotes: [
                   isAf
@@ -14969,6 +15502,10 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
                     : "Memo not auto-markable — please review against the memo.",
                 ],
               };
+          if (breakdown.notMarked) {
+            notMarkedCount++;
+            notMarkedMarks += total;
+          }
         }
 
         marksAwarded += breakdown.marksAwarded;
@@ -14992,7 +15529,11 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         });
       }
 
-      const pct = marksAvailable > 0 ? Math.round((marksAwarded / marksAvailable) * 100) : 0;
+      // Percentage is computed over the marks we could actually mark. A
+      // question whose memo is unparsable is shown to the learner flagged as
+      // "not auto-marked" but must not silently count as marks lost.
+      const markedAvailable = Math.max(0, marksAvailable - notMarkedMarks);
+      const pct = markedAvailable > 0 ? Math.round((marksAwarded / markedAvailable) * 100) : 0;
       const sections = Array.from(sectionTotals.entries())
         .sort((a, b) => a[0].localeCompare(b[0], undefined, { numeric: true }))
         .map(([key, v]) => ({
@@ -15008,6 +15549,10 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         session,
         marksAwarded,
         marksAvailable,
+        // Denominator actually used for `percentage`, and how much was excluded.
+        markedAvailable,
+        notMarkedCount,
+        notMarkedMarks,
         percentage: pct,
         band: pct >= 85 ? "star" : pct >= 75 ? "green" : pct >= 60 ? "amber" : "red",
         sections,
@@ -15683,7 +16228,20 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       }
       if (selectedSubjects.length === 0) selectedSubjects = allSubjects;
 
-      const language = profile?.preferredLanguage === 'afrikaans' ? 'af' : 'en';
+      // Was: `profile?.preferredLanguage === 'afrikaans'`. That comparison was
+      // dead — onboarding_results.preferred_language is CHECK-constrained to
+      // the short form 'en'|'af' (migrations/0017), so it never equalled
+      // 'afrikaans' and every learner got English. Resolve through the shared
+      // helper, preferring the live users.preferred_language (which the
+      // in-app language toggle PATCHes) over the frozen onboarding value.
+      const [challengeUser] = await db
+        .select({ preferredLanguage: users.preferredLanguage })
+        .from(users)
+        .where(eq(users.id, userId));
+      const language: LangCode = resolveRequestLang(
+        req.query.lang,
+        challengeUser?.preferredLanguage ?? profile?.preferredLanguage,
+      );
 
       // Prefer DBE-seeded subject_daily_challenges rows when available — these
       // come from the verified DBE catalog ingestion. Only fall back to the
@@ -20058,14 +20616,17 @@ a{color:#28c9d6;text-decoration:none}</style></head>
       overallAccuracyResult,
     ] = await Promise.all([
       pool.query(
-        `SELECT COUNT(*) AS total FROM users WHERE school_id = $1 AND role = 'learner'`,
+        // is_demo = false on every school-dashboard query below: a demo learner
+        // must not inflate a school's reported numbers even if one is ever
+        // assigned a school_id.
+        `SELECT COUNT(*) AS total FROM users WHERE school_id = $1 AND role = 'learner' AND is_demo = false`,
         [schoolId],
       ),
       pool.query(
         `SELECT COUNT(DISTINCT ss.user_id) AS active
          FROM study_sessions ss
          JOIN users u ON ss.user_id = u.id
-         WHERE u.school_id = $1
+         WHERE u.school_id = $1 AND u.is_demo = false
            AND ss.started_at >= NOW() - INTERVAL '30 days'`,
         [schoolId],
       ),
@@ -20073,7 +20634,7 @@ a{color:#28c9d6;text-decoration:none}</style></head>
         `SELECT COALESCE(AVG(ss.duration_seconds), 0) AS avg_seconds
          FROM study_sessions ss
          JOIN users u ON ss.user_id = u.id
-         WHERE u.school_id = $1
+         WHERE u.school_id = $1 AND u.is_demo = false
            AND ss.duration_seconds > 0`,
         [schoolId],
       ),
@@ -20081,7 +20642,7 @@ a{color:#28c9d6;text-decoration:none}</style></head>
         `SELECT COUNT(*) AS total
          FROM study_sessions ss
          JOIN users u ON ss.user_id = u.id
-         WHERE u.school_id = $1`,
+         WHERE u.school_id = $1 AND u.is_demo = false`,
         [schoolId],
       ),
       pool.query(
@@ -20090,7 +20651,7 @@ a{color:#28c9d6;text-decoration:none}</style></head>
          FROM study_sessions ss
          JOIN users u ON ss.user_id = u.id
          JOIN subjects s ON ss.subject_id = s.id
-         WHERE u.school_id = $1
+         WHERE u.school_id = $1 AND u.is_demo = false
            AND ss.subject_id IS NOT NULL
          GROUP BY s.name
          ORDER BY session_count DESC
@@ -20104,7 +20665,7 @@ a{color:#28c9d6;text-decoration:none}</style></head>
          FROM topic_mastery tm
          JOIN users u ON tm.user_id = u.id
          JOIN subjects s ON tm.subject_id = s.id
-         WHERE u.school_id = $1
+         WHERE u.school_id = $1 AND u.is_demo = false
            AND tm.mastery_score > 0
          GROUP BY s.name
          HAVING COUNT(DISTINCT tm.user_id) >= 2
@@ -20120,7 +20681,7 @@ a{color:#28c9d6;text-decoration:none}</style></head>
            SUM(CASE WHEN us.current_streak > 30 THEN 1 ELSE 0 END) AS long_streak
          FROM user_streaks us
          JOIN users u ON us.user_id = u.id
-         WHERE u.school_id = $1`,
+         WHERE u.school_id = $1 AND u.is_demo = false`,
         [schoolId],
       ),
       pool.query(
@@ -20130,7 +20691,7 @@ a{color:#28c9d6;text-decoration:none}</style></head>
          COUNT(*) AS total_attempts
          FROM attempts a
          JOIN users u ON a.user_id = u.id
-         WHERE u.school_id = $1
+         WHERE u.school_id = $1 AND u.is_demo = false
            AND a.marks_available > 0`,
         [schoolId],
       ),

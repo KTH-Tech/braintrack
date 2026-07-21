@@ -21,17 +21,31 @@ function syncLanguageToProfile(language: Language): void {
   }).catch(() => {});
 }
 
+/**
+ * Read the persisted language synchronously.
+ *
+ * This MUST be a lazy useState initialiser rather than an effect. Previously
+ * the provider started at "en" and only read localStorage in useEffect, so the
+ * entire first render — including every React Query fetch that fires on mount
+ * and bakes `lang=` into its URL and queryKey — ran as English for an
+ * Afrikaans learner. That is a direct cause of content "jumping back to
+ * English" on load and after navigation.
+ */
+function readStoredLanguage(): Language {
+  if (typeof window === "undefined") return "en";
+  try {
+    const stored = window.localStorage.getItem("braintrack-language");
+    return stored === "af" ? "af" : "en";
+  } catch {
+    return "en";
+  }
+}
+
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<Language>("en");
+  const [language, setLanguageState] = useState<Language>(readStoredLanguage);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem("braintrack-language");
-    if (stored === "en" || stored === "af") {
-      setLanguageState(stored);
-    } else {
-      setLanguageState("en");
-    }
     setMounted(true);
   }, []);
 

@@ -16,6 +16,7 @@ import { CosmicBackground } from "@/components/neural-bg";
 import { InstallBanner } from "@/components/install-banner";
 import { AppRatingPrompt } from "@/components/app-rating-prompt";
 import { AdminPreviewBanner } from "@/components/admin-preview-banner";
+import { DemoAccountBadge } from "@/components/demo-account-badge";
 import { CookieConsentBanner } from "@/components/cookie-consent-banner";
 import { UpdateBanner } from "@/components/update-banner";
 import { useSwUpdate } from "@/hooks/use-sw-update";
@@ -1046,6 +1047,7 @@ function App() {
           <CosmicBackground />
           <Toaster />
           <AdminPreviewBanner />
+          <DemoAccountBadge />
           <LanguageSync />
           <GlobalSocketConnector />
           <LearnerNotificationEnforcer />

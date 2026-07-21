@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, type ReactNode } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
@@ -12,7 +12,12 @@ import {
   Activity, AlertTriangle, BarChart3, CheckCircle2, Database, Eye, FileEdit, FileText, Flag,
   GraduationCap, Gift, Layers, Loader2, LogOut, Mail, Package,
   ShieldAlert, Store, Users, Zap, Handshake, School, ChevronDown, ChevronUp, QrCode,
+  BookOpen, CreditCard, Inbox, ShieldCheck,
 } from "lucide-react";
+import {
+  BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid,
+  Tooltip as RechartsTooltip, ResponsiveContainer,
+} from "recharts";
 
 type AdminStats = {
   totalUsers: number;
@@ -111,19 +116,15 @@ function FraudFlagsPanel({ isAf }: { isAf: boolean }) {
 
   return (
     <section data-testid="fraud-flags-section">
-      <h2 className="text-[10px] font-black uppercase tracking-[0.24em] text-white mb-3 flex items-center gap-2">
-        <Flag className="w-3 h-3" style={{ color: "#FFE29A" }} />
+      <SectionHeading
+        Icon={Flag}
+        color="#FFE29A"
+        count={unreviewedCount}
+        countTone="attention"
+        testId="fraud-flags-badge"
+      >
         {isAf ? "Bedrogvlae" : "Fraud Flags"}
-        {unreviewedCount > 0 && (
-          <span
-            className="px-1.5 py-0.5 rounded-full text-[9px] font-black tabular-nums"
-            style={{ background: "rgba(255,226,154,0.18)", color: "#FFE29A", border: "1px solid rgba(255,226,154,0.45)" }}
-            data-testid="fraud-flags-badge"
-          >
-            {unreviewedCount}
-          </span>
-        )}
-      </h2>
+      </SectionHeading>
       <NeonShell color="#FFE29A" className="p-5" testId="fraud-flags-panel">
 
         {haltedCount > 0 && (
@@ -367,13 +368,12 @@ function DbHealthPanel({ isAf }: { isAf: boolean }) {
 
   return (
     <section data-testid="db-health-section">
-      <h2 className="text-[10px] font-black uppercase tracking-[0.24em] text-white mb-3 flex items-center gap-2">
-        <Database className="w-3 h-3" style={{ color }} />
+      <SectionHeading Icon={Database} color={color}>
         {isAf ? "Databasis Gesondheid" : "DB Health"}
         {isFetching && !isLoading && (
           <Loader2 className="w-3 h-3 animate-spin" style={{ color }} />
         )}
-      </h2>
+      </SectionHeading>
 
       <NeonShell color={color} className="p-5" testId="db-health-panel">
         {isLoading ? (
@@ -503,7 +503,7 @@ function PartnerSchoolInquiriesPanel({ isAf }: { isAf: boolean }) {
   const [expanded, setExpanded] = useState<number | null>(null);
   const [noteInputs, setNoteInputs] = useState<Record<number, string>>({});
 
-  const { data: inquiries = [], isLoading } = useQuery<PartnerSchoolInquiry[]>({
+  const { data: inquiries = [], isLoading, isError } = useQuery<PartnerSchoolInquiry[]>({
     queryKey: ["/api/admin/school/inquiries"],
   });
 
@@ -530,26 +530,26 @@ function PartnerSchoolInquiriesPanel({ isAf }: { isAf: boolean }) {
 
   return (
     <section>
-      <h2 className="text-[10px] font-black uppercase tracking-[0.24em] text-white mb-3 flex items-center gap-2">
-        <Handshake className="w-3 h-3" style={{ color }} />
+      <SectionHeading Icon={Handshake} color={color} count={inquiries.length} countTone="attention">
         {isAf ? "Inkomende Skoolaansoeke" : "Inbound School Inquiries"}
-        {inquiries.length > 0 && (
-          <span
-            className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[9px] font-black"
-            style={{ background: color, color: "#000" }}
-          >
-            {inquiries.length}
-          </span>
-        )}
-      </h2>
+      </SectionHeading>
       <NeonShell color={color} className="p-5" testId="admin-partner-school-inquiries">
         {isLoading ? (
           <div className="flex items-center gap-2 py-4 text-white text-xs">
             <Loader2 className="w-4 h-4 animate-spin" style={{ color }} />
             {isAf ? "Laai aansoeke…" : "Loading inquiries…"}
           </div>
+        ) : isError ? (
+          /* A failed request used to fall through to the empty state and read
+             as "nothing waiting", which is the opposite of the truth. */
+          <div className="flex items-center gap-2 py-4 text-xs" style={{ color: "#FFE29A" }} data-testid="partner-inquiries-error">
+            <AlertTriangle className="w-4 h-4 shrink-0" />
+            {isAf ? "Kon nie aansoeke laai nie." : "Could not load school inquiries."}
+          </div>
         ) : inquiries.length === 0 ? (
-          <p className="text-white text-xs py-4">{isAf ? "Geen uitstaande aansoeke nie." : "No pending school inquiries."}</p>
+          <p className="text-white text-xs py-4" data-testid="partner-inquiries-empty">
+            {isAf ? "Geen uitstaande aansoeke nie." : "No pending school inquiries."}
+          </p>
         ) : (
           <div className="space-y-2">
             {inquiries.map((inq) => {
@@ -676,7 +676,7 @@ function SchoolEnquiriesPanel({ isAf }: { isAf: boolean }) {
   const [expanded, setExpanded] = useState<number | null>(null);
   const [noteInputs, setNoteInputs] = useState<Record<number, string>>({});
 
-  const { data: enquiries = [], isLoading } = useQuery<SchoolEnquiry[]>({
+  const { data: enquiries = [], isLoading, isError } = useQuery<SchoolEnquiry[]>({
     queryKey: ["/api/admin/school-enquiries"],
   });
 
@@ -699,26 +699,24 @@ function SchoolEnquiriesPanel({ isAf }: { isAf: boolean }) {
 
   return (
     <section>
-      <h2 className="text-[10px] font-black uppercase tracking-[0.24em] text-white mb-3 flex items-center gap-2">
-        <School className="w-3 h-3" style={{ color }} />
+      <SectionHeading Icon={School} color={color} count={newCount} countTone="attention">
         {isAf ? "Skoolaansoeke" : "School Enquiries"}
-        {newCount > 0 && (
-          <span
-            className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[9px] font-black"
-            style={{ background: color, color: "#000" }}
-          >
-            {newCount}
-          </span>
-        )}
-      </h2>
+      </SectionHeading>
       <NeonShell color={color} className="p-5" testId="admin-school-enquiries">
         {isLoading ? (
           <div className="flex items-center gap-2 py-4 text-white text-xs">
             <Loader2 className="w-4 h-4 animate-spin" style={{ color }} />
             {isAf ? "Laai aansoeke…" : "Loading enquiries…"}
           </div>
+        ) : isError ? (
+          <div className="flex items-center gap-2 py-4 text-xs" style={{ color: "#FFE29A" }} data-testid="school-enquiries-error">
+            <AlertTriangle className="w-4 h-4 shrink-0" />
+            {isAf ? "Kon nie aansoeke laai nie." : "Could not load school enquiries."}
+          </div>
         ) : enquiries.length === 0 ? (
-          <p className="text-white text-xs py-4">{isAf ? "Geen aansoeke nog nie." : "No school enquiries yet."}</p>
+          <p className="text-white text-xs py-4" data-testid="school-enquiries-empty">
+            {isAf ? "Geen aansoeke nog nie." : "No school enquiries yet."}
+          </p>
         ) : (
           <div className="space-y-2">
             {enquiries.map((enq) => {
@@ -841,6 +839,345 @@ function SchoolEnquiriesPanel({ isAf }: { isAf: boolean }) {
   );
 }
 
+/**
+ * Consistent section heading. Every band on this page uses the same
+ * eyebrow treatment so the vertical rhythm reads as one document rather
+ * than a pile of unrelated cards.
+ */
+function SectionHeading({
+  Icon, color, children, count, countTone = "neutral", testId,
+}: {
+  Icon?: any;
+  color?: NeonHex;
+  children: ReactNode;
+  count?: number;
+  countTone?: "neutral" | "attention";
+  testId?: string;
+}) {
+  return (
+    <h2
+      className="text-[10px] font-black uppercase tracking-[0.24em] text-white mb-3 flex items-center gap-2"
+      data-testid={testId}
+    >
+      {Icon && <Icon className="w-3 h-3" style={{ color: color ?? "#fff" }} />}
+      {children}
+      {count !== undefined && count > 0 && (
+        <span
+          className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1.5 rounded-full text-[9px] font-black tabular-nums"
+          style={
+            countTone === "attention"
+              ? { background: "#FFE29A", color: "#050508" }
+              : { border: `1px solid ${color ?? "#fff"}`, color: color ?? "#fff" }
+          }
+        >
+          {count}
+        </span>
+      )}
+    </h2>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// DBE content coverage — per-subject released vs ingested question counts.
+// ---------------------------------------------------------------------------
+
+type DbeCoverage = {
+  subjects: Array<{ subject: string; total: number; released: number; pct: number }>;
+  totals: {
+    total: number; released: number; pct: number;
+    subjectCount: number; zeroReleasedCount: number;
+  };
+  fetchedAt: string;
+};
+
+/**
+ * Coarse four-band colour scale. Bands are deliberately blunt so the grid
+ * reads as a heat map in one glance instead of sixty numbers that each need
+ * interpreting. 0% is its own band because "ingested but never released" is
+ * the actionable failure state — those questions exist but no learner can
+ * ever see them.
+ */
+const COVERAGE_BANDS: { min: number; color: NeonHex; en: string; af: string }[] = [
+  { min: 90, color: "#94F7C5", en: "90–100%",  af: "90–100%" },
+  { min: 50, color: "#9FD8FF", en: "50–89%",   af: "50–89%" },
+  { min: 1,  color: "#FFE29A", en: "1–49%",    af: "1–49%" },
+  { min: 0,  color: "#FFB7E5", en: "0% — none released", af: "0% — niks vrygestel" },
+];
+
+function coverageColor(pct: number): NeonHex {
+  return (COVERAGE_BANDS.find((b) => pct >= b.min) ?? COVERAGE_BANDS[3]).color;
+}
+
+function DbeCoveragePanel({ isAf, language }: { isAf: boolean; language: string }) {
+  const color: NeonHex = "#9FF5E8";
+  const [showAll, setShowAll] = useState(false);
+
+  const { data, isLoading, isError } = useQuery<DbeCoverage>({
+    queryKey: ["/api/admin/reports/dbe-coverage"],
+  });
+
+  const subjects = data?.subjects ?? [];
+  const VISIBLE = 24;
+  const shown = showAll ? subjects : subjects.slice(0, VISIBLE);
+  const t = data?.totals;
+
+  return (
+    <section data-testid="dbe-coverage-section">
+      <SectionHeading Icon={BookOpen} color={color}>
+        {isAf ? "DBE Inhoudsdekking" : "DBE Content Coverage"}
+      </SectionHeading>
+
+      <NeonShell color={color} className="p-5" testId="dbe-coverage-panel">
+        {isLoading ? (
+          <div className="flex items-center justify-center gap-2 py-10 text-sm" style={{ color }} data-testid="dbe-coverage-loading">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            {isAf ? "Laai dekking…" : "Loading coverage…"}
+          </div>
+        ) : isError ? (
+          <div className="flex items-center justify-center gap-2 py-10 text-sm" style={{ color: "#FFE29A" }} data-testid="dbe-coverage-error">
+            <AlertTriangle className="w-4 h-4" />
+            {isAf ? "Kon nie dekking laai nie." : "Could not load DBE coverage."}
+          </div>
+        ) : subjects.length === 0 ? (
+          <p className="text-white text-xs py-8 text-center" data-testid="dbe-coverage-empty">
+            {isAf ? "Geen DBE-vrae is nog ingeneem nie." : "No DBE questions have been ingested yet."}
+          </p>
+        ) : (
+          <>
+            {/* Headline numbers */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+              {[
+                { label: "Ingested", labelAf: "Ingeneem", value: formatNumber(t!.total, language), tone: "#fff" as string, testId: "dbe-total" },
+                { label: "Released", labelAf: "Vrygestel", value: formatNumber(t!.released, language), tone: color as string, testId: "dbe-released" },
+                { label: "Coverage", labelAf: "Dekking", value: `${t!.pct}%`, tone: (t!.pct >= 90 ? "#94F7C5" : t!.pct >= 50 ? "#9FD8FF" : "#FFE29A") as string, testId: "dbe-pct" },
+                { label: "Subjects at 0%", labelAf: "Vakke op 0%", value: formatNumber(t!.zeroReleasedCount, language), tone: (t!.zeroReleasedCount > 0 ? "#FFB7E5" : "#94F7C5") as string, testId: "dbe-zero-count" },
+              ].map(({ label, labelAf, value, tone, testId }) => (
+                <div key={label} className="rounded-xl bg-black/40 p-3" style={{ border: `1px solid ${halo(color, 0.3)}` }} data-testid={testId}>
+                  <div className="text-[10px] font-black uppercase tracking-[0.18em]" style={{ color }}>
+                    {isAf ? labelAf : label}
+                  </div>
+                  <div className="text-2xl font-black tabular-nums mt-1" style={{ color: tone }}>{value}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Overall released / not-released bar */}
+            <div className="mb-2 flex items-center justify-between gap-2 text-[10px] font-black uppercase tracking-[0.18em] text-white">
+              <span>{isAf ? "Vrygestel teenoor ingeneem" : "Released vs ingested"}</span>
+              <span className="tabular-nums" style={{ color }}>
+                {formatNumber(t!.released, language)} / {formatNumber(t!.total, language)}
+              </span>
+            </div>
+            <div className="h-3 rounded-full overflow-hidden mb-5" style={{ background: "rgba(255,255,255,0.1)" }} data-testid="dbe-overall-bar">
+              <div className="h-full rounded-full transition-all" style={{ width: `${t!.pct}%`, background: color }} />
+            </div>
+
+            {/* Legend */}
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4">
+              {COVERAGE_BANDS.map((b) => (
+                <span key={b.en} className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-white">
+                  <span className="w-2.5 h-2.5 rounded-sm" style={{ background: b.color }} />
+                  {isAf ? b.af : b.en}
+                </span>
+              ))}
+            </div>
+
+            {/* Per-subject heat grid, worst coverage first */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2" data-testid="dbe-coverage-grid">
+              {shown.map((s) => {
+                const c = coverageColor(s.pct);
+                return (
+                  <div
+                    key={s.subject}
+                    className="rounded-lg px-2.5 py-2 bg-black/40"
+                    style={{ border: `1px solid ${c}` }}
+                    title={`${s.subject} — ${s.released} / ${s.total} released (${s.pct}%)`}
+                    data-testid={`dbe-subject-${s.subject.replace(/\s+/g, "-").toLowerCase()}`}
+                  >
+                    <div className="text-[10px] font-bold text-white leading-tight truncate">{s.subject}</div>
+                    <div className="flex items-baseline justify-between gap-1 mt-1">
+                      <span className="text-sm font-black tabular-nums" style={{ color: c }}>{s.pct}%</span>
+                      <span className="text-[9px] tabular-nums text-white">
+                        {formatNumber(s.released, language)}/{formatNumber(s.total, language)}
+                      </span>
+                    </div>
+                    <div className="mt-1.5 h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.12)" }}>
+                      <div className="h-full rounded-full" style={{ width: `${Math.max(s.pct, s.released > 0 ? 2 : 0)}%`, background: c }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {subjects.length > VISIBLE && (
+              <button
+                type="button"
+                onClick={() => setShowAll((v) => !v)}
+                data-testid="dbe-coverage-toggle"
+                className="mt-4 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-colors"
+                style={{ border: `1px solid ${halo(color, 0.5)}`, color, background: halo(color, 0.08) }}
+              >
+                {showAll
+                  ? (isAf ? "Wys minder" : "Show fewer")
+                  : (isAf
+                      ? `Wys al ${subjects.length} vakke`
+                      : `Show all ${subjects.length} subjects`)}
+              </button>
+            )}
+          </>
+        )}
+      </NeonShell>
+    </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Subscription funnel — trial → active → past_due / cancelled.
+// ---------------------------------------------------------------------------
+
+type SubscriptionFunnel = {
+  stages: Array<{ status: string; count: number }>;
+  total: number;
+  activeRate: number;
+  fetchedAt: string;
+};
+
+const FUNNEL_META: Record<string, { en: string; af: string; color: NeonHex }> = {
+  trial:     { en: "Trial",     af: "Proef",          color: "#FFE29A" },
+  active:    { en: "Active",    af: "Aktief",         color: "#94F7C5" },
+  past_due:  { en: "Past Due",  af: "Agterstallig",   color: "#FFB7E5" },
+  cancelled: { en: "Cancelled", af: "Gekanselleer",   color: "#C5B3FF" },
+};
+
+function funnelMeta(status: string) {
+  return FUNNEL_META[status] ?? { en: status, af: status, color: "#9FD8FF" as NeonHex };
+}
+
+function SubscriptionFunnelPanel({ isAf, language }: { isAf: boolean; language: string }) {
+  const color: NeonHex = "#FFB7E5";
+
+  const { data, isLoading, isError } = useQuery<SubscriptionFunnel>({
+    queryKey: ["/api/admin/reports/subscription-funnel"],
+  });
+
+  const stages = data?.stages ?? [];
+  const total = data?.total ?? 0;
+
+  const chartData = useMemo(
+    () => stages.map((s) => {
+      const m = funnelMeta(s.status);
+      return { label: isAf ? m.af : m.en, count: s.count, fill: m.color };
+    }),
+    [stages, isAf],
+  );
+
+  return (
+    <section data-testid="subscription-funnel-section" className="h-full">
+      <SectionHeading Icon={CreditCard} color={color}>
+        {isAf ? "Intekeningtregter" : "Subscription Funnel"}
+      </SectionHeading>
+
+      <NeonShell color={color} className="p-5" testId="subscription-funnel-panel">
+        {isLoading ? (
+          <div className="flex items-center justify-center gap-2 py-10 text-sm" style={{ color }} data-testid="funnel-loading">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            {isAf ? "Laai tregter…" : "Loading funnel…"}
+          </div>
+        ) : isError ? (
+          <div className="flex items-center justify-center gap-2 py-10 text-sm" style={{ color: "#FFE29A" }} data-testid="funnel-error">
+            <AlertTriangle className="w-4 h-4" />
+            {isAf ? "Kon nie tregter laai nie." : "Could not load subscription funnel."}
+          </div>
+        ) : (
+          <>
+            {/* Stage tiles — always rendered, including at zero, so the shape
+                of the funnel is visible before any subscriptions exist. */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              {stages.map((s) => {
+                const m = funnelMeta(s.status);
+                const share = total > 0 ? Math.round((s.count / total) * 100) : 0;
+                return (
+                  <div
+                    key={s.status}
+                    className="rounded-xl bg-black/40 p-3"
+                    style={{ border: `1px solid ${halo(m.color, 0.4)}` }}
+                    data-testid={`funnel-stage-${s.status}`}
+                  >
+                    <div className="text-[10px] font-black uppercase tracking-[0.18em] truncate" style={{ color: m.color }}>
+                      {isAf ? m.af : m.en}
+                    </div>
+                    <div className="text-2xl font-black tabular-nums text-white mt-1">
+                      {formatNumber(s.count, language)}
+                    </div>
+                    <div className="text-[10px] tabular-nums text-white mt-0.5">
+                      {total > 0 ? `${share}%` : "—"}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {total === 0 ? (
+              <p className="text-white text-xs mt-5 py-6 text-center rounded-xl bg-black/30" data-testid="funnel-empty">
+                {isAf
+                  ? "Geen intekeningrekords nog nie. Die tregter verskyn sodra die eerste proef begin."
+                  : "No subscription records yet. The funnel appears as soon as the first trial starts."}
+              </p>
+            ) : (
+              <>
+                <div className="mt-5" style={{ height: Math.max(chartData.length * 34 + 24, 120) }} data-testid="funnel-chart">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={chartData} layout="vertical" margin={{ top: 4, right: 16, bottom: 4, left: 4 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.12)" horizontal={false} />
+                      <XAxis
+                        type="number"
+                        allowDecimals={false}
+                        stroke="rgba(255,255,255,0.3)"
+                        tick={{ fill: "#ffffff", fontSize: 10 }}
+                      />
+                      <YAxis
+                        type="category"
+                        dataKey="label"
+                        width={88}
+                        stroke="rgba(255,255,255,0.3)"
+                        tick={{ fill: "#ffffff", fontSize: 10 }}
+                      />
+                      <RechartsTooltip
+                        cursor={{ fill: "rgba(255,255,255,0.06)" }}
+                        contentStyle={{
+                          background: "#050508",
+                          border: "1px solid rgba(255,255,255,0.25)",
+                          borderRadius: 12,
+                          color: "#ffffff",
+                          fontSize: 11,
+                        }}
+                        labelStyle={{ color: "#ffffff", fontWeight: 700 }}
+                        itemStyle={{ color: "#ffffff" }}
+                        formatter={(v: any) => [formatNumber(Number(v), language), isAf ? "Intekeninge" : "Subscriptions"]}
+                      />
+                      <Bar dataKey="count" radius={[0, 6, 6, 0]} maxBarSize={22}>
+                        {chartData.map((d) => (
+                          <Cell key={d.label} fill={d.fill} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+
+                <p className="text-xs text-white mt-2" data-testid="funnel-active-rate">
+                  {isAf
+                    ? `${formatNumber(total, language)} intekeninge totaal · ${data!.activeRate}% aktief betalend.`
+                    : `${formatNumber(total, language)} subscriptions total · ${data!.activeRate}% actively paying.`}
+                </p>
+              </>
+            )}
+          </>
+        )}
+      </NeonShell>
+    </section>
+  );
+}
+
 export default function AdminDashboardPage() {
   const { user } = useAuth();
   const { language, toggleLanguage } = useLanguage();
@@ -848,13 +1185,34 @@ export default function AdminDashboardPage() {
   const { toast } = useToast();
   const qc = useQueryClient();
 
-  const { data: stats } = useQuery<AdminStats>({ queryKey: ["/api/admin/reports/stats"] });
+  const { data: stats, isLoading: statsLoading, isError: statsError } =
+    useQuery<AdminStats>({ queryKey: ["/api/admin/reports/stats"] });
   const { data: reportSchedule, isError: reportScheduleError } = useQuery<{ config: { enabled: boolean; frequency: "weekly" | "monthly" } }>({
     queryKey: ["/api/admin/report-schedule"],
   });
-  const { data: emergency } = useQuery<EmergencyStatus>({ queryKey: ["/api/admin/emergency/status"] });
+  const { data: emergency, isLoading: emergencyLoading } =
+    useQuery<EmergencyStatus>({ queryKey: ["/api/admin/emergency/status"] });
   const { data: superFlag } = useQuery<{ isSuperAdmin: boolean }>({ queryKey: ["/api/admin/is-super-admin"] });
-  const { data: referralSummary } = useQuery<{
+
+  // Counts for the "Needs Attention" strip. These reuse the exact query keys
+  // (and, for referral flags, the exact queryFn) of the detail panels further
+  // down the page, so React Query serves both from one cache entry and one
+  // network request rather than double-fetching.
+  const { data: attentionFlags } = useQuery<{ flags: ReferralFlag[]; total: number }>({
+    queryKey: ["/api/admin/referral-flags", false],
+    queryFn: async () => {
+      const r = await apiRequest("GET", "/api/admin/referral-flags?reviewed=false");
+      return r.json();
+    },
+  });
+  const { data: attentionInquiries } = useQuery<PartnerSchoolInquiry[]>({
+    queryKey: ["/api/admin/school/inquiries"],
+  });
+  const { data: attentionEnquiries } = useQuery<SchoolEnquiry[]>({
+    queryKey: ["/api/admin/school-enquiries"],
+  });
+
+  const { data: referralSummary, isLoading: referralSummaryLoading, isError: referralSummaryError } = useQuery<{
     linksGenerated: number;
     referrersWithActivity: number;
     pending: number;
@@ -951,6 +1309,21 @@ export default function AdminDashboardPage() {
   const emergencyActive = Boolean(emergency?.emergency?.active);
   const disabledCount =
     (emergency?.disabledEndpoints?.length ?? 0) + (emergency?.disabledFeatures?.length ?? 0);
+
+  // "Needs attention" queue counts.
+  const openFlagCount = (attentionFlags?.flags ?? []).filter((f) => !f.reviewed).length;
+  const pendingInquiryCount = attentionInquiries?.length ?? 0;
+  const newEnquiryCount = (attentionEnquiries ?? []).filter((e) => e.status === "new").length;
+  const attentionTotal = openFlagCount + pendingInquiryCount + newEnquiryCount;
+
+  const attentionTiles: {
+    label: string; labelAf: string; value: number; href?: string;
+    Icon: any; testId: string;
+  }[] = [
+    { label: "Open Fraud Flags", labelAf: "Oop Bedrogvlae", value: openFlagCount, Icon: Flag, testId: "attention-flags" },
+    { label: "Partner Inquiries", labelAf: "Vennootaansoeke", value: pendingInquiryCount, Icon: Handshake, testId: "attention-inquiries" },
+    { label: "New School Enquiries", labelAf: "Nuwe Skoolaansoeke", value: newEnquiryCount, Icon: Inbox, testId: "attention-enquiries" },
+  ];
 
   const quickActions: {
     href: string; color: NeonHex; title: string; titleAf: string;
@@ -1106,29 +1479,40 @@ export default function AdminDashboardPage() {
                 </span>
               </div>
             )}
+            {/* System status. While the status request is still in flight we
+                say so rather than asserting "nominal" — an unconfirmed green
+                light is worse than no light. */}
             <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1"
               style={{
-                border: emergencyActive ? "1px solid rgba(255,226,154,0.5)" : "1px solid rgba(148,247,197,0.5)",
+                border: emergencyLoading
+                  ? "1px solid rgba(255,255,255,0.3)"
+                  : emergencyActive
+                    ? "1px solid rgba(255,226,154,0.5)"
+                    : "1px solid rgba(148,247,197,0.5)",
               }}
               data-testid="badge-emergency"
             >
-              {emergencyActive
-                ? <AlertTriangle className="w-3 h-3" style={{ color: "#FFE29A" }} />
-                : <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#94F7C5" }} />}
+              {emergencyLoading
+                ? <Loader2 className="w-3 h-3 animate-spin" style={{ color: "#fff" }} />
+                : emergencyActive
+                  ? <AlertTriangle className="w-3 h-3" style={{ color: "#FFE29A" }} />
+                  : <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#94F7C5" }} />}
               <span className="text-[10px] font-bold uppercase tracking-[0.2em]"
-                style={{ color: emergencyActive ? "#FFE29A" : "#94F7C5" }}>
-                {emergencyActive
-                  ? (isAf ? "Noodgeval Aktief" : "Emergency Active")
-                  : (isAf ? "Stelsel Gesond" : "System Nominal")}
+                style={{ color: emergencyLoading ? "#fff" : emergencyActive ? "#FFE29A" : "#94F7C5" }}>
+                {emergencyLoading
+                  ? (isAf ? "Kontroleer stelsel" : "Checking system")
+                  : emergencyActive
+                    ? (isAf ? "Noodgeval Aktief" : "Emergency Active")
+                    : (isAf ? "Stelsel Gesond" : "System Nominal")}
               </span>
             </div>
           </div>
 
           <p className="text-white font-semibold text-sm mb-1">{isAf ? "Welkom terug," : "Welcome back,"}</p>
-          <div role="heading" aria-level={1} className="text-4xl sm:text-5xl text-white font-black tracking-tight leading-[0.98]">
+          <div role="heading" aria-level={1} className="text-3xl sm:text-4xl text-white font-black tracking-tight leading-[0.98]">
             {firstName}.
           </div>
-          <p className="text-white text-base sm:text-lg mt-2 max-w-xl">
+          <p className="text-white text-sm sm:text-base mt-2 max-w-xl">
             {isAf
               ? "Die hele BrainTrack-enjinkamer is hier. Hou kaarte dop, kataloge oop en die stelsel onder beheer."
               : "The whole BrainTrack engine room, right here. Watch the dials, open catalogs, keep the system green."}
@@ -1138,6 +1522,7 @@ export default function AdminDashboardPage() {
             <div
               className="mt-4 inline-flex items-center gap-2 rounded-full px-3 py-1.5"
               style={{ border: "1px solid rgba(255,226,154,0.55)" }}
+              data-testid="hero-disabled-pill"
             >
               <AlertTriangle className="w-3.5 h-3.5" style={{ color: "#FFE29A" }} />
               <span className="text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: "#FFE29A" }}>
@@ -1147,41 +1532,142 @@ export default function AdminDashboardPage() {
           )}
         </section>
 
-        {/* Stats grid */}
-        <section>
-          <h2 className="text-[10px] font-black uppercase tracking-[0.24em] text-white mb-3">
-            {isAf ? "Lewende Telling" : "Live Counts"}
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-            {statCards.map(({ label, labelAf, value, color, Icon, testId }) => {
-              const h = halo(color, 0.35);
+        {/* ------------------------------------------------------------------
+            BAND 1 — NEEDS ATTENTION.
+            The single most important question an ops dashboard answers is
+            "is there anything waiting for me?". Previously that lived three
+            screens down inside four equal-weight panels; now it is the first
+            thing under the masthead, and each tile jumps to its own panel.
+        ------------------------------------------------------------------- */}
+        <section data-testid="attention-section">
+          <SectionHeading
+            Icon={attentionTotal > 0 ? AlertTriangle : ShieldCheck}
+            color={attentionTotal > 0 ? "#FFE29A" : "#94F7C5"}
+            count={attentionTotal}
+            countTone="attention"
+          >
+            {isAf ? "Benodig Aandag" : "Needs Attention"}
+          </SectionHeading>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {attentionTiles.map(({ label, labelAf, value, Icon, testId }) => {
+              const active = value > 0;
+              const c: NeonHex = active ? "#FFE29A" : "#94F7C5";
               return (
-                <NeonShell key={label} color={color} className="p-4" testId={testId}>
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center"
-                      style={{ background: "rgba(255,255,255,0.035)", border: `1px solid ${h}` }}>
-                      <Icon className="w-4 h-4" style={{ color }} />
+                <NeonShell key={label} color={c} className="p-4" testId={testId}>
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                      style={{ background: halo(c, 0.1), border: `1px solid ${halo(c, 0.4)}` }}
+                    >
+                      <Icon className="w-4 h-4" style={{ color: c }} />
                     </div>
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color }}>
-                      {isAf ? labelAf : label}
-                    </span>
-                  </div>
-                  <div className="text-3xl font-black tabular-nums text-white">
-                    {formatNumber(value, language)}
+                    <div className="min-w-0 flex-1">
+                      <div className="text-[10px] font-black uppercase tracking-[0.18em] truncate" style={{ color: c }}>
+                        {isAf ? labelAf : label}
+                      </div>
+                      <div className="text-2xl font-black tabular-nums text-white leading-tight">
+                        {formatNumber(value, language)}
+                      </div>
+                    </div>
                   </div>
                 </NeonShell>
               );
             })}
           </div>
+
+          {attentionTotal === 0 && (
+            <p className="text-white text-xs mt-3" data-testid="attention-all-clear">
+              {isAf
+                ? "Alles skoon — geen oop vlae of onbeantwoorde skoolaansoeke nie."
+                : "All clear — no open flags and no unanswered school enquiries."}
+            </p>
+          )}
         </section>
 
-        {/* Learner Referral Programme */}
+        {/* Stats grid */}
+        {/* ------------------------------------------------------------------
+            BAND 2 — THE BUSINESS.
+            Who is on the platform (Live Counts) sits beside how they are
+            paying (Subscription Funnel), because those two are read together.
+        ------------------------------------------------------------------- */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+          <section data-testid="live-counts-section">
+            <SectionHeading Icon={Users} color="#9FF5E8">
+              {isAf ? "Lewende Telling" : "Live Counts"}
+            </SectionHeading>
+
+            {statsError ? (
+              <NeonShell color="#FFE29A" className="p-5" testId="live-counts-error">
+                <div className="flex items-center justify-center gap-2 py-6 text-sm" style={{ color: "#FFE29A" }}>
+                  <AlertTriangle className="w-4 h-4" />
+                  {isAf ? "Kon nie tellings laai nie." : "Could not load live counts."}
+                </div>
+              </NeonShell>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {statCards.map(({ label, labelAf, value, color, Icon, testId }) => {
+                  const h = halo(color, 0.35);
+                  return (
+                    <NeonShell key={label} color={color} className="p-4" testId={testId}>
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                          style={{ background: "rgba(255,255,255,0.035)", border: `1px solid ${h}` }}>
+                          <Icon className="w-4 h-4" style={{ color }} />
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] leading-tight" style={{ color }}>
+                          {isAf ? labelAf : label}
+                        </span>
+                      </div>
+                      {/* An em dash while loading, never a placeholder zero —
+                          "0 learners" and "not loaded yet" are different
+                          facts and must not look identical. */}
+                      <div className="text-3xl font-black tabular-nums text-white">
+                        {statsLoading ? "—" : formatNumber(value, language)}
+                      </div>
+                    </NeonShell>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+
+          <SubscriptionFunnelPanel isAf={isAf} language={language} />
+        </div>
+
+        {/* ------------------------------------------------------------------
+            BAND 3 — CONTENT READINESS.
+        ------------------------------------------------------------------- */}
+        <DbeCoveragePanel isAf={isAf} language={language} />
+
+        {/* ------------------------------------------------------------------
+            BAND 4 — WORK QUEUES.
+            The three panels an admin actually acts on, grouped together and
+            in the same order as the Needs Attention tiles above so a tile and
+            its panel are trivially connected.
+        ------------------------------------------------------------------- */}
+        <FraudFlagsPanel isAf={isAf} />
+        <PartnerSchoolInquiriesPanel isAf={isAf} />
+        <SchoolEnquiriesPanel isAf={isAf} />
+
+        {/* ------------------------------------------------------------------
+            BAND 5 — GROWTH. Referral programme + its drill-down table.
+        ------------------------------------------------------------------- */}
         <section>
-          <h2 className="text-[10px] font-black uppercase tracking-[0.24em] text-white mb-3 flex items-center gap-2">
-            <Gift className="w-3 h-3" style={{ color: "#9FD8FF" }} />
+          <SectionHeading Icon={Gift} color="#9FD8FF">
             {isAf ? "Verwysingsprogram" : "Referral Programme"}
-          </h2>
+          </SectionHeading>
           <NeonShell color="#9FD8FF" className="p-5" testId="admin-referral-summary">
+            {referralSummaryError && (
+              <div
+                className="mb-4 flex items-center gap-2 rounded-xl px-4 py-3 text-xs"
+                style={{ background: "rgba(255,226,154,0.1)", border: "1px solid rgba(255,226,154,0.4)", color: "#FFE29A" }}
+                data-testid="ref-summary-error"
+              >
+                <AlertTriangle className="w-4 h-4 shrink-0" />
+                {isAf ? "Kon nie verwysingsopsomming laai nie." : "Could not load the referral summary."}
+              </div>
+            )}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
               {[
                 { label: "Links",            labelAf: "Skakels",     value: referralSummary?.linksGenerated ?? 0,         testId: "ref-links" },
@@ -1196,7 +1682,7 @@ export default function AdminDashboardPage() {
                     {isAf ? labelAf : label}
                   </div>
                   <div className="text-2xl font-black tabular-nums text-white mt-1">
-                    {formatNumber(value, language)}
+                    {referralSummaryLoading ? "—" : formatNumber(value, language)}
                   </div>
                 </div>
               ))}
@@ -1410,23 +1896,20 @@ export default function AdminDashboardPage() {
           </NeonShell>
         </section>
 
-        {/* DB Health */}
+        {/* ------------------------------------------------------------------
+            BAND 6 — INFRASTRUCTURE. Reference data, checked when something
+            feels slow rather than scanned every visit, so it sits low.
+        ------------------------------------------------------------------- */}
         <DbHealthPanel isAf={isAf} />
 
-        {/* Fraud Flags */}
-        <FraudFlagsPanel isAf={isAf} />
-
-        {/* Inbound Partner School Inquiries */}
-        <PartnerSchoolInquiriesPanel isAf={isAf} />
-
-        {/* School Enquiries */}
-        <SchoolEnquiriesPanel isAf={isAf} />
-
-        {/* Quick actions */}
+        {/* ------------------------------------------------------------------
+            BAND 7 — COMMAND DECK. Pure navigation, so it anchors the bottom
+            instead of competing with live data for the top of the page.
+        ------------------------------------------------------------------- */}
         <section>
-          <h2 className="text-[10px] font-black uppercase tracking-[0.24em] text-white mb-3">
+          <SectionHeading Icon={Layers} color="#C5B3FF">
             {isAf ? "Bedieningspaneel" : "Command Deck"}
-          </h2>
+          </SectionHeading>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {(() => {
               const { color, title, titleAf, desc, descAf, testId } = previewCard;

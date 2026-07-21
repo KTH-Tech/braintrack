@@ -664,11 +664,15 @@ export async function getNextMilestone(userId: string): Promise<BadgeProgress | 
 export async function getDAU(fromDate: string, toDate: string): Promise<any[]> {
   try {
     const { rows } = await pool.query(
+      // u.is_demo = false: a demo learner's seeded attempts are not real
+      // activity and must never appear in daily active users.
       `SELECT
          DATE(a.created_at) AS date,
          COUNT(DISTINCT a.user_id) AS active_users
        FROM attempts a
+       JOIN users u ON u.id = a.user_id
        WHERE DATE(a.created_at) >= $1 AND DATE(a.created_at) <= $2
+         AND u.is_demo = false
        GROUP BY DATE(a.created_at)
        ORDER BY date ASC`,
       [fromDate, toDate]
@@ -684,8 +688,10 @@ export async function getQuizCompletionRate(): Promise<{ total: number; complete
     const { rows: [row] } = await pool.query( // nosemgrep: javascript.drizzle-orm.security.audit.ban-drizzle-sql-raw -- static SQL, no user input
       `SELECT
          COUNT(*) AS total,
-         SUM(CASE WHEN status='completed' THEN 1 ELSE 0 END) AS completed
-       FROM exam_sessions`
+         SUM(CASE WHEN es.status='completed' THEN 1 ELSE 0 END) AS completed
+       FROM exam_sessions es
+       JOIN users u ON u.id = es.user_id
+       WHERE u.is_demo = false`
     );
     const total = parseInt(row?.total) || 0;
     const completed = parseInt(row?.completed) || 0;
@@ -698,7 +704,10 @@ export async function getQuizCompletionRate(): Promise<{ total: number; complete
 export async function getBadgeAwardRate(): Promise<{ totalBadgesAwarded: number; uniqueUsers: number; avgPerUser: number }> {
   try {
     const { rows: [row] } = await pool.query( // nosemgrep: javascript.drizzle-orm.security.audit.ban-drizzle-sql-raw -- static SQL, no user input
-      `SELECT COUNT(*) AS total, COUNT(DISTINCT user_id) AS unique_users FROM user_badges`
+      `SELECT COUNT(*) AS total, COUNT(DISTINCT ub.user_id) AS unique_users
+       FROM user_badges ub
+       JOIN users u ON u.id = ub.user_id
+       WHERE u.is_demo = false`
     );
     const total = parseInt(row?.total) || 0;
     const uniqueUsers = parseInt(row?.unique_users) || 0;
@@ -723,7 +732,7 @@ export async function getAvgReadinessBySchool(): Promise<any[]> {
        FROM users u
        LEFT JOIN topic_mastery tm ON tm.user_id = u.id
        LEFT JOIN user_streaks us ON us.user_id = u.id
-       WHERE u.role = 'learner' AND u.school IS NOT NULL
+       WHERE u.role = 'learner' AND u.school IS NOT NULL AND u.is_demo = false
        GROUP BY u.school
        ORDER BY avg_readiness DESC
        LIMIT 50`

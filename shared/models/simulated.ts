@@ -57,9 +57,56 @@ export const generatedQuestions = pgTable("generated_questions", {
   examinerProfileId: integer("examiner_profile_id"),
   groundingQuestionIds: jsonb("grounding_question_ids"),
   generationModel: text("generation_model"),
-  // Verification trail — the basis of any accuracy claim.
+  /** "What is this really testing + the mistake that loses marks." Learner-facing,
+   *  written in the same language as `language`. Required for release. */
+  examinerTip: text("examiner_tip"),
+  // ── Quality scoring (server/question-generator.ts `scoreGeneratedQuestion`) ──
+  // All 0-100. Written on every insert; an unscored row is a bug, not a default.
+  // The prior `dbe_simulated_questions` batch stored 222 rows with all-zero
+  // scores because scoring never ran — hence `qualityFlag` is NOT NULL, so a
+  // row physically cannot be persisted without a verdict attached.
+  /** Topic/CAPS grounding: does it actually examine the topic it claims to? */
+  capsAlignment: integer("caps_alignment").default(0),
+  /** Fit to the examiner profile: marks in range, numbering depth, memo length. */
+  structureScore: integer("structure_score").default(0),
+  /** Memo is a learner-facing model answer with a mark breakdown that adds up. */
+  answerCompleteness: integer("answer_completeness").default(0),
+  /** Weighted composite of the three above. */
+  qualityScore: integer("quality_score").default(0),
+  /** pass | review | reject — the gate. Only `pass` may be released. */
+  qualityFlag: text("quality_flag").notNull().default("review")
+    .$type<"pass" | "review" | "reject">(),
+  /** Per-check breakdown + human-readable reasons, for auditing the gate. */
+  scoreDetail: jsonb("score_detail"),
+  /** Groups one generator run, so a bad batch can be retired wholesale. */
+  batchId: text("batch_id"),
+  // ── Verification trail — the basis of any accuracy claim ──────────────────
+  // Written by server/content-verifier.ts. These exist because the quality
+  // scorer above validates STRUCTURE, VOICE and COMPLETENESS and cannot tell
+  // whether a question is TRUE: it passed an Accounting MCQ teaching LIFO at
+  // 86/100 and released it, when LIFO is prohibited under IAS 2 and is not in
+  // CAPS Grade 12 Accounting at all.
+  /** The item was independently re-answered WITHOUT sight of `answerText` and
+   *  the two answers agreed. false = disagreed OR uncertain OR the check
+   *  errored — read `solverVerdict` for which. */
   solverVerified: boolean("solver_verified").default(false),
+  /** 0–1 semantic agreement between the memo and the independent answer. */
   solverAnswerMatch: numeric("solver_answer_match"),
+  /** agree | disagree | uncertain. A disagreement is NOT proof the memo is
+   *  wrong — the solver can be wrong too, hence the third outcome. */
+  solverVerdict: text("solver_verdict").$type<"agree" | "disagree" | "uncertain">(),
+  solverReason: text("solver_reason"),
+  /** on_syllabus | off_syllabus | uncertain. `off_syllabus` requires an
+   *  SA-CAPS-anchored LLM judgement AND zero corroboration in a dense verbatim
+   *  corpus; anything less decisive degrades to `uncertain`. */
+  capsVerdict: text("caps_verdict").$type<"on_syllabus" | "off_syllabus" | "uncertain">(),
+  capsConfidence: numeric("caps_confidence"),
+  capsReason: text("caps_reason"),
+  /** ok | needs_review. Advisory only — nothing auto-deletes or unpublishes. */
+  verificationFlag: text("verification_flag").$type<"ok" | "needs_review">(),
+  verificationDetail: jsonb("verification_detail"),
+  verificationModel: text("verification_model"),
+  verifiedAt: timestamp("verified_at", { withTimezone: true }),
   similarityMax: numeric("similarity_max"),
   humanApproved: boolean("human_approved"),
   releasedAt: timestamp("released_at", { withTimezone: true }),
@@ -67,6 +114,13 @@ export const generatedQuestions = pgTable("generated_questions", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 }, (t) => ({
   subjectReleasedIdx: index("generated_questions_subject_released_idx").on(t.subject, t.releasedAt),
+  // Learner reads are always (subject, paper, language) + released; batch/flag
+  // indexes serve the admin review queue and per-batch retirement.
+  subjectPaperLangIdx: index("generated_questions_subject_paper_lang_idx")
+    .on(t.subject, t.paperNumber, t.language),
+  batchIdx: index("generated_questions_batch_idx").on(t.batchId),
+  qualityFlagIdx: index("generated_questions_quality_flag_idx").on(t.qualityFlag, t.qualityScore),
+  verificationIdx: index("generated_questions_verification_idx").on(t.verificationFlag, t.capsVerdict),
 }));
 
 /** A full assembled simulated paper. */

@@ -942,7 +942,10 @@ export default function OnboardingPage() {
         focusDuration: answers.focus_duration || 45,
         challenges: [],
         goals: answers.goals || [],
-        preferredLanguage: language === "af" ? "afrikaans" : "english",
+        // Short form only. The DB CHECK constraint (migrations/0017) requires
+        // 'en'|'af'; sending the long form here is what led server code to
+        // compare against 'afrikaans' and silently always resolve to English.
+        preferredLanguage: language,
         rawAnswersJson: { ...answers, subjectMarks, varkPrimary, varkSecondary, schoolName, schoolId, grade, firstName, lastName },
         traitsJson: traits,
         recommendationsJson: recommendations,

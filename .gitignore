@@ -18,3 +18,13 @@ test-results
 *.pem
 *.zip
 *.tar.gz
+
+# question-generator resumable checkpoints (scripts/generate-questions.ts)
+.generate-questions-state.json
+.gq-*.json
+
+# Agent scratch — local test scaffolding, never shipped
+.tmp-pgdata/
+.afrmemo-work/
+.report-preview/
+_tmp-*

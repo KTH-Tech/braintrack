@@ -65,6 +65,17 @@ export const users = pgTable("users", {
   // Operational flag derived from DOB at onboarding submission: age < 18.
   // Drives the parent-consent + card-capture gate for trial activation.
   isMinor: boolean("is_minor"),
+  // Demo accounts — created ONLY by scripts/seed-demo-accounts.ts so the owner
+  // can sign in and review the learner and parent experiences against realistic
+  // data.
+  //
+  // This is a business-metric exclusion flag, not a cosmetic label. Every admin
+  // stat, report, list and export filters `is_demo = false` so demo activity can
+  // never be counted as real usage. If you add an endpoint that counts or lists
+  // users, learners, parents, subscriptions or trials, it MUST filter this out —
+  // that is the entire reason the column exists. The normal signup path never
+  // sets it, so real accounts are `false` by construction.
+  isDemo: boolean("is_demo").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 }, (table) => [

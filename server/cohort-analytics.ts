@@ -85,6 +85,10 @@ export async function aggregateCohortPerformance(
     LEFT JOIN partner_schools ps ON ps.id = u.school_id
     WHERE a.dbe_verbatim_question_id IS NOT NULL
       AND a.is_correct IS NOT NULL
+      -- Demo accounts are seeded with synthetic attempts. Including them would
+      -- both distort the cohort averages and count toward the k-anonymity
+      -- threshold with a user who is not a real learner.
+      AND u.is_demo = false
       ${sinceClause}
     GROUP BY
       d.subject, d.topic, d.paper_number, a.cognitive_level,

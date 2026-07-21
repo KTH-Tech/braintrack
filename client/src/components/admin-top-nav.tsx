@@ -85,7 +85,7 @@ const NAV_GROUPS: NavGroup[] = [
     labelEn: "Quick Jumps",
     labelAf: "Vinnige Skakels",
     items: [
-      { key: "classroom", href: "/classroom", labelEn: "Learner Classroom", labelAf: "Leerderklaskamer", Icon: GraduationCap },
+      { key: "classroom", href: "/dashboard", labelEn: "Learner Dashboard", labelAf: "Leerderpaneel", Icon: GraduationCap },
       { key: "parent", href: "/parent", labelEn: "Parent View", labelAf: "Ouer Aansig", Icon: Users },
     ],
   },
@@ -167,7 +167,6 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
                 fontWeight: 800,
                 letterSpacing: "2.4px",
                 color: "#fff",
-                opacity: 0.85,
               }}
             >
               {isAf ? group.labelAf : group.labelEn}
@@ -268,7 +267,7 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
               padding: "9px 12px",
               transition: "all .2s",
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#FF8DA1"; e.currentTarget.style.color = "#FF8DA1"; }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#FFB7E5"; e.currentTarget.style.color = "#FFB7E5"; }}
             onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,.14)"; e.currentTarget.style.color = "#fff"; }}
           >
             <LogOut style={{ width: 15, height: 15 }} />

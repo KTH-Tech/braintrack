@@ -1387,9 +1387,31 @@ export default function ParentDashboardPage() {
   const parentNavLinks = PARENT_NAV_LINKS(nt);
   useSocket();
 
+  // ── Admin sample-data preview ────────────────────────────────────────────
+  // Production has no parent-learner links, so this page renders its empty
+  // state and the design cannot be reviewed. `/parent?preview=1` lets an ADMIN
+  // (and only an admin) load the dashboard against synthetic data served by
+  // server/parent-preview.ts. Nothing is written to the database.
+  //
+  // Gating is belt-and-braces: this flag needs `role === "admin"` on the
+  // client, and the server independently re-checks admin role + email
+  // allowlist before it will return a single sample row. A non-admin who adds
+  // ?preview=1 by hand gets their normal data, because the flag is false here
+  // and the server middleware falls through to the real handler.
+  const isAdmin = user?.role === "admin";
+  const previewMode =
+    isAdmin && new URLSearchParams(window.location.search).get("preview") === "1";
+
   // All linked children for this parent (drives per-child readiness rendering and the active-child switcher).
+  // In preview mode this returns a single synthetic child whose id is the
+  // reserved preview learner id — every per-child widget below then requests
+  // that id and is served sample data by the same middleware.
   const { data: childrenData } = useQuery<{ children: Array<{ learnerUserId: string; learnerName: string }> }>({
-    queryKey: ["/api/parent/children"],
+    queryKey: ["/api/parent/children", previewMode ? "preview" : "live"],
+    queryFn: () =>
+      fetch(previewMode ? "/api/parent/children?preview=1" : "/api/parent/children", {
+        credentials: "include",
+      }).then(r => r.json()),
   });
 
   // Active child selection — drives every per-child widget below. Defaults to the first linked
@@ -1540,6 +1562,27 @@ export default function ParentDashboardPage() {
               {isAf ? "Tuis" : "Home"}
             </button>
           </Link>
+
+          {/* Admins land on this dead end whenever no family is linked, which
+              is exactly when they want to review the layout. Surface the
+              sample-data preview here rather than leaving it a secret URL. */}
+          {isAdmin && (
+            <div className="mt-6 pt-5" style={{ borderTop: "1px solid rgba(255,255,255,.1)" }}>
+              <p className="text-xs text-white/80">
+                {isAf
+                  ? "Admin: laai hierdie bladsy met voorbeelddata om die ontwerp na te gaan. Niks word in die databasis geskep nie."
+                  : "Admin: load this page with sample data to review the design. Nothing is written to the database."}
+              </p>
+              <button
+                onClick={() => { window.location.href = "/parent?preview=1"; }}
+                className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold hover:bg-white/10 mt-3"
+                style={{ color: PASTEL.amber, border: `1.5px solid ${PASTEL.amber}` }}
+                data-testid="parent-preview-enter"
+              >
+                {isAf ? "Voorskou met voorbeelddata" : "Preview with sample data"}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -1769,6 +1812,50 @@ export default function ParentDashboardPage() {
       </header>
 
       <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+        {/* ── Admin preview banner ──────────────────────────────────────────
+            Deliberately loud and impossible to miss. Everything on this page
+            is synthetic when this is showing — it must never be mistaken for
+            a real family's data. */}
+        {previewMode && (
+          <div
+            className="rounded-2xl px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5"
+            style={{
+              background: "repeating-linear-gradient(135deg, rgba(255,226,154,.16) 0 14px, rgba(255,226,154,.06) 14px 28px)",
+              border: `2px dashed ${PASTEL.amber}`,
+            }}
+            data-testid="parent-preview-banner"
+            role="status"
+            aria-live="polite"
+          >
+            <span
+              className="inline-flex items-center shrink-0 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em]"
+              style={{ background: PASTEL.amber, color: "#050508" }}
+            >
+              {isAf ? "Voorbeelddata" : "Sample data"}
+            </span>
+            <div className="min-w-0">
+              <p className="text-sm font-bold text-white">
+                {isAf
+                  ? "Admin-voorskou — niks hier is werklik nie."
+                  : "Admin preview — nothing on this page is real."}
+              </p>
+              <p className="text-xs text-white/80 mt-0.5">
+                {isAf
+                  ? "Elke leerder, punt, vak en aktiwiteit hieronder is versinde demodata wat slegs vir ontwerp-oorsig gewys word. Geen rekords is in die databasis geskep nie. Verwyder ?preview=1 uit die URL om na regte data terug te keer."
+                  : "Every learner, mark, subject and activity below is invented demo data shown for design review only. No records were created in the database. Remove ?preview=1 from the URL to return to live data."}
+              </p>
+            </div>
+            <button
+              onClick={() => { window.location.href = "/parent"; }}
+              className="sm:ml-auto shrink-0 px-3 py-2 rounded-xl text-xs font-bold hover:bg-white/10"
+              style={{ color: PASTEL.amber, border: `1.5px solid ${PASTEL.amber}` }}
+              data-testid="parent-preview-exit"
+            >
+              {isAf ? "Verlaat voorskou" : "Exit preview"}
+            </button>
+          </div>
+        )}
+
         {/* ── Greeting — who this is, and who it's about ─────────────────── */}
         <section className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5">
           <div>

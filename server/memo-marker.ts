@@ -16,6 +16,8 @@
  *     attached to each criterion — never AI prose.
  */
 
+import { cleanMemoText, sanitizeKeywords, isMemoContentless } from "./memo-clean";
+
 export type MarkSchemeCriterion = {
   id: string;
   /** Required keywords (stemmed) — every keyword must be present for the mark. */
@@ -42,6 +44,13 @@ export type MarkBreakdown = {
   marksAwarded: number;
   marksAvailable: number;
   isCorrect: boolean;
+  /**
+   * True when every criterion in the scheme was examiner furniture (layout
+   * codes / marker instructions) and nothing markable survived sanitising.
+   * The caller MUST NOT show a score for such a question — there is no memo
+   * content to mark against. See server/memo-clean.ts.
+   */
+  unmarkable?: boolean;
   perCriterion: Array<{
     id: string;
     marks: number;
@@ -82,10 +91,58 @@ function lightStem(word: string): string {
 export function tokenize(text: string): string[] {
   return (text || "")
     .toLowerCase()
-    .replace(/[^\p{L}\p{N}\s%./-]/gu, " ")
+    // "/" is an OR separator in DBE memos ("Jam/Jelly/Marmalade"), not part of
+    // a word. Splitting on it stops alternatives being glued into a single
+    // unmatchable token like "voedselallergie/allergiese".
+    .replace(/\//g, " ")
+    .replace(/[^\p{L}\p{N}\s%.-]/gu, " ")
     .split(/\s+/)
     .filter((t) => t.length > 1 && !STOPWORDS.has(t))
     .map(lightStem);
+}
+
+/**
+ * DBE memos express acceptable alternatives with "/" — a single mark is
+ * earned by ANY one of them:
+ *
+ *   "Voedselallergie/Allergiese reaksie/Anafilakse/Allergie✓"   (1 mark)
+ *   "Jam/Jelly/ Marmalade"                                       (1 mark)
+ *
+ * Treating that as one required phrase means a learner who writes the first
+ * listed alternative scores zero — which is exactly what row 85817 did.
+ * This splits such a line into its alternatives so each can satisfy the
+ * criterion on its own.
+ *
+ * Returns [] when the line is not an alternatives list, so ordinary prose
+ * memos (and dates/fractions like "1/2") are left untouched.
+ */
+export function extractAlternatives(line: string): string[] {
+  const text = (line || "").replace(/[✓✔√]/g, " ").trim();
+  if (!text.includes("/")) return [];
+  // Numeric fractions and ratios are not alternatives.
+  if (/^\s*\d+\s*\/\s*\d+\s*$/.test(text)) return [];
+
+  const parts = text
+    .split("/")
+    .map((p) => p.trim())
+    .filter((p) => p.length > 0);
+  if (parts.length < 2) return [];
+
+  // Every segment must look like an answer phrase, not a sentence fragment
+  // from prose that merely happens to contain a slash.
+  const usable = parts.filter((p) => p.length >= 2 && p.length <= 80 && /\p{L}/u.test(p));
+  if (usable.length < 2) return [];
+  return usable.slice(0, 12);
+}
+
+/**
+ * Tokenize memo text into expected-answer keywords, with marker vocabulary
+ * and layout codes filtered out. Used everywhere a criterion's `keywords`
+ * are built so no derivation path can leak examiner furniture into the
+ * terms a learner is graded against.
+ */
+function deriveKeywords(text: string, limit: number): string[] {
+  return sanitizeKeywords(tokenize(text)).slice(0, limit);
 }
 
 // ---------------------------------------------------------------
@@ -155,6 +212,10 @@ function extractAcceptable(line: string): string[] {
   OR_RE.lastIndex = 0;
   while ((m = OR_RE.exec(line)) !== null) {
     if (m[2]) out.push(m[2].trim());
+  }
+  // "/"-separated alternatives count as acceptable variants too.
+  for (const alt of extractAlternatives(line)) {
+    if (!out.includes(alt)) out.push(alt);
   }
   return out;
 }
@@ -234,8 +295,17 @@ export function parseMemoToScheme(
   memoText: string | null | undefined,
   totalMarks: number,
 ): MarkScheme | null {
-  const text = (memoText || "").trim();
-  if (text.length < 10) return null;
+  // Strip examiner artifacts (layout codes like "M194 F37", marker
+  // instructions like "Enige volgorde" / "Max (4)") BEFORE any keyword is
+  // derived. Without this the marker tells learners the expected answer terms
+  // are the examiner's formatting notes — see server/memo-clean.ts.
+  const text = cleanMemoText(memoText);
+  // Gate on CONTENT, not raw length. A fixed length floor applied after
+  // cleaning would reject legitimate one-word memos — DBE answers like
+  // "Sorbet", "Lewer" and "Linne" are complete, markable answers. What must be
+  // rejected is a memo with no answer content at all.
+  if (isMemoContentless(text)) return null;
+  if (text.replace(/[^\p{L}\p{N}]/gu, "").length < 2) return null;
 
   const total = Math.max(1, totalMarks || 1);
   const lines = splitMemoLines(text);
@@ -268,7 +338,10 @@ export function parseMemoToScheme(
     const cleaned = cleanLine(line);
     if (cleaned.length < 2) continue;
     const acceptable = extractAcceptable(line);
-    const keywords = tokenize(cleaned).slice(0, 8);
+    const keywords = deriveKeywords(cleaned, 8);
+    // Zero keywords after sanitising means the line was pure examiner
+    // furniture ("Enige volgorde M194 F37"). Skip it — a criterion with no
+    // real content term can never be legitimately satisfied.
     if (keywords.length === 0) continue;
     tagged.push({
       id: `c${tagged.length + 1}`,
@@ -315,7 +388,7 @@ export function parseMemoToScheme(
     .slice(0, Math.max(1, Math.min(total, 8)));
   if (bullets.length === 0) {
     // Single-blob memo — one criterion worth all marks
-    const keywords = tokenize(text).slice(0, 12);
+    const keywords = deriveKeywords(text, 12);
     if (keywords.length === 0) return null;
     const single: MarkSchemeCriterion[] = [{
       id: "c1",
@@ -334,11 +407,16 @@ export function parseMemoToScheme(
     };
   }
 
-  const perItem = Math.max(1, Math.floor(total / bullets.length));
-  const remainder = total - perItem * bullets.length;
-  const criteria: MarkSchemeCriterion[] = bullets.map((b, i) => ({
+  // Drop bullets that sanitise down to nothing before allocating marks, so
+  // furniture lines do not consume a share of the question's total.
+  const contentBullets = bullets.filter((b) => deriveKeywords(b, 6).length > 0);
+  if (contentBullets.length === 0) return null;
+
+  const perItem = Math.max(1, Math.floor(total / contentBullets.length));
+  const remainder = total - perItem * contentBullets.length;
+  const criteria: MarkSchemeCriterion[] = contentBullets.map((b, i) => ({
     id: `c${i + 1}`,
-    keywords: tokenize(b).slice(0, 6),
+    keywords: deriveKeywords(b, 6),
     acceptable: extractAcceptable(b),
     marks: perItem + (i === 0 ? remainder : 0),
     memoExcerpt: b.slice(0, 220),
@@ -401,6 +479,44 @@ export function markAgainstScheme(
   const learnerLower = (learnerAnswer || "").toLowerCase();
   const learnerTokens = new Set(tokenize(learnerAnswer || ""));
 
+  // ── Defensive sanitising of the incoming scheme ────────────────────────
+  // `mark_scheme` is persisted jsonb and the learner paths mark from the
+  // STORED scheme (routes.ts `ensureMarkScheme` is read-only). Thousands of
+  // released rows were parsed before memo cleaning existed and still carry
+  // artifact keywords such as `enige`, `volgorde`, `m194`, `f37`. Filtering
+  // here fixes those rows at mark time, without a re-ingest or a DB write.
+  const sanitised = scheme.criteria
+    .map((c) => ({ ...c, keywords: sanitizeKeywords(c.keywords) }))
+    .filter((c) => c.keywords.length > 0 || c.acceptable.length > 0);
+
+  if (sanitised.length === 0) {
+    // Nothing markable survived — the memo was entirely examiner furniture.
+    return {
+      marksAwarded: 0,
+      marksAvailable: scheme.totalMarks,
+      isCorrect: false,
+      unmarkable: true,
+      perCriterion: [],
+      examinerNotes: scheme.partialRules,
+    };
+  }
+
+  // Redistribute the marks of any dropped criterion across the survivors so
+  // full marks stay attainable — otherwise removing furniture would silently
+  // cap the learner below 100%.
+  const survivingTotal = sanitised.reduce((s, c) => s + c.marks, 0);
+  if (survivingTotal > 0 && survivingTotal !== scheme.totalMarks) {
+    let allocated = 0;
+    sanitised.forEach((c, i) => {
+      if (i === sanitised.length - 1) {
+        c.marks = Math.max(1, scheme.totalMarks - allocated);
+      } else {
+        c.marks = Math.max(1, Math.round((c.marks / survivingTotal) * scheme.totalMarks));
+        allocated += c.marks;
+      }
+    });
+  }
+
   // Memo "Do not award" rules — if the answer contains any denied phrase
   // verbatim, that criterion cannot earn marks. This enforces examiner
   // disqualifiers from the memo (e.g. "Do not award if learner wrote X").
@@ -410,7 +526,7 @@ export function markAgainstScheme(
   let total = 0;
   const perCriterion: MarkBreakdown["perCriterion"] = [];
 
-  for (const c of scheme.criteria) {
+  for (const c of sanitised) {
     const { met, matched, missed } = criterionMet(c, learnerTokens, learnerLower);
     let awarded = 0;
     if (met) {
@@ -435,9 +551,22 @@ export function markAgainstScheme(
         ? isAfrikaans
           ? `Gedeeltelike krediet (${awarded}/${c.marks}). Mis: ${missed.join(", ") || "—"}.`
           : `Partial credit (${awarded}/${c.marks}). Missing: ${missed.join(", ") || "—"}.`
-        : isAfrikaans
-          ? `Geen merke nie. Verwagte sleutelwoorde: ${c.keywords.join(", ")}.`
-          : `No marks. Expected key terms: ${c.keywords.join(", ")}.`;
+        : (() => {
+            // Prefer the memo's own acceptable alternatives over stemmed
+            // keywords — "Voedselallergie / Allergiese reaksie / Anafilakse"
+            // is real guidance; "voedselallergie, allergies, reaksie" is not.
+            const expected = c.acceptable.length > 0
+              ? c.acceptable.slice(0, 6).join(" / ")
+              : c.keywords.join(", ");
+            if (!expected) {
+              return isAfrikaans
+                ? "Geen merke nie. Vergelyk jou antwoord met die memo hierbo."
+                : "No marks. Compare your answer with the memo excerpt above.";
+            }
+            return isAfrikaans
+              ? `Geen merke nie. Verwagte antwoord: ${expected}.`
+              : `No marks. Expected answer: ${expected}.`;
+          })();
 
     perCriterion.push({
       id: c.id,
