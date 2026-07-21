@@ -27,6 +27,7 @@ import { useLanguage } from "@/lib/language-context";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LearnerHeader } from "@/components/learner-header";
 import { getSubjectIcon } from "@/lib/vark";
+import { GraffitiSplats } from "@/components/graffiti-splats";
 
 interface SubjectMastery {
   subjectId: number;
@@ -717,7 +718,8 @@ export default function ExamModePage() {
   );
 
   return (
-    <div style={{ minHeight: "100vh", background: "#050508", color: "#fff", overflowX: "hidden" }}>
+    <div style={{ minHeight: "100vh", background: "#050508", color: "#fff", overflowX: "hidden", position: "relative" }}>
+      <GraffitiSplats variant="full" opacity={0.4} />
       <style>{`
         .btx-action { transition: transform .2s; }
         .btx-action:hover { transform: translateY(-2px); }

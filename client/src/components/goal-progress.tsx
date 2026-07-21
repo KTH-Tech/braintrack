@@ -114,7 +114,7 @@ export function GoalProgress({ isAf }: GoalProgressProps) {
             <h2 className="text-lg" style={{ color: "#ffffff", fontFamily: "'Poppins',sans-serif", fontWeight: 800 }}>
               {isAf ? "Daaglikse Doele" : "Daily Goals"}
             </h2>
-            <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
+            <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
               {isAf ? "elke dag tel!" : "every day counts!"}
             </span>
             {data && data.streakDays >= 2 && (

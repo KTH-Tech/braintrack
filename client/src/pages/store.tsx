@@ -20,6 +20,7 @@ import {
   Shield, Rocket,
 } from "lucide-react";
 import { LearnerHeader } from "@/components/learner-header";
+import { GraffitiSplats } from "@/components/graffiti-splats";
 
 type MysteryReward = { type: "coins" | "theme"; amount?: number; themeKey?: string; label: string; labelAf: string };
 
@@ -224,7 +225,8 @@ export default function StorePage() {
         }
       />
 
-      <main className="relative max-w-5xl mx-auto px-4 py-10 sm:py-14 space-y-10">
+      <main className="relative z-10 max-w-5xl mx-auto px-4 py-10 sm:py-14 space-y-10">
+        <GraffitiSplats variant="full" opacity={0.5} />
         {/* Ambient auras */}
         <div aria-hidden className="pointer-events-none absolute -top-24 -left-24 w-[380px] h-[380px] rounded-full blur-[120px] opacity-35" style={{ background: "#C5B3FF" }} />
         <div aria-hidden className="pointer-events-none absolute top-48 -right-24 w-[340px] h-[340px] rounded-full blur-[120px] opacity-30" style={{ background: "#FFE29A" }} />

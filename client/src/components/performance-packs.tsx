@@ -921,7 +921,7 @@ export function RescuePackAlert({ isAf }: { isAf: boolean }) {
                   <ShieldAlert className="w-5 h-5" style={{ color: "#FF8DA1", filter: "drop-shadow(0 0 5px #FF8DA1)" }} />
                 </div>
                 <div className="min-w-0">
-                  <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 13, color: "#FF8DA1", transform: "rotate(-1.5deg)", display: "inline-block", textShadow: "0 0 10px rgba(255,141,161,.5)" }}>
+                  <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#FF8DA1", transform: "rotate(-1.5deg)", display: "inline-block", textShadow: "0 0 10px rgba(255,141,161,.5)" }}>
                     {isAf ? "Reddingspakket" : "Rescue Pack"}
                   </div>
                   <p className="text-base font-black text-white leading-tight">

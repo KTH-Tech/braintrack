@@ -981,7 +981,7 @@ export default function SubjectDetailPage() {
 
   return (
     <div className="min-h-screen text-white relative overflow-hidden" style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}>
-      <GraffitiSplats variant="corner" opacity={0.3} />
+      <GraffitiSplats variant="corner" opacity={0.5} />
       <LearnerHeader
         backLabel={isAf ? "Tuis" : "Home"}
         title={isAf ? "Klaskamer" : "Classroom"}
@@ -1052,7 +1052,7 @@ export default function SubjectDetailPage() {
                         {subject.code}
                       </span>
                       <span
-                        style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}
+                        style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}
                       >
                         {isAf ? "Graad 12 NSS" : "Grade 12 NSC"}
                       </span>

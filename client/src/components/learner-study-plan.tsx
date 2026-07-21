@@ -141,7 +141,7 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
             {isAf ? "Studieplan" : "Study Plan"}
           </h2>
         </div>
-        <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
+        <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
           {isAf ? "Top 3 swak" : "Top 3 weak"}
         </span>
       </div>

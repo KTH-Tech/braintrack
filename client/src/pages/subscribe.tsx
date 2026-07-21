@@ -604,7 +604,7 @@ export default function SubscribePage() {
             <span
               style={{
                 position: "absolute", top: -13, left: 32,
-                fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#050508",
+                fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#050508",
                 background: "linear-gradient(100deg,#9FF5E8,#FFE29A)", borderRadius: 999,
                 padding: "5px 16px", transform: "rotate(-2deg)",
               }}
@@ -797,7 +797,7 @@ function PaymentPickerScreen({
       {/* Charge summary */}
       <div style={{ marginBottom: 28 }}>
         <WallCallout color="#FFE29A">
-          <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 12, textTransform: "uppercase", letterSpacing: "2px", color: "#FFE29A", margin: "0 0 4px" }}>
+          <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#FFE29A", margin: "0 0 4px" }}>
             {t.charge}
           </p>
           <p style={{ fontWeight: 800, fontSize: 17, color: "#FFE29A", margin: 0, lineHeight: 1.5 }}>
@@ -832,7 +832,7 @@ function PaymentPickerScreen({
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, marginBottom: 4 }}>
                 <span style={{ fontWeight: 700, color: "#fff" }}>{t.paystack}</span>
-                <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 12, textTransform: "uppercase", letterSpacing: "1.5px", color: "#94F7C5" }}>
+                <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#94F7C5" }}>
                   {t.paystackBadge}
                 </span>
               </div>
@@ -1244,7 +1244,7 @@ function PaymentSuccessScreen({
                 <CreditCard style={{ width: 20, height: 20, flex: "none", marginTop: 2, color: "#9FD8FF" }} />
               )}
               <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 12, textTransform: "uppercase", letterSpacing: "2px", color: "#9FD8FF", margin: "0 0 2px" }}>
+                <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FD8FF", margin: "0 0 2px" }}>
                   {isAf ? "Betaalmetode" : "Payment method"}
                 </p>
                 <p style={{ fontWeight: 700, color: "#fff", margin: 0 }} data-testid="payment-success-method">
@@ -1261,7 +1261,7 @@ function PaymentSuccessScreen({
         {/* Billing */}
         <div style={{ marginBottom: 32 }}>
           <WallCallout color="#FFE29A">
-            <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 12, textTransform: "uppercase", letterSpacing: "2px", color: "#FFE29A", margin: "0 0 4px" }}>
+            <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#FFE29A", margin: "0 0 4px" }}>
               {isAf ? "Maandeliks gehef" : "Billed monthly"}
             </p>
             <p style={{ fontWeight: 800, fontSize: 17, color: "#FFE29A", margin: 0 }}>
@@ -1508,7 +1508,7 @@ function ParentSubscribeScreen({
 
           <div style={{ marginBottom: 20 }}>
             <WallCallout color="#94F7C5">
-              <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 12, textTransform: "uppercase", letterSpacing: "2px", color: "#94F7C5", margin: "0 0 4px" }}>
+              <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#94F7C5", margin: "0 0 4px" }}>
                 {isAf ? "Status" : "Status"}
               </p>
               <p style={{ fontWeight: 800, fontSize: 17, color: "#fff", margin: 0 }} data-testid="parent-subscribe-status">
@@ -1589,7 +1589,7 @@ function ParentSubscribeScreen({
       {/* What the child gets */}
       <div style={{ marginBottom: 20 }}>
         <WallCallout color="#9FD8FF">
-          <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 12, textTransform: "uppercase", letterSpacing: "2px", color: "#9FD8FF", margin: "0 0 8px" }}>
+          <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FD8FF", margin: "0 0 8px" }}>
             {isAf ? `Wat ${learnerName} kry` : `What ${learnerName} gets`}
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>

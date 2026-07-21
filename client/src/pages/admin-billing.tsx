@@ -283,7 +283,7 @@ function LinkHistoryModal({
           )}
 
           {!isLoading && isError && (
-            <div className="flex items-center justify-center gap-2 py-12 text-red-400 text-sm">
+            <div className="flex items-center justify-center gap-2 py-12 text-sm" style={{ color: "#FF8DA1" }}>
               <AlertTriangle className="w-4 h-4 shrink-0" />
               Could not load link history — check server logs.
             </div>
@@ -326,7 +326,7 @@ function LinkHistoryModal({
                             </span>
                           )}
                           {(r.retryCount ?? 0) > 0 && (
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "#fb923c22", color: "#fb923c" }}>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "#9FF5E822", color: "#9FF5E8" }}>
                               {r.retryCount} retry
                             </span>
                           )}
@@ -362,7 +362,7 @@ function LinkHistoryModal({
                         </div>
 
                         {r.deliveryError && (
-                          <div className="text-[10px] font-mono text-red-400 break-all bg-red-950/30 px-2 py-1 rounded-lg">
+                          <div className="text-[10px] font-mono break-all px-2 py-1 rounded-lg" style={{ color: "#FF8DA1", background: "rgba(255,141,161,0.1)" }}>
                             {r.deliveryError}
                           </div>
                         )}
@@ -840,10 +840,10 @@ export default function AdminBillingPage() {
                 { k: "total",       label: "Issued",       color: "#ffffff" },
                 { k: "sent",        label: "Sent",         color: "#94F7C5" },
                 { k: "delivered",   label: "Delivered",    color: "#9FD8FF" },
-                { k: "opened",      label: "Opened",       color: "#facc15" },
+                { k: "opened",      label: "Opened",       color: "#FFE29A" },
                 { k: "failed",      label: "Failed",       color: "#FF8DA1" },
                 { k: "pending",     label: "Pending",      color: "#C5B3FF" },
-                { k: "autoRetried", label: "Auto-retried", color: "#fb923c" },
+                { k: "autoRetried", label: "Auto-retried", color: "#9FF5E8" },
               ] as Array<{ k: keyof Pick<SmsStats, "total"|"sent"|"delivered"|"opened"|"failed"|"pending"|"autoRetried">; label: string; color: string }>
               ).map(c => (
                 <div key={c.k} className="rounded-xl bg-white/5 px-3 py-2" data-testid={`sms-stat-${c.k}`}>
@@ -867,14 +867,14 @@ export default function AdminBillingPage() {
             onClick={() => setActionLogOpen(v => !v)}
             className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-white hover:text-white transition mb-3"
           >
-            <History className="w-4 h-4" style={{ color: "#fb923c" }} />
-            <span style={{ color: "#fb923c" }}>Admin Action History</span>
+            <History className="w-4 h-4" style={{ color: "#9FF5E8" }} />
+            <span style={{ color: "#9FF5E8" }}>Admin Action History</span>
             <ChevronDown
               className="w-3 h-3 transition-transform"
-              style={{ color: "#fb923c", transform: actionLogOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+              style={{ color: "#9FF5E8", transform: actionLogOpen ? "rotate(180deg)" : "rotate(0deg)" }}
             />
             {actionLog && (
-              <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full" style={{ background: "#fb923c22", color: "#fb923c" }}>
+              <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full" style={{ background: "#9FF5E822", color: "#9FF5E8" }}>
                 {actionLog.length}
               </span>
             )}
@@ -883,7 +883,7 @@ export default function AdminBillingPage() {
           {actionLogOpen && (
             <div
               className="rounded-2xl overflow-hidden"
-              style={{ border: "1px solid #fb923c44", background: "rgba(251,146,60,0.03)" }}
+              style={{ border: "1px solid #9FF5E844", background: "rgba(159,245,232,0.03)" }}
               data-testid="action-log-panel"
             >
               {actionLogLoading && (
@@ -917,7 +917,7 @@ export default function AdminBillingPage() {
                           "billing.mark_lapsed":   { label: "Mark Lapsed",   color: "#FFB7E5" },
                           "billing.mark_active":   { label: "Mark Active",   color: "#9FF5E8" },
                         };
-                        const { label, color } = actionLabel[row.action] ?? { label: row.action, color: "#ffffff60" };
+                        const { label, color } = actionLabel[row.action] ?? { label: row.action, color: "#ffffff" };
                         return (
                           <tr key={row.id} data-testid={`action-log-row-${row.id}`}>
                             <Td>
@@ -1048,7 +1048,7 @@ export default function AdminBillingPage() {
                             <Td>
                               <span
                                 className="font-black text-sm tabular-nums"
-                                style={{ color: sent > 0 ? "#94F7C5" : "#ffffff44" }}
+                                style={{ color: sent > 0 ? "#94F7C5" : "#ffffff" }}
                               >
                                 {sent}
                               </span>
@@ -1056,14 +1056,14 @@ export default function AdminBillingPage() {
                             <Td>
                               <span
                                 className="font-black text-sm tabular-nums"
-                                style={{ color: failed > 0 ? "#FF8DA1" : "#ffffff44" }}
+                                style={{ color: failed > 0 ? "#FF8DA1" : "#ffffff" }}
                               >
                                 {failed}
                               </span>
                             </Td>
                             <Td>
                               {reason ? (
-                                <span className="text-[10px] font-mono text-red-400">{reason}</span>
+                                <span className="text-[10px] font-mono" style={{ color: "#FF8DA1" }}>{reason}</span>
                               ) : (
                                 <span className="text-white text-xs">—</span>
                               )}
@@ -1152,7 +1152,7 @@ function LastNudgedBadge({ sentAt }: { sentAt: string | undefined }) {
 }
 
 function MethodBadge({ method }: { method: string | null }) {
-  const color = method === "debicheck" ? "#9FD8FF" : method === "card" ? "#94F7C5" : "#ffffff44";
+  const color = method === "debicheck" ? "#9FD8FF" : method === "card" ? "#94F7C5" : "#ffffff";
   const label = method ?? "none";
   return (
     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: `${color}22`, color }}>
@@ -1209,12 +1209,12 @@ function TrialsTable({ rows, isLoading, inFlight, onSendReminder, onExtendTrial,
               </Td>
               <Td>
                 {r.trialReminderD13Sent
-                  ? <CheckCircle className="w-4 h-4 text-green-400" />
+                  ? <CheckCircle className="w-4 h-4" style={{ color: "#94F7C5" }} />
                   : <span className="text-white text-xs">—</span>}
               </Td>
               <Td>
                 {r.trialReminderD14Sent
-                  ? <CheckCircle className="w-4 h-4 text-green-400" />
+                  ? <CheckCircle className="w-4 h-4" style={{ color: "#94F7C5" }} />
                   : <span className="text-white text-xs">—</span>}
               </Td>
               <Td><LastNudgedBadge sentAt={lastNudgedMap[r.userId]} /></Td>
@@ -1282,14 +1282,14 @@ function GraceTable({ rows, isLoading, inFlight, onSendReminder, onMarkLapsed, o
               <Td>
                 <div className="text-xs text-white">{fmtDate(r.lastPaymentAt)}</div>
                 {r.lastPaymentStatus && (
-                  <div className="text-[10px] font-bold text-red-400">{r.lastPaymentStatus}</div>
+                  <div className="text-[10px] font-bold" style={{ color: "#FF8DA1" }}>{r.lastPaymentStatus}</div>
                 )}
               </Td>
               <Td><span className="text-white text-xs">{fmtDate(r.gracePeriodEndsAt)}</span></Td>
               <Td>
                 <span
                   className="font-black text-sm"
-                  style={{ color: graceDays !== null && graceDays <= 1 ? "#ff4444" : color }}
+                  style={{ color: graceDays !== null && graceDays <= 1 ? "#FF8DA1" : color }}
                 >
                   {graceDays !== null ? (graceDays <= 0 ? "Expired" : `${graceDays}d`) : "—"}
                 </span>

@@ -11,6 +11,7 @@ import {
 import rizzAvatar from "@assets/rizz-nav-transparent.png";
 import { rizzMascot } from "@/components/rizz-brand";
 import { LearnerHeader } from "@/components/learner-header";
+import { GraffitiSplats } from "@/components/graffiti-splats";
 
 interface JourneyEvent {
   id: string;
@@ -92,7 +93,7 @@ const sticker = (color: string, rotate: number, pos: CSSProperties): CSSProperti
   ...pos,
   transform: `rotate(${rotate}deg)`,
   fontFamily: "'Permanent Marker',cursive",
-  fontSize: 12,
+  fontSize: 16,
   lineHeight: 1.2,
   color,
   background: "rgba(5,5,8,.88)",
@@ -179,6 +180,10 @@ export default function JourneyPage() {
       className="min-h-screen text-white relative overflow-hidden"
       style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}
     >
+      {/* Light background scatter — kept low-opacity so it doesn't compete
+          with Rizz's standing mascot illustration and sticker callouts below. */}
+      <GraffitiSplats variant="band" opacity={0.32} />
+
       {/* ── Sticky street header ── */}
       <LearnerHeader
         backHref={backHref}

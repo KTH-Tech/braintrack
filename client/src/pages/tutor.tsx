@@ -475,7 +475,7 @@ export default function TutorPage() {
 
   return (
     <div className="min-h-screen flex flex-col text-white overflow-x-hidden relative" style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}>
-      <GraffitiSplats variant="corner" opacity={0.35} />
+      <GraffitiSplats variant="band" opacity={0.6} />
       <style>{`
         .tutor-sticker { transition: transform .18s ease, box-shadow .18s ease; }
         .tutor-sticker:hover { transform: rotate(0deg) translateY(-3px) scale(1.02) !important; }
@@ -1164,7 +1164,7 @@ export default function TutorPage() {
               {t.askMeAnything}
             </div>
             <div
-              className="relative mb-3 text-sm sm:text-base"
+              className="relative mb-3 text-base"
               style={{ fontFamily: "'Permanent Marker',cursive", color: "#FFB7E5", transform: "rotate(-2deg)" }}
             >
               {RIZZ_LINES[language].tagline}

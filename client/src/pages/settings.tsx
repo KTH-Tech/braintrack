@@ -27,6 +27,7 @@ import {
   GraduationCap,
 } from "lucide-react";
 import { LearnerHeader } from "@/components/learner-header";
+import { GraffitiSplats } from "@/components/graffiti-splats";
 import type { Subject, OnboardingResult } from "@shared/schema";
 
 /* ── Street-pastel section card ──────────────────────────────────────────
@@ -69,7 +70,7 @@ function SectionCard({ color, icon: Icon, eyebrow, title, subtitle, children, te
             <Icon className="w-5 h-5" style={{ color, filter: `drop-shadow(0 0 5px ${color})` }} />
           </div>
           <div className="min-w-0">
-            <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 13, color, transform: "rotate(-1.5deg)", display: "inline-block" }}>
+            <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color, transform: "rotate(-1.5deg)", display: "inline-block" }}>
               {eyebrow}
             </div>
             <div role="heading" aria-level={2} className="text-lg font-black text-white leading-tight">
@@ -639,6 +640,7 @@ export default function SettingsPage() {
       <div aria-hidden className="pointer-events-none fixed -top-24 -left-24 w-[420px] h-[420px] rounded-full blur-[120px] opacity-30" style={{ background: "#9FF5E8" }} />
       <div aria-hidden className="pointer-events-none fixed top-1/3 -right-24 w-[380px] h-[380px] rounded-full blur-[120px] opacity-25" style={{ background: "#C5B3FF" }} />
       <div aria-hidden className="pointer-events-none fixed -bottom-24 left-1/4 w-[360px] h-[360px] rounded-full blur-[120px] opacity-20" style={{ background: "#FFB7E5" }} />
+      <GraffitiSplats variant="full" opacity={0.5} />
 
       <div className="relative z-10">
         {/* ── Sticky street header ── */}

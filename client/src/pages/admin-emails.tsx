@@ -5,10 +5,10 @@ import { useLanguage } from "@/lib/language-context";
 import { AdminTopNav } from "@/components/admin-top-nav";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { PageHeader } from "@/components/page-header";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import {
+  AdminGround, NeonShell, AdminBadge, AdminButton,
+  adminInputClass, adminInputStyle, halo, type NeonHex,
+} from "@/components/admin-ui";
 import {
   Mail, Send, ChevronLeft, Loader2, CheckCircle, AlertCircle, Eye,
   Settings, Key, AtSign, User as UserIcon, CornerDownLeft, EyeOff, Save, ShieldCheck,
@@ -55,11 +55,11 @@ const EMAIL_TYPES: {
     desc: "Sent to learners after their parent confirms consent",
     descAf: "Gestuur aan leerders nadat hul ouer toestemming bevestig",
     icon: CheckCircle, category: "lifecycle" },
-  { value: "day-13", label: "Trial Expiry â€” Day 13", labelAf: "Proeftydperk â€” Dag 13",
+  { value: "day-13", label: "Trial Expiry — Day 13", labelAf: "Proeftydperk — Dag 13",
     desc: "Nudge sent on day 13 of trial: ending soon, keep momentum",
     descAf: "Stoot gestuur op dag 13 van proeftydperk: eindig binnekort",
     icon: AlertCircle, category: "lifecycle" },
-  { value: "day-14", label: "Trial Expiry â€” Day 14", labelAf: "Proeftydperk â€” Dag 14",
+  { value: "day-14", label: "Trial Expiry — Day 14", labelAf: "Proeftydperk — Dag 14",
     desc: "Urgent last-day notice: trial expires today, subscribe now",
     descAf: "Dringende laaste-dag kennisgewing: proeftydperk verloop vandag",
     icon: AlertCircle, category: "lifecycle" },
@@ -68,8 +68,8 @@ const EMAIL_TYPES: {
     descAf: "Gestuur na 'n suksesvolle eerste betaling of hernuwing",
     icon: CheckCircle, category: "billing" },
   { value: "payment-failed", label: "Payment Failed", labelAf: "Betaling Misluk",
-    desc: "Sent when a recurring debit fails â€” 3-day grace period warning",
-    descAf: "Gestuur wanneer 'n hernuwing misluk â€” 3-dae grasieperiode",
+    desc: "Sent when a recurring debit fails — 3-day grace period warning",
+    descAf: "Gestuur wanneer 'n hernuwing misluk — 3-dae grasieperiode",
     icon: CreditCard, category: "billing" },
   { value: "subscription-cancelled", label: "Subscription Cancelled", labelAf: "Intekening Gekanselleer",
     desc: "Confirmation that the subscription has been cancelled",
@@ -93,10 +93,10 @@ const EMAIL_TYPES: {
     icon: UserMinus, category: "engagement" },
 ];
 
-const CATEGORY_META: Record<Category, { en: string; af: string }> = {
-  lifecycle: { en: "Lifecycle", af: "Lewensiklus" },
-  billing: { en: "Billing", af: "Fakturering" },
-  engagement: { en: "Engagement", af: "Betrokkenheid" },
+const CATEGORY_META: Record<Category, { en: string; af: string; color: NeonHex }> = {
+  lifecycle: { en: "Lifecycle", af: "Lewensiklus", color: "#9FD8FF" },
+  billing: { en: "Billing", af: "Fakturering", color: "#FFE29A" },
+  engagement: { en: "Engagement", af: "Betrokkenheid", color: "#C5B3FF" },
 };
 
 export default function AdminEmailsPage() {
@@ -260,15 +260,14 @@ export default function AdminEmailsPage() {
 
   const headerActions = (
     <div className="flex items-center gap-2">
-      <div role="group" className="flex items-center rounded-xl border border-border bg-card p-0.5">
+      <div role="group" className="flex items-center rounded-xl p-0.5" style={{ border: "1px solid rgba(255,255,255,0.14)", background: "rgba(255,255,255,0.03)" }}>
         <button
           type="button"
           onClick={() => setActiveTab("templates")}
           data-testid="tab-templates"
           aria-pressed={activeTab === "templates"}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-            activeTab === "templates" ? "bg-primary text-primary-foreground shadow-sm" : "text-white hover:text-foreground"
-          }`}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition"
+          style={activeTab === "templates" ? { background: "#9FF5E8", color: "#050508" } : { color: "#fff" }}
         >
           <Mail className="w-3.5 h-3.5" />
           {isAf ? "Sjablone" : "Templates"}
@@ -278,9 +277,8 @@ export default function AdminEmailsPage() {
           onClick={() => { setActiveTab("settings"); setSettingsTestResult(null); }}
           data-testid="tab-settings"
           aria-pressed={activeTab === "settings"}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-            activeTab === "settings" ? "bg-primary text-primary-foreground shadow-sm" : "text-white hover:text-foreground"
-          }`}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition"
+          style={activeTab === "settings" ? { background: "#9FF5E8", color: "#050508" } : { color: "#fff" }}
         >
           <Settings className="w-3.5 h-3.5" />
           {isAf ? "Instellings" : "Settings"}
@@ -288,7 +286,7 @@ export default function AdminEmailsPage() {
       </div>
 
       {activeTab === "templates" && (
-        <div role="group" className="flex items-center rounded-full border border-border bg-card p-0.5">
+        <div role="group" className="flex items-center rounded-full p-0.5" style={{ border: "1px solid rgba(255,255,255,0.14)", background: "rgba(255,255,255,0.03)" }}>
           {(["en", "af"] as Lang[]).map((l) => (
             <button
               key={l}
@@ -296,9 +294,8 @@ export default function AdminEmailsPage() {
               onClick={() => handleLangChange(l)}
               data-testid={`button-lang-${l}`}
               aria-pressed={previewLang === l}
-              className={`px-2.5 py-1 rounded-full text-xs font-semibold transition ${
-                previewLang === l ? "bg-primary text-primary-foreground" : "text-white hover:text-foreground"
-              }`}
+              className="px-2.5 py-1 rounded-full text-xs font-bold transition"
+              style={previewLang === l ? { background: "#9FF5E8", color: "#050508" } : { color: "#fff" }}
             >
               {l === "en" ? "EN" : "AF"}
             </button>
@@ -308,7 +305,8 @@ export default function AdminEmailsPage() {
 
       <Link
         href="/learn/admin/reports"
-        className="flex items-center justify-center w-9 h-9 rounded-xl border border-border bg-card text-white hover:text-foreground transition"
+        className="flex items-center justify-center w-9 h-9 rounded-xl text-white transition"
+        style={{ border: "1px solid rgba(255,255,255,0.14)" }}
         aria-label={isAf ? "Terug na Admin" : "Back to Admin"}
         data-testid="link-admin"
       >
@@ -316,7 +314,8 @@ export default function AdminEmailsPage() {
       </Link>
       <button
         onClick={() => navigate("/dashboard")}
-        className="flex items-center justify-center w-9 h-9 rounded-xl border border-border bg-card text-white hover:text-foreground transition"
+        className="flex items-center justify-center w-9 h-9 rounded-xl text-white transition"
+        style={{ border: "1px solid rgba(255,255,255,0.14)" }}
         aria-label={isAf ? "Kontroleskerm" : "Dashboard"}
         data-testid="button-home"
       >
@@ -326,18 +325,32 @@ export default function AdminEmailsPage() {
   );
 
   return (
-    <div className="min-h-screen text-white" style={{ background: "#050508", fontFamily: "'Poppins', system-ui, sans-serif" }}>
+    <AdminGround>
       <AdminTopNav current="emails" />
-      <PageHeader
-        sticky
-        icon={Mail}
-        title={isAf ? "E-pos Bestuur" : "Email Management"}
-        subtitle={isAf ? "Voorskou, toets en konfigureer transaksionele e-posse" : "Preview, test and configure transactional emails"}
-        testId="text-page-title"
-        actions={headerActions}
-      />
+      <div className="sticky top-0 z-40 border-b border-white/10" style={{ background: "rgba(5,5,8,0.9)", backdropFilter: "blur(8px)" }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-wrap items-center gap-4 justify-between">
+          <div className="flex items-center gap-3 min-w-0">
+            <span
+              aria-hidden
+              className="shrink-0 inline-flex items-center justify-center w-11 h-11 rounded-xl"
+              style={{ background: "rgba(255,255,255,0.035)", border: "1px solid rgba(159,245,232,0.4)" }}
+            >
+              <Mail className="w-5 h-5" style={{ color: "#9FF5E8" }} />
+            </span>
+            <div className="min-w-0">
+              <h1 data-testid="text-page-title" className="text-xl sm:text-2xl font-black tracking-tight text-white truncate">
+                {isAf ? "E-pos Bestuur" : "Email Management"}
+              </h1>
+              <p className="text-xs text-white mt-0.5 truncate">
+                {isAf ? "Voorskou, toets en konfigureer transaksionele e-posse" : "Preview, test and configure transactional emails"}
+              </p>
+            </div>
+          </div>
+          {headerActions}
+        </div>
+      </div>
 
-      {/* â”€â”€ SETTINGS TAB â”€â”€ */}
+      {/* ── SETTINGS TAB ── */}
       {activeTab === "settings" && (
         <div className="max-w-2xl mx-auto px-4 py-8">
           {!isConfigLoading && emailConfig && (
@@ -354,20 +367,20 @@ export default function AdminEmailsPage() {
                 : <AlertCircle className="w-4 h-4 shrink-0" />}
               {emailConfig.isConfigured
                 ? (isAf ? "SendGrid is gekonfigureer en aktief" : "SendGrid is configured and active")
-                : (isAf ? "Geen API-sleutel gekonfigureer nie â€” e-posse sal nie gestuur word nie" : "No API key configured â€” emails will not be sent")}
+                : (isAf ? "Geen API-sleutel gekonfigureer nie — e-posse sal nie gestuur word nie" : "No API key configured — emails will not be sent")}
             </div>
           )}
 
-          <Card className="p-6 space-y-5">
+          <NeonShell color="#9FF5E8" className="p-6 space-y-5">
             <div className="space-y-1.5">
-              <label className="flex items-center gap-1.5 text-xs font-semibold text-white uppercase tracking-widest">
-                <Key className="w-3.5 h-3.5" />
+              <label className="flex items-center gap-1.5 text-xs font-black text-white uppercase tracking-widest">
+                <Key className="w-3.5 h-3.5" style={{ color: "#9FF5E8" }} />
                 {isAf ? "SendGrid API-sleutel" : "SendGrid API Key"}
               </label>
               {!isConfigLoading && emailConfig?.apiKeyDisplay && (
                 <p className="text-xs text-white">
                   {isAf ? "Huidig: " : "Current: "}
-                  <span className="font-mono text-primary">{emailConfig.apiKeyDisplay}</span>
+                  <span className="font-mono" style={{ color: "#9FF5E8" }}>{emailConfig.apiKeyDisplay}</span>
                 </p>
               )}
               <div className="relative">
@@ -377,12 +390,13 @@ export default function AdminEmailsPage() {
                   onChange={(e) => setApiKeyInput(e.target.value)}
                   placeholder={isAf ? "Nuwe sleutel (laat leeg om te behou)" : "New key (leave blank to keep current)"}
                   data-testid="api-key-input"
-                  className="w-full px-3 py-2.5 pr-10 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-white focus:outline-none focus:border-primary font-mono"
+                  className={`${adminInputClass} pr-10 font-mono`}
+                  style={adminInputStyle}
                 />
                 <button
                   type="button"
                   onClick={() => setShowApiKey((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white hover:text-foreground transition"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white transition"
                   aria-label={showApiKey ? "Hide API key" : "Show API key"}
                   tabIndex={-1}
                 >
@@ -396,11 +410,11 @@ export default function AdminEmailsPage() {
               </p>
             </div>
 
-            <div className="h-px bg-border" />
+            <div className="h-px" style={{ background: "rgba(255,255,255,0.1)" }} />
 
             <div className="space-y-1.5">
-              <label className="flex items-center gap-1.5 text-xs font-semibold text-white uppercase tracking-widest">
-                <AtSign className="w-3.5 h-3.5" />
+              <label className="flex items-center gap-1.5 text-xs font-black text-white uppercase tracking-widest">
+                <AtSign className="w-3.5 h-3.5" style={{ color: "#9FF5E8" }} />
                 {isAf ? "Van E-posadres" : "From Email Address"}
               </label>
               <input
@@ -409,13 +423,14 @@ export default function AdminEmailsPage() {
                 onChange={(e) => setFromEmailInput(e.target.value)}
                 placeholder="learn@kth-tech.com"
                 data-testid="from-email-input"
-                className="w-full px-3 py-2.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-white focus:outline-none focus:border-primary"
+                className={adminInputClass}
+                style={adminInputStyle}
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="flex items-center gap-1.5 text-xs font-semibold text-white uppercase tracking-widest">
-                <UserIcon className="w-3.5 h-3.5" />
+              <label className="flex items-center gap-1.5 text-xs font-black text-white uppercase tracking-widest">
+                <UserIcon className="w-3.5 h-3.5" style={{ color: "#9FF5E8" }} />
                 {isAf ? "Vertoonnaam" : "From Display Name"}
               </label>
               <input
@@ -424,13 +439,14 @@ export default function AdminEmailsPage() {
                 onChange={(e) => setFromNameInput(e.target.value)}
                 placeholder="BrainTrack"
                 data-testid="from-name-input"
-                className="w-full px-3 py-2.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-white focus:outline-none focus:border-primary"
+                className={adminInputClass}
+                style={adminInputStyle}
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="flex items-center gap-1.5 text-xs font-semibold text-white uppercase tracking-widest">
-                <CornerDownLeft className="w-3.5 h-3.5" />
+              <label className="flex items-center gap-1.5 text-xs font-black text-white uppercase tracking-widest">
+                <CornerDownLeft className="w-3.5 h-3.5" style={{ color: "#9FF5E8" }} />
                 {isAf ? "Antwoord-aan Adres" : "Reply-To Address"}
                 <span className="text-white font-normal normal-case tracking-normal">
                   {isAf ? "(opsioneel)" : "(optional)"}
@@ -442,25 +458,27 @@ export default function AdminEmailsPage() {
                 onChange={(e) => setReplyToInput(e.target.value)}
                 placeholder={isAf ? "learn@kth-tech.com" : "learn@kth-tech.com"}
                 data-testid="reply-to-input"
-                className="w-full px-3 py-2.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-white focus:outline-none focus:border-primary"
+                className={adminInputClass}
+                style={adminInputStyle}
               />
             </div>
 
-            <Button
+            <button
               type="button"
               data-testid="save-config-button"
               onClick={() => saveMutation.mutate()}
               disabled={saveMutation.isPending || (!fromEmailInput && !fromNameInput && !apiKeyInput)}
-              className="w-full"
+              className="w-full inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-black uppercase tracking-wider transition-transform hover:scale-[1.01] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
+              style={{ background: "#9FF5E8", color: "#050508" }}
             >
-              {saveMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+              {saveMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
               {isAf ? "Stoor Instellings" : "Save Settings"}
-            </Button>
-          </Card>
+            </button>
+          </NeonShell>
 
-          <Card className="mt-6 p-6 space-y-4">
-            <h2 className="text-sm font-semibold flex items-center gap-2 text-foreground">
-              <Send className="w-4 h-4 text-primary" />
+          <NeonShell color="#C5B3FF" className="mt-6 p-6 space-y-4">
+            <h2 className="text-sm font-black flex items-center gap-2 text-white">
+              <Send className="w-4 h-4" style={{ color: "#C5B3FF" }} />
               {isAf ? "Stuur Toets-E-pos" : "Send Test Email"}
             </h2>
             <p className="text-xs text-white leading-relaxed">
@@ -468,27 +486,29 @@ export default function AdminEmailsPage() {
                 ? "Stuur 'n welkom-sjabloonepos na jou eie admin-adres om te bevestig dat aflewering werk met die gestoorde konfigurasie."
                 : "Send a welcome template email to your own admin address to confirm delivery works with the saved configuration."}
             </p>
-            <Button
+            <AdminButton
               type="button"
-              variant="secondary"
-              data-testid="settings-test-send-button"
+              color="#C5B3FF"
+              testId="settings-test-send-button"
               disabled={settingsTestMutation.isPending}
               onClick={() => { setSettingsTestResult(null); settingsTestMutation.mutate(); }}
+              className="!px-4 !py-2.5 !text-xs"
             >
-              {settingsTestMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
+              {settingsTestMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
               {isAf ? "Stuur Toets na My Adres" : "Send Test to My Address"}
-            </Button>
+            </AdminButton>
 
             {settingsTestResult && (
               <div
                 data-testid="settings-test-result"
-                className={`flex items-start gap-2 rounded-xl px-3 py-2.5 text-sm border ${
+                className="flex items-start gap-2 rounded-xl px-3 py-2.5 text-sm"
+                style={
                   settingsTestResult.delivery === "sent"
-                    ? "bg-[#94F7C5]/10 border-[#94F7C5]/40 text-[#94F7C5]"
+                    ? { background: halo("#94F7C5", 0.1), border: `1px solid ${halo("#94F7C5", 0.4)}`, color: "#94F7C5" }
                     : settingsTestResult.delivery === "not_configured"
-                    ? "bg-[#FFE29A]/10 border-[#FFE29A]/40 text-[#FFE29A]"
-                    : "bg-destructive/10 border-destructive/30 text-destructive"
-                }`}
+                    ? { background: halo("#FFE29A", 0.1), border: `1px solid ${halo("#FFE29A", 0.4)}`, color: "#FFE29A" }
+                    : { background: "rgba(255,141,161,0.1)", border: "1px solid rgba(255,141,161,0.4)", color: "#FF8DA1" }
+                }
               >
                 {settingsTestResult.delivery === "sent"
                   ? <CheckCircle className="w-4 h-4 mt-0.5 shrink-0" />
@@ -497,65 +517,72 @@ export default function AdminEmailsPage() {
                   {settingsTestResult.delivery === "sent"
                     ? isAf ? "E-pos suksesvol gestuur!" : "Email sent successfully!"
                     : settingsTestResult.delivery === "not_configured"
-                    ? isAf ? "Nie gekonfigureer â€” stel die API-sleutel hierbo in." : "Not configured â€” set the API key above."
+                    ? isAf ? "Nie gekonfigureer — stel die API-sleutel hierbo in." : "Not configured — set the API key above."
                     : settingsTestResult.error ?? (isAf ? "Stuur misluk" : "Send failed")}
                 </span>
               </div>
             )}
-          </Card>
+          </NeonShell>
         </div>
       )}
 
-      {/* â”€â”€ TEMPLATES TAB â”€â”€ */}
+      {/* ── TEMPLATES TAB ── */}
       {activeTab === "templates" && (
         <div className="max-w-7xl mx-auto px-4 py-6 flex flex-col lg:flex-row gap-6">
-          {/* Sidebar â€” grouped email type list */}
+          {/* Sidebar — grouped email type list */}
           <aside className="lg:w-80 shrink-0 space-y-5">
-            {(Object.keys(groupedTypes) as Category[]).map((cat) => (
-              <div key={cat}>
-                <h2 className="text-[10px] font-semibold text-white uppercase tracking-widest mb-2 px-1 flex items-center gap-2">
-                  {isAf ? CATEGORY_META[cat].af : CATEGORY_META[cat].en}
-                  <Badge variant="outline" className="text-[9px] h-4 px-1.5">{groupedTypes[cat].length}</Badge>
-                </h2>
-                <div className="space-y-1.5">
-                  {groupedTypes[cat].map((et) => {
-                    const Icon = et.icon;
-                    const active = selectedType === et.value;
-                    return (
-                      <button
-                        key={et.value}
-                        type="button"
-                        data-testid={`email-type-${et.value}`}
-                        onClick={() => handleTypeSelect(et.value)}
-                        aria-pressed={active}
-                        className={`w-full text-left p-3 rounded-xl border transition flex items-start gap-3 ${
-                          active
-                            ? "bg-primary/10 border-primary/40 text-foreground shadow-[0_0_20px_-8px_hsl(var(--primary)/0.5)]"
-                            : "bg-card border-border text-white hover:text-foreground hover:border-primary/30"
-                        }`}
-                      >
-                        <div className={`flex items-center justify-center w-8 h-8 rounded-lg shrink-0 border ${active ? "bg-primary/15 border-primary/40 text-primary" : "bg-background border-border text-white"}`}>
-                          <Icon className="w-4 h-4" />
-                        </div>
-                        <div className="min-w-0">
-                          <div className="font-semibold text-sm text-foreground mb-0.5">
-                            {isAf ? et.labelAf : et.label}
+            {(Object.keys(groupedTypes) as Category[]).map((cat) => {
+              const catColor = CATEGORY_META[cat].color;
+              return (
+                <div key={cat}>
+                  <h2 className="text-[10px] font-black uppercase tracking-widest mb-2 px-1 flex items-center gap-2" style={{ color: catColor }}>
+                    {isAf ? CATEGORY_META[cat].af : CATEGORY_META[cat].en}
+                    <AdminBadge color={catColor}>{groupedTypes[cat].length}</AdminBadge>
+                  </h2>
+                  <div className="space-y-1.5">
+                    {groupedTypes[cat].map((et) => {
+                      const Icon = et.icon;
+                      const active = selectedType === et.value;
+                      return (
+                        <button
+                          key={et.value}
+                          type="button"
+                          data-testid={`email-type-${et.value}`}
+                          onClick={() => handleTypeSelect(et.value)}
+                          aria-pressed={active}
+                          className="w-full text-left p-3 rounded-xl transition flex items-start gap-3"
+                          style={active
+                            ? { background: halo(catColor, 0.1), border: `1px solid ${catColor}` }
+                            : { background: "rgba(255,255,255,0.035)", border: "1px solid rgba(255,255,255,0.1)" }}
+                        >
+                          <div
+                            className="flex items-center justify-center w-8 h-8 rounded-lg shrink-0"
+                            style={active
+                              ? { background: halo(catColor, 0.18), border: `1px solid ${catColor}`, color: catColor }
+                              : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", color: "#fff" }}
+                          >
+                            <Icon className="w-4 h-4" />
                           </div>
-                          <div className="text-xs text-white leading-snug">
-                            {isAf ? et.descAf : et.desc}
+                          <div className="min-w-0">
+                            <div className="font-bold text-sm text-white mb-0.5">
+                              {isAf ? et.labelAf : et.label}
+                            </div>
+                            <div className="text-xs text-white leading-snug">
+                              {isAf ? et.descAf : et.desc}
+                            </div>
                           </div>
-                        </div>
-                      </button>
-                    );
-                  })}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
             {/* Test send panel */}
-            <Card className="p-4 space-y-3">
-              <h3 className="text-xs font-semibold text-white uppercase tracking-widest flex items-center gap-1.5">
-                <Send className="w-3 h-3" />
+            <NeonShell color="#9FD8FF" className="p-4 space-y-3">
+              <h3 className="text-xs font-black text-white uppercase tracking-widest flex items-center gap-1.5">
+                <Send className="w-3 h-3" style={{ color: "#9FD8FF" }} />
                 {isAf ? "Toets Stuur" : "Test Send"}
               </h3>
               <p className="text-xs text-white leading-snug">
@@ -569,54 +596,56 @@ export default function AdminEmailsPage() {
                 onChange={(e) => setTestEmail(e.target.value)}
                 placeholder={isAf ? "jou@epos.com" : "you@email.com"}
                 data-testid="test-email-input"
-                className="w-full px-3 py-2 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-white focus:outline-none focus:border-primary"
+                className={adminInputClass}
+                style={adminInputStyle}
               />
-              <Button
+              <button
                 type="button"
                 data-testid="test-send-button"
                 disabled={sendMutation.isPending || !testEmail.includes("@")}
                 onClick={() => { setLastSendResult(null); sendMutation.mutate(); }}
-                className="w-full"
-                size="sm"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-black uppercase tracking-wider transition disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ background: "#9FD8FF", color: "#050508" }}
               >
-                {sendMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
+                {sendMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                 {isAf ? "Stuur Toets" : "Send Test"}
-              </Button>
+              </button>
 
               {lastSendResult && (
                 <div
                   data-testid="send-result"
-                  className={`flex items-start gap-2 rounded-lg px-3 py-2 text-xs border ${
+                  className="flex items-start gap-2 rounded-lg px-3 py-2 text-xs"
+                  style={
                     lastSendResult.delivery === "sent"
-                      ? "bg-[#94F7C5]/10 border-[#94F7C5]/40 text-[#94F7C5]"
+                      ? { background: halo("#94F7C5", 0.1), border: `1px solid ${halo("#94F7C5", 0.4)}`, color: "#94F7C5" }
                       : lastSendResult.delivery === "not_configured"
-                      ? "bg-[#FFE29A]/10 border-[#FFE29A]/40 text-[#FFE29A]"
-                      : "bg-destructive/10 border-destructive/30 text-destructive"
-                  }`}
+                      ? { background: halo("#FFE29A", 0.1), border: `1px solid ${halo("#FFE29A", 0.4)}`, color: "#FFE29A" }
+                      : { background: "rgba(255,141,161,0.1)", border: "1px solid rgba(255,141,161,0.4)", color: "#FF8DA1" }
+                  }
                 >
                   {lastSendResult.delivery === "sent" ? <CheckCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" /> : <AlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" />}
                   <span>
                     {lastSendResult.delivery === "sent"
                       ? isAf ? "E-pos gestuur!" : "Email sent!"
                       : lastSendResult.delivery === "not_configured"
-                      ? isAf ? "E-pos nie gekonfigureer nie â€” gebruik Instellings" : "Email not configured â€” use Settings tab"
+                      ? isAf ? "E-pos nie gekonfigureer nie — gebruik Instellings" : "Email not configured — use Settings tab"
                       : lastSendResult.error ?? (isAf ? "Stuur misluk" : "Send failed")}
                   </span>
                 </div>
               )}
-            </Card>
+            </NeonShell>
           </aside>
 
-          {/* Main â€” preview area */}
+          {/* Main — preview area */}
           <main className="flex-1 min-w-0">
-            <Card className="p-5 mb-4">
+            <NeonShell color={CATEGORY_META[selectedMeta.category].color} className="p-5 mb-4">
               <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <Badge variant="outline" className="text-[10px] uppercase tracking-wider">
+                    <AdminBadge color={CATEGORY_META[selectedMeta.category].color}>
                       {isAf ? CATEGORY_META[selectedMeta.category].af : CATEGORY_META[selectedMeta.category].en}
-                    </Badge>
-                    <div role="heading" aria-level={1} className="text-lg font-bold text-foreground">
+                    </AdminBadge>
+                    <div role="heading" aria-level={1} className="text-lg font-black text-white">
                       {isAf ? selectedMeta.labelAf : selectedMeta.label}
                     </div>
                   </div>
@@ -624,33 +653,35 @@ export default function AdminEmailsPage() {
                     {isAf ? selectedMeta.descAf : selectedMeta.desc}
                   </p>
                   {previewSubject && (
-                    <p className="text-xs text-primary mt-2 font-medium">
+                    <p className="text-xs mt-2 font-bold" style={{ color: CATEGORY_META[selectedMeta.category].color }}>
                       {isAf ? "Onderwerp: " : "Subject: "}
-                      <span className="text-foreground/80" data-testid="preview-subject">{previewSubject}</span>
+                      <span className="text-white font-normal" data-testid="preview-subject">{previewSubject}</span>
                     </p>
                   )}
                 </div>
-                <Button
+                <AdminButton
                   type="button"
-                  data-testid="preview-button"
+                  color={CATEGORY_META[selectedMeta.category].color}
+                  solid
+                  testId="preview-button"
                   onClick={() => fetchPreview(selectedType, previewLang)}
                   disabled={isFetchingPreview}
-                  className="shrink-0"
+                  className="shrink-0 !px-4 !py-2.5 !text-xs"
                 >
-                  {isFetchingPreview ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Eye className="w-4 h-4 mr-2" />}
+                  {isFetchingPreview ? <Loader2 className="w-4 h-4 animate-spin" /> : <Eye className="w-4 h-4" />}
                   {isAf ? "Wys Voorskou" : "Render Preview"}
-                </Button>
+                </AdminButton>
               </div>
-            </Card>
+            </NeonShell>
 
-            <Card className="overflow-hidden p-0" style={{ minHeight: "600px" }}>
+            <NeonShell color={CATEGORY_META[selectedMeta.category].color} className="overflow-hidden p-0" style={{ minHeight: "600px" }}>
               {isFetchingPreview && (
-                <div className="flex items-center justify-center h-96 bg-card">
-                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                <div className="flex items-center justify-center h-96">
+                  <Loader2 className="w-8 h-8 animate-spin" style={{ color: CATEGORY_META[selectedMeta.category].color }} />
                 </div>
               )}
               {!isFetchingPreview && !previewHtml && (
-                <div className="flex flex-col items-center justify-center h-96 bg-card text-white" data-testid="preview-empty">
+                <div className="flex flex-col items-center justify-center h-96 text-white" data-testid="preview-empty">
                   <Mail className="w-12 h-12 mb-3 opacity-30" />
                   <p className="text-sm">
                     {isAf
@@ -669,7 +700,7 @@ export default function AdminEmailsPage() {
                   sandbox="allow-same-origin"
                 />
               )}
-            </Card>
+            </NeonShell>
 
             <p className="text-xs text-white mt-3 text-center">
               {isAf
@@ -679,6 +710,6 @@ export default function AdminEmailsPage() {
           </main>
         </div>
       )}
-    </div>
+    </AdminGround>
   );
 }

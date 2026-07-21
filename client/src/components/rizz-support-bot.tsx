@@ -365,7 +365,7 @@ export function RizzSupportBot() {
                   display: "flex",
                   alignItems: "center",
                   gap: 8,
-                  fontSize: 13,
+                  fontSize: 15,
                   color: RIZZ.purple,
                   fontWeight: 700,
                   fontFamily: "'Permanent Marker',cursive",

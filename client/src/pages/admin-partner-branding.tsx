@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { useLanguage } from "@/lib/language-context";
 import { AdminTopNav } from "@/components/admin-top-nav";
+import { NeonShell } from "@/components/admin-ui";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Building2, Upload, Trash2, CheckCircle, Loader2, ImageIcon, Calendar, Clock, Send, History, ToggleLeft, ToggleRight } from "lucide-react";
 
@@ -43,18 +44,6 @@ type OptOutLogEntry = {
   createdAt: string | null;
 };
 
-function NeonShell({ children, color = "#C5B3FF", className = "" }: { children: React.ReactNode; color?: string; className?: string }) {
-  return (
-    <div
-      className={`relative overflow-hidden ${className}`}
-      style={{ background: "rgba(255,255,255,0.035)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 16 }}
-    >
-      <span aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: color, opacity: 0.8 }} />
-      {children}
-    </div>
-  );
-}
-
 const DAY_NAMES_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const DAY_NAMES_AF = ["Sondag", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrydag", "Saterdag"];
 
@@ -76,8 +65,8 @@ function StatusBadge({ status, errorMessage, isAf }: { status: string; errorMess
     status === "sent"
       ? { bg: "rgba(148,247,197,0.15)", border: "#94F7C5", text: "#94F7C5" }
       : status === "failed"
-        ? { bg: "rgba(220,38,38,0.15)", border: "#dc2626", text: "#dc2626" }
-        : { bg: "rgba(107,114,128,0.15)", border: "#6b7280", text: "#6b7280" };
+        ? { bg: "rgba(255,141,161,0.15)", border: "#FF8DA1", text: "#FF8DA1" }
+        : { bg: "rgba(159,216,255,0.15)", border: "#9FD8FF", text: "#9FD8FF" };
   return (
     <span
       className="inline-block text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full"
@@ -465,7 +454,7 @@ export default function AdminPartnerBrandingPage() {
                       style={{
                         background: scheduleEnabled ? "rgba(255,226,154,0.2)" : "rgba(255,255,255,0.06)",
                         border: `1px solid ${scheduleEnabled ? "#FFE29A" : "rgba(255,255,255,0.15)"}`,
-                        color: scheduleEnabled ? "#FFE29A" : "#6b7280",
+                        color: scheduleEnabled ? "#FFE29A" : "#fff",
                       }}
                     >
                       {scheduleEnabled
@@ -490,7 +479,7 @@ export default function AdminPartnerBrandingPage() {
                           className="py-2 rounded-xl text-xs font-bold transition"
                           style={{
                             background: scheduleFrequency === f ? "#FFE29A" : "rgba(255,255,255,0.04)",
-                            color: scheduleFrequency === f ? "#000" : "#9ca3af",
+                            color: scheduleFrequency === f ? "#000" : "#fff",
                             border: `1px solid ${scheduleFrequency === f ? "#FFE29A" : "rgba(255,255,255,0.12)"}`,
                           }}
                         >
@@ -590,7 +579,7 @@ export default function AdminPartnerBrandingPage() {
                   <div className="rounded-xl p-4 space-y-2" style={{ background: "rgba(148,247,197,0.06)", border: "1px solid rgba(148,247,197,0.2)" }}>
                     <div className="grid grid-cols-2 gap-y-2 text-xs">
                       <span className="text-white">{isAf ? "Status:" : "Status:"}</span>
-                      <span className={scheduleEnabled ? "text-green-400 font-bold" : "text-white"}>
+                      <span className={scheduleEnabled ? "font-bold" : ""} style={{ color: scheduleEnabled ? "#94F7C5" : "#fff" }}>
                         {scheduleEnabled ? (isAf ? "✓ Aktief" : "✓ Active") : (isAf ? "✗ Af" : "✗ Off")}
                       </span>
                       <span className="text-white">{isAf ? "Frekwensie:" : "Frequency:"}</span>
@@ -645,24 +634,24 @@ export default function AdminPartnerBrandingPage() {
         <section className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-black text-white flex items-center gap-2">
-              <History className="w-5 h-5" style={{ color: "#6366f1" }} />
+              <History className="w-5 h-5" style={{ color: "#9FD8FF" }} />
               {isAf ? "Stuurlys" : "Send Log"}
             </h2>
             <button
               type="button"
               onClick={() => refetchLog()}
               className="text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-full transition"
-              style={{ border: "1px solid rgba(99,102,241,0.4)", color: "#6366f1" }}
+              style={{ border: "1px solid rgba(159,216,255,0.4)", color: "#9FD8FF" }}
             >
               {isAf ? "Verfris" : "Refresh"}
             </button>
           </div>
 
-          <NeonShell color="#6366f1">
+          <NeonShell color="#9FD8FF">
             <div className="p-4">
               {sendLogLoading ? (
                 <div className="flex items-center justify-center py-8">
-                  <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#6366f1" }} />
+                  <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#9FD8FF" }} />
                 </div>
               ) : sendLog.length === 0 ? (
                 <div className="text-center py-8">
@@ -703,12 +692,12 @@ export default function AdminPartnerBrandingPage() {
                           <td className="py-2.5 pr-4">
                             <StatusBadge status={entry.status} errorMessage={entry.errorMessage} isAf={isAf} />
                             {entry.errorMessage && entry.errorMessage !== "opted_out" && (
-                              <p className="text-[9px] text-red-400 mt-0.5 max-w-[140px] truncate" title={entry.errorMessage}>
+                              <p className="text-[9px] mt-0.5 max-w-[140px] truncate" style={{ color: "#FF8DA1" }} title={entry.errorMessage}>
                                 {entry.errorMessage}
                               </p>
                             )}
                             {entry.errorMessage === "opted_out" && (
-                              <p className="text-[9px] text-amber-400/70 mt-0.5 max-w-[140px] truncate">
+                              <p className="text-[9px] mt-0.5 max-w-[140px] truncate" style={{ color: "#FFE29A" }}>
                                 {isAf ? "Ouer afgemeld" : "Parent unsubscribed"}
                               </p>
                             )}

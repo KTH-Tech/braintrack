@@ -1283,7 +1283,7 @@ export default function OnboardingPage() {
               {phase === "questions" && ` · ${currentStep + 1}/${ONBOARDING_QUESTIONS.length}`}
             </span>
             <span
-              className="text-[13px] shrink-0"
+              className="text-[15px] shrink-0"
               style={{ fontFamily: MARKER, color: progress >= 75 ? BRAND.yellow : BRAND.mint }}
             >
               {progress >= 75 ? t.almostThere : `${Math.round(progress)}%`}

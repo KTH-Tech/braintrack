@@ -14,6 +14,7 @@ import {
   LogOut,
   Home,
   QrCode,
+  School,
 } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
 import iconTransparent from "@/assets/handoff/icon-transparent.png";
@@ -76,6 +77,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { key: "emails", href: "/learn/admin/emails", labelEn: "Emails", labelAf: "E-pos", Icon: Mail, testId: "admin-nav-emails-top" },
       { key: "partner-branding", href: "/learn/admin/partner-branding", labelEn: "Partner Branding", labelAf: "Vennoothandelsmerk", Icon: Handshake },
+      { key: "schools", href: "/learn/admin/school-qr", labelEn: "School QR Codes", labelAf: "Skool QR-kodes", Icon: School },
       { key: "qr", href: "/learn/admin/qr", labelEn: "QR Generator", labelAf: "QR-Generator", Icon: QrCode },
     ],
   },

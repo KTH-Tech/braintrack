@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import type { DailyChallenge, DailyChallengeQuestion } from "@shared/schema";
 import { LearnerHeader } from "@/components/learner-header";
+import { GraffitiSplats } from "@/components/graffiti-splats";
 
 const CHALLENGE_TIME_LIMIT = 300;
 
@@ -512,7 +513,8 @@ export default function DailyChallengePage() {
         }
       />
 
-      <main className="relative max-w-3xl mx-auto px-4 py-6 space-y-6">
+      <main className="relative z-10 max-w-3xl mx-auto px-4 py-6 space-y-6">
+        <GraffitiSplats variant="full" opacity={0.5} />
         {/* Ambient pastel auras */}
         <div
           aria-hidden

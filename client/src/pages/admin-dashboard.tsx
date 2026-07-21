@@ -4,6 +4,7 @@ import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/language-context";
 import { AdminTopNav } from "@/components/admin-top-nav";
+import { NeonShell, halo, type NeonHex } from "@/components/admin-ui";
 import { formatNumber } from "@/lib/formatters";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -12,47 +13,6 @@ import {
   GraduationCap, Gift, Layers, Loader2, LogOut, Mail, Package,
   ShieldAlert, Store, Users, Zap, Handshake, School, ChevronDown, ChevronUp, QrCode,
 } from "lucide-react";
-
-type NeonHex =
-  | "#9FF5E8" | "#9FD8FF" | "#FFB7E5"
-  | "#C5B3FF" | "#FFE29A" | "#94F7C5";
-
-function halo(color: NeonHex, a = 0.28) {
-  // Token-palette rgb triplets (braintrack-tokens.css pastels).
-  const rgb: Record<NeonHex, string> = {
-    "#9FF5E8": "159,245,232",
-    "#9FD8FF": "159,216,255",
-    "#FFB7E5": "255,183,229",
-    "#C5B3FF": "197,179,255",
-    "#FFE29A": "255,226,154",
-    "#94F7C5": "148,247,197",
-  };
-  return `rgba(${rgb[color]},${a})`;
-}
-
-function NeonShell({
-  color, children, className = "", testId,
-}: {
-  color: NeonHex;
-  children: React.ReactNode;
-  className?: string;
-  testId?: string;
-}) {
-  return (
-    <div
-      className={`relative overflow-hidden ${className}`}
-      style={{
-        background: "rgba(255,255,255,0.035)",
-        border: "1px solid rgba(255,255,255,0.1)",
-        borderRadius: 20,
-      }}
-      data-testid={testId}
-    >
-      <span aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: color, opacity: 0.8 }} />
-      {children}
-    </div>
-  );
-}
 
 type AdminStats = {
   totalUsers: number;

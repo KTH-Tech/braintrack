@@ -11,6 +11,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/language-context";
 import { LearnerHeader } from "@/components/learner-header";
+import { GraffitiSplats } from "@/components/graffiti-splats";
 import {
   AlertTriangle,
   Clock,
@@ -647,6 +648,7 @@ export default function ExamReadyPage() {
   if (examState === "completed") {
     return (
       <div className="min-h-screen text-white relative overflow-hidden" style={pageRootStyle}>
+        <GraffitiSplats variant="corner" opacity={0.5} />
         {renderHeader()}
         <div
           aria-hidden
@@ -737,6 +739,7 @@ export default function ExamReadyPage() {
 
     return (
       <div className="min-h-screen text-white relative overflow-hidden" style={pageRootStyle}>
+        <GraffitiSplats variant="hero" opacity={0.45} />
         {renderHeader()}
         {/* Ambient auras */}
         <div

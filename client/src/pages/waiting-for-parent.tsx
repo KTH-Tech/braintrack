@@ -221,7 +221,7 @@ export default function WaitingForParentPage() {
                   ))}
                 </div>
 
-                <div className="flex items-center justify-center gap-2 text-xs" style={{ fontFamily: "'Permanent Marker',cursive", color: "#9FF5E8" }}>
+                <div className="flex items-center justify-center gap-2 text-[15px]" style={{ fontFamily: "'Permanent Marker',cursive", color: "#9FF5E8" }}>
                   <Loader2 className="w-3.5 h-3.5" style={{ animation: "bt-spin 1.4s linear infinite" }} />
                   {t.checking}
                 </div>

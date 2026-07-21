@@ -87,7 +87,7 @@ export function YouVsYouChart({ isAf = false }: YouVsYouChartProps) {
         <p className="text-[11px] uppercase tracking-[0.18em]" style={{ color: ACCENT, fontFamily: "'Poppins',sans-serif", fontWeight: 800 }}>
           {isAf ? "Hierdie week vs vorige" : "This week vs last"}
         </p>
-        <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
+        <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
           {isAf ? "jy vs JY" : "you vs YOU"}
         </span>
       </div>

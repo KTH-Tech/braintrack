@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { AdminTopNav } from "@/components/admin-top-nav";
+import { NeonShell, AdminBadge, adminSelectClass, adminSelectStyle, type NeonHex } from "@/components/admin-ui";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/lib/language-context";
@@ -125,42 +126,14 @@ const HEX = {
   violet: "#C5B3FF",
   pink: "#FFB7E5",
   amber: "#FFE29A",
-  green: "#34d399",
+  mint: "#94F7C5",
 } as const;
 
-// ── GlowCard shell ───────────────────────────────────────────────────────────
-function GlowCard({ accent, children }: { accent: string; children: React.ReactNode }) {
-  return (
-    <div
-      className="relative rounded-2xl bg-black p-5 transition-shadow"
-      style={{
-        border: `1px solid ${accent}55`,
-      }}
-    >
-      <span aria-hidden className="pointer-events-none absolute left-0 top-0 h-3 w-3 border-l border-t rounded-tl-2xl" style={{ borderColor: accent }} />
-      <span aria-hidden className="pointer-events-none absolute right-0 top-0 h-3 w-3 border-r border-t rounded-tr-2xl" style={{ borderColor: accent }} />
-      <span aria-hidden className="pointer-events-none absolute left-0 bottom-0 h-3 w-3 border-l border-b rounded-bl-2xl" style={{ borderColor: accent }} />
-      <span aria-hidden className="pointer-events-none absolute right-0 bottom-0 h-3 w-3 border-r border-b rounded-br-2xl" style={{ borderColor: accent }} />
-      {children}
-    </div>
-  );
-}
-
 // ── Source badge ─────────────────────────────────────────────────────────────
+// (thin wrapper around the shared AdminBadge — was a bespoke inline pill)
 function SourceBadge({ source }: { source: string }) {
   const isAdmin = source === "admin";
-  return (
-    <span
-      className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest"
-      style={{
-        background: isAdmin ? `${HEX.pink}22` : `${HEX.cyan}22`,
-        color: isAdmin ? HEX.pink : HEX.cyan,
-        border: `1px solid ${isAdmin ? HEX.pink : HEX.cyan}44`,
-      }}
-    >
-      {source}
-    </span>
-  );
+  return <AdminBadge color={isAdmin ? HEX.pink : HEX.cyan}>{source}</AdminBadge>;
 }
 
 // ── Plain textarea ────────────────────────────────────────────────────────────
@@ -236,15 +209,9 @@ function SearchBar({
 }
 
 // ── Language pill ─────────────────────────────────────────────────────────────
+// (thin wrapper around the shared AdminBadge — was a bespoke inline pill)
 function LangPill({ lang }: { lang: string }) {
-  return (
-    <span
-      className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest"
-      style={{ background: `${HEX.violet}22`, color: HEX.violet, border: `1px solid ${HEX.violet}44` }}
-    >
-      {lang}
-    </span>
-  );
+  return <AdminBadge color={HEX.violet}>{lang}</AdminBadge>;
 }
 
 // ── Coverage banner ───────────────────────────────────────────────────────
@@ -271,17 +238,17 @@ function CoverageBanner({
     <div
       className="rounded-xl px-4 py-3 flex items-center gap-4"
       style={{
-        background: allDone ? `${HEX.green}11` : `${HEX.amber}11`,
-        border: `1px solid ${allDone ? HEX.green : HEX.amber}33`,
+        background: allDone ? `${HEX.mint}11` : `${HEX.amber}11`,
+        border: `1px solid ${allDone ? HEX.mint : HEX.amber}33`,
       }}
       data-testid="coverage-banner"
     >
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1.5">
           {allDone
-            ? <CheckCircle2 size={14} style={{ color: HEX.green }} />
+            ? <CheckCircle2 size={14} style={{ color: HEX.mint }} />
             : <AlertCircle size={14} style={{ color: HEX.amber }} />}
-          <span className="text-xs font-bold" style={{ color: allDone ? HEX.green : HEX.amber }}>
+          <span className="text-xs font-bold" style={{ color: allDone ? HEX.mint : HEX.amber }}>
             {reviewed} of {total} {label} reviewed
           </span>
           {unreviewed > 0 && (
@@ -295,7 +262,7 @@ function CoverageBanner({
             className="h-full rounded-full transition-all duration-500"
             style={{
               width: `${pct}%`,
-              background: allDone ? HEX.green : HEX.amber,
+              background: allDone ? HEX.mint : HEX.amber,
             }}
           />
         </div>
@@ -307,7 +274,7 @@ function CoverageBanner({
           className="shrink-0 flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold uppercase tracking-widest transition-all"
           style={{
             background: showUnreviewedOnly ? `${HEX.amber}33` : "rgba(255,255,255,0.05)",
-            color: showUnreviewedOnly ? HEX.amber : "rgba(255,255,255,0.85)",
+            color: showUnreviewedOnly ? HEX.amber : "#fff",
             border: `1px solid ${showUnreviewedOnly ? HEX.amber : "rgba(255,255,255,0.10)"}`,
           }}
         >
@@ -353,7 +320,7 @@ function SubjectBreakdownPanel({
       <button
         onClick={() => setOpen((v) => !v)}
         className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest transition-colors"
-        style={{ color: open ? accent : "rgba(255,255,255,0.85)" }}
+        style={{ color: open ? accent : "#fff" }}
         data-testid="coverage-by-subject-toggle"
       >
         {open ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
@@ -393,12 +360,12 @@ function SubjectBreakdownPanel({
                     <div className="w-20 h-1.5 rounded-full bg-white/10 overflow-hidden">
                       <div
                         className="h-full rounded-full transition-all duration-300"
-                        style={{ width: `${pct}%`, background: allDone ? HEX.green : accent }}
+                        style={{ width: `${pct}%`, background: allDone ? HEX.mint : accent }}
                       />
                     </div>
                     <span
                       className="text-[10px] w-8 text-right"
-                      style={{ color: allDone ? HEX.green : "rgba(255,255,255,0.85)" }}
+                      style={{ color: allDone ? HEX.mint : "#fff" }}
                     >
                       {pct}%
                     </span>
@@ -449,7 +416,7 @@ function BulkImportPanel({
   onImported,
 }: {
   type: "notes" | "flashcards";
-  accent: string;
+  accent: NeonHex;
   onImported: () => void;
 }) {
   const { toast } = useToast();
@@ -513,7 +480,7 @@ function BulkImportPanel({
         data-testid={`bulk-import-toggle-${type}`}
         onClick={() => { setOpen((v) => !v); setResult(null); setParseError(null); }}
         className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest transition-colors"
-        style={{ color: open ? accent : "rgba(255,255,255,0.85)" }}
+        style={{ color: open ? accent : "#fff" }}
       >
         <Upload size={13} />
         Bulk Import
@@ -521,7 +488,7 @@ function BulkImportPanel({
       </button>
 
       {open && (
-        <GlowCard accent={accent}>
+        <NeonShell color={accent} className="p-5">
           <p className="mb-1 text-sm font-bold" style={{ color: accent }}>
             Bulk Import — {type === "notes" ? "Topic Notes" : "Flashcards"}
           </p>
@@ -567,17 +534,17 @@ function BulkImportPanel({
             <div
               className="mb-3 rounded-lg p-3 text-xs"
               style={{
-                background: result.errored > 0 ? "#ff444422" : "#34d39922",
-                border: `1px solid ${result.errored > 0 ? "#ff4444" : "#34d399"}44`,
+                background: result.errored > 0 ? "#ff444422" : `${HEX.mint}22`,
+                border: `1px solid ${result.errored > 0 ? "#ff4444" : HEX.mint}44`,
               }}
             >
-              <div className="flex items-center gap-2 font-bold mb-1" style={{ color: result.errored > 0 ? "#ff6060" : "#34d399" }}>
+              <div className="flex items-center gap-2 font-bold mb-1" style={{ color: result.errored > 0 ? "#ff6060" : HEX.mint }}>
                 {result.errored > 0 ? <AlertCircle size={13} /> : <CheckCircle2 size={13} />}
                 {result.errored > 0 ? "Import completed with errors" : "Import successful"}
               </div>
               <div className="flex gap-4 text-white">
-                <span><span className="text-green-400 font-bold">{result.created}</span> created</span>
-                <span><span className="text-amber-400 font-bold">{result.updated}</span> updated</span>
+                <span><span className="font-bold" style={{ color: HEX.mint }}>{result.created}</span> created</span>
+                <span><span className="font-bold" style={{ color: HEX.amber }}>{result.updated}</span> updated</span>
                 <span><span className="text-red-400 font-bold">{result.errored}</span> errored</span>
               </div>
               {result.errors.length > 0 && (
@@ -608,7 +575,7 @@ function BulkImportPanel({
               Import
             </Button>
           </div>
-        </GlowCard>
+        </NeonShell>
       )}
     </div>
   );
@@ -755,7 +722,7 @@ function TopicNotesTab() {
       />
 
       {creating && (
-        <GlowCard accent={HEX.green}>
+        <NeonShell color={HEX.mint} className="p-5">
           <p className="mb-4 text-sm font-bold text-white">New Topic Note</p>
           <div className="flex flex-col gap-3">
             <div className="flex gap-3">
@@ -771,7 +738,8 @@ function TopicNotesTab() {
               <div className="flex flex-col gap-1 w-24">
                 <label className="text-[10px] font-bold uppercase tracking-widest text-white">Language</label>
                 <select
-                  className="rounded-lg bg-white/5 px-3 py-2 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-white/30"
+                  className={adminSelectClass}
+                  style={adminSelectStyle}
                   value={newNote.language}
                   onChange={(e) => setNewNote((n) => ({ ...n, language: e.target.value }))}
                 >
@@ -803,7 +771,7 @@ function TopicNotesTab() {
               <Button size="sm" variant="ghost" className="text-white" onClick={() => setCreating(false)}>Cancel</Button>
               <Button
                 size="sm"
-                style={{ background: `${HEX.green}33`, color: HEX.green, border: `1px solid ${HEX.green}55` }}
+                style={{ background: `${HEX.mint}33`, color: HEX.mint, border: `1px solid ${HEX.mint}55` }}
                 onClick={submitCreate}
                 disabled={createMutation.isPending || !newNote.topicId}
                 data-testid="save-new-note-btn"
@@ -813,11 +781,11 @@ function TopicNotesTab() {
               </Button>
             </div>
           </div>
-        </GlowCard>
+        </NeonShell>
       )}
 
       {filtered.map((row) => (
-        <GlowCard key={row.id} accent={editingId === row.id ? HEX.amber : HEX.cyan}>
+        <NeonShell key={row.id} color={editingId === row.id ? HEX.amber : HEX.cyan} className="p-5">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2 mb-1">
@@ -839,7 +807,7 @@ function TopicNotesTab() {
                   </Button>
                   <Button
                     size="sm"
-                    className="bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border border-amber-500/40"
+                    style={{ background: `${HEX.amber}22`, color: HEX.amber, border: `1px solid ${HEX.amber}55` }}
                     onClick={() => updateMutation.mutate({ id: row.id, body: draft })}
                     disabled={updateMutation.isPending}
                     data-testid={`save-note-${row.id}`}
@@ -886,7 +854,7 @@ function TopicNotesTab() {
               />
             </div>
           )}
-        </GlowCard>
+        </NeonShell>
       ))}
 
       {filtered.length === 0 && !creating && (
@@ -1026,7 +994,7 @@ function TopicFlashcardsTab() {
       />
 
       {creating && (
-        <GlowCard accent={HEX.green}>
+        <NeonShell color={HEX.mint} className="p-5">
           <p className="mb-4 text-sm font-bold text-white">New Flashcard</p>
           <div className="flex flex-col gap-3">
             <div className="flex gap-3">
@@ -1042,7 +1010,8 @@ function TopicFlashcardsTab() {
               <div className="flex flex-col gap-1 w-24">
                 <label className="text-[10px] font-bold uppercase tracking-widest text-white">Language</label>
                 <select
-                  className="rounded-lg bg-white/5 px-3 py-2 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-white/30"
+                  className={adminSelectClass}
+                  style={adminSelectStyle}
                   value={newCard.language}
                   onChange={(e) => setNewCard((c) => ({ ...c, language: e.target.value }))}
                 >
@@ -1053,7 +1022,8 @@ function TopicFlashcardsTab() {
               <div className="flex flex-col gap-1 w-28">
                 <label className="text-[10px] font-bold uppercase tracking-widest text-white">Type</label>
                 <select
-                  className="rounded-lg bg-white/5 px-3 py-2 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-white/30"
+                  className={adminSelectClass}
+                  style={adminSelectStyle}
                   value={newCard.cardType}
                   onChange={(e) => setNewCard((c) => ({ ...c, cardType: e.target.value }))}
                 >
@@ -1070,7 +1040,7 @@ function TopicFlashcardsTab() {
               <Button size="sm" variant="ghost" className="text-white" onClick={() => setCreating(false)}>Cancel</Button>
               <Button
                 size="sm"
-                style={{ background: `${HEX.green}33`, color: HEX.green, border: `1px solid ${HEX.green}55` }}
+                style={{ background: `${HEX.mint}33`, color: HEX.mint, border: `1px solid ${HEX.mint}55` }}
                 onClick={() => createMutation.mutate(newCard)}
                 disabled={createMutation.isPending || !newCard.topicId || !newCard.front || !newCard.back}
                 data-testid="save-new-flashcard-btn"
@@ -1080,11 +1050,11 @@ function TopicFlashcardsTab() {
               </Button>
             </div>
           </div>
-        </GlowCard>
+        </NeonShell>
       )}
 
       {filtered.map((row) => (
-        <GlowCard key={row.id} accent={editingId === row.id ? HEX.amber : HEX.violet}>
+        <NeonShell key={row.id} color={editingId === row.id ? HEX.amber : HEX.violet} className="p-5">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2 mb-1">
@@ -1092,12 +1062,7 @@ function TopicFlashcardsTab() {
                 <span className="text-white">›</span>
                 <span className="text-sm font-semibold text-white">{row.topicName}</span>
                 <LangPill lang={row.language} />
-                <span
-                  className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest"
-                  style={{ background: `${HEX.cyan}11`, color: HEX.cyan, border: `1px solid ${HEX.cyan}33` }}
-                >
-                  {row.cardType}
-                </span>
+                <AdminBadge color={HEX.cyan}>{row.cardType}</AdminBadge>
                 <SourceBadge source={row.source} />
               </div>
               {editingId !== row.id && (
@@ -1114,7 +1079,7 @@ function TopicFlashcardsTab() {
                   </Button>
                   <Button
                     size="sm"
-                    className="bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border border-amber-500/40"
+                    style={{ background: `${HEX.amber}22`, color: HEX.amber, border: `1px solid ${HEX.amber}55` }}
                     onClick={() => updateMutation.mutate({ id: row.id, body: draft })}
                     disabled={updateMutation.isPending}
                     data-testid={`save-card-${row.id}`}
@@ -1149,7 +1114,8 @@ function TopicFlashcardsTab() {
                 <div className="flex flex-col gap-1 flex-1">
                   <label className="text-[10px] font-bold uppercase tracking-widest text-white">Card Type</label>
                   <select
-                    className="rounded-lg bg-white/5 px-3 py-2 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-white/30"
+                    className={adminSelectClass}
+                    style={adminSelectStyle}
                     value={draft.cardType}
                     onChange={(e) => setDraft((d) => ({ ...d, cardType: e.target.value }))}
                   >
@@ -1171,7 +1137,7 @@ function TopicFlashcardsTab() {
               </div>
             </div>
           )}
-        </GlowCard>
+        </NeonShell>
       ))}
 
       {filtered.length === 0 && !creating && (
@@ -1297,7 +1263,7 @@ function LiteratureNotesTab() {
       />
 
       {creating && (
-        <GlowCard accent={HEX.green}>
+        <NeonShell color={HEX.mint} className="p-5">
           <p className="mb-4 text-sm font-bold text-white">New Literature Note</p>
           <div className="flex flex-col gap-3">
             <div className="flex gap-3">
@@ -1313,7 +1279,8 @@ function LiteratureNotesTab() {
               <div className="flex flex-col gap-1 w-24">
                 <label className="text-[10px] font-bold uppercase tracking-widest text-white">Language</label>
                 <select
-                  className="rounded-lg bg-white/5 px-3 py-2 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-white/30"
+                  className={adminSelectClass}
+                  style={adminSelectStyle}
                   value={newNote.language}
                   onChange={(e) => setNewNote((n) => ({ ...n, language: e.target.value }))}
                 >
@@ -1327,7 +1294,7 @@ function LiteratureNotesTab() {
               <Button size="sm" variant="ghost" className="text-white" onClick={() => setCreating(false)}>Cancel</Button>
               <Button
                 size="sm"
-                style={{ background: `${HEX.green}33`, color: HEX.green, border: `1px solid ${HEX.green}55` }}
+                style={{ background: `${HEX.mint}33`, color: HEX.mint, border: `1px solid ${HEX.mint}55` }}
                 onClick={() => createMutation.mutate(newNote)}
                 disabled={createMutation.isPending || !newNote.workId}
                 data-testid="save-new-lit-note-btn"
@@ -1337,11 +1304,11 @@ function LiteratureNotesTab() {
               </Button>
             </div>
           </div>
-        </GlowCard>
+        </NeonShell>
       )}
 
       {filtered.map((row) => (
-        <GlowCard key={row.id} accent={editingId === row.id ? HEX.amber : HEX.pink}>
+        <NeonShell key={row.id} color={editingId === row.id ? HEX.amber : HEX.pink} className="p-5">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2 mb-1">
@@ -1362,7 +1329,7 @@ function LiteratureNotesTab() {
                   </Button>
                   <Button
                     size="sm"
-                    className="bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border border-amber-500/40"
+                    style={{ background: `${HEX.amber}22`, color: HEX.amber, border: `1px solid ${HEX.amber}55` }}
                     onClick={() => updateMutation.mutate({ id: row.id, body: draft })}
                     disabled={updateMutation.isPending}
                     data-testid={`save-lit-${row.id}`}
@@ -1398,7 +1365,7 @@ function LiteratureNotesTab() {
               <JsonField label="Essay Frameworks (JSON array)" value={draft.essayFrameworks} onChange={(v) => setDraft((d) => ({ ...d, essayFrameworks: v }))} />
             </div>
           )}
-        </GlowCard>
+        </NeonShell>
       ))}
 
       {filtered.length === 0 && !creating && (
@@ -1451,7 +1418,7 @@ export default function AdminContentEditorPage() {
               onClick={() => setTab(t.id)}
               className="flex items-center gap-2 px-4 py-3 text-xs font-bold uppercase tracking-widest transition-all"
               style={{
-                color: tab === t.id ? t.accent : "rgba(255,255,255,0.85)",
+                color: tab === t.id ? t.accent : "#fff",
                 borderBottom: tab === t.id ? `2px solid ${t.accent}` : "2px solid transparent",
               }}
             >

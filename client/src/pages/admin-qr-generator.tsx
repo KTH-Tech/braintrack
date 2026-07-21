@@ -242,7 +242,7 @@ export default function AdminQrGeneratorPage() {
                   style={{ width: 240, height: 240, imageRendering: "pixelated" }}
                 />
               </div>
-              <p className="graffiti-hand text-sm flex items-center gap-1.5" style={{ color: fg }}>
+              <p className="text-sm font-bold flex items-center gap-1.5" style={{ color: fg }}>
                 <QrIcon className="w-4 h-4" />
                 {isAf ? "Skandeer om te toets" : "Scan to test"}
               </p>

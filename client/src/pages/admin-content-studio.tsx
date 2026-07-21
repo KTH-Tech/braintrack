@@ -3,6 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { AdminTopNav } from "@/components/admin-top-nav";
+import { AdminGround, NeonShell, type NeonHex } from "@/components/admin-ui";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/lib/language-context";
@@ -19,30 +20,18 @@ const HEX = {
   blue: "#9FD8FF",
   violet: "#C5B3FF",
   pink: "#FFB7E5",
-};
+} as const satisfies Record<string, NeonHex>;
 
 type RunState = "idle" | "running" | "success" | "error";
 
 function GlowCard({
   accent, children,
-}: { accent: string; children: React.ReactNode; onClick?: () => void; disabled?: boolean }) {
-  return (
-    <div
-      className="relative overflow-hidden p-6"
-      style={{
-        background: "rgba(255,255,255,0.035)",
-        border: "1px solid rgba(255,255,255,0.1)",
-        borderRadius: 16,
-      }}
-    >
-      <span aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: accent, opacity: 0.8 }} />
-      {children}
-    </div>
-  );
+}: { accent: NeonHex; children: React.ReactNode; onClick?: () => void; disabled?: boolean }) {
+  return <NeonShell color={accent} className="p-6">{children}</NeonShell>;
 }
 
 interface ActionCardProps {
-  accent: string;
+  accent: NeonHex;
   icon: React.ReactNode;
   title: string;
   description: string;
@@ -215,7 +204,7 @@ export default function AdminContentStudio() {
   })();
 
   return (
-    <div className="min-h-screen text-white" style={{ background: "#050508", fontFamily: "'Poppins', system-ui, sans-serif" }}>
+    <AdminGround>
       <AdminTopNav current="content-studio" />
       <div className="mx-auto max-w-6xl px-4 py-8 md:px-6 md:py-10">
         <div className="mb-8 flex items-center justify-end">
@@ -327,6 +316,6 @@ export default function AdminContentStudio() {
           {t.footer}
         </p>
       </div>
-    </div>
+    </AdminGround>
   );
 }

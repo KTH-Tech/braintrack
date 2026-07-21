@@ -17,6 +17,7 @@ import { calcReadiness, readinessBand, readinessBandLabel } from "@/lib/readines
 import { useEarliestPrelimDate } from "@/components/exam-countdown";
 import { ShieldCheck } from "lucide-react";
 import { LearnerHeader } from "@/components/learner-header";
+import { GraffitiSplats } from "@/components/graffiti-splats";
 
 /* ─── Day label constants ─────────────────────────────────────────────── */
 
@@ -587,8 +588,9 @@ export default function StudyCalendarPage() {
   }
 
   return (
-    <div className="min-h-screen overflow-x-hidden" style={{ color:"#ffffff", fontFamily: "'Poppins',sans-serif" }}>
+    <div className="min-h-screen overflow-x-hidden relative" style={{ color:"#ffffff", fontFamily: "'Poppins',sans-serif" }}>
       <SpaceBg />
+      <GraffitiSplats variant="full" opacity={0.5} />
 
       <LearnerHeader
         backHref="/dashboard"
@@ -596,64 +598,36 @@ export default function StudyCalendarPage() {
         title={isAf ? "Studieplan" : "Study Plan"}
         titleColor="#9FF5E8"
         maxWidthClassName="max-w-7xl"
-        titleExtra={<CalendarDays className="w-4 h-4" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px #9FF5E8)" }} />}
+        titleExtra={<CalendarDays className="w-4 h-4" style={{ color: "#9FF5E8" }} />}
       />
 
-      {/* ── Sticky TODAY directive banner — surfaces the timetable engine's #1 priority ── */}
-      {todayDirective && todayDirective.hasExam && (() => {
-        const urgencyMap: Record<string, { color: string; glow: string }> = {
-          final_sprint:     { color: "#FFB7E5", glow: "rgba(255,183,229,0.55)" },
-          exam_prep_mode:   { color: "#FFE29A", glow: "rgba(255,226,154,0.55)" },
-          focused_revision: { color: "#FFE29A", glow: "rgba(255,226,154,0.55)" },
-          build_mastery:    { color: "#C5B3FF", glow: "rgba(197,179,255,0.55)" },
-        };
-        const u = urgencyMap[todayDirective.urgencyState] || urgencyMap.build_mastery;
-        const days = todayDirective.daysUntil ?? 0;
-        const subjectLabel = isAf ? todayDirective.subjectNameAf : todayDirective.subjectName;
-        return (
+      {/* ── Continuity breadcrumb — Home's LearnerStudyPlan widget already shows
+          "Today's Focus" (same /api/learner/today-directive data) as a full
+          card with a Study Now CTA. Repeating that here — previously as a
+          sticky banner — just re-staged content the learner scrolled past
+          seconds ago. This page earns its own click with the High-Yield
+          Topics + calendar content below; all this line does is confirm
+          continuity (which exam is closest) without re-hosting Home's hero. ── */}
+      {hasHeroExam && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3" data-testid="plan-breadcrumb">
           <div
-            className="sticky z-40"
-            style={{ top: 56, background: "rgba(5,5,8,.92)", backdropFilter: "blur(8px)", borderBottom: `1px solid ${u.color}55`, boxShadow: `0 4px 18px ${u.glow}33` }}
-            data-testid="sticky-today-directive"
+            className="flex items-center gap-2 flex-wrap px-3.5 py-2 rounded-lg"
+            style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.08)" }}
           >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5">
-              <div className="flex items-center gap-3 flex-wrap">
-                <span
-                  className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shrink-0"
-                  style={{ background: `${u.color}14`, color: u.color, border: `1px solid ${u.color}` }}
-                >
-                  {todayDirective.isExamToday
-                    ? (isAf ? "Eksamen Vandag" : "Exam Today")
-                    : (isAf ? "Vandag" : "Today")}
-                </span>
-                <div className="flex-1 min-w-0 flex items-center gap-2">
-                  <p className="text-sm font-black text-white truncate">
-                    {subjectLabel}{todayDirective.paperNumber ? ` · ${isAf ? "V" : "P"}${todayDirective.paperNumber}` : ""}
-                  </p>
-                  <span className="hidden sm:inline tabular-nums text-[11px] font-bold" style={{ color: u.color }}>
-                    {days}{isAf ? (days === 1 ? "d oor" : "d oor") : "d left"}
-                  </span>
-                  <span className="hidden md:inline text-[11px] truncate" style={{ color:"#ffffff" }}>
-                    · {isAf ? todayDirective.messageAf : todayDirective.message}
-                  </span>
-                </div>
-                <Link href={todayDirective.deepLink}>
-                  <button
-                    className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-[0.16em] transition-all hover:scale-[1.03]"
-                    data-testid="sticky-today-cta"
-                    style={{ background: `${u.color}14`, color: u.color, border: `1.5px solid ${u.color}` }}
-                  >
-                    {isAf ? "Studeer Nou" : "Study Now"}
-                    <ChevronRight className="w-3 h-3" />
-                  </button>
-                </Link>
-              </div>
-            </div>
+            <span className="text-[10px] font-black uppercase tracking-[0.14em] shrink-0" style={{ color: heroUrgencyInfo.color }}>
+              {isAf ? "Volgende eksamen" : "Next exam"}
+            </span>
+            <span className="text-xs font-bold truncate" style={{ color: "#ffffff" }}>
+              {heroName}{heroPaper ? ` · ${heroPaper}` : ""}
+            </span>
+            <span className="text-xs tabular-nums shrink-0" style={{ color: heroUrgencyInfo.color, opacity: 0.9 }}>
+              {heroDays}{isAf ? "d oor" : "d left"}
+            </span>
           </div>
-        );
-      })()}
+        </div>
+      )}
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-5">
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-5">
 
         {/* ── Street hero intro (marker eyebrow → pastel gradient title → subtitle) ── */}
         <section className="relative overflow-hidden" style={{ animation: "bt-fadeup .5s cubic-bezier(.22,1,.36,1) both" }}>
@@ -738,7 +712,7 @@ export default function StudyCalendarPage() {
                 <Rocket className="w-6 h-6" style={{ color: heroUrgencyInfo.color, filter: `drop-shadow(0 0 8px ${heroUrgencyInfo.glow})` }} />
               </div>
               <div>
-                <p style={{ fontFamily: "'Permanent Marker',cursive", color: heroUrgencyInfo.color, fontSize: 13, transform: "rotate(-1.5deg)", display: "inline-block" }}>
+                <p style={{ fontFamily: "'Permanent Marker',cursive", color: heroUrgencyInfo.color, fontSize: 16, transform: "rotate(-1.5deg)", display: "inline-block" }}>
                   {isAf ? "Volgende Eksamen" : "Next Exam"}
                 </p>
                 <p
@@ -1240,7 +1214,7 @@ export default function StudyCalendarPage() {
         <div className="md:hidden">
           {thisWeekExams.length > 0 && (
             <div>
-              <p style={{ fontFamily:"'Permanent Marker',cursive", fontSize:13, color:"#FFB7E5", transform:"rotate(-1.5deg)", display:"inline-block", marginBottom:"8px" }}>
+              <p style={{ fontFamily:"'Permanent Marker',cursive", fontSize:16, color:"#FFB7E5", transform:"rotate(-1.5deg)", display:"inline-block", marginBottom:"8px" }}>
                 {isAf ? "Hierdie Week" : "This Week"}
               </p>
               <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1" style={{ scrollbarWidth:"none" }}>
@@ -1374,7 +1348,7 @@ export default function StudyCalendarPage() {
                   <span
                     style={{
                       fontFamily: "'Permanent Marker',cursive",
-                      fontSize: "13px",
+                      fontSize: "15px",
                       transform: "rotate(-2deg)",
                       color: isActive ? "#9FF5E8" : "#ffffff",
                       opacity: isActive ? 1 : 0.85,
@@ -1417,7 +1391,7 @@ export default function StudyCalendarPage() {
                   >
                     {/* Day header */}
                     <div className="mb-2 text-center">
-                      <p style={{ fontFamily:"'Permanent Marker',cursive", fontSize:"11px", color:isToday?"#9FF5E8":"#ffffff", transform:"rotate(-2deg)" }}>
+                      <p style={{ fontFamily:"'Permanent Marker',cursive", fontSize:"15px", color:isToday?"#9FF5E8":"#ffffff", transform:"rotate(-2deg)" }}>
                         {isAf ? day.shortAf : day.short}
                       </p>
                       <p style={{ fontSize:"13px", fontWeight:700, color:"#ffffff" }}>
@@ -1862,7 +1836,7 @@ export default function StudyCalendarPage() {
             <div style={{ borderRadius:"20px", padding:"20px", background:"rgba(255,255,255,.03)", border:"1.5px solid #94F7C5" }}>
               <div className="flex items-center gap-2 mb-3">
                 <CheckCircle2 className="w-4 h-4" style={{ color:"#94F7C5", filter:"drop-shadow(0 0 5px rgba(148,247,197,.6))" }} />
-                <p style={{ fontFamily:"'Permanent Marker',cursive", fontSize:"14px", color:"#94F7C5", transform:"rotate(-1.5deg)" }}>
+                <p style={{ fontFamily:"'Permanent Marker',cursive", fontSize:"16px", color:"#94F7C5", transform:"rotate(-1.5deg)" }}>
                   {isAf ? "Hierdie week se doel" : "This week's target"}
                 </p>
               </div>

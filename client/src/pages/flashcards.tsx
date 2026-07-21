@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { useLanguage } from "@/lib/language-context";
 import { LearnerHeader } from "@/components/learner-header";
+import { GraffitiSplats } from "@/components/graffiti-splats";
 import {
   ArrowLeft,
   Brain,
@@ -948,7 +949,8 @@ export default function FlashcardsPage() {
   const isAf = language === "af";
 
   return (
-    <div className="min-h-screen text-white" style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}>
+    <div className="min-h-screen text-white relative overflow-hidden" style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}>
+      <GraffitiSplats variant="full" opacity={0.4} />
       <LearnerHeader
         backHref="/dashboard"
         backLabel={isAf ? "Tuis" : "Home"}
@@ -957,7 +959,7 @@ export default function FlashcardsPage() {
         maxWidthClassName="max-w-7xl"
       />
 
-      <main className="max-w-2xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+      <main className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 py-8 space-y-6">
         <div className="space-y-1">
           <span
             style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}

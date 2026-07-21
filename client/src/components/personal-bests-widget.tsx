@@ -125,7 +125,7 @@ export function PersonalBestsWidget({ isAf = false }: PersonalBestsWidgetProps) 
                 {pb.highest_score}%
               </p>
               {isTop ? (
-                <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
+                <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
                   {isAf ? "Rekord" : "Record"}
                 </p>
               ) : (

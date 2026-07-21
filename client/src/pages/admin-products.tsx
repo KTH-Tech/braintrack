@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { AdminTopNav } from "@/components/admin-top-nav";
+import { AdminGround, NeonShell, AdminBadge, adminInputClass, adminInputStyle, type NeonHex } from "@/components/admin-ui";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -44,11 +43,11 @@ interface Product {
   is_active: boolean;
 }
 
-const tierLabel: Record<number, { en: string; af: string; color: string }> = {
-  0: { en: "Free", af: "Gratis", color: "bg-muted text-white" },
-  1: { en: "Brain Boost", af: "Brein-aansporing", color: "bg-[#9FD8FF]/10 border border-[#9FD8FF]/40 text-[#9FD8FF]" },
-  2: { en: "Pro", af: "Pro", color: "bg-[#9FD8FF]/10 border border-[#9FD8FF]/40 text-[#9FD8FF]" },
-  3: { en: "Elite", af: "Elite", color: "bg-amber-500/10 border border-amber-500/30 text-amber-700" },
+const tierLabel: Record<number, { en: string; af: string; color: NeonHex }> = {
+  0: { en: "Free", af: "Gratis", color: "#9FD8FF" },
+  1: { en: "Brain Boost", af: "Brein-aansporing", color: "#9FD8FF" },
+  2: { en: "Pro", af: "Pro", color: "#C5B3FF" },
+  3: { en: "Elite", af: "Elite", color: "#FFE29A" },
 };
 
 export default function AdminProductsPage() {
@@ -190,7 +189,7 @@ export default function AdminProductsPage() {
   const categories = Array.from(new Set(products.map(p => p.category))).sort();
 
   return (
-    <div className="min-h-screen text-white" style={{ background: "#050508", fontFamily: "'Poppins', system-ui, sans-serif" }}>
+    <AdminGround>
       <AdminTopNav current="products" />
 
       <main className="max-w-5xl mx-auto px-4 py-6">
@@ -212,33 +211,30 @@ export default function AdminProductsPage() {
                   <p className="text-xs mt-1">{tr.noPlansHelp} <code className="bg-muted px-1 rounded text-xs">npm run db:seed</code> {tr.ifEmpty}</p>
                 </div>
               ) : plans.map(plan => {
-                const tierEntry = tierLabel[plan.tier] ?? { en: `Tier ${plan.tier}`, af: `Vlak ${plan.tier}`, color: "bg-muted text-white" };
+                const tierEntry = tierLabel[plan.tier] ?? { en: `Tier ${plan.tier}`, af: `Vlak ${plan.tier}`, color: "#9FD8FF" as NeonHex };
                 const tier = { label: isAf ? tierEntry.af : tierEntry.en, color: tierEntry.color };
                 const featureList: string[] = Array.isArray(plan.features) ? plan.features as string[] : [];
                 return (
-                  <Card key={plan.id} className={`rounded-2xl border-border/50 transition-opacity ${!plan.is_active ? "opacity-60" : ""}`}>
-                    <div className={`h-1 rounded-t-2xl ${plan.is_active ? "bg-[linear-gradient(95deg,#FFB7E5,#FFE29A,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)]" : "bg-muted"}`} />
-                    <CardHeader className="pb-2 pt-4">
+                  <NeonShell key={plan.id} color={plan.is_active ? tier.color : "#9FD8FF"} className={`transition-opacity ${!plan.is_active ? "opacity-50" : ""}`}>
+                    <div className="p-5 pt-4 space-y-3">
                       <div className="flex items-start justify-between gap-2">
                         <div>
-                          <CardTitle className="text-base font-semibold">{isAf ? plan.name_af : plan.name_en}</CardTitle>
-                          <Badge className={`text-[10px] mt-1 ${tier.color}`}>{tier.label}</Badge>
+                          <h3 className="text-base font-black text-white">{isAf ? plan.name_af : plan.name_en}</h3>
+                          <AdminBadge color={tier.color} className="mt-1">{tier.label}</AdminBadge>
                         </div>
                         <div className="text-right">
-                          <div className="text-lg font-bold text-white">R{plan.monthly_price_rands}<span className="text-xs font-normal text-white">{tr.perMonth}</span></div>
+                          <div className="text-lg font-black text-white">R{plan.monthly_price_rands}<span className="text-xs font-normal text-white">{tr.perMonth}</span></div>
                           {plan.season_price_rands > 0 && <div className="text-[10px] text-white">R{plan.season_price_rands} {tr.season}</div>}
                         </div>
                       </div>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
                       <div className="grid grid-cols-2 gap-2 text-xs">
-                        <div className="bg-muted/50 rounded-lg p-2">
+                        <div className="rounded-lg p-2" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
                           <div className="text-white">{tr.dailyQ}</div>
-                          <div className="font-semibold text-white">{plan.daily_questions_limit === -1 ? tr.unlimited : plan.daily_questions_limit}</div>
+                          <div className="font-bold text-white">{plan.daily_questions_limit === -1 ? tr.unlimited : plan.daily_questions_limit}</div>
                         </div>
-                        <div className="bg-muted/50 rounded-lg p-2">
+                        <div className="rounded-lg p-2" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
                           <div className="text-white">{tr.fullSols}</div>
-                          <div className="font-semibold text-white">{plan.daily_full_solutions_limit === -1 ? tr.unlimited : `${plan.daily_full_solutions_limit}${tr.perDay}`}</div>
+                          <div className="font-bold text-white">{plan.daily_full_solutions_limit === -1 ? tr.unlimited : `${plan.daily_full_solutions_limit}${tr.perDay}`}</div>
                         </div>
                       </div>
                       {featureList.length > 0 && (
@@ -252,10 +248,10 @@ export default function AdminProductsPage() {
                           {featureList.length > 4 && <li className="text-[10px] text-white ml-4.5">+{featureList.length - 4} {tr.more}</li>}
                         </ul>
                       )}
-                      <div className="flex items-center justify-between pt-1 border-t border-border/50">
+                      <div className="flex items-center justify-between pt-2" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
                         <div className="flex items-center gap-2">
                           {plan.is_active
-                            ? <><CheckCircle className="w-3.5 h-3.5 text-[#94F7C5]" /><span className="text-xs text-[#94F7C5] font-medium">{tr.active}</span></>
+                            ? <><CheckCircle className="w-3.5 h-3.5 text-[#94F7C5]" /><span className="text-xs text-[#94F7C5] font-bold">{tr.active}</span></>
                             : <><XCircle className="w-3.5 h-3.5 text-white" /><span className="text-xs text-white">{tr.inactive}</span></>
                           }
                         </div>
@@ -265,8 +261,8 @@ export default function AdminProductsPage() {
                           disabled={togglePlanMutation.isPending}
                         />
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </NeonShell>
                 );
               })}
             </div>
@@ -309,22 +305,22 @@ export default function AdminProductsPage() {
                     </h3>
                     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                       {products.filter(p => p.category === cat).map(product => (
-                        <Card key={product.id} className={`rounded-xl border-border/50 transition-opacity ${!product.is_active ? "opacity-60" : ""}`}>
-                          <CardContent className="p-4">
+                        <NeonShell key={product.id} color="#FFB7E5" className={`transition-opacity ${!product.is_active ? "opacity-50" : ""}`}>
+                          <div className="p-4">
                             <div className="flex items-start justify-between gap-2 mb-2">
                               <div className="flex-1 min-w-0">
-                                <p className="font-semibold text-sm truncate">{isAf ? product.name_af : product.name_en}</p>
+                                <p className="font-bold text-sm text-white truncate">{isAf ? product.name_af : product.name_en}</p>
                                 <p className="text-[11px] text-white mt-0.5 line-clamp-2">{(isAf && product.description_af) ? product.description_af : product.description_en}</p>
                               </div>
                               <div className="text-right shrink-0">
-                                <div className="text-base font-bold text-white">R{product.price_rands}</div>
-                                <Badge variant="outline" className="text-[9px] mt-1">{product.slug}</Badge>
+                                <div className="text-base font-black text-white">R{product.price_rands}</div>
+                                <AdminBadge color="#FFB7E5" className="mt-1">{product.slug}</AdminBadge>
                               </div>
                             </div>
-                            <div className="flex items-center justify-between pt-2 border-t border-border/50">
+                            <div className="flex items-center justify-between pt-2" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
                               <div className="flex items-center gap-1.5">
                                 {product.is_active
-                                  ? <><CheckCircle className="w-3.5 h-3.5 text-[#94F7C5]" /><span className="text-xs text-[#94F7C5] font-medium">{tr.active}</span></>
+                                  ? <><CheckCircle className="w-3.5 h-3.5 text-[#94F7C5]" /><span className="text-xs text-[#94F7C5] font-bold">{tr.active}</span></>
                                   : <><XCircle className="w-3.5 h-3.5 text-white" /><span className="text-xs text-white">{tr.inactive}</span></>
                                 }
                               </div>
@@ -334,8 +330,8 @@ export default function AdminProductsPage() {
                                 disabled={toggleProductMutation.isPending}
                               />
                             </div>
-                          </CardContent>
-                        </Card>
+                          </div>
+                        </NeonShell>
                       ))}
                     </div>
                   </div>
@@ -347,73 +343,72 @@ export default function AdminProductsPage() {
           <TabsContent value="settings">
             <div className="max-w-xl space-y-6">
               <div>
-                <h2 className="text-sm font-semibold mb-1">{tr.installNudge}</h2>
+                <h2 className="text-sm font-black text-white mb-1">{tr.installNudge}</h2>
                 <p className="text-xs text-white mb-4">
                   {tr.installNudgeHelp}
                 </p>
-                <Card className="rounded-2xl border-border/50">
-                  <CardContent className="p-5">
-                    <div className="flex items-center justify-between gap-4">
-                      <div>
-                        <p className="text-sm font-medium">{tr.sessionThreshold}</p>
-                        <p className="text-[11px] text-white mt-0.5">
-                          {tr.showAfter}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2 shrink-0">
+                <NeonShell color="#9FD8FF" className="p-5">
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <p className="text-sm font-bold text-white">{tr.sessionThreshold}</p>
+                      <p className="text-[11px] text-white mt-0.5">
+                        {tr.showAfter}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        aria-label="Decrease threshold"
+                        onClick={() => setNudgeThresholdInput(Math.max(1, currentThreshold - 1))}
+                        disabled={currentThreshold <= 1 || configLoading}
+                        className="h-8 w-8 rounded-lg flex items-center justify-center text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                        style={{ border: "1px solid rgba(159,216,255,0.4)" }}
+                      >
+                        <Minus className="w-3.5 h-3.5" />
+                      </button>
+                      <span className="w-8 text-center text-base font-black tabular-nums text-white">
+                        {configLoading ? "…" : currentThreshold}
+                      </span>
+                      <button
+                        aria-label="Increase threshold"
+                        onClick={() => setNudgeThresholdInput(Math.min(100, currentThreshold + 1))}
+                        disabled={currentThreshold >= 100 || configLoading}
+                        className="h-8 w-8 rounded-lg flex items-center justify-center text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                        style={{ border: "1px solid rgba(159,216,255,0.4)" }}
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                  {nudgeThresholdInput !== null && nudgeThresholdInput !== platformConfig?.installNudgeSessionThreshold && (
+                    <div className="mt-4 pt-4 flex items-center justify-between gap-3" style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+                      <p className="text-[11px] font-bold" style={{ color: "#FFE29A" }}>
+                        {tr.unsavedPrefix} {platformConfig?.installNudgeSessionThreshold ?? 2}
+                      </p>
+                      <div className="flex gap-2">
                         <button
-                          aria-label="Decrease threshold"
-                          onClick={() => setNudgeThresholdInput(Math.max(1, currentThreshold - 1))}
-                          disabled={currentThreshold <= 1 || configLoading}
-                          className="h-8 w-8 rounded-lg border border-border flex items-center justify-center text-white hover:text-white hover:border-border/80 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                          onClick={() => setNudgeThresholdInput(null)}
+                          className="h-7 px-3 rounded-lg text-xs font-bold uppercase tracking-wider text-white transition"
+                          style={{ border: "1px solid rgba(255,255,255,0.2)" }}
                         >
-                          <Minus className="w-3.5 h-3.5" />
+                          {tr.cancel}
                         </button>
-                        <span className="w-8 text-center text-base font-bold tabular-nums">
-                          {configLoading ? "…" : currentThreshold}
-                        </span>
                         <button
-                          aria-label="Increase threshold"
-                          onClick={() => setNudgeThresholdInput(Math.min(100, currentThreshold + 1))}
-                          disabled={currentThreshold >= 100 || configLoading}
-                          className="h-8 w-8 rounded-lg border border-border flex items-center justify-center text-white hover:text-white hover:border-border/80 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                          disabled={updateConfigMutation.isPending}
+                          onClick={() =>
+                            updateConfigMutation.mutate({
+                              key: "install_nudge_session_threshold",
+                              value: nudgeThresholdInput,
+                            })
+                          }
+                          className="h-7 px-3 rounded-lg text-xs font-black uppercase tracking-wider disabled:opacity-40 transition"
+                          style={{ background: "#9FD8FF", color: "#050508" }}
                         >
-                          <Plus className="w-3.5 h-3.5" />
+                          {updateConfigMutation.isPending ? tr.saving : tr.save}
                         </button>
                       </div>
                     </div>
-                    {nudgeThresholdInput !== null && nudgeThresholdInput !== platformConfig?.installNudgeSessionThreshold && (
-                      <div className="mt-4 pt-4 border-t border-border/50 flex items-center justify-between gap-3">
-                        <p className="text-[11px] text-amber-600 font-medium">
-                          {tr.unsavedPrefix} {platformConfig?.installNudgeSessionThreshold ?? 2}
-                        </p>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-7 text-xs !rounded-lg"
-                            onClick={() => setNudgeThresholdInput(null)}
-                          >
-                            {tr.cancel}
-                          </Button>
-                          <Button
-                            size="sm"
-                            className="h-7 text-xs !rounded-lg"
-                            disabled={updateConfigMutation.isPending}
-                            onClick={() =>
-                              updateConfigMutation.mutate({
-                                key: "install_nudge_session_threshold",
-                                value: nudgeThresholdInput,
-                              })
-                            }
-                          >
-                            {updateConfigMutation.isPending ? tr.saving : tr.save}
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
+                  )}
+                </NeonShell>
               </div>
             </div>
           </TabsContent>
@@ -553,6 +548,6 @@ export default function AdminProductsPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </AdminGround>
   );
 }

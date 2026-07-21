@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useLanguage } from "@/lib/language-context";
 import { PageHeader } from "@/components/page-header";
+import { GraffitiSplats } from "@/components/graffiti-splats";
 import {
   Clock,
   Shield,
@@ -375,7 +376,8 @@ export default function BSTExamPage() {
   if (examState === "select") {
     const papers = papersData?.papers ?? [];
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen relative">
+        <GraffitiSplats variant="corner" opacity={0.35} />
         <PageHeader
           sticky
           icon={Zap}
@@ -529,7 +531,8 @@ export default function BSTExamPage() {
   // ---------- RULES STATE ----------
   if (examState === "rules") {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen relative">
+        <GraffitiSplats variant="hero" opacity={0.4} />
         <PageHeader
           sticky
           icon={Shield}
@@ -834,7 +837,8 @@ export default function BSTExamPage() {
     );
 
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen relative">
+        <GraffitiSplats variant="corner" opacity={0.3} />
         <PageHeader
           sticky
           icon={Trophy}

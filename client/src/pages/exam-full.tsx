@@ -18,6 +18,7 @@ import { useLanguage } from "@/lib/language-context";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { LearnerHeader } from "@/components/learner-header";
+import { GraffitiSplats } from "@/components/graffiti-splats";
 import {
   ArrowRight,
   CheckCircle2,
@@ -121,6 +122,10 @@ function StreetShell({ isAf, eyebrow, children }: {
 }) {
   return (
     <div className="min-h-screen text-white relative overflow-x-hidden" style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}>
+      {/* Decorative graffiti scatter — StreetShell is only used for the calm
+          "select" and "results" phases; the timed "active" phase renders its
+          own plain shell below and deliberately gets none of this. */}
+      <GraffitiSplats variant="hero" opacity={0.5} />
       {/* Ambient auras — kept faint for focused exam chrome */}
       <div aria-hidden className="pointer-events-none fixed -top-24 -left-24 w-[380px] h-[380px] rounded-full blur-[120px] opacity-20" style={{ background: "#9FF5E8" }} />
       <div aria-hidden className="pointer-events-none fixed -bottom-24 -right-24 w-[340px] h-[340px] rounded-full blur-[120px] opacity-15" style={{ background: "#C5B3FF" }} />

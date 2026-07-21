@@ -132,6 +132,7 @@ const ExamFullPage = lazy(() => import("@/pages/exam-full"));
 const AboutPage = lazy(() => import("@/pages/about"));
 const ResearchPage = lazy(() => import("@/pages/research"));
 const FeaturesPage = lazy(() => import("@/pages/features"));
+const ForSchoolsPage = lazy(() => import("@/pages/for-schools"));
 const DailyChallengePage = lazy(() => import("@/pages/daily-challenge"));
 const StudyCalendarPage = lazy(() => import("@/pages/study-calendar"));
 const PrelimTimetablePage = lazy(() => import("@/pages/prelim-timetable"));
@@ -775,6 +776,7 @@ function Router() {
         <Route path="/about" component={AboutPage} />
         <Route path="/research" component={ResearchPage} />
         <Route path="/features" component={FeaturesPage} />
+        <Route path="/for-schools" component={ForSchoolsPage} />
         <Route path="/privacy-policy" component={PrivacyPolicyPage} />
         <Route path="/terms-of-service" component={TermsOfServicePage} />
         <Route path="/cookie-policy" component={CookiePolicyPage} />

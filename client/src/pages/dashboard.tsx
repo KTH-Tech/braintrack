@@ -48,6 +48,7 @@ import { GoalProgress } from "@/components/goal-progress";
 import { YouVsYouChart } from "@/components/you-vs-you-chart";
 import { PersonalBestsWidget } from "@/components/personal-bests-widget";
 import { useEarliestPrelimDate, FINALS_DATE } from "@/components/exam-countdown";
+import { GraffitiSplats } from "@/components/graffiti-splats";
 
 const BADGE_INFO: Record<string, { name: string; nameAfrikaans: string; icon: any; color: string }> = {
   streak_3:      { name: "3-Day Streak",    nameAfrikaans: "3-Dag Reeks",    icon: Flame,        color: "text-orange-500" },
@@ -71,7 +72,6 @@ const NAV_LINKS = (labels: { navHome: string; navSubjects: string; navTutor: str
   { href: "/tutor",          icon: Brain,       label: labels.navTutor        },
   { href: "/flashcards",     icon: Layers,      label: labels.navFlashcards   },
   { href: "/progress",       icon: TrendingUp,  label: labels.navProgress     },
-  { href: "/study-calendar", icon: CalendarDays,label: labels.navStudyPlan    },
   { href: "/rewards",        icon: Trophy,      label: labels.navRewards      },
   { href: "/store",          icon: Sparkles,    label: labels.navStore        },
   { href: "/journey",        icon: Rocket,      label: labels.navJourney      },
@@ -717,7 +717,7 @@ export default function DashboardPage() {
             padding: 16,
           }}
         >
-          <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#FFB7E5" }}>{t.studyStreak} 🔥🔥🔥</div>
+          <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#FFB7E5" }}>{t.studyStreak} 🔥🔥🔥</div>
           <div className="tabular-nums" style={{ fontSize: 24, fontWeight: 900, color: "#fff", marginTop: 2 }}>
             {streakVal} <span style={{ fontSize: 14 }}>{streakVal === 1 ? t.dayLabel : t.streakDays}</span>
           </div>
@@ -754,13 +754,10 @@ export default function DashboardPage() {
 
       {/* ── Main ── */}
       <div className="bt-dash-main" style={{ flex: 1, padding: "34px 40px", minWidth: 0, position: "relative", overflow: "hidden" }}>
-        {/* Decorative blurred glows + graffiti scatter glyphs */}
+        {/* Decorative blurred glows + full graffiti scatter (doodles, emoji, hype tags) */}
         <div aria-hidden style={{ position: "absolute", top: -40, right: -40, width: 340, height: 340, background: "radial-gradient(circle,rgba(255,183,229,.12),transparent 65%)", filter: "blur(24px)", pointerEvents: "none" }} />
         <div aria-hidden style={{ position: "absolute", bottom: "10%", left: -60, width: 300, height: 300, background: "radial-gradient(circle,rgba(159,245,232,.1),transparent 65%)", filter: "blur(24px)", pointerEvents: "none" }} />
-        <span aria-hidden style={{ position: "absolute", top: 110, right: 60, fontFamily: "'Permanent Marker',cursive", fontSize: 30, color: "rgba(255,226,154,.5)", transform: "rotate(12deg)", pointerEvents: "none" }}>★</span>
-        <span aria-hidden style={{ position: "absolute", top: 300, right: 24, fontFamily: "'Permanent Marker',cursive", fontSize: 26, color: "rgba(255,183,229,.45)", transform: "rotate(-8deg)", pointerEvents: "none" }}>⚡</span>
-        <span aria-hidden style={{ position: "absolute", bottom: 140, right: 80, fontFamily: "'Permanent Marker',cursive", fontSize: 24, color: "rgba(197,179,255,.45)", transform: "rotate(6deg)", pointerEvents: "none" }}>✦</span>
-        <span aria-hidden style={{ position: "absolute", top: "60%", left: 8, fontFamily: "'Permanent Marker',cursive", fontSize: 22, color: "rgba(159,216,255,.4)", transform: "rotate(-14deg)", pointerEvents: "none" }}>👑</span>
+        <GraffitiSplats variant="full" opacity={0.55} />
 
         {/* ── Header row ── */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap", marginBottom: 30, position: "relative", zIndex: 1 }}>
@@ -1006,7 +1003,7 @@ export default function DashboardPage() {
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10, flexWrap: "wrap", marginBottom: 20 }}>
               <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 18, color: "#fff" }}>{t.subjectsHeading} 📈</div>
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#9FF5E8" }}>{t.keepPushing}</span>
+                <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#9FF5E8" }}>{t.keepPushing}</span>
                 <Link href="/settings">
                   <button
                     data-testid="link-manage-subjects"
@@ -1253,7 +1250,7 @@ export default function DashboardPage() {
               {(() => { const Icon = prepStatus.icon; return <Icon style={{ width: 26, height: 26, color: ac.hex }} />; })()}
             </div>
             <div>
-              <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: ac.hex, transform: "rotate(-2deg)", display: "inline-block" }}>
+              <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: ac.hex, transform: "rotate(-2deg)", display: "inline-block" }}>
                 {t.yourStatus} ✦
               </div>
               <div data-testid="prep-status-label" style={{ fontSize: 26, fontWeight: 900, letterSpacing: -0.5, color: "#fff" }}>
@@ -1330,7 +1327,7 @@ export default function DashboardPage() {
                 <Icon style={{ width: 20, height: 20, color: u.hex }} />
               </div>
               <div style={{ flex: 1, minWidth: 180 }}>
-                <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: u.hex, transform: "rotate(-1.5deg)", display: "inline-block" }}>
+                <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: u.hex, transform: "rotate(-1.5deg)", display: "inline-block" }}>
                   {isAf ? examWidgets.urgencyBanner.labelAf : examWidgets.urgencyBanner.label}
                 </div>
                 <p style={{ fontSize: 13, color: "#fff", margin: "2px 0 0" }}>
@@ -1360,7 +1357,7 @@ export default function DashboardPage() {
         <div>
           <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 16 }}>
             <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 18, color: "#fff" }}>{t.quickActions} 🚀</div>
-            <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#FFE29A", transform: "rotate(-2deg)", display: "inline-block" }}>
+            <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFE29A", transform: "rotate(-2deg)", display: "inline-block" }}>
               {isAf ? "kies jou missie" : "pick your mission"}
             </span>
           </div>
@@ -1465,7 +1462,7 @@ export default function DashboardPage() {
                 <Target style={{ width: 18, height: 18, color: "#94F7C5" }} />
                 {t.focusAreasHeading} 🎯
               </div>
-              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#94F7C5", transform: "rotate(-2deg)", display: "inline-block" }}>
+              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#94F7C5", transform: "rotate(-2deg)", display: "inline-block" }}>
                 {isAf ? "vang hulle vas!" : "lock them down!"}
               </span>
             </div>
@@ -1500,7 +1497,7 @@ export default function DashboardPage() {
                         onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; e.currentTarget.style.borderColor = `${hex}66`; e.currentTarget.style.boxShadow = "none"; }}
                       >
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 10 }}>
-                          <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 13, color: hex, transform: "rotate(-2deg)", display: "inline-block" }}>
+                          <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: hex, transform: "rotate(-2deg)", display: "inline-block" }}>
                             {bandLabel}
                           </span>
                           <span className="tabular-nums" style={{ fontSize: 13, fontWeight: 800, color: hex }}>{fa.masteryScore}%</span>
@@ -1534,7 +1531,7 @@ export default function DashboardPage() {
                 {t.yourVibeHeading} {varkStyle ? varkStyle.icon : "🧠"}
               </div>
               {varkStyle && (
-                <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#C5B3FF", transform: "rotate(-2deg)", display: "inline-block" }}>
+                <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#C5B3FF", transform: "rotate(-2deg)", display: "inline-block" }}>
                   {isAf ? varkStyle.taglineAf : varkStyle.tagline}
                 </span>
               )}
@@ -1563,7 +1560,7 @@ export default function DashboardPage() {
               >
                 <Lightbulb style={{ width: 20, height: 20, flex: "none", color: "#FFE29A" }} />
                 <p style={{ flex: 1, minWidth: 200, fontSize: 14, color: "#fff", lineHeight: 1.55, margin: 0 }}>
-                  <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 14, color: "#FFE29A", marginRight: 8 }}>{t.proTipHeading}:</span>
+                  <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFE29A", marginRight: 8 }}>{t.proTipHeading}:</span>
                   {(isAf
                     ? LEARNING_STYLE_INFO[profile.learningStyle as LearningStyle]?.tipsAfrikaans
                     : LEARNING_STYLE_INFO[profile.learningStyle as LearningStyle]?.tips
@@ -1591,7 +1588,7 @@ export default function DashboardPage() {
                   {varkInsights.dominantStyle === "visual" ? "👁" : varkInsights.dominantStyle === "auditory" ? "🔊" : varkInsights.dominantStyle === "read" ? "📖" : "✏"}
                 </span>
                 <div style={{ flex: 1, minWidth: 200 }}>
-                  <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 13, color: "#9FF5E8", marginRight: 8 }}>{t.styleEvolving}</span>
+                  <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#9FF5E8", marginRight: 8 }}>{t.styleEvolving}</span>
                   <span style={{ fontSize: 13, color: "#fff" }}>
                     {varkInsights.recommendation
                       ? varkInsights.recommendation

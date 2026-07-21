@@ -1,11 +1,19 @@
 import { useState, useMemo, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AdminTopNav } from "@/components/admin-top-nav";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import {
+  NeonShell, AdminBadge, AdminButton, halo,
+  adminInputClass, adminInputStyle, adminSelectClass, adminSelectStyle,
+  adminTableWrapClass, adminTableWrapStyle, adminThClass,
+  type NeonHex,
+} from "@/components/admin-ui";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+// Sections still on the shadcn primitives, pending conversion to the
+// NeonShell/AdminBadge admin design system above.
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
@@ -98,32 +106,32 @@ function DonutChart({ learners, parents, admins }: { learners: number; parents: 
   const lPct = (learners / total) * 100;
   const pPct = (parents / total) * 100;
   const aPct = (admins / total) * 100;
-  const gradient = `conic-gradient(#3b82f6 0% ${lPct}%, #06b6d4 ${lPct}% ${lPct + pPct}%, #f59e0b ${lPct + pPct}% 100%)`;
+  const gradient = `conic-gradient(#9FD8FF 0% ${lPct}%, #C5B3FF ${lPct}% ${lPct + pPct}%, #FFE29A ${lPct + pPct}% 100%)`;
   return (
     <div className="flex items-center gap-6">
       <div className="w-28 h-28 rounded-full flex-shrink-0 relative" style={{ background: gradient }}>
-        <div className="absolute inset-3 rounded-full bg-background flex items-center justify-center">
+        <div className="absolute inset-3 rounded-full bg-black flex items-center justify-center">
           <div className="text-center">
-            <div className="text-lg font-semibold">{total}</div>
+            <div className="text-lg font-semibold text-white">{total}</div>
             <div className="text-[9px] text-white">{isAf ? "Totaal" : "Total"}</div>
           </div>
         </div>
       </div>
       <div className="space-y-2.5">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-sm bg-blue-500" />
+          <div className="w-3 h-3 rounded-sm" style={{ background: "#9FD8FF" }} />
           <span className="text-xs text-white">{isAf ? "Leerders" : "Learners"}</span>
-          <span className="text-xs font-semibold ml-auto">{learners} ({Math.round(lPct)}%)</span>
+          <span className="text-xs font-semibold ml-auto text-white">{learners} ({Math.round(lPct)}%)</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-sm bg-cyan-500" />
+          <div className="w-3 h-3 rounded-sm" style={{ background: "#C5B3FF" }} />
           <span className="text-xs text-white">{isAf ? "Ouers" : "Parents"}</span>
-          <span className="text-xs font-semibold ml-auto">{parents} ({Math.round(pPct)}%)</span>
+          <span className="text-xs font-semibold ml-auto text-white">{parents} ({Math.round(pPct)}%)</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-sm bg-amber-500" />
+          <div className="w-3 h-3 rounded-sm" style={{ background: "#FFE29A" }} />
           <span className="text-xs text-white">{isAf ? "Admins" : "Admins"}</span>
-          <span className="text-xs font-semibold ml-auto">{admins} ({Math.round(aPct)}%)</span>
+          <span className="text-xs font-semibold ml-auto text-white">{admins} ({Math.round(aPct)}%)</span>
         </div>
       </div>
     </div>
@@ -133,7 +141,7 @@ function DonutChart({ learners, parents, admins }: { learners: number; parents: 
 function EmptyState({ icon: Icon, title, description }: { icon: any; title: string; description: string }) {
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4">
-      <div className="w-16 h-16 rounded-2xl bg-muted/50 flex items-center justify-center mb-4">
+      <div className="w-16 h-16 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center mb-4">
         <Icon className="w-8 h-8 text-white" />
       </div>
       <h3 className="text-sm font-semibold text-white mb-1">{title}</h3>
@@ -142,39 +150,45 @@ function EmptyState({ icon: Icon, title, description }: { icon: any; title: stri
   );
 }
 
-function GlowStatCard({ label, value, sub, icon: Icon }: { label: string; value: string | number; sub?: string; icon?: any; accent?: string }) {
+function GlowStatCard({ label, value, sub, icon: Icon, color }: { label: string; value: string | number; sub?: string; icon?: any; color: NeonHex }) {
   const { language } = useLanguage();
+  const h = halo(color, 0.35);
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-white/[0.035] p-5 border border-white/10">
-      <div className="flex items-start justify-between">
-        <div className="space-y-1.5">
-          <div className="text-[10px] uppercase tracking-[0.18em] font-bold text-white">{label}</div>
-          <div className="text-3xl font-bold tabular-nums text-white">
-            {typeof value === 'number' ? formatNumber(value, language) : value}
-          </div>
-          {sub && <div className="text-[10px] text-white">{sub}</div>}
-        </div>
+    <NeonShell color={color} className="p-4">
+      <div className="flex items-center gap-2 mb-3">
         {Icon && (
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-black border border-white/25 text-white">
-            <Icon className="w-5 h-5" />
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.035)", border: `1px solid ${h}` }}>
+            <Icon className="w-4 h-4" style={{ color }} />
           </div>
         )}
+        <span className="text-[10px] font-black uppercase tracking-[0.18em]" style={{ color }}>{label}</span>
       </div>
-    </div>
+      <div className="text-3xl font-black tabular-nums text-white">
+        {typeof value === 'number' ? formatNumber(value, language) : value}
+      </div>
+      {sub && <div className="text-[10px] text-white mt-1">{sub}</div>}
+    </NeonShell>
   );
 }
 
 function EndorsementBadge({ status }: { status: string }) {
   const { language } = useLanguage();
   const isAf = language === "af";
-  const cfg: Record<string, { label: string; cls: string }> = {
-    none: { label: isAf ? "Geen" : "None", cls: "bg-muted/50 text-white border-muted" },
-    interested: { label: isAf ? "Belangstellend" : "Interested", cls: "bg-amber-500/10 text-amber-700 border-amber-500/30" },
-    endorsed: { label: isAf ? "Onderskryf" : "Endorsed", cls: "bg-blue-500/10 text-blue-700 border-blue-500/30" },
-    champion: { label: isAf ? "Kampioen" : "Champion", cls: "bg-primary/10 text-primary border-primary/30" },
+  const cfg: Record<string, { label: string; color: NeonHex | null }> = {
+    none: { label: isAf ? "Geen" : "None", color: null },
+    interested: { label: isAf ? "Belangstellend" : "Interested", color: "#FFE29A" },
+    endorsed: { label: isAf ? "Onderskryf" : "Endorsed", color: "#9FD8FF" },
+    champion: { label: isAf ? "Kampioen" : "Champion", color: "#94F7C5" },
   };
   const c = cfg[status] ?? cfg.none;
-  return <Badge variant="outline" className={`text-[10px] h-5 ${c.cls}`}>{c.label}</Badge>;
+  if (!c.color) {
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider text-white border border-white/25 bg-white/5">
+        {c.label}
+      </span>
+    );
+  }
+  return <AdminBadge color={c.color}>{c.label}</AdminBadge>;
 }
 
 function TrialCountdown({ expiryDate }: { expiryDate?: string | null }) {
@@ -597,52 +611,52 @@ function SchoolDetailPanel({ schoolId, onClose }: { schoolId: number; onClose: (
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <h2 className="text-base font-semibold">{school.schoolName}</h2>
+            <h2 className="text-base font-semibold text-white">{school.schoolName}</h2>
             <EndorsementBadge status={school.endorsementStatus ?? "none"} />
           </div>
           <div className="text-xs text-white">{school.province} {school.district ? `Â· ${school.district}` : ""} Â· {school.schoolType}</div>
           {school.gradeRange && <div className="text-xs text-white">{language === "af" ? "Grade" : "Grades"} {school.gradeRange}</div>}
         </div>
-        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onClose}><X className="w-4 h-4" /></Button>
+        <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:text-white" onClick={onClose}><X className="w-4 h-4" /></Button>
       </div>
 
       {/* R35 Value Widget */}
-      <div className="bg-black border border-white/20 rounded-2xl p-4">
+      <NeonShell color="#FFE29A" className="p-4">
         <div className="text-[10px] text-white uppercase tracking-widest font-medium mb-1">{language === "af" ? "Skoolwaarde â€” R35/leerder" : "School Value â€” R35/learner"}</div>
-        <div className="text-3xl font-semibold font-heading text-primary">R{formatNumber(stats?.valueRands ?? 0, language)}<span className="text-base font-normal text-white">{language === "af" ? "/maand" : "/month"}</span></div>
+        <div className="text-3xl font-semibold font-heading" style={{ color: "#FFE29A" }}>R{formatNumber(stats?.valueRands ?? 0, language)}<span className="text-base font-normal text-white">{language === "af" ? "/maand" : "/month"}</span></div>
         <div className="text-[11px] text-white mt-1">{stats?.learnerCount ?? 0} {language === "af" ? "aktiewe leerders Ã— R35" : "active learners Ã— R35"}</div>
-      </div>
+      </NeonShell>
 
       {/* Key Stats */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="bg-blue-500/5 border border-blue-500/15 rounded-xl p-3">
+        <NeonShell color="#9FD8FF" className="p-3">
           <div className="text-[10px] text-white uppercase tracking-widest mb-1">{language === "af" ? "Gem. Akkuraatheid" : "Avg Accuracy"}</div>
-          <div className="text-xl font-semibold">{stats?.avgAccuracy ?? 0}%</div>
-        </div>
-        <div className="bg-green-500/5 border border-green-500/15 rounded-xl p-3">
+          <div className="text-xl font-semibold text-white">{stats?.avgAccuracy ?? 0}%</div>
+        </NeonShell>
+        <NeonShell color="#94F7C5" className="p-3">
           <div className="text-[10px] text-white uppercase tracking-widest mb-1">{language === "af" ? "Vraestelle Voltooi" : "Papers Completed"}</div>
-          <div className="text-xl font-semibold">{stats?.totalPapersCompleted ?? 0}</div>
-        </div>
-        <div className="bg-amber-500/5 border border-amber-500/15 rounded-xl p-3">
+          <div className="text-xl font-semibold text-white">{stats?.totalPapersCompleted ?? 0}</div>
+        </NeonShell>
+        <NeonShell color="#FFE29A" className="p-3">
           <div className="text-[10px] text-white uppercase tracking-widest mb-1">{language === "af" ? "Aktief Hierdie Week" : "Active This Week"}</div>
-          <div className="text-xl font-semibold flex items-center gap-1.5">
+          <div className="text-xl font-semibold flex items-center gap-1.5 text-white">
             {stats?.activeThisWeek ?? 0}
             {trendUp
               ? <TrendingUp className="w-4 h-4 text-white" />
-              : <TrendingDown className="w-4 h-4 text-red-500" />}
+              : <TrendingDown className="w-4 h-4" style={{ color: "#FF8DA1" }} />}
           </div>
-        </div>
-        <div className="bg-cyan-500/5 border border-cyan-500/15 rounded-xl p-3">
+        </NeonShell>
+        <NeonShell color="#9FF5E8" className="p-3">
           <div className="text-[10px] text-white uppercase tracking-widest mb-1">{language === "af" ? "Gem. Vrae" : "Avg Questions"}</div>
-          <div className="text-xl font-semibold">{stats?.avgQuestionsAnswered ?? 0}</div>
-        </div>
+          <div className="text-xl font-semibold text-white">{stats?.avgQuestionsAnswered ?? 0}</div>
+        </NeonShell>
       </div>
 
       {/* Engagement Trend â€” 8-week sparkline */}
       {(activityData?.weeks ?? []).length > 0 && (
-        <div className="p-3 rounded-xl border border-border bg-muted/10">
-          <div className="text-xs font-semibold mb-2 flex items-center justify-between gap-2">
-            <span className="flex items-center gap-1.5"><Activity className="w-3.5 h-3.5 text-primary" /> {language === "af" ? "8-Week Betrokkenheid" : "8-Week Engagement"}</span>
+        <NeonShell color="#9FF5E8" className="p-3">
+          <div className="text-xs font-semibold mb-2 flex items-center justify-between gap-2 text-white">
+            <span className="flex items-center gap-1.5"><Activity className="w-3.5 h-3.5" style={{ color: "#9FF5E8" }} /> {language === "af" ? "8-Week Betrokkenheid" : "8-Week Engagement"}</span>
             <span className="text-[10px] text-white font-normal">{language === "af" ? "aktiewe leerders / week" : "active learners / week"}</span>
           </div>
           <div className="flex items-end gap-1">
@@ -653,8 +667,8 @@ function SchoolDetailPanel({ schoolId, onClose }: { schoolId: number; onClose: (
               return (
                 <div key={i} className="flex-1 flex flex-col items-center gap-1">
                   <div
-                    className={`w-full rounded-t-sm transition-all ${isLatest ? "bg-primary" : "bg-primary/30"}`}
-                    style={{ height: `${heightPct * 0.32}rem` }}
+                    className="w-full rounded-t-sm transition-all"
+                    style={{ height: `${heightPct * 0.32}rem`, background: "#9FF5E8", opacity: isLatest ? 1 : 0.35 }}
                     title={`${w.weekLabel}: ${w.activeCount} active`}
                   />
                   {i === 0 || i === (activityData?.weeks?.length ?? 1) - 1 ? (
@@ -667,11 +681,11 @@ function SchoolDetailPanel({ schoolId, onClose }: { schoolId: number; onClose: (
           <div className="text-[10px] text-white mt-1">
             {language === "af" ? "Hoogtepunt" : "Peak"}: {Math.max(...(activityData?.weeks ?? []).map(w => w.activeCount), 0)} {language === "af" ? "leerders Â· Huidig" : "learners Â· Current"}: {activityData?.weeks?.[activityData.weeks.length - 1]?.activeCount ?? 0}
           </div>
-        </div>
+        </NeonShell>
       )}
 
       {/* Trial status */}
-      <div className="p-3 rounded-xl border border-border bg-muted/20 space-y-2">
+      <div className="p-3 rounded-xl bg-white/[0.04] space-y-2" style={{ border: "1px solid rgba(255,255,255,0.1)" }}>
         <div className="flex items-center justify-between">
           <div className="text-xs font-semibold flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-white" /> {language === "af" ? "Proeflopie-status" : "Trial Status"}</div>
           <TrialCountdown expiryDate={school.trialExpiryDate} />
@@ -718,10 +732,10 @@ function SchoolDetailPanel({ schoolId, onClose }: { schoolId: number; onClose: (
           </div>
           <div className="space-y-1.5">
             {gradeSummaries.map((g: any) => (
-              <div key={g.grade} className="flex items-center gap-3 p-2.5 rounded-lg bg-muted/20 border border-white/15">
-                <div className="text-xs font-semibold w-14">{language === "af" ? "Gr" : "Gr"} {g.grade}</div>
+              <div key={g.grade} className="flex items-center gap-3 p-2.5 rounded-lg bg-white/[0.04] border border-white/10">
+                <div className="text-xs font-semibold w-14 text-white">{language === "af" ? "Gr" : "Gr"} {g.grade}</div>
                 <div className="flex-1">
-                  <MiniBar value={g.avgAccuracy} max={100} color={g.avgAccuracy >= 70 ? "bg-green-500" : "bg-amber-500"} />
+                  <MiniBar value={g.avgAccuracy} max={100} color={g.avgAccuracy >= 70 ? "bg-[#94F7C5]" : "bg-[#FFE29A]"} />
                 </div>
                 <div className="text-xs text-white w-12 text-right">{g.avgAccuracy}%</div>
                 <div className="text-[10px] text-white w-14 text-right">{g.learnerCount} {language === "af" ? "leerders" : "learners"}</div>
@@ -755,8 +769,8 @@ function SchoolDetailPanel({ schoolId, onClose }: { schoolId: number; onClose: (
             <div className="text-[11px] text-white text-center py-4">{language === "af" ? "Nog geen kontaklog-inskrywings nie" : "No contact log entries yet"}</div>
           ) : (
             (contactLogData?.entries ?? []).map((e: any) => (
-              <div key={e.id} className="flex gap-2.5 p-2.5 rounded-lg bg-muted/20 border border-white/15">
-                <div className="text-[11px] flex-shrink-0 mt-0.5">{logTypeLabels[e.type] ?? e.type}</div>
+              <div key={e.id} className="flex gap-2.5 p-2.5 rounded-lg bg-white/[0.04] border border-white/10">
+                <div className="text-[11px] flex-shrink-0 mt-0.5 text-white">{logTypeLabels[e.type] ?? e.type}</div>
                 <div className="flex-1 min-w-0">
                   <div className="text-xs text-white leading-relaxed">{e.notes}</div>
                   <div className="text-[10px] text-white mt-0.5">{formatDate(e.createdAt, language, { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}</div>
@@ -769,10 +783,10 @@ function SchoolDetailPanel({ schoolId, onClose }: { schoolId: number; onClose: (
 
       {/* Export */}
       <div className="pt-1">
-        <a href={`/api/admin/schools/${schoolId}/export`} download>
-          <Button variant="outline" size="sm" className="w-full h-9 gap-1.5 text-xs border-green-500/40 text-green-700 hover:bg-green-500/10">
+        <a href={`/api/admin/schools/${schoolId}/export`} download className="block">
+          <AdminButton color="#94F7C5" className="w-full justify-center h-9 text-xs">
             <Download className="w-3.5 h-3.5" /> {language === "af" ? "Voer Leerderverslag Uit (CSV)" : "Export Learner Report (CSV)"}
-          </Button>
+          </AdminButton>
         </a>
       </div>
     </div>
@@ -822,26 +836,32 @@ function SendTestEmailCard({ language }: { language: string }) {
     },
   });
 
+  const isDanger = !!lastResult && lastResult.delivery !== "sent" && lastResult.delivery !== "not_configured";
+  const resultColor = !lastResult
+    ? "#9FD8FF"
+    : lastResult.delivery === "sent" ? "#94F7C5"
+    : lastResult.delivery === "not_configured" ? "#FFE29A"
+    : "#FF8DA1";
+  const resultHalo = (a: number) => isDanger ? `rgba(255,141,161,${a})` : halo(resultColor as NeonHex, a);
+
   return (
-    <Card className="rounded-2xl border-white/15">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm flex items-center gap-2">
-          <Mail className="w-4 h-4" style={{ color: "#a78bfa" }} />
-          {isAf ? "E-pos Aflewering" : "Email Delivery"}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-6 pt-2 space-y-3">
+    <NeonShell color="#C5B3FF" className="p-5">
+      <div className="text-sm font-bold flex items-center gap-2 mb-2 text-white">
+        <Mail className="w-4 h-4" style={{ color: "#C5B3FF" }} />
+        {isAf ? "E-pos Aflewering" : "Email Delivery"}
+      </div>
+      <div className="space-y-3">
         <p className="text-xs text-white leading-snug">
           {isAf
             ? "Stuur 'n vinnige toets-e-pos na jou eie adres om te bevestig dat transaksionele e-posse afgelewer word."
             : "Send a quick test email to your own address to confirm transactional emails are delivering correctly."}
         </p>
-        <Button
-          data-testid="send-test-email-btn"
-          size="sm"
+        <AdminButton
+          testId="send-test-email-btn"
+          color="#C5B3FF"
+          solid
           disabled={mutation.isPending}
           onClick={() => { setLastResult(null); mutation.mutate(); }}
-          className="flex items-center gap-2 bg-violet-600 hover:bg-violet-500 text-white"
         >
           {mutation.isPending ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -849,17 +869,12 @@ function SendTestEmailCard({ language }: { language: string }) {
             <Send className="w-3.5 h-3.5" />
           )}
           {isAf ? "Stuur Toets-E-pos" : "Send Test Email"}
-        </Button>
+        </AdminButton>
         {lastResult && (
           <div
             data-testid="test-email-result"
-            className={`flex items-start gap-2 rounded-lg px-3 py-2 text-xs ${
-              lastResult.delivery === "sent"
-                ? "bg-emerald-900/30 border border-emerald-500/30 text-emerald-300"
-                : lastResult.delivery === "not_configured"
-                ? "bg-amber-900/30 border border-amber-500/30 text-amber-300"
-                : "bg-red-900/30 border border-red-500/30 text-red-300"
-            }`}
+            className="flex items-start gap-2 rounded-lg px-3 py-2 text-xs"
+            style={{ background: resultHalo(0.12), border: `1px solid ${resultHalo(0.4)}`, color: resultColor }}
           >
             {lastResult.delivery === "sent" ? (
               <CheckCircle2 className="w-3.5 h-3.5 mt-0.5 shrink-0" />
@@ -875,8 +890,8 @@ function SendTestEmailCard({ language }: { language: string }) {
             </span>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </NeonShell>
   );
 }
 
@@ -1164,12 +1179,12 @@ export default function AdminReportsPage() {
           </section>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
-            <GlowStatCard label={language === "af" ? "ðŸ‘¥ Totale Gebruikers" : "ðŸ‘¥ Total Users"} value={stats?.totalUsers ?? 0} icon={Users} accent="primary" />
-            <GlowStatCard label={language === "af" ? "ðŸŽ“ Leerders" : "ðŸŽ“ Learners"} value={stats?.learners ?? 0} icon={UserCheck} accent="blue" />
-            <GlowStatCard label={language === "af" ? "ðŸ‘ª Ouers" : "ðŸ‘ª Parents"} value={stats?.parents ?? 0} icon={Users} accent="cyan" />
-            <GlowStatCard label={language === "af" ? "âš¡ Aktief Vandag" : "âš¡ Active Today"} value={stats?.activeToday ?? 0} icon={TrendingUp} accent="green" />
-            <GlowStatCard label={language === "af" ? "ðŸ”“ Op Proeflopie" : "ðŸ”“ On Trial"} value={stats?.trialUsers ?? 0} icon={Clock} accent="amber" />
-            <GlowStatCard label={language === "af" ? "ðŸ’° Ingeteken" : "ðŸ’° Subscribed"} value={stats?.subscribedUsers ?? 0} sub={language === "af" ? "R169/maand" : "R169/month"} icon={DollarSign} accent="cyan" />
+            <GlowStatCard label={language === "af" ? "ðŸ‘¥ Totale Gebruikers" : "ðŸ‘¥ Total Users"} value={stats?.totalUsers ?? 0} icon={Users} color="#9FF5E8" />
+            <GlowStatCard label={language === "af" ? "ðŸŽ“ Leerders" : "ðŸŽ“ Learners"} value={stats?.learners ?? 0} icon={UserCheck} color="#9FD8FF" />
+            <GlowStatCard label={language === "af" ? "ðŸ‘ª Ouers" : "ðŸ‘ª Parents"} value={stats?.parents ?? 0} icon={Users} color="#C5B3FF" />
+            <GlowStatCard label={language === "af" ? "âš¡ Aktief Vandag" : "âš¡ Active Today"} value={stats?.activeToday ?? 0} icon={TrendingUp} color="#94F7C5" />
+            <GlowStatCard label={language === "af" ? "ðŸ”“ Op Proeflopie" : "ðŸ”“ On Trial"} value={stats?.trialUsers ?? 0} icon={Clock} color="#FFE29A" />
+            <GlowStatCard label={language === "af" ? "ðŸ’° Ingeteken" : "ðŸ’° Subscribed"} value={stats?.subscribedUsers ?? 0} sub={language === "af" ? "R169/maand" : "R169/month"} icon={DollarSign} color="#FFB7E5" />
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -1210,73 +1225,65 @@ export default function AdminReportsPage() {
             <TabsContent value="overview">
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Card className="bg-white/[0.035] border-white/10 rounded-2xl">
-                    <CardContent className="p-6">
+                  <NeonShell color="#9FD8FF" className="p-6">
                       <div className="flex items-center gap-3 mb-3">
-                        <div className="w-11 h-11 rounded-xl bg-blue-500/15 flex items-center justify-center"><Activity className="w-5 h-5 text-white" /></div>
+                        <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: halo("#9FD8FF", 0.18) }}><Activity className="w-5 h-5" style={{ color: "#9FD8FF" }} /></div>
                         <div className="text-xs text-white uppercase tracking-wider font-medium">{language === "af" ? "Aktief Hierdie Week" : "Active This Week"}</div>
                       </div>
-                      <div className="text-3xl font-semibold font-heading">{stats?.activeThisWeek ?? 0}</div>
+                      <div className="text-3xl font-semibold font-heading text-white">{stats?.activeThisWeek ?? 0}</div>
                       <div className="text-[10px] text-white mt-1">{language === "af" ? "gebruikers het hierdie week aangemeld" : "users logged in this week"}</div>
-                      <MiniBar value={stats?.activeThisWeek ?? 0} max={stats?.totalUsers ?? 1} color="bg-blue-500" />
-                    </CardContent>
-                  </Card>
-                  <Card className="bg-white/[0.035] border-white/10 rounded-2xl">
-                    <CardContent className="p-6">
+                      <MiniBar value={stats?.activeThisWeek ?? 0} max={stats?.totalUsers ?? 1} color="bg-[#9FD8FF]" />
+                  </NeonShell>
+                  <NeonShell color="#94F7C5" className="p-6">
                       <div className="flex items-center gap-3 mb-3">
-                        <div className="w-11 h-11 rounded-xl bg-green-500/15 flex items-center justify-center"><TrendingUp className="w-5 h-5 text-white" /></div>
+                        <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: halo("#94F7C5", 0.18) }}><TrendingUp className="w-5 h-5" style={{ color: "#94F7C5" }} /></div>
                         <div className="text-xs text-white uppercase tracking-wider font-medium">{language === "af" ? "Omskakelingstempo" : "Conversion Rate"}</div>
                       </div>
-                      <div className="text-3xl font-semibold font-heading">{conversionRate}%</div>
+                      <div className="text-3xl font-semibold font-heading text-white">{conversionRate}%</div>
                       <div className="text-[10px] text-white mt-1">{language === "af" ? "proeflopie â†’ ingeteken" : "trial â†’ subscribed"}</div>
-                      <MiniBar value={conversionRate} max={100} color="bg-green-500" />
-                    </CardContent>
-                  </Card>
-                  <Card className="bg-white/[0.035] border-white/10 rounded-2xl">
-                    <CardContent className="p-6">
+                      <MiniBar value={conversionRate} max={100} color="bg-[#94F7C5]" />
+                  </NeonShell>
+                  <NeonShell color="#FFE29A" className="p-6">
                       <div className="flex items-center gap-3 mb-3">
-                        <div className="w-11 h-11 rounded-xl bg-primary/15 flex items-center justify-center"><DollarSign className="w-5 h-5 text-primary" /></div>
+                        <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: halo("#FFE29A", 0.18) }}><DollarSign className="w-5 h-5" style={{ color: "#FFE29A" }} /></div>
                         <div className="text-xs text-white uppercase tracking-wider font-medium">{language === "af" ? "Maandelikse Inkomste" : "Monthly Revenue"}</div>
                       </div>
-                      <div className="text-3xl font-semibold font-heading">R{formatNumber(monthlyRevenue, language)}</div>
+                      <div className="text-3xl font-semibold font-heading text-white">R{formatNumber(monthlyRevenue, language)}</div>
                       <div className="text-[10px] text-white mt-1">{stats?.subscribedUsers ?? 0} Ã— R169</div>
-                      <MiniBar value={monthlyRevenue} max={Math.max(monthlyRevenue, 10000)} color="bg-primary" />
-                    </CardContent>
-                  </Card>
+                      <MiniBar value={monthlyRevenue} max={Math.max(monthlyRevenue, 10000)} color="bg-[#FFE29A]" />
+                  </NeonShell>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Card className="rounded-2xl border-white/15">
-                    <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><PieChart className="w-4 h-4" style={{ color: "#9FF5E8" }} /> {language === "af" ? "Gebruikeruitsplitsing" : "User Breakdown"}</CardTitle></CardHeader>
-                    <CardContent className="p-6 pt-2">
-                      <DonutChart learners={stats?.learners ?? 0} parents={stats?.parents ?? 0} admins={stats?.admins ?? 0} />
-                    </CardContent>
-                  </Card>
-                  <Card className="rounded-2xl border-white/15">
-                    <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><Zap className="w-4 h-4" style={{ color: "#FFE29A" }} /> {language === "af" ? "Sleutel-insigte" : "Key Insights"}</CardTitle></CardHeader>
-                    <CardContent className="p-6 pt-2 space-y-3">
-                      <div className="flex items-center gap-3 p-3 rounded-xl bg-blue-500/5 border border-blue-500/10">
-                        <div className="w-9 h-9 rounded-lg bg-blue-500/15 flex items-center justify-center flex-shrink-0"><Award className="w-4 h-4 text-white" /></div>
+                  <NeonShell color="#9FF5E8" className="p-6">
+                    <div className="text-sm font-bold flex items-center gap-2 mb-3 text-white"><PieChart className="w-4 h-4" style={{ color: "#9FF5E8" }} /> {language === "af" ? "Gebruikeruitsplitsing" : "User Breakdown"}</div>
+                    <DonutChart learners={stats?.learners ?? 0} parents={stats?.parents ?? 0} admins={stats?.admins ?? 0} />
+                  </NeonShell>
+                  <NeonShell color="#FFE29A" className="p-6">
+                    <div className="text-sm font-bold flex items-center gap-2 mb-3 text-white"><Zap className="w-4 h-4" style={{ color: "#FFE29A" }} /> {language === "af" ? "Sleutel-insigte" : "Key Insights"}</div>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04]" style={{ border: `1px solid ${halo("#9FD8FF", 0.25)}` }}>
+                        <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: halo("#9FD8FF", 0.18) }}><Award className="w-4 h-4" style={{ color: "#9FD8FF" }} /></div>
                         <div>
-                          <div className="text-xs font-semibold">{language === "af" ? "Mees Aktief" : "Most Active"}</div>
+                          <div className="text-xs font-semibold text-white">{language === "af" ? "Mees Aktief" : "Most Active"}</div>
                           <div className="text-[10px] text-white">{stats?.activeToday ?? 0} {language === "af" ? "leerders aktief vandag" : "learners active today"}</div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3 p-3 rounded-xl bg-green-500/5 border border-green-500/10">
-                        <div className="w-9 h-9 rounded-lg bg-green-500/15 flex items-center justify-center flex-shrink-0"><TrendingUp className="w-4 h-4 text-white" /></div>
+                      <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04]" style={{ border: `1px solid ${halo("#94F7C5", 0.25)}` }}>
+                        <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: halo("#94F7C5", 0.18) }}><TrendingUp className="w-4 h-4" style={{ color: "#94F7C5" }} /></div>
                         <div>
-                          <div className="text-xs font-semibold">{language === "af" ? "Omskakelingstregter" : "Conversion Funnel"}</div>
+                          <div className="text-xs font-semibold text-white">{language === "af" ? "Omskakelingstregter" : "Conversion Funnel"}</div>
                           <div className="text-[10px] text-white">{stats?.trialUsers ?? 0} {language === "af" ? "proeflopie" : "trial"} â†’ {stats?.subscribedUsers ?? 0} {language === "af" ? "ingeteken" : "subscribed"} ({conversionRate}%)</div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-primary/10">
-                        <div className="w-9 h-9 rounded-lg bg-primary/15 flex items-center justify-center flex-shrink-0"><DollarSign className="w-4 h-4 text-primary" /></div>
+                      <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04]" style={{ border: `1px solid ${halo("#FFE29A", 0.25)}` }}>
+                        <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: halo("#FFE29A", 0.18) }}><DollarSign className="w-4 h-4" style={{ color: "#FFE29A" }} /></div>
                         <div>
-                          <div className="text-xs font-semibold">{language === "af" ? "Inkomste-tendens" : "Revenue Trend"}</div>
+                          <div className="text-xs font-semibold text-white">{language === "af" ? "Inkomste-tendens" : "Revenue Trend"}</div>
                           <div className="text-[10px] text-white">{language === "af" ? `R${formatNumber(monthlyRevenue, language)}/maand van ${stats?.subscribedUsers ?? 0} intekenaars` : `R${formatNumber(monthlyRevenue, language)}/month from ${stats?.subscribedUsers ?? 0} subscribers`}</div>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </NeonShell>
                 </div>
                 <SendTestEmailCard language={language} />
               </div>
@@ -1284,16 +1291,13 @@ export default function AdminReportsPage() {
 
             {/* ===== LEARNERS ===== */}
             <TabsContent value="learners">
-              <Card className="bg-black border-white/15 rounded-2xl">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm flex items-center gap-2"><GraduationCap className="w-4 h-4" style={{ color: "#9FD8FF" }} /> {language === "af" ? "Leerderbestuur" : "Learner Management"}</CardTitle>
-                </CardHeader>
-                <CardContent>
+              <NeonShell color="#9FD8FF" className="p-5">
+                  <div className="text-sm font-bold flex items-center gap-2 mb-4 text-white"><GraduationCap className="w-4 h-4" style={{ color: "#9FD8FF" }} /> {language === "af" ? "Leerderbestuur" : "Learner Management"}</div>
                   {/* Filters */}
                   <div className="flex flex-wrap gap-2 mb-4">
                     <div className="relative flex-1 min-w-48">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white" />
-                      <Input placeholder={language === "af" ? "Soek volgens naam, e-posâ€¦" : "Search by name, emailâ€¦"} className="pl-9 h-9 text-sm rounded-xl" value={learnerSearch} onChange={e => setLearnerSearch(e.target.value)} />
+                      <input placeholder={language === "af" ? "Soek volgens naam, e-posâ€¦" : "Search by name, emailâ€¦"} className={`${adminInputClass} pl-9 h-9`} style={adminInputStyle} value={learnerSearch} onChange={e => setLearnerSearch(e.target.value)} />
                     </div>
                     <Select value={learnerGrade} onValueChange={setLearnerGrade}>
                       <SelectTrigger className="h-9 w-32 text-sm rounded-xl"><SelectValue placeholder={language === "af" ? "Graad" : "Grade"} /></SelectTrigger>
@@ -1317,36 +1321,36 @@ export default function AdminReportsPage() {
                   {selectedLearners.size > 0 && (
                     <div className="flex items-center gap-2 mb-3 p-2.5 rounded-xl bg-white/[0.04] border border-white/20">
                       <span className="text-xs font-medium text-white">{selectedLearners.size} {language === "af" ? "gekies" : "selected"}</span>
-                      <Button size="sm" className="h-7 text-[11px] gap-1 ml-2" onClick={() => bulkTrialMutation.mutate([...selectedLearners])} disabled={bulkTrialMutation.isPending}>
+                      <AdminButton color="#9FD8FF" solid className="ml-2" onClick={() => bulkTrialMutation.mutate([...selectedLearners])} disabled={bulkTrialMutation.isPending}>
                         <Clock className="w-3 h-3" /> {language === "af" ? "Ken 30-dae Proeflopie Toe" : "Assign 30-day Trial"}
-                      </Button>
+                      </AdminButton>
                       <a href={`/api/admin/learners/export?ids=${[...selectedLearners].join(',')}`} download>
-                        <Button size="sm" variant="outline" className="h-7 text-[11px] gap-1">
+                        <AdminButton color="#9FD8FF">
                           <Download className="w-3 h-3" /> {language === "af" ? "Voer Gekose Uit" : "Export Selected"}
-                        </Button>
+                        </AdminButton>
                       </a>
-                      <Button size="sm" variant="ghost" className="h-7 text-[11px] ml-auto" onClick={() => setSelectedLearners(new Set())}>
+                      <button className="ml-auto text-white hover:text-white" onClick={() => setSelectedLearners(new Set())}>
                         <X className="w-3 h-3" />
-                      </Button>
+                      </button>
                     </div>
                   )}
 
-                  <div className="overflow-x-auto rounded-xl border border-white/15">
+                  <div className={adminTableWrapClass} style={adminTableWrapStyle("#9FD8FF")}>
                     <Table>
                       <TableHeader>
-                        <TableRow className="bg-white/[0.03] hover:bg-white/[0.03]">
+                        <TableRow className="bg-black/60 hover:bg-black/60 border-white/10">
                           <TableHead className="w-10">
                             <button onClick={toggleSelectAll} className="text-white hover:text-white">
-                              {allSelected ? <CheckSquare className="w-3.5 h-3.5 text-primary" /> : <Square className="w-3.5 h-3.5" />}
+                              {allSelected ? <CheckSquare className="w-3.5 h-3.5" style={{ color: "#9FD8FF" }} /> : <Square className="w-3.5 h-3.5" />}
                             </button>
                           </TableHead>
-                          <TableHead className="text-[11px] font-semibold text-white">{language === "af" ? "Leerder" : "Learner"}</TableHead>
-                          <TableHead className="text-[11px] font-semibold text-white">{language === "af" ? "Graad" : "Grade"}</TableHead>
-                          <TableHead className="text-center text-[11px] font-semibold text-white">{language === "af" ? "Status" : "Status"}</TableHead>
-                          <TableHead className="text-center text-[11px] font-semibold text-white">{language === "af" ? "Vrae" : "Questions"}</TableHead>
-                          <TableHead className="text-center text-[11px] font-semibold text-white">{language === "af" ? "Akkuraatheid" : "Accuracy"}</TableHead>
-                          <TableHead className="text-[11px] font-semibold text-white">{language === "af" ? "Laaste Aktief" : "Last Active"}</TableHead>
-                          <TableHead className="text-center text-[11px] font-semibold text-white w-12">{language === "af" ? "Aksie" : "Action"}</TableHead>
+                          <TableHead className={adminThClass}>{language === "af" ? "Leerder" : "Learner"}</TableHead>
+                          <TableHead className={adminThClass}>{language === "af" ? "Graad" : "Grade"}</TableHead>
+                          <TableHead className={`text-center ${adminThClass}`}>{language === "af" ? "Status" : "Status"}</TableHead>
+                          <TableHead className={`text-center ${adminThClass}`}>{language === "af" ? "Vrae" : "Questions"}</TableHead>
+                          <TableHead className={`text-center ${adminThClass}`}>{language === "af" ? "Akkuraatheid" : "Accuracy"}</TableHead>
+                          <TableHead className={adminThClass}>{language === "af" ? "Laaste Aktief" : "Last Active"}</TableHead>
+                          <TableHead className={`text-center w-12 ${adminThClass}`}>{language === "af" ? "Aksie" : "Action"}</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -1364,34 +1368,33 @@ export default function AdminReportsPage() {
                               <TableRow key={l.id || i} className={`hover:bg-white/[0.04] even:bg-white/[0.02] ${isSelected ? "bg-white/[0.04]" : ""}`}>
                                 <TableCell>
                                   <button onClick={() => toggleLearner(sid)} className="text-white hover:text-white">
-                                    {isSelected ? <CheckSquare className="w-3.5 h-3.5 text-primary" /> : <Square className="w-3.5 h-3.5" />}
+                                    {isSelected ? <CheckSquare className="w-3.5 h-3.5" style={{ color: "#9FD8FF" }} /> : <Square className="w-3.5 h-3.5" />}
                                   </button>
                                 </TableCell>
                                 <TableCell>
-                                  <div className="font-medium text-sm">{l.first_name || ''} {l.last_name || ''}</div>
+                                  <div className="font-medium text-sm text-white">{l.first_name || ''} {l.last_name || ''}</div>
                                   <div className="text-[10px] text-white">{l.email}</div>
                                   {l.school_name && <div className="text-[10px] text-white">{l.school_name}</div>}
                                 </TableCell>
-                                <TableCell className="text-sm">{l.grade ? (language === "af" ? `Gr ${l.grade}` : `Gr ${l.grade}`) : "â€”"}</TableCell>
+                                <TableCell className="text-sm text-white">{l.grade ? (language === "af" ? `Gr ${l.grade}` : `Gr ${l.grade}`) : "â€”"}</TableCell>
                                 <TableCell className="text-center">
-                                  <Badge variant="outline" className={`text-[10px] h-5 ${l.subscription_status === 'active' ? "bg-white/10 border-white/30 text-white" : l.subscription_status === 'trial' ? "bg-white/10 border-white/30 text-white" : "bg-muted/50 text-white border-muted"}`}>
+                                  <AdminBadge color={l.subscription_status === 'active' ? "#94F7C5" : l.subscription_status === 'trial' ? "#FFE29A" : "#9FD8FF"}>
                                     {l.subscription_status === 'active' ? (language === "af" ? "Ingeteken" : "Subscribed") : l.subscription_status === 'trial' ? (language === "af" ? "Proeflopie" : "Trial") : (language === "af" ? "Geen" : "None")}
-                                  </Badge>
+                                  </AdminBadge>
                                 </TableCell>
-                                <TableCell className="text-center text-sm">{formatNumber(Number(l.questions_attempted), language)}</TableCell>
+                                <TableCell className="text-center text-sm text-white">{formatNumber(Number(l.questions_attempted), language)}</TableCell>
                                 <TableCell className="text-center">
-                                  <Badge variant="outline" className={`text-[10px] ${Number(l.accuracy) >= 70 ? "bg-white/10 border-white/30 text-white" : "bg-white/10 border-white/30 text-white"}`}>
+                                  <AdminBadge color={Number(l.accuracy) >= 70 ? "#94F7C5" : "#FFB7E5"}>
                                     {l.accuracy}%
-                                  </Badge>
+                                  </AdminBadge>
                                 </TableCell>
                                 <TableCell className="text-xs text-white">
                                   {l.last_active_at ? formatDate(l.last_active_at, language, {}) : "â€”"}
                                 </TableCell>
                                 <TableCell className="text-center">
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    className="h-7 w-7 p-0 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                  <button
+                                    className="inline-flex items-center justify-center h-7 w-7 rounded-lg transition"
+                                    style={{ color: "#FF8DA1" }}
                                     onClick={() => setPendingDelete({
                                       id: sid,
                                       label: `${l.first_name || ''} ${l.last_name || ''}`.trim() || l.email || sid,
@@ -1400,7 +1403,7 @@ export default function AdminReportsPage() {
                                     data-testid={`button-delete-learner-${sid}`}
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
-                                  </Button>
+                                  </button>
                                 </TableCell>
                               </TableRow>
                             );
@@ -1413,14 +1416,13 @@ export default function AdminReportsPage() {
                     <div className="flex items-center justify-between mt-3">
                       <span className="text-[11px] text-white">{filteredLearners.length} {language === "af" ? "leerder(s)" : "learner(s)"}</span>
                       <a href="/api/admin/learners/export" download>
-                        <Button variant="outline" size="sm" className="h-7 text-[11px] gap-1">
+                        <AdminButton color="#9FD8FF">
                           <Download className="w-3 h-3" /> {language === "af" ? "Voer Alles Uit" : "Export All"}
-                        </Button>
+                        </AdminButton>
                       </a>
                     </div>
                   )}
-                </CardContent>
-              </Card>
+              </NeonShell>
             </TabsContent>
 
             {/* ===== PARENTS ===== */}
@@ -1648,15 +1650,15 @@ export default function AdminReportsPage() {
             {/* ===== CLICKS & TRIALS ===== */}
             <TabsContent value="clicks">
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
-                <GlowStatCard label={language === "af" ? "Totale Klikke" : "Total Clicks"} value={partnerStatsData?.totalClicks ?? 0} icon={MousePointerClick} accent="blue" />
-                <GlowStatCard label={language === "af" ? "Proefbeginne" : "Trial Starts"} value={partnerStatsData?.totalTrials ?? 0} icon={UserCheck} accent="green" />
+                <GlowStatCard label={language === "af" ? "Totale Klikke" : "Total Clicks"} value={partnerStatsData?.totalClicks ?? 0} icon={MousePointerClick} color="#9FD8FF" />
+                <GlowStatCard label={language === "af" ? "Proefbeginne" : "Trial Starts"} value={partnerStatsData?.totalTrials ?? 0} icon={UserCheck} color="#94F7C5" />
                 <GlowStatCard
                   label={language === "af" ? "Klik â†’ Proeflopie %" : "Click â†’ Trial %"}
                   value={partnerStatsData && partnerStatsData.totalClicks > 0
                     ? `${Math.round((partnerStatsData.totalTrials / partnerStatsData.totalClicks) * 100)}%`
                     : "0%"}
                   icon={TrendingUp}
-                  accent="amber"
+                  color="#FFE29A"
                 />
               </div>
               <Card className="bg-black border-white/15 rounded-2xl">

@@ -1,10 +1,14 @@
-import { useParams } from "wouter";
+import { useParams, Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { AdminTopNav } from "@/components/admin-top-nav";
+import {
+  AdminGround, NeonShell, AdminBadge,
+  adminTableWrapClass, adminTableWrapStyle, adminTableClass,
+  adminTheadClass, adminThClass, adminTrClass, adminTdClass,
+  type NeonHex,
+} from "@/components/admin-ui";
 import { Loader2, ShieldCheck, ArrowLeft } from "lucide-react";
-import { Link } from "wouter";
 import { useLanguage } from "@/lib/language-context";
 
 interface ConsentLogRow {
@@ -27,18 +31,18 @@ const TYPE_LABELS: Record<ConsentLogRow["consentType"], string> = {
   billing: "Billing",
 };
 
-const TYPE_COLOURS: Record<ConsentLogRow["consentType"], string> = {
-  terms_of_service: "bg-blue-500/20 text-blue-300 border-blue-500/40",
-  privacy_policy: "bg-purple-500/20 text-purple-300 border-purple-500/40",
-  cookie: "bg-amber-500/20 text-amber-300 border-amber-500/40",
-  parental: "bg-cyan-500/20 text-cyan-300 border-cyan-500/40",
-  billing: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
+const TYPE_COLOURS: Record<ConsentLogRow["consentType"], NeonHex> = {
+  terms_of_service: "#9FD8FF",
+  privacy_policy: "#C5B3FF",
+  cookie: "#FFE29A",
+  parental: "#9FF5E8",
+  billing: "#94F7C5",
 };
 
-const ACTION_COLOURS: Record<ConsentLogRow["action"], string> = {
-  granted: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
-  revoked: "bg-rose-500/20 text-rose-300 border-rose-500/40",
-  updated: "bg-indigo-500/20 text-indigo-300 border-indigo-500/40",
+const ACTION_COLOURS: Record<ConsentLogRow["action"], NeonHex> = {
+  granted: "#94F7C5",
+  revoked: "#FFB7E5",
+  updated: "#9FD8FF",
 };
 
 export default function AdminConsentLogPage() {
@@ -54,16 +58,28 @@ export default function AdminConsentLogPage() {
   });
 
   return (
-    <div className="min-h-screen p-4 sm:p-8">
-      <div className="max-w-5xl mx-auto space-y-6">
+    <AdminGround>
+      <AdminTopNav />
+
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-6">
         <div className="flex items-center gap-3">
-          <Link href="/learn/admin/reports" className="text-white hover:text-foreground transition-colors">
-            <ArrowLeft className="w-5 h-5" />
+          <Link
+            href="/learn/admin/reports"
+            className="flex items-center justify-center w-9 h-9 rounded-xl text-white transition"
+            style={{ border: "1px solid rgba(255,255,255,0.15)" }}
+            data-testid="link-back-reports"
+          >
+            <ArrowLeft className="w-4 h-4" />
           </Link>
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-6 h-6 text-primary" />
+          <div className="flex items-center gap-3">
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center"
+              style={{ background: "rgba(255,255,255,0.035)", border: "1px solid rgba(197,179,255,0.5)" }}
+            >
+              <ShieldCheck className="w-5 h-5" style={{ color: "#C5B3FF" }} />
+            </div>
             <div>
-              <div role="heading" aria-level={1} className="text-xl font-bold text-foreground">
+              <div role="heading" aria-level={1} className="text-xl font-black text-white">
                 {isAf ? "Toestemming Ouditlys" : "Consent Audit Log"}
               </div>
               <p className="text-xs text-white font-mono">{userId}</p>
@@ -71,26 +87,25 @@ export default function AdminConsentLogPage() {
           </div>
         </div>
 
-        <Card className="border-border/60 bg-background/60 ">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-semibold text-white uppercase tracking-wide">
-              {isAf ? "Toestemmingsgeskiedenis" : "Consent History"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+        <section>
+          <h2 className="text-[10px] font-black uppercase tracking-[0.24em] text-white mb-3">
+            {isAf ? "Toestemmingsgeskiedenis" : "Consent History"}
+          </h2>
+          <NeonShell color="#C5B3FF" className="p-5" testId="consent-history-panel">
             {isLoading && (
-              <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-6 h-6 animate-spin text-primary" />
+              <div className="flex items-center justify-center py-12 gap-2 text-sm text-white">
+                <Loader2 className="w-5 h-5 animate-spin" style={{ color: "#C5B3FF" }} />
+                {isAf ? "Laai toestemmingsrekords…" : "Loading consent records…"}
               </div>
             )}
             {isError && (
-              <p className="text-sm text-rose-400 py-4 text-center">
+              <p className="text-sm py-4 text-center" style={{ color: "#FF8DA1" }}>
                 {isAf ? "Kon nie toestemmingsrekords laai nie." : "Failed to load consent records."}
               </p>
             )}
             {!isLoading && !isError && rows && rows.length === 0 && (
               <div className="py-10 text-center space-y-2">
-                <p className="text-sm text-white">
+                <p className="text-sm text-white max-w-md mx-auto">
                   {isAf
                     ? "Geen toestemmingsrekords gevind vir hierdie gebruiker nie. Rekords word slegs versamel vir aksies wat na hierdie funksie geaktiveer is."
                     : "No consent records found for this user. Records are only collected for actions taken after this feature was activated."}
@@ -98,39 +113,35 @@ export default function AdminConsentLogPage() {
               </div>
             )}
             {!isLoading && !isError && rows && rows.length > 0 && (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-border/60 text-white text-xs uppercase tracking-wide">
-                      <th className="pb-2 text-left pr-3">{isAf ? "Tipe" : "Type"}</th>
-                      <th className="pb-2 text-left pr-3">{isAf ? "Aksie" : "Action"}</th>
-                      <th className="pb-2 text-left pr-3">{isAf ? "Weergawe" : "Version"}</th>
-                      <th className="pb-2 text-left pr-3">{isAf ? "Tydstempel" : "Timestamp"}</th>
-                      <th className="pb-2 text-left pr-3 hidden md:table-cell">IP</th>
-                      <th className="pb-2 text-left hidden lg:table-cell">{isAf ? "Gebruiker-agent" : "User Agent"}</th>
+              <div className={adminTableWrapClass} style={adminTableWrapStyle("#C5B3FF")}>
+                <table className={adminTableClass} data-testid="consent-log-table">
+                  <thead className={adminTheadClass}>
+                    <tr>
+                      <th className={adminThClass}>{isAf ? "Tipe" : "Type"}</th>
+                      <th className={adminThClass}>{isAf ? "Aksie" : "Action"}</th>
+                      <th className={adminThClass}>{isAf ? "Weergawe" : "Version"}</th>
+                      <th className={adminThClass}>{isAf ? "Tydstempel" : "Timestamp"}</th>
+                      <th className={`${adminThClass} hidden md:table-cell`}>IP</th>
+                      <th className={`${adminThClass} hidden lg:table-cell`}>{isAf ? "Gebruiker-agent" : "User Agent"}</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border/40">
+                  <tbody>
                     {rows.map((row) => (
-                      <tr key={row.id} className="hover:bg-muted/20 transition-colors">
-                        <td className="py-2.5 pr-3">
-                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs border font-medium ${TYPE_COLOURS[row.consentType]}`}>
-                            {TYPE_LABELS[row.consentType]}
-                          </span>
+                      <tr key={row.id} className={adminTrClass} data-testid={`consent-row-${row.id}`}>
+                        <td className={adminTdClass}>
+                          <AdminBadge color={TYPE_COLOURS[row.consentType]}>{TYPE_LABELS[row.consentType]}</AdminBadge>
                         </td>
-                        <td className="py-2.5 pr-3">
-                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs border font-medium ${ACTION_COLOURS[row.action]}`}>
-                            {row.action}
-                          </span>
+                        <td className={adminTdClass}>
+                          <AdminBadge color={ACTION_COLOURS[row.action]}>{row.action}</AdminBadge>
                         </td>
-                        <td className="py-2.5 pr-3 text-white font-mono text-xs">{row.version || "—"}</td>
-                        <td className="py-2.5 pr-3 text-white whitespace-nowrap text-xs">
+                        <td className={`${adminTdClass} font-mono`}>{row.version || "—"}</td>
+                        <td className={`${adminTdClass} whitespace-nowrap tabular-nums`}>
                           {new Date(row.createdAt).toLocaleString("en-ZA", { timeZone: "Africa/Johannesburg", hour12: false })}
                         </td>
-                        <td className="py-2.5 pr-3 text-white font-mono text-xs hidden md:table-cell">
+                        <td className={`${adminTdClass} font-mono hidden md:table-cell`}>
                           {row.ipAddress ?? "—"}
                         </td>
-                        <td className="py-2.5 text-white text-xs hidden lg:table-cell max-w-[200px] truncate" title={row.userAgent ?? ""}>
+                        <td className={`${adminTdClass} hidden lg:table-cell max-w-[200px] truncate`} title={row.userAgent ?? ""}>
                           {row.userAgent ? row.userAgent.slice(0, 60) + (row.userAgent.length > 60 ? "…" : "") : "—"}
                         </td>
                       </tr>
@@ -139,24 +150,22 @@ export default function AdminConsentLogPage() {
                 </table>
               </div>
             )}
-          </CardContent>
-        </Card>
+          </NeonShell>
+        </section>
 
         {rows && rows.length > 0 && (
-          <Card className="border-border/60 bg-background/60 ">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-semibold text-white uppercase tracking-wide">
-                {isAf ? "Laaste rekord metadata" : "Latest Record Metadata"}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <pre className="text-xs text-white font-mono bg-muted/20 rounded-lg p-3 overflow-x-auto whitespace-pre-wrap">
+          <section>
+            <h2 className="text-[10px] font-black uppercase tracking-[0.24em] text-white mb-3">
+              {isAf ? "Laaste rekord metadata" : "Latest Record Metadata"}
+            </h2>
+            <NeonShell color="#9FD8FF" className="p-5" testId="consent-metadata-panel">
+              <pre className="text-xs text-white font-mono rounded-xl p-3 overflow-x-auto whitespace-pre-wrap" style={{ background: "rgba(0,0,0,0.4)", border: "1px solid rgba(255,255,255,0.08)" }}>
                 {JSON.stringify(rows[0].metadata, null, 2) ?? "null"}
               </pre>
-            </CardContent>
-          </Card>
+            </NeonShell>
+          </section>
         )}
-      </div>
-    </div>
+      </main>
+    </AdminGround>
   );
 }

@@ -57,7 +57,7 @@ export default function ProgressPage() {
 
   return (
     <div className="min-h-screen text-white relative overflow-hidden" style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}>
-      <GraffitiSplats variant="band" opacity={0.35} />
+      <GraffitiSplats variant="band" opacity={0.55} />
       <LearnerHeader
         backHref="/dashboard"
         backLabel={isAf ? "Tuis" : "Home"}

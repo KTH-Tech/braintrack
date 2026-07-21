@@ -292,7 +292,7 @@ export default function PastPapersPage() {
       className="min-h-screen overflow-x-hidden relative text-white"
       style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}
     >
-      <GraffitiSplats variant="corner" opacity={0.3} />
+      <GraffitiSplats variant="corner" opacity={0.5} />
 
       {/* ── Sticky header ─────────────────────────────────────────── */}
       <header

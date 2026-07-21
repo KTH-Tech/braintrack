@@ -26,12 +26,13 @@ const COPY = {
     tResearch: "Research",
     tSubjects: "Subjects",
     tPricing: "Pricing",
+    tForSchools: "For Schools",
     tEnter: "Log on",
     heroHead1: "The learning platform that ",
     heroAccent: "doesn't feel like school",
     heroTail: ".",
     heroSub:
-      "Not another quiz app. A CAPS-aligned matric readiness ecosystem — DBE-data diagnostics, dynamic study plans, parent visibility and school fundraising in one.",
+      "A CAPS-aligned matric ecosystem — diagnostics, study plans and parent visibility, all in one.",
     ctaStart: "Start free — 14 days",
     marquee: [
       { text: "CAPS-aligned ✦", color: "#9FF5E8" },
@@ -49,18 +50,18 @@ const COPY = {
     tDropHead1: "Everything you need to ",
     tDropHead2: "move real marks",
     features: [
-      { icon: "📅", color: "#9FF5E8", chipBg: "rgba(159,245,232,.14)", glow: "rgba(159,245,232,.25)", tilt: -1, title: "Dynamic study plans", body: "A weekly CAPS roadmap rebuilt daily around what you actually got wrong — not a static timetable." },
-      { icon: "📊", color: "#9FD8FF", chipBg: "rgba(159,216,255,.14)", glow: "rgba(159,216,255,.25)", tilt: 1, title: "DBE-data diagnostics", body: "Ten years of NSC exam trends show exactly where matrics lose marks — and where you will." },
-      { icon: "📝", color: "#FFB7E5", chipBg: "rgba(255,183,229,.14)", glow: "rgba(255,183,229,.25)", tilt: -1, title: "Real past papers + memos", body: "Verbatim DBE questions with marking memos, drilled by topic until the marks stick." },
-      { icon: "🤖", color: "#C5B3FF", chipBg: "rgba(197,179,255,.14)", glow: "rgba(197,179,255,.25)", tilt: 1, title: "Rizz — your AI tutor", body: "CAPS-aligned help in English and Afrikaans, 24/7. Explains it until it clicks." },
-      { icon: "👀", color: "#FFE29A", chipBg: "rgba(255,226,154,.14)", glow: "rgba(255,226,154,.25)", tilt: -1, title: "Parent visibility", body: "Weekly executive reports parents actually read — progress, risks, next steps." },
-      { icon: "🏆", color: "#94F7C5", chipBg: "rgba(148,247,197,.14)", glow: "rgba(148,247,197,.25)", tilt: 1, title: "XP, streaks & rewards", body: "Confetti when you nail a paper. Crowns when you hold a streak. Dopamine, but productive." },
+      { icon: "📅", color: "#9FF5E8", chipBg: "rgba(159,245,232,.14)", glow: "rgba(159,245,232,.25)", tilt: -1, title: "Dynamic study plans", body: "Rebuilt daily around what you actually got wrong." },
+      { icon: "📊", color: "#9FD8FF", chipBg: "rgba(159,216,255,.14)", glow: "rgba(159,216,255,.25)", tilt: 1, title: "DBE-data diagnostics", body: "Ten years of NSC trends — where matrics lose marks." },
+      { icon: "📝", color: "#FFB7E5", chipBg: "rgba(255,183,229,.14)", glow: "rgba(255,183,229,.25)", tilt: -1, title: "Real past papers + memos", body: "Verbatim DBE questions with memos, drilled by topic." },
+      { icon: "🤖", color: "#C5B3FF", chipBg: "rgba(197,179,255,.14)", glow: "rgba(197,179,255,.25)", tilt: 1, title: "Rizz — your AI tutor", body: "EN + AF, 24/7. Explains it until it clicks." },
+      { icon: "👀", color: "#FFE29A", chipBg: "rgba(255,226,154,.14)", glow: "rgba(255,226,154,.25)", tilt: -1, title: "Parent visibility", body: "Weekly reports parents actually read." },
+      { icon: "🏆", color: "#94F7C5", chipBg: "rgba(148,247,197,.14)", glow: "rgba(148,247,197,.25)", tilt: 1, title: "XP, streaks & rewards", body: "Confetti for a nailed paper. Crowns for a streak." },
     ],
     proofEye: "the receipts",
     proofHead1: "Not claims. ",
     proofHead2: "Evidence.",
     proofSub:
-      "Everything below is already loaded inside BrainTrack — indexed, verified and searchable by topic. No hype, no roadmap promises.",
+      "Already loaded inside BrainTrack — indexed, verified, searchable by topic.",
     proof: [
       { icon: "📜", title: "10 years of real NSC papers", detail: "2015 – 2025, sitting by sitting", color: "#9FF5E8", glow: "rgba(159,245,232,.28)" },
       { icon: "🎯", title: "Every CAPS subject covered", detail: "mapped across the full curriculum", color: "#FFB7E5", glow: "rgba(255,183,229,.28)" },
@@ -83,15 +84,15 @@ const COPY = {
     tFragmented: "fragmented. expensive. too late.",
     tConnects: "BrainTrack connects",
     tAskLine:
-      "Ask one question: does your matric tool know which topics cost South African learners the most marks last November? BrainTrack does — verbatim, per subject, in both languages.",
+      "Does your tool know which topics cost matrics the most marks last November? BrainTrack does.",
     tQuote:
-      "“BrainTrack is not a quiz app. It is a matric readiness ecosystem built on ten years of real DBE outcomes — designed so that no learner walks into the NSC exams blind.”",
+      "“Not a quiz app — a matric readiness ecosystem built on ten years of real DBE outcomes, so no learner walks in blind.”",
     xpEye: "dopamine, but productive",
     xpHead1: "Every session drops ",
     xpHead2: "XP, streaks",
     xpHead3: " and reward reveals",
     xpBody:
-      "Confetti when you nail a paper. Crowns when you hold a streak. And while you put in the work, parents and schools get clean, executive reports.",
+      "Put in the work — parents and schools get clean, executive reports.",
     xpStats: [
       { value: "+120", label: "XP / session", color: "#9FF5E8", glow: "rgba(159,245,232,.25)" },
       { value: "21🔥", label: "day streak", color: "#FFB7E5", glow: "rgba(255,183,229,.25)" },
@@ -118,12 +119,13 @@ const COPY = {
     tResearch: "Navorsing",
     tSubjects: "Vakke",
     tPricing: "Pryse",
+    tForSchools: "Vir Skole",
     tEnter: "Meld aan",
     heroHead1: "Die leerplatform wat ",
     heroAccent: "nie soos skool voel nie",
     heroTail: ".",
     heroSub:
-      "Nie nog 'n vasvra-app nie. 'n KABV-belynde matriekgereedheid-ekosisteem — DBE-datadiagnostiek, dinamiese studieplanne, ouersigbaarheid en skoolfondsinsameling in een.",
+      "'n KABV-belynde matriek-ekosisteem — diagnostiek, studieplanne en ouersigbaarheid, alles in een.",
     ctaStart: "Begin gratis — 14 dae",
     marquee: [
       { text: "KABV-belyn ✦", color: "#9FF5E8" },
@@ -141,18 +143,18 @@ const COPY = {
     tDropHead1: "Alles wat jy nodig het om ",
     tDropHead2: "regte punte te skuif",
     features: [
-      { icon: "📅", color: "#9FF5E8", chipBg: "rgba(159,245,232,.14)", glow: "rgba(159,245,232,.25)", tilt: -1, title: "Dinamiese studieplanne", body: "'n Weeklikse KABV-padkaart wat daagliks herbou word rondom wat jy verkeerd gekry het." },
-      { icon: "📊", color: "#9FD8FF", chipBg: "rgba(159,216,255,.14)", glow: "rgba(159,216,255,.25)", tilt: 1, title: "DBE-datadiagnostiek", body: "Tien jaar se NSS-eksamenneigings wys presies waar matrieks punte verloor — en waar jy sal." },
-      { icon: "📝", color: "#FFB7E5", chipBg: "rgba(255,183,229,.14)", glow: "rgba(255,183,229,.25)", tilt: -1, title: "Regte vraestelle + memo's", body: "Woordelikse DBE-vrae met nasienmemo's, per onderwerp gedril totdat die punte vassit." },
-      { icon: "🤖", color: "#C5B3FF", chipBg: "rgba(197,179,255,.14)", glow: "rgba(197,179,255,.25)", tilt: 1, title: "Rizz — jou KI-tutor", body: "KABV-belynde hulp in Afrikaans en Engels, 24/7. Verduidelik totdat dit klik." },
-      { icon: "👀", color: "#FFE29A", chipBg: "rgba(255,226,154,.14)", glow: "rgba(255,226,154,.25)", tilt: -1, title: "Ouersigbaarheid", body: "Weeklikse uitvoerende verslae wat ouers regtig lees — vordering, risiko's, volgende stappe." },
-      { icon: "🏆", color: "#94F7C5", chipBg: "rgba(148,247,197,.14)", glow: "rgba(148,247,197,.25)", tilt: 1, title: "XP, reekse & belonings", body: "Konfetti as jy 'n vraestel klop. Krone as jy 'n reeks hou. Dopamien, maar produktief." },
+      { icon: "📅", color: "#9FF5E8", chipBg: "rgba(159,245,232,.14)", glow: "rgba(159,245,232,.25)", tilt: -1, title: "Dinamiese studieplanne", body: "Daagliks herbou rondom wat jy verkeerd gekry het." },
+      { icon: "📊", color: "#9FD8FF", chipBg: "rgba(159,216,255,.14)", glow: "rgba(159,216,255,.25)", tilt: 1, title: "DBE-datadiagnostiek", body: "Tien jaar se NSS-neigings — waar matrieks punte verloor." },
+      { icon: "📝", color: "#FFB7E5", chipBg: "rgba(255,183,229,.14)", glow: "rgba(255,183,229,.25)", tilt: -1, title: "Regte vraestelle + memo's", body: "Woordelikse DBE-vrae met memo's, per onderwerp gedril." },
+      { icon: "🤖", color: "#C5B3FF", chipBg: "rgba(197,179,255,.14)", glow: "rgba(197,179,255,.25)", tilt: 1, title: "Rizz — jou KI-tutor", body: "AF + EN, 24/7. Verduidelik totdat dit klik." },
+      { icon: "👀", color: "#FFE29A", chipBg: "rgba(255,226,154,.14)", glow: "rgba(255,226,154,.25)", tilt: -1, title: "Ouersigbaarheid", body: "Weeklikse verslae wat ouers regtig lees." },
+      { icon: "🏆", color: "#94F7C5", chipBg: "rgba(148,247,197,.14)", glow: "rgba(148,247,197,.25)", tilt: 1, title: "XP, reekse & belonings", body: "Konfetti vir 'n geklopte vraestel. Krone vir 'n reeks." },
     ],
     proofEye: "die bewyse",
     proofHead1: "Nie beloftes nie. ",
     proofHead2: "Bewyse.",
     proofSub:
-      "Alles hieronder is reeds in BrainTrack gelaai — geïndekseer, geverifieer en per onderwerp deursoekbaar. Geen oordrywing nie, geen padkaart-beloftes nie.",
+      "Reeds in BrainTrack gelaai — geïndekseer, geverifieer, per onderwerp deursoekbaar.",
     proof: [
       { icon: "📜", title: "10 jaar se regte NSS-vraestelle", detail: "2015 – 2025, sitting vir sitting", color: "#9FF5E8", glow: "rgba(159,245,232,.28)" },
       { icon: "🎯", title: "Elke KABV-vak gedek", detail: "gekarteer oor die volle kurrikulum", color: "#FFB7E5", glow: "rgba(255,183,229,.28)" },
@@ -175,15 +177,15 @@ const COPY = {
     tFragmented: "gefragmenteer. duur. te laat.",
     tConnects: "BrainTrack verbind",
     tAskLine:
-      "Vra een vraag: weet jou matriekhulpmiddel watter onderwerpe Suid-Afrikaanse leerders verlede November die meeste punte gekos het? BrainTrack weet — woordeliks, per vak, in albei tale.",
+      "Weet jou hulpmiddel watter onderwerpe matrieks verlede November die meeste punte gekos het? BrainTrack weet.",
     tQuote:
-      "“BrainTrack is nie 'n vasvra-app nie. Dit is 'n matriekgereedheid-ekosisteem gebou op tien jaar se regte DBE-uitkomste — ontwerp sodat geen leerder blind by die NSS-eksamens instap nie.”",
+      "“Nie 'n vasvra-app nie — 'n matriekgereedheid-ekosisteem gebou op tien jaar se regte DBE-uitkomste, sodat geen leerder blind instap nie.”",
     xpEye: "dopamien, maar produktief",
     xpHead1: "Elke sessie laat val ",
     xpHead2: "XP, reekse",
     xpHead3: " en beloningsonthullings",
     xpBody:
-      "Konfetti as jy 'n vraestel klop. Krone as jy 'n reeks hou. En terwyl jy die werk insit, kry ouers en skole skoon, uitvoerende verslae.",
+      "Sit die werk in — ouers en skole kry skoon, uitvoerende verslae.",
     xpStats: [
       { value: "+120", label: "XP / sessie", color: "#9FF5E8", glow: "rgba(159,245,232,.25)" },
       { value: "21🔥", label: "dae-reeks", color: "#FFB7E5", glow: "rgba(255,183,229,.25)" },
@@ -430,6 +432,7 @@ export default function LandingPage() {
             <Link href="/research"><span className="btl-nav-link" style={{ "--h": "#9FD8FF" } as React.CSSProperties}>{t.tResearch}</span></Link>
             <Link href="/features"><span className="btl-nav-link" style={{ "--h": "#FFB7E5" } as React.CSSProperties}>{t.tSubjects}</span></Link>
             <Link href="/subscribe"><span className="btl-nav-link" style={{ "--h": "#FFE29A" } as React.CSSProperties}>{t.tPricing}</span></Link>
+            <Link href="/for-schools"><span className="btl-nav-link" style={{ "--h": "#C5B3FF" } as React.CSSProperties}>{t.tForSchools}</span></Link>
           </span>
           <span
             onClick={toggleLanguage}
