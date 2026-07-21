@@ -1,0 +1,49 @@
+name: CI
+
+# Typecheck and unit tests on every push and PR. Previously only the three
+# security workflows ran, so a commit that broke the build merged and deployed
+# clean — admin-reports.tsx reached this branch with 152 type errors and was
+# only caught by hand.
+on:
+  push:
+    branches: [launch-prep, main]
+  pull_request:
+    branches: [launch-prep, main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  typecheck-and-test:
+    name: Typecheck + unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --include=dev
+
+      # The build must typecheck. This is the check that would have caught the
+      # broken admin-reports.tsx import refactor before it landed.
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      # Unit tests cover the money paths (Netcash/PayFast signatures and webhook
+      # lifecycles, payment rate limiting), auth utils, CAPS scoring and DBE
+      # ingestion parsing.
+      - name: Unit tests
+        run: npm run test:unit
+        env:
+          # Some suites import server/routes.ts, which expects these at module
+          # load. Dummy values are fine — nothing here talks to a real service.
+          DATABASE_URL: postgres://ci:ci@localhost:5432/ci
+          SESSION_SECRET: ci-session-secret-not-a-real-secret
+          NODE_ENV: test
