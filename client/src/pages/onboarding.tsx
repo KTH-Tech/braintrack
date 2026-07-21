@@ -1555,7 +1555,6 @@ export default function OnboardingPage() {
               style={{
                 width: `${progress}%`,
                 background: `linear-gradient(90deg, ${BRAND.cyan}, ${BRAND.mint}, ${BRAND.yellow}, ${BRAND.pink}, ${BRAND.purple})`,
-                boxShadow: `0 0 12px ${BRAND.pink}66`,
                 transition: "width .55s cubic-bezier(.22,1,.36,1)",
               }}
             />
@@ -1578,7 +1577,7 @@ export default function OnboardingPage() {
                       : dotActive
                       ? `linear-gradient(90deg, ${BRAND.cyan}, ${BRAND.pink})`
                       : "rgba(255,255,255,.16)",
-                    boxShadow: dotActive ? `0 0 10px ${BRAND.cyan}99` : dotDone ? `0 0 6px ${CONFETTI_COLORS[i]}66` : "none",
+                    
                   }}
                 />
               );
@@ -1598,7 +1597,6 @@ export default function OnboardingPage() {
               style={{
                 background: BRAND.card,
                 border: "1px solid rgba(255,255,255,.12)",
-                boxShadow: `0 0 34px ${accent}22`,
                 animation: anim("bt-fadeup .45s cubic-bezier(.22,1,.36,1) both"),
               }}
             >
@@ -1639,7 +1637,7 @@ export default function OnboardingPage() {
                           style={{
                             background: isSel ? `${accent}1F` : "rgba(255,255,255,.03)",
                             border: `1.5px solid ${isSel ? accent : "rgba(255,255,255,.14)"}`,
-                            boxShadow: isSel ? `0 0 20px ${accent}55` : "none",
+                            
                             transition: "background .2s ease, border-color .2s ease, box-shadow .2s ease",
                             animation: anim(`bt-fadeup .4s cubic-bezier(.22,1,.36,1) ${0.04 * i}s both`),
                           }}
@@ -1682,7 +1680,7 @@ export default function OnboardingPage() {
                           style={{
                             background: isChecked ? `${accent}1F` : "rgba(255,255,255,.03)",
                             border: `1.5px solid ${isChecked ? accent : "rgba(255,255,255,.14)"}`,
-                            boxShadow: isChecked ? `0 0 20px ${accent}55` : "none",
+                            
                             transition: "background .2s ease, border-color .2s ease, box-shadow .2s ease",
                             animation: anim(`bt-fadeup .4s cubic-bezier(.22,1,.36,1) ${0.04 * i}s both`),
                           }}
@@ -1715,7 +1713,6 @@ export default function OnboardingPage() {
                           className="w-32 h-32 sm:w-36 sm:h-36 rounded-full flex items-center justify-center"
                           style={{
                             border: `6px solid ${accent}`,
-                            boxShadow: `0 0 26px ${accent}55, inset 0 0 22px ${accent}22`,
                           }}
                         >
                           <span className="text-5xl font-extrabold text-white">
@@ -1780,7 +1777,6 @@ export default function OnboardingPage() {
               style={{
                 background: BRAND.card,
                 border: "1px solid rgba(255,255,255,.12)",
-                boxShadow: `0 0 34px ${BRAND.purple}22`,
                 animation: anim("bt-fadeup .45s cubic-bezier(.22,1,.36,1) both"),
               }}
             >
@@ -1815,7 +1811,7 @@ export default function OnboardingPage() {
                         style={{
                           background: isPrimary ? `${tint}1F` : "rgba(255,255,255,.03)",
                           border: `1.5px solid ${isPrimary ? tint : "rgba(255,255,255,.14)"}`,
-                          boxShadow: isPrimary ? `0 0 22px ${tint}66` : "none",
+                          
                           transition: "background .2s ease, border-color .2s ease, box-shadow .2s ease",
                           animation: anim(`bt-fadeup .4s cubic-bezier(.22,1,.36,1) ${0.05 * i}s both`),
                         }}
@@ -1903,7 +1899,6 @@ export default function OnboardingPage() {
               style={{
                 background: BRAND.card,
                 border: "1px solid rgba(255,255,255,.12)",
-                boxShadow: `0 0 34px ${BRAND.yellow}22`,
                 animation: anim("bt-fadeup .45s cubic-bezier(.22,1,.36,1) both"),
               }}
             >
@@ -2008,7 +2003,7 @@ export default function OnboardingPage() {
                         style={{
                           background: isSelected ? `${cm.color}16` : "rgba(255,255,255,.03)",
                           border: `1.5px solid ${isSelected ? cm.color : "rgba(255,255,255,.12)"}`,
-                          boxShadow: isSelected ? `0 0 18px ${cm.color}44` : "none",
+                          
                           transition: "background .2s ease, border-color .2s ease, box-shadow .2s ease",
                         }}
                       >
@@ -2132,7 +2127,6 @@ export default function OnboardingPage() {
               style={{
                 background: "rgba(28,28,38,.6)",
                 border: "1px solid rgba(255,255,255,.12)",
-                boxShadow: `0 0 34px ${BRAND.cyan}22`,
                 animation: anim("bt-fadeup .45s cubic-bezier(.22,1,.36,1) both"),
               }}
             >
@@ -2397,7 +2391,6 @@ export default function OnboardingPage() {
               style={{
                 background: BRAND.card,
                 border: "1px solid rgba(255,255,255,.12)",
-                boxShadow: `0 0 40px ${BRAND.pink}33`,
                 animation: anim("bt-fadeup .45s cubic-bezier(.22,1,.36,1) both"),
               }}
             >
@@ -2519,7 +2512,6 @@ export default function OnboardingPage() {
                     className="h-16 px-6 text-lg font-extrabold rounded-2xl text-[#0D0D14] flex-1 disabled:opacity-40"
                     style={{
                       background: `linear-gradient(95deg, ${BRAND.pink}, ${BRAND.yellow}, ${BRAND.mint}, ${BRAND.cyan})`,
-                      boxShadow: `0 0 26px ${BRAND.pink}55`,
                     }}
                     onClick={handleNext}
                     disabled={submitMutation.isPending}
@@ -2598,7 +2590,6 @@ export default function OnboardingPage() {
                   fontFamily: MARKER,
                   fontSize: 26,
                   color: BRAND.yellow,
-                  textShadow: `0 0 20px ${BRAND.yellow}77`,
                   animation: anim("bt-pop .5s cubic-bezier(.22,1,.36,1) both"),
                 }}
               >
@@ -2627,7 +2618,7 @@ export default function OnboardingPage() {
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(13,13,20,.86)" }} data-testid="onboarding-loading-overlay">
               <div
                 className="rounded-3xl p-7 text-center max-w-sm w-full"
-                style={{ background: BRAND.card, border: `1px solid ${BRAND.cyan}55`, boxShadow: `0 0 40px ${BRAND.cyan}33` }}
+                style={{ background: BRAND.card, border: `1px solid ${BRAND.cyan}55` }}
               >
                 <Loader2 className="w-9 h-9 animate-spin mx-auto mb-4" style={{ color: BRAND.cyan }} />
                 <h3 className="text-lg font-extrabold text-white mb-1">{t.preparingClassroomTitle}</h3>

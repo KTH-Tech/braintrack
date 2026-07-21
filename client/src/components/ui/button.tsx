@@ -39,7 +39,7 @@ const buttonVariants = cva(base, {
 
       // ── CTA — electric blue sticker ───────────────────────────────────
       cta:
-        "bg-[#9FD8FF] text-white border-2 border-[#9FD8FF] hover:bg-[#0057D6] shadow-[0_0_18px_rgba(159,216,255,0.45)]",
+        "bg-[#9FD8FF] text-white border-2 border-[#9FD8FF] hover:bg-[#0057D6]",
 
       // ── CTA outline — secondary action next to a cta ──────────────────
       "cta-outline":
@@ -48,22 +48,22 @@ const buttonVariants = cva(base, {
 
       // ── CTA gold — standout yellow sticker ───────────────────────────
       "cta-gold":
-        "bg-[#FFE29A] text-[#02040A] border-2 border-[#FFE29A] hover:bg-[#E6CF00] shadow-[0_0_18px_rgba(255,226,154,0.45)]",
+        "bg-[#FFE29A] text-[#02040A] border-2 border-[#FFE29A] hover:bg-[#E6CF00]",
 
       // ── Legacy names restyled ─────────────────────────────────────────
       gradient:
-        "bg-[#C5B3FF] text-white border-2 border-[#C5B3FF] hover:brightness-110 shadow-[0_0_18px_rgba(197,179,255,0.4)]",
+        "bg-[#C5B3FF] text-white border-2 border-[#C5B3FF] hover:brightness-110",
       neon:
         "bg-transparent text-[#C5B3FF] border-2 border-[#C5B3FF] hover:bg-[#C5B3FF]/10" +
         " dark:text-[#6EE7F9] dark:border-[#6EE7F9] dark:hover:bg-[#6EE7F9]/10",
 
       // ── Solid brand fills — Gen Z sticker style ───────────────────────
-      cyan:   "bg-[#6EE7F9] text-[#02040A] border-2 border-[#6EE7F9] hover:brightness-110 shadow-[0_0_14px_rgba(110,231,249,0.4)]",
-      blue:   "bg-[#9FD8FF] text-white border-2 border-[#9FD8FF] hover:brightness-110 shadow-[0_0_14px_rgba(159,216,255,0.4)]",
-      pink:   "bg-[#FFB7E5] text-white border-2 border-[#FFB7E5] hover:brightness-110 shadow-[0_0_14px_rgba(255,183,229,0.4)]",
-      green:  "bg-[#94F7C5] text-[#02040A] border-2 border-[#94F7C5] hover:brightness-110 shadow-[0_0_14px_rgba(148,247,197,0.4)]",
-      orange: "bg-[#FFE29A] text-[#02040A] border-2 border-[#FFE29A] hover:brightness-110 shadow-[0_0_14px_rgba(255,226,154,0.4)]",
-      gold:   "bg-[#FFE29A] text-[#02040A] border-2 border-[#FFE29A] hover:brightness-110 shadow-[0_0_14px_rgba(255,226,154,0.4)]",
+      cyan:   "bg-[#6EE7F9] text-[#02040A] border-2 border-[#6EE7F9] hover:brightness-110",
+      blue:   "bg-[#9FD8FF] text-white border-2 border-[#9FD8FF] hover:brightness-110",
+      pink:   "bg-[#FFB7E5] text-white border-2 border-[#FFB7E5] hover:brightness-110",
+      green:  "bg-[#94F7C5] text-[#02040A] border-2 border-[#94F7C5] hover:brightness-110",
+      orange: "bg-[#FFE29A] text-[#02040A] border-2 border-[#FFE29A] hover:brightness-110",
+      gold:   "bg-[#FFE29A] text-[#02040A] border-2 border-[#FFE29A] hover:brightness-110",
     },
     size: {
       // WCAG 2.5.5: minimum 44 × 44 px tap target for school-procurement a11y.

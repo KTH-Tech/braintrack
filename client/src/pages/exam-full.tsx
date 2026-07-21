@@ -103,7 +103,7 @@ function GlassCard({ children, accent, className = "", style, testId }: {
       className={`relative overflow-hidden ${className}`}
       data-testid={testId}
       style={{
-        background: "rgba(255,255,255,.03)",
+        background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
         border: accent ? `1.5px solid ${accent}` : "1px solid rgba(255,255,255,.08)",
         borderRadius: 22,
         ...style,

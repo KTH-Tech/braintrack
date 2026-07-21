@@ -463,7 +463,7 @@ export default function SubjectsPage() {
           <div
             className="relative p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8 overflow-hidden"
             style={{
-              background: "rgba(255,255,255,.03)",
+              background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
               border: "1px solid rgba(255,255,255,.08)",
               borderRadius: 22,
             }}
@@ -520,7 +520,7 @@ export default function SubjectsPage() {
           <div
             className="relative overflow-hidden mb-10"
             style={{
-              background: "rgba(255,255,255,.03)",
+              background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
               border: "1px solid rgba(255,255,255,.08)",
               borderRadius: 24,
             }}
@@ -770,7 +770,7 @@ export default function SubjectsPage() {
               </div>
             ) : subjectsToShow.length > 0 ? (
               <div
-                className="relative text-center py-16 rounded-[22px] bg-white/[.03] overflow-hidden"
+                className="relative text-center py-16 rounded-[22px] bg-[#050508] bg-[linear-gradient(rgba(255,255,255,.05),rgba(255,255,255,.05))] overflow-hidden"
                 style={{
                   border: "1px solid rgba(255,255,255,0.1)",
                 }}
@@ -932,7 +932,7 @@ function SubjectNeonCard({
       data-testid={testId}
       className="group relative overflow-hidden cursor-pointer transition-all hover:-translate-y-1"
       style={{
-        background: "rgba(255,255,255,.03)",
+        background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
         border: "1px solid rgba(255,255,255,.08)",
         borderRadius: 22,
         transition: "transform .25s, box-shadow .25s",

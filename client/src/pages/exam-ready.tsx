@@ -82,7 +82,7 @@ const RAINBOW_TEXT: CSSProperties = {
   color: "transparent",
 };
 const CARD: CSSProperties = {
-  background: "rgba(255,255,255,.03)",
+  background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
   border: "1px solid rgba(255,255,255,.08)",
   borderRadius: 20,
 };
@@ -1077,7 +1077,7 @@ export default function ExamReadyPage() {
       <div className="flex-1 flex flex-col md:flex-row">
         <aside
           className="w-full md:w-64 shrink-0 border-b md:border-b-0 md:border-r p-4 overflow-y-auto max-h-48 md:max-h-none"
-          style={{ background: "rgba(255,255,255,.02)", borderColor: "rgba(255,255,255,.08)" }}
+          style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", borderColor: "rgba(255,255,255,.08)" }}
         >
           <div role="heading" aria-level={2} className="font-bold text-white mb-3">
             {isAfrikaans ? "Vrae" : "Questions"}

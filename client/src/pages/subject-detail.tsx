@@ -117,7 +117,7 @@ function CosmicCard({ children, color = "cyan", className = "" }: { children: Re
   const hex = COSMIC_HEX[color];
   return (
     <div
-      className={`relative rounded-2xl bg-white/[.03] overflow-hidden ${className}`}
+      className={`relative rounded-2xl bg-[#050508] bg-[linear-gradient(rgba(255,255,255,.05),rgba(255,255,255,.05))] overflow-hidden ${className}`}
       style={{ border: `1.5px solid ${hex}` }}
     >
       <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 pointer-events-none" style={{ borderColor: hex }} />
@@ -144,7 +144,7 @@ function NeonBadge({ children, color = "cyan" }: { children: React.ReactNode; co
 function NeonStat({ hex, icon: Icon, value, label }: { hex: string; icon: any; value: React.ReactNode; label: string }) {
   return (
     <div
-      className="relative rounded-2xl bg-white/[.03] p-4 text-center overflow-hidden"
+      className="relative rounded-2xl bg-[#050508] bg-[linear-gradient(rgba(255,255,255,.05),rgba(255,255,255,.05))] p-4 text-center overflow-hidden"
       style={{ border: `1px solid ${hex}66` }}
     >
       <Icon className="w-5 h-5 mx-auto mb-1" style={{ color: hex }} />
@@ -1000,7 +1000,7 @@ export default function SubjectDetailPage() {
           </Link>
 
           {loading ? (
-            <div className="rounded-3xl border border-white/10 bg-white/[.03] p-6 sm:p-8">
+            <div className="rounded-3xl border border-white/10 bg-[#050508] bg-[linear-gradient(rgba(255,255,255,.05),rgba(255,255,255,.05))] p-6 sm:p-8">
               <div className="flex items-center gap-5">
                 <Skeleton className="w-20 h-20 rounded-2xl" />
                 <div className="flex-1 space-y-3">
@@ -1015,7 +1015,7 @@ export default function SubjectDetailPage() {
             const masteryHex = mastery ? getBandHex(mastery.overallBand) : hex;
             return (
               <div
-                className="relative overflow-hidden rounded-3xl border bg-white/[.03] p-6 sm:p-8"
+                className="relative overflow-hidden rounded-3xl border bg-[#050508] bg-[linear-gradient(rgba(255,255,255,.05),rgba(255,255,255,.05))] p-6 sm:p-8"
                 style={{
                   borderColor: `${hex}44`,
                   animation: "bt-fadeup .5s cubic-bezier(.22,1,.36,1) both",
@@ -1110,7 +1110,7 @@ export default function SubjectDetailPage() {
               </div>
             );
           })() : (
-            <div className="rounded-3xl border border-white/10 bg-white/[.03] p-8 text-center">
+            <div className="rounded-3xl border border-white/10 bg-[#050508] bg-[linear-gradient(rgba(255,255,255,.05),rgba(255,255,255,.05))] p-8 text-center">
               <div role="heading" aria-level={1} className="text-2xl sm:text-3xl font-black text-white">
                 {isAf ? "Vak Nie Gevind" : "Subject Not Found"}
               </div>
@@ -1131,7 +1131,7 @@ export default function SubjectDetailPage() {
             <div className="grid gap-3 sm:grid-cols-2" data-testid="exam-shortcuts">
               <Link href={miniMockHref}>
                 <button
-                  className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-white/[.03] text-left transition-all hover:-translate-y-1.5"
+                  className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-[#050508] bg-[linear-gradient(rgba(255,255,255,.05),rgba(255,255,255,.05))] text-left transition-all hover:-translate-y-1.5"
                   style={{ border: "1.5px solid #FFE29A" }}
                   data-testid="button-mini-mock-shortcut"
                 >
@@ -1155,7 +1155,7 @@ export default function SubjectDetailPage() {
               </Link>
               <Link href={`/exam/full?subject=${encodeURIComponent(subject.name)}`}>
                 <button
-                  className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-white/[.03] text-left transition-all hover:-translate-y-1.5"
+                  className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-[#050508] bg-[linear-gradient(rgba(255,255,255,.05),rgba(255,255,255,.05))] text-left transition-all hover:-translate-y-1.5"
                   style={{ border: "1.5px solid #C5B3FF" }}
                   data-testid="button-full-exam-shortcut"
                 >

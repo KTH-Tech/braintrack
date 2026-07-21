@@ -91,7 +91,7 @@ const RAINBOW_TEXT: CSSProperties = {
   color: "transparent",
 };
 const CARD: CSSProperties = {
-  background: "rgba(255,255,255,.03)",
+  background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
   border: "1px solid rgba(255,255,255,.08)",
   borderRadius: 20,
 };
@@ -117,7 +117,7 @@ const marker = (color: string, size = 15): CSSProperties => ({
   display: "inline-block",
 });
 const accentCard = (hex: string): CSSProperties => ({
-  background: "rgba(255,255,255,.03)",
+  background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
   border: `1.5px solid ${hex}55`,
   borderRadius: 20,
 });

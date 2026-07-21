@@ -370,7 +370,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
 
   if (deckLoading) {
     return (
-      <div className="rounded-2xl border border-dashed border-white/10 p-8 text-center space-y-3" style={{ background: "rgba(255,255,255,.03)", animation: "bt-fadeup .4s both" }}>
+      <div className="rounded-2xl border border-dashed border-white/10 p-8 text-center space-y-3" style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", animation: "bt-fadeup .4s both" }}>
         <Layers className="w-10 h-10 mx-auto" style={{ color: "#9FD8FF", animation: "bt-pulse 1.6s ease-in-out infinite" }} />
         <p className="text-sm text-white">
           {isAf ? "Laai amptelike DBE-flitskaarte..." : "Loading official DBE flashcards..."}
@@ -382,7 +382,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
 
   if (noneEnrolled) {
     return (
-      <div className="rounded-2xl border border-dashed border-white/10 p-8 text-center space-y-3" style={{ background: "rgba(255,255,255,.03)" }}>
+      <div className="rounded-2xl border border-dashed border-white/10 p-8 text-center space-y-3" style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508" }}>
         <Layers className="w-10 h-10 mx-auto" style={{ color: "#C5B3FF" }} />
         <h3 className="text-lg font-bold text-white">{isAf ? "Geen flitskaarte gereed nie" : "No flashcards ready yet"}</h3>
         <p className="text-sm text-white max-w-sm mx-auto">
@@ -414,7 +414,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
       <div className="flex flex-col items-center justify-center py-12 space-y-6" style={{ animation: "bt-fadeup .5s both" }}>
         <div
           className="w-20 h-20 rounded-2xl flex items-center justify-center"
-          style={{ background: "rgba(255,255,255,.03)", border: "1.5px solid #FFE29A", boxShadow: "0 0 0 1px rgba(255,226,154,0.25), inset 0 0 18px rgba(0,0,0,0.6)" }}
+          style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: "1.5px solid #FFE29A", boxShadow: "0 0 0 1px rgba(255,226,154,0.25), inset 0 0 18px rgba(0,0,0,0.6)" }}
         >
           <Trophy className="w-10 h-10" style={{ color: "#FFE29A" }} />
         </div>
@@ -439,11 +439,11 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
           )}
         </div>
         <div className="grid grid-cols-2 gap-4 w-full max-w-xs">
-          <div className="rounded-xl p-4 text-center" style={{ background: "rgba(255,255,255,.03)", border: "1.5px solid #94F7C5" }}>
+          <div className="rounded-xl p-4 text-center" style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: "1.5px solid #94F7C5" }}>
             <p className="text-3xl font-bold" style={{ color: "#94F7C5" }}>{totalGot}</p>
             <p className="text-xs font-semibold mt-1" style={{ color: "#94F7C5" }}>{isAf ? "Geweet ✓" : "Got it ✓"}</p>
           </div>
-          <div className="rounded-xl p-4 text-center" style={{ background: "rgba(255,255,255,.03)", border: "1.5px solid #FF8DA1" }}>
+          <div className="rounded-xl p-4 text-center" style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: "1.5px solid #FF8DA1" }}>
             <p className="text-3xl font-bold" style={{ color: "#FF8DA1" }}>{totalMissed}</p>
             <p className="text-xs font-semibold mt-1" style={{ color: "#FF8DA1" }}>{isAf ? "Gemis ✗" : "Missed ✗"}</p>
           </div>
@@ -516,7 +516,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
               { icon: Layers, value: serverStats?.dueTomorrow ?? dueTomorrow,           label: isAf ? "Môre Reg"    : "Due Tomorrow", hex: "#FFB7E5" },
               { icon: Trophy, value: serverStats?.cardsMastered ?? 0,                   label: isAf ? "Bemeester"   : "Mastered",     hex: "#C5B3FF" },
             ] as const).map(({ icon: Icon, value, label, hex }) => (
-              <div key={label} className="rounded-xl p-3 text-center" style={{ background: "rgba(255,255,255,.03)", border: `1px solid ${hex}55` }}>
+              <div key={label} className="rounded-xl p-3 text-center" style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: `1px solid ${hex}55` }}>
                 <Icon className="w-4 h-4 mx-auto mb-1" style={{ color: hex }} />
                 <p className="text-xl font-bold text-white">{value}</p>
                 <p className="text-[10px] text-white font-semibold uppercase tracking-wider">{label}</p>
@@ -524,7 +524,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
             ))}
           </div>
           {serverStats && (serverStats.currentStreak > 0 || serverStats.longestStreak > 0) && (
-            <div className="rounded-xl p-3 flex items-center justify-between" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,226,154,.4)" }}>
+            <div className="rounded-xl p-3 flex items-center justify-between" style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: "1px solid rgba(255,226,154,.4)" }}>
               <div className="flex items-center gap-2 text-sm text-white">
                 <Zap className="w-4 h-4" style={{ color: "#FFE29A" }} />
                 <span>{isAf ? "Huidige reeks" : "Current streak"}: <strong>{serverStats.currentStreak}</strong> {isAf ? "dae" : "days"} 🔥</span>
@@ -541,7 +541,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
               {isAf ? "Kies 'n Vak" : "Choose a Subject"}
             </p>
             {subjects.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-white/10 p-6 text-center space-y-1.5" style={{ background: "rgba(255,255,255,.03)" }}>
+              <div className="rounded-2xl border border-dashed border-white/10 p-6 text-center space-y-1.5" style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508" }}>
                 <Layers className="w-7 h-7 mx-auto" style={{ color: "#C5B3FF" }} />
                 <p className="text-sm font-semibold text-white">
                   {isAf ? "Geen vakke gereed nie" : "No subjects available"}
@@ -560,7 +560,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
                   onClick={() => { setSelectedSubject(sub.code); setSelectedTopic("all"); }}
                   className="w-full text-left rounded-2xl transition-all p-4"
                   style={{
-                    background: "rgba(255,255,255,.03)",
+                    background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
                     border: pct > 0 ? `1.5px solid ${hex}` : "1px solid rgba(255,255,255,.08)",
                   }}
                   onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.borderColor = hex; }}
@@ -641,7 +641,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
 
         {/* Subject header */}
         <div className="rounded-2xl p-4 space-y-2.5"
-          style={{ background: "rgba(255,255,255,.03)", border: "1.5px solid #9FD8FF" }}>
+          style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: "1.5px solid #9FD8FF" }}>
           <div className="flex items-center justify-between">
             <h2 className="text-base font-black text-white">{selectedSubjectName}</h2>
             <span className="text-xs font-black" style={{ color: "#9FD8FF" }}>
@@ -708,7 +708,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
                   disabled={tot === 0}
                   className="w-full text-left rounded-2xl transition-all p-3.5 disabled:opacity-40"
                   style={{
-                    background: "rgba(255,255,255,.03)",
+                    background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
                     border: pct === 100 ? "1.5px solid #94F7C5" : pct > 0 ? "1.5px solid rgba(159,216,255,.55)" : "1px solid rgba(255,255,255,.08)",
                   }}
                   onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-6px)"; }}
@@ -856,7 +856,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
           <div
             className="absolute inset-0 rounded-2xl border-2 p-6 sm:p-8 flex flex-col items-center justify-center overflow-y-auto"
             style={{
-              background: "rgba(255,255,255,.03)",
+              background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
               boxShadow: "inset 0 0 22px rgba(0,0,0,.6)",
               backfaceVisibility: "hidden",
               borderColor: swipeDelta > 30 ? "rgba(148,247,197,0.7)" : swipeDelta < -30 ? "rgba(255,141,161,0.7)" : "rgba(159,245,232,0.45)",
@@ -889,7 +889,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
           <div
             className="absolute inset-0 rounded-2xl border-2 p-6 sm:p-8 flex flex-col items-center justify-center overflow-y-auto"
             style={{
-              background: "rgba(255,255,255,.03)",
+              background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
               boxShadow: "inset 0 0 22px rgba(0,0,0,.6)",
               backfaceVisibility: "hidden",
               transform: "rotateY(180deg)",
@@ -929,7 +929,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
                 key={quality}
                 onClick={() => handleGrade(quality)}
                 className="flex flex-col items-center gap-0.5 p-3 rounded-xl transition-all active:scale-95 hover:scale-[1.02]"
-                style={{ background: "rgba(255,255,255,.03)", border: `2px solid ${hex}` }}
+                style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: `2px solid ${hex}` }}
               >
                 <span className="font-bold text-sm" style={{ color: hex }}>{label}</span>
                 <span className="text-[10px] text-white">{desc}</span>
@@ -987,7 +987,7 @@ export default function FlashcardsPage() {
 
         <FlashcardReview isAf={isAf} />
 
-        <div className="rounded-2xl border border-dashed border-white/10 p-5 text-center space-y-2" style={{ background: "rgba(255,255,255,.03)" }}>
+        <div className="rounded-2xl border border-dashed border-white/10 p-5 text-center space-y-2" style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508" }}>
           <p className="text-sm font-semibold text-white">
             {isAf ? "Soek jy 'n vasvra?" : "Looking for a quiz?"}
           </p>

@@ -279,7 +279,7 @@ export default function RewardsPage() {
         <div
           className="relative rounded-2xl overflow-hidden p-6 sm:p-8"
           style={{
-            background: "rgba(255,255,255,0.03)",
+            background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
             border: "1px solid rgba(255,255,255,0.08)",
           }}
           data-testid="rewards-hero"
@@ -777,7 +777,7 @@ function CosmicCard({
     <div
       className={`relative rounded-2xl overflow-hidden transition-all ${className}`}
       style={{
-        background: "rgba(255,255,255,0.03)",
+        background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
         border: `1px solid ${hex}44`,
       }}
       data-testid={testId}

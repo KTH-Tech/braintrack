@@ -56,7 +56,7 @@ const rainbowText: CSSProperties = {
 };
 
 const cardStyle = (accent?: string, radius = 22): CSSProperties => ({
-  background: "rgba(255,255,255,.03)",
+  background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
   border: accent ? `1.5px solid ${accent}` : "1px solid rgba(255,255,255,.08)",
   borderRadius: radius,
 });
@@ -968,7 +968,7 @@ function ResultsView({
               key={i}
               className="overflow-hidden transition-all"
               style={{
-                background: "rgba(255,255,255,.03)",
+                background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
                 border: `1.5px solid ${halo(rowHex, 0.45)}`,
                 borderRadius: 20,
               }}

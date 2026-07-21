@@ -146,7 +146,7 @@ function GlassCard({ children, className = "", neonColor, style }: {
     <div
       className={`relative ${className}`}
       style={{
-        background: "rgba(255,255,255,.03)",
+        background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
         border: neonColor ? `1.5px solid ${hex}` : "1px solid rgba(255,255,255,.08)",
         borderRadius: "20px",
         ...style,
@@ -612,7 +612,7 @@ export default function StudyCalendarPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3" data-testid="plan-breadcrumb">
           <div
             className="flex items-center gap-2 flex-wrap px-3.5 py-2 rounded-lg"
-            style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.08)" }}
+            style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: "1px solid rgba(255,255,255,.08)" }}
           >
             <span className="text-[10px] font-black uppercase tracking-[0.14em] shrink-0" style={{ color: heroUrgencyInfo.color }}>
               {isAf ? "Volgende eksamen" : "Next exam"}
@@ -672,7 +672,7 @@ export default function StudyCalendarPage() {
           data-testid="countdown-prelims-plan"
           className="relative overflow-hidden p-5 sm:px-[30px] sm:py-7"
           style={{
-            background: "rgba(255,255,255,.03)",
+            background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
             border: "1px solid rgba(255,255,255,.08)",
             borderRadius: 22,
             boxShadow: `0 0 0 1px ${heroUrgencyInfo.color}33, 0 10px 40px rgba(0,0,0,0.55)`,
@@ -1458,7 +1458,7 @@ export default function StudyCalendarPage() {
                   ))}
                 </div>
               ) : weekPlan.length === 0 ? (
-                <div className="rounded-2xl p-8 text-center" style={{ background:"rgba(255,255,255,.03)", border:"1px solid rgba(255,255,255,.08)" }} data-testid="day-view-empty">
+                <div className="rounded-2xl p-8 text-center" style={{ background:"linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border:"1px solid rgba(255,255,255,.08)" }} data-testid="day-view-empty">
                   <CalendarDays className="w-10 h-10 mx-auto mb-3" style={{ color:"#9FF5E8" }} />
                   <p className="font-bold text-sm text-white mb-1">{isAf ? "Geen studieplan beskikbaar nie" : "No study plan available"}</p>
                   <p className="text-[11px] text-white mb-4" style={{ opacity:0.85 }}>{isAf ? "Kies jou vakke om jou plan te genereer." : "Select your subjects to generate your plan."}</p>
@@ -1831,7 +1831,7 @@ export default function StudyCalendarPage() {
             </GlassCard>
 
             {/* Weekly goals CTA */}
-            <div style={{ borderRadius:"20px", padding:"20px", background:"rgba(255,255,255,.03)", border:"1.5px solid #94F7C5" }}>
+            <div style={{ borderRadius:"20px", padding:"20px", background:"linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border:"1.5px solid #94F7C5" }}>
               <div className="flex items-center gap-2 mb-3">
                 <CheckCircle2 className="w-4 h-4" style={{ color:"#94F7C5" }} />
                 <p style={{ fontFamily:"'Permanent Marker',cursive", fontSize:"16px", color:"#94F7C5", transform:"rotate(-1.5deg)" }}>

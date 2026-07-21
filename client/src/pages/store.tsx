@@ -286,7 +286,7 @@ export default function StorePage() {
                   key={item.key}
                   data-testid={`store-item-${item.key}`}
                   style={{
-                    background: `linear-gradient(160deg, ${hex}12, rgba(255,255,255,.02))`,
+                    background: `linear-gradient(160deg, ${hex}12, rgba(255,255,255,.05)), #050508`,
                     border: `1.5px solid ${hex}`,
                     borderRadius: 22,
                     padding: 22,
@@ -373,7 +373,7 @@ export default function StorePage() {
         {/* Earn-coins footer */}
         <div
           className="relative text-center rounded-2xl px-6 py-8"
-          style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.08)" }}
+          style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: "1px solid rgba(255,255,255,.08)" }}
         >
           <div
             aria-hidden

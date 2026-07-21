@@ -50,7 +50,7 @@ function SectionCard({ color, icon: Icon, eyebrow, title, subtitle, children, te
     <section
       className="relative overflow-hidden"
       style={{
-        background: "rgba(255,255,255,.03)",
+        background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
         border: "1px solid rgba(255,255,255,.08)",
         borderRadius: 22,
         animation: `bt-fadeup .5s cubic-bezier(.22,1,.36,1) ${delay}s both`,

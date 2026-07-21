@@ -688,7 +688,7 @@ export default function DbePracticePage() {
                       style={{
                         padding: 18,
                         borderRadius: 14,
-                        background: "rgba(255,255,255,.03)",
+                        background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
                         border: "1px solid rgba(255,255,255,.08)",
                       }}
                     >

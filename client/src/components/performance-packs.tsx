@@ -240,7 +240,7 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
 
   // Shared glass-card shell used across every state of the Daily Quiz
   const glassShell =
-    "relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.06] via-white/[0.02] to-transparent  shadow-[0_0_40px_-12px_rgba(139,92,246,0.35)]";
+    "relative overflow-hidden rounded-2xl border border-white/10 bg-[#050508] bg-gradient-to-br from-white/[0.06] via-white/[0.02] to-transparent";
 
   if (quizState === "idle" && !quizStarted) {
     const DIFFICULTY_OPTIONS: {
@@ -570,11 +570,11 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
                     isCurrent ? "w-6" : "w-2"
                   } ${
                     isCorrect
-                      ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]"
+                      ? "bg-emerald-400"
                       : isWrong
-                      ? "bg-rose-400 shadow-[0_0_8px_rgba(251,113,133,0.6)]"
+                      ? "bg-rose-400"
                       : isCurrent
-                      ? "bg-gradient-to-r from-violet-400 to-cyan-400 shadow-[0_0_8px_rgba(139,92,246,0.6)]"
+                      ? "bg-gradient-to-r from-violet-400 to-cyan-400"
                       : isAnswered
                       ? "bg-white/30"
                       : "bg-white/10"
@@ -615,11 +615,11 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
                   disabled={answerSubmitted}
                   className={`group relative w-full text-left px-4 py-3.5 rounded-xl border text-sm transition-all flex items-center gap-3 overflow-hidden ${
                     showCorrect
-                      ? "border-emerald-400/60 bg-emerald-500/15 text-foreground shadow-[0_0_20px_-8px_rgba(52,211,153,0.5)]"
+                      ? "border-emerald-400/60 bg-emerald-500/15 text-foreground"
                       : wasWrong
-                      ? "border-rose-400/60 bg-rose-500/15 text-foreground shadow-[0_0_20px_-8px_rgba(251,113,133,0.5)]"
+                      ? "border-rose-400/60 bg-rose-500/15 text-foreground"
                       : isSelected
-                      ? "border-violet-400/60 bg-gradient-to-r from-violet-500/20 to-cyan-400/15 font-semibold shadow-[0_0_20px_-8px_rgba(139,92,246,0.6)]"
+                      ? "border-violet-400/60 bg-gradient-to-r from-violet-500/20 to-cyan-400/15 font-semibold"
                       : "border-white/10 bg-white/[0.02] hover:border-white/25 hover:bg-white/[0.05]"
                   } ${answerSubmitted ? "cursor-default" : "cursor-pointer"}`}
                   data-testid={`boost-option-${q.id}-${opt.label}`}
@@ -719,10 +719,10 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
     const { score, total, percentage, coinsEarned, results } = quizResult;
 
     const grade =
-      percentage >= 80 ? { label_en: "Outstanding", label_af: "Uitstekend", from: "from-emerald-400", to: "to-cyan-400", glow: "shadow-[0_0_40px_-8px_rgba(52,211,153,0.6)]", icon: Award } :
-      percentage >= 60 ? { label_en: "Solid Work",  label_af: "Goeie Werk", from: "from-violet-500",  to: "to-cyan-400", glow: "shadow-[0_0_40px_-8px_rgba(139,92,246,0.6)]", icon: Trophy } :
-      percentage >= 40 ? { label_en: "Keep Pushing", label_af: "Hou Vol",   from: "from-amber-400",   to: "to-orange-500", glow: "shadow-[0_0_40px_-8px_rgba(251,191,36,0.5)]", icon: Flame } :
-                         { label_en: "Try Again",   label_af: "Probeer Weer", from: "from-rose-500",  to: "to-fuchsia-500", glow: "shadow-[0_0_40px_-8px_rgba(244,63,94,0.5)]", icon: RotateCcw };
+      percentage >= 80 ? { label_en: "Outstanding", label_af: "Uitstekend", from: "from-emerald-400", to: "to-cyan-400", icon: Award } :
+      percentage >= 60 ? { label_en: "Solid Work",  label_af: "Goeie Werk", from: "from-violet-500",  to: "to-cyan-400", icon: Trophy } :
+      percentage >= 40 ? { label_en: "Keep Pushing", label_af: "Hou Vol",   from: "from-amber-400",   to: "to-orange-500", icon: Flame } :
+                         { label_en: "Try Again",   label_af: "Probeer Weer", from: "from-rose-500",  to: "to-fuchsia-500", icon: RotateCcw };
     const GradeIcon = grade.icon;
 
     return (
@@ -733,7 +733,7 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
         <div className="relative p-6 sm:p-7 space-y-5">
           {/* Hero result */}
           <div className="flex flex-col items-center text-center space-y-3">
-            <div className={`relative w-20 h-20 rounded-3xl bg-gradient-to-br ${grade.from} ${grade.to} flex items-center justify-center ${grade.glow}`}>
+            <div className={`relative w-20 h-20 rounded-3xl bg-gradient-to-br ${grade.from} ${grade.to} flex items-center justify-center`}>
               <GradeIcon className="w-10 h-10 text-white" strokeWidth={2} />
             </div>
             <div className="space-y-0.5">
@@ -899,7 +899,7 @@ export function RescuePackAlert({ isAf }: { isAf: boolean }) {
             key={pack.id ?? idx}
             className="relative overflow-hidden"
             style={{
-              background: "rgba(255,255,255,.03)",
+              background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
               border: "1.5px solid #FF8DA1",
               borderRadius: 20,
               animation: "bt-fadeup .45s cubic-bezier(.22,1,.36,1) both",

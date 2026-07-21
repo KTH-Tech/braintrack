@@ -32,7 +32,25 @@ import {
 import type { Subject, OnboardingResult, Topic } from "@shared/schema";
 import { TopicMindmap } from "@/components/topic-mindmap";
 import { GraffitiSplats } from "@/components/graffiti-splats";
-import { RizzFace, RizzWordmark, RizzBrandStyles, RIZZ_USER_GRADIENT, RIZZ_RAINBOW, RIZZ_LINES, type RizzExpression } from "@/components/rizz-brand";
+import { RizzFace, RizzWordmark, RizzBrandStyles, rizzMascot, RIZZ_USER_GRADIENT, RIZZ_RAINBOW, RIZZ_LINES, type RizzExpression } from "@/components/rizz-brand";
+import type { CSSProperties } from "react";
+
+/** Rotated speech-bubble callout beside the hero mascot (mirrors journey.tsx). */
+const tutorSticker = (color: string, rotate: number, pos: CSSProperties): CSSProperties => ({
+  position: "absolute",
+  ...pos,
+  zIndex: 3,
+  transform: `rotate(${rotate}deg)`,
+  fontFamily: "'Permanent Marker',cursive",
+  fontSize: 16,
+  lineHeight: 1.2,
+  color,
+  background: "rgba(5,5,8,.88)",
+  border: `1.5px solid ${color}`,
+  borderRadius: 14,
+  padding: "6px 11px",
+  whiteSpace: "nowrap",
+});
 import brandLogo from "@assets/Logo_01_1779989960628.jpeg";
 import { LearnerHeader } from "@/components/learner-header";
 
@@ -75,6 +93,11 @@ interface ChatMessage {
 const T = {
   en: {
     homeLabel: "Home",
+    // Sticker callouts around the hero mascot — same graffiti language as the
+    // journey page's stickers.
+    sticker1: "Ask me anything!",
+    sticker2: "No dumb questions ⚡",
+    sticker3: "I explain till it clicks 🧠",
     chatTab: "Chat",
     notesTab: "Study Notes",
     pageTitle: "Smart Tutor",
@@ -156,6 +179,9 @@ const T = {
   },
   af: {
     homeLabel: "Tuis",
+    sticker1: "Vra my enigiets!",
+    sticker2: "Geen dom vrae ⚡",
+    sticker3: "Ek verduidelik tot dit klik 🧠",
     chatTab: "Gesels",
     notesTab: "Studienotas",
     pageTitle: "Slimmer Tutor",
@@ -773,7 +799,7 @@ export default function TutorPage() {
 
             {generatedNotes && (
               <div
-                className="flex-1 overflow-hidden rounded-2xl bg-white/[.03]"
+                className="flex-1 overflow-hidden rounded-2xl bg-[#050508] bg-[linear-gradient(rgba(255,255,255,.05),rgba(255,255,255,.05))]"
                 style={{ border: "1.5px solid #FFB7E5" }}
               >
                 <div className="p-4 h-full flex flex-col">
@@ -1125,16 +1151,47 @@ export default function TutorPage() {
               const tutorAvatar = TUTOR_AVATARS[learningStyle] || TUTOR_AVATARS.mixed;
               const TutorIcon = tutorAvatar.icon;
               return (
-                <div className="relative mb-5">
-                  <RizzFace expression="happy" mascot size={108} radius={30} />
+                // Rizz's own page — he gets the full standing mascot at hero
+                // scale with floating animation and sticker callouts, matching
+                // the journey page's treatment. He was previously a 108px
+                // avatar crop with no callouts, which read as a chat icon
+                // rather than the character the page is named after.
+                <div className="relative mb-5 w-[190px] h-[190px] sm:w-[240px] sm:h-[240px]">
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 rounded-full blur-[50px] opacity-60"
+                    style={{ background: "#B388FF" }}
+                  />
+                  <img
+                    src={rizzMascot}
+                    alt={isAf ? "Rizz, jou studiemaat" : "Rizz, your study buddy"}
+                    className="relative"
+                    style={{
+                      zIndex: 2,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain",
+                      animation: "bt-float 6s ease-in-out infinite",
+                      filter: "drop-shadow(0 16px 26px rgba(179,136,255,.35))",
+                    }}
+                  />
+                  <span className="hidden sm:inline-flex" style={tutorSticker("#9FF5E8", -8, { top: 2, left: -26 })}>
+                    {t.sticker1}
+                  </span>
+                  <span className="hidden lg:inline-flex" style={tutorSticker("#FFE29A", 7, { top: 44, right: -66 })}>
+                    {t.sticker2}
+                  </span>
+                  <span className="hidden lg:inline-flex" style={tutorSticker("#FFB7E5", -6, { bottom: 22, left: -52 })}>
+                    {t.sticker3}
+                  </span>
                   <span
                     aria-hidden
-                    className="absolute bottom-1 left-1 w-4 h-4 rounded-full"
-                    style={{ background: "#94F7C5", border: "2.5px solid #050508" }}
+                    className="absolute bottom-3 left-3 w-4 h-4 rounded-full"
+                    style={{ zIndex: 3, background: "#94F7C5", border: "2.5px solid #050508" }}
                   />
                   <span
-                    className="absolute -bottom-2 -right-2 w-9 h-9 rounded-lg bg-black flex items-center justify-center"
-                    style={{ border: "1.5px solid #C5B3FF" }}
+                    className="absolute bottom-1 right-1 w-9 h-9 rounded-lg bg-black flex items-center justify-center"
+                    style={{ zIndex: 3, border: "1.5px solid #C5B3FF" }}
                     title={isAf ? "Jou leerstyl" : "Your learning style"}
                   >
                     <TutorIcon className="w-4 h-4" style={{ color: "#C5B3FF" }} />

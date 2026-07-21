@@ -121,7 +121,7 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
       className="relative overflow-hidden"
       data-testid="study-plan-widget"
       style={{
-        background: "rgba(255,255,255,.03)",
+        background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
         border: `1.5px solid ${ACCENT}`,
         borderRadius: 20,
       }}

@@ -480,7 +480,7 @@ export default function BSTExamPage() {
                   key={p.id}
                   onClick={() => { setSelectedPaperId(p.id); setExamState("rules"); }}
                   data-testid={`card-paper-${p.id}`}
-                  className="group text-left rounded-2xl p-5 bg-card border border-border hover:border-primary/50 hover:shadow-[0_0_24px_-8px_hsl(var(--primary)/0.4)] transition-all duration-200"
+                  className="group text-left rounded-2xl p-5 bg-card border border-border hover:border-primary/50 transition-all duration-200"
                 >
                   <div className="flex items-start gap-3 mb-4">
                     <div className="flex items-center justify-center w-9 h-9 rounded-xl flex-shrink-0 bg-primary/10 border border-primary/30">

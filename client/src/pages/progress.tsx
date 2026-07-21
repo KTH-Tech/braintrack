@@ -98,7 +98,7 @@ export default function ProgressPage() {
               <div
                 className="relative overflow-hidden rounded-3xl p-6 sm:p-8 md:p-10"
                 style={{
-                  background: "rgba(255,255,255,.03)",
+                  background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
                   border: "1.5px solid #9FD8FF",
                   boxShadow: "0 0 0 1px rgba(159,216,255,0.28)",
                 }}
@@ -374,7 +374,7 @@ export default function ProgressPage() {
                   return heroStats.map(({ label, value, unit, icon: Icon, hex, testid }) => (
                     <div
                       key={label}
-                      className="relative rounded-2xl bg-white/[.03] p-5 overflow-hidden transition-all hover:-translate-y-1.5"
+                      className="relative rounded-2xl bg-[#050508] bg-[linear-gradient(rgba(255,255,255,.05),rgba(255,255,255,.05))] p-5 overflow-hidden transition-all hover:-translate-y-1.5"
                       style={{ border: `1.5px solid ${hex}`, boxShadow: `0 0 0 1px ${hex}33` }}
                     >
                       <span aria-hidden className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: hex }} />
@@ -404,7 +404,7 @@ export default function ProgressPage() {
               <div className="grid gap-6 lg:grid-cols-2">
                 {/* Subject Progress */}
                 <div
-                  className="relative rounded-2xl bg-white/[.03] overflow-hidden"
+                  className="relative rounded-2xl bg-[#050508] bg-[linear-gradient(rgba(255,255,255,.05),rgba(255,255,255,.05))] overflow-hidden"
                   style={{ border: "1.5px solid #9FD8FF", boxShadow: "0 0 0 1px rgba(159,216,255,0.28)" }}
                 >
                   <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#9FD8FF" }} />
@@ -469,7 +469,7 @@ export default function ProgressPage() {
 
                 {/* Areas to Improve */}
                 <div
-                  className="relative rounded-2xl bg-white/[.03] overflow-hidden"
+                  className="relative rounded-2xl bg-[#050508] bg-[linear-gradient(rgba(255,255,255,.05),rgba(255,255,255,.05))] overflow-hidden"
                   style={{ border: "1.5px solid #FFB7E5", boxShadow: "0 0 0 1px rgba(255,183,229,0.28)" }}
                 >
                   <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FFB7E5" }} />
@@ -521,7 +521,7 @@ export default function ProgressPage() {
 
               {/* Recent Activity */}
               <div
-                className="relative rounded-2xl bg-white/[.03] overflow-hidden"
+                className="relative rounded-2xl bg-[#050508] bg-[linear-gradient(rgba(255,255,255,.05),rgba(255,255,255,.05))] overflow-hidden"
                 style={{ border: "1.5px solid #FFE29A", boxShadow: "0 0 0 1px rgba(255,226,154,0.28)" }}
               >
                 <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 z-10" style={{ borderColor: "#FFE29A" }} />
@@ -578,7 +578,7 @@ export default function ProgressPage() {
               </div>
             </>
           ) : (
-            <div className="rounded-2xl bg-white/[.03] border border-white/10 p-12 text-center">
+            <div className="rounded-2xl bg-[#050508] bg-[linear-gradient(rgba(255,255,255,.05),rgba(255,255,255,.05))] border border-white/10 p-12 text-center">
               <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-white/[.03] flex items-center justify-center border border-white/10">
                 <Target className="w-8 h-8 text-white" />
               </div>

@@ -287,7 +287,7 @@ export default function JourneyPage() {
             <section
               className="relative rounded-3xl p-5 sm:p-6 overflow-hidden"
               style={{
-                background: "rgba(255,255,255,.03)",
+                background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
                 border: "1.5px solid #6EE7F9",
                 borderRadius: 22,
                 
@@ -397,7 +397,7 @@ export default function JourneyPage() {
                     <div
                       className="flex items-center gap-3 p-4 text-white text-sm"
                       style={{
-                        background: "rgba(255,255,255,.03)",
+                        background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
                         border: "1px solid rgba(255,255,255,.08)",
                         borderRadius: 18,
                       }}
@@ -425,7 +425,7 @@ export default function JourneyPage() {
                         <div
                           className="flex-1 p-4 transition-all"
                           style={{
-                            background: "rgba(255,255,255,.03)",
+                            background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
                             border: `1px solid ${hex}`,
                             borderRadius: 18,
                             
@@ -500,7 +500,7 @@ export default function JourneyPage() {
                         key={event.id}
                         className="flex items-start gap-3 p-4"
                         style={{
-                          background: "rgba(255,255,255,.03)",
+                          background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
                           border: `1px dashed ${hex}55`,
                           borderRadius: 18,
                         }}
@@ -531,7 +531,7 @@ export default function JourneyPage() {
               <section
                 className="relative p-6 sm:p-7 flex flex-col sm:flex-row items-center justify-between gap-5 overflow-hidden"
                 style={{
-                  background: "rgba(255,255,255,.03)",
+                  background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
                   border: "1.5px solid #FFB7E5",
                   borderRadius: 22,
                   

@@ -42,7 +42,7 @@ export function PersonalBestsWidget({ isAf = false }: PersonalBestsWidgetProps) 
     return (
       <div
         className="h-full min-h-[180px] p-5 space-y-2"
-        style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.08)", borderRadius: 20 }}
+        style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: "1px solid rgba(255,255,255,.08)", borderRadius: 20 }}
       >
         {[1, 2, 3].map((i) => (
           <div key={i} className="h-12 rounded-xl animate-pulse" style={{ background: "rgba(255,255,255,.05)" }} />
@@ -55,7 +55,7 @@ export function PersonalBestsWidget({ isAf = false }: PersonalBestsWidgetProps) 
     return (
       <div
         className="h-full p-6 text-center flex flex-col items-center justify-center"
-        style={{ background: "rgba(255,255,255,.03)", border: `1.5px solid ${ACCENT}`, borderRadius: 20 }}
+        style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: `1.5px solid ${ACCENT}`, borderRadius: 20 }}
       >
         <Trophy className="w-8 h-8 mx-auto mb-2" style={{ color: ACCENT }} />
         <p className="text-sm text-white font-semibold">
@@ -72,7 +72,7 @@ export function PersonalBestsWidget({ isAf = false }: PersonalBestsWidgetProps) 
   return (
     <div
       className="h-full p-4 flex flex-col gap-2"
-      style={{ background: "rgba(255,255,255,.03)", border: `1.5px solid ${ACCENT}`, borderRadius: 20 }}
+      style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: `1.5px solid ${ACCENT}`, borderRadius: 20 }}
       data-testid="personal-bests-widget"
     >
       {topBests.map((pb, index) => {

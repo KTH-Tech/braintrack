@@ -102,7 +102,7 @@ export function GoalProgress({ isAf }: GoalProgressProps) {
         className="overflow-hidden"
         data-testid="goal-progress-widget"
         style={{
-          background: "rgba(255,255,255,.03)",
+          background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
           border: "1px solid rgba(255,255,255,.08)",
           borderRadius: 20,
         }}

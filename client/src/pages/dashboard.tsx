@@ -845,7 +845,7 @@ export default function DashboardPage() {
               data-testid="subscription-trial-banner"
               className="flex flex-wrap items-center justify-between gap-3 rounded-2xl px-5 py-3.5"
               style={{
-                background: `linear-gradient(135deg, ${hex}14 0%, rgba(255,255,255,.03) 60%)`,
+                background: `linear-gradient(135deg, ${hex}14 0%, rgba(255,255,255,.05) 60%), #050508`,
                 border: `1.5px solid ${hex}66`,
               }}
             >
@@ -881,7 +881,7 @@ export default function DashboardPage() {
             data-testid="subscription-lapsed-banner"
             className="flex flex-wrap items-center justify-between gap-3 rounded-2xl px-5 py-3.5"
             style={{
-              background: "linear-gradient(135deg, rgba(255,183,229,0.12) 0%, rgba(255,255,255,.03) 60%)",
+              background: "linear-gradient(135deg, rgba(255,183,229,0.12) 0%, rgba(255,255,255,.05) 60%), #050508",
               border: "1.5px solid rgba(255,183,229,0.5)",
             }}
           >
@@ -1000,7 +1000,7 @@ export default function DashboardPage() {
         {/* ── Two-column: Subject mastery + Next mission / Fresh drops ── */}
         <div className="bt-grid-2col" style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr", gap: 24 }}>
           {/* Subject mastery */}
-          <div style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.08)", borderRadius: 24, padding: 26 }}>
+          <div style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: "1px solid rgba(255,255,255,.08)", borderRadius: 24, padding: 26 }}>
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10, flexWrap: "wrap", marginBottom: 20 }}>
               <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 18, color: "#fff" }}>{t.subjectsHeading} 📈</div>
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -1096,7 +1096,7 @@ export default function DashboardPage() {
             })()}
 
             {/* Fresh drops — recent achievements */}
-            <div style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.08)", borderRadius: 24, padding: 24, flex: 1 }}>
+            <div style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: "1px solid rgba(255,255,255,.08)", borderRadius: 24, padding: 24, flex: 1 }}>
               <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 16, color: "#fff", marginBottom: 16 }}>{t.freshDropsTitle}</div>
               {badges && badges.length > 0 ? (
                 <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -1128,7 +1128,7 @@ export default function DashboardPage() {
         </div>
 
         {/* ── Exam countdown — DBE 2026 ── */}
-        <div style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.08)", borderRadius: 24, padding: 26 }}>
+        <div style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: "1px solid rgba(255,255,255,.08)", borderRadius: 24, padding: 26 }}>
           <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 8 }}>
             <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 18, color: "#fff" }}>{t.examCountdownHeading}</div>
             <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
@@ -1223,7 +1223,7 @@ export default function DashboardPage() {
         <div
           data-testid="prep-status-indicator"
           style={{
-            background: `linear-gradient(120deg, ${ac.hex}14, rgba(255,255,255,.03))`,
+            background: `linear-gradient(120deg, ${ac.hex}14, rgba(255,255,255,.05)), #050508`,
             border: `1.5px solid ${ac.hex}`,
             borderRadius: 20,
             padding: "20px 26px",
@@ -1309,7 +1309,7 @@ export default function DashboardPage() {
             <div
               data-testid="urgency-banner"
               style={{
-                background: `linear-gradient(120deg, ${u.hex}14, rgba(255,255,255,.03))`,
+                background: `linear-gradient(120deg, ${u.hex}14, rgba(255,255,255,.05)), #050508`,
                 border: `1.5px solid ${u.hex}`,
                 borderRadius: 18,
                 padding: "14px 20px",
@@ -1456,7 +1456,7 @@ export default function DashboardPage() {
         {focusAreasData && (
           <div
             data-testid="panel-focus-areas"
-            style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.08)", borderRadius: 24, padding: 26 }}
+            style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: "1px solid rgba(255,255,255,.08)", borderRadius: 24, padding: 26 }}
           >
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10, flexWrap: "wrap", marginBottom: 6 }}>
               <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 18, color: "#fff", display: "flex", alignItems: "center", gap: 8 }}>
@@ -1524,7 +1524,7 @@ export default function DashboardPage() {
         {profile && (
           <div
             data-testid="vark-style-badge"
-            style={{ background: "linear-gradient(150deg,rgba(197,179,255,.12),rgba(255,255,255,.02))", border: "1.5px solid rgba(197,179,255,.5)", borderRadius: 24, padding: 26 }}
+            style={{ background: "linear-gradient(150deg,rgba(197,179,255,.12),rgba(255,255,255,.05)), #050508", border: "1.5px solid rgba(197,179,255,.5)", borderRadius: 24, padding: 26 }}
           >
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
               <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 18, color: "#fff", display: "flex", alignItems: "center", gap: 8 }}>
