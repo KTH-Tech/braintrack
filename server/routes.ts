@@ -15196,12 +15196,29 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
             ? (requestedLang === "af" ? "en" : "af")
             : requestedLang;
 
-      const rows = await db
+      // A memo can be long enough to pass the length check and still carry no
+      // gradable content once marker instructions and layout codes are stripped
+      // — "A C Enige volgorde M194 F37 (2)" cleans down to "A C (2)" and yields
+      // no scheme, so the learner answers and gets nothing back. That is ~0.9%
+      // of memo-bearing rows. Over-fetch and drop them so every question in a
+      // mini-mock can actually be graded.
+      const candidates = await db
         .select()
         .from(vqT)
         .where(and(...baseConditions, eq(vqT.language, toDbLanguage(servedLang))))
         .orderBy(sql`RANDOM()`)
-        .limit(count);
+        .limit(count * 3);
+
+      const { isMemoContentless } = await import("./memo-clean");
+      const { parseMemoToScheme } = await import("./memo-marker");
+      const markable = candidates.filter((r) => {
+        if (isMemoContentless(r.memoText)) return false;
+        return Boolean(parseMemoToScheme(r.memoText ?? "", r.marks ?? 1));
+      });
+
+      // If filtering leaves us short (a very thin subject), fall back to the
+      // unfiltered draw rather than handing back an empty mini-mock.
+      const rows = (markable.length >= count ? markable : candidates).slice(0, count);
 
       const questions = rows.map((r) => ({
         id: r.id,
