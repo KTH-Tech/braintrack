@@ -1330,7 +1330,10 @@ export default function AdminDashboardPage() {
     desc: string; descAf: string; Icon: any; testId: string;
   }[] = [
     {
-      href: "/dashboard", color: "#FFE29A",
+      // /classroom, not /dashboard: /dashboard routes admins to the ADMIN
+      // dashboard, so from here the link would appear to do nothing. The
+      // /classroom alias renders the learner DashboardPage directly.
+      href: "/classroom", color: "#FFE29A",
       title: "Open Learner Dashboard", titleAf: "Maak Leerderpaneel Oop",
       desc: "Jump straight to the learner dashboard without entering an impersonation session.",
       descAf: "Gaan direk na die leerderpaneel sonder om 'n nabootsingsessie te begin.",

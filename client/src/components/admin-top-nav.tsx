@@ -85,7 +85,10 @@ const NAV_GROUPS: NavGroup[] = [
     labelEn: "Quick Jumps",
     labelAf: "Vinnige Skakels",
     items: [
-      { key: "classroom", href: "/dashboard", labelEn: "Learner Dashboard", labelAf: "Leerderpaneel", Icon: GraduationCap },
+      // /classroom, not /dashboard: for an admin, /dashboard renders the admin
+      // dashboard, so this entry would appear dead. /classroom is the direct
+      // alias for the learner DashboardPage.
+      { key: "classroom", href: "/classroom", labelEn: "Learner Dashboard", labelAf: "Leerderpaneel", Icon: GraduationCap },
       { key: "parent", href: "/parent", labelEn: "Parent View", labelAf: "Ouer Aansig", Icon: Users },
     ],
   },

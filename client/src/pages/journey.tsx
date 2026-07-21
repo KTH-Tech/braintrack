@@ -69,20 +69,12 @@ const EVENT_HEX: Record<string, string> = {
   daily:      "#FFB7E5",
 };
 
-const halo = (hex: string, a = 0.32) => {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `rgba(${r},${g},${b},${a})`;
-};
-
 const marker = (color: string, size = 16): CSSProperties => ({
   fontFamily: "'Permanent Marker',cursive",
   fontSize: size,
   color,
   transform: "rotate(-2deg)",
   display: "inline-block",
-  textShadow: `0 0 10px ${halo(color, 0.45)}`,
 });
 
 /* Cute sticker callout — small rotated speech-bubble chip, same graffiti
@@ -100,7 +92,6 @@ const sticker = (color: string, rotate: number, pos: CSSProperties): CSSProperti
   border: `1.5px solid ${color}`,
   borderRadius: 14,
   padding: "6px 11px",
-  boxShadow: `0 0 14px ${halo(color, 0.4)}`,
   whiteSpace: "nowrap",
   zIndex: 3,
 });
@@ -220,7 +211,7 @@ export default function JourneyPage() {
               <div className="inline-flex items-center gap-2">
                 <Rocket
                   className="w-4 h-4"
-                  style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }}
+                  style={{ color: "#FFE29A" }}
                 />
                 <span style={marker("#FFE29A")}>{t.heroLabel}</span>
               </div>
@@ -299,7 +290,7 @@ export default function JourneyPage() {
                 background: "rgba(255,255,255,.03)",
                 border: "1.5px solid #6EE7F9",
                 borderRadius: 22,
-                boxShadow: `0 0 28px ${halo("#6EE7F9", 0.28)}`,
+                
                 animation: "bt-fadeup .5s .05s both",
               }}
               data-testid="rizz-narrator"
@@ -307,7 +298,7 @@ export default function JourneyPage() {
               <span
                 aria-hidden
                 className="absolute top-0 left-0 right-0 h-[2px]"
-                style={{ background: "#6EE7F9", boxShadow: "0 0 10px #6EE7F9" }}
+                style={{ background: "#6EE7F9" }}
               />
               <div className="flex items-start gap-4">
                 <div
@@ -315,7 +306,7 @@ export default function JourneyPage() {
                   style={{
                     background: "rgba(5,5,8,.6)",
                     border: "1.5px solid #6EE7F9",
-                    boxShadow: `0 0 14px ${halo("#6EE7F9", 0.45)}`,
+                    
                   }}
                 >
                   <img src={rizzAvatar} alt="Rizz" className="w-full h-full object-cover" />
@@ -341,38 +332,34 @@ export default function JourneyPage() {
                   { label: t.statPapers,    value: journey.stats.papersCompleted,   hex: "#C5B3FF", Icon: FileText,   testid: "stat-papers"    },
                   { label: t.statStreak,    value: journey.stats.currentStreak,     hex: "#FFE29A", Icon: Flame,      testid: "stat-streak"    },
                 ].map(({ label, value, hex, Icon, testid }, i) => {
-                  const h = halo(hex, 0.32);
                   return (
                     <div
                       key={label}
                       className="relative p-4 text-center overflow-hidden transition-transform"
                       style={{
+                        // No glow — the app-wide rule is border + flat card, no
+                        // zero-offset shadows. These chips shipped with glows
+                        // after that rule landed and stood out as off-brand.
                         background: "rgba(255,255,255,.03)",
                         border: `1.5px solid ${hex}`,
                         borderRadius: 20,
-                        boxShadow: `0 0 16px ${halo(hex, 0.22)}`,
                         transform: `rotate(${i % 2 === 0 ? -1 : 1}deg)`,
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.transform = "rotate(0deg) translateY(-6px)";
-                        e.currentTarget.style.boxShadow = `0 0 26px ${h}`;
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.transform = `rotate(${i % 2 === 0 ? -1 : 1}deg)`;
-                        e.currentTarget.style.boxShadow = `0 0 16px ${halo(hex, 0.22)}`;
                       }}
                       data-testid={testid}
                     >
                       <div className="flex items-center justify-center gap-1.5 mb-1.5">
-                        <Icon className="w-3.5 h-3.5" style={{ color: hex, filter: `drop-shadow(0 0 4px ${h})` }} />
+                        <Icon className="w-3.5 h-3.5" style={{ color: hex }} />
                         <span className="text-[9px] font-black uppercase tracking-[0.22em]" style={{ color: hex }}>
                           {label}
                         </span>
                       </div>
-                      <p
-                        className="text-3xl font-black tabular-nums leading-none text-white"
-                        style={{ textShadow: `0 0 12px ${h}` }}
-                      >
+                      <p className="text-3xl font-black tabular-nums leading-none text-white">
                         {value}
                       </p>
                     </div>
@@ -384,7 +371,7 @@ export default function JourneyPage() {
             {/* ── Completed timeline ── */}
             <section className="space-y-3" style={{ animation: "bt-fadeup .5s .15s both" }}>
               <h2 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.28em] text-white">
-                <CheckCircle2 className="w-3.5 h-3.5" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px #9FF5E8)" }} />
+                <CheckCircle2 className="w-3.5 h-3.5" style={{ color: "#9FF5E8" }} />
                 {t.completedMilestones}
                 <span
                   className="ml-1 px-2 py-0.5 rounded-full text-[9px] font-black tabular-nums"
@@ -423,8 +410,7 @@ export default function JourneyPage() {
                   {completed.map((event) => {
                     const Icon = EVENT_ICONS[event.type] ?? Star;
                     const hex = EVENT_HEX[event.type] ?? "#9FF5E8";
-                    const h = halo(hex, 0.32);
-                    return (
+                      return (
                       <div key={event.id} className="relative flex gap-4" data-testid={`journey-event-${event.id}`}>
                         {/* timeline node */}
                         <span
@@ -433,7 +419,7 @@ export default function JourneyPage() {
                           style={{
                             background: "#050508",
                             border: `2px solid ${hex}`,
-                            boxShadow: `0 0 10px ${hex}, 0 0 20px ${h}`,
+                            
                           }}
                         />
                         <div
@@ -442,15 +428,15 @@ export default function JourneyPage() {
                             background: "rgba(255,255,255,.03)",
                             border: `1px solid ${hex}`,
                             borderRadius: 18,
-                            boxShadow: `0 0 14px ${halo(hex, 0.18)}`,
+                            
                           }}
                           onMouseEnter={(e) => {
                             e.currentTarget.style.transform = "translateY(-6px)";
-                            e.currentTarget.style.boxShadow = `0 0 24px ${h}`;
+                            
                           }}
                           onMouseLeave={(e) => {
                             e.currentTarget.style.transform = "none";
-                            e.currentTarget.style.boxShadow = `0 0 14px ${halo(hex, 0.18)}`;
+                            
                           }}
                         >
                           <div className="flex items-start justify-between gap-3">
@@ -460,10 +446,10 @@ export default function JourneyPage() {
                                 style={{
                                   background: "rgba(5,5,8,.6)",
                                   border: `1.5px solid ${hex}`,
-                                  boxShadow: `0 0 10px ${h}`,
+                                  
                                 }}
                               >
-                                <Icon className="w-4 h-4" style={{ color: hex, filter: `drop-shadow(0 0 4px ${hex})` }} />
+                                <Icon className="w-4 h-4" style={{ color: hex }} />
                               </div>
                               <div className="min-w-0">
                                 <p className="font-black text-sm text-white leading-tight">
@@ -548,7 +534,7 @@ export default function JourneyPage() {
                   background: "rgba(255,255,255,.03)",
                   border: "1.5px solid #FFB7E5",
                   borderRadius: 22,
-                  boxShadow: `0 0 26px ${halo("#FFB7E5", 0.28)}`,
+                  
                   animation: "bt-fadeup .5s .25s both",
                 }}
                 data-testid="journey-cta"
