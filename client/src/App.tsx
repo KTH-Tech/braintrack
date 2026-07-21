@@ -708,6 +708,12 @@ function Router() {
           </ProtectedRoute>
         </Route>
 
+        {/*
+          Legacy alias for /dashboard. "Classroom" used to name three different
+          places at once — this route, the subjects list heading, and the
+          single-subject page title — so the label was removed from the UI.
+          The route stays so old links and bookmarks keep working.
+        */}
         <Route path="/classroom">
           <ProtectedRoute>
             <Suspense fallback={<PageLoader />}>

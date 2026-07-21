@@ -55,7 +55,7 @@ const t = {
     schoolsDesc: "We partner with schools across South Africa to boost exam performance, track learner progress digitally, and support targeted intervention. Smarter learners, stronger results.",
     popia: "Your data is protected under POPIA (Protection of Personal Information Act, 2013). We only collect information necessary for learning and never share it with third parties.",
     cta: "Start Learning Smarter",
-    ctaLoggedIn: "Go to My Classroom",
+    ctaLoggedIn: "Go to My Dashboard",
     tResearch: "Research",
     tEnter: "Enter the app →",
     privacyTitle: "Privacy & Security",
@@ -95,7 +95,7 @@ const t = {
     schoolsDesc: "Ons vennoot met skole regoor Suid-Afrika om eksamenprestasie te verhoog, leerdervordering digitaal te volg, en geteikende ingryping te ondersteun. Slimmer leerders, sterker resultate.",
     popia: "Jou data word beskerm volgens die POPIA-wet (Wet op Beskerming van Persoonlike Inligting, 2013). Ons versamel slegs inligting wat nodig is vir leer en deel dit nooit met derde partye nie.",
     cta: "Begin Slimmer Leer",
-    ctaLoggedIn: "My Klaskamer",
+    ctaLoggedIn: "My Paneelbord",
     tResearch: "Navorsing",
     tEnter: "Betree die app →",
     privacyTitle: "Privaatheid & Sekuriteit",
@@ -152,7 +152,7 @@ export default function AboutPage() {
   const c = t[language];
   const en = language === "en";
 
-  const ctaHref = isAuthenticated ? "/classroom" : "/subscribe";
+  const ctaHref = isAuthenticated ? "/dashboard" : "/subscribe";
   const ctaLabel = isAuthenticated ? c.ctaLoggedIn : c.cta;
 
   return (

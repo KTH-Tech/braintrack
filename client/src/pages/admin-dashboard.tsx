@@ -957,10 +957,10 @@ export default function AdminDashboardPage() {
     desc: string; descAf: string; Icon: any; testId: string;
   }[] = [
     {
-      href: "/classroom", color: "#FFE29A",
-      title: "Open Learner Classroom", titleAf: "Maak Klaskamer Oop",
-      desc: "Jump straight to the learner classroom without entering an impersonation session.",
-      descAf: "Gaan direk na die leerder klaskamer sonder om 'n nabootsingsessie te begin.",
+      href: "/dashboard", color: "#FFE29A",
+      title: "Open Learner Dashboard", titleAf: "Maak Leerderpaneel Oop",
+      desc: "Jump straight to the learner dashboard without entering an impersonation session.",
+      descAf: "Gaan direk na die leerderpaneel sonder om 'n nabootsingsessie te begin.",
       Icon: GraduationCap, testId: "quick-preview-classroom",
     },
     {

@@ -45,7 +45,7 @@ const COPY = {
       { icon: "🏆", color: "#94F7C5", chipBg: "rgba(148,247,197,.14)", glow: "rgba(148,247,197,.25)", tilt: 1, title: "Gamified Progress", body: "Earn XP, level up, and collect achievement badges. Stay motivated with every session." },
     ],
     cta: "Start your 14-day trial",
-    ctaLoggedIn: "Go to My Classroom",
+    ctaLoggedIn: "Go to My Dashboard",
   },
   af: {
     tResearch: "Navorsing",
@@ -69,7 +69,7 @@ const COPY = {
       { icon: "🏆", color: "#94F7C5", chipBg: "rgba(148,247,197,.14)", glow: "rgba(148,247,197,.25)", tilt: 1, title: "Spel-agtige Vordering", body: "Verdien XP, bereik nuwe vlakke, en ontsluit prestasiekentekens. Bly gemotiveerd met elke sessie." },
     ],
     cta: "Begin jou 14-dae proeftydperk",
-    ctaLoggedIn: "My Klaskamer",
+    ctaLoggedIn: "My Paneelbord",
   },
 } as const;
 

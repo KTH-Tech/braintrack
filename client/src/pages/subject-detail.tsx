@@ -984,7 +984,10 @@ export default function SubjectDetailPage() {
       <GraffitiSplats variant="corner" opacity={0.5} />
       <LearnerHeader
         backLabel={isAf ? "Tuis" : "Home"}
-        title={isAf ? "Klaskamer" : "Classroom"}
+        // Name the subject being studied. "Classroom" was a leftover that also
+        // titled the subjects list and aliased the dashboard, so one word meant
+        // three different places.
+        title={(isAf ? subject?.nameAfrikaans || subject?.name : subject?.name) || (isAf ? "Vak" : "Subject")}
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 overflow-x-hidden">
