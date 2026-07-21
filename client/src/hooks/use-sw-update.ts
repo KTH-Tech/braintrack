@@ -2,6 +2,21 @@ import { useEffect, useState } from "react";
 
 const POLL_INTERVAL_MS = 60 * 60 * 1000; // 1 hour
 
+// Routes where yanking the page out from under the user is destructive — a
+// timed exam or quiz in progress must never be force-reloaded. On these the
+// update falls back to the banner and applies on the user's click, or
+// automatically the next time an update check runs on a safe page.
+const DEFER_UPDATE_PREFIXES = [
+  "/exam",        // /exam/full, /exam/mini-mock, /exam-mode, /exam-ready, /exam-session
+  "/bst-exam",
+  "/daily-challenge",
+];
+
+function onDeferredRoute(): boolean {
+  const p = window.location.pathname;
+  return DEFER_UPDATE_PREFIXES.some((prefix) => p.startsWith(prefix));
+}
+
 export function useSwUpdate() {
   const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(null);
 
@@ -10,10 +25,21 @@ export function useSwUpdate() {
 
     let cancelled = false;
 
-    function checkForWaiting(registration: ServiceWorkerRegistration) {
-      if (registration.waiting && !cancelled) {
-        setWaitingWorker(registration.waiting);
+    function handleWaiting(waiting: ServiceWorker | null) {
+      if (!waiting || cancelled) return;
+      // Deploys used to sit behind an "Update available" banner that people —
+      // including the owner — never clicked, so already-fixed bugs kept being
+      // reported from stale cached bundles. Apply immediately wherever a
+      // reload is safe; the controllerchange listener below does the refresh.
+      if (!onDeferredRoute()) {
+        waiting.postMessage({ type: "SKIP_WAITING" });
+        return;
       }
+      setWaitingWorker(waiting);
+    }
+
+    function checkForWaiting(registration: ServiceWorkerRegistration) {
+      handleWaiting(registration.waiting);
     }
 
     let stateChangeHandler: (() => void) | null = null;
@@ -36,7 +62,7 @@ export function useSwUpdate() {
 
         stateChangeHandler = () => {
           if (installing.state === "installed" && navigator.serviceWorker.controller && !cancelled) {
-            setWaitingWorker(registration.waiting);
+            handleWaiting(registration.waiting);
           }
         };
 
