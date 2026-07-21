@@ -610,7 +610,10 @@ function GlobalFooter() {
 
 function GlobalCookieBanner() {
   const [location] = useLocation();
-  const hideOn = ["/exam-session", "/bst-exam", "/onboarding"];
+  // Admin surfaces excluded: the consent banner is for visitors and learners,
+  // and on the admin console it overlays the bottom rows of data tables (it
+  // even intercepted clicks during automated QA of the content editor).
+  const hideOn = ["/exam-session", "/bst-exam", "/onboarding", "/learn/admin", "/admin"];
   if (hideOn.some(p => location.startsWith(p))) return null;
   return <CookieConsentBanner />;
 }

@@ -230,25 +230,31 @@ function CoverageBanner({
   const total = rows.length;
   const reviewed = rows.filter((r) => r.source === "admin").length;
   const unreviewed = total - reviewed;
-  const pct = total === 0 ? 100 : Math.round((reviewed / total) * 100);
-  const allDone = unreviewed === 0;
+  // An empty table is not "done" — a full green bar over "0 of 0 reviewed"
+  // reads as complete when there is no content at all. Show a neutral empty
+  // state instead, tinted with the tab's accent so the three tabs are
+  // visually distinct (the accent prop previously went unread).
+  const isEmpty = total === 0;
+  const pct = isEmpty ? 0 : Math.round((reviewed / total) * 100);
+  const allDone = !isEmpty && unreviewed === 0;
+  const tone = isEmpty ? accent : allDone ? HEX.mint : HEX.amber;
 
   return (
     <div
       className="rounded-xl px-4 py-3 flex items-center gap-4"
       style={{
-        background: allDone ? `${HEX.mint}11` : `${HEX.amber}11`,
-        border: `1px solid ${allDone ? HEX.mint : HEX.amber}33`,
+        background: `${tone}11`,
+        border: `1px solid ${tone}33`,
       }}
       data-testid="coverage-banner"
     >
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1.5">
           {allDone
-            ? <CheckCircle2 size={14} style={{ color: HEX.mint }} />
-            : <AlertCircle size={14} style={{ color: HEX.amber }} />}
-          <span className="text-xs font-bold" style={{ color: allDone ? HEX.mint : HEX.amber }}>
-            {reviewed} of {total} {label} reviewed
+            ? <CheckCircle2 size={14} style={{ color: tone }} />
+            : <AlertCircle size={14} style={{ color: tone }} />}
+          <span className="text-xs font-bold" style={{ color: tone }}>
+            {isEmpty ? `No ${label} yet` : `${reviewed} of ${total} ${label} reviewed`}
           </span>
           {unreviewed > 0 && (
             <span className="text-xs text-white">
@@ -261,7 +267,7 @@ function CoverageBanner({
             className="h-full rounded-full transition-all duration-500"
             style={{
               width: `${pct}%`,
-              background: allDone ? HEX.mint : HEX.amber,
+              background: tone,
             }}
           />
         </div>
@@ -474,7 +480,12 @@ function BulkImportPanel({
   }
 
   return (
-    <div>
+    // relative + absolute panel: this component lives inside the toolbar's
+    // flex row, and rendering the expanded editor inline inflated that row —
+    // collapsing the search box and pushing the other buttons out of place.
+    // As an anchored dropdown it overlays the list instead of reflowing the
+    // toolbar.
+    <div className="relative">
       <button
         data-testid={`bulk-import-toggle-${type}`}
         onClick={() => { setOpen((v) => !v); setResult(null); setParseError(null); }}
@@ -487,6 +498,7 @@ function BulkImportPanel({
       </button>
 
       {open && (
+        <div className="absolute right-0 top-full mt-2 z-40 w-[min(640px,90vw)] text-left">
         <NeonShell color={accent} className="p-5">
           <p className="mb-1 text-sm font-bold" style={{ color: accent }}>
             Bulk Import — {type === "notes" ? "Topic Notes" : "Flashcards"}
@@ -575,6 +587,7 @@ function BulkImportPanel({
             </Button>
           </div>
         </NeonShell>
+        </div>
       )}
     </div>
   );
