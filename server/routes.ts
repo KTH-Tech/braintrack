@@ -5916,15 +5916,31 @@ Learner's question: ${data.message}`;
         });
       }
 
-      // Check subscription — expired subscribers cannot access AI tutor
+      // Subscription gate — with deliberate carve-outs and honest copy.
+      // Admins and demo accounts bypass entirely: the owner must be able to
+      // demo Rizz, and demo accounts carry no billing. For everyone else,
+      // distinguish never-subscribed from lapsed — a freshly parent-activated
+      // child has never had a subscription, and telling them it "expired" is
+      // both wrong and a dead end.
       const isActiveSub = await storage.hasActiveSubscription(userId);
       if (!isActiveSub) {
-        return res.status(402).json({
-          error: isAfrikaans
-            ? "Jou intekening het verval. Skakel weer in om die AI Tutor te gebruik."
-            : "Your subscription has expired. Resubscribe to use the AI Tutor.",
-          feature: "ai_tutor",
-        });
+        const tutorUser = await authStorage.getUser(userId);
+        const bypass = tutorUser?.role === "admin" || (tutorUser as any)?.isDemo === true;
+        if (!bypass) {
+          const existingSub = await storage.getSubscription(userId);
+          const neverSubscribed = !existingSub;
+          return res.status(402).json({
+            error: neverSubscribed
+              ? (isAfrikaans
+                  ? "Begin jou gratis proeftydperk om Rizz te gebruik — vra jou ouer om die aktivering te voltooi."
+                  : "Start your free trial to use Rizz — ask your parent to complete activation.")
+              : (isAfrikaans
+                  ? "Jou intekening het verval. Skakel weer in om die AI Tutor te gebruik."
+                  : "Your subscription has expired. Resubscribe to use the AI Tutor."),
+            feature: "ai_tutor",
+            reason: neverSubscribed ? "trial_needed" : "expired",
+          });
+        }
       }
 
       // Check usage limits
@@ -6263,14 +6279,27 @@ Use clear structure only when the content genuinely needs it. Otherwise, just ta
       const { topic, subject, language, learningStyle, studyPreference, focusDuration, planningStyle, practiceMethod } = req.body;
       const isAfrikaans = language === 'afrikaans';
 
+      // Same carve-outs as the tutor ask gate: admins and demo accounts pass,
+      // and a never-subscribed learner gets trial copy rather than being told
+      // a subscription they never had lapsed.
       const isActive = await storage.hasActiveSubscription(userId);
       if (!isActive) {
-        return res.status(402).json({
-          error: "subscription_required",
-          message: isAfrikaans
-            ? "Aktiewe intekening vereis vir AI-aantekeninge."
-            : "An active Brain Boost subscription is required for AI study notes.",
-        });
+        const notesUser = await authStorage.getUser(userId);
+        const notesBypass = notesUser?.role === "admin" || (notesUser as any)?.isDemo === true;
+        if (!notesBypass) {
+          const notesSub = await storage.getSubscription(userId);
+          return res.status(402).json({
+            error: "subscription_required",
+            reason: notesSub ? "expired" : "trial_needed",
+            message: !notesSub
+              ? (isAfrikaans
+                  ? "Begin jou gratis proeftydperk om KI-aantekeninge te gebruik."
+                  : "Start your free trial to use AI study notes.")
+              : (isAfrikaans
+                  ? "Aktiewe intekening vereis vir AI-aantekeninge."
+                  : "An active Brain Boost subscription is required for AI study notes."),
+          });
+        }
       }
 
       if (!topic || typeof topic !== 'string' || topic.trim().length < 3) {
