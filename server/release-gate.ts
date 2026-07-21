@@ -37,6 +37,20 @@ import { db } from "./db";
 // so requiring mark coverage at the gate buys us nothing.
 export const MEMO_THRESHOLD_RATIO = 0.60;
 export const MARK_THRESHOLD_RATIO = 0.0;
+
+// ─── Per-question quality release ────────────────────────────────────────────
+// The paper gate above is all-or-nothing, and that throws away good content.
+// Life Sciences 2024 P1 holds 40 cleanly-parsed, memo-backed questions, but
+// because the other 39 never paired a memo the tuple sits near 51% and learners
+// see none of them. Judging each question on its own merit releases those 40
+// and withholds only the 39 that are genuinely deficient.
+//
+// This runs IN ADDITION to the paper gate, never instead of it. A question
+// released this way clears a STRICTER bar than the paper gate applies: it must
+// parse clean, score at least QUESTION_QUALITY_MIN, and carry a real memo.
+// Papers passing wholesale still bring their memo-less questions along, exactly
+// as before, so nothing already live is withdrawn.
+export const QUESTION_QUALITY_MIN = 70;
 // Back-compat exports (kept so other modules / admin UI keep compiling).
 export const RELEASE_THRESHOLD_RATIO = MEMO_THRESHOLD_RATIO;
 export const RELEASE_THRESHOLD_PERCENT = Math.round(MEMO_THRESHOLD_RATIO * 100);
@@ -126,6 +140,14 @@ export async function releaseEligiblePapers(
           AND ${session === null ? sql`session IS NULL` : sql`session = ${session}`}
           AND language = ${row.language}
           AND released_at IS NOT NULL
+          -- Never demote a question that stands on its own quality: it was
+          -- released on its individual merit, not on its paper's average.
+          AND NOT (
+            accuracy_flag = 'clean'
+            AND quality_score >= ${QUESTION_QUALITY_MIN}
+            AND memo_text IS NOT NULL
+            AND length(memo_text) >= 20
+          )
       `);
     }
 
@@ -142,7 +164,34 @@ export async function releaseEligiblePapers(
     });
   }
 
+  await releaseHighQualityQuestions(subjectFilter);
+
   return results;
+}
+
+/**
+ * Release individual questions that are good enough to stand alone, regardless
+ * of how their paper scored as a whole. See QUESTION_QUALITY_MIN above for why
+ * this exists.
+ *
+ * Additive only — this never clears a release stamp.
+ *
+ * @returns how many questions this pass newly released.
+ */
+export async function releaseHighQualityQuestions(
+  subjectFilter?: string
+): Promise<number> {
+  const result = await db.execute(sql`
+    UPDATE dbe_verbatim_questions
+    SET released_at = NOW()
+    WHERE released_at IS NULL
+      AND accuracy_flag = 'clean'
+      AND quality_score >= ${QUESTION_QUALITY_MIN}
+      AND memo_text IS NOT NULL
+      AND length(memo_text) >= 20
+      ${subjectFilter ? sql`AND subject = ${subjectFilter}` : sql``}
+  `);
+  return (result as any).rowCount ?? 0;
 }
 
 /**
