@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { TrendingUp, TrendingDown, Minus, Calendar, Target, Zap } from "lucide-react";
 
 const ACCENT = "#9FD8FF";
-const ACCENT_GLOW = "rgba(159,216,255,0.3)";
 const UP = "#94F7C5";
 const DOWN = "#FF8DA1";
 
@@ -56,7 +55,7 @@ export function YouVsYouChart({ isAf = false }: YouVsYouChartProps) {
     return (
       <div
         className="h-full p-5 flex flex-col items-center justify-center text-center"
-        style={{ background: "rgba(255,255,255,.03)", border: `1.5px solid ${ACCENT}`, borderRadius: 20, boxShadow: `0 0 18px ${ACCENT_GLOW}` }}
+        style={{ background: "rgba(255,255,255,.03)", border: `1.5px solid ${ACCENT}`, borderRadius: 20 }}
       >
         <Target className="w-7 h-7 mb-2" style={{ color: ACCENT }} />
         <p className="text-sm font-semibold text-white">
@@ -80,7 +79,7 @@ export function YouVsYouChart({ isAf = false }: YouVsYouChartProps) {
   return (
     <div
       className="h-full p-5 flex flex-col gap-4"
-      style={{ background: "rgba(255,255,255,.03)", border: `1.5px solid ${ACCENT}`, borderRadius: 20, boxShadow: `0 0 18px ${ACCENT_GLOW}` }}
+      style={{ background: "rgba(255,255,255,.03)", border: `1.5px solid ${ACCENT}`, borderRadius: 20 }}
       data-testid="you-vs-you-chart"
     >
       <div className="flex items-center justify-between gap-3">
@@ -99,7 +98,7 @@ export function YouVsYouChart({ isAf = false }: YouVsYouChartProps) {
             <div
               key={labelEn}
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl"
-              style={{ background: "rgba(255,255,255,.03)", border: `1px solid ${hex}55`, boxShadow: `0 0 10px ${hex}26` }}
+              style={{ background: "rgba(255,255,255,.03)", border: `1px solid ${hex}55` }}
             >
               <div
                 className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"

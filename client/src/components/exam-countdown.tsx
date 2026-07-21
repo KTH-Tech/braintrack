@@ -106,7 +106,6 @@ export function CountdownDigits({
         style={{
           fontFamily: '"JetBrains Mono", "Sora", monospace',
           color: hex,
-          textShadow: `0 0 10px ${hex}66`,
         }}
       >
         {days}

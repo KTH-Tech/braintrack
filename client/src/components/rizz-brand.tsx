@@ -23,7 +23,7 @@ export const RIZZ = {
 
 export const RIZZ_RAINBOW =
   "linear-gradient(95deg,#FF7EC6,#FFD166,#94F7C5,#6EE7F9,#B388FF,#FF7EC6)";
-// User → aqua→purple gradient; header/CTA glow → purple→pink.
+// User → aqua→purple gradient; header/CTA → purple→pink.
 export const RIZZ_USER_GRADIENT = "linear-gradient(100deg,#6EE7F9,#B388FF)";
 export const RIZZ_HEADER_GRADIENT = "linear-gradient(100deg,#B388FF,#FF7EC6)";
 
@@ -40,24 +40,24 @@ export type RizzExpression =
   | "sleepy"
   | "party";
 
-// We ship two portrait assets; expression is conveyed through the glow colour +
+// We ship two portrait assets; expression is conveyed through the ring colour +
 // an inline bt-* animation treatment layered over the avatar.
 const EXPRESSION_STYLE: Record<
   RizzExpression,
-  { glow: string; ring: string; anim: string }
+  { ring: string; anim: string }
 > = {
-  happy: { glow: RIZZ.mint, ring: RIZZ.purple, anim: "bt-rizz-bob 4.5s ease-in-out infinite" },
-  excited: { glow: RIZZ.pink, ring: RIZZ.pink, anim: "bt-rizz-pop 1.4s ease-in-out infinite" },
-  focused: { glow: RIZZ.cyan, ring: RIZZ.cyan, anim: "none" },
-  thinking: { glow: RIZZ.purple, ring: RIZZ.purple, anim: "bt-rizz-think 1.8s ease-in-out infinite" },
-  cheeky: { glow: RIZZ.yellow, ring: RIZZ.pink, anim: "bt-rizz-tilt 3.5s ease-in-out infinite" },
-  surprised: { glow: RIZZ.yellow, ring: RIZZ.yellow, anim: "bt-rizz-pop 1.4s ease-in-out infinite" },
-  sleepy: { glow: RIZZ.purple, ring: RIZZ.purple, anim: "bt-rizz-breathe 5s ease-in-out infinite" },
-  party: { glow: RIZZ.pink, ring: RIZZ.mint, anim: "bt-rizz-party 1.2s ease-in-out infinite" },
+  happy: { ring: RIZZ.purple, anim: "bt-rizz-bob 4.5s ease-in-out infinite" },
+  excited: { ring: RIZZ.pink, anim: "bt-rizz-pop 1.4s ease-in-out infinite" },
+  focused: { ring: RIZZ.cyan, anim: "none" },
+  thinking: { ring: RIZZ.purple, anim: "bt-rizz-think 1.8s ease-in-out infinite" },
+  cheeky: { ring: RIZZ.pink, anim: "bt-rizz-tilt 3.5s ease-in-out infinite" },
+  surprised: { ring: RIZZ.yellow, anim: "bt-rizz-pop 1.4s ease-in-out infinite" },
+  sleepy: { ring: RIZZ.purple, anim: "bt-rizz-breathe 5s ease-in-out infinite" },
+  party: { ring: RIZZ.mint, anim: "bt-rizz-party 1.2s ease-in-out infinite" },
 };
 
 /**
- * Rizz's face — an avatar with an expression-driven glow ring and micro-motion.
+ * Rizz's face — an avatar with an expression-driven ring colour and micro-motion.
  * Pass `mascot` to use the full-body mascot art instead of the head crop.
  */
 export function RizzFace({
@@ -85,7 +85,6 @@ export function RizzFace({
         borderRadius: r,
         objectFit: "cover",
         border: `2px solid ${e.ring}`,
-        boxShadow: `0 0 18px ${e.glow}66`,
         // Inline "bt-" keeps this exempt from the global animation kill-switch.
         animation: e.anim,
         flex: "none",

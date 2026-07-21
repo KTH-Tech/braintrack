@@ -65,7 +65,7 @@ export default function SchoolOnboardingPage() {
       <div className="min-h-screen flex items-center justify-center px-4 py-12">
         <Card className="max-w-lg w-full text-center">
           <CardContent className="pt-10 pb-10 space-y-5">
-            <CheckCircle className="w-16 h-16 mx-auto text-green-400" style={{ filter: "drop-shadow(0 0 12px rgba(74,222,128,0.6))" }} />
+            <CheckCircle className="w-16 h-16 mx-auto text-green-400" />
             <h2 className="text-2xl font-bold text-foreground">
               {isAf ? "Dankie!" : "Thank you!"}
             </h2>

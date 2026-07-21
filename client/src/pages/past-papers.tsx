@@ -362,7 +362,7 @@ export default function PastPapersPage() {
         {/* ── Hero ─────────────────────────────────────────────────── */}
         <section className="relative space-y-3 mb-8" style={{ animation: "bt-fadeup .5s both" }}>
           <div className="inline-flex items-center gap-2">
-            <FileText className="w-4 h-4" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px #9FF5E8)" }} />
+            <FileText className="w-4 h-4" style={{ color: "#9FF5E8" }} />
             <span style={marker("#9FF5E8", 16)}>{text.heroHype}</span>
           </div>
           <div
@@ -404,7 +404,7 @@ export default function PastPapersPage() {
           {/* ── Official / Exam Patterns tab ────────────────────────── */}
           <TabsContent value="official" className="space-y-6">
             <div className="p-4 flex items-start gap-3" style={accentCard("#9FD8FF")}>
-              <Sparkles className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: "#9FD8FF", filter: "drop-shadow(0 0 5px #9FD8FF)" }} />
+              <Sparkles className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: "#9FD8FF" }} />
               <div>
                 <p className="text-sm text-white font-semibold">{text.disclaimer}</p>
                 <p className="text-xs text-white mt-1" style={{ opacity: 0.9 }}>{text.legalNote}</p>
@@ -562,7 +562,7 @@ export default function PastPapersPage() {
                 ) : (
                   <div className="h-full flex items-center justify-center p-6" style={CARD}>
                     <div className="text-center py-12">
-                      <Target className="w-12 h-12 mx-auto mb-4" style={{ color: "#9FD8FF", filter: "drop-shadow(0 0 8px rgba(159,216,255,.5))" }} />
+                      <Target className="w-12 h-12 mx-auto mb-4" style={{ color: "#9FD8FF" }} />
                       <span style={marker("#9FD8FF", 16)}>{text.selectSubject}</span>
                     </div>
                   </div>
@@ -614,7 +614,7 @@ export default function PastPapersPage() {
                   <div className="space-y-4">
                     <div className="p-6" style={accentCard("#94F7C5")}>
                       <div className="flex items-center gap-2 mb-4">
-                        <Sparkles className="w-5 h-5" style={{ color: "#94F7C5", filter: "drop-shadow(0 0 5px #94F7C5)" }} />
+                        <Sparkles className="w-5 h-5" style={{ color: "#94F7C5" }} />
                         <div role="heading" aria-level={2} className="font-black text-white">{text.mustKnow}</div>
                       </div>
                       <div className="flex flex-wrap gap-2">
@@ -626,7 +626,7 @@ export default function PastPapersPage() {
 
                     <div className="p-6" style={accentCard("#FFE29A")}>
                       <div className="flex items-center gap-2 mb-4">
-                        <Calendar className="w-5 h-5" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 5px #FFE29A)" }} />
+                        <Calendar className="w-5 h-5" style={{ color: "#FFE29A" }} />
                         <div role="heading" aria-level={2} className="font-black text-white">{text.highFreq}</div>
                       </div>
                       <div className="flex flex-wrap gap-2">
@@ -638,7 +638,7 @@ export default function PastPapersPage() {
 
                     <div className="p-6" style={accentCard("#9FD8FF")}>
                       <div className="flex items-center gap-2 mb-3">
-                        <GraduationCap className="w-5 h-5" style={{ color: "#9FD8FF", filter: "drop-shadow(0 0 5px #9FD8FF)" }} />
+                        <GraduationCap className="w-5 h-5" style={{ color: "#9FD8FF" }} />
                         <div role="heading" aria-level={2} className="font-black text-white">{text.examTips}</div>
                       </div>
                       <p className="text-white">{patterns.tips}</p>
@@ -647,7 +647,7 @@ export default function PastPapersPage() {
                 ) : (
                   <div className="h-full flex items-center justify-center p-6" style={CARD}>
                     <div className="text-center py-12">
-                      <Sparkles className="w-12 h-12 mx-auto mb-4" style={{ color: "#FFB7E5", filter: "drop-shadow(0 0 8px rgba(255,183,229,.5))" }} />
+                      <Sparkles className="w-12 h-12 mx-auto mb-4" style={{ color: "#FFB7E5" }} />
                       <span style={marker("#FFB7E5", 16)}>{text.selectSubject}</span>
                     </div>
                   </div>
@@ -673,7 +673,7 @@ export default function PastPapersPage() {
             </div>
 
             <div className="p-4 flex items-start gap-3 mb-6" style={accentCard("#94F7C5")}>
-              <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: "#94F7C5", filter: "drop-shadow(0 0 5px #94F7C5)" }} />
+              <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: "#94F7C5" }} />
               <div>
                 <p className="text-sm font-bold text-white">
                   {language === "af" ? "Wetlik Voldoen" : "Legally Compliant"}
@@ -869,7 +869,7 @@ export default function PastPapersPage() {
               ].map(({ hex, Icon, InnerIcon, title, source, body, how }, i) => (
                 <div key={i} className="p-6" style={accentCard(hex)}>
                   <div className="flex items-center gap-2">
-                    <Icon className="w-6 h-6" style={{ color: hex, filter: `drop-shadow(0 0 6px ${hex})` }} />
+                    <Icon className="w-6 h-6" style={{ color: hex }} />
                     <div role="heading" aria-level={3} className="font-black text-white">{title}</div>
                   </div>
                   <p className="text-xs mt-1" style={{ color: hex }}>{source}</p>

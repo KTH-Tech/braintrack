@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Award, Trophy, TrendingUp } from "lucide-react";
 
 const ACCENT = "#FFE29A";
-const ACCENT_GLOW = "rgba(255,226,154,0.3)";
 
 /* Canonical band colours (street-pastel-anchored) */
 function scorePastel(score: number) {
@@ -56,7 +55,7 @@ export function PersonalBestsWidget({ isAf = false }: PersonalBestsWidgetProps) 
     return (
       <div
         className="h-full p-6 text-center flex flex-col items-center justify-center"
-        style={{ background: "rgba(255,255,255,.03)", border: `1.5px solid ${ACCENT}`, borderRadius: 20, boxShadow: `0 0 18px ${ACCENT_GLOW}` }}
+        style={{ background: "rgba(255,255,255,.03)", border: `1.5px solid ${ACCENT}`, borderRadius: 20 }}
       >
         <Trophy className="w-8 h-8 mx-auto mb-2" style={{ color: ACCENT }} />
         <p className="text-sm text-white font-semibold">
@@ -73,7 +72,7 @@ export function PersonalBestsWidget({ isAf = false }: PersonalBestsWidgetProps) 
   return (
     <div
       className="h-full p-4 flex flex-col gap-2"
-      style={{ background: "rgba(255,255,255,.03)", border: `1.5px solid ${ACCENT}`, borderRadius: 20, boxShadow: `0 0 18px ${ACCENT_GLOW}` }}
+      style={{ background: "rgba(255,255,255,.03)", border: `1.5px solid ${ACCENT}`, borderRadius: 20 }}
       data-testid="personal-bests-widget"
     >
       {topBests.map((pb, index) => {
@@ -87,7 +86,6 @@ export function PersonalBestsWidget({ isAf = false }: PersonalBestsWidgetProps) 
             style={{
               background: "rgba(255,255,255,.03)",
               border: `1px solid ${hex}55`,
-              boxShadow: `0 0 10px ${hex}26`,
             }}
             data-testid={`personal-best-${pb.subject_code}`}
           >
@@ -113,7 +111,6 @@ export function PersonalBestsWidget({ isAf = false }: PersonalBestsWidgetProps) 
                     style={{
                       width: `${pb.highest_score}%`,
                       background: `linear-gradient(90deg,${hex},${hex2})`,
-                      boxShadow: `0 0 8px ${hex}40`,
                     }}
                   />
                 </div>

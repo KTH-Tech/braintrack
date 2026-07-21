@@ -320,7 +320,7 @@ export default function DbePracticePage() {
         {/* ── Hero ──────────────────────────────────────────────── */}
         <section style={{ animation: "bt-fadeup .5s both" }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-            <BookOpen style={{ width: 15, height: 15, color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }} />
+            <BookOpen style={{ width: 15, height: 15, color: "#FFE29A" }} />
             <span
               style={{
                 fontFamily: "'Permanent Marker',cursive",
@@ -374,7 +374,7 @@ export default function DbePracticePage() {
               textAlign: "center",
             }}
           >
-            <BookOpen style={{ width: 48, height: 48, margin: "0 auto 12px", color: "#FFE29A", filter: "drop-shadow(0 0 10px rgba(255,226,154,.5))" }} />
+            <BookOpen style={{ width: 48, height: 48, margin: "0 auto 12px", color: "#FFE29A" }} />
             <div role="heading" aria-level={2} style={{ fontSize: 18, fontWeight: 900, color: "#fff" }}>
               {isAf ? "Geen vrae beskikbaar nie." : "No questions available."}
             </div>

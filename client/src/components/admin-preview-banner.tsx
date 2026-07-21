@@ -32,14 +32,13 @@ export function AdminPreviewBanner() {
       className="fixed top-0 left-0 right-0 z-[100] bg-black px-4 py-2 flex items-center justify-between gap-3"
       style={{
         borderBottom: "1px solid #FFE29A",
-        boxShadow: "0 0 16px rgba(255,226,154,0.35)",
       }}
       data-testid="admin-preview-banner"
     >
       <div className="flex items-center gap-2 min-w-0">
         <Eye
           className="w-4 h-4 shrink-0"
-          style={{ color: "#FFE29A", filter: "drop-shadow(0 0 6px #FFE29A)" }}
+          style={{ color: "#FFE29A" }}
         />
         <span
           className="text-[10px] sm:text-xs font-black uppercase tracking-[0.18em] truncate"
@@ -57,7 +56,6 @@ export function AdminPreviewBanner() {
         style={{
           border: "1px solid #FFE29A",
           color: "#FFE29A",
-          boxShadow: "0 0 10px rgba(255,226,154,0.3)",
         }}
         data-testid="button-exit-preview"
       >

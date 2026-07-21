@@ -90,7 +90,7 @@ export function BadgePopup({ badgeCode, isAf = false, onDismiss }: BadgePopupPro
           <motion.div
             className="pointer-events-auto relative rounded-3xl border border-white/20 bg-background/95 shadow-2xl p-8 flex flex-col items-center gap-4 max-w-sm mx-4"
             style={{
-              boxShadow: `0 0 40px 8px ${info.glow}, 0 8px 32px rgba(0,0,0,0.4)`,
+              boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
             }}
           >
             <button

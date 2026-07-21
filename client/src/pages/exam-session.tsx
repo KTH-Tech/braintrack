@@ -418,7 +418,7 @@ export default function ExamSessionPage() {
                 className="mx-auto w-16 h-16 rounded-2xl flex items-center justify-center"
                 style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #FFE29A" }}
               >
-                <AlertCircle className="w-8 h-8" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 8px #FFE29A)" }} />
+                <AlertCircle className="w-8 h-8" style={{ color: "#FFE29A" }} />
               </div>
               <div role="heading" aria-level={1} className="text-xl font-black text-white">
                 {isAf ? "Vraestel nie beskikbaar nie" : "Paper not available"}
@@ -466,7 +466,7 @@ export default function ExamSessionPage() {
             <div aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: "linear-gradient(90deg,#FFE29A,#94F7C5,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)" }} />
             <div className="space-y-5">
               <div className="inline-flex items-center gap-2">
-                <Shield className="w-4 h-4" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px #9FF5E8)" }} />
+                <Shield className="w-4 h-4" style={{ color: "#9FF5E8" }} />
                 <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}>
                   {isAf ? "Eksamentyd" : "Crunch Time"}
                 </span>
@@ -681,7 +681,7 @@ export default function ExamSessionPage() {
                   className="mx-auto w-16 h-16 rounded-2xl flex items-center justify-center"
                   style={{ background: "rgba(5,5,8,.6)", border: `1.5px solid ${band.hex}` }}
                 >
-                  <Trophy className="w-8 h-8" style={{ color: band.hex, filter: `drop-shadow(0 0 8px ${band.hex})` }} />
+                  <Trophy className="w-8 h-8" style={{ color: band.hex }} />
                 </div>
                 <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 18, color: band.hex, transform: "rotate(-1.5deg)" }}>
                   {isAf ? "Eksamen Voltooi!" : "Exam Complete!"}

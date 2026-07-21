@@ -540,12 +540,21 @@ function RoleSelectRoute({ children }: { children: React.ReactNode }) {
 }
 
 function OnboardingRoute({ children }: { children: React.ReactNode }) {
-  const { isLoading, isAuthenticated } = useAuth();
+  const { isLoading, isAuthenticated, user } = useAuth();
 
   const { data: onboardingComplete, isLoading: onboardingLoading } = useQuery<boolean>({
     queryKey: ["/api/user/onboarding-status"],
     enabled: isAuthenticated,
   });
+
+  // Admin-only onboarding preview (/onboarding?preview=1): the completed-
+  // onboarding redirect below would bounce an admin to /dashboard before a
+  // single phase rendered. In preview the page itself disarms every mutation
+  // (see client/src/lib/onboarding-preview.ts), so letting an admin through is
+  // write-safe by construction. Non-admins with the flag keep the normal guard.
+  const adminPreview =
+    user?.role === "admin" &&
+    new URLSearchParams(window.location.search).get("preview") === "1";
 
   if (isLoading || onboardingLoading) return <PageLoader />;
 
@@ -554,7 +563,7 @@ function OnboardingRoute({ children }: { children: React.ReactNode }) {
     return null;
   }
 
-  if (onboardingComplete) {
+  if (onboardingComplete && !adminPreview) {
     window.location.href = "/dashboard";
     return null;
   }

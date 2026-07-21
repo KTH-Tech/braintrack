@@ -74,10 +74,9 @@ export function MarkingFeedback({
       style={{
         background: "rgba(255,255,255,.03)",
         border: `1.5px solid ${accentHex}`,
-        boxShadow: `0 0 22px ${halo(accentHex, 0.22)}`,
       }}
     >
-      <div aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: accentHex, boxShadow: `0 0 10px ${accentHex}` }} />
+      <div aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: accentHex }} />
 
       <div className="flex items-start justify-between gap-3 flex-wrap">
         <div>

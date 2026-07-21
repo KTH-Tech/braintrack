@@ -857,7 +857,6 @@ export default function BSTExamPage() {
                 <div
                   className="text-6xl sm:text-7xl font-bold text-foreground tabular-nums"
                   data-testid="text-score-percentage"
-                  style={{ textShadow: "0 0 30px hsl(var(--primary) / 0.4)" }}
                 >
                   {examResult.percentage}%
                 </div>

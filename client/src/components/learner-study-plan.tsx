@@ -4,11 +4,11 @@ import { ChevronRight, Target, TrendingUp, ShieldCheck, Rocket, AlertTriangle } 
 import { calcReadiness, readinessBand } from "@/lib/readiness";
 import type { DailyDirective } from "@/types/daily-directive";
 
-const URGENCY_HEX: Record<string, { hex: string; halo: string }> = {
-  final_sprint:     { hex: "#FFB7E5", halo: "rgba(255,183,229,0.3)" },
-  exam_prep_mode:   { hex: "#FFE29A", halo: "rgba(255,226,154,0.3)" },
-  focused_revision: { hex: "#FFE29A", halo: "rgba(255,226,154,0.3)" },
-  build_mastery:    { hex: "#C5B3FF", halo: "rgba(197,179,255,0.3)" },
+const URGENCY_HEX: Record<string, { hex: string }> = {
+  final_sprint:     { hex: "#FFB7E5" },
+  exam_prep_mode:   { hex: "#FFE29A" },
+  focused_revision: { hex: "#FFE29A" },
+  build_mastery:    { hex: "#C5B3FF" },
 };
 
 interface WeakTopic {
@@ -37,10 +37,10 @@ interface StudyPlanProps {
   isAf: boolean;
 }
 
-const BAND_PASTEL: Record<string, { hex: string; glow: string }> = {
-  red:   { hex: "#FF8DA1", glow: "rgba(255,141,161,0.3)" },
-  amber: { hex: "#FFE29A", glow: "rgba(255,226,154,0.3)" },
-  green: { hex: "#94F7C5", glow: "rgba(148,247,197,0.3)" },
+const BAND_PASTEL: Record<string, { hex: string }> = {
+  red:   { hex: "#FF8DA1" },
+  amber: { hex: "#FFE29A" },
+  green: { hex: "#94F7C5" },
 };
 
 function bandPastel(band: string) {
@@ -52,7 +52,7 @@ function BandDot({ band }: { band: string }) {
   return (
     <span
       className="inline-block w-2.5 h-2.5 rounded-full shrink-0"
-      style={{ background: n.hex, boxShadow: `0 0 8px ${n.glow}` }}
+      style={{ background: n.hex }}
     />
   );
 }
@@ -124,7 +124,6 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
         background: "rgba(255,255,255,.03)",
         border: `1.5px solid ${ACCENT}`,
         borderRadius: 20,
-        boxShadow: "0 0 22px rgba(159,245,232,0.28)",
       }}
     >
       {/* rainbow hairline */}
@@ -158,13 +157,12 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
               style={{
                 background: "rgba(255,255,255,.03)",
                 border: `1.5px solid ${u.hex}`,
-                boxShadow: `0 0 22px ${u.halo}`,
               }}
             >
               <div className="flex items-start gap-3">
                 <div
                   className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ background: `${u.hex}26`, boxShadow: `0 0 14px ${u.halo}` }}
+                  style={{ background: `${u.hex}26` }}
                 >
                   {directive.isExamToday ? (
                     <AlertTriangle className="w-5 h-5" style={{ color: u.hex }} />
@@ -247,7 +245,6 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
               className="w-12 h-12 mx-auto mb-3 rounded-2xl flex items-center justify-center"
               style={{
                 background: "rgba(148,247,197,.16)",
-                boxShadow: "0 0 14px rgba(148,247,197,0.3)",
               }}
             >
               <TrendingUp className="w-6 h-6" style={{ color: "#94F7C5" }} />
@@ -271,7 +268,6 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
                 style={{
                   background: "rgba(255,255,255,.03)",
                   border: `1px solid ${pastel.hex}55`,
-                  boxShadow: `0 0 12px ${pastel.glow}`,
                 }}
               >
                 <div
@@ -279,7 +275,6 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
                   style={{
                     background: `${pastel.hex}26`,
                     color: pastel.hex,
-                    boxShadow: `0 0 8px ${pastel.glow}`,
                   }}
                 >
                   {idx + 1}
@@ -338,7 +333,6 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
                 style={{
                   background: `${overallPastel.hex}1F`,
                   border: `1px solid ${overallPastel.hex}`,
-                  boxShadow: `0 0 8px ${overallPastel.glow}`,
                   color: overallPastel.hex,
                 }}
               >
@@ -360,7 +354,6 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
                       style={{
                         background: `${n.hex}14`,
                         border: `1px solid ${n.hex}`,
-                        boxShadow: `0 0 8px ${n.glow}`,
                         color: "#ffffff",
                       }}
                     >

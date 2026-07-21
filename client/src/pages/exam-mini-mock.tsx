@@ -120,7 +120,7 @@ function StreetShell({ isAf, eyebrow, onExit, children }: {
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-14 gap-4">
             <div className="flex items-center gap-2 min-w-0">
-              <Zap className="w-4 h-4 shrink-0" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px #9FF5E8)" }} />
+              <Zap className="w-4 h-4 shrink-0" style={{ color: "#9FF5E8" }} />
               <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}>
                 Mini Mock
               </span>
@@ -401,7 +401,7 @@ export default function ExamMiniMockPage() {
               className="mx-auto w-16 h-16 rounded-2xl flex items-center justify-center"
               style={{ background: "rgba(5,5,8,.6)", border: `1.5px solid ${gradeHex}` }}
             >
-              <Trophy className="w-8 h-8" style={{ color: gradeHex, filter: `drop-shadow(0 0 8px ${gradeHex})` }} />
+              <Trophy className="w-8 h-8" style={{ color: gradeHex }} />
             </div>
             <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 18, color: gradeHex, transform: "rotate(-1.5deg)" }}>
               {isAf ? "Mini Mock voltooi!" : "Mini Mock complete!"}
@@ -617,7 +617,7 @@ export default function ExamMiniMockPage() {
       {/* Hero */}
       <section style={{ animation: "bt-fadeup .5s cubic-bezier(.22,1,.36,1) both" }}>
         <div className="inline-flex items-center gap-2 mb-3">
-          <Brain className="w-4 h-4" style={{ color: "#FFB7E5", filter: "drop-shadow(0 0 4px #FFB7E5)" }} />
+          <Brain className="w-4 h-4" style={{ color: "#FFB7E5" }} />
           <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
             {isAf ? "Toets jouself" : "Test yourself"}
           </span>

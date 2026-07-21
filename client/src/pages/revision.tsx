@@ -229,7 +229,7 @@ export default function RevisionPage() {
           </Link>
           <div className="flex-1" />
           <div className="flex items-center gap-2 min-w-0">
-            <RotateCcw className="w-4 h-4 shrink-0" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px #9FF5E8)" }} />
+            <RotateCcw className="w-4 h-4 shrink-0" style={{ color: "#9FF5E8" }} />
             <span className="truncate" style={marker("#9FF5E8")}>
               {isAf ? "Hersiening" : "Revision Mode"}
             </span>
@@ -471,7 +471,7 @@ export default function RevisionPage() {
             <div className="p-10 text-center">
               {error ? (
                 <>
-                  <AlertCircle className="w-16 h-16 mx-auto mb-4" style={{ color: "#FF8DA1", filter: "drop-shadow(0 0 8px #FF8DA1)" }} />
+                  <AlertCircle className="w-16 h-16 mx-auto mb-4" style={{ color: "#FF8DA1" }} />
                   <div role="heading" aria-level={2} className="text-xl font-extrabold text-white mb-2">
                     {isAf ? "Kon nie vrae laai nie" : "Could not load questions"}
                   </div>
@@ -483,7 +483,7 @@ export default function RevisionPage() {
                 </>
               ) : (
                 <>
-                  <CheckCircle2 className="w-16 h-16 mx-auto mb-4" style={{ color: "#94F7C5", filter: "drop-shadow(0 0 8px #94F7C5)" }} />
+                  <CheckCircle2 className="w-16 h-16 mx-auto mb-4" style={{ color: "#94F7C5" }} />
                   <span className="block mb-2" style={marker("#94F7C5", 17)}>
                     {isAf ? "Sterk gedaan! 💪" : "You're crushing it! 💪"}
                   </span>
@@ -527,7 +527,7 @@ export default function RevisionPage() {
                   animation: "bt-float 3s ease-in-out infinite",
                 }}
               >
-                <Trophy className="w-10 h-10" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 8px #FFE29A)" }} />
+                <Trophy className="w-10 h-10" style={{ color: "#FFE29A" }} />
               </div>
               <div>
                 <p className="text-4xl font-black" style={rainbowText}>{scorePct}%</p>

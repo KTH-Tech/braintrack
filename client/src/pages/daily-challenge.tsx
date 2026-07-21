@@ -469,7 +469,7 @@ export default function DailyChallengePage() {
               data-testid="text-challenge-streak"
               title={isAf ? "Reeks" : "Streak"}
             >
-              <Flame className="w-4 h-4" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }} />
+              <Flame className="w-4 h-4" style={{ color: "#FFE29A" }} />
               <span className="text-sm font-extrabold tabular-nums" style={{ color: "#FFE29A" }}>
                 {streak}
                 <span className="hidden sm:inline">&nbsp;{isAf ? "dae" : "days"}</span>
@@ -783,7 +783,7 @@ function ResultsView({
                 animation: "bt-float 3s ease-in-out infinite",
               }}
             >
-              <GradeIcon className="w-10 h-10" style={{ color: grade.hex, filter: `drop-shadow(0 0 8px ${grade.hex})` }} />
+              <GradeIcon className="w-10 h-10" style={{ color: grade.hex }} />
             </div>
             <div
               role="heading"
@@ -877,7 +877,7 @@ function ResultsView({
       {history.length > 0 && (
         <div className="space-y-3" style={{ animation: "bt-fadeup .5s .1s both" }}>
           <div role="heading" aria-level={3} className="text-lg font-extrabold text-white px-1 flex items-center gap-2" data-testid="text-history-heading">
-            <Flame className="w-5 h-5" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }} />
+            <Flame className="w-5 h-5" style={{ color: "#FFE29A" }} />
             {isAf ? (
               <>
                 Jou <span style={rainbowText}>reeks</span>

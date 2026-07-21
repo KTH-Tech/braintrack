@@ -952,7 +952,7 @@ export default function ExamModePage() {
               textAlign: "center",
             }}
           >
-            <GraduationCap style={{ width: 58, height: 58, margin: "0 auto 14px", color: "#FFE29A", filter: "drop-shadow(0 0 10px rgba(255,226,154,.5))" }} />
+            <GraduationCap style={{ width: 58, height: 58, margin: "0 auto 14px", color: "#FFE29A" }} />
             <div role="heading" aria-level={2} style={{ fontSize: 22, fontWeight: 900, color: "#fff" }}>
               {t.noSubjectsMsg}
             </div>

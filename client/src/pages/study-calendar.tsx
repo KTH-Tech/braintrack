@@ -31,19 +31,19 @@ const DAYS_SHORT_AF = ["Maa","Din","Woe","Don","Vry","Sat","Son"];
 /* Guideline pastel set — every hex is a stop in the BrainTrack street rainbow.
    `text` is the same pastel hex: accent text is always a pure pastel, never a
    muted/grey mix (No-grey rule). */
-const NEON: Record<string, { hex: string; glow: string; text: string }> = {
-  blue:   { hex: "#9FD8FF", glow: "rgba(159,216,255,0.45)", text: "#9FD8FF" },
-  cyan:   { hex: "#9FF5E8", glow: "rgba(159,245,232,0.45)", text: "#9FF5E8" },
-  green:  { hex: "#94F7C5", glow: "rgba(148,247,197,0.45)", text: "#94F7C5" },
-  gold:   { hex: "#FFE29A", glow: "rgba(255,226,154,0.50)", text: "#FFE29A" },
-  orange: { hex: "#FFE29A", glow: "rgba(255,226,154,0.50)", text: "#FFE29A" },
+const NEON: Record<string, { hex: string; text: string }> = {
+  blue:   { hex: "#9FD8FF", text: "#9FD8FF" },
+  cyan:   { hex: "#9FF5E8", text: "#9FF5E8" },
+  green:  { hex: "#94F7C5", text: "#94F7C5" },
+  gold:   { hex: "#FFE29A", text: "#FFE29A" },
+  orange: { hex: "#FFE29A", text: "#FFE29A" },
   /* legacy alias — second cyan slot kept for compile compatibility */
-  cyan2:  { hex: "#6EE7F9", glow: "rgba(110,231,249,0.45)", text: "#6EE7F9" },
-  pink:   { hex: "#FFB7E5", glow: "rgba(255,183,229,0.50)", text: "#FFB7E5" },
-  red:    { hex: "#FF8DA1", glow: "rgba(255,141,161,0.50)", text: "#FF8DA1" },
-  teal:   { hex: "#9FF5E8", glow: "rgba(159,245,232,0.40)", text: "#9FF5E8" },
-  lime:   { hex: "#94F7C5", glow: "rgba(148,247,197,0.50)", text: "#94F7C5" },
-  violet: { hex: "#C5B3FF", glow: "rgba(197,179,255,0.50)", text: "#C5B3FF" },
+  cyan2:  { hex: "#6EE7F9", text: "#6EE7F9" },
+  pink:   { hex: "#FFB7E5", text: "#FFB7E5" },
+  red:    { hex: "#FF8DA1", text: "#FF8DA1" },
+  teal:   { hex: "#9FF5E8", text: "#9FF5E8" },
+  lime:   { hex: "#94F7C5", text: "#94F7C5" },
+  violet: { hex: "#C5B3FF", text: "#C5B3FF" },
 };
 
 const SUBJECT_NEON_MAP: Record<string, keyof typeof NEON> = {
@@ -114,11 +114,11 @@ function urgencyBand(daysLeft: number): UrgencyBand {
   return "sprint";
 }
 
-const URGENCY_LABEL: Record<UrgencyBand, { en: string; af: string; color: string; glow: string }> = {
-  build:   { en: "Build Mastery",      af: "Bou Vaardigheid",     color: "#C5B3FF", glow: "rgba(197,179,255,0.55)" },
-  focused: { en: "Focused Revision",   af: "Gefokusde Herhaling", color: "#FFE29A", glow: "rgba(255,226,154,0.55)"  },
-  prep:    { en: "Exam Prep Mode",     af: "Eksamenvoorbereiding",color: "#FFE29A", glow: "rgba(255,226,154,0.55)"  },
-  sprint:  { en: "Final Sprint",       af: "Finale Sprint",       color: "#FFB7E5", glow: "rgba(255,183,229,0.55)"  },
+const URGENCY_LABEL: Record<UrgencyBand, { en: string; af: string; color: string }> = {
+  build:   { en: "Build Mastery",      af: "Bou Vaardigheid",     color: "#C5B3FF" },
+  focused: { en: "Focused Revision",   af: "Gefokusde Herhaling", color: "#FFE29A" },
+  prep:    { en: "Exam Prep Mode",     af: "Eksamenvoorbereiding",color: "#FFE29A" },
+  sprint:  { en: "Final Sprint",       af: "Finale Sprint",       color: "#FFB7E5" },
 };
 
 /* ─── Space background ─────────────────────────────────────────────────── */
@@ -643,7 +643,7 @@ export default function StudyCalendarPage() {
           />
           <div className="relative text-center py-10 sm:py-14">
             <div className="inline-flex items-center gap-2 mb-5">
-              <CalendarDays className="w-4 h-4" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px #9FF5E8)" }} />
+              <CalendarDays className="w-4 h-4" style={{ color: "#9FF5E8" }} />
               <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}>
                 {isAf ? "Die Plan" : "The Plan"}
               </span>
@@ -709,7 +709,7 @@ export default function StudyCalendarPage() {
                   display: "flex", alignItems: "center", justifyContent: "center",
                 }}
               >
-                <Rocket className="w-6 h-6" style={{ color: heroUrgencyInfo.color, filter: `drop-shadow(0 0 8px ${heroUrgencyInfo.glow})` }} />
+                <Rocket className="w-6 h-6" style={{ color: heroUrgencyInfo.color }} />
               </div>
               <div>
                 <p style={{ fontFamily: "'Permanent Marker',cursive", color: heroUrgencyInfo.color, fontSize: 16, transform: "rotate(-1.5deg)", display: "inline-block" }}>
@@ -722,7 +722,6 @@ export default function StudyCalendarPage() {
                     backgroundImage: "linear-gradient(90deg,#9FF5E8,#C5B3FF,#FFB7E5)",
                     WebkitBackgroundClip: "text", backgroundClip: "text",
                     color: "transparent", WebkitTextFillColor: "transparent",
-                    filter: "drop-shadow(0 0 10px rgba(197,179,255,0.35))",
                   }}
                 >
                   {heroName}
@@ -740,7 +739,6 @@ export default function StudyCalendarPage() {
                     backgroundImage: `linear-gradient(180deg,#ffffff 0%,${heroUrgencyInfo.color} 55%,${heroUrgencyInfo.color} 100%)`,
                     WebkitBackgroundClip: "text", backgroundClip: "text",
                     color: "transparent", WebkitTextFillColor: "transparent",
-                    filter: `drop-shadow(0 0 18px ${heroUrgencyInfo.glow})`,
                   }}
                 >
                   {heroDays}
@@ -839,7 +837,7 @@ export default function StudyCalendarPage() {
                   className="px-5 py-4 flex items-center gap-2 flex-wrap"
                   style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(197,179,255,0.06)" }}
                 >
-                  <ShieldCheck className="w-4 h-4" style={{ color: "#C5B3FF", filter: "drop-shadow(0 0 6px rgba(197,179,255,0.65))" }} />
+                  <ShieldCheck className="w-4 h-4" style={{ color: "#C5B3FF" }} />
                   <p className="font-bold text-sm" style={{ color:"#ffffff" }}>
                     {isAf ? "Gereedheidstellings" : "Readiness Scores"}
                   </p>
@@ -936,7 +934,7 @@ export default function StudyCalendarPage() {
               className="px-5 py-4 flex items-center gap-2 flex-wrap"
               style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,226,154,0.06)" }}
             >
-              <Sparkles className="w-4 h-4" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 6px rgba(255,226,154,0.65))" }} />
+              <Sparkles className="w-4 h-4" style={{ color: "#FFE29A" }} />
               <p className="font-bold text-sm" style={{ color: "#ffffff" }}>
                 {isAf ? "Hoë-opbrengs Onderwerpe" : "High-Yield Topics"}
               </p>
@@ -1256,7 +1254,7 @@ export default function StudyCalendarPage() {
             <div data-testid="exam-overlay-section">
               <GlassCard neonColor="#C5B3FF" className="overflow-hidden">
                 <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom:"1px solid rgba(255,255,255,0.06)", background:"rgba(197,179,255,0.06)" }}>
-                  <GraduationCap className="w-4 h-4" style={{ color:"#C5B3FF", filter:"drop-shadow(0 0 6px rgba(197,179,255,0.65))" }} />
+                  <GraduationCap className="w-4 h-4" style={{ color:"#C5B3FF" }} />
                   <p className="font-bold text-sm" style={{ color:"#ffffff" }}>
                     {isAf ? "NSC Eksamenrooster Oorleg" : "NSC Exam Calendar Overlay"}
                   </p>
@@ -1267,11 +1265,11 @@ export default function StudyCalendarPage() {
                 <div className="p-5">
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 mb-4">
                     {upcoming.slice(0, 9).map((exam: any, i: number) => {
-                      const urgencyMap: Record<string, { color: string; glow: string }> = {
-                        final_sprint:     { color: "#FFB7E5", glow: "rgba(255,183,229,0.50)" },
-                        exam_prep_mode:   { color: "#FFE29A", glow: "rgba(255,226,154,0.50)" },
-                        focused_revision: { color: "#FFE29A", glow: "rgba(255,226,154,0.50)" },
-                        build_mastery:    { color: "#C5B3FF", glow: "rgba(197,179,255,0.50)" },
+                      const urgencyMap: Record<string, { color: string }> = {
+                        final_sprint:     { color: "#FFB7E5" },
+                        exam_prep_mode:   { color: "#FFE29A" },
+                        focused_revision: { color: "#FFE29A" },
+                        build_mastery:    { color: "#C5B3FF" },
                       };
                       const u = urgencyMap[exam.urgencyState] || urgencyMap.build_mastery;
                       return (
@@ -1522,14 +1520,14 @@ export default function StudyCalendarPage() {
 
                     {isRestDay ? (
                       <div className="text-center py-8">
-                        <Moon className="w-10 h-10 mx-auto mb-2" style={{ color:"#C5B3FF", filter:"drop-shadow(0 0 8px rgba(197,179,255,.5))" }} />
+                        <Moon className="w-10 h-10 mx-auto mb-2" style={{ color:"#C5B3FF" }} />
                         <p className="font-semibold" style={{ color:"#ffffff" }}>
                           {isAf ? "Rusdag — geen druk!" : "Rest day — you've earned it."}
                         </p>
                       </div>
                     ) : day.slots.length === 0 ? (
                       <div className="text-center py-8">
-                        <CheckCircle2 className="w-10 h-10 mx-auto mb-2" style={{ color:"#94F7C5", filter:"drop-shadow(0 0 8px rgba(148,247,197,.5))" }} />
+                        <CheckCircle2 className="w-10 h-10 mx-auto mb-2" style={{ color:"#94F7C5" }} />
                         <p className="font-semibold" style={{ color:"#ffffff" }}>
                           {isAf ? "NSC pouse — gebruik vir inhaalwerk." : "NSC break — use for catch-up."}
                         </p>
@@ -1707,7 +1705,7 @@ export default function StudyCalendarPage() {
               <div className="p-4">
                 {thisWeekExams.length === 0 ? (
                   <div className="py-4 text-center">
-                    <CheckCircle2 className="w-8 h-8 mx-auto mb-2" style={{ color:"#94F7C5", filter:"drop-shadow(0 0 8px rgba(148,247,197,.5))" }} />
+                    <CheckCircle2 className="w-8 h-8 mx-auto mb-2" style={{ color:"#94F7C5" }} />
                     <p style={{ color:"#ffffff", fontSize:"12px" }}>
                       {isAf ? "Geen eksamens hierdie week nie." : "No exams scheduled this week."}
                     </p>
@@ -1752,7 +1750,7 @@ export default function StudyCalendarPage() {
             <GlassCard className="overflow-hidden">
               <div className="px-5 py-4" style={{ borderBottom:"1px solid rgba(255,255,255,0.06)" }}>
                 <div className="flex items-center gap-2">
-                  <BookOpen className="w-4 h-4" style={{ color:"#9FD8FF", filter:"drop-shadow(0 0 5px rgba(159,216,255,.6))" }} />
+                  <BookOpen className="w-4 h-4" style={{ color:"#9FD8FF" }} />
                   <p className="font-bold text-sm" style={{ color:"#ffffff" }}>
                     {isAf ? "Jou Vakke" : "Your Subjects"}
                   </p>
@@ -1807,7 +1805,7 @@ export default function StudyCalendarPage() {
             <GlassCard className="overflow-hidden">
               <div className="px-5 py-4" style={{ borderBottom:"1px solid rgba(255,255,255,0.06)" }}>
                 <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4" style={{ color:"#9FF5E8", filter:"drop-shadow(0 0 5px rgba(159,245,232,.6))" }} />
+                  <Clock className="w-4 h-4" style={{ color:"#9FF5E8" }} />
                   <p className="font-bold text-sm" style={{ color:"#ffffff" }}>
                     {isAf ? "Studietye" : "Study Times"}
                   </p>
@@ -1835,7 +1833,7 @@ export default function StudyCalendarPage() {
             {/* Weekly goals CTA */}
             <div style={{ borderRadius:"20px", padding:"20px", background:"rgba(255,255,255,.03)", border:"1.5px solid #94F7C5" }}>
               <div className="flex items-center gap-2 mb-3">
-                <CheckCircle2 className="w-4 h-4" style={{ color:"#94F7C5", filter:"drop-shadow(0 0 5px rgba(148,247,197,.6))" }} />
+                <CheckCircle2 className="w-4 h-4" style={{ color:"#94F7C5" }} />
                 <p style={{ fontFamily:"'Permanent Marker',cursive", fontSize:"16px", color:"#94F7C5", transform:"rotate(-1.5deg)" }}>
                   {isAf ? "Hierdie week se doel" : "This week's target"}
                 </p>

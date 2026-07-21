@@ -72,7 +72,6 @@ export function ConfettiBurst({ count = 60 }: { count?: number }) {
               height: isRibbon ? size * 2.1 : isCircle ? size : size * 1.15,
               borderRadius: isCircle ? "50%" : isRibbon ? 1 : 2,
               background: color,
-              boxShadow: `0 0 ${Math.round(size * 0.7)}px ${color}66`,
               ["--cx" as any]: `${drift}px`,
               animation: `${keyframe} ${duration.toFixed(2)}s ${easing} ${delay.toFixed(2)}s both`,
             }}

@@ -7,12 +7,18 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { ONBOARDING_QUESTIONS, GRADE_12_SUBJECTS } from "@/lib/constants";
-import { ArrowLeft, ArrowRight, Loader2, Globe, Check, Sparkles, Search } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2, Globe, Check, Sparkles, Search, Eye, RotateCcw } from "lucide-react";
 import iconTransparent from "@/assets/handoff/icon-transparent.png";
 import { GraffitiSplats } from "@/components/graffiti-splats";
 import { type VarkStyle, VARK_STYLES } from "@/lib/vark";
 import { useLanguage } from "@/lib/language-context";
 import { useAuth } from "@/hooks/use-auth";
+import {
+  isOnboardingPreview,
+  createPreviewGate,
+  installPreviewWriteTripwire,
+  ONBOARDING_PREVIEW_SAMPLE,
+} from "@/lib/onboarding-preview";
 
 interface SubjectMark {
   subjectCode: string;
@@ -605,6 +611,10 @@ const BRAND = {
 const CONFETTI_COLORS = [BRAND.pink, BRAND.purple, BRAND.cyan, BRAND.yellow, BRAND.mint];
 const MARKER = "'Permanent Marker',cursive";
 
+// Amber used by every admin preview surface (matches PASTEL.amber on the
+// parent-dashboard preview banner) — the hazard colour of "this is not real".
+const PREVIEW_AMBER = "#FFE29A";
+
 // Rizz's real brand lines — used as step-completion encouragement.
 const RIZZ_LINES = {
   en: [
@@ -810,14 +820,30 @@ export default function OnboardingPage() {
   const isAf = language === "af";
   const t = T[language];
   const { isAuthenticated, user } = useAuth();
+  // ── Admin-only preview mode (?preview=1) ────────────────────────────────
+  // Mirrors the /parent?preview=1 pattern (parent-dashboard.tsx +
+  // server/parent-preview.ts) — but onboarding is a WRITE flow, so instead of
+  // substituting reads, every mutation below is created through
+  // `previewGate.mutation(real, simulated)`: in preview the real network call
+  // is NEVER invoked, and a fetch tripwire additionally blocks any write to
+  // /api/* that might slip past the gate. Reads (school search) stay live —
+  // they're harmless and keep the preview realistic. A non-admin who adds
+  // ?preview=1 by hand gets `inPreview === false` and the completely normal
+  // flow. See client/src/lib/onboarding-preview.ts for the full contract.
+  const inPreview = isOnboardingPreview(
+    user?.role,
+    typeof window !== "undefined" ? window.location.search : "",
+  );
   // Prefill first name / surname from the authenticated user if we don't have
   // a value yet (persisted draft or fresh). Does not clobber user edits.
+  // Skipped in preview — the admin's own name appearing in the identity step
+  // would blur the "nothing here is real" line.
   useEffect(() => {
-    if (!user) return;
+    if (!user || inPreview) return;
     setFirstName((prev) => prev || user.firstName || "");
     setLastName((prev) => prev || user.lastName || "");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, inPreview]);
   useEffect(() => {
     // Backend preferredLanguage (synced via LanguageSync in App.tsx) is the
     // source of truth for authenticated users. Only fall back to a persisted
@@ -840,12 +866,62 @@ export default function OnboardingPage() {
     new Set(persisted?.selectedSubjects ?? [])
   );
 
+  // ── Preview plumbing (no-ops unless inPreview) ──────────────────────────
+  // The single centralised write gate every mutationFn below goes through.
+  const previewGate = useMemo(() => createPreviewGate(inPreview), [inPreview]);
+  // Preview-only "Done" screen — stands in for the real post-submit redirect
+  // to /subscribe (adults) or /waiting-for-parent (minors).
+  const [previewDone, setPreviewDone] = useState(false);
+
+  // Belt-and-braces backstop: while preview is active, window.fetch refuses
+  // any write to /api/* (rejected before the network is touched). If a future
+  // mutation call site forgets the gate, it trips here instead of writing.
+  useEffect(() => {
+    if (!inPreview || typeof window === "undefined") return;
+    return installPreviewWriteTripwire(window);
+  }, [inPreview]);
+
+  const resetPreviewState = () => {
+    setCurrentStep(0);
+    setPhase("questions");
+    setAnswers({ focus_duration: 45 });
+    setVarkPrimary(null);
+    setVarkSecondary(null);
+    setSubjectMarks([]);
+    setSelectedSubjects(new Set());
+    setSchoolName("");
+    setSchoolQuery("");
+    setSchoolId(null);
+    setFirstName("");
+    setLastName("");
+    setIdNumber("");
+    setDobDay("");
+    setDobMonth("");
+    setDobYear("");
+    setParentEmail("");
+    setConsentLink(null);
+    setConsentDelivery(null);
+    setPreviewDone(false);
+  };
+
+  // Entering preview always starts from a clean slate — never from a
+  // persisted learner draft (and, below, never writes a draft back).
+  const previewEnteredRef = useRef(false);
+  useEffect(() => {
+    if (!inPreview || previewEnteredRef.current) return;
+    previewEnteredRef.current = true;
+    resetPreviewState();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inPreview]);
+
   useEffect(() => {
     setHydrated(true);
   }, []);
 
   useEffect(() => {
-    if (!hydrated || typeof window === "undefined") return;
+    // Preview never persists a draft — the walkthrough is disposable and must
+    // not leave a resumable onboarding state behind on the admin's browser.
+    if (!hydrated || inPreview || typeof window === "undefined") return;
     try {
       const state: PersistedState = {
         currentStep,
@@ -868,7 +944,7 @@ export default function OnboardingPage() {
     } catch {
       // ignore storage errors (quota, private mode)
     }
-  }, [hydrated, currentStep, phase, language, answers, varkPrimary, varkSecondary, subjectMarks, selectedSubjects, schoolName, schoolId, grade, parentEmail, firstName, lastName, idNumber]);
+  }, [hydrated, inPreview, currentStep, phase, language, answers, varkPrimary, varkSecondary, subjectMarks, selectedSubjects, schoolName, schoolId, grade, parentEmail, firstName, lastName, idNumber]);
 
   // Task #43 — Debounced school name search against partnerSchools.
   useEffect(() => {
@@ -933,7 +1009,11 @@ export default function OnboardingPage() {
   }, [subjectMarks.length, phase]);
 
   const submitMutation = useMutation({
-    mutationFn: async () => {
+    // previewGate: in preview the real POST /api/onboarding is NEVER invoked.
+    // The simulated branch resolves after a short delay so the "Preparing
+    // your classroom" overlay renders exactly as it does for a learner, then
+    // onSuccess shows the preview Done screen instead of redirecting.
+    mutationFn: previewGate.mutation(async () => {
       const traits = calculateTraits(answers);
       const recommendations = calculateRecommendations(answers, traits);
       return apiRequest("POST", "/api/onboarding", {
@@ -968,8 +1048,14 @@ export default function OnboardingPage() {
           return isoDob ? { dateOfBirth: isoDob } : {};
         })()),
       });
-    },
+    }, () => ({ preview: true }) as unknown as Response, { delayMs: 1400 }),
     onSuccess: () => {
+      if (inPreview) {
+        // Nothing was saved or seeded — swap the learner redirect for the
+        // preview completion card (Restart preview / Back to admin).
+        setPreviewDone(true);
+        return;
+      }
       try { window.localStorage.removeItem(ONBOARDING_STORAGE_KEY); } catch { /* ignore */ }
       queryClient.invalidateQueries({ queryKey: ["/api/user/onboarding"] });
       queryClient.invalidateQueries({ queryKey: ["/api/user/subscription-status"] });
@@ -995,8 +1081,22 @@ export default function OnboardingPage() {
   });
 
   const resetRoleMutation = useMutation({
-    mutationFn: () => apiRequest("POST", "/api/auth/reset-role"),
+    // previewGate: never POSTs in preview — role select is a separate page
+    // with its own live writes, so the preview stays inside this flow.
+    mutationFn: previewGate.mutation(
+      () => apiRequest("POST", "/api/auth/reset-role"),
+      () => ({ preview: true }) as unknown as Response,
+    ),
     onSuccess: () => {
+      if (inPreview) {
+        toast({
+          title: isAf ? "Voorskou" : "Preview",
+          description: isAf
+            ? "Rolkeuse is buite hierdie voorskou — niks is verander nie."
+            : "Role selection is outside this preview — nothing was changed.",
+        });
+        return;
+      }
       try { window.localStorage.removeItem(ONBOARDING_STORAGE_KEY); } catch { /* ignore */ }
       window.location.href = "/role-select";
     },
@@ -1119,20 +1219,92 @@ export default function OnboardingPage() {
     }
   };
 
+  // ── Preview phase jumping ────────────────────────────────────────────────
+  // The main reason the preview exists: inspect any step directly without
+  // answering everything before it. Jumping ahead seeds obviously-fake sample
+  // values (from ONBOARDING_PREVIEW_SAMPLE) for the phases being skipped so
+  // later screens render with representative content instead of empty
+  // placeholders. The sample ID/DOB describe a minor, so the consent phase
+  // shows the parental-consent branch. Seeding only fills gaps — anything the
+  // admin already typed into the preview is left alone.
+  const PREVIEW_PHASE_ORDER: Array<Phase | "done"> = ["questions", "vark", "subjects", "school", "parent_consent", "done"];
+  const previewSeedThrough = (target: Phase | "done") => {
+    const idx = PREVIEW_PHASE_ORDER.indexOf(target);
+    const S = ONBOARDING_PREVIEW_SAMPLE;
+    if (idx > PREVIEW_PHASE_ORDER.indexOf("vark") && !varkPrimary) {
+      setVarkPrimary(S.varkPrimary as VarkStyle);
+    }
+    if (idx > PREVIEW_PHASE_ORDER.indexOf("subjects") && subjectMarks.length < 6) {
+      setSubjectMarks(S.subjects.map((s) => ({ subjectCode: s.code, subjectName: s.name, mark: S.subjectMark })));
+      setSelectedSubjects(new Set(S.subjects.map((s) => s.code)));
+    }
+    if (idx > PREVIEW_PHASE_ORDER.indexOf("school")) {
+      if (!firstName.trim()) setFirstName(S.firstName);
+      if (!lastName.trim()) setLastName(S.lastName);
+      if (!schoolName.trim()) {
+        setSchoolName(S.schoolName);
+        setSchoolQuery(S.schoolName);
+      }
+      if (!idNumber.trim()) setIdNumber(S.idNumber);
+      if (!dobDay && !dobMonth && !dobYear) {
+        setDobDay(S.dobDay);
+        setDobMonth(S.dobMonth);
+        setDobYear(S.dobYear);
+      }
+    }
+  };
+
+  const previewJump = (target: Phase | "done") => {
+    if (!inPreview) return;
+    if (advanceTimer.current) clearTimeout(advanceTimer.current);
+    previewSeedThrough(target);
+    if (target === "done") {
+      setPhase("parent_consent");
+      setPreviewDone(true);
+      return;
+    }
+    setPreviewDone(false);
+    if (target === "questions") setCurrentStep(0);
+    setPhase(target);
+  };
+
   // Task #43 — Send the parent consent email (best-effort). The endpoint
   // always returns the link so we can offer a manual-share fallback if email
   // delivery isn't configured in this environment.
   const consentMutation = useMutation({
-    mutationFn: async () => {
-      const r = await apiRequest("POST", "/api/onboarding/parent-consent/request", {
-        parentEmail: parentEmail.trim(),
-        language: language === "af" ? "af" : "en",
-      });
-      return r as unknown as { ok: boolean; url: string; delivery: "sent" | "not_configured" | "failed" };
-    },
+    // previewGate: in preview no consent email (or request) ever leaves the
+    // browser — the simulated branch hands back a self-describing sample link.
+    mutationFn: previewGate.mutation(
+      async () => {
+        const r = await apiRequest("POST", "/api/onboarding/parent-consent/request", {
+          parentEmail: parentEmail.trim(),
+          language: language === "af" ? "af" : "en",
+        });
+        // apiRequest resolves a Response — the body must be parsed. Casting it
+        // straight to the payload type silently handed back the Response's own
+        // `url` (the API endpoint), so a learner's "share this with your parent"
+        // link pointed at /api/onboarding/parent-consent/request, and the
+        // missing `delivery` field always fell through to the manual-share copy.
+        return (await r.json()) as { ok: boolean; url: string; delivery: "sent" | "not_configured" | "failed" };
+      },
+      () => ({
+        ok: true,
+        url: ONBOARDING_PREVIEW_SAMPLE.consentUrl,
+        delivery: "sent" as const,
+      }),
+    ),
     onSuccess: (data) => {
       setConsentLink(data.url);
       setConsentDelivery(data.delivery);
+      if (inPreview) {
+        toast({
+          title: isAf ? "Voorskou — geen e-pos gestuur nie" : "Preview — no email was sent",
+          description: isAf
+            ? "Die skakel hieronder is voorbeelddata."
+            : "The link below is sample data.",
+        });
+        return;
+      }
       toast({
         title: t.consentRequestReady,
         description: data.delivery === "sent" ? t.consentSentByEmail : t.consentManualShare,
@@ -1230,6 +1402,83 @@ export default function OnboardingPage() {
       style={{ background: BRAND.ground, fontFamily: "Poppins, ui-sans-serif, system-ui, sans-serif" }}
     >
       <GraffitiSplats variant="full" opacity={0.35} />
+
+      {/* ── Admin preview banner — deliberately loud, impossible to mistake
+          for real onboarding. Same dashed-amber hazard treatment as the
+          parent-dashboard preview banner (parent-dashboard.tsx). The phase
+          chips are the point of the preview: jump straight to any step. ── */}
+      {inPreview && (
+        <div className="relative z-50 px-4 pt-4">
+          <div
+            className="max-w-3xl mx-auto rounded-2xl px-5 py-4 space-y-3"
+            style={{
+              background: "repeating-linear-gradient(135deg, rgba(255,226,154,.16) 0 14px, rgba(255,226,154,.06) 14px 28px)",
+              border: `2px dashed ${PREVIEW_AMBER}`,
+            }}
+            data-testid="onboarding-preview-banner"
+            role="status"
+            aria-live="polite"
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
+              <span
+                className="inline-flex items-center shrink-0 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em]"
+                style={{ background: PREVIEW_AMBER, color: "#050508" }}
+              >
+                <Eye className="w-3 h-3 mr-1.5" />
+                {isAf ? "Voorskou" : "Preview"}
+              </span>
+              <div className="min-w-0">
+                <p className="text-sm font-bold text-white">
+                  {isAf
+                    ? "Admin-voorskou — niks op hierdie bladsy is werklik nie."
+                    : "Admin preview — nothing on this page is real."}
+                </p>
+                <p className="text-xs text-white mt-0.5">
+                  {isAf
+                    ? "Elke antwoord, punt en besonderheid word weggegooi — geen profiel, identiteit, vakke of toestemmingsversoek word gestoor nie, en geen e-pos word gestuur nie. Gebruik die fase-knoppies om na enige stap te spring."
+                    : "Every answer, mark and detail is discarded — no profile, identity, subjects or consent request is saved, and no email is sent. Use the phase chips to jump to any step."}
+                </p>
+              </div>
+              <button
+                onClick={() => { window.location.href = "/learn/admin"; }}
+                className="sm:ml-auto shrink-0 px-3 py-2 rounded-xl text-xs font-bold hover:bg-white/10"
+                style={{ color: PREVIEW_AMBER, border: `1.5px solid ${PREVIEW_AMBER}` }}
+                data-testid="onboarding-preview-exit"
+              >
+                {isAf ? "Terug na admin" : "Back to admin"}
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-2" data-testid="onboarding-preview-jumps">
+              {([
+                { id: "questions", en: "Questions", af: "Vrae" },
+                { id: "vark", en: "VARK", af: "VARK" },
+                { id: "subjects", en: "Subjects", af: "Vakke" },
+                { id: "school", en: "Identity & School", af: "Identiteit & Skool" },
+                { id: "parent_consent", en: "Consent", af: "Toestemming" },
+                { id: "done", en: "Done", af: "Klaar" },
+              ] as Array<{ id: Phase | "done"; en: string; af: string }>).map((p) => {
+                const active = p.id === "done" ? previewDone : !previewDone && phase === p.id;
+                return (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => previewJump(p.id)}
+                    data-testid={`preview-jump-${p.id}`}
+                    className="rounded-full px-3.5 h-9 text-[12px] font-bold"
+                    style={{
+                      background: active ? PREVIEW_AMBER : "transparent",
+                      color: active ? "#050508" : PREVIEW_AMBER,
+                      border: `1.5px dashed ${PREVIEW_AMBER}`,
+                    }}
+                  >
+                    {isAf ? p.af : p.en}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       <header
         className="relative z-40 sticky top-0"
@@ -1341,7 +1590,7 @@ export default function OnboardingPage() {
       <main className="relative z-10 flex-1 w-full">
         <div className="w-full max-w-2xl mx-auto px-4 py-6 sm:py-8 space-y-5">
           {/* ── PHASE: QUESTIONS — one big question per screen ─────────────── */}
-          {phase === "questions" && currentQuestion && (
+          {!previewDone && phase === "questions" && currentQuestion && (
             <section
               key={currentQuestion.id}
               data-testid="card-onboarding"
@@ -1524,7 +1773,7 @@ export default function OnboardingPage() {
           )}
 
           {/* ── PHASE: VARK ────────────────────────────────────────────────── */}
-          {phase === "vark" && (
+          {!previewDone && phase === "vark" && (
             <section
               data-testid="card-vark"
               className="rounded-3xl overflow-hidden"
@@ -1647,7 +1896,7 @@ export default function OnboardingPage() {
           )}
 
           {/* ── PHASE: SUBJECTS — the fun part ─────────────────────────────── */}
-          {phase === "subjects" && (
+          {!previewDone && phase === "subjects" && (
             <section
               data-testid="card-subjects"
               className="rounded-3xl overflow-hidden"
@@ -1876,7 +2125,7 @@ export default function OnboardingPage() {
           )}
 
           {/* ── PHASE: SCHOOL — sequenced, conversational detail capture ───── */}
-          {phase === "school" && (
+          {!previewDone && phase === "school" && (
             <section
               data-testid="card-school"
               className="rounded-3xl overflow-hidden"
@@ -2141,7 +2390,7 @@ export default function OnboardingPage() {
           )}
 
           {/* ── PHASE: PARENT CONSENT — finish strong ──────────────────────── */}
-          {phase === "parent_consent" && (
+          {!previewDone && phase === "parent_consent" && (
             <section
               data-testid="card-parent-consent"
               className="rounded-3xl overflow-hidden"
@@ -2278,6 +2527,60 @@ export default function OnboardingPage() {
                   >
                     {submitMutation.isPending ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <Sparkles className="w-5 h-5 mr-2" />}
                     {t.letsGetIt}
+                  </Button>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* ── PREVIEW-ONLY: Done — stands in for the real post-submit
+              redirect to /subscribe (adults) or /waiting-for-parent (minors).
+              Nothing was saved; restart the walkthrough or return to the
+              admin console. Dashed amber, no glow — hazard language. ── */}
+          {inPreview && previewDone && (
+            <section
+              data-testid="card-preview-done"
+              className="rounded-3xl overflow-hidden"
+              style={{
+                background: BRAND.card,
+                border: `2px dashed ${PREVIEW_AMBER}`,
+                animation: anim("bt-fadeup .45s cubic-bezier(.22,1,.36,1) both"),
+              }}
+            >
+              <div className="p-5 sm:p-8 space-y-6 text-center">
+                <p style={{ fontFamily: MARKER, color: BRAND.yellow, fontSize: 20, transform: "rotate(-2deg)", margin: 0 }}>
+                  {isAf ? "Voorskou klaar!" : "Preview complete!"}
+                </p>
+                <h2 className="text-white font-extrabold leading-[1.12] text-[28px] sm:text-[36px] tracking-tight">
+                  {isAf ? "Dis die volle aanboordreis" : "That's the full onboarding journey"}
+                </h2>
+                <p className="text-white text-[15px] leading-relaxed max-w-md mx-auto">
+                  {isAf
+                    ? "Op hierdie punt word 'n regte leerder se profiel gestoor, hul vakke gelaai, en word hulle na die betaalmuur (volwassenes) of die ouer-wagbladsy (minderjariges) gestuur. In voorskou is niks gestoor nie."
+                    : "At this point a real learner's profile is saved, their subjects are seeded, and they're redirected to the paywall (adults) or the waiting-for-parent page (minors). In preview, nothing was saved."}
+                </p>
+                <div className="rounded-2xl px-4 py-3 inline-block" style={{ border: `1.5px dashed ${PREVIEW_AMBER}` }}>
+                  <p className="text-[12px] font-bold uppercase tracking-[0.14em]" style={{ color: PREVIEW_AMBER }}>
+                    {isAf ? "Geen data is geskryf nie" : "No data was written"}
+                  </p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center pt-1">
+                  <Button
+                    variant="outline"
+                    className={ghostBtn}
+                    onClick={resetPreviewState}
+                    data-testid="button-preview-restart"
+                  >
+                    <RotateCcw className="w-5 h-5 mr-1.5" />
+                    {isAf ? "Herbegin voorskou" : "Restart preview"}
+                  </Button>
+                  <Button
+                    className={primaryBtn}
+                    style={primaryBtnStyle}
+                    onClick={() => { window.location.href = "/learn/admin"; }}
+                    data-testid="button-preview-back-admin"
+                  >
+                    {isAf ? "Terug na admin" : "Back to admin"}
                   </Button>
                 </div>
               </div>

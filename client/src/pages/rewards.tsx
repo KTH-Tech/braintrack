@@ -399,7 +399,7 @@ export default function RewardsPage() {
                           }}
                           data-testid={`milestone-${m}`}
                         >
-                          <Flame className="w-4 h-4" style={{ color: hit ? "#FFE29A" : "#FFFFFF", filter: hit ? "drop-shadow(0 0 4px #FFE29A)" : undefined }} />
+                          <Flame className="w-4 h-4" style={{ color: hit ? "#FFE29A" : "#FFFFFF" }} />
                           <span className="text-xs font-bold mt-0.5" style={{ color: hit ? "#FFE29A" : "#FFFFFF" }}>{m}</span>
                         </div>
                       );
@@ -445,7 +445,7 @@ export default function RewardsPage() {
                             className="w-11 h-11 rounded-full bg-black flex items-center justify-center"
                             style={{ border: "1px solid rgba(255,226,154,0.5)" }}
                           >
-                            <Icon className="w-5 h-5" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }} />
+                            <Icon className="w-5 h-5" style={{ color: "#FFE29A" }} />
                           </div>
                           <span className="text-xs font-bold text-white leading-tight">{isAf ? info.nameAf : info.name}</span>
                           {badge.earnedAt && (
@@ -506,7 +506,7 @@ export default function RewardsPage() {
                       className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center"
                       style={{ border: "1px solid rgba(159,216,255,0.4)" }}
                     >
-                      <Sparkles className="w-7 h-7" style={{ color: "#9FD8FF", filter: "drop-shadow(0 0 6px #9FD8FF)" }} />
+                      <Sparkles className="w-7 h-7" style={{ color: "#9FD8FF" }} />
                     </div>
                     <div>
                       <p className="font-bold text-sm text-white mb-1">{t.upgradeToRefer}</p>

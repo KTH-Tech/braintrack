@@ -138,7 +138,7 @@ function StreetShell({ isAf, eyebrow, children }: {
         maxWidthClassName="max-w-3xl"
         titleExtra={
           <>
-            <GraduationCap className="w-4 h-4 shrink-0" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px #9FF5E8)" }} />
+            <GraduationCap className="w-4 h-4 shrink-0" style={{ color: "#9FF5E8" }} />
             <span className="hidden sm:inline text-[11px] font-bold uppercase tracking-[0.18em] text-white truncate" style={{ opacity: 0.85 }}>
               · {eyebrow}
             </span>
@@ -406,7 +406,7 @@ export default function ExamFullPage() {
         {/* Hero */}
         <section style={{ animation: "bt-fadeup .5s cubic-bezier(.22,1,.36,1) both" }}>
           <div className="inline-flex items-center gap-2 mb-3">
-            <Clock className="w-4 h-4" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }} />
+            <Clock className="w-4 h-4" style={{ color: "#FFE29A" }} />
             <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFE29A", transform: "rotate(-2deg)", display: "inline-block" }}>
               {isAf ? "Die groot een" : "The big one"}
             </span>
@@ -448,7 +448,7 @@ export default function ExamFullPage() {
                 border: "1px solid rgba(255,226,154,0.55)",
               }}
             >
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }} />
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "#FFE29A" }} />
               <p className="text-white">
                 {isAf
                   ? "Hierdie modus simuleer 'n DBE vraestel: getyd, een keer indien aan die einde. Antwoorde word teen die memorandum gemerk."
@@ -768,7 +768,7 @@ export default function ExamFullPage() {
               className="mx-auto w-16 h-16 rounded-2xl flex items-center justify-center"
               style={{ background: "rgba(5,5,8,.6)", border: `1.5px solid ${gradeHex}` }}
             >
-              <Trophy className="w-8 h-8" style={{ color: gradeHex, filter: `drop-shadow(0 0 8px ${gradeHex})` }} />
+              <Trophy className="w-8 h-8" style={{ color: gradeHex }} />
             </div>
             <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 18, color: gradeHex, transform: "rotate(-1.5deg)" }}>
               {isAf ? "Eksamen-resultate" : "Exam Results"}

@@ -234,7 +234,7 @@ export default function StorePage() {
         {/* Hero */}
         <section className="relative space-y-4 text-center">
           <div className="inline-flex items-center gap-2">
-            <ShoppingBag className="w-4 h-4" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }} />
+            <ShoppingBag className="w-4 h-4" style={{ color: "#FFE29A" }} />
             <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#FFE29A", transform: "rotate(-2deg)", display: "inline-block" }}>
               {t.heroEyebrow} 💰
             </span>

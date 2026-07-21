@@ -550,7 +550,7 @@ export default function TutorPage() {
               <div>
                 <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
                   <h2 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
-                    <NotebookPen className="w-5 h-5" style={{ color: "#6EE7F9", filter: "drop-shadow(0 0 5px #6EE7F9)" }} />
+                    <NotebookPen className="w-5 h-5" style={{ color: "#6EE7F9" }} />
                     {t.generateStudyNotesHeading}
                   </h2>
                   {profile?.learningStyle === "visual" && (
@@ -643,7 +643,7 @@ export default function TutorPage() {
                         className="w-9 h-9 rounded-lg bg-white/[.03] flex items-center justify-center flex-shrink-0 mt-0.5"
                         style={{ border: "1px solid #C5B3FF" }}
                       >
-                        <StyleIcon className="w-5 h-5" style={{ color: "#C5B3FF", filter: "drop-shadow(0 0 3px #C5B3FF)" }} />
+                        <StyleIcon className="w-5 h-5" style={{ color: "#C5B3FF" }} />
                       </div>
                       <div>
                         <p className="text-sm font-black mb-0.5" style={{ color: "#C5B3FF" }}>{isAf ? meta.af : meta.en}</p>
@@ -730,7 +730,7 @@ export default function TutorPage() {
                       </>
                     ) : (
                       <>
-                        <Sparkles className="w-4 h-4" style={{ filter: "drop-shadow(0 0 4px #FFB7E5)" }} />
+                        <Sparkles className="w-4 h-4" />
                         {t.generateNotesBtn}
                       </>
                     )}
@@ -1146,7 +1146,7 @@ export default function TutorPage() {
               className="relative inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.28em] px-4 py-1.5 rounded-full bg-white/[.03] mb-4"
               style={{ color: "#6EE7F9", border: "1px solid rgba(110,231,249,0.55)" }}
             >
-              <Sparkles className="w-3.5 h-3.5" style={{ filter: "drop-shadow(0 0 4px #6EE7F9)" }} />
+              <Sparkles className="w-3.5 h-3.5" />
               {t.tutorHeading}
             </span>
             <div
@@ -1196,7 +1196,7 @@ export default function TutorPage() {
                           style={{ color: hex, border: `1.5px solid ${hex}`, transform: `rotate(${tilt}deg)`, boxShadow: `0 3px 0 ${hex}44` }}
                           data-testid={`topic-chip-chat-${topic.id}`}
                         >
-                          <BookOpen className="w-3.5 h-3.5" style={{ filter: `drop-shadow(0 0 3px ${hex})` }} />
+                          <BookOpen className="w-3.5 h-3.5" />
                           {isAf ? topic.nameAfrikaans : topic.name}
                           {topic.capsWeighting === "high" && <span className="ml-0.5" style={{ color: "#FFE29A" }}>★</span>}
                         </button>
@@ -1228,7 +1228,7 @@ export default function TutorPage() {
                           }}
                           data-testid={`suggested-question-${i}`}
                         >
-                          <Sparkles className="w-4 h-4 mt-0.5 shrink-0" style={{ color: hex, filter: `drop-shadow(0 0 4px ${hex})` }} />
+                          <Sparkles className="w-4 h-4 mt-0.5 shrink-0" style={{ color: hex }} />
                           <span>{q}</span>
                         </button>
                       );
@@ -1438,7 +1438,7 @@ export default function TutorPage() {
                         className="w-8 h-8 rounded-lg bg-white/[.03] flex items-center justify-center flex-shrink-0"
                         style={{ border: "1.5px solid #6EE7F9" }}
                       >
-                        <User className="w-4 h-4" style={{ color: "#6EE7F9", filter: "drop-shadow(0 0 3px #6EE7F9)" }} />
+                        <User className="w-4 h-4" style={{ color: "#6EE7F9" }} />
                       </div>
                     )}
                   </div>

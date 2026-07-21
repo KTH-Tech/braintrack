@@ -68,7 +68,7 @@ function SectionCard({ color, icon: Icon, eyebrow, title, subtitle, children, te
             className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
             style={{ background: "rgba(5,5,8,.6)", border: `1px solid ${color}` }}
           >
-            <Icon className="w-5 h-5" style={{ color, filter: `drop-shadow(0 0 5px ${color})` }} />
+            <Icon className="w-5 h-5" style={{ color }} />
           </div>
           <div className="min-w-0">
             <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color, transform: "rotate(-1.5deg)", display: "inline-block" }}>
@@ -725,7 +725,7 @@ export default function SettingsPage() {
           {/* ── Hero ── */}
           <section className="relative mb-2" style={{ animation: "bt-fadeup .5s cubic-bezier(.22,1,.36,1) both" }}>
             <div className="inline-flex items-center gap-2 mb-3">
-              <SlidersHorizontal className="w-4 h-4" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px #9FF5E8)" }} />
+              <SlidersHorizontal className="w-4 h-4" style={{ color: "#9FF5E8" }} />
               <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}>
                 {t.heroEyebrow}
               </span>
@@ -803,7 +803,7 @@ export default function SettingsPage() {
                   style={{ background: "rgba(197,179,255,.06)", border: "1px solid rgba(197,179,255,.4)" }}
                   data-testid="phone-parent-lock"
                 >
-                  <Shield className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#C5B3FF", filter: "drop-shadow(0 0 4px rgba(197,179,255,.7))" }} />
+                  <Shield className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#C5B3FF" }} />
                   <div className="text-sm">
                     <p className="font-black uppercase tracking-[0.16em] text-[11px]" style={{ color: "#C5B3FF" }}>
                       {t.managedByParent}
@@ -842,7 +842,7 @@ export default function SettingsPage() {
                     className="flex items-start gap-3 p-3 rounded-xl"
                     style={{ background: "rgba(255,226,154,.06)", border: "1px solid rgba(255,226,154,.4)" }}
                   >
-                    <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px rgba(255,226,154,.7))" }} />
+                    <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#FFE29A" }} />
                     <div className="text-sm">
                       <p className="font-black uppercase tracking-[0.16em] text-[11px]" style={{ color: "#FFE29A" }}>
                         {t.verificationRequired}
@@ -879,7 +879,7 @@ export default function SettingsPage() {
                     className="flex items-center gap-2 p-3 rounded-xl"
                     style={{ background: "rgba(159,245,232,.06)", border: "1px solid rgba(159,245,232,.4)" }}
                   >
-                    <CheckCircle className="w-5 h-5" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px rgba(159,245,232,.7))" }} />
+                    <CheckCircle className="w-5 h-5" style={{ color: "#9FF5E8" }} />
                     <p className="text-sm text-white">
                       {t.codeSentTo}{" "}
                       <strong style={{ color: "#9FF5E8" }}>{pendingPhone}</strong>

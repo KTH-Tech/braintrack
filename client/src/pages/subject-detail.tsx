@@ -147,7 +147,7 @@ function NeonStat({ hex, icon: Icon, value, label }: { hex: string; icon: any; v
       className="relative rounded-2xl bg-white/[.03] p-4 text-center overflow-hidden"
       style={{ border: `1px solid ${hex}66` }}
     >
-      <Icon className="w-5 h-5 mx-auto mb-1" style={{ color: hex, filter: `drop-shadow(0 0 4px ${hex})` }} />
+      <Icon className="w-5 h-5 mx-auto mb-1" style={{ color: hex }} />
       <p className="text-2xl font-bold text-white tabular-nums">{value}</p>
       <p className="text-[10px] text-white mt-0.5 uppercase tracking-[0.14em]">{label}</p>
     </div>
@@ -1042,7 +1042,7 @@ export default function SubjectDetailPage() {
                   >
                     <Icon
                       className="w-8 h-8 sm:w-10 sm:h-10"
-                      style={{ color: hex, filter: `drop-shadow(0 0 8px ${hex})` }}
+                      style={{ color: hex }}
                     />
                   </div>
 
@@ -1136,7 +1136,7 @@ export default function SubjectDetailPage() {
                   data-testid="button-mini-mock-shortcut"
                 >
                   <div className="flex items-center gap-3">
-                    <Zap className="w-5 h-5" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }} />
+                    <Zap className="w-5 h-5" style={{ color: "#FFE29A" }} />
                     <div>
                       <p className="font-black text-sm text-white uppercase tracking-[0.14em]">
                         {isAf ? "Mini Mock" : "Mini Mock"}
@@ -1160,7 +1160,7 @@ export default function SubjectDetailPage() {
                   data-testid="button-full-exam-shortcut"
                 >
                   <div className="flex items-center gap-3">
-                    <GraduationCap className="w-5 h-5" style={{ color: "#C5B3FF", filter: "drop-shadow(0 0 4px #C5B3FF)" }} />
+                    <GraduationCap className="w-5 h-5" style={{ color: "#C5B3FF" }} />
                     <div>
                       <p className="font-black text-sm text-white uppercase tracking-[0.14em]">
                         {isAf ? "Volle Eksamen" : "Full Exam"}
@@ -1283,7 +1283,7 @@ export default function SubjectDetailPage() {
               <CosmicCard color="cyan" className="p-5" data-testid="current-vs-target">
                 <div className="flex items-center justify-between gap-4 flex-wrap mb-3">
                   <div className="flex items-center gap-2">
-                    <Target className="w-5 h-5" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px #9FF5E8)" }} />
+                    <Target className="w-5 h-5" style={{ color: "#9FF5E8" }} />
                     <h3 className="font-bold text-base text-white">{isAf ? "Huidige vs Teiken Telling" : "Current vs Target Score"}</h3>
                   </div>
                   <NeonBadge color={scoreDiff >= 0 ? "emerald" : "pink"}>
@@ -1297,7 +1297,7 @@ export default function SubjectDetailPage() {
                   </div>
                   <div className="flex items-center justify-center">
                     <div className="flex flex-col items-center gap-1">
-                      <ChevronRight className="w-8 h-8" style={{ color: scoreDiff >= 0 ? "#94F7C5" : "#FFB7E5", filter: `drop-shadow(0 0 6px ${scoreDiff >= 0 ? "#94F7C5" : "#FFB7E5"})` }} />
+                      <ChevronRight className="w-8 h-8" style={{ color: scoreDiff >= 0 ? "#94F7C5" : "#FFB7E5" }} />
                       <p className="text-[10px] text-white">{scoreDiff >= 0 ? (isAf ? 'Op Koers' : 'On Track') : (isAf ? 'Moet Verbeter' : 'Needs Work')}</p>
                     </div>
                   </div>
@@ -1335,7 +1335,7 @@ export default function SubjectDetailPage() {
                   value={tab.value}
                   className="flex-1 min-w-[72px] flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-black uppercase tracking-[0.12em] transition-all border-0 shadow-none data-[state=active]:bg-white/10 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-white hover:text-white data-[state=active]:shadow-none"
                 >
-                  <tab.Icon className="w-3.5 h-3.5" style={{ color: tab.hex, filter: `drop-shadow(0 0 4px ${tab.hex})` }} />
+                  <tab.Icon className="w-3.5 h-3.5" style={{ color: tab.hex }} />
                   {isAf ? tab.af : tab.en}
                 </TabsTrigger>
               ))}
@@ -1387,7 +1387,7 @@ export default function SubjectDetailPage() {
                   <div className="grid sm:grid-cols-2 gap-4">
                     <CosmicCard color="yellow" className="p-5 space-y-3" data-testid="recommended-quiz-card">
                       <div className="flex items-center gap-2">
-                        <Zap className="w-5 h-5" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }} />
+                        <Zap className="w-5 h-5" style={{ color: "#FFE29A" }} />
                         <span className="font-black text-sm text-white uppercase tracking-[0.14em]">
                           {isAf ? "Aanbevole Vasvraag" : "Recommended Quiz"}
                         </span>
@@ -1413,7 +1413,7 @@ export default function SubjectDetailPage() {
 
                     <CosmicCard color="purple" className="p-5 space-y-3" data-testid="revision-mode-card">
                       <div className="flex items-center gap-2">
-                        <BookOpen className="w-5 h-5" style={{ color: "#C5B3FF", filter: "drop-shadow(0 0 4px #C5B3FF)" }} />
+                        <BookOpen className="w-5 h-5" style={{ color: "#C5B3FF" }} />
                         <span className="font-black text-sm text-white uppercase tracking-[0.14em]">
                           {isAf ? "Hersien Verkeerde Antwoorde" : "Revise Wrong Answers"}
                         </span>
@@ -1458,7 +1458,7 @@ export default function SubjectDetailPage() {
             <TabsContent value="topics" className="mt-6">
               <CosmicCard color="cyan" className="p-5">
                 <div className="flex items-center gap-2 mb-4">
-                  <Target className="w-5 h-5" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px #9FF5E8)" }} />
+                  <Target className="w-5 h-5" style={{ color: "#9FF5E8" }} />
                   <h3 className="font-bold text-base text-white">{isAf ? "Onderwerp Bemeestering" : "Topic Mastery"}</h3>
                   {mastery && mastery.topics.length > 0 && <NeonBadge color="cyan">{mastery.topics.length}</NeonBadge>}
                 </div>
@@ -1628,7 +1628,7 @@ export default function SubjectDetailPage() {
             <TabsContent value="plan" className="space-y-6 mt-6">
               <CosmicCard color="blue" className="p-5">
                 <div className="flex items-center gap-2 mb-4">
-                  <Calendar className="w-5 h-5" style={{ color: "#9FD8FF", filter: "drop-shadow(0 0 4px #9FD8FF)" }} />
+                  <Calendar className="w-5 h-5" style={{ color: "#9FD8FF" }} />
                   <h3 className="font-bold text-base text-white">{isAf ? "Persoonlike Studieplan" : "Personalized Study Plan"}</h3>
                   <NeonBadge color="blue">{isAf ? "7 Dae" : "7 Day"}</NeonBadge>
                 </div>
@@ -1686,7 +1686,7 @@ export default function SubjectDetailPage() {
               {badges && badges.length > 0 && (
                 <CosmicCard color="yellow" className="p-5">
                   <div className="flex items-center gap-2 mb-4">
-                    <Award className="w-5 h-5" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }} />
+                    <Award className="w-5 h-5" style={{ color: "#FFE29A" }} />
                     <h3 className="font-bold text-base text-white">{isAf ? "Prestasies" : "Achievements"}</h3>
                     <NeonBadge color="yellow">{badges.length}</NeonBadge>
                   </div>
@@ -1702,7 +1702,7 @@ export default function SubjectDetailPage() {
                           style={{ border: "1px solid #FFE29A44" }}
                           data-testid={`badge-${badge.badgeCode}`}
                         >
-                          <IconComp className="w-4 h-4" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 3px #FFE29A)" }} />
+                          <IconComp className="w-4 h-4" style={{ color: "#FFE29A" }} />
                           <span className="text-sm font-semibold text-white">
                             {isAf ? info.nameAfrikaans : info.name}
                           </span>
@@ -1723,7 +1723,7 @@ export default function SubjectDetailPage() {
                   <CosmicCard color="cyan" className="p-5" data-testid="card-literature-selection">
                     <div className="flex items-center justify-between gap-3 flex-wrap mb-2">
                       <h3 className="flex items-center gap-2 font-bold text-base text-white">
-                        <BookMarked className="w-5 h-5" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px #9FF5E8)" }} />
+                        <BookMarked className="w-5 h-5" style={{ color: "#9FF5E8" }} />
                         {isAf ? "Jou Voorgeskryfde Werke" : "Your Prescribed Works"}
                       </h3>
                       <button
@@ -1871,7 +1871,7 @@ export default function SubjectDetailPage() {
 
               <CosmicCard color="blue" className="p-5">
                 <div className="flex items-center gap-2 mb-4">
-                  <ExternalLink className="w-5 h-5" style={{ color: "#9FD8FF", filter: "drop-shadow(0 0 4px #9FD8FF)" }} />
+                  <ExternalLink className="w-5 h-5" style={{ color: "#9FD8FF" }} />
                   <h3 className="font-bold text-base text-white">{isAf ? "Amptelike Bronne" : "Official Sources"}</h3>
                 </div>
                 <div className="space-y-2">

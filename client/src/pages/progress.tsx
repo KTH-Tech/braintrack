@@ -160,7 +160,7 @@ export default function ProgressPage() {
                         className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-white/[.03]"
                         style={{ border: "1px solid rgba(255,226,154,0.55)" }}
                       >
-                        <Flame className="w-3 h-3" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }} />
+                        <Flame className="w-3 h-3" style={{ color: "#FFE29A" }} />
                         <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#FFE29A" }}>
                           {streak} {isAf ? (streak === 1 ? "dag" : "dae") : (streak === 1 ? "day" : "days")}
                         </span>
@@ -177,7 +177,6 @@ export default function ProgressPage() {
                         WebkitBackgroundClip: "text",
                         WebkitTextFillColor: "transparent",
                         backgroundClip: "text",
-                        filter: "drop-shadow(0 0 18px rgba(159,216,255,0.25))",
                       }}
                     >
                       {isAf ? "Jou Vordering" : "Your Progress"}
@@ -316,7 +315,6 @@ export default function ProgressPage() {
                           fontSize: "32px",
                           fontWeight: 900,
                           fill: rankHex,
-                          filter: `drop-shadow(0 0 6px ${rankHex})`,
                         }}
                       >
                         {acc}
@@ -388,7 +386,7 @@ export default function ProgressPage() {
                           className="w-12 h-12 rounded-xl bg-white/[.03] flex items-center justify-center shrink-0"
                           style={{ border: `1.5px solid ${hex}` }}
                         >
-                          <Icon className="w-6 h-6" style={{ color: hex, filter: `drop-shadow(0 0 5px ${hex})` }} />
+                          <Icon className="w-6 h-6" style={{ color: hex }} />
                         </div>
                         <div>
                           <p className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: hex }}>{label}</p>
@@ -414,7 +412,7 @@ export default function ProgressPage() {
                   <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#9FD8FF" }} />
                   <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#9FD8FF" }} />
                   <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(159,216,255,0.35)" }}>
-                    <TrendingUp className="w-5 h-5" style={{ color: "#9FD8FF", filter: "drop-shadow(0 0 6px rgba(159,216,255,0.85))" }} />
+                    <TrendingUp className="w-5 h-5" style={{ color: "#9FD8FF" }} />
                     <h2 className="text-lg font-bold text-white">{isAf ? "Vakvordering" : "Subject Progress"}</h2>
                   </div>
                   <div className="p-5 space-y-3">
@@ -479,7 +477,7 @@ export default function ProgressPage() {
                   <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#FFB7E5" }} />
                   <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#FFB7E5" }} />
                   <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(255,183,229,0.35)" }}>
-                    <TrendingDown className="w-5 h-5" style={{ color: "#FFB7E5", filter: "drop-shadow(0 0 6px rgba(255,183,229,0.85))" }} />
+                    <TrendingDown className="w-5 h-5" style={{ color: "#FFB7E5" }} />
                     <h2 className="text-lg font-bold text-white">{isAf ? "Areas om te Verbeter" : "Areas to Improve"}</h2>
                   </div>
                   <div className="p-5 space-y-3">
@@ -531,7 +529,7 @@ export default function ProgressPage() {
                 <span aria-hidden className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 z-10" style={{ borderColor: "#FFE29A" }} />
                 <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 z-10" style={{ borderColor: "#FFE29A" }} />
                 <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(255,226,154,0.35)" }}>
-                  <Calendar className="w-5 h-5" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 6px rgba(255,226,154,0.85))" }} />
+                  <Calendar className="w-5 h-5" style={{ color: "#FFE29A" }} />
                   <h2 className="text-lg font-bold text-white">{isAf ? "Onlangse Aktiwiteit" : "Recent Activity"}</h2>
                 </div>
                 <div className="p-6">

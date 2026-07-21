@@ -152,7 +152,7 @@ export function CookieConsentBanner() {
               className="mt-0.5 shrink-0 w-8 h-8 rounded-lg flex items-center justify-center"
               style={{ background: "#000", border: "1px solid #6EE7F9" }}
             >
-              <Cookie className="w-4 h-4 icon-neon" style={{ color: "#6EE7F9" }} />
+              <Cookie className="w-4 h-4" style={{ color: "#6EE7F9" }} />
             </div>
             <div className="space-y-1 min-w-0">
               <p className="graffiti-hand text-lg leading-snug">

@@ -383,7 +383,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
   if (noneEnrolled) {
     return (
       <div className="rounded-2xl border border-dashed border-white/10 p-8 text-center space-y-3" style={{ background: "rgba(255,255,255,.03)" }}>
-        <Layers className="w-10 h-10 mx-auto" style={{ color: "#C5B3FF", filter: "drop-shadow(0 0 6px #C5B3FF)" }} />
+        <Layers className="w-10 h-10 mx-auto" style={{ color: "#C5B3FF" }} />
         <h3 className="text-lg font-bold text-white">{isAf ? "Geen flitskaarte gereed nie" : "No flashcards ready yet"}</h3>
         <p className="text-sm text-white max-w-sm mx-auto">
           {isAf
@@ -416,7 +416,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
           className="w-20 h-20 rounded-2xl flex items-center justify-center"
           style={{ background: "rgba(255,255,255,.03)", border: "1.5px solid #FFE29A", boxShadow: "0 0 0 1px rgba(255,226,154,0.25), inset 0 0 18px rgba(0,0,0,0.6)" }}
         >
-          <Trophy className="w-10 h-10" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 6px #FFE29A)" }} />
+          <Trophy className="w-10 h-10" style={{ color: "#FFE29A" }} />
         </div>
         <div className="text-center space-y-2">
           <span
@@ -517,7 +517,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
               { icon: Trophy, value: serverStats?.cardsMastered ?? 0,                   label: isAf ? "Bemeester"   : "Mastered",     hex: "#C5B3FF" },
             ] as const).map(({ icon: Icon, value, label, hex }) => (
               <div key={label} className="rounded-xl p-3 text-center" style={{ background: "rgba(255,255,255,.03)", border: `1px solid ${hex}55` }}>
-                <Icon className="w-4 h-4 mx-auto mb-1" style={{ color: hex, filter: `drop-shadow(0 0 4px ${hex})` }} />
+                <Icon className="w-4 h-4 mx-auto mb-1" style={{ color: hex }} />
                 <p className="text-xl font-bold text-white">{value}</p>
                 <p className="text-[10px] text-white font-semibold uppercase tracking-wider">{label}</p>
               </div>
@@ -526,7 +526,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
           {serverStats && (serverStats.currentStreak > 0 || serverStats.longestStreak > 0) && (
             <div className="rounded-xl p-3 flex items-center justify-between" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,226,154,.4)" }}>
               <div className="flex items-center gap-2 text-sm text-white">
-                <Zap className="w-4 h-4" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 4px #FFE29A)" }} />
+                <Zap className="w-4 h-4" style={{ color: "#FFE29A" }} />
                 <span>{isAf ? "Huidige reeks" : "Current streak"}: <strong>{serverStats.currentStreak}</strong> {isAf ? "dae" : "days"} 🔥</span>
               </div>
               <div className="text-xs text-white">

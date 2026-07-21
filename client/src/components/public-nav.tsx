@@ -27,7 +27,7 @@ export function PublicNav() {
         background: "#000",
         borderBottom: "3px solid transparent",
         borderImage: "linear-gradient(90deg,#9FD8FF,#6EE7F9,#94F7C5,#FFE29A,#FFE29A,#FFB7E5,#C5B3FF) 1",
-        boxShadow: "0 0 32px rgba(110,231,249,0.2), 0 4px 24px rgba(0,0,0,0.8)",
+        boxShadow: "0 4px 24px rgba(0,0,0,0.8)",
       }}
       data-testid="nav-public"
     >
@@ -48,7 +48,6 @@ export function PublicNav() {
                       background: link.color,
                       color: link.dark ? "#000" : "#fff",
                       border: `2px solid ${link.color}`,
-                      boxShadow: `0 0 16px ${link.color}88`,
                     } : {
                       background: "transparent",
                       color: "#fff",
@@ -82,7 +81,7 @@ export function PublicNav() {
                   <button
                     data-testid="button-my-classroom"
                     className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-[12px] font-black uppercase tracking-wide text-black transition-all hover:scale-105 active:scale-95"
-                    style={{ background: "#94F7C5", border: "2px solid #94F7C5", boxShadow: "0 0 18px rgba(148,247,197,0.5)" }}
+                    style={{ background: "#94F7C5", border: "2px solid #94F7C5" }}
                   >
                     <BookOpen className="h-3.5 w-3.5" />
                     {language === "en" ? "My Classroom" : "My Klaskamer"}
@@ -103,7 +102,7 @@ export function PublicNav() {
                 <button
                   data-testid="button-sign-in"
                   className="inline-flex items-center px-5 py-2 rounded-xl text-[12px] font-black uppercase tracking-wider text-black transition-all hover:scale-105 active:scale-95"
-                  style={{ background: "#FFE29A", border: "2px solid #FFE29A", boxShadow: "0 0 18px rgba(255,226,154,0.5)" }}
+                  style={{ background: "#FFE29A", border: "2px solid #FFE29A" }}
                 >
                   {language === "en" ? "Sign In" : "Kom In"}
                 </button>
@@ -163,7 +162,6 @@ export function PublicNav() {
                     background: link.color,
                     color: link.dark ? "#000" : "#fff",
                     border: `2px solid ${link.color}`,
-                    boxShadow: `0 0 20px ${link.color}66`,
                     animationDelay: `${idx * 50}ms`,
                   } : {
                     background: "rgba(255,255,255,0.04)",
@@ -188,7 +186,7 @@ export function PublicNav() {
                   data-testid="link-mobile-my-classroom"
                   onClick={() => setMobileOpen(false)}
                   className="nav-mobile-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-black uppercase tracking-wide text-black"
-                  style={{ background: "#94F7C5", border: "2px solid #94F7C5", boxShadow: "0 0 16px rgba(148,247,197,0.45)", animationDelay: `${navLinks.length * 50}ms` }}
+                  style={{ background: "#94F7C5", border: "2px solid #94F7C5", animationDelay: `${navLinks.length * 50}ms` }}
                 >
                   <BookOpen className="w-4 h-4" />
                   {language === "en" ? "My Classroom" : "My Klaskamer"}
@@ -211,7 +209,7 @@ export function PublicNav() {
               >
                 <button
                   className="w-full py-3 rounded-xl text-sm font-black uppercase tracking-wider text-black"
-                  style={{ background: "#FFE29A", border: "2px solid #FFE29A", boxShadow: "0 0 16px rgba(255,226,154,0.45)" }}
+                  style={{ background: "#FFE29A", border: "2px solid #FFE29A" }}
                 >
                   {language === "en" ? "Sign In" : "Kom In"}
                 </button>

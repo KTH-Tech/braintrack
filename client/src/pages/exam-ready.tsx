@@ -668,7 +668,7 @@ export default function ExamReadyPage() {
               className="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4"
               style={{ background: "rgba(148,247,197,.12)", border: "1.5px solid rgba(148,247,197,.5)" }}
             >
-              <CheckCircle2 className="w-8 h-8" style={{ color: "#94F7C5", filter: "drop-shadow(0 0 8px rgba(148,247,197,.6))" }} />
+              <CheckCircle2 className="w-8 h-8" style={{ color: "#94F7C5" }} />
             </div>
             <span style={marker("#94F7C5", 16)}>{isAfrikaans ? "Mooi so! 🎉" : "Sharp sharp! 🎉"}</span>
             <div role="heading" aria-level={1} className="text-2xl font-black mt-2" style={RAINBOW_TEXT}>
@@ -758,7 +758,7 @@ export default function ExamReadyPage() {
             {/* Hero */}
             <section className="text-center space-y-3" style={{ animation: "bt-fadeup .5s both" }}>
               <div className="inline-flex items-center gap-2">
-                <BookOpen className="w-4 h-4" style={{ color: "#9FF5E8", filter: "drop-shadow(0 0 4px #9FF5E8)" }} />
+                <BookOpen className="w-4 h-4" style={{ color: "#9FF5E8" }} />
                 <span style={marker("#9FF5E8", 16)}>
                   {isAfrikaans ? "Regte toestande. Regte fokus. 🔒" : "Real conditions. Real focus. 🔒"}
                 </span>
@@ -787,7 +787,7 @@ export default function ExamReadyPage() {
                 style={{ background: "#FFE29A" }}
               />
               <div className="flex items-center gap-2 mb-4">
-                <AlertTriangle className="w-5 h-5" style={{ color: "#FFE29A", filter: "drop-shadow(0 0 6px #FFE29A)" }} />
+                <AlertTriangle className="w-5 h-5" style={{ color: "#FFE29A" }} />
                 <div role="heading" aria-level={2} className="font-black text-lg text-white">
                   {isAfrikaans ? "Belangrike Reëls" : "Important Rules"}
                 </div>
@@ -795,7 +795,7 @@ export default function ExamReadyPage() {
               <div className="space-y-3">
                 {rules.map(({ Icon, hex, text }, i) => (
                   <div key={i} className="flex items-start gap-3">
-                    <Icon className="w-5 h-5 mt-0.5 shrink-0" style={{ color: hex, filter: `drop-shadow(0 0 5px ${hex})` }} />
+                    <Icon className="w-5 h-5 mt-0.5 shrink-0" style={{ color: hex }} />
                     <p className="text-sm text-white">{text}</p>
                   </div>
                 ))}
@@ -948,7 +948,7 @@ export default function ExamReadyPage() {
             className="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4"
             style={{ background: "rgba(159,216,255,.1)", border: "1.5px solid rgba(159,216,255,.5)" }}
           >
-            <Maximize2 className="w-8 h-8" style={{ color: "#9FD8FF", filter: "drop-shadow(0 0 8px rgba(159,216,255,.6))" }} />
+            <Maximize2 className="w-8 h-8" style={{ color: "#9FD8FF" }} />
           </div>
           <span style={marker("#9FD8FF", 16)}>{isAfrikaans ? "Diep asem. Jy's reg. 💪" : "Deep breath. You got this. 💪"}</span>
           <div role="heading" aria-level={1} className="text-2xl font-black mt-2 text-white">

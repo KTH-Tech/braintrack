@@ -3,7 +3,6 @@ import { Flame, Star, Zap, Target, Trophy, GraduationCap, Award, BookOpen, Spark
 import { Link } from "wouter";
 
 const ACCENT = "#FFE29A";
-const ACCENT_GLOW = "rgba(255,226,154,0.3)";
 
 const BADGE_ICONS: Record<string, any> = {
   streak_3: Flame, streak_7: Flame, streak_14: Flame, streak_30: Flame,
@@ -45,7 +44,7 @@ export function NextMilestoneWidget({ isAf = false }: NextMilestoneWidgetProps) 
     return (
       <div
         className="h-full p-5 text-center flex flex-col items-center justify-center"
-        style={{ background: "rgba(255,255,255,.03)", border: `1.5px solid ${ACCENT}`, borderRadius: 20, boxShadow: `0 0 18px ${ACCENT_GLOW}` }}
+        style={{ background: "rgba(255,255,255,.03)", border: `1.5px solid ${ACCENT}`, borderRadius: 20 }}
       >
         <Trophy className="w-7 h-7 mx-auto mb-2" style={{ color: ACCENT }} />
         <p className="text-sm font-semibold text-white">
@@ -71,13 +70,13 @@ export function NextMilestoneWidget({ isAf = false }: NextMilestoneWidgetProps) 
     <Link href="/rewards" className="block h-full">
       <div
         className="h-full p-5 flex flex-col gap-4 cursor-pointer transition-transform hover:-translate-y-1"
-        style={{ background: "rgba(255,255,255,.03)", border: `1.5px solid ${ACCENT}`, borderRadius: 20, boxShadow: `0 0 18px ${ACCENT_GLOW}` }}
+        style={{ background: "rgba(255,255,255,.03)", border: `1.5px solid ${ACCENT}`, borderRadius: 20 }}
         data-testid="next-milestone-widget"
       >
         <div className="flex items-center gap-3">
           <div
             className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
-            style={{ background: `${ACCENT}26`, boxShadow: `0 0 14px ${ACCENT_GLOW}` }}
+            style={{ background: `${ACCENT}26` }}
           >
             <Icon className="w-5 h-5" style={{ color: ACCENT }} />
           </div>
@@ -104,7 +103,6 @@ export function NextMilestoneWidget({ isAf = false }: NextMilestoneWidgetProps) 
               style={{
                 width: `${milestone.progressPct}%`,
                 background: "linear-gradient(90deg,#FFE29A,#94F7C5)",
-                boxShadow: `0 0 10px ${ACCENT_GLOW}`,
               }}
             />
           </div>

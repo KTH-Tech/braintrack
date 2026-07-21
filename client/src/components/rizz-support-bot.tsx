@@ -105,19 +105,13 @@ export function RizzHeaderButton({ compact = false }: { compact?: boolean }) {
         fontWeight: 800,
         fontSize: 14,
         whiteSpace: "nowrap",
-        // Soft pastel glow using the pink/purple brand colours.
-        boxShadow: "0 0 16px rgba(255,183,229,.5), 0 0 26px rgba(197,179,255,.3)",
-        transition: "transform .18s, box-shadow .18s",
+        transition: "transform .18s",
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = "translateY(-1px)";
-        e.currentTarget.style.boxShadow =
-          "0 0 22px rgba(255,183,229,.65), 0 0 36px rgba(197,179,255,.4)";
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = "none";
-        e.currentTarget.style.boxShadow =
-          "0 0 16px rgba(255,183,229,.5), 0 0 26px rgba(197,179,255,.3)";
       }}
     >
       <img
@@ -248,7 +242,7 @@ export function RizzSupportBot() {
             background: RIZZ.nearBlack,
             border: "1.5px solid rgba(179,136,255,.45)",
             borderRadius: 22,
-            boxShadow: "0 24px 60px rgba(179,136,255,.28), 0 0 40px rgba(255,126,198,.14)",
+            boxShadow: "0 24px 60px rgba(179,136,255,.28)",
             display: "flex",
             flexDirection: "column",
             overflow: "hidden",
@@ -352,7 +346,6 @@ export function RizzSupportBot() {
                   whiteSpace: "pre-wrap",
                   // Purple-tinted glass for bot bubbles.
                   backdropFilter: m.role === "bot" ? "blur(6px)" : undefined,
-                  boxShadow: m.role === "me" ? "0 0 14px rgba(110,231,249,.25)" : undefined,
                 }}
               >
                 {m.text}
@@ -427,7 +420,6 @@ export function RizzSupportBot() {
                     padding: "7px 12px",
                     cursor: "pointer",
                     whiteSpace: "nowrap",
-                    boxShadow: "0 0 12px rgba(110,231,249,.3)",
                   }}
                 >
                   {t.trialCta}

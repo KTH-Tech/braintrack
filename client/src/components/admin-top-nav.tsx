@@ -15,6 +15,7 @@ import {
   Home,
   QrCode,
   School,
+  Footprints,
 } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
 import iconTransparent from "@/assets/handoff/icon-transparent.png";
@@ -32,6 +33,7 @@ export type AdminNavKey =
   | "schools"
   | "qr"
   | "classroom"
+  | "onboarding-preview"
   | "parent";
 
 type NavItem = {
@@ -89,6 +91,10 @@ const NAV_GROUPS: NavGroup[] = [
       // dashboard, so this entry would appear dead. /classroom is the direct
       // alias for the learner DashboardPage.
       { key: "classroom", href: "/classroom", labelEn: "Learner Dashboard", labelAf: "Leerderpaneel", Icon: GraduationCap },
+      // ?preview=1: admin-only preview of the learner onboarding flow with
+      // every mutation disarmed (see client/src/lib/onboarding-preview.ts) —
+      // walking the phases saves nothing against the admin's account.
+      { key: "onboarding-preview", href: "/onboarding?preview=1", labelEn: "Onboarding Journey", labelAf: "Aanboordreis", Icon: Footprints },
       { key: "parent", href: "/parent", labelEn: "Parent View", labelAf: "Ouer Aansig", Icon: Users },
     ],
   },

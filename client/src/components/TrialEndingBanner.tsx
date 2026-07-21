@@ -97,7 +97,6 @@ export function TrialEndingBanner({ trialEndsAt }: TrialEndingBannerProps) {
       style={{
         background: `linear-gradient(135deg, ${hex}18 0%, transparent 60%), #000`,
         border: `1px solid ${hex}66`,
-        boxShadow: `0 0 22px ${hex}28`,
       }}
     >
       <div className="flex items-center gap-3 min-w-0">
@@ -113,7 +112,6 @@ export function TrialEndingBanner({ trialEndsAt }: TrialEndingBannerProps) {
             style={{
               background: hex,
               color: "#000",
-              boxShadow: `0 0 12px ${hex}66`,
             }}
           >
             {t.upgrade}

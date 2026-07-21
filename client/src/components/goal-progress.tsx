@@ -45,7 +45,6 @@ function LuminousBar({ pct, hex, hex2 }: { pct: number; hex: string; hex2: strin
         style={{
           width: `${clampedPct}%`,
           background: `linear-gradient(90deg,${hex},${hex2})`,
-          boxShadow: `0 0 12px ${hex}40`,
         }}
       />
     </div>
@@ -120,7 +119,7 @@ export function GoalProgress({ isAf }: GoalProgressProps) {
             {data && data.streakDays >= 2 && (
               <div
                 className="flex items-center gap-1 px-2 py-0.5 rounded-full"
-                style={{ background: "rgba(255,226,154,.14)", border: "1px solid #FFE29A", boxShadow: "0 0 10px rgba(255,226,154,.25)" }}
+                style={{ background: "rgba(255,226,154,.14)", border: "1px solid #FFE29A" }}
                 title={isAf ? `${data.streakDays}-dag reeks!` : `${data.streakDays}-day streak!`}
               >
                 <Flame className="w-3.5 h-3.5" style={{ color: "#FFE29A" }} />

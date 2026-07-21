@@ -379,7 +379,6 @@ export default function SubjectsPage() {
               className="w-4 h-4"
               style={{
                 color: "#9FF5E8",
-                filter: "drop-shadow(0 0 4px #9FF5E8)",
               }}
             />
             <span
@@ -481,7 +480,6 @@ export default function SubjectsPage() {
               className="w-6 h-6 shrink-0"
               style={{
                 color: "#FFE29A",
-                filter: "drop-shadow(0 0 6px #FFE29A)",
               }}
             />
             <div className="flex-1">
@@ -781,7 +779,6 @@ export default function SubjectsPage() {
                   className="w-12 h-12 mx-auto mb-4"
                   style={{
                     color: "#C5B3FF",
-                    filter: "drop-shadow(0 0 10px #C5B3FF)",
                   }}
                 />
                 <p className="text-lg text-white font-semibold">
@@ -974,7 +971,7 @@ function SubjectNeonCard({
           >
             <Icon
               className="w-6 h-6"
-              style={{ color: hex, filter: `drop-shadow(0 0 6px ${hex})` }}
+              style={{ color: hex }}
               strokeWidth={2}
             />
           </div>

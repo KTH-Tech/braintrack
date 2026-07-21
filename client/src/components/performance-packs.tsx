@@ -902,26 +902,25 @@ export function RescuePackAlert({ isAf }: { isAf: boolean }) {
               background: "rgba(255,255,255,.03)",
               border: "1.5px solid #FF8DA1",
               borderRadius: 20,
-              boxShadow: "0 0 22px rgba(255,141,161,.25)",
               animation: "bt-fadeup .45s cubic-bezier(.22,1,.36,1) both",
               fontFamily: "'Poppins',sans-serif",
             }}
             data-testid={`rescue-pack-alert-${idx}`}
           >
             {/* Alert accent bar */}
-            <div aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: "#FF8DA1", boxShadow: "0 0 10px #FF8DA1" }} />
+            <div aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: "#FF8DA1" }} />
             <div aria-hidden className="pointer-events-none absolute -top-14 -right-14 w-36 h-36 rounded-full blur-3xl opacity-25" style={{ background: "#FF8DA1" }} />
 
             <div className="relative p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-4">
               <div className="flex items-start gap-3.5 flex-1 min-w-0">
                 <div
                   className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ background: "rgba(5,5,8,.6)", border: "1px solid #FF8DA1", boxShadow: "0 0 14px rgba(255,141,161,.35), inset 0 0 10px rgba(255,141,161,.15)" }}
+                  style={{ background: "rgba(5,5,8,.6)", border: "1px solid #FF8DA1" }}
                 >
-                  <ShieldAlert className="w-5 h-5" style={{ color: "#FF8DA1", filter: "drop-shadow(0 0 5px #FF8DA1)" }} />
+                  <ShieldAlert className="w-5 h-5" style={{ color: "#FF8DA1" }} />
                 </div>
                 <div className="min-w-0">
-                  <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#FF8DA1", transform: "rotate(-1.5deg)", display: "inline-block", textShadow: "0 0 10px rgba(255,141,161,.5)" }}>
+                  <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#FF8DA1", transform: "rotate(-1.5deg)", display: "inline-block" }}>
                     {isAf ? "Reddingspakket" : "Rescue Pack"}
                   </div>
                   <p className="text-base font-black text-white leading-tight">
@@ -939,7 +938,6 @@ export function RescuePackAlert({ isAf }: { isAf: boolean }) {
                   style={{
                     background: "linear-gradient(100deg,#FF8DA1,#FFB7E5)",
                     color: "#050508",
-                    boxShadow: "0 0 18px rgba(255,141,161,.35)",
                   }}
                   onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
                   onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}

@@ -12,7 +12,7 @@ import {
   Activity, AlertTriangle, BarChart3, CheckCircle2, Database, Eye, FileEdit, FileText, Flag,
   GraduationCap, Gift, Layers, Loader2, LogOut, Mail, Package,
   ShieldAlert, Store, Users, Zap, Handshake, School, ChevronDown, ChevronUp, QrCode,
-  BookOpen, CreditCard, Inbox, ShieldCheck,
+  BookOpen, CreditCard, Inbox, ShieldCheck, Footprints,
 } from "lucide-react";
 import {
   BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid,
@@ -1338,6 +1338,18 @@ export default function AdminDashboardPage() {
       desc: "Jump straight to the learner dashboard without entering an impersonation session.",
       descAf: "Gaan direk na die leerderpaneel sonder om 'n nabootsingsessie te begin.",
       Icon: GraduationCap, testId: "quick-preview-classroom",
+    },
+    {
+      // ?preview=1 renders the learner onboarding flow with every mutation
+      // disarmed (admin-gated client flag + fetch write-tripwire, see
+      // client/src/lib/onboarding-preview.ts): walking or jumping through all
+      // phases saves NOTHING — no profile, identity, VARK, subjects or
+      // consent request ever touches the admin's own account.
+      href: "/onboarding?preview=1", color: "#FFE29A",
+      title: "Onboarding Journey", titleAf: "Aanboordreis",
+      desc: "Preview the learner onboarding flow with all saves disarmed — jump to any phase.",
+      descAf: "Voorskou die leerder-aanboordvloei met alle stoor-aksies ontwapen — spring na enige fase.",
+      Icon: Footprints, testId: "quick-preview-onboarding",
     },
     {
       href: "/learn/admin/reports", color: "#C5B3FF",
