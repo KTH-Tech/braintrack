@@ -201,7 +201,7 @@ function TrialCountdown({ expiryDate }: { expiryDate?: string | null }) {
     return () => clearInterval(id);
   }, [expiryDate]);
 
-  if (!expiryDate) return <span className="text-[10px] text-white font-mono">â€” : â€” : â€” : â€”</span>;
+  if (!expiryDate) return <span className="text-[10px] text-white font-mono">— : — : — : —</span>;
   const expiry = new Date(expiryDate).getTime();
   const diff = expiry - now;
 
@@ -241,7 +241,7 @@ function TrialCountdown({ expiryDate }: { expiryDate?: string | null }) {
         className="text-[10px] font-bold leading-none"
         style={{ color: hex }}
       >
-        {expired ? "â€“" : ""}{pad(days, 2)}<span className="opacity-60">d</span> {pad(hrs)}:{pad(mins)}:{pad(secs)}
+        {expired ? "–" : ""}{pad(days, 2)}<span className="opacity-60">d</span> {pad(hrs)}:{pad(mins)}:{pad(secs)}
       </span>
     </div>
   );
@@ -334,7 +334,7 @@ function SchoolOnboardingForm({ onClose, onSuccess }: { onClose: () => void; onS
                     : { color: "rgba(255,255,255,0.85)", border: "1px solid rgba(255,255,255,0.15)" }
                   }
                 >
-                  {done ? "âœ“" : i + 1}
+                  {done ? "✓" : i + 1}
                 </div>
                 <span
                   className="text-[10px] font-bold uppercase tracking-[0.14em] whitespace-nowrap"
@@ -351,14 +351,14 @@ function SchoolOnboardingForm({ onClose, onSuccess }: { onClose: () => void; onS
         })}
       </div>
 
-      {/* Step 0 â€” School Info */}
+      {/* Step 0 — School Info */}
       {step === 0 && (
         <div className="space-y-3">
           <div>
             <label className={lCls}>{isAf ? "Skoolnaam" : "School Name"} <span style={{ color: A }}>*</span></label>
             <Input
               autoFocus
-              placeholder={isAf ? "bv. HoÃ«rskool Pretoria" : "e.g. Hoerskool Pretoria"}
+              placeholder={isAf ? "bv. Hoërskool Pretoria" : "e.g. Hoerskool Pretoria"}
               value={form.schoolName}
               onChange={e => update("schoolName", e.target.value)}
               className={iCls} style={iSty}
@@ -368,7 +368,7 @@ function SchoolOnboardingForm({ onClose, onSuccess }: { onClose: () => void; onS
             <div>
               <label className={lCls}>{isAf ? "Provinsie" : "Province"}</label>
               <Select value={form.province} onValueChange={v => update("province", v)}>
-                <SelectTrigger className={iCls} style={iSty}><SelectValue placeholder={isAf ? "Kiesâ€¦" : "Selectâ€¦"} /></SelectTrigger>
+                <SelectTrigger className={iCls} style={iSty}><SelectValue placeholder={isAf ? "Kies…" : "Select…"} /></SelectTrigger>
                 <SelectContent>
                   {["Gauteng","Western Cape","KwaZulu-Natal","Eastern Cape","Free State","Limpopo","Mpumalanga","Northern Cape","North West"].map(p => (
                     <SelectItem key={p} value={p}>{p}</SelectItem>
@@ -395,7 +395,7 @@ function SchoolOnboardingForm({ onClose, onSuccess }: { onClose: () => void; onS
         </div>
       )}
 
-      {/* Step 1 â€” Contact & Size */}
+      {/* Step 1 — Contact & Size */}
       {step === 1 && (
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
@@ -418,9 +418,9 @@ function SchoolOnboardingForm({ onClose, onSuccess }: { onClose: () => void; onS
               <Select value={form.gradeRange} onValueChange={v => update("gradeRange", v)}>
                 <SelectTrigger className={iCls} style={iSty}><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="8-12">{isAf ? "Gr 8â€“12" : "Gr 8â€“12"}</SelectItem>
-                  <SelectItem value="10-12">{isAf ? "Gr 10â€“12" : "Gr 10â€“12"}</SelectItem>
-                  <SelectItem value="11-12">{isAf ? "Gr 11â€“12" : "Gr 11â€“12"}</SelectItem>
+                  <SelectItem value="8-12">{isAf ? "Gr 8–12" : "Gr 8–12"}</SelectItem>
+                  <SelectItem value="10-12">{isAf ? "Gr 10–12" : "Gr 10–12"}</SelectItem>
+                  <SelectItem value="11-12">{isAf ? "Gr 11–12" : "Gr 11–12"}</SelectItem>
                   <SelectItem value="12">{isAf ? "Slegs Gr 12" : "Gr 12 only"}</SelectItem>
                 </SelectContent>
               </Select>
@@ -447,7 +447,7 @@ function SchoolOnboardingForm({ onClose, onSuccess }: { onClose: () => void; onS
         </div>
       )}
 
-      {/* Step 2 â€” Trial Setup */}
+      {/* Step 2 — Trial Setup */}
       {step === 2 && (
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
@@ -463,7 +463,7 @@ function SchoolOnboardingForm({ onClose, onSuccess }: { onClose: () => void; onS
           <div>
             <label className={lCls}>{isAf ? "Notas" : "Notes"}</label>
             <Textarea
-              placeholder={isAf ? "Ooreengekome terme, opvolgstappe, ensâ€¦" : "Agreed terms, follow-up actions, etcâ€¦"}
+              placeholder={isAf ? "Ooreengekome terme, opvolgstappe, ens…" : "Agreed terms, follow-up actions, etc…"}
               value={form.notes}
               onChange={e => update("notes", e.target.value)}
               className="text-sm min-h-[64px] bg-black text-white placeholder:text-white resize-none"
@@ -480,15 +480,15 @@ function SchoolOnboardingForm({ onClose, onSuccess }: { onClose: () => void; onS
               </div>
               <div className="text-right">
                 <div className="text-xl font-black" style={{ color: "#FFE29A" }}>R{formatNumber((parseInt(form.expectedLearnerCount || "0") || 0) * 35, language)}<span className="text-xs font-semibold text-white">/{isAf ? "mo" : "mo"}</span></div>
-                <div className="text-[10px] text-white">{form.expectedLearnerCount} Ã— R35</div>
+                <div className="text-[10px] text-white">{form.expectedLearnerCount} × R35</div>
               </div>
             </div>
           )}
           {/* Summary */}
           <div className="p-3 rounded-xl bg-black text-[11px] text-white space-y-1" style={{ border: "1px solid rgba(255,255,255,0.1)" }}>
             <div className="text-[10px] font-black uppercase tracking-[0.14em] text-white mb-2">{isAf ? "Opsomming" : "Summary"}</div>
-            <div className="font-semibold text-white">{form.schoolName || "â€”"}{form.province ? ` Â· ${form.province}` : ""}</div>
-            <div>{form.schoolType} Â· {isAf ? "Grade" : "Grades"} {form.gradeRange}{form.contactEmail ? ` Â· ${form.contactEmail}` : ""}</div>
+            <div className="font-semibold text-white">{form.schoolName || "—"}{form.province ? ` · ${form.province}` : ""}</div>
+            <div>{form.schoolType} · {isAf ? "Grade" : "Grades"} {form.gradeRange}{form.contactEmail ? ` · ${form.contactEmail}` : ""}</div>
             {form.endorsementStatus !== "none" && <div>{isAf ? "Onderskrywing" : "Endorsement"}: {form.endorsementStatus}</div>}
           </div>
         </div>
@@ -519,7 +519,7 @@ function SchoolOnboardingForm({ onClose, onSuccess }: { onClose: () => void; onS
               className="inline-flex items-center gap-1.5 rounded-xl px-5 py-2 text-xs font-black uppercase tracking-[0.16em] disabled:opacity-35 transition-transform hover:scale-[1.02]"
               style={{ background: `linear-gradient(90deg,${A},#9FD8FF)`, color: "#000" }}
             >
-              {isAf ? "Volgende" : "Next"} â†’
+              {isAf ? "Volgende" : "Next"} →
             </button>
           ) : (
             <button
@@ -529,7 +529,7 @@ function SchoolOnboardingForm({ onClose, onSuccess }: { onClose: () => void; onS
               style={{ background: `linear-gradient(90deg,${A},#9FD8FF)`, color: "#000" }}
             >
               {createMutation.isPending
-                ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> {isAf ? "Skepâ€¦" : "Creatingâ€¦"}</>
+                ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> {isAf ? "Skep…" : "Creating…"}</>
                 : <><School className="w-3.5 h-3.5" /> {isAf ? "Skool Inboord" : "Onboard School"}</>
               }
             </button>
@@ -589,7 +589,7 @@ function SchoolDetailPanel({ schoolId, onClose }: { schoolId: number; onClose: (
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-48">
-        <div className="text-sm text-white">{language === "af" ? "Laai skooldataâ€¦" : "Loading school dataâ€¦"}</div>
+        <div className="text-sm text-white">{language === "af" ? "Laai skooldata…" : "Loading school data…"}</div>
       </div>
     );
   }
@@ -602,8 +602,8 @@ function SchoolDetailPanel({ schoolId, onClose }: { schoolId: number; onClose: (
 
   const trendUp = (stats?.activeThisWeek ?? 0) >= (stats?.activeLastWeek ?? 0);
   const logTypeLabels: Record<string, string> = language === "af"
-    ? { call: "ðŸ“ž Oproep", email: "ðŸ“§ E-pos", meeting: "ðŸ¤ Vergadering", demo: "ðŸŽ¯ Demo", follow_up: "ðŸ” Opvolg" }
-    : { call: "ðŸ“ž Call", email: "ðŸ“§ Email", meeting: "ðŸ¤ Meeting", demo: "ðŸŽ¯ Demo", follow_up: "ðŸ” Follow-up" };
+    ? { call: "📞 Oproep", email: "📧 E-pos", meeting: "🤝 Vergadering", demo: "🎯 Demo", follow_up: "🔁 Opvolg" }
+    : { call: "📞 Call", email: "📧 Email", meeting: "🤝 Meeting", demo: "🎯 Demo", follow_up: "🔁 Follow-up" };
 
   return (
     <div className="space-y-5">
@@ -614,7 +614,7 @@ function SchoolDetailPanel({ schoolId, onClose }: { schoolId: number; onClose: (
             <h2 className="text-base font-semibold text-white">{school.schoolName}</h2>
             <EndorsementBadge status={school.endorsementStatus ?? "none"} />
           </div>
-          <div className="text-xs text-white">{school.province} {school.district ? `Â· ${school.district}` : ""} Â· {school.schoolType}</div>
+          <div className="text-xs text-white">{school.province} {school.district ? `· ${school.district}` : ""} · {school.schoolType}</div>
           {school.gradeRange && <div className="text-xs text-white">{language === "af" ? "Grade" : "Grades"} {school.gradeRange}</div>}
         </div>
         <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:text-white" onClick={onClose}><X className="w-4 h-4" /></Button>
@@ -622,9 +622,9 @@ function SchoolDetailPanel({ schoolId, onClose }: { schoolId: number; onClose: (
 
       {/* R35 Value Widget */}
       <NeonShell color="#FFE29A" className="p-4">
-        <div className="text-[10px] text-white uppercase tracking-widest font-medium mb-1">{language === "af" ? "Skoolwaarde â€” R35/leerder" : "School Value â€” R35/learner"}</div>
+        <div className="text-[10px] text-white uppercase tracking-widest font-medium mb-1">{language === "af" ? "Skoolwaarde — R35/leerder" : "School Value — R35/learner"}</div>
         <div className="text-3xl font-semibold font-heading" style={{ color: "#FFE29A" }}>R{formatNumber(stats?.valueRands ?? 0, language)}<span className="text-base font-normal text-white">{language === "af" ? "/maand" : "/month"}</span></div>
-        <div className="text-[11px] text-white mt-1">{stats?.learnerCount ?? 0} {language === "af" ? "aktiewe leerders Ã— R35" : "active learners Ã— R35"}</div>
+        <div className="text-[11px] text-white mt-1">{stats?.learnerCount ?? 0} {language === "af" ? "aktiewe leerders × R35" : "active learners × R35"}</div>
       </NeonShell>
 
       {/* Key Stats */}
@@ -652,7 +652,7 @@ function SchoolDetailPanel({ schoolId, onClose }: { schoolId: number; onClose: (
         </NeonShell>
       </div>
 
-      {/* Engagement Trend â€” 8-week sparkline */}
+      {/* Engagement Trend — 8-week sparkline */}
       {(activityData?.weeks ?? []).length > 0 && (
         <NeonShell color="#9FF5E8" className="p-3">
           <div className="text-xs font-semibold mb-2 flex items-center justify-between gap-2 text-white">
@@ -679,7 +679,7 @@ function SchoolDetailPanel({ schoolId, onClose }: { schoolId: number; onClose: (
             })}
           </div>
           <div className="text-[10px] text-white mt-1">
-            {language === "af" ? "Hoogtepunt" : "Peak"}: {Math.max(...(activityData?.weeks ?? []).map(w => w.activeCount), 0)} {language === "af" ? "leerders Â· Huidig" : "learners Â· Current"}: {activityData?.weeks?.[activityData.weeks.length - 1]?.activeCount ?? 0}
+            {language === "af" ? "Hoogtepunt" : "Peak"}: {Math.max(...(activityData?.weeks ?? []).map(w => w.activeCount), 0)} {language === "af" ? "leerders · Huidig" : "learners · Current"}: {activityData?.weeks?.[activityData.weeks.length - 1]?.activeCount ?? 0}
           </div>
         </NeonShell>
       )}
@@ -693,7 +693,7 @@ function SchoolDetailPanel({ schoolId, onClose }: { schoolId: number; onClose: (
         {school.trialStartDate && (
           <div className="text-[11px] text-white">
             {language === "af" ? "Begin" : "Started"}: {formatDate(school.trialStartDate, language, {})}
-            {school.trialExpiryDate && ` Â· ${language === "af" ? "Verval" : "Expires"}: ${formatDate(school.trialExpiryDate, language, {})}`}
+            {school.trialExpiryDate && ` · ${language === "af" ? "Verval" : "Expires"}: ${formatDate(school.trialExpiryDate, language, {})}`}
           </div>
         )}
         {!editingEndorsement ? (
@@ -758,7 +758,7 @@ function SchoolDetailPanel({ schoolId, onClose }: { schoolId: number; onClose: (
                 {Object.entries(logTypeLabels).map(([v, l]) => <SelectItem key={v} value={v}>{l}</SelectItem>)}
               </SelectContent>
             </Select>
-            <Input value={logNotes} onChange={e => setLogNotes(e.target.value)} placeholder={language === "af" ? "Notas oor hierdie interaksieâ€¦" : "Notes about this interactionâ€¦"} className="h-8 text-xs flex-1" onKeyDown={e => { if (e.key === "Enter" && logNotes.trim()) addLogMutation.mutate(); }} />
+            <Input value={logNotes} onChange={e => setLogNotes(e.target.value)} placeholder={language === "af" ? "Notas oor hierdie interaksie…" : "Notes about this interaction…"} className="h-8 text-xs flex-1" onKeyDown={e => { if (e.key === "Enter" && logNotes.trim()) addLogMutation.mutate(); }} />
             <Button size="sm" className="h-8 text-xs px-3" disabled={!logNotes.trim() || addLogMutation.isPending} onClick={() => addLogMutation.mutate()}>
               {language === "af" ? "Voeg By" : "Add"}
             </Button>
@@ -793,7 +793,7 @@ function SchoolDetailPanel({ schoolId, onClose }: { schoolId: number; onClose: (
   );
 }
 
-// â”€â”€ Send Test Email card â€” shown in Overview tab â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+              // ── Send Test Email card — shown in Overview tab ──────────────
 function SendTestEmailCard({ language }: { language: string }) {
   const isAf = language === "af";
   const { toast } = useToast();
@@ -954,8 +954,8 @@ export default function AdminReportsPage() {
       toast({
         title: language === "af" ? "Massa-invoer voltooi" : "Bulk import complete",
         description: language === "af"
-          ? `${data.summary?.inserted ?? 0} bygevoeg Â· ${data.summary?.skipped ?? 0} oorgeslaan Â· ${data.summary?.failed ?? 0} misluk`
-          : `${data.summary?.inserted ?? 0} added Â· ${data.summary?.skipped ?? 0} skipped Â· ${data.summary?.failed ?? 0} failed`,
+          ? `${data.summary?.inserted ?? 0} bygevoeg · ${data.summary?.skipped ?? 0} oorgeslaan · ${data.summary?.failed ?? 0} misluk`
+          : `${data.summary?.inserted ?? 0} added · ${data.summary?.skipped ?? 0} skipped · ${data.summary?.failed ?? 0} failed`,
       });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/reports/partners"] });
       queryClient.invalidateQueries({ queryKey: ["/api/partner-schools"] });
@@ -1011,8 +1011,8 @@ export default function AdminReportsPage() {
       toast({
         title: language === "af" ? "Massa-invoer voltooi" : "Bulk import complete",
         description: language === "af"
-          ? `${data.summary?.inserted ?? 0} bygevoeg Â· ${data.summary?.skipped ?? 0} oorgeslaan Â· ${data.summary?.failed ?? 0} misluk`
-          : `${data.summary?.inserted ?? 0} added Â· ${data.summary?.skipped ?? 0} skipped Â· ${data.summary?.failed ?? 0} failed`,
+          ? `${data.summary?.inserted ?? 0} bygevoeg · ${data.summary?.skipped ?? 0} oorgeslaan · ${data.summary?.failed ?? 0} misluk`
+          : `${data.summary?.inserted ?? 0} added · ${data.summary?.skipped ?? 0} skipped · ${data.summary?.failed ?? 0} failed`,
       });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/reports/schools"] });
     },
@@ -1102,7 +1102,7 @@ export default function AdminReportsPage() {
     onError: () => toast({ title: language === "af" ? "Fout" : "Error", description: language === "af" ? "Kon nie proeflopies toewys nie." : "Could not assign trials.", variant: "destructive" }),
   });
 
-  // Delete-user state + mutation (admin only â€” excludes other admins via API)
+  // Delete-user state + mutation (admin only — excludes other admins via API)
   const [pendingDelete, setPendingDelete] = useState<{ id: string; label: string } | null>(null);
   const deleteUserMutation = useMutation({
     mutationFn: (userId: string) =>
@@ -1179,12 +1179,12 @@ export default function AdminReportsPage() {
           </section>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
-            <GlowStatCard label={language === "af" ? "ðŸ‘¥ Totale Gebruikers" : "ðŸ‘¥ Total Users"} value={stats?.totalUsers ?? 0} icon={Users} color="#9FF5E8" />
-            <GlowStatCard label={language === "af" ? "ðŸŽ“ Leerders" : "ðŸŽ“ Learners"} value={stats?.learners ?? 0} icon={UserCheck} color="#9FD8FF" />
-            <GlowStatCard label={language === "af" ? "ðŸ‘ª Ouers" : "ðŸ‘ª Parents"} value={stats?.parents ?? 0} icon={Users} color="#C5B3FF" />
-            <GlowStatCard label={language === "af" ? "âš¡ Aktief Vandag" : "âš¡ Active Today"} value={stats?.activeToday ?? 0} icon={TrendingUp} color="#94F7C5" />
-            <GlowStatCard label={language === "af" ? "ðŸ”“ Op Proeflopie" : "ðŸ”“ On Trial"} value={stats?.trialUsers ?? 0} icon={Clock} color="#FFE29A" />
-            <GlowStatCard label={language === "af" ? "ðŸ’° Ingeteken" : "ðŸ’° Subscribed"} value={stats?.subscribedUsers ?? 0} sub={language === "af" ? "R169/maand" : "R169/month"} icon={DollarSign} color="#FFB7E5" />
+            <GlowStatCard label={language === "af" ? "👥 Totale Gebruikers" : "👥 Total Users"} value={stats?.totalUsers ?? 0} icon={Users} color="#9FF5E8" />
+            <GlowStatCard label={language === "af" ? "🎓 Leerders" : "🎓 Learners"} value={stats?.learners ?? 0} icon={UserCheck} color="#9FD8FF" />
+            <GlowStatCard label={language === "af" ? "👪 Ouers" : "👪 Parents"} value={stats?.parents ?? 0} icon={Users} color="#C5B3FF" />
+            <GlowStatCard label={language === "af" ? "⚡ Aktief Vandag" : "⚡ Active Today"} value={stats?.activeToday ?? 0} icon={TrendingUp} color="#94F7C5" />
+            <GlowStatCard label={language === "af" ? "🔓 Op Proeflopie" : "🔓 On Trial"} value={stats?.trialUsers ?? 0} icon={Clock} color="#FFE29A" />
+            <GlowStatCard label={language === "af" ? "💰 Ingeteken" : "💰 Subscribed"} value={stats?.subscribedUsers ?? 0} sub={language === "af" ? "R169/maand" : "R169/month"} icon={DollarSign} color="#FFB7E5" />
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -1240,7 +1240,7 @@ export default function AdminReportsPage() {
                         <div className="text-xs text-white uppercase tracking-wider font-medium">{language === "af" ? "Omskakelingstempo" : "Conversion Rate"}</div>
                       </div>
                       <div className="text-3xl font-semibold font-heading text-white">{conversionRate}%</div>
-                      <div className="text-[10px] text-white mt-1">{language === "af" ? "proeflopie â†’ ingeteken" : "trial â†’ subscribed"}</div>
+                      <div className="text-[10px] text-white mt-1">{language === "af" ? "proeflopie → ingeteken" : "trial → subscribed"}</div>
                       <MiniBar value={conversionRate} max={100} color="bg-[#94F7C5]" />
                   </NeonShell>
                   <NeonShell color="#FFE29A" className="p-6">
@@ -1249,7 +1249,7 @@ export default function AdminReportsPage() {
                         <div className="text-xs text-white uppercase tracking-wider font-medium">{language === "af" ? "Maandelikse Inkomste" : "Monthly Revenue"}</div>
                       </div>
                       <div className="text-3xl font-semibold font-heading text-white">R{formatNumber(monthlyRevenue, language)}</div>
-                      <div className="text-[10px] text-white mt-1">{stats?.subscribedUsers ?? 0} Ã— R169</div>
+                      <div className="text-[10px] text-white mt-1">{stats?.subscribedUsers ?? 0} × R169</div>
                       <MiniBar value={monthlyRevenue} max={Math.max(monthlyRevenue, 10000)} color="bg-[#FFE29A]" />
                   </NeonShell>
                 </div>
@@ -1272,7 +1272,7 @@ export default function AdminReportsPage() {
                         <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: halo("#94F7C5", 0.18) }}><TrendingUp className="w-4 h-4" style={{ color: "#94F7C5" }} /></div>
                         <div>
                           <div className="text-xs font-semibold text-white">{language === "af" ? "Omskakelingstregter" : "Conversion Funnel"}</div>
-                          <div className="text-[10px] text-white">{stats?.trialUsers ?? 0} {language === "af" ? "proeflopie" : "trial"} â†’ {stats?.subscribedUsers ?? 0} {language === "af" ? "ingeteken" : "subscribed"} ({conversionRate}%)</div>
+                          <div className="text-[10px] text-white">{stats?.trialUsers ?? 0} {language === "af" ? "proeflopie" : "trial"} → {stats?.subscribedUsers ?? 0} {language === "af" ? "ingeteken" : "subscribed"} ({conversionRate}%)</div>
                         </div>
                       </div>
                       <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04]" style={{ border: `1px solid ${halo("#FFE29A", 0.25)}` }}>
@@ -1297,7 +1297,7 @@ export default function AdminReportsPage() {
                   <div className="flex flex-wrap gap-2 mb-4">
                     <div className="relative flex-1 min-w-48">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white" />
-                      <input placeholder={language === "af" ? "Soek volgens naam, e-posâ€¦" : "Search by name, emailâ€¦"} className={`${adminInputClass} pl-9 h-9`} style={adminInputStyle} value={learnerSearch} onChange={e => setLearnerSearch(e.target.value)} />
+                      <input placeholder={language === "af" ? "Soek volgens naam, e-pos…" : "Search by name, email…"} className={`${adminInputClass} pl-9 h-9`} style={adminInputStyle} value={learnerSearch} onChange={e => setLearnerSearch(e.target.value)} />
                     </div>
                     <Select value={learnerGrade} onValueChange={setLearnerGrade}>
                       <SelectTrigger className="h-9 w-32 text-sm rounded-xl"><SelectValue placeholder={language === "af" ? "Graad" : "Grade"} /></SelectTrigger>
@@ -1376,7 +1376,7 @@ export default function AdminReportsPage() {
                                   <div className="text-[10px] text-white">{l.email}</div>
                                   {l.school_name && <div className="text-[10px] text-white">{l.school_name}</div>}
                                 </TableCell>
-                                <TableCell className="text-sm text-white">{l.grade ? (language === "af" ? `Gr ${l.grade}` : `Gr ${l.grade}`) : "â€”"}</TableCell>
+                                <TableCell className="text-sm text-white">{l.grade ? (language === "af" ? `Gr ${l.grade}` : `Gr ${l.grade}`) : "—"}</TableCell>
                                 <TableCell className="text-center">
                                   <AdminBadge color={l.subscription_status === 'active' ? "#94F7C5" : l.subscription_status === 'trial' ? "#FFE29A" : "#9FD8FF"}>
                                     {l.subscription_status === 'active' ? (language === "af" ? "Ingeteken" : "Subscribed") : l.subscription_status === 'trial' ? (language === "af" ? "Proeflopie" : "Trial") : (language === "af" ? "Geen" : "None")}
@@ -1389,7 +1389,7 @@ export default function AdminReportsPage() {
                                   </AdminBadge>
                                 </TableCell>
                                 <TableCell className="text-xs text-white">
-                                  {l.last_active_at ? formatDate(l.last_active_at, language, {}) : "â€”"}
+                                  {l.last_active_at ? formatDate(l.last_active_at, language, {}) : "—"}
                                 </TableCell>
                                 <TableCell className="text-center">
                                   <button
@@ -1434,7 +1434,7 @@ export default function AdminReportsPage() {
                 <CardContent>
                   <div className="relative mb-4">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white" />
-                    <Input placeholder={language === "af" ? "Soek ouersâ€¦" : "Search parentsâ€¦"} className="pl-9 h-9 text-sm rounded-xl" value={search} onChange={e => setSearch(e.target.value)} />
+                    <Input placeholder={language === "af" ? "Soek ouers…" : "Search parents…"} className="pl-9 h-9 text-sm rounded-xl" value={search} onChange={e => setSearch(e.target.value)} />
                   </div>
                   <div className="overflow-x-auto rounded-xl border border-white/15">
                     <Table>
@@ -1653,7 +1653,7 @@ export default function AdminReportsPage() {
                 <GlowStatCard label={language === "af" ? "Totale Klikke" : "Total Clicks"} value={partnerStatsData?.totalClicks ?? 0} icon={MousePointerClick} color="#9FD8FF" />
                 <GlowStatCard label={language === "af" ? "Proefbeginne" : "Trial Starts"} value={partnerStatsData?.totalTrials ?? 0} icon={UserCheck} color="#94F7C5" />
                 <GlowStatCard
-                  label={language === "af" ? "Klik â†’ Proeflopie %" : "Click â†’ Trial %"}
+                  label={language === "af" ? "Klik → Proeflopie %" : "Click → Trial %"}
                   value={partnerStatsData && partnerStatsData.totalClicks > 0
                     ? `${Math.round((partnerStatsData.totalTrials / partnerStatsData.totalClicks) * 100)}%`
                     : "0%"}
@@ -1678,7 +1678,7 @@ export default function AdminReportsPage() {
                       </TableHeader>
                       <TableBody>
                         {(partnerStatsData?.stats ?? []).length === 0 ? (
-                          <TableRow><TableCell colSpan={6} className="p-0"><EmptyState icon={MousePointerClick} title={language === "af" ? "Nog geen vennootskakel-klikke nie" : "No partner link clicks yet"} description={language === "af" ? "Statistieke sal opdateer namate vennootskakels deur potensiÃ«le gebruikers besoek word." : "Stats will populate as partner links are visited by potential users."} /></TableCell></TableRow>
+                          <TableRow><TableCell colSpan={6} className="p-0"><EmptyState icon={MousePointerClick} title={language === "af" ? "Nog geen vennootskakel-klikke nie" : "No partner link clicks yet"} description={language === "af" ? "Statistieke sal opdateer namate vennootskakels deur potensiële gebruikers besoek word." : "Stats will populate as partner links are visited by potential users."} /></TableCell></TableRow>
                         ) : (
                           (partnerStatsData?.stats ?? []).map((s: any, i: number) => {
                             const convPct = s.clicks > 0 ? Math.round((s.trialStarts / s.clicks) * 100) : 0;
@@ -1690,8 +1690,8 @@ export default function AdminReportsPage() {
                                 <TableCell className="text-center">
                                   <Badge variant="outline" className={`text-[10px] ${convPct >= 20 ? "bg-white/10 border-white/30 text-white" : convPct >= 5 ? "bg-white/10 border-white/30 text-white" : "bg-red-500/10 border-red-500/30 text-white"}`}>{convPct}%</Badge>
                                 </TableCell>
-                                <TableCell className="text-xs text-white">{s.firstClick ? formatDate(s.firstClick, language, {}) : 'â€”'}</TableCell>
-                                <TableCell className="text-xs text-white">{s.lastClick ? formatDate(s.lastClick, language, {}) : 'â€”'}</TableCell>
+                                <TableCell className="text-xs text-white">{s.firstClick ? formatDate(s.firstClick, language, {}) : '—'}</TableCell>
+                                <TableCell className="text-xs text-white">{s.lastClick ? formatDate(s.lastClick, language, {}) : '—'}</TableCell>
                               </TableRow>
                             );
                           })
@@ -1728,7 +1728,7 @@ export default function AdminReportsPage() {
                         <div key={source} className={`rounded-2xl border p-4 ${accent}`}>
                           <p className="text-xs font-bold uppercase tracking-wider mb-1">{label}</p>
                           <p className="text-2xl font-bold">{stat?.clicks ?? 0}</p>
-                          <p className="text-[10px] mt-0.5 opacity-80">{language === "af" ? "klikke" : "clicks"} Â· {stat?.trialStarts ?? 0} {language === "af" ? "proeflopies" : "trials"}</p>
+                          <p className="text-[10px] mt-0.5 opacity-80">{language === "af" ? "klikke" : "clicks"} · {stat?.trialStarts ?? 0} {language === "af" ? "proeflopies" : "trials"}</p>
                           <div className="mt-2">
                             <code className="text-[10px] bg-black/10 px-1.5 py-0.5 rounded font-mono">{source}</code>
                           </div>
@@ -1798,15 +1798,15 @@ export default function AdminReportsPage() {
               {language === "af" ? (
                 <>
                   <p><strong>Twee formate ondersteun:</strong></p>
-                  <p><strong>CSV</strong> â€” eerste ry opsionele opskrifte (name, province, district, contactName, contactEmail, contactPhone, schoolType, gradeRange, expectedLearnerCount, schoolCode, notes). Sonder opskrifte word kolomme in daardie volgorde gelees.</p>
-                  <p><strong>JSON</strong> â€” plak 'n skikking van objekte bv. <code className="text-[10px]">[{`{"name":"Sandton High","province":"Gauteng"}`}]</code></p>
+                  <p><strong>CSV</strong> — eerste ry opsionele opskrifte (name, province, district, contactName, contactEmail, contactPhone, schoolType, gradeRange, expectedLearnerCount, schoolCode, notes). Sonder opskrifte word kolomme in daardie volgorde gelees.</p>
+                  <p><strong>JSON</strong> — plak 'n skikking van objekte bv. <code className="text-[10px]">[{`{"name":"Sandton High","province":"Gauteng"}`}]</code></p>
                   <p>Duplikate (dieselfde naam of schoolCode) word outomaties oorgeslaan. Ontbrekende schoolCode word outogenereer.</p>
                 </>
               ) : (
                 <>
                   <p><strong>Two formats supported:</strong></p>
-                  <p><strong>CSV</strong> â€” first row optional headers (name, province, district, contactName, contactEmail, contactPhone, schoolType, gradeRange, expectedLearnerCount, schoolCode, notes). Without headers, columns are read in that order.</p>
-                  <p><strong>JSON</strong> â€” paste an array of objects e.g. <code className="text-[10px]">[{`{"name":"Sandton High","province":"Gauteng"}`}]</code></p>
+                  <p><strong>CSV</strong> — first row optional headers (name, province, district, contactName, contactEmail, contactPhone, schoolType, gradeRange, expectedLearnerCount, schoolCode, notes). Without headers, columns are read in that order.</p>
+                  <p><strong>JSON</strong> — paste an array of objects e.g. <code className="text-[10px]">[{`{"name":"Sandton High","province":"Gauteng"}`}]</code></p>
                   <p>Duplicates (same name or schoolCode) are skipped automatically. Missing schoolCode is auto-generated.</p>
                 </>
               )}
@@ -1818,7 +1818,7 @@ export default function AdminReportsPage() {
                 value={bulkText}
                 onChange={(e) => setBulkText(e.target.value)}
                 placeholder={language === "af"
-                  ? "naam,provinsie,distrik,kontakEpos\nSandton HoÃ«r,Gauteng,Johannesburg Noord,office@sandtonhigh.co.za\nDurban Meisies,KwaZulu-Natal,Durban,info@durbangirls.org"
+                  ? "naam,provinsie,distrik,kontakEpos\nSandton Hoër,Gauteng,Johannesburg Noord,office@sandtonhigh.co.za\nDurban Meisies,KwaZulu-Natal,Durban,info@durbangirls.org"
                   : "name,province,district,contactEmail\nSandton High,Gauteng,Johannesburg North,office@sandtonhigh.co.za\nDurban Girls,KwaZulu-Natal,Durban,info@durbangirls.org"}
                 className="font-mono text-xs min-h-[200px]"
                 data-testid="textarea-bulk-schools"
@@ -1855,7 +1855,7 @@ export default function AdminReportsPage() {
                     }}
                     data-testid="button-bulk-submit"
                   >
-                    {bulkImportMutation.isPending ? (language === "af" ? "Voer inâ€¦" : "Importingâ€¦") : (language === "af" ? "Voer in" : "Import")}
+                    {bulkImportMutation.isPending ? (language === "af" ? "Voer in…" : "Importing…") : (language === "af" ? "Voer in" : "Import")}
                   </Button>
                 </div>
               </div>
@@ -1886,10 +1886,10 @@ export default function AdminReportsPage() {
                     <summary className="cursor-pointer text-white">{language === "af" ? "Sien besonderhede" : "View details"}</summary>
                     <div className="mt-2 space-y-1 max-h-40 overflow-y-auto">
                       {bulkResult.skipped?.map((s: any, i: number) => (
-                        <div key={`sk-${i}`} className="text-amber-700">{language === "af" ? "Ry" : "Row"} {s.row}: {s.name} â€” {s.reason}</div>
+                        <div key={`sk-${i}`} className="text-amber-700">{language === "af" ? "Ry" : "Row"} {s.row}: {s.name} — {s.reason}</div>
                       ))}
                       {bulkResult.failed?.map((f: any, i: number) => (
-                        <div key={`fl-${i}`} className="text-red-700">{language === "af" ? "Ry" : "Row"} {f.row}: {f.name ?? (language === "af" ? "(geen naam)" : "(no name)")} â€” {f.reason}</div>
+                        <div key={`fl-${i}`} className="text-red-700">{language === "af" ? "Ry" : "Row"} {f.row}: {f.name ?? (language === "af" ? "(geen naam)" : "(no name)")} — {f.reason}</div>
                       ))}
                     </div>
                   </details>
@@ -1979,7 +1979,7 @@ export default function AdminReportsPage() {
                       data-testid="input-partner-code"
                     />
                     <p className="text-[10px] mt-1" style={{ color: codeOk ? "rgba(255,255,255,0.85)" : "#ef4444" }}>
-                      {codeOk ? (language === "af" ? "Laat leeg om outomaties te genereer Â· 3â€“12 letters/syfers" : "Leave blank to auto-generate Â· 3â€“12 letters/numbers") : (language === "af" ? "Slegs 3â€“12 letters/syfers" : "3â€“12 letters/numbers only")}
+                      {codeOk ? (language === "af" ? "Laat leeg om outomaties te genereer · 3–12 letters/syfers" : "Leave blank to auto-generate · 3–12 letters/numbers") : (language === "af" ? "Slegs 3–12 letters/syfers" : "3–12 letters/numbers only")}
                     </p>
                   </div>
 
@@ -2000,7 +2000,7 @@ export default function AdminReportsPage() {
                       <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm font-black" style={{ color: "#FFE29A" }}>%</span>
                     </div>
                     <p className="text-[10px] mt-1" style={{ color: commOk ? "rgba(255,255,255,0.85)" : "#ef4444" }}>
-                      {language === "af" ? "Per leerder Â· verstek 10%" : "Per learner Â· default 10%"}
+                      {language === "af" ? "Per leerder · verstek 10%" : "Per learner · default 10%"}
                     </p>
                   </div>
 
@@ -2053,7 +2053,7 @@ export default function AdminReportsPage() {
                       value={partnerForm.province}
                       onChange={e => setPartnerForm(f => ({ ...f, province: e.target.value }))}
                     >
-                      <option value="">{language === "af" ? "Kiesâ€¦" : "Selectâ€¦"}</option>
+                      <option value="">{language === "af" ? "Kies…" : "Select…"}</option>
                       {provinces.map(p => <option key={p} value={p}>{p}</option>)}
                     </select>
                   </div>
@@ -2074,7 +2074,7 @@ export default function AdminReportsPage() {
                     <Textarea
                       value={partnerForm.notes}
                       onChange={e => setPartnerForm(f => ({ ...f, notes: e.target.value }))}
-                      placeholder={language === "af" ? "Enige nuttige inligting oor hierdie vennoot â€” ooreengekome voorwaardes, intro-bron, ens." : "Anything useful about this partner â€” agreed terms, intro source, etc."}
+                      placeholder={language === "af" ? "Enige nuttige inligting oor hierdie vennoot — ooreengekome voorwaardes, intro-bron, ens." : "Anything useful about this partner — agreed terms, intro source, etc."}
                       className="text-sm min-h-[70px] bg-black text-white placeholder:text-white"
                       style={{ border: "1px solid rgba(255,183,229,0.35)" }}
                     />
@@ -2087,7 +2087,7 @@ export default function AdminReportsPage() {
                 >
                   <Sparkles className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: "#9FF5E8" }} />
                   <p className="text-[11px] text-white leading-relaxed">
-                    {language === "af" ? "Nadat ons geskep het, sal ons 'n unieke verwysings-URL genereer. Deel dit met die vennoot â€” elke proeflopie-aanmelding vanaf hul skakel verdien hulle die kommissie hierbo." : "After creating, we'll generate a unique referral URL. Share it with the partner â€” every trial signup from their link earns them the commission above."}
+                    {language === "af" ? "Nadat ons geskep het, sal ons 'n unieke verwysings-URL genereer. Deel dit met die vennoot — elke proeflopie-aanmelding vanaf hul skakel verdien hulle die kommissie hierbo." : "After creating, we'll generate a unique referral URL. Share it with the partner — every trial signup from their link earns them the commission above."}
                   </p>
                 </div>
 
@@ -2106,7 +2106,7 @@ export default function AdminReportsPage() {
                     className="inline-flex items-center gap-2 rounded-lg bg-black px-4 py-2 text-xs font-black uppercase tracking-[0.18em] transition-none disabled:opacity-40"
                     style={{ color: "#FFE29A", border: "1.5px solid #FFE29A" }}
                   >
-                    {addPartnerMutation.isPending ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> {language === "af" ? "Skepâ€¦" : "Creatingâ€¦"}</> : <><Handshake className="w-3.5 h-3.5" /> {language === "af" ? "Skep vennoot" : "Create partner"}</>}
+                    {addPartnerMutation.isPending ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> {language === "af" ? "Skep…" : "Creating…"}</> : <><Handshake className="w-3.5 h-3.5" /> {language === "af" ? "Skep vennoot" : "Create partner"}</>}
                   </button>
                 </div>
               </div>
@@ -2126,10 +2126,10 @@ export default function AdminReportsPage() {
           <div className="space-y-4">
             <div className="text-xs text-white space-y-1.5 p-3 rounded-lg bg-muted/40 border border-border">
               <p><strong>{language === "af" ? "Twee formate ondersteun:" : "Two formats supported:"}</strong></p>
-              <p><strong>CSV</strong> â€” {language === "af"
+              <p><strong>CSV</strong> — {language === "af"
                 ? "eerste ry opsionele opskrifte (name, contactEmail, contactPhone, schoolCode, commissionRate, province, district, notes). Sonder opskrifte word kolomme in daardie volgorde gelees."
                 : "first row optional headers (name, contactEmail, contactPhone, schoolCode, commissionRate, province, district, notes). Without headers, columns are read in that order."}</p>
-              <p><strong>JSON</strong> â€” {language === "af" ? "plak 'n skikking van objekte, bv." : "paste an array of objects, e.g."} <code className="text-[10px]">[{`{"name":"Bright Future Tutors","contactEmail":"info@bft.co.za","commissionRate":15}`}]</code></p>
+              <p><strong>JSON</strong> — {language === "af" ? "plak 'n skikking van objekte, bv." : "paste an array of objects, e.g."} <code className="text-[10px]">[{`{"name":"Bright Future Tutors","contactEmail":"info@bft.co.za","commissionRate":15}`}]</code></p>
               <p>{language === "af"
                 ? "Elke vennoot kry 'n unieke verwysingskode (outomaties gegenereer indien nie verskaf nie). Duplikate word oorgeslaan."
                 : "Each partner gets a unique referral code (auto-generated if not supplied). Duplicates are skipped."}</p>
@@ -2171,7 +2171,7 @@ export default function AdminReportsPage() {
                     data-testid="button-bulk-partners-submit"
                     className="bg-amber-600 hover:bg-amber-700 text-white"
                   >
-                    {partnerBulkMutation.isPending ? (language === "af" ? "Voer inâ€¦" : "Importingâ€¦") : (language === "af" ? "Voer in" : "Import")}
+                    {partnerBulkMutation.isPending ? (language === "af" ? "Voer in…" : "Importing…") : (language === "af" ? "Voer in" : "Import")}
                   </Button>
                 </div>
               </div>
@@ -2201,7 +2201,7 @@ export default function AdminReportsPage() {
                     <summary className="cursor-pointer text-white">{language === "af" ? "Sien bygevoegde vennote + kodes" : "View added partners + codes"}</summary>
                     <div className="mt-2 space-y-1 max-h-40 overflow-y-auto font-mono">
                       {partnerBulkResult.inserted.map((p: any, i: number) => (
-                        <div key={`in-${i}`} className="text-emerald-700">{p.name} â†’ <code className="bg-muted/60 px-1">{p.code}</code></div>
+                        <div key={`in-${i}`} className="text-emerald-700">{p.name} → <code className="bg-muted/60 px-1">{p.code}</code></div>
                       ))}
                     </div>
                   </details>
@@ -2211,10 +2211,10 @@ export default function AdminReportsPage() {
                     <summary className="cursor-pointer text-white">{language === "af" ? "Sien probleme" : "View issues"}</summary>
                     <div className="mt-2 space-y-1 max-h-40 overflow-y-auto">
                       {partnerBulkResult.skipped?.map((s: any, i: number) => (
-                        <div key={`sk-${i}`} className="text-amber-700">{language === "af" ? "Ry" : "Row"} {s.row}: {s.name} â€” {s.reason}</div>
+                        <div key={`sk-${i}`} className="text-amber-700">{language === "af" ? "Ry" : "Row"} {s.row}: {s.name} — {s.reason}</div>
                       ))}
                       {partnerBulkResult.failed?.map((f: any, i: number) => (
-                        <div key={`fl-${i}`} className="text-red-700">{language === "af" ? "Ry" : "Row"} {f.row}: {f.name ?? (language === "af" ? "(geen naam)" : "(no name)")} â€” {f.reason}</div>
+                        <div key={`fl-${i}`} className="text-red-700">{language === "af" ? "Ry" : "Row"} {f.row}: {f.name ?? (language === "af" ? "(geen naam)" : "(no name)")} — {f.reason}</div>
                       ))}
                     </div>
                   </details>
@@ -2273,7 +2273,7 @@ interface CohortPressureRow {
 }
 
 // ============================================
-// GAMIFICATION ANALYTICS TAB â€” T119
+// GAMIFICATION ANALYTICS TAB — T119
 // ============================================
 
 function GamificationTab() {
@@ -2312,21 +2312,21 @@ function GamificationTab() {
           <Card className="rounded-2xl bg-black border-white/20">
             <CardContent className="p-5 space-y-1">
               <p className="text-[10px] font-bold text-white uppercase tracking-widest">{language === "af" ? "Vasvra-voltooiingskoers" : "Quiz Completion Rate"}</p>
-              <p className="text-3xl font-bold text-white">{quizData?.rate ?? "â€”"}%</p>
+              <p className="text-3xl font-bold text-white">{quizData?.rate ?? "—"}%</p>
               <p className="text-[10px] text-white">{quizData?.completed ?? 0} {language === "af" ? "van" : "of"} {quizData?.total ?? 0} {language === "af" ? "voltooi" : "completed"}</p>
             </CardContent>
           </Card>
           <Card className="rounded-2xl bg-black border-white/20">
             <CardContent className="p-5 space-y-1">
               <p className="text-[10px] font-bold text-white uppercase tracking-widest">{language === "af" ? "Kenteken-toekenningskoers" : "Badge Award Rate"}</p>
-              <p className="text-3xl font-bold text-white">{badgeData?.avgPerUser?.toFixed(1) ?? "â€”"} <span className="text-sm font-normal">{language === "af" ? "gem." : "avg"}</span></p>
+              <p className="text-3xl font-bold text-white">{badgeData?.avgPerUser?.toFixed(1) ?? "—"} <span className="text-sm font-normal">{language === "af" ? "gem." : "avg"}</span></p>
               <p className="text-[10px] text-white">{badgeData?.uniqueUsers ?? 0} {language === "af" ? "leerders met kentekens" : "learners with badges"}</p>
             </CardContent>
           </Card>
           <Card className="rounded-2xl bg-black border-white/20">
             <CardContent className="p-5 space-y-1">
               <p className="text-[10px] font-bold text-white uppercase tracking-widest">{language === "af" ? "Totale Kentekens Toegeken" : "Total Badges Awarded"}</p>
-              <p className="text-3xl font-bold text-white">{badgeData?.totalBadgesAwarded ?? "â€”"}</p>
+              <p className="text-3xl font-bold text-white">{badgeData?.totalBadgesAwarded ?? "—"}</p>
               <p className="text-[10px] text-white">{language === "af" ? "Oor alle leerders" : "Across all learners"}</p>
             </CardContent>
           </Card>
@@ -2383,7 +2383,7 @@ function GamificationTab() {
                       <div key={i} className="space-y-1">
                         <div className="flex justify-between text-xs">
                           <span className="font-semibold text-white truncate max-w-[60%]">{row.schoolName}</span>
-                          <span className="text-white">{pct.toFixed(0)}% Â· {row.learnerCount} {language === "af" ? "leerders" : "learners"}</span>
+                          <span className="text-white">{pct.toFixed(0)}% · {row.learnerCount} {language === "af" ? "leerders" : "learners"}</span>
                         </div>
                         <div className="h-1.5 rounded-full bg-muted overflow-hidden">
                           <div className={`h-full rounded-full ${color} transition-all`} style={{ width: `${pct}%` }} />
@@ -2406,7 +2406,7 @@ function GamificationTab() {
 }
 
 // ============================================
-// REMINDER CAMPAIGN VIEW â€” T148
+// REMINDER CAMPAIGN VIEW — T148
 // ============================================
 
 interface CampaignSetting {
@@ -2479,7 +2479,7 @@ function ReminderCampaignView() {
       setEditingKey(null);
       toast({ title: language === "af" ? "Mylpale opgedateer" : "Milestones updated" });
     },
-    onError: () => toast({ title: language === "af" ? "Ongeldige mylpale â€” gebruik kommageskeide getalle (bv. 30,14,7)" : "Invalid milestones â€” use comma-separated numbers (e.g. 30,14,7)", variant: "destructive" }),
+    onError: () => toast({ title: language === "af" ? "Ongeldige mylpale — gebruik kommageskeide getalle (bv. 30,14,7)" : "Invalid milestones — use comma-separated numbers (e.g. 30,14,7)", variant: "destructive" }),
   });
 
   const sendMutation = useMutation({
@@ -2490,7 +2490,7 @@ function ReminderCampaignView() {
     onSuccess: (data) => {
       setRunResult(data);
       queryClient.invalidateQueries({ queryKey: ["/api/admin/timetable/reminder-log"] });
-      toast({ title: language === "af" ? `Aflewering voltooi â€” ${data.notificationsSent} gestuur, ${data.notificationsSkipped} oorgeslaan` : `Dispatch complete â€” ${data.notificationsSent} sent, ${data.notificationsSkipped} skipped` });
+      toast({ title: language === "af" ? `Aflewering voltooi — ${data.notificationsSent} gestuur, ${data.notificationsSkipped} oorgeslaan` : `Dispatch complete — ${data.notificationsSent} sent, ${data.notificationsSkipped} skipped` });
     },
     onError: () => toast({ title: language === "af" ? "Aflewering misluk" : "Dispatch failed", variant: "destructive" }),
   });
@@ -2529,7 +2529,7 @@ function ReminderCampaignView() {
           ) : campaigns.length === 0 ? (
             <div className="flex flex-col items-center py-8 text-center gap-2">
               <Bell className="w-8 h-8 text-white" />
-              <p className="text-sm text-white">{language === "af" ? "Nog geen veldtogte opgestel nie. Klik â€œStuur Nouâ€ om die globale veldtog te begin." : "No campaigns configured yet. Click \"Send Now\" to initialise the global campaign."}</p>
+              <p className="text-sm text-white">{language === "af" ? "Nog geen veldtogte opgestel nie. Klik “Stuur Nou” om die globale veldtog te begin." : "No campaigns configured yet. Click \"Send Now\" to initialise the global campaign."}</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -2587,7 +2587,7 @@ function ReminderCampaignView() {
               disabled={sendMutation.isPending}
             >
               {sendMutation.isPending ? <RotateCcw className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
-              {sendMutation.isPending ? (language === "af" ? "Stuur tansâ€¦" : "Dispatchingâ€¦") : (language === "af" ? "Stuur Herinneringe Nou" : "Send Reminders Now")}
+              {sendMutation.isPending ? (language === "af" ? "Stuur tans…" : "Dispatching…") : (language === "af" ? "Stuur Herinneringe Nou" : "Send Reminders Now")}
             </Button>
           </div>
 
@@ -2690,16 +2690,16 @@ type ReminderTemplate = {
 const REMINDER_TEMPLATES: ReminderTemplate[] = [
   {
     id: "mock-tomorrow",
-    labelEn: "Mock exam tomorrow", labelAf: "Mock-eksamen mÃ´re",
-    titleEn: "ðŸ“ Mock exam tomorrow", titleAf: "ðŸ“ Mock-eksamen mÃ´re",
-    bodyEn: "Big day tomorrow! Quick revision, full night's sleep, and breakfast â€” you've got this.",
-    bodyAf: "Groot dag mÃ´re! Vinnige hersiening, 'n volle nag se slaap en ontbyt â€” jy het dit.",
+    labelEn: "Mock exam tomorrow", labelAf: "Mock-eksamen môre",
+    titleEn: "📝 Mock exam tomorrow", titleAf: "📝 Mock-eksamen môre",
+    bodyEn: "Big day tomorrow! Quick revision, full night's sleep, and breakfast — you've got this.",
+    bodyAf: "Groot dag môre! Vinnige hersiening, 'n volle nag se slaap en ontbyt — jy het dit.",
     tone: "border-[#FFE29A]/40 bg-[#FFE29A]/10 text-[#FFE29A]",
   },
   {
     id: "study-streak",
     labelEn: "Streak nudge", labelAf: "Reeks-stoot",
-    titleEn: "ðŸ”¥ Don't break your streak", titleAf: "ðŸ”¥ Moenie jou reeks breek nie",
+    titleEn: "🔥 Don't break your streak", titleAf: "🔥 Moenie jou reeks breek nie",
     bodyEn: "20 minutes of practice today keeps your streak alive. Open BrainTrack now.",
     bodyAf: "20 minute oefening vandag hou jou reeks aan die lewe. Open BrainTrack nou.",
     tone: "border-[#FFE29A]/40 bg-[#FFE29A]/10 text-[#FFE29A]",
@@ -2707,31 +2707,31 @@ const REMINDER_TEMPLATES: ReminderTemplate[] = [
   {
     id: "pep-talk",
     labelEn: "Pep talk", labelAf: "Aanmoediging",
-    titleEn: "ðŸ’ª You're closer than you think", titleAf: "ðŸ’ª Jy is nader as wat jy dink",
-    bodyEn: "Every past paper, every flashcard â€” it's all adding up. Keep showing up. Rizz believes in you.",
-    bodyAf: "Elke vorige vraestel, elke flitskaart â€” dit tel alles op. Bly opdaag. Rizz glo in jou.",
+    titleEn: "💪 You're closer than you think", titleAf: "💪 Jy is nader as wat jy dink",
+    bodyEn: "Every past paper, every flashcard — it's all adding up. Keep showing up. Rizz believes in you.",
+    bodyAf: "Elke vorige vraestel, elke flitskaart — dit tel alles op. Bly opdaag. Rizz glo in jou.",
     tone: "border-[#FFB7E5]/40 bg-[#FFB7E5]/10 text-[#FFB7E5]",
   },
   {
     id: "weekly-plan",
     labelEn: "Weekly study plan", labelAf: "Weeklikse studieplan",
-    titleEn: "ðŸ“… New week, new plan", titleAf: "ðŸ“… Nuwe week, nuwe plan",
-    bodyEn: "Tap into your CAPS study plan for this week â€” three subjects, balanced and ready.",
-    bodyAf: "Gebruik jou KABV-studieplan vir hierdie week â€” drie vakke, gebalanseerd en gereed.",
+    titleEn: "📅 New week, new plan", titleAf: "📅 Nuwe week, nuwe plan",
+    bodyEn: "Tap into your CAPS study plan for this week — three subjects, balanced and ready.",
+    bodyAf: "Gebruik jou KABV-studieplan vir hierdie week — drie vakke, gebalanseerd en gereed.",
     tone: "border-[#9FD8FF]/40 bg-[#9FD8FF]/10 text-[#9FD8FF]",
   },
   {
     id: "trial-ending",
     labelEn: "Trial ending soon", labelAf: "Proeflopie eindig binnekort",
-    titleEn: "â³ Your free trial ends soon", titleAf: "â³ Jou gratis proeflopie eindig binnekort",
-    bodyEn: "Keep all of Brain Boost â€” past papers, AI tutor, gamified streaks â€” for just R169/month.",
-    bodyAf: "Behou alles van Brain Boost â€” vorige vraestelle, KI-tutor, spelreekse â€” vir net R169/maand.",
+    titleEn: "⏳ Your free trial ends soon", titleAf: "⏳ Jou gratis proeflopie eindig binnekort",
+    bodyEn: "Keep all of Brain Boost — past papers, AI tutor, gamified streaks — for just R169/month.",
+    bodyAf: "Behou alles van Brain Boost — vorige vraestelle, KI-tutor, spelreekse — vir net R169/maand.",
     tone: "border-[#C5B3FF]/40 bg-[#C5B3FF]/10 text-[#C5B3FF]",
   },
   {
     id: "new-papers",
     labelEn: "New past papers", labelAf: "Nuwe vorige vraestelle",
-    titleEn: "ðŸ“š Fresh DBE past papers added", titleAf: "ðŸ“š Nuwe DBO vorige vraestelle bygevoeg",
+    titleEn: "📚 Fresh DBE past papers added", titleAf: "📚 Nuwe DBO vorige vraestelle bygevoeg",
     bodyEn: "We've just loaded new verified past papers + memos. Open Practice to try one.",
     bodyAf: "Ons het pas nuwe geverifieerde vorige vraestelle + memos gelaai. Open Oefening om een te probeer.",
     tone: "border-[#9FF5E8]/40 bg-[#9FF5E8]/10 text-[#9FF5E8]",
@@ -2739,17 +2739,17 @@ const REMINDER_TEMPLATES: ReminderTemplate[] = [
   {
     id: "holiday-close",
     labelEn: "Holiday motivation", labelAf: "Vakansie-motivering",
-    titleEn: "ðŸŒž Holiday revision", titleAf: "ðŸŒž Vakansie-hersiening",
-    bodyEn: "Even 30 minutes a day during the holiday compounds â€” your future self will thank you.",
-    bodyAf: "Selfs 30 minute per dag tydens die vakansie tel op â€” jou toekomstige self sal jou bedank.",
+    titleEn: "🌞 Holiday revision", titleAf: "🌞 Vakansie-hersiening",
+    bodyEn: "Even 30 minutes a day during the holiday compounds — your future self will thank you.",
+    bodyAf: "Selfs 30 minute per dag tydens die vakansie tel op — jou toekomstige self sal jou bedank.",
     tone: "border-[#FFE29A]/40 bg-[#FFE29A]/10 text-[#FFE29A]",
   },
   {
     id: "weekend-challenge",
     labelEn: "Weekend challenge", labelAf: "Naweek-uitdaging",
-    titleEn: "ðŸ† Weekend challenge unlocked", titleAf: "ðŸ† Naweek-uitdaging ontsluit",
-    bodyEn: "Try today's Daily Challenge â€” bonus XP if you finish before Monday.",
-    bodyAf: "Probeer vandag se Daaglikse Uitdaging â€” bonus XP as jy voor Maandag klaarmaak.",
+    titleEn: "🏆 Weekend challenge unlocked", titleAf: "🏆 Naweek-uitdaging ontsluit",
+    bodyEn: "Try today's Daily Challenge — bonus XP if you finish before Monday.",
+    bodyAf: "Probeer vandag se Daaglikse Uitdaging — bonus XP as jy voor Maandag klaarmaak.",
     tone: "border-[#FFE29A]/40 bg-[#FFE29A]/10 text-[#FFE29A]",
   },
 ];
@@ -2781,7 +2781,7 @@ function CustomReminderCard() {
       setResult(data);
       toast({
         title: language === "af" ? "Herinnering afgelewer" : "Reminder dispatched",
-        description: language === "af" ? `${data.pushSent} stoot Â· ${data.emailIntentLogged} e-pos-bedoeling Â· ${data.pushFailed} misluk` : `${data.pushSent} push Â· ${data.emailIntentLogged} email-intent Â· ${data.pushFailed} failed`,
+        description: language === "af" ? `${data.pushSent} stoot · ${data.emailIntentLogged} e-pos-bedoeling · ${data.pushFailed} misluk` : `${data.pushSent} push · ${data.emailIntentLogged} email-intent · ${data.pushFailed} failed`,
       });
     },
     onError: (e: any) => toast({ title: language === "af" ? "Stuur misluk" : "Send failed", description: e?.message ?? (language === "af" ? "Kon nie stuur nie" : "Could not send"), variant: "destructive" }),
@@ -2804,7 +2804,7 @@ function CustomReminderCard() {
           {language === "af" ? "Stuur Pasgemaakte Herinnering" : "Send Custom Reminder"}
         </CardTitle>
         <p className="text-xs text-white">
-          {language === "af" ? "Vuur enige tyd 'n ad hoc-stootkennisgewing af â€” na alle leerders, 'n spesifieke skool, of 'n enkele leerder. Kies hieronder 'n sjabloon, pas die woorde aan en stuur." : "Fire an ad-hoc push notification anytime â€” to all learners, a specific school, or a single learner. Pick a template below, tweak the wording, then send."}
+          {language === "af" ? "Vuur enige tyd 'n ad hoc-stootkennisgewing af — na alle leerders, 'n spesifieke skool, of 'n enkele leerder. Kies hieronder 'n sjabloon, pas die woorde aan en stuur." : "Fire an ad-hoc push notification anytime — to all learners, a specific school, or a single learner. Pick a template below, tweak the wording, then send."}
         </p>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -2832,7 +2832,7 @@ function CustomReminderCard() {
               className="w-full text-sm border border-border rounded-lg px-3 py-2 bg-background"
               value={title}
               onChange={e => { setTitle(e.target.value); setActiveTemplate(null); }}
-              placeholder={language === "af" ? "bv. â° 7 dae oor" : "e.g. â° 7 days to go"}
+              placeholder={language === "af" ? "bv. ⏰ 7 dae oor" : "e.g. ⏰ 7 days to go"}
               maxLength={120}
               data-testid="input-custom-title"
             />
@@ -2854,7 +2854,7 @@ function CustomReminderCard() {
           <Textarea
             value={body}
             onChange={e => { setBody(e.target.value); setActiveTemplate(null); }}
-            placeholder={language === "af" ? "Skryf 'n kort, motiverende boodskapâ€¦" : "Write a short, motivating messageâ€¦"}
+            placeholder={language === "af" ? "Skryf 'n kort, motiverende boodskap…" : "Write a short, motivating message…"}
             className="text-sm min-h-[90px]"
             maxLength={400}
             data-testid="input-custom-body"
@@ -2885,7 +2885,7 @@ function CustomReminderCard() {
                 className="w-full text-sm border border-border rounded-lg px-3 py-2 bg-background"
                 data-testid="select-custom-school"
               >
-                <option value="">{language === "af" ? "â€” Kies 'n skool â€”" : "â€” Choose a school â€”"}</option>
+                <option value="">{language === "af" ? "— Kies 'n skool —" : "— Choose a school —"}</option>
                 {schools.map(s => (
                   <option key={s.id} value={s.id}>{s.schoolName} ({s.learnerCount} {language === "af" ? "leerders" : "learners"})</option>
                 ))}
@@ -2917,7 +2917,7 @@ function CustomReminderCard() {
             data-testid="button-send-custom"
             className="bg-[#C5B3FF] hover:bg-[#C5B3FF]/90 text-white border-0"
           >
-            {sendCustom.isPending ? (language === "af" ? "Stuurâ€¦" : "Sendingâ€¦") : (language === "af" ? "Stuur nou" : "Send now")}
+            {sendCustom.isPending ? (language === "af" ? "Stuur…" : "Sending…") : (language === "af" ? "Stuur nou" : "Send now")}
           </Button>
         </div>
 
@@ -2949,10 +2949,10 @@ function CustomReminderCard() {
 function ParentRatePromptCard() {
   const { language } = useLanguage();
   const { toast } = useToast();
-  const [titleEn, setTitleEn] = useState("Enjoying BrainTrack? â­");
-  const [titleAf, setTitleAf] = useState("Geniet jy BrainTrack? â­");
-  const [messageEn, setMessageEn] = useState("Takes 30 seconds â€” tap to rate us and help other families find BrainTrack.");
-  const [messageAf, setMessageAf] = useState("Dit neem 30 sekondes â€” tik om ons te gradeer en help ander gesinne BrainTrack vind.");
+  const [titleEn, setTitleEn] = useState("Enjoying BrainTrack? ⭐");
+  const [titleAf, setTitleAf] = useState("Geniet jy BrainTrack? ⭐");
+  const [messageEn, setMessageEn] = useState("Takes 30 seconds — tap to rate us and help other families find BrainTrack.");
+  const [messageAf, setMessageAf] = useState("Dit neem 30 sekondes — tik om ons te gradeer en help ander gesinne BrainTrack vind.");
   const [ctaUrl, setCtaUrl] = useState("https://play.google.com/store/apps/details?id=com.braintrack");
   const [result, setResult] = useState<{ parents: number; inAppCreated: number; pushSent: number; pushFailed: number } | null>(null);
 
@@ -2969,7 +2969,7 @@ function ParentRatePromptCard() {
       setResult(data);
       toast({
         title: language === "af" ? "Graderingsversoek gestuur" : "Rate prompt sent",
-        description: language === "af" ? `${data.parents} ouers Â· ${data.inAppCreated} in-app Â· ${data.pushSent} stoot` : `${data.parents} parents Â· ${data.inAppCreated} in-app Â· ${data.pushSent} push`,
+        description: language === "af" ? `${data.parents} ouers · ${data.inAppCreated} in-app · ${data.pushSent} stoot` : `${data.parents} parents · ${data.inAppCreated} in-app · ${data.pushSent} push`,
       });
     },
     onError: (e: any) => toast({ title: language === "af" ? "Stuur misluk" : "Send failed", description: e?.message ?? (language === "af" ? "Kon nie stuur nie" : "Could not send"), variant: "destructive" }),
@@ -2998,7 +2998,7 @@ function ParentRatePromptCard() {
               backgroundClip: "text",
             }}
           >
-            {language === "af" ? "Ouer-graderingsversoek â€” Komms-uitsending" : "Parent Rate Prompt â€” Comms Blast"}
+            {language === "af" ? "Ouer-graderingsversoek — Komms-uitsending" : "Parent Rate Prompt — Comms Blast"}
           </span>
         </CardTitle>
         <p className="text-[11px] text-white">
@@ -3054,7 +3054,7 @@ function ParentRatePromptCard() {
               style={{ border: "1px solid rgba(255,183,229,0.35)" }}
               value={ctaUrl}
               onChange={e => setCtaUrl(e.target.value)}
-              placeholder="https://play.google.com/store/apps/details?id=â€¦"
+              placeholder="https://play.google.com/store/apps/details?id=…"
             />
             <p className="text-[10px] text-white mt-1">{language === "af" ? "Absolute URL (Play Store / App Store / resensievorm) of interne pad soos" : "Absolute URL (Play Store / App Store / review form) or internal path like"} <code className="text-white">/parent-dashboard?rate=1</code></p>
           </div>
@@ -3067,7 +3067,7 @@ function ParentRatePromptCard() {
             className="inline-flex items-center gap-2 rounded-lg bg-black px-4 py-2 text-xs font-black uppercase tracking-[0.18em] transition-none disabled:opacity-40"
             style={{ color: "#FFE29A", border: "1.5px solid #FFE29A" }}
           >
-            {send.isPending ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> {language === "af" ? "Stuurâ€¦" : "Sendingâ€¦"}</> : <><Send className="w-3.5 h-3.5" /> {language === "af" ? "Stuur na alle ouers" : "Blast to all parents"}</>}
+            {send.isPending ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> {language === "af" ? "Stuur…" : "Sending…"}</> : <><Send className="w-3.5 h-3.5" /> {language === "af" ? "Stuur na alle ouers" : "Blast to all parents"}</>}
           </button>
         </div>
 
@@ -3121,7 +3121,7 @@ function ExamPressureView() {
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
             <Calendar className="w-4 h-4 text-primary" />
-            {language === "af" ? "NSS 2026 â€” Kohort Eksamendruk Hitkaart" : "NSC 2026 â€” Cohort Exam Pressure Heatmap"}
+            {language === "af" ? "NSS 2026 — Kohort Eksamendruk Hitkaart" : "NSC 2026 — Cohort Exam Pressure Heatmap"}
           </CardTitle>
           <p className="text-xs text-white">
             {language === "af" ? "Vak + vraestel-kombinasies gerangskik volgens nabyheid aan eksamendatum. Wys hoeveel leerders hierdie eksamen in hul skedule het." : "Subject + paper combinations ordered by proximity to exam date. Shows how many learners have this exam in their schedule."}
@@ -3137,7 +3137,7 @@ function ExamPressureView() {
               <Calendar className="w-10 h-10 text-white mb-3" />
               <p className="text-sm font-semibold text-white">{language === "af" ? "Nog geen eksamenroosters gegenereer nie" : "No exam schedules generated yet"}</p>
               <p className="text-xs text-white mt-1">
-                {language === "af" ? "Leerderroosters word outomaties gebou wanneer leerders aanmeld. Gaan na DBO Admin â†’ Rooster om alles te hergenereer." : "Learner schedules are built automatically when learners log in. Go to DBE Admin â†’ Timetable to regenerate all."}
+                {language === "af" ? "Leerderroosters word outomaties gebou wanneer leerders aanmeld. Gaan na DBO Admin → Rooster om alles te hergenereer." : "Learner schedules are built automatically when learners log in. Go to DBE Admin → Timetable to regenerate all."}
               </p>
             </div>
           ) : (
@@ -3492,7 +3492,7 @@ function DailyFocusPushView() {
                           </Badge>
                         </TableCell>
                         <TableCell className="py-2">
-                          <span className="text-[11px] text-white font-mono">{row.payload_tag ?? "â€”"}</span>
+                          <span className="text-[11px] text-white font-mono">{row.payload_tag ?? "—"}</span>
                         </TableCell>
                         <TableCell className="py-2">
                           {row.success ? (
@@ -3513,13 +3513,13 @@ function DailyFocusPushView() {
                               {row.error}
                             </span>
                           ) : (
-                            <span className="text-[10px] text-white">â€”</span>
+                            <span className="text-[10px] text-white">—</span>
                           )}
                         </TableCell>
                         <TableCell className="py-2 text-[10px] text-white whitespace-nowrap">
                           {row.created_at
                             ? new Date(row.created_at).toLocaleTimeString("en-ZA", { hour: "2-digit", minute: "2-digit" })
-                            : "â€”"}
+                            : "—"}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -3531,7 +3531,7 @@ function DailyFocusPushView() {
               {totalPages > 1 && (
                 <div className="flex items-center justify-between px-4 py-3 border-t border-white/5">
                   <span className="text-[11px] text-white">
-                    {page * PAGE_SIZE + 1}â€“{Math.min((page + 1) * PAGE_SIZE, allRows.length)}{" "}
+                    {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, allRows.length)}{" "}
                     {language === "af" ? "van" : "of"} {allRows.length}
                   </span>
                   <div className="flex gap-2">

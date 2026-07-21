@@ -71,7 +71,7 @@ const T = {
         data, to prevent re-identification.
       </span>
     ),
-    privacyShort: "Aggregated & anonymised â€” no individual learner data",
+    privacyShort: "Aggregated & anonymised — no individual learner data",
     totalLearners: "Total Learners",
     activeLearners: "Active This Week",
     overallAccuracy: "Overall Accuracy",
@@ -91,7 +91,7 @@ const T = {
     sessions: "Sessions",
     avgScore: "Avg score (%)",
     learners: "learners",
-    colorLegend: "Colour: green â‰¥75%, amber â‰¥50%, red <50%",
+    colorLegend: "Colour: green ≥75%, amber ≥50%, red <50%",
     printFooter: "BrainTrack School Dashboard",
     generated: "Generated",
     printAnon: "All data is anonymised and aggregated. No individual learner data is included.",
@@ -117,7 +117,7 @@ const T = {
         data het, om heridentifikasie te voorkom.
       </span>
     ),
-    privacyShort: "Saamgevoeg en geanonimiseer â€” geen individuele leerderdata",
+    privacyShort: "Saamgevoeg en geanonimiseer — geen individuele leerderdata",
     totalLearners: "Totale Leerders",
     activeLearners: "Aktief Hierdie Week",
     overallAccuracy: "Algehele Akkuraatheid",
@@ -137,7 +137,7 @@ const T = {
     sessions: "Sessies",
     avgScore: "Gem. telling (%)",
     learners: "leerders",
-    colorLegend: "Kleur: groen â‰¥75%, amber â‰¥50%, rooi <50%",
+    colorLegend: "Kleur: groen ≥75%, amber ≥50%, rooi <50%",
     printFooter: "BrainTrack Skool-dashboard",
     generated: "Gegenereer",
     printAnon: "Alle data is geanonimiseer en saamgevoeg. Geen individuele leerderdata is ingesluit nie.",
@@ -365,7 +365,7 @@ export default function SchoolDashboardPage() {
   return (
     <div className="min-h-screen bg-background text-foreground print:bg-white print:text-black">
 
-      {/* Aurora gradient background â€” non-print only */}
+      {/* Aurora gradient background — non-print only */}
       <div
         className="fixed inset-0 pointer-events-none print:hidden"
         style={{
@@ -626,7 +626,7 @@ export default function SchoolDashboardPage() {
           </Card>
         </div>
 
-        {/* Streak Distribution â€” unified panel */}
+        {/* Streak Distribution — unified panel */}
         <Card className="border-border/60 bg-card/60 ">
           <CardHeader className="pb-2 pt-4 px-4">
             <CardTitle className="text-xs font-black uppercase tracking-widest text-white flex items-center gap-1.5">
@@ -699,9 +699,9 @@ export default function SchoolDashboardPage() {
 
         {/* Print footer */}
         <div className="hidden print:block mt-8 pt-6 border-t border-black/20 text-xs text-black/50 text-center space-y-1">
-          <p>{t.printFooter} â€” {school.name}</p>
+          <p>{t.printFooter} — {school.name}</p>
           <p>
-            {t.generated}: {generatedDate} Â· {t.printAnon}
+            {t.generated}: {generatedDate} · {t.printAnon}
           </p>
           <p>braintrack.co.za</p>
         </div>

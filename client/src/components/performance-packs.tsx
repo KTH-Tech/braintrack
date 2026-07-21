@@ -427,10 +427,10 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
             <p className="text-sm text-white leading-relaxed">
               {isAf
                 ? topicFocus
-                  ? `Ons berei nog KABV-vrae voor vir ${subjectName} â€” ${topicFocus}. Kyk binnekort weer.`
+                  ? `Ons berei nog KABV-vrae voor vir ${subjectName} — ${topicFocus}. Kyk binnekort weer.`
                   : `Ons berei nog amptelike KABV-vrae voor vir ${subjectName}. Kyk binnekort weer.`
                 : topicFocus
-                ? `We're still preparing CAPS questions for ${subjectName} â€” ${topicFocus}. Check back soon.`
+                ? `We're still preparing CAPS questions for ${subjectName} — ${topicFocus}. Check back soon.`
                 : `We're still preparing official CAPS questions for ${subjectName}. Check back soon.`}
             </p>
           </div>
@@ -565,7 +565,7 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
                 <button
                   key={question.id}
                   onClick={() => handleJumpToQuestion(idx)}
-                  title={`${isAf ? "Vraag" : "Question"} ${idx + 1}${isCorrect ? ` â€” ${isAf ? "Korrek" : "Correct"}` : isWrong ? ` â€” ${isAf ? "Verkeerd" : "Incorrect"}` : ""}`}
+                  title={`${isAf ? "Vraag" : "Question"} ${idx + 1}${isCorrect ? ` — ${isAf ? "Korrek" : "Correct"}` : isWrong ? ` — ${isAf ? "Verkeerd" : "Incorrect"}` : ""}`}
                   className={`h-2 rounded-full transition-all flex-shrink-0 ${
                     isCurrent ? "w-6" : "w-2"
                   } ${
@@ -655,7 +655,7 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
                 </span>
                 <span className="font-bold text-foreground">{q.correctAnswer}</span>
                 {q.options.find(o => o.label === q.correctAnswer) && (
-                  <span className="text-white"> â€” {q.options.find(o => o.label === q.correctAnswer)!.text}</span>
+                  <span className="text-white"> — {q.options.find(o => o.label === q.correctAnswer)!.text}</span>
                 )}
               </div>
             </div>
@@ -817,7 +817,7 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
             data-testid="boost-button-try-again"
           >
             <RotateCcw className="w-4 h-4 mr-2" />
-            {isAf ? "Probeer mÃ´re weer" : "Try Again Tomorrow"}
+            {isAf ? "Probeer môre weer" : "Try Again Tomorrow"}
           </Button>
         </div>
       </div>
