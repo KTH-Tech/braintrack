@@ -15165,10 +15165,17 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       const requestedLang = resolveRequestLang(req.query.lang, userRow?.preferredLanguage);
 
       const { dbeVerbatimQuestions: vqT } = await import("@shared/schema");
-      // Task #394 — release-gate filter: only ≥98% memo+mark-covered rows.
+      // The release gate works per PAPER: a paper clears at 60% memo coverage,
+      // so up to 40% of the questions it releases carry no memo. In a mini-mock
+      // that is a question the marker cannot grade against anything — the
+      // learner answers and gets nothing back. Require a usable memo per
+      // QUESTION here. Across the released corpus this excludes ~23% of rows,
+      // which is the correct trade: fewer questions, all of them markable.
       const baseConditions = [
         eq(vqT.subject, subject),
         sql`${vqT.releasedAt} IS NOT NULL`,
+        sql`${vqT.memoText} IS NOT NULL`,
+        sql`length(trim(${vqT.memoText})) >= 20`,
       ];
       if (topic) baseConditions.push(eq(vqT.topic, topic));
 
