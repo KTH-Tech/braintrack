@@ -6,7 +6,7 @@ import { emitScoreUpdated, emitReadinessRecalculated, emitReportUpdated, emitSub
 import { storage } from "./storage";
 import { generateReportPdfBuffer } from "./report-generator";
 import { markAnswer, bubbleToPaperScore } from "./marking-strategies";
-import { extractMcqAnswer } from "./dbe-ingestion";
+import { extractMcqAnswer, parseCorrectOptions } from "./dbe-ingestion";
 import {
   startJob, finishJob, isJobRunning, getCurrentJob, requestStop, shouldAbort,
   markSubjectStarted, markSubjectFinished, deriveStatus,
@@ -15243,22 +15243,39 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
 
       let result: any;
 
-      // MCQ short-circuit: if the question stores MCQ metadata, mark by letter
+      // MCQ short-circuit: if the question stores MCQ metadata, mark by letter.
+      // Selection items legitimately have MULTI-letter answers accepted in any
+      // order (Hospitality 2025 P1 Q1.4.2 is "A C" for 2 marks), so compare
+      // letter SETS. Reading only the first character would mark a learner who
+      // correctly answered "A C" as wrong.
       if (row.correctOption) {
-        const expected = row.correctOption.toUpperCase();
-        const got = answer.trim().toUpperCase().slice(0, 1);
-        const isCorrect = got === expected;
+        const expectedSet = parseCorrectOptions(row.correctOption);
+        const expected = expectedSet.join(", ");
+        const gotSet = parseCorrectOptions(answer);
+        const isCorrect =
+          expectedSet.length > 0 &&
+          gotSet.length === expectedSet.length &&
+          expectedSet.every((l) => gotSet.includes(l));
         const marksAvailable = row.marks ?? 1;
+        // Partial credit on multi-letter items: each correct letter earns its
+        // share, mirroring how DBE marks a selection item.
+        const hits = expectedSet.filter((l) => gotSet.includes(l)).length;
+        const overAnswered = gotSet.length > expectedSet.length;
+        const awarded = isCorrect
+          ? marksAvailable
+          : overAnswered
+            ? 0
+            : Math.floor((hits / Math.max(1, expectedSet.length)) * marksAvailable);
         result = {
-          marksAwarded: isCorrect ? marksAvailable : 0,
+          marksAwarded: awarded,
           marksAvailable,
           isCorrect,
           perCriterion: [{
             id: "mcq",
             marks: marksAvailable,
-            awarded: isCorrect ? marksAvailable : 0,
-            matched: isCorrect ? [expected] : [],
-            missed: isCorrect ? [] : [expected],
+            awarded,
+            matched: expectedSet.filter((l) => gotSet.includes(l)),
+            missed: expectedSet.filter((l) => !gotSet.includes(l)),
             memoExcerpt: `Correct option: ${expected}`,
             feedback: isCorrect
               ? (isAf ? "Korrekte opsie." : "Correct option chosen.")
@@ -15463,19 +15480,31 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         let breakdown: any;
 
         if (row.correctOption) {
-          const expected = row.correctOption.toUpperCase();
-          const got = learnerAnswer.trim().toUpperCase().slice(0, 1);
-          const correct = got === expected;
+          // Letter-SET comparison — see the mini-mock path above for why a
+          // first-character check is wrong on multi-letter selection items.
+          const expectedSet = parseCorrectOptions(row.correctOption);
+          const expected = expectedSet.join(", ");
+          const gotSet = parseCorrectOptions(learnerAnswer);
+          const correct =
+            expectedSet.length > 0 &&
+            gotSet.length === expectedSet.length &&
+            expectedSet.every((l) => gotSet.includes(l));
+          const hits = expectedSet.filter((l) => gotSet.includes(l)).length;
+          const awarded = correct
+            ? total
+            : gotSet.length > expectedSet.length
+              ? 0
+              : Math.floor((hits / Math.max(1, expectedSet.length)) * total);
           breakdown = {
-            marksAwarded: correct ? total : 0,
+            marksAwarded: awarded,
             marksAvailable: total,
             isCorrect: correct,
             perCriterion: [{
               id: "mcq",
               marks: total,
-              awarded: correct ? total : 0,
-              matched: correct ? [expected] : [],
-              missed: correct ? [] : [expected],
+              awarded,
+              matched: expectedSet.filter((l) => gotSet.includes(l)),
+              missed: expectedSet.filter((l) => !gotSet.includes(l)),
               memoExcerpt: `Correct option: ${expected}`,
               feedback: correct
                 ? (isAf ? "Korrekte opsie." : "Correct.")
