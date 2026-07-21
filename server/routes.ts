@@ -17188,7 +17188,26 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
 
   app.get("/api/user/journey", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const callerId = req.user.claims.sub;
+
+      // A parent opening the Journey tab wants their CHILD's journey. This
+      // endpoint used to read the caller's id unconditionally, so a parent saw
+      // their own (empty) journey under their own name. Resolve the subject of
+      // the journey: an explicit learnerId must be a learner this parent is
+      // linked to; otherwise a parent falls back to their first linked child.
+      let userId = callerId;
+      const requestedLearnerId = typeof req.query.learnerId === "string" ? req.query.learnerId : null;
+      const callerRow = await authStorage.getUser(callerId);
+      if (callerRow?.role === "parent") {
+        if (requestedLearnerId) {
+          const linked = await storage.isParentOfLearner(callerId, requestedLearnerId);
+          if (!linked) return res.status(403).json({ error: "Forbidden" });
+          userId = requestedLearnerId;
+        } else {
+          const children = await storage.getLearnersForParent(callerId);
+          if (children.length > 0) userId = children[0].learnerUserId;
+        }
+      }
 
       const [userRow, onboarding, badgeRows, streakRow, progressRows] = await Promise.all([
         db.select().from(users).where(eq(users.id, userId)).limit(1),

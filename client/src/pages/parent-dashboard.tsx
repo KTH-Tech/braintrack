@@ -196,9 +196,13 @@ type ParentNavCopy = Record<keyof (typeof PARENT_NAV_T)["en"], string>;
 /** Every destination below is a route that exists in client/src/App.tsx.
     `match` lists the pathnames that should light the row up — /parent and the
     legacy /parent-dashboard alias both render this page. */
-const PARENT_NAV_LINKS = (t: ParentNavCopy) => [
+const PARENT_NAV_LINKS = (t: ParentNavCopy, learnerId?: string | null) => [
   { href: "/parent",           match: ["/parent", "/parent-dashboard"], icon: Home,        label: t.navHome     },
-  { href: "/journey?parent=1", match: ["/journey"],                     icon: MapPin,      label: t.navJourney  },
+  // Carry the selected child so the journey shows THEIR milestones. With no id
+  // the server falls back to the parent's first linked child — correct for
+  // one-child families, but it would pin a multi-child parent to the first.
+  { href: learnerId ? `/journey?parent=1&learnerId=${encodeURIComponent(learnerId)}` : "/journey?parent=1",
+                               match: ["/journey"],                     icon: MapPin,      label: t.navJourney  },
   { href: "/parent/activate-child", match: ["/parent/activate-child"],  icon: UserPlus,    label: t.navAddChild },
   { href: "/parent-purchase",  match: ["/parent-purchase"],             icon: CreditCard,  label: t.navBilling  },
   { href: "/subscribe",        match: ["/subscribe"],                   icon: Sparkles,    label: t.navPlan     },
@@ -1387,7 +1391,6 @@ export default function ParentDashboardPage() {
   const isAf = language === "af";
   const [location, navigate] = useLocation();
   const nt = PARENT_NAV_T[isAf ? "af" : "en"];
-  const parentNavLinks = PARENT_NAV_LINKS(nt);
   useSocket();
 
   // ── Admin sample-data preview ────────────────────────────────────────────
@@ -1421,6 +1424,7 @@ export default function ParentDashboardPage() {
   // learner once the children list arrives so multi-child parents see the same child across all
   // widgets and switching refreshes them in lock-step.
   const [selectedLearnerId, setSelectedLearnerId] = useState<string | null>(null);
+  const parentNavLinks = PARENT_NAV_LINKS(nt, selectedLearnerId);
   useEffect(() => {
     const list = childrenData?.children ?? [];
     if (list.length === 0) return;
@@ -2537,7 +2541,7 @@ export default function ParentDashboardPage() {
                   </p>
                 </div>
               </div>
-              <Link href="/journey?parent=1">
+              <Link href={selectedLearnerId ? `/journey?parent=1&learnerId=${encodeURIComponent(selectedLearnerId)}` : "/journey?parent=1"}>
                 <Button
                   size="sm"
                   className={`${BTN_SECONDARY} shrink-0`}
