@@ -82,6 +82,48 @@ export async function getEffectivePrelimExams(userId: string): Promise<PrelimExa
       byKey.set(key, row);
     }
   }
+
+  // Third tier — provisional SACAI dates. Prelim timetables are set per
+  // school, so a new learner used to see NO prelim countdown at all until
+  // someone typed dates in. But the repo vendors the published SACAI 2026
+  // preliminary timetable, which is the standard many schools follow — so a
+  // subject with no learner- or school-set date falls back to its SACAI
+  // entries, synthesized in-memory (id: 0, source "provisional"), never
+  // persisted. The moment a learner or school saves real dates for that
+  // subject, those win and the fallback disappears.
+  if (selectedIds.size > 0) {
+    const selectedSubjects = await db
+      .select({ id: subjects.id, name: subjects.name })
+      .from(subjects)
+      .where(inArray(subjects.id, Array.from(selectedIds)));
+    const nameById = new Map(selectedSubjects.map((s) => [s.id, s.name]));
+
+    for (const [subjectId, name] of nameById) {
+      const sacaiEntries = NSC_2026_PRELIMINARY_TIMETABLE.filter(
+        (e) => e.subjectName.toLowerCase() === name.toLowerCase() && !e.isNonExaminationDay,
+      );
+      for (const entry of sacaiEntries) {
+        const key = `${subjectId}:${entry.paperNumber}`;
+        if (byKey.has(key)) continue;
+        byKey.set(key, {
+          id: 0,
+          source: "provisional",
+          userId,
+          schoolId: null,
+          subjectId,
+          subjectName: name,
+          paperNumber: entry.paperNumber,
+          examDate: entry.examDate,
+          startTime: entry.startTime,
+          durationMinutes: entry.durationMinutes,
+          createdBy: null,
+          createdAt: null,
+          updatedAt: null,
+        } as PrelimExam);
+      }
+    }
+  }
+
   return Array.from(byKey.values());
 }
 

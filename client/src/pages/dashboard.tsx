@@ -66,7 +66,8 @@ const BADGE_INFO: Record<string, { name: string; nameAfrikaans: string; icon: an
 
 const NAV_LINKS = (labels: { navHome: string; navSubjects: string; navTutor: string; navFlashcards: string; navProgress: string; navStudyPlan: string; navRewards: string; navStore: string; navJourney: string; navSettings: string }) => [
   { href: "/dashboard",      icon: BookOpen,    label: labels.navHome         },
-  { href: "/subjects",       icon: Languages,   label: labels.navSubjects     },
+  // Subjects has no sidebar tab (owner call): the dashboard's "Your Subjects"
+  // section links each subject card directly and /subjects stays routable.
   // Rizz, the AI tutor. Was reachable only from a dashboard card, so learners
   // had no way to find it from the sidebar.
   { href: "/tutor",          icon: Brain,       label: labels.navTutor        },
