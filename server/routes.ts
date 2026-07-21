@@ -15698,10 +15698,32 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
             .select()
             .from(subjectDailyChallenges)
             .where(inArray(subjectDailyChallenges.subject, subjectNames));
+          // A seeded question is only usable if it carries the fields the
+          // learner actually needs. stripAnswersFromChallenge() whitelists
+          // id/question/questionAf/options/optionsAf/subject/subjectAf/topic/
+          // difficulty, so a row shaped {n, marks, topic, memoText,
+          // questionText, cognitiveLevel} — which is what the older seeding
+          // path wrote — loses every field that renders. The learner then gets
+          // a blank, unanswerable question that auto-scores wrong. Skip those
+          // so the template fallback below fills the slot with something real.
+          const isUsableSeed = (q: any) =>
+            q
+            && typeof q.question === "string"
+            && q.question.trim().length > 0
+            && Array.isArray(q.options)
+            && q.options.length > 1
+            && typeof q.correctIndex === "number";
+
           const seededBySubject = new Map<string, any[]>();
           for (const row of seededRows) {
             const arr = Array.isArray(row.questionsJson) ? (row.questionsJson as any[]) : [];
-            if (arr.length > 0) seededBySubject.set(row.subject, arr);
+            const usable = arr.filter(isUsableSeed);
+            if (usable.length !== arr.length) {
+              console.warn(
+                `[daily-challenge] ${row.subject}: dropped ${arr.length - usable.length}/${arr.length} seeded questions missing question/options/correctIndex`,
+              );
+            }
+            if (usable.length > 0) seededBySubject.set(row.subject, usable);
           }
           for (let i = 0; i < 5; i++) {
             const subj = selectedSubjects[i % selectedSubjects.length];
