@@ -1507,6 +1507,44 @@ export default function ParentDashboardPage() {
     );
   }
 
+  // No linked learner — an admin opening this page for support, or a parent
+  // whose child hasn't finished linking. Everything below assumes a selected
+  // learner, and `selectedLearnerId` is only set once the children list
+  // arrives, so without this guard the per-child queries never settle and the
+  // page sits on the spinner above indefinitely.
+  if ((childrenData?.children?.length ?? 0) === 0) {
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center p-6 text-white"
+        style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}
+        data-testid="parent-no-learner"
+      >
+        <div
+          className="max-w-md w-full text-center rounded-2xl p-8"
+          style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.1)" }}
+        >
+          <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}>
+            {isAf ? "Nog geen leerder gekoppel nie" : "No learner linked yet"}
+          </p>
+          <p className="text-sm text-white mt-3">
+            {isAf
+              ? "Sodra jou kind hul BrainTrack-rekening aan jou koppel, verskyn hul vordering hier."
+              : "Once your child links their BrainTrack account to you, their progress shows up here."}
+          </p>
+          <Link href="/dashboard">
+            <button
+              className="inline-flex items-center px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 mt-5"
+              style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
+              data-testid="link-home"
+            >
+              {isAf ? "Tuis" : "Home"}
+            </button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   // Sidebar footer card — who this parent is watching. Falls back to the first
   // linked child when the per-child payload hasn't landed yet.
   const sidebarLearnerName =

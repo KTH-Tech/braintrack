@@ -388,7 +388,11 @@ function RequireParentRoute({ children }: { children: React.ReactNode }) {
     return null;
   }
 
-  if (user?.role === "parent") {
+  // Admins reach the parent dashboard too, so support can see exactly what a
+  // parent sees without needing a parent login. The server still scopes every
+  // parent query by the caller's own id, so an admin sees the empty state
+  // rather than another family's data.
+  if (user?.role === "parent" || user?.role === "admin") {
     return <>{children}</>;
   }
 
