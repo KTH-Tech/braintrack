@@ -33,6 +33,8 @@ import { useRolePromptNav } from "@/components/role-prompt-modal";
 import iconTransparent from "@/assets/handoff/icon-transparent.png";
 import muralTransparent from "@/assets/handoff/mural-transparent.png";
 import { KthMark } from "@/components/kth-mark";
+import { KthTechChip } from "@/components/brand/KthTechLogo";
+import { SpraySmear } from "@/components/graffiti-splats";
 import { ReviewsRibbon } from "@/components/landing/reviews-ribbon";
 import { RizzDemo } from "@/components/landing/rizz-demo";
 
@@ -143,37 +145,35 @@ const COPY = {
     footSafeguarding: "Safeguarding",
     footAdmin: "Admin",
     footPowered: "KTH Tech",
-    // ── Redesigned footer (4-col + legal entity + Paystack badges) ────────
+    // ── Minimal gravity-wall footer (owner mid-task redirect) ─────────────
+    // Brand-first, not a link farm. 4 links max in the centre cluster.
     footTagline: "Grade 12 Matric prep for South Africa.",
-    footBadges: "Powered by Paystack · Verified by Visa · Mastercard SecureCode",
-    footLegalEntity:
-      "© 2026 KTH Projects (Pty) Ltd trading as KTH-Tech · Reg 2025/627290/07",
-    footStatementNote: "Charges appear on your statement as KTH-TECH",
-    footLangNote: "Available in English + Afrikaans",
-    footEmail: "hello@braintrack.tech",
-    colLearnTitle: "Learn",
-    colLearn: [
-      { href: "/features", label: "Features" },
-      { href: "/features#how-it-works", label: "How it works" },
-      { href: "/for-schools", label: "For schools" },
-      { href: "/features#parents", label: "For parents" },
-      { href: "/features#study-plan", label: "Study plan" },
+    footLegalLine:
+      "© 2026 KTH Projects (Pty) Ltd · Reg 2025/627290/07 · Charges appear as KTH-TECH · braintrack.tech",
+    footMinLinks: [
+      { href: "/terms-of-service",              label: "Terms" },
+      { href: "/privacy-policy",                label: "Privacy" },
+      { href: "/refund-policy",                 label: "Refunds" },
+      { href: "mailto:hello@braintrack.tech",   label: "Contact" },
     ],
-    colCompanyTitle: "Company",
-    colCompany: [
-      { href: "/about", label: "About" },
-      { href: "/blog", label: "Blog" },
-      { href: "mailto:hello@braintrack.tech", label: "Contact" },
-      { href: "/partner-schools", label: "Partner schools" },
+    // ── BrainTrack vs. other matric sites — animated split-screen ─────────
+    compareEye: "head-to-head",
+    compareHead1: "BrainTrack vs. ",
+    compareHead2: "other matric sites",
+    compareSub:
+      "Past-paper PDFs and generic drills stop at the download. BrainTrack keeps going — memos in the learner's voice, weakness-first practice, and reports parents actually read.",
+    cmpOther: "Other matric sites",
+    cmpUs: "BrainTrack",
+    cmpRows: [
+      { criterion: "Past papers",                    other: "Yes",                        otherIcon: "✓", otherColor: "#9FF5E8", us: "Yes — with real examiner intent" },
+      { criterion: "Answer memos",                   other: "Sometimes",                  otherIcon: "~", otherColor: "#FFE29A", us: "Every question, in your voice" },
+      { criterion: "Adaptive practice",              other: "No",                         otherIcon: "✗", otherColor: "#FFB7E5", us: "Weakness-first, updated daily" },
+      { criterion: "Bilingual (EN + Afrikaans)",     other: "Rare",                       otherIcon: "~", otherColor: "#FFE29A", us: "Every subject" },
+      { criterion: "Parent progress view",           other: "No",                         otherIcon: "✗", otherColor: "#FFB7E5", us: "Weekly summary + WhatsApp nudge" },
+      { criterion: "Costs",                          other: "Free (with ads) or R100s",   otherIcon: "~", otherColor: "#FFE29A", us: "R169/month, first 14 days free" },
+      { criterion: "School reporting",               other: "No",                         otherIcon: "✗", otherColor: "#FFB7E5", us: "Per-school dashboard" },
     ],
-    colLegalTitle: "Legal",
-    colLegal: [
-      { href: "/terms-of-service", label: "Terms" },
-      { href: "/privacy-policy", label: "Privacy" },
-      { href: "/cookie-policy", label: "Cookies" },
-      { href: "/refund-policy", label: "Refund policy" },
-      { href: "/privacy-policy", label: "POPIA consent" },
-    ],
+    compareCta: "Start free — R1 verify, 14 days on us",
   },
   af: {
     tFeatures: "Funksies",
@@ -271,37 +271,34 @@ const COPY = {
     footSafeguarding: "Beskerming",
     footAdmin: "Admin",
     footPowered: "KTH Tech",
-    // ── Herontwerpte voetskrif (4-kolom + regsentiteit + Paystack-tekens) ─
+    // ── Minimale muur-graffiti-voetskrif (eienaar-redigering) ─────────────
     footTagline: "Graad 12-matriekvoorbereiding vir Suid-Afrika.",
-    footBadges: "Aangedryf deur Paystack · Verified by Visa · Mastercard SecureCode",
-    footLegalEntity:
-      "© 2026 KTH Projects (Pty) Ltd handel dryf as KTH-Tech · Reg 2025/627290/07",
-    footStatementNote: "Bedrae verskyn op jou staat as KTH-TECH",
-    footLangNote: "Beskikbaar in Engels + Afrikaans",
-    footEmail: "hello@braintrack.tech",
-    colLearnTitle: "Leer",
-    colLearn: [
-      { href: "/features", label: "Kenmerke" },
-      { href: "/features#how-it-works", label: "Hoe dit werk" },
-      { href: "/for-schools", label: "Vir Skole" },
-      { href: "/features#parents", label: "Vir Ouers" },
-      { href: "/features#study-plan", label: "Studieplan" },
+    footLegalLine:
+      "© 2026 KTH Projects (Pty) Ltd · Reg 2025/627290/07 · Bedrae verskyn as KTH-TECH · braintrack.tech",
+    footMinLinks: [
+      { href: "/terms-of-service",              label: "Bepalings" },
+      { href: "/privacy-policy",                label: "Privaatheid" },
+      { href: "/refund-policy",                 label: "Terugbetalings" },
+      { href: "mailto:hello@braintrack.tech",   label: "Kontak" },
     ],
-    colCompanyTitle: "Maatskappy",
-    colCompany: [
-      { href: "/about", label: "Omtrent" },
-      { href: "/blog", label: "Blog" },
-      { href: "mailto:hello@braintrack.tech", label: "Kontak" },
-      { href: "/partner-schools", label: "Vennootskole" },
+    // ── BrainTrack teen ander matriekwerwe — geanimeerde geskeide skerm ──
+    compareEye: "kop-teen-kop",
+    compareHead1: "BrainTrack teen ",
+    compareHead2: "ander matriekwerwe",
+    compareSub:
+      "Vraestel-PDF's en generiese drille eindig by die aflaai. BrainTrack gaan verder — memo's in die leerder se stem, swakplek-eerste oefening, en verslae wat ouers regtig lees.",
+    cmpOther: "Ander matriekwerwe",
+    cmpUs: "BrainTrack",
+    cmpRows: [
+      { criterion: "Vraestelle",                       other: "Ja",                           otherIcon: "✓", otherColor: "#9FF5E8", us: "Ja — met regte eksamenbedoeling" },
+      { criterion: "Antwoordmemo's",                   other: "Soms",                         otherIcon: "~", otherColor: "#FFE29A", us: "Elke vraag, in jou stem" },
+      { criterion: "Aanpasbare oefening",              other: "Nee",                          otherIcon: "✗", otherColor: "#FFB7E5", us: "Swakplek-eerste, daagliks bygewerk" },
+      { criterion: "Tweetalig (EN + Afrikaans)",       other: "Skaars",                       otherIcon: "~", otherColor: "#FFE29A", us: "Elke vak" },
+      { criterion: "Ouer-vorderingsuitsig",            other: "Nee",                          otherIcon: "✗", otherColor: "#FFB7E5", us: "Weeklikse opsomming + WhatsApp-stoot" },
+      { criterion: "Koste",                            other: "Gratis (met advertensies) of R100e", otherIcon: "~", otherColor: "#FFE29A", us: "R169/maand, eerste 14 dae gratis" },
+      { criterion: "Skoolverslaggewing",               other: "Nee",                          otherIcon: "✗", otherColor: "#FFB7E5", us: "Per-skool-dashbord" },
     ],
-    colLegalTitle: "Regte",
-    colLegal: [
-      { href: "/terms-of-service", label: "Bepalings" },
-      { href: "/privacy-policy", label: "Privaatheid" },
-      { href: "/cookie-policy", label: "Koekies" },
-      { href: "/refund-policy", label: "Terugbetalingsbeleid" },
-      { href: "/privacy-policy", label: "POPIA-toestemming" },
-    ],
+    compareCta: "Begin gratis — R1-verifikasie, 14 dae op ons",
   },
 } as const;
 
@@ -583,13 +580,10 @@ export default function LandingPage() {
           .btl-quote { font-size: 15px !important; padding: 20px 22px !important; }
           .btl-foot { padding: 36px 22px !important; flex-direction: column; align-items: flex-start !important; }
           .btl-foot-links { gap: 16px 18px !important; }
-          .btl-foot-cols { grid-template-columns: repeat(2,1fr) !important; gap: 32px !important; }
-          .btl-foot-bottom { grid-template-columns: 1fr !important; gap: 10px !important; text-align: center !important; }
-          .btl-foot-bottom > * { text-align: center !important; justify-content: center !important; }
-          .btl-foot-badges span { flex-wrap: wrap; justify-content: center; }
-        }
-        @media (max-width: 520px) {
-          .btl-foot-cols { grid-template-columns: 1fr !important; gap: 28px !important; }
+          .btl-foot-row-min { flex-direction: column !important; align-items: center !important; text-align: center !important; gap: 22px !important; }
+          .btl-foot-row-min > * { justify-content: center !important; text-align: center !important; }
+          .btl-foot-left-cluster { flex-direction: column !important; text-align: center !important; align-items: center !important; }
+          .btl-foot-links-min { justify-content: center !important; gap: 14px 20px !important; }
         }
         @media (max-width: 480px) {
           .btl-nav { padding: 12px 10px !important; gap: 6px !important; }
@@ -1079,14 +1073,17 @@ export default function LandingPage() {
         </Reveal>
       </div>
 
-      {/* ── Footer (4-column, conversion-conscious) ─────────────
-          Task-1 rework: replaces the old single-row link strip.
-          Columns: Brand + tagline + email · Learn · Company · Legal.
-          Payment badges pill above the columns. Bottom bar carries the
-          full legal-entity line, the Paystack statement-descriptor note
-          and the KTH-Tech mark. All accent colours drawn from the
-          existing pastel palette — no grey ever (see feedback_no-grey).
-          Rainbow top-edge accent kept from the previous footer. */}
+      {/* ── Footer (minimal "gravity wall", owner redirect) ─────
+          Brand-first, not a link farm. Single row on desktop, stacks
+          cleanly on mobile. Pure #000 wall with two low-opacity paint
+          smears (top-right + bottom-left) for a graffiti-wall vibe.
+          Centre cluster is 4 links MAX (Terms · Privacy · Refunds ·
+          Contact) — anything else lives on interior pages. Right cluster
+          uses the new KthTechChip so the ringed emblem sits next to the
+          KTH-TECH wordmark. Thin bottom line carries entity, reg number,
+          statement descriptor and canonical domain in a graffiti-tag
+          typeface (Bebas Neue / Impact / Arial Black). Rainbow top-edge
+          accent kept from the previous footer for continuity. */}
       <footer
         className="btl-foot-v2"
         data-testid="landing-footer"
@@ -1094,226 +1091,152 @@ export default function LandingPage() {
         style={{
           position: "relative",
           marginTop: 120,
+          background: "#000",
           borderTop: "1px solid rgba(255,255,255,.08)",
-          background: "linear-gradient(180deg,rgba(255,255,255,.022),transparent 70%)",
+          overflow: "hidden",
+          fontFamily: "'Poppins',sans-serif",
         }}
       >
+        {/* Rainbow top-edge accent — retained from previous footer. */}
         <div
           aria-hidden
           style={{
             position: "absolute", top: -1, left: 0, right: 0, height: 1.5,
             background: RAINBOW, backgroundSize: "200% 100%",
             animation: "bt-rainbow 9s linear infinite", opacity: 0.55,
+            zIndex: 1,
           }}
         />
-        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "52px 32px 32px" }}>
-          {/* Payment badges pill row — sets billing expectation up-front. */}
+        {/* Paint drips — SpraySmear at very low opacity, corner cosmetic. */}
+        <span
+          aria-hidden
+          data-testid="footer-splat-top-right"
+          style={{
+            position: "absolute", top: -30, right: -40,
+            width: 260, height: 90, opacity: 0.14, pointerEvents: "none",
+            transform: "rotate(-6deg)", zIndex: 0,
+          }}
+        >
+          <SpraySmear color="#C5B3FF" />
+        </span>
+        <span
+          aria-hidden
+          data-testid="footer-splat-bottom-left"
+          style={{
+            position: "absolute", bottom: -34, left: -50,
+            width: 220, height: 80, opacity: 0.11, pointerEvents: "none",
+            transform: "rotate(4deg)", zIndex: 0,
+          }}
+        >
+          <SpraySmear color="#9FF5E8" />
+        </span>
+
+        <div style={{ position: "relative", zIndex: 2, maxWidth: 1200, margin: "0 auto", padding: "40px 32px 24px" }}>
           <div
-            className="btl-foot-badges"
-            data-testid="footer-payment-badges"
+            className="btl-foot-row-min"
             style={{
-              display: "flex", justifyContent: "center", flexWrap: "wrap",
-              gap: 10, marginBottom: 40,
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              gap: 32, flexWrap: "wrap",
             }}
           >
-            <span
+            {/* Left cluster — BrainTrack wordmark + one-line tagline. */}
+            <div
+              className="btl-foot-left-cluster"
+              data-testid="footer-brand"
+              style={{ display: "flex", alignItems: "center", gap: 14 }}
+            >
+              <img
+                src={iconTransparent}
+                alt=""
+                className="btl-logo-img"
+                style={{ width: 46, height: 46, objectFit: "contain", flex: "none" }}
+              />
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <RainbowWordmark size={22} />
+                <span
+                  data-testid="footer-tagline"
+                  style={{
+                    fontSize: 12.5, color: "#fff", letterSpacing: 2,
+                    fontFamily: "'Bebas Neue','Impact','Arial Black',sans-serif",
+                    fontWeight: 700, textTransform: "uppercase",
+                  }}
+                >
+                  {t.footTagline}
+                </span>
+              </div>
+            </div>
+
+            {/* Centre cluster — 4 links MAX. */}
+            <nav
+              aria-label="Footer links"
+              className="btl-foot-links-min"
+              data-testid="footer-links"
               style={{
-                display: "inline-flex", alignItems: "center", gap: 10,
-                fontSize: 12.5, fontWeight: 700, color: "#fff",
-                letterSpacing: ".3px",
-                border: "1.5px solid rgba(159,245,232,.55)",
-                borderRadius: 999, padding: "9px 20px",
-                background: "rgba(159,245,232,.06)",
+                display: "flex", flexWrap: "wrap", alignItems: "center",
+                gap: "10px 24px",
               }}
             >
-              <span aria-hidden style={{ color: "#9FF5E8" }}>✓</span>
-              {t.footBadges}
-            </span>
-          </div>
-
-          {/* 4-column grid: Brand · Learn · Company · Legal */}
-          <div
-            className="btl-foot-cols"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1.4fr 1fr 1fr 1fr",
-              gap: 40,
-            }}
-          >
-            {/* Column 1 — Brand */}
-            <div>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-                <img
-                  src={iconTransparent}
-                  alt=""
-                  className="btl-logo-img"
-                  style={{ width: 44, height: 44, objectFit: "contain" }}
-                />
-                <RainbowWordmark size={20} />
-              </div>
-              <div style={{ fontSize: 14, lineHeight: 1.6, color: "#fff", opacity: 0.92, marginBottom: 14 }}>
-                {t.footTagline}
-              </div>
-              <a
-                href={`mailto:${t.footEmail}`}
-                data-testid="link-footer-email"
-                className="btl-foot-link"
-                style={{
-                  display: "inline-flex", alignItems: "center",
-                  fontSize: 13.5, fontWeight: 700,
-                  color: "#9FF5E8", textDecoration: "none",
-                  minHeight: 44,
-                  "--h": "#FFB7E5",
-                } as React.CSSProperties}
-              >
-                {t.footEmail}
-              </a>
-            </div>
-
-            {/* Column 2 — Learn */}
-            <nav aria-label={t.colLearnTitle}>
-              <div style={{
-                fontSize: 11, fontWeight: 900, letterSpacing: "1.8px",
-                textTransform: "uppercase", color: "#9FF5E8", marginBottom: 16,
-              }}>
-                {t.colLearnTitle}
-              </div>
-              <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 4 }}>
-                {t.colLearn.map((l) => (
-                  <li key={l.label}>
-                    <Link href={l.href}>
-                      <span
-                        className="btl-foot-link"
-                        data-testid={`footer-learn-${l.label.toLowerCase().replace(/\s+/g, "-")}`}
-                        style={{
-                          fontSize: 13.5, fontWeight: 600, color: "#fff",
-                          minHeight: 44, display: "inline-flex", alignItems: "center",
-                          cursor: "pointer",
-                          "--h": "#9FF5E8",
-                        } as React.CSSProperties}
-                      >
-                        {l.label}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-
-            {/* Column 3 — Company */}
-            <nav aria-label={t.colCompanyTitle}>
-              <div style={{
-                fontSize: 11, fontWeight: 900, letterSpacing: "1.8px",
-                textTransform: "uppercase", color: "#9FD8FF", marginBottom: 16,
-              }}>
-                {t.colCompanyTitle}
-              </div>
-              <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 4 }}>
-                {t.colCompany.map((l) => {
-                  const isMail = l.href.startsWith("mailto:");
-                  const testId = `footer-company-${l.label.toLowerCase().replace(/\s+/g, "-")}`;
-                  const cellStyle = {
-                    fontSize: 13.5, fontWeight: 600, color: "#fff",
-                    minHeight: 44, display: "inline-flex", alignItems: "center",
-                    cursor: "pointer", textDecoration: "none",
-                    "--h": "#9FD8FF",
-                  } as React.CSSProperties;
-                  return (
-                    <li key={l.label}>
-                      {isMail ? (
-                        <a href={l.href} data-testid={testId} className="btl-foot-link" style={cellStyle}>
-                          {l.label}
-                        </a>
-                      ) : (
-                        <Link href={l.href}>
-                          <span className="btl-foot-link" data-testid={testId} style={cellStyle}>
-                            {l.label}
-                          </span>
-                        </Link>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            </nav>
-
-            {/* Column 4 — Legal */}
-            <nav aria-label={t.colLegalTitle}>
-              <div style={{
-                fontSize: 11, fontWeight: 900, letterSpacing: "1.8px",
-                textTransform: "uppercase", color: "#FFE29A", marginBottom: 16,
-              }}>
-                {t.colLegalTitle}
-              </div>
-              <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 4 }}>
-                {t.colLegal.map((l) => (
-                  <li key={l.label}>
-                    <Link href={l.href}>
-                      <span
-                        className="btl-foot-link"
-                        data-testid={`footer-legal-${l.label.toLowerCase().replace(/\s+/g, "-")}`}
-                        style={{
-                          fontSize: 13.5, fontWeight: 600, color: "#fff",
-                          minHeight: 44, display: "inline-flex", alignItems: "center",
-                          cursor: "pointer",
-                          "--h": "#FFE29A",
-                        } as React.CSSProperties}
-                      >
-                        {l.label}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          </div>
-
-          {/* Bottom bar — legal entity · statement descriptor · KTH-Tech mark.
-              Language toggle already lives in the sticky nav (top of page),
-              so we surface it here as a text mention only — no duplicate. */}
-          <div
-            className="btl-foot-bottom"
-            style={{
-              marginTop: 40, paddingTop: 22,
-              borderTop: "1px solid rgba(255,255,255,.08)",
-              display: "grid",
-              gridTemplateColumns: "1.5fr 1fr 1fr",
-              gap: 24,
-              alignItems: "center",
-            }}
-          >
-            <div
-              data-testid="footer-legal-entity"
-              style={{ fontSize: 12, lineHeight: 1.55, color: "#fff", opacity: 0.9 }}
-            >
-              {t.footLegalEntity}
-            </div>
-            <div
-              data-testid="footer-statement-note"
-              style={{ fontSize: 12, lineHeight: 1.55, color: "#fff", opacity: 0.9, textAlign: "center" }}
-            >
-              {t.footStatementNote}
-            </div>
-            <div
-              data-testid="footer-bottom-right"
-              style={{ fontSize: 12, lineHeight: 1.55, color: "#fff", textAlign: "right", display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 12, flexWrap: "wrap" }}
-            >
-              <span data-testid="footer-lang-note" style={{ opacity: 0.9 }}>{t.footLangNote}</span>
-              <a
-                href="https://kth-tech.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                data-testid="link-footer-kth"
-                aria-label="KTH Tech"
-                style={{
-                  display: "inline-flex", alignItems: "center", gap: 6,
+              {t.footMinLinks.map((l, i) => {
+                const accents = ["#9FD8FF", "#FFB7E5", "#FFE29A", "#9FF5E8"];
+                const c = accents[i % accents.length];
+                const testId = `footer-link-${l.label.toLowerCase()}`;
+                const linkStyle = {
+                  fontFamily: "'Bebas Neue','Impact','Arial Black',sans-serif",
+                  fontSize: 15, fontWeight: 800, letterSpacing: 2,
+                  textTransform: "uppercase" as const,
                   color: "#fff", textDecoration: "none",
-                }}
-              >
-                <KthMark size={28} />
-                <span style={{ fontWeight: 700 }}>{t.footPowered}</span>
-              </a>
-            </div>
+                  minHeight: 44, display: "inline-flex", alignItems: "center",
+                  cursor: "pointer",
+                  "--h": c,
+                } as React.CSSProperties;
+                if (l.href.startsWith("mailto:")) {
+                  return (
+                    <a key={l.label} href={l.href} className="btl-foot-link" data-testid={testId} style={linkStyle}>
+                      {l.label}
+                    </a>
+                  );
+                }
+                return (
+                  <Link key={l.label} href={l.href}>
+                    <span className="btl-foot-link" data-testid={testId} style={linkStyle}>
+                      {l.label}
+                    </span>
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {/* Right cluster — KthTechChip (ringed emblem + wordmark). */}
+            <a
+              href="https://kth-tech.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-testid="link-footer-kth"
+              aria-label="KTH Tech"
+              style={{
+                color: "#fff", textDecoration: "none",
+                display: "inline-flex", alignItems: "center",
+                minHeight: 44,
+              }}
+            >
+              <KthTechChip label="KTH-Tech" size={26} />
+            </a>
+          </div>
+
+          {/* Thin bottom line — entity · reg · statement descriptor · domain. */}
+          <div
+            data-testid="footer-legal-line"
+            style={{
+              marginTop: 24, paddingTop: 14,
+              borderTop: "1px solid rgba(255,255,255,.08)",
+              fontSize: 12.5,
+              fontFamily: "'Bebas Neue','Impact','Arial Black',sans-serif",
+              letterSpacing: 2, textTransform: "uppercase",
+              color: "#fff", opacity: 0.92,
+              textAlign: "center", lineHeight: 1.55,
+            }}
+          >
+            {t.footLegalLine}
           </div>
         </div>
       </footer>
