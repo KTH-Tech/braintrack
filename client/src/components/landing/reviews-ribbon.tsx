@@ -120,7 +120,10 @@ export function ReviewsRibbon({ language }: { language: "en" | "af" }) {
   return (
     <div
       className="btl-sec"
-      style={{ maxWidth: 1240, margin: "116px auto 0", padding: "0 32px" }}
+      /* Narrow closing band, not a full section. Sits directly above the
+         footer, so the old 116px top gap and tall stacked header would have
+         left a dead void between the last CTA and the wall. */
+      style={{ maxWidth: 1240, margin: "56px auto 0", padding: "0 32px" }}
       data-testid="section-reviews-ribbon"
     >
       {/* Local keyframes — hover-pause helper. bt-marquee itself is defined
@@ -131,14 +134,27 @@ export function ReviewsRibbon({ language }: { language: "en" | "af" }) {
                       box-shadow .32s ease, border-color .32s ease;
         }
         .bt-review-card:hover {
-          transform: translateY(-6px);
-          box-shadow: 0 22px 46px var(--rglow, rgba(255,255,255,.15));
+          /* Sticker-slap, not bloom — matches the global card treatment. */
+          transform: translate(-3px,-3px) rotate(-.35deg);
+          box-shadow: 7px 7px 0 0 var(--rc, #9FD8FF);
           border-color: var(--rc, #9FD8FF) !important;
         }
       `}</style>
 
-      {/* Section header — icon + Permanent Marker eyebrow */}
-      <div style={{ textAlign: "center", marginBottom: 34 }}>
+      {/* Compact band header — eyebrow, headline and subhead sit on one
+          centred line-wrapped row instead of three stacked blocks, so the
+          whole ribbon stays short above the footer. */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "baseline",
+          justifyContent: "center",
+          flexWrap: "wrap",
+          gap: "6px 14px",
+          textAlign: "center",
+          marginBottom: 18,
+        }}
+      >
         <div
           style={{
             display: "inline-flex",
@@ -157,11 +173,10 @@ export function ReviewsRibbon({ language }: { language: "en" | "af" }) {
         <div
           className="btl-sec-head"
           style={{
-            fontSize: 38,
+            fontSize: 24,
             fontWeight: 900,
-            letterSpacing: "-1.2px",
-            lineHeight: 1.14,
-            marginTop: 10,
+            letterSpacing: "-.6px",
+            lineHeight: 1.2,
             color: "#fff",
           }}
         >
@@ -170,14 +185,11 @@ export function ReviewsRibbon({ language }: { language: "en" | "af" }) {
         <div
           className="btl-sec-sub"
           style={{
-            marginTop: 12,
-            fontSize: 15.5,
-            lineHeight: 1.6,
+            fontSize: 13.5,
+            lineHeight: 1.5,
             color: "#fff",
-            opacity: 0.92,
-            maxWidth: 700,
-            marginLeft: "auto",
-            marginRight: "auto",
+            opacity: 0.9,
+            maxWidth: 620,
           }}
         >
           {subHead}

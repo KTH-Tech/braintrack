@@ -767,11 +767,6 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* ── Reviews ribbon ───────────────────────────────────
-          Marquee of pilot testimonials — pauses on hover, marked SAMPLE
-          on every card so the reviews aren't mistaken for endorsements. */}
-      <ReviewsRibbon language={language} />
-
       {/* ── Features ────────────────────────────────────────── */}
       <div className="btl-sec" style={{ maxWidth: 1100, margin: "104px auto 0", padding: "0 32px" }}>
         <Reveal style={{ textAlign: "center", marginBottom: 58 }}>
@@ -1072,6 +1067,12 @@ export default function LandingPage() {
           </div>
         </Reveal>
       </div>
+
+      {/* ── Reviews ribbon ───────────────────────────────────
+          Pilot-cohort testimonials. Moved down here (owner call) so it reads
+          as a thin closing endorsement band directly above the footer rather
+          than interrupting the mid-page pitch. */}
+      <ReviewsRibbon language={language} />
 
       {/* ── Footer (minimal "gravity wall", owner redirect) ─────
           Brand-first, not a link farm. Single row on desktop, stacks
