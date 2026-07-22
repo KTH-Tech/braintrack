@@ -19,6 +19,7 @@ import {
   RefreshCw, Users, UserPlus, Sparkles, Rocket,
   MessageSquare, CheckCircle2, XCircle, Loader2, Send,
   Link2, Settings2, CreditCard, ShieldCheck,
+  Copy, Check, Share2, Gift,
 } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { VARK_STYLES } from "@/lib/vark";
@@ -993,6 +994,143 @@ type LinkStatusRow = {
 };
 
 const TERMINAL_STATUSES = new Set(["delivered", "failed", "undelivered", "not_configured"]);
+
+/* ── Parent-side referral share ─────────────────────────────────────────────
+   Parents don't own a subscription (their linked child does), so they don't
+   have their own referral code. Instead they can share the CHILD's referral
+   link so friends of the family also start a trial — two paid friends earn
+   the child a free month on their subscription. This mirrors the learner
+   share flow in client/src/pages/rewards.tsx but scoped to what the parent
+   sees. When the child is still trial-day-0 the endpoint returns a code —
+   see server/routes.ts:getOrCreateLearnerReferralCode ("trial" is eligible).
+   Only renders when at least one linked child has a code assigned.        */
+type ParentReferralChild = {
+  learnerUserId: string;
+  learnerName: string;
+  code: string | null;
+  link: string | null;
+};
+
+function ParentReferralShareCard({ isAf }: { isAf: boolean }) {
+  const { data, isLoading } = useQuery<{ children: ParentReferralChild[] }>({
+    queryKey: ["/api/parent/referral/child-links"],
+    queryFn: () =>
+      fetch("/api/parent/referral/child-links", { credentials: "include" }).then((r) =>
+        r.ok ? r.json() : { children: [] },
+      ),
+    staleTime: 60_000,
+  });
+
+  const kids = (data?.children ?? []).filter((c) => c.code && c.link);
+  if (isLoading || kids.length === 0) return null;
+
+  const heading = isAf ? "Verwys 'n vriend — verdien 'n gratis maand" : "Refer a friend — earn a free month";
+  const sub = isAf
+    ? "Deel jou kind se skakel. Wanneer 2 vriende vir Brain Boost intekening betaal, kry jou kind 1 gratis maand op hul intekening."
+    : "Share your child's link. When 2 friends pay for Brain Boost, your child gets 1 free month added to their subscription.";
+  const shareLabel = isAf ? "Deel op WhatsApp" : "Share on WhatsApp";
+  const copyLabel = isAf ? "Kopieer skakel" : "Copy link";
+
+  return (
+    <section style={panel(PASTEL.emerald)} className="p-5 sm:p-6" data-testid="parent-referral-share-card">
+      <div className="flex items-start gap-3 mb-4">
+        <div
+          className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
+          style={{ background: "rgba(148,247,197,.12)", border: `1.5px solid ${PASTEL.emerald}` }}
+        >
+          <Gift className="w-5 h-5" style={{ color: PASTEL.emerald }} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <Heading hex={PASTEL.emerald} size="md">
+            {heading}
+          </Heading>
+          <p className="text-sm text-white mt-1">{sub}</p>
+        </div>
+      </div>
+      <div className="space-y-3">
+        {kids.map((kid) => (
+          <ParentReferralChildRow key={kid.learnerUserId} kid={kid} isAf={isAf} shareLabel={shareLabel} copyLabel={copyLabel} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ParentReferralChildRow({
+  kid,
+  isAf,
+  shareLabel,
+  copyLabel,
+}: {
+  kid: ParentReferralChild;
+  isAf: boolean;
+  shareLabel: string;
+  copyLabel: string;
+}) {
+  const [copied, setCopied] = useState(false);
+  const link = kid.link ?? "";
+  const firstName = (kid.learnerName ?? "").trim().split(/\s+/)[0] || (isAf ? "jou kind" : "your child");
+  const msg = isAf
+    ? `Sluit ${firstName} aan op BrainTrack en berei saam vir die NSC-eksamens voor: ${link}`
+    : `Join ${firstName} on BrainTrack and get NSC exam-ready together: ${link}`;
+  const waHref = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+
+  const handleCopy = async () => {
+    if (!link) return;
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // ignore — user can still tap Share on WhatsApp
+    }
+  };
+
+  return (
+    <div
+      className="rounded-xl p-3 flex flex-col sm:flex-row sm:items-center gap-3"
+      style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.08)" }}
+      data-testid={`parent-referral-child-row-${kid.learnerUserId}`}
+    >
+      <div className="flex-1 min-w-0">
+        <p className="text-[11px] uppercase tracking-[0.18em] text-white font-bold">
+          {kid.learnerName || (isAf ? "Leerder" : "Learner")}
+        </p>
+        <p
+          className="text-xs text-white truncate font-mono mt-0.5"
+          title={link}
+          data-testid={`parent-referral-link-${kid.learnerUserId}`}
+        >
+          {link || "—"}
+        </p>
+      </div>
+      <div className="flex items-center gap-2 shrink-0">
+        <button
+          type="button"
+          onClick={handleCopy}
+          disabled={!link}
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-colors disabled:opacity-50"
+          style={{ color: PASTEL.emerald, border: `1.5px solid ${PASTEL.emerald}`, background: "transparent" }}
+          data-testid={`parent-referral-copy-${kid.learnerUserId}`}
+        >
+          {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+          {copied ? (isAf ? "Gekopieer" : "Copied") : copyLabel}
+        </button>
+        <a
+          href={waHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black transition-transform hover:-translate-y-0.5"
+          style={{ background: PASTEL.emerald, color: "#050508" }}
+          data-testid={`parent-referral-whatsapp-${kid.learnerUserId}`}
+        >
+          <Share2 className="w-3.5 h-3.5" />
+          {shareLabel}
+        </a>
+      </div>
+    </div>
+  );
+}
 
 function WhatsAppLinkStatusPanel({ isAf }: { isAf: boolean }) {
   const [resending, setResending] = useState(false);
@@ -2704,6 +2842,8 @@ export default function ParentDashboardPage() {
 
           <SubscriptionPanel isAf={isAf} />
 
+          <ParentReferralShareCard isAf={isAf} />
+
           <WhatsAppLinkStatusPanel isAf={isAf} />
 
           {selectedLearnerId && (
@@ -3076,7 +3216,7 @@ const PARENT_FAQ = {
     { q: "How do I see my child's progress?", a: "Your dashboard shows weekly reports including study days, minutes studied, subjects practised, and mastery levels." },
     { q: "What does the mastery percentage mean?", a: "Mastery shows how well your child understands each topic. Green (75%+) means strong, amber (50-74%) developing, red means more practice needed." },
     { q: "Can I see which subjects my child is struggling with?", a: "Yes — the subject breakdown highlights weak areas in red. Use this for focused conversations with your child or their teachers." },
-    { q: "How does the 14-day free trial work?", a: "Full access for 14 days. No charge until day 15. Cancel anytime before then at no cost." },
+    { q: "How does the 14-day free trial work?", a: "Full access for 14 days. Cancel any time during the trial and you're never charged. If you don't cancel, R169 goes off on day 14 and every month after." },
     { q: "Is the content aligned with the NSC curriculum?", a: "Yes — all questions, topics, and study plans come from the CAPS curriculum and 10 years of real NSC exam papers." },
     { q: "How do I contact support?", a: "Email learn@kth-tech.com or use the help button in the app. We respond within 24 hours." },
   ],
@@ -3084,7 +3224,7 @@ const PARENT_FAQ = {
     { q: "Hoe sien ek my kind se vordering?", a: "Jou dashboard wys weeklikse verslae met studiedae, minute gestudeer, vakke geoefen en bemeesteringsvlakke." },
     { q: "Wat beteken die bemeesteringspersentasie?", a: "Bemeestering wys hoe goed jou kind elke onderwerp verstaan. Groen (75%+) beteken sterk, amber (50-74%) ontwikkelend, rooi beteken meer oefening nodig." },
     { q: "Kan ek sien met watter vakke my kind sukkel?", a: "Ja — die vakuiteensetting lig swak areas in rooi uit vir gefokusde gesprekke." },
-    { q: "Hoe werk die 14-dae gratis proeftydperk?", a: "Volle toegang vir 14 dae. Geen heffing voor dag 15 nie. Kanselleer enige tyd teen geen koste." },
+    { q: "Hoe werk die 14-dae gratis proeftydperk?", a: "Volle toegang vir 14 dae. Kanselleer enige tyd tydens die proeftydperk en jy word nooit gehef nie. As jy nie kanselleer nie, word R169 outomaties op dag 14 gehef en elke maand daarna." },
     { q: "Is die inhoud in lyn met die NSC-kurrikulum?", a: "Ja — alle vrae en studieplanne kom uit die KABV-kurrikulum en 10 jaar se werklike NSC-eksamenvraestelle." },
     { q: "Hoe kontak ek ondersteuning?", a: "Stuur 'n e-pos aan learn@kth-tech.com of gebruik die hulpknoppie in die app." },
   ],

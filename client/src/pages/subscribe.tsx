@@ -599,8 +599,8 @@ export default function SubscribePage() {
             style={{ fontSize: 14, color: "#fff", maxWidth: 620, margin: "0 auto 28px", lineHeight: 1.55 }}
           >
             {isAf
-              ? "Vir ouers wat 'n minderjarige aktiveer: R1 vandag om die kaart te verifieer (POPIA-toestemming). Geen ander heffing tot dag 15 nie."
-              : "Parents activating a minor pay R1 today to verify the card (POPIA consent). No other charge until day 15."}
+              ? "Vir ouers wat 'n minderjarige aktiveer: R1 vandag om die kaart te verifieer (POPIA-toestemming). Geen ander heffing tot dag 14 nie."
+              : "Parents activating a minor pay R1 today to verify the card (POPIA consent). No other charge until day 14."}
           </div>
 
           {/* ── Trust-signal stack (above the CTA — this is the moment the parent's brain says "is this legit?") ── */}
@@ -791,8 +791,8 @@ export default function SubscribePage() {
               </div>
               <p style={{ fontSize: 14, color: "#fff", margin: 0, lineHeight: 1.6 }}>
                 {isAf
-                  ? "As jy 'n minderjarige aktiveer, vra Paystack R1 om die kaart aan die ouer te koppel — dis hoe POPIA-toestemming rekord hou. Dit is een keer, geen ander heffing tot dag 15 nie. Volwasse leerders wat vir hulself aanmeld, hoef geen kaart in te lees om te begin nie."
-                  : "For parents activating a minor, Paystack takes R1 to confirm the card belongs to you — that's how POPIA consent is recorded. It's one-off, non-refundable, and there is no other charge until day 15. Adult learners activating themselves don't need to enter a card to start the trial."}
+                  ? "As jy 'n minderjarige aktiveer, vra Paystack R1 om die kaart aan die ouer te koppel — dis hoe POPIA-toestemming rekord hou. Dit is een keer, geen ander heffing tot dag 14 nie. Volwasse leerders wat vir hulself aanmeld, hoef geen kaart in te lees om te begin nie."
+                  : "For parents activating a minor, Paystack takes R1 to confirm the card belongs to you — that's how POPIA consent is recorded. It's one-off, non-refundable, and there is no other charge until day 14. Adult learners activating themselves don't need to enter a card to start the trial."}
               </p>
             </div>
           </div>
@@ -1932,8 +1932,8 @@ function ParentSubscribeScreen({
         <WallCallout color="#FFE29A">
           <p style={{ fontWeight: 800, fontSize: 15, color: "#FFE29A", margin: 0, lineHeight: 1.7 }} data-testid="parent-subscribe-terms">
             {isAf
-              ? "R1 kaartverifikasie vandag · gratis vir 14 dae · R169/maand vanaf dag 15 · kanselleer enige tyd in die app"
-              : "R1 card verification today · free for 14 days · R169/month from day 15 · cancel anytime in the app"}
+              ? "R1 kaartverifikasie vandag · gratis vir 14 dae · R169/maand vanaf dag 14 · kanselleer enige tyd in die app"
+              : "R1 card verification today · free for 14 days · R169/month from day 14 · cancel anytime in the app"}
           </p>
         </WallCallout>
       </div>
