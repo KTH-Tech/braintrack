@@ -10,7 +10,7 @@ export default function PrivacyPolicyPage() {
   const isAf = language === "af";
   useSEO({
     title: "Privacy Policy & POPIA Compliance | BrainTrack",
-    description: "BrainTrack privacy policy covering POPIA compliance, data protection, learner data security, and your rights as a South African user. Powered by KTH Tech.",
+    description: "BrainTrack privacy policy covering POPIA compliance, data protection, learner data security, and your rights as a South African user. Operated by KTH Projects (Pty) Ltd t/a KTH-Tech.",
     canonical: "https://braintrack.tech/privacy-policy",
   });
 
@@ -34,8 +34,8 @@ export default function PrivacyPolicyPage() {
         <div className="space-y-3">
           <p>
             {isAf
-              ? "BrainTrack (\"ons\" of \"ons s'n\") bedryf die BrainTrack opvoedkundige platform. Hierdie Privaatheidsbeleid verduidelik hoe ons jou persoonlike inligting versamel, gebruik, openbaar en beskerm wanneer jy ons diens gebruik."
-              : "BrainTrack (\"we\", \"us\", or \"our\") operates the BrainTrack educational platform. This Privacy Policy explains how we collect, use, disclose, and safeguard your personal information when you use our service."}
+              ? "In hierdie Privaatheidsbeleid verwys \"BrainTrack\", \"ons\" of \"ons s'n\" na KTH Projects (Edms) Bpk (registrasienommer 2025/627290/07), 'n Suid-Afrikaanse private maatskappy wat handel dryf as KTH-Tech. BrainTrack is ons matriek-eksamenvoorbereidingsproduk; kaartheffings verskyn op jou bankstaat as KTH-TECH. Hierdie Privaatheidsbeleid verduidelik hoe ons jou persoonlike inligting versamel, gebruik, openbaar en beskerm wanneer jy ons diens gebruik."
+              : "In this Privacy Policy, \"BrainTrack\", \"we\", \"us\", or \"our\" refers to KTH Projects (Pty) Ltd (registration number 2025/627290/07), a South African private company trading as KTH-Tech. BrainTrack is our matric exam-preparation product; card charges appear on your bank statement as KTH-TECH. This Privacy Policy explains how we collect, use, disclose, and safeguard your personal information when you use our service."}
           </p>
           <p>
             {isAf
@@ -236,7 +236,9 @@ export default function PrivacyPolicyPage() {
               : "For any privacy-related questions or to exercise your rights:"}
           </p>
           <div className="pl-3 py-1 space-y-2" style={{ borderLeft: "3px solid #FFB7E5" }}>
-            <p><strong>{isAf ? "Inligtingsbeampte:" : "Information Officer:"}</strong> KTH Tech</p>
+            <p><strong>{isAf ? "Verantwoordelike Party:" : "Responsible Party:"}</strong> {isAf ? "KTH Projects (Edms) Bpk h/a KTH-Tech" : "KTH Projects (Pty) Ltd t/a KTH-Tech"}</p>
+            <p><strong>{isAf ? "Registrasienommer:" : "Registration number:"}</strong> 2025/627290/07</p>
+            <p><strong>{isAf ? "Inligtingsbeampte:" : "Information Officer:"}</strong> BrainTrack (KTH-Tech)</p>
             <p><strong>{isAf ? "E-pos:" : "Email:"}</strong> learn@kth-tech.com</p>
             <p><strong>{isAf ? "Adres:" : "Address:"}</strong> {isAf ? "Suid-Afrika" : "South Africa"}</p>
           </div>

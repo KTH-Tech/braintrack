@@ -25,11 +25,24 @@ export default function CookiePolicyPage() {
       activeHref="/cookie-policy"
       backTestId="cookie-nav-back"
       lead={
-        <p>
-          {isAf
-            ? "BrainTrack gebruik noodsaaklike koekies en opsionele koekies per kategorie — Analise en Bemarking. Jy kan elke kategorie afsonderlik bestuur via ons koekievoorkeure-paneel."
-            : "BrainTrack uses essential cookies and optional cookies by category — Analytics and Marketing. You can manage each category separately via our cookie preferences panel."}
-        </p>
+        <div className="space-y-3">
+          <p>
+            {isAf
+              ? "BrainTrack gebruik noodsaaklike koekies en opsionele koekies per kategorie — Analise en Bemarking. Jy kan elke kategorie afsonderlik bestuur via ons koekievoorkeure-paneel."
+              : "BrainTrack uses essential cookies and optional cookies by category — Analytics and Marketing. You can manage each category separately via our cookie preferences panel."}
+          </p>
+          <p>
+            {isAf ? (
+              <>
+                In hierdie Koekiebeleid verwys <strong>&ldquo;BrainTrack&rdquo;</strong>, <strong>&ldquo;ons&rdquo;</strong> of <strong>&ldquo;ons s&rsquo;n&rdquo;</strong> na <strong>KTH Projects (Edms) Bpk</strong> (registrasienommer 2025/627290/07), &rsquo;n Suid-Afrikaanse private maatskappy wat handel dryf as <strong>KTH-Tech</strong>. BrainTrack is ons matriek-eksamenvoorbereidingsproduk. Kaartheffings verskyn op jou bankstaat as <strong>KTH-TECH</strong>.
+              </>
+            ) : (
+              <>
+                In this Cookie Policy, <strong>&ldquo;BrainTrack&rdquo;</strong>, <strong>&ldquo;we&rdquo;</strong>, <strong>&ldquo;us&rdquo;</strong>, or <strong>&ldquo;our&rdquo;</strong> refers to <strong>KTH Projects (Pty) Ltd</strong> (registration number 2025/627290/07), a South African private company trading as <strong>KTH-Tech</strong>. BrainTrack is our matric exam-preparation product. Card charges appear on your bank statement as <strong>KTH-TECH</strong>.
+              </>
+            )}
+          </p>
+        </div>
       }
     >
       <LegalSection accent="#9FF5E8" title={isAf ? "1. Wat is Koekies?" : "1. What Are Cookies?"}>
@@ -308,7 +321,9 @@ export default function CookiePolicyPage() {
               : "For any questions about our use of cookies or this policy:"}
           </p>
           <div className="p-4 rounded-xl space-y-2" style={{ background: "rgba(255,255,255,.04)", border: "1px solid rgba(255,255,255,.1)" }}>
-            <p><strong>{isAf ? "Inligtingsbeampte:" : "Information Officer:"}</strong> KTH Tech</p>
+            <p><strong>{isAf ? "Verantwoordelike Party:" : "Responsible Party:"}</strong> {isAf ? "KTH Projects (Edms) Bpk h/a KTH-Tech" : "KTH Projects (Pty) Ltd t/a KTH-Tech"}</p>
+            <p><strong>{isAf ? "Registrasienommer:" : "Registration number:"}</strong> 2025/627290/07</p>
+            <p><strong>{isAf ? "Inligtingsbeampte:" : "Information Officer:"}</strong> BrainTrack (KTH-Tech)</p>
             <p><strong>{isAf ? "E-pos:" : "Email:"}</strong> learn@kth-tech.com</p>
             <p>
               <strong>{isAf ? "Privaatheidsbeleid:" : "Privacy Policy:"}</strong>{" "}

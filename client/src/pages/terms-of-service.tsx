@@ -163,7 +163,7 @@ export default function TermsOfServicePage() {
         content: [
           "These Terms are governed by the laws of the Republic of South Africa.",
           "Any disputes arising from the use of BrainTrack™ shall be subject to the exclusive jurisdiction of the South African courts.",
-          "BrainTrack™ is a product of KTH Tech (Pty) Ltd, a company registered in South Africa."
+          "BrainTrack™ is a product of KTH Projects (Pty) Ltd (registration number 2025/627290/07), a South African private company trading as KTH-Tech. Card charges appear on your bank statement as KTH-TECH."
         ]
       },
       {
@@ -319,7 +319,7 @@ export default function TermsOfServicePage() {
         content: [
           "Hierdie Voorwaardes word beheer deur die wette van die Republiek van Suid-Afrika.",
           "Enige geskille wat spruit uit die gebruik van BrainTrack™ sal onderhewig wees aan die eksklusiewe jurisdiksie van die Suid-Afrikaanse howe.",
-          "BrainTrack™ is 'n produk van KTH Tech (Edms) Bpk, 'n maatskappy geregistreer in Suid-Afrika."
+          "BrainTrack™ is 'n produk van KTH Projects (Edms) Bpk (registrasienommer 2025/627290/07), 'n Suid-Afrikaanse private maatskappy wat handel dryf as KTH-Tech. Kaartheffings verskyn op jou bankstaat as KTH-TECH."
         ]
       },
       {
@@ -344,11 +344,24 @@ export default function TermsOfServicePage() {
       activeHref="/terms-of-service"
       backTestId="terms-nav-back"
       lead={
-        <p>
-          {isAf
-            ? "Alles wat jy moet weet voor jy BrainTrack™ gebruik — reguit en sonder raaisels."
-            : "Everything you need to know before using BrainTrack™ — straight up, no small print games."}
-        </p>
+        <div className="space-y-3">
+          <p>
+            {isAf
+              ? "Alles wat jy moet weet voor jy BrainTrack™ gebruik — reguit en sonder raaisels."
+              : "Everything you need to know before using BrainTrack™ — straight up, no small print games."}
+          </p>
+          <p>
+            {isAf ? (
+              <>
+                In hierdie Voorwaardes verwys <strong>&ldquo;BrainTrack&rdquo;</strong>, <strong>&ldquo;ons&rdquo;</strong> of <strong>&ldquo;ons s&rsquo;n&rdquo;</strong> na <strong>KTH Projects (Edms) Bpk</strong> (registrasienommer 2025/627290/07), &rsquo;n Suid-Afrikaanse private maatskappy wat handel dryf as <strong>KTH-Tech</strong>. BrainTrack is ons matriek-eksamenvoorbereidingsproduk. Kaartheffings verskyn op jou bankstaat as <strong>KTH-TECH</strong>.
+              </>
+            ) : (
+              <>
+                In these Terms, <strong>&ldquo;BrainTrack&rdquo;</strong>, <strong>&ldquo;we&rdquo;</strong>, <strong>&ldquo;us&rdquo;</strong>, or <strong>&ldquo;our&rdquo;</strong> refers to <strong>KTH Projects (Pty) Ltd</strong> (registration number 2025/627290/07), a South African private company trading as <strong>KTH-Tech</strong>. BrainTrack is our matric exam-preparation product. Card charges appear on your bank statement as <strong>KTH-TECH</strong>.
+              </>
+            )}
+          </p>
+        </div>
       }
     >
       {currentSections.map((section, index) => {

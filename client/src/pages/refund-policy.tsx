@@ -183,11 +183,24 @@ export default function RefundPolicyPage() {
       activeHref="/refund-policy"
       backTestId="refund-nav-back"
       lead={
-        <p>
-          {isAf
-            ? "Ons is deursigtig oor hoe fakturering, kansellasies en terugbetalings werk."
-            : "We're transparent about how billing, cancellations, and refunds work."}
-        </p>
+        <div className="space-y-3">
+          <p>
+            {isAf
+              ? "Ons is deursigtig oor hoe fakturering, kansellasies en terugbetalings werk."
+              : "We're transparent about how billing, cancellations, and refunds work."}
+          </p>
+          <p>
+            {isAf ? (
+              <>
+                In hierdie Terugbetalingsbeleid verwys <strong>&ldquo;BrainTrack&rdquo;</strong>, <strong>&ldquo;ons&rdquo;</strong> of <strong>&ldquo;ons s&rsquo;n&rdquo;</strong> na <strong>KTH Projects (Edms) Bpk</strong> (registrasienommer 2025/627290/07), &rsquo;n Suid-Afrikaanse private maatskappy wat handel dryf as <strong>KTH-Tech</strong>. BrainTrack is ons matriek-eksamenvoorbereidingsproduk. Kaartheffings verskyn op jou bankstaat as <strong>KTH-TECH</strong>.
+              </>
+            ) : (
+              <>
+                In this Refund Policy, <strong>&ldquo;BrainTrack&rdquo;</strong>, <strong>&ldquo;we&rdquo;</strong>, <strong>&ldquo;us&rdquo;</strong>, or <strong>&ldquo;our&rdquo;</strong> refers to <strong>KTH Projects (Pty) Ltd</strong> (registration number 2025/627290/07), a South African private company trading as <strong>KTH-Tech</strong>. BrainTrack is our matric exam-preparation product. Card charges appear on your bank statement as <strong>KTH-TECH</strong>.
+              </>
+            )}
+          </p>
+        </div>
       }
     >
       {currentSections.map((section, index) => {
