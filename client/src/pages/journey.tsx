@@ -303,15 +303,14 @@ export default function JourneyPage() {
                   filter: "drop-shadow(0 12px 22px rgba(179,136,255,.32))",
                 }}
               />
-              <span className="hidden sm:inline-flex" style={sticker("#9FF5E8", -8, { top: 4, left: 4 })}>
-                {t.sticker1}
-              </span>
-              <span className="hidden lg:inline-flex" style={sticker("#FFE29A", 7, { top: 40, right: 4 })}>
-                {t.sticker2}
-              </span>
-              <span className="hidden lg:inline-flex" style={sticker("#FFB7E5", -6, { bottom: 8, left: 4 })}>
-                {t.sticker3}
-              </span>
+              {/* Stickers removed — they sat ON TOP of Rizz's face/chest
+                  ("STREAK MODE: ON" was literally across his sternum), which
+                  is what the owner was reporting as "cards over Rizz's face".
+                  Positioning them anywhere INSIDE the mascot box overlaps his
+                  silhouette; positioning them OUTSIDE the box crashes into
+                  the next section. Cleanest fix is to drop them entirely —
+                  Rizz + the "Rizz says" narrator card below carry the mascot
+                  presence without decorative crowding. */}
             </div>
           </div>
         </section>
