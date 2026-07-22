@@ -1526,8 +1526,8 @@ function PaymentSuccessScreen({
         ? "Jou bank sal R169 elke maand aftrek volgens jou gemagtigde debietorder."
         : "Your bank will debit R169 each month via your authorised debit order.")
     : (isAf
-        ? "Jou kaart sal elke maand met R169 gehef word. Netcash stoor die kaart veilig vir jou."
-        : "Your card will be charged R169 each month. Netcash securely stores the card for you.");
+        ? "Jou kaart sal elke maand met R169 gehef word deur KTH-Tech. Jou kaartbesonderhede word veilig deur Paystack gestoor."
+        : "Your card will be charged R169 each month by KTH-Tech. Your card details are securely stored by Paystack.");
 
   return (
     <WallScreen testId="payment-success-panel">
@@ -1580,10 +1580,18 @@ function PaymentSuccessScreen({
             <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#FFE29A", margin: "0 0 4px" }}>
               {isAf ? "Maandeliks gehef" : "Billed monthly"}
             </p>
-            <p style={{ fontWeight: 800, fontSize: 17, color: "#FFE29A", margin: 0 }}>
+            <p style={{ fontWeight: 800, fontSize: 17, color: "#FFE29A", margin: "0 0 6px" }}>
               {isAf
                 ? "R169/maand · Kanselleer enige tyd"
                 : "R169/month · Cancel anytime"}
+            </p>
+            {/* Statement descriptor — parents see "KTH-TECH" on their bank
+                statement, not "BrainTrack". Saying it up-front here prevents
+                "I don't recognise this charge" chargebacks. */}
+            <p style={{ fontSize: 13, color: "#fff", opacity: 0.9, margin: 0 }}>
+              {isAf
+                ? "Verskyn op jou staat as KTH-TECH."
+                : "Appears on your statement as KTH-TECH."}
             </p>
           </WallCallout>
         </div>
