@@ -11261,7 +11261,11 @@ Create comprehensive study notes for the topic provided.`;
     try {
       const { generateDailyChallengeMcqs, persistDailyChallengeMcqs, DEFAULT_MODEL } = await import("./content-generators");
       const model = typeof req.body?.model === "string" ? req.body.model : DEFAULT_MODEL;
-      const count = Math.min(30, Math.max(3, Number(req.body?.count) || 15));
+      // Preview stays under one OpenAI batch (~10-30s) — we only render 5
+      // samples anyway, and the client fetch/CDN cuts long previews off,
+      // leaving the spinner hanging forever. Publish uses the full count.
+      const publishCount = Math.min(30, Math.max(3, Number(req.body?.count) || 15));
+      const count = preview ? 5 : publishCount;
       const targets = await resolveContentStudioTargets(req.body, preview);
       if (targets.length === 0) return res.status(400).json({ error: "Provide a subject or set all:true" });
 
@@ -11320,7 +11324,13 @@ Create comprehensive study notes for the topic provided.`;
       const gen = await import("./content-generators");
       const { generateFlashcardsForSubject, persistFlashcards, generateCapsCoverageForSubject, persistCapsFlashcards, DEFAULT_MODEL } = gen;
       const model = typeof req.body?.model === "string" ? req.body.model : DEFAULT_MODEL;
-      const limit = Math.min(400, Math.max(8, Number(req.body?.limit) || (preview ? 12 : 120)));
+      // Preview stays under one OpenAI batch (batchSize=4 → limit 4 = 1 call,
+      // ~10-30s). Client only renders 5 samples; anything more is wasted work
+      // and pushes the round-trip past the CDN/fetch timeout — the reason
+      // Preview was hanging with a spinner that never resolved.
+      const limit = preview
+        ? 4
+        : Math.min(400, Math.max(8, Number(req.body?.limit) || 120));
       const targets = await resolveContentStudioTargets(req.body, preview);
       if (targets.length === 0) return res.status(400).json({ error: "Provide a subject or set all:true" });
 
@@ -11404,7 +11414,11 @@ Create comprehensive study notes for the topic provided.`;
     try {
       const gen = await import("./content-generators");
       const model = typeof req.body?.model === "string" ? req.body.model : gen.DEFAULT_MODEL;
-      const count = Math.min(10, Math.max(3, Number(req.body?.count) || 6));
+      // Preview asks for just 3 tips (client renders 5 max anyway) so the
+      // single OpenAI call finishes well inside the request timeout — same
+      // reason as daily-challenge/flashcards.
+      const publishCount = Math.min(10, Math.max(3, Number(req.body?.count) || 6));
+      const count = preview ? 3 : publishCount;
       const targets = await resolveContentStudioTargets(req.body, preview);
       if (targets.length === 0) return res.status(400).json({ error: "Provide a subject or set all:true" });
 
