@@ -3,7 +3,7 @@ import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { useLanguage } from "@/lib/language-context";
 import { LearnerHeader } from "@/components/learner-header";
-import { GraffitiSplats } from "@/components/graffiti-splats";
+import { GraffitiSplats, GraffitiMark } from "@/components/graffiti-splats";
 import {
   ArrowLeft,
   Brain,
@@ -29,6 +29,10 @@ import {
 } from "@/lib/sm2";
 
 const MAX_NEW_CARDS_PER_SESSION = 20;
+
+// Street-pastel tokens — the graffiti palette. Reviewed cards stamp the "tag
+// wall" cycling through these so a finished deck reads as a colourful wall.
+const STREET_PASTELS = ["#9FF5E8", "#9FD8FF", "#FFB7E5", "#C5B3FF", "#FFE29A", "#94F7C5"] as const;
 
 function FlashcardReview({ isAf }: { isAf: boolean }) {
   // Task #428 — support deep links from /subjects/:id pages: ?subject=MATH&topic=MATH-1
@@ -414,7 +418,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
       <div className="flex flex-col items-center justify-center py-12 space-y-6" style={{ animation: "bt-fadeup .5s both" }}>
         <div
           className="w-20 h-20 rounded-2xl flex items-center justify-center"
-          style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: "1.5px solid #FFE29A", boxShadow: "0 0 0 1px rgba(255,226,154,0.25), inset 0 0 18px rgba(0,0,0,0.6)" }}
+          style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: "1.5px solid #FFE29A", boxShadow: "0 0 0 1.5px rgba(255,226,154,0.45), 0 12px 26px rgba(0,0,0,0.5)" }}
         >
           <Trophy className="w-10 h-10" style={{ color: "#FFE29A" }} />
         </div>
@@ -448,6 +452,38 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
             <p className="text-xs font-semibold mt-1" style={{ color: "#FF8DA1" }}>{isAf ? "Gemis ✗" : "Missed ✗"}</p>
           </div>
         </div>
+
+        {/* Graffiti tag wall — every card you reviewed slaps a tag on the wall:
+            colourful stars for wins, pink sparks for misses (shape-coded so it
+            reads regardless of colour). Each tag stamps on with a bt- pop. */}
+        {(totalGot + totalMissed) > 0 && (
+          <div className="w-full max-w-xs space-y-1.5">
+            <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
+              {isAf ? "Jou muur 🧱" : "Your wall 🧱"}
+            </span>
+            <div
+              className="flex flex-wrap gap-1.5 justify-center rounded-xl p-3"
+              style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: "1.5px dashed rgba(159,245,232,0.4)" }}
+              data-testid="stamp-wall"
+            >
+              {Array.from({ length: Math.min(totalGot, 40) }).map((_, i) => (
+                <span key={"g" + i} style={{ display: "inline-block", transform: `rotate(${(i % 3 - 1) * 11}deg)` }}>
+                  <span style={{ display: "inline-block", animation: "bt-stamp-pop .4s both", animationDelay: `${Math.min(i, 24) * 32}ms` }}>
+                    <GraffitiMark kind="star" color={STREET_PASTELS[i % STREET_PASTELS.length]} size={20} />
+                  </span>
+                </span>
+              ))}
+              {Array.from({ length: Math.min(totalMissed, 40) }).map((_, i) => (
+                <span key={"m" + i} style={{ display: "inline-block", transform: `rotate(${(i % 3 - 1) * 11}deg)` }}>
+                  <span style={{ display: "inline-block", animation: "bt-stamp-pop .4s both", animationDelay: `${Math.min(totalGot + i, 24) * 32}ms` }}>
+                    <GraffitiMark kind="spark" color="#FF8DA1" size={20} />
+                  </span>
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="w-full max-w-xs space-y-1">
           <div className="flex justify-between text-xs text-white">
             <span>{isAf ? "Telling" : "Score"}</span>
@@ -757,58 +793,104 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <button onClick={() => { setSessionStarted(false); setFlipped(false); }} className="flex items-center gap-1 text-sm text-white hover:bg-white/5 px-1 rounded transition-colors">
-          <ArrowLeft className="w-4 h-4" />
-          {isAf ? "Verlaat" : "Exit"}
-        </button>
-        <div className="flex items-center gap-3">
-          {isReviewMissedPass && (
+      <div className="space-y-2.5">
+        <div className="flex items-center justify-between">
+          <button onClick={() => { setSessionStarted(false); setFlipped(false); }} className="flex items-center gap-1 text-sm text-white hover:bg-white/5 px-1 rounded transition-colors">
+            <ArrowLeft className="w-4 h-4" />
+            {isAf ? "Verlaat" : "Exit"}
+          </button>
+          <div className="flex items-center gap-2.5">
+            {isReviewMissedPass && (
+              <span
+                className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border"
+                style={{
+                  color: "#FF8DA1",
+                  background: "rgba(255,141,161,0.12)",
+                  borderColor: "rgba(255,141,161,0.45)",
+                }}
+                data-testid="badge-redrill"
+              >
+                {isAf ? "Her-oefen" : "Re-drill"}
+              </span>
+            )}
+            {/* Marker count — graffiti tag-count accent (≥15px per legibility rule) */}
             <span
-              className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border"
               style={{
-                color: "#FF8DA1",
-                background: "rgba(255,141,161,0.12)",
-                borderColor: "rgba(255,141,161,0.45)",
+                fontFamily: "'Permanent Marker',cursive",
+                fontSize: 18,
+                lineHeight: 1,
+                color: isReviewMissedPass ? "#FF8DA1" : "#9FF5E8",
+                transform: "rotate(-3deg)",
+                display: "inline-block",
               }}
-              data-testid="badge-redrill"
+              data-testid="text-card-count"
             >
-              {isAf ? "Her-oefen" : "Re-drill"}
+              {currentIndex + 1}/{reviewQueue.length}
             </span>
-          )}
-          <span className="text-xs text-white font-semibold">
-            {currentIndex + 1} / {reviewQueue.length}
-          </span>
-          {isReviewMissedPass ? (
-            <div
-              className="w-24 h-2 rounded-full overflow-hidden"
-              style={{ background: "rgba(255,141,161,0.15)" }}
-              data-testid="progress-redrill"
-            >
-              <div
-                className="h-full rounded-full transition-all duration-300"
-                style={{
-                  width: `${((currentIndex + 1) / reviewQueue.length) * 100}%`,
-                  background: "linear-gradient(90deg,#FF8DA1,#FFE29A)",
-                }}
-              />
-            </div>
-          ) : (
-            <div className="w-24 h-2 rounded-full bg-white/10 overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all duration-300"
-                style={{
-                  width: `${((currentIndex + 1) / reviewQueue.length) * 100}%`,
-                  background: "linear-gradient(90deg,#9FF5E8,#C5B3FF)",
-                }}
-              />
-            </div>
-          )}
+          </div>
         </div>
+
+        {/* Graffiti tag wall — each reviewed card stamps a coloured tag; the
+            wall "fills up" as you work through the deck. Falls back to a spray
+            strip for very large decks so it never overwhelms the header. */}
+        {reviewQueue.length <= 26 ? (
+          <div className="flex flex-wrap items-center gap-[3px]" data-testid="progress-tagwall" role="progressbar" aria-valuenow={currentIndex + 1} aria-valuemax={reviewQueue.length}>
+            {Array.from({ length: reviewQueue.length }).map((_, i) => {
+              const col = isReviewMissedPass ? "#FF8DA1" : STREET_PASTELS[i % STREET_PASTELS.length];
+              if (i < currentIndex) {
+                // reviewed — a solid slapped tag
+                return (
+                  <span
+                    key={i}
+                    style={{ width: 11, height: 11, borderRadius: 3, background: col, transform: `rotate(${i % 2 ? 9 : -9}deg)`, display: "inline-block", boxShadow: "0 1px 2px rgba(0,0,0,0.55)" }}
+                  />
+                );
+              }
+              if (i === currentIndex) {
+                // current — a fresh tag with a ring
+                return (
+                  <span
+                    key={i}
+                    style={{ width: 13, height: 13, borderRadius: 3, background: col, transform: "rotate(-6deg)", display: "inline-block", boxShadow: `0 0 0 2px #050508, 0 0 0 3.5px ${col}` }}
+                  />
+                );
+              }
+              // upcoming — an empty outlined slot
+              return (
+                <span key={i} style={{ width: 9, height: 9, borderRadius: 2.5, border: `1.5px solid ${col}`, display: "inline-block", opacity: 1 }} />
+              );
+            })}
+          </div>
+        ) : (
+          <div className="h-2.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.1)" }} data-testid="progress-redrill">
+            <div
+              className="h-full rounded-full transition-all duration-300"
+              style={{
+                width: `${((currentIndex + 1) / reviewQueue.length) * 100}%`,
+                background: isReviewMissedPass ? "linear-gradient(90deg,#FF8DA1,#FFE29A)" : "linear-gradient(90deg,#9FF5E8,#C5B3FF)",
+              }}
+            />
+          </div>
+        )}
       </div>
 
-      <div className="text-center mb-2">
-        <span className="text-xs text-white px-2 py-1 rounded-full" style={{ background: "rgba(5,5,8,.6)", border: "1px solid rgba(255,255,255,.18)" }}>
+      {/* Topic tag — a graffiti sticker slapped on the wall: solid pastel,
+          dark ink, marker face, peeled at a tilt. Dark-on-bright = high
+          contrast so the topic stays instantly readable. */}
+      <div className="text-center mb-3">
+        <span
+          className="inline-block px-3 py-1 rounded-lg max-w-[88%] align-middle"
+          style={{
+            fontFamily: "'Permanent Marker',cursive",
+            fontSize: 15,
+            lineHeight: 1.2,
+            color: "#050508",
+            background: "#FFE29A",
+            transform: "rotate(-2deg)",
+            boxShadow: "0 3px 0 rgba(0,0,0,0.5), 0 6px 12px rgba(0,0,0,0.45)",
+          }}
+          data-testid="text-card-topic"
+        >
           {currentCard.topic}
         </span>
       </div>
@@ -853,44 +935,53 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
             minHeight: "300px",
           }}
         >
+          {/* FRONT face — opaque #050508 ground so the background graffiti can
+              never bleed through and muddy the question text. */}
           <div
             className="absolute inset-0 rounded-2xl border-2 p-6 sm:p-8 flex flex-col items-center justify-center overflow-y-auto"
             style={{
               background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
-              boxShadow: "inset 0 0 22px rgba(0,0,0,.6)",
+              boxShadow: "0 16px 34px rgba(0,0,0,0.55)",
               backfaceVisibility: "hidden",
               borderColor: swipeDelta > 30 ? "rgba(148,247,197,0.7)" : swipeDelta < -30 ? "rgba(255,141,161,0.7)" : "rgba(159,245,232,0.45)",
               transition: swipeDelta !== 0 ? "border-color 0.1s" : "border-color 0.3s",
               WebkitOverflowScrolling: "touch",
             }}
           >
-            <div className="absolute top-3 left-3">
+            {/* sticker corner — marker tag peeled on the card */}
+            <div className="absolute top-3 left-3 z-10">
               <span
-                className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full"
-                style={{ color: "#9FF5E8", border: "1px solid rgba(159,245,232,.5)", background: "rgba(159,245,232,.1)" }}
+                className="inline-block px-2 py-0.5 rounded-md"
+                style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, lineHeight: 1, color: "#050508", background: "#9FF5E8", transform: "rotate(-5deg)", boxShadow: "0 2px 0 rgba(0,0,0,0.5), 0 4px 8px rgba(0,0,0,0.4)" }}
               >
-                {isAf ? "Voorkant" : "Front"}
+                {isAf ? "VOOR" : "FRONT"}
               </span>
             </div>
             {currentCard.type === "cloze" && (
-              <div className="absolute top-3 right-3">
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ color: "#FFE29A", border: "1px solid rgba(255,226,154,.5)", background: "rgba(255,226,154,.1)" }}>Cloze</span>
+              <div className="absolute top-3 right-3 z-10">
+                <span className="inline-block px-2 py-0.5 rounded-md" style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, lineHeight: 1, color: "#050508", background: "#FFE29A", transform: "rotate(4deg)", boxShadow: "0 2px 0 rgba(0,0,0,0.5), 0 4px 8px rgba(0,0,0,0.4)" }}>CLOZE</span>
               </div>
             )}
-            <p className="text-lg sm:text-xl font-semibold text-white text-center leading-relaxed whitespace-pre-line">
+            {/* decorative corner tag — reuses the page graffiti art, kept BEHIND
+                the study text (zIndex -1) so it can never obscure the question. */}
+            <GraffitiMark kind="star" color="#C5B3FF" size={30} rotate={-14} style={{ position: "absolute", bottom: 12, right: 12, zIndex: -1 }} />
+            <p className="text-lg sm:text-xl font-semibold text-white text-center leading-relaxed whitespace-pre-line px-1">
               {currentCard.front.replace(/\{\{___\}\}/g, "______")}
             </p>
-            <p className="text-xs text-white mt-6 flex items-center gap-1.5">
-              <RotateCcw className="w-3 h-3" style={{ color: "#9FF5E8" }} />
-              {isAf ? "Tik of sleep om te beoordeel" : "Tap to flip · swipe to grade"}
-            </p>
+            {/* TAP TO FLIP — marker accent with a hand-drawn arrow */}
+            <span className="mt-7 inline-flex items-center gap-1.5" style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, lineHeight: 1, color: "#9FF5E8", transform: "rotate(-1.5deg)" }}>
+              <GraffitiMark kind="arrow" color="#9FF5E8" size={22} rotate={-6} />
+              {isAf ? "TIK OM TE DRAAI" : "TAP TO FLIP"}
+            </span>
           </div>
 
+          {/* BACK face — same opaque ground; the answer is the study content, so
+              it stays large, pure-white and high-contrast (graffiti only frames). */}
           <div
             className="absolute inset-0 rounded-2xl border-2 p-6 sm:p-8 flex flex-col items-center justify-center overflow-y-auto"
             style={{
               background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
-              boxShadow: "inset 0 0 22px rgba(0,0,0,.6)",
+              boxShadow: "0 16px 34px rgba(0,0,0,0.55)",
               backfaceVisibility: "hidden",
               transform: "rotateY(180deg)",
               borderColor: swipeDelta > 30 ? "rgba(148,247,197,0.7)" : swipeDelta < -30 ? "rgba(255,141,161,0.7)" : "rgba(148,247,197,0.5)",
@@ -898,17 +989,21 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
               WebkitOverflowScrolling: "touch",
             }}
           >
-            <div className="absolute top-3 left-3">
+            <div className="absolute top-3 left-3 z-10">
               <span
-                className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full"
-                style={{ color: "#94F7C5", border: "1px solid rgba(148,247,197,.5)", background: "rgba(148,247,197,.1)" }}
+                className="inline-block px-2 py-0.5 rounded-md"
+                style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, lineHeight: 1, color: "#050508", background: "#94F7C5", transform: "rotate(-5deg)", boxShadow: "0 2px 0 rgba(0,0,0,0.5), 0 4px 8px rgba(0,0,0,0.4)" }}
               >
-                {isAf ? "Antwoord" : "Answer"}
+                {isAf ? "ANTW" : "ANSWER"}
               </span>
             </div>
-            <p className="text-base sm:text-lg font-medium text-white text-center leading-relaxed whitespace-pre-line">
-              {currentCard.back}
-            </p>
+            <GraffitiMark kind="spark" color="#9FD8FF" size={28} rotate={12} style={{ position: "absolute", bottom: 12, right: 12, zIndex: -1 }} />
+            {/* spray-tag reveal — the answer sprays on when the card is flipped */}
+            <div className="w-full" style={{ animation: flipped ? "bt-spray-reveal .5s both" : "none" }}>
+              <p className="text-base sm:text-lg font-medium text-white text-center leading-relaxed whitespace-pre-line px-1">
+                {currentCard.back}
+              </p>
+            </div>
           </div>
         </div>
       </div>

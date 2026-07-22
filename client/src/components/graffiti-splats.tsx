@@ -1,3 +1,5 @@
+import type { CSSProperties } from "react";
+
 // BrainTrack graffiti scatter — vibey teen energy, NOT big muddy blobs.
 // A light scatter of emoji, small hand-drawn doodles (stars, bolts, hearts,
 // crowns, sparkles) and short hype words. Bright, small, fun, decorative.
@@ -10,7 +12,7 @@ const EMOJI = ["🔥", "⚡", "💯", "⭐", "🎯", "🧠", "✌️", "👑", "
 // short hype words (graffiti tags)
 const WORDS = ["MATRIC READY", "YOU GOT THIS", "LEGENDARY", "LEVEL UP", "100%", "FOCUS", "GRIND", "STUDY SMART"];
 
-type DoodleKind = "star" | "bolt" | "heart" | "crown" | "spark" | "arrow";
+export type DoodleKind = "star" | "bolt" | "heart" | "crown" | "spark" | "arrow";
 
 function Doodle({ kind, color }: { kind: DoodleKind; color: string }) {
   const s = { stroke: color, fill: "none", strokeWidth: 8, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
@@ -22,6 +24,36 @@ function Doodle({ kind, color }: { kind: DoodleKind; color: string }) {
     case "spark": return <><path {...s} d="M50 16 L50 84" /><path {...s} d="M16 50 L84 50" /><path {...s} d="M28 28 L72 72" /><path {...s} d="M72 28 L28 72" /></>;
     case "arrow": return <><path {...s} d="M12 82 Q34 24 82 30" /><path {...s} d="M64 14 L84 30 L62 44" /></>;
   }
+}
+
+// A single sized hand-drawn graffiti mark — reuses the exact Doodle art so the
+// flashcard stickers/arrows match the page scatter. Decorative, aria-hidden.
+export function GraffitiMark({
+  kind,
+  color,
+  size = 28,
+  rotate = 0,
+  className,
+  style,
+}: {
+  kind: DoodleKind;
+  color: string;
+  size?: number;
+  rotate?: number;
+  className?: string;
+  style?: CSSProperties;
+}) {
+  return (
+    <span
+      aria-hidden
+      className={className}
+      style={{ display: "inline-block", width: size, height: size, lineHeight: 0, transform: `rotate(${rotate}deg)`, ...style }}
+    >
+      <svg viewBox="0 0 100 100" width="100%" height="100%" overflow="visible">
+        <Doodle kind={kind} color={color} />
+      </svg>
+    </span>
+  );
 }
 
 // deterministic layouts per variant — [type, value, x%, y%, size, rotate, delay]

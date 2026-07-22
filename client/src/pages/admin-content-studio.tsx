@@ -512,6 +512,8 @@ interface GeneratorCardProps {
   isAf: boolean;
   subjects: BankSubject[];
   subjectsLoading: boolean;
+  /** Optional coverage-mode selector (e.g. flashcards: bank / CAPS / literature). */
+  modes?: { value: string; label: string; labelAf: string }[];
 }
 
 /** Renders one generated sample item, shaped by generator kind. */
@@ -572,10 +574,11 @@ function SampleItem({ kind, s, accent, isAf }: { kind: GenKind; s: any; accent: 
 }
 
 function GeneratorCard({
-  accent, icon, pipelineLabel, title, description, endpoint, kind, testId, isAf, subjects, subjectsLoading,
+  accent, icon, pipelineLabel, title, description, endpoint, kind, testId, isAf, subjects, subjectsLoading, modes,
 }: GeneratorCardProps) {
   const { toast } = useToast();
   const [subject, setSubject] = useState<string>("");  // "" = all usable subjects
+  const [mode, setMode] = useState<string>(modes?.[0]?.value ?? "");
   const [samples, setSamples] = useState<any[]>([]);
   const [stat, setStat] = useState<string>("");
   const [error, setError] = useState<string>("");
@@ -590,6 +593,7 @@ function GeneratorCard({
     try {
       const body: Record<string, unknown> = preview ? { preview: true } : { preview: false };
       if (subject) body.subject = subject; else body.all = true;
+      if (modes && mode) body.mode = mode;
       const res = await apiRequest("POST", endpoint, body);
       const data = await res.json();
       const first = data?.results?.[0];
@@ -599,6 +603,8 @@ function GeneratorCard({
         if (first) {
           if (typeof first.accepted === "number") parts.push(`${first.accepted} ${isAf ? "goedgekeur" : "accepted"}`);
           if (typeof first.rejectionRate === "number") parts.push(`${first.rejectionRate}% ${isAf ? "verwerp" : "rejected"}`);
+          if (typeof first.topicsCovered === "number" && typeof first.topicsTotal === "number") parts.push(`${first.topicsCovered}/${first.topicsTotal} ${isAf ? "onderwerpe" : "topics"}`);
+          if (Array.isArray(first.literatureWorksCovered) && first.literatureWorksCovered.length > 0) parts.push(`${first.literatureWorksCovered.length} ${isAf ? "werke" : "works"}`);
           if (typeof first.stimulusRejectPct === "number") parts.push(`${first.stimulusRejectPct}% ${isAf ? "stimulus-afhanklik" : "stimulus-dependent"}`);
           if (first.error) { setError(first.error); }
         }
@@ -664,6 +670,33 @@ function GeneratorCard({
               <ChevronDown className="pointer-events-none absolute right-2.5 top-2.5 h-4 w-4" style={{ color: accent }} />
             </div>
           </div>
+
+          {/* Coverage mode (flashcards only) */}
+          {modes && modes.length > 0 && (
+            <div className="mt-3">
+              <label className="text-[10px] uppercase tracking-wider text-white" htmlFor={`${testId}-mode`}>
+                {isAf ? "Dekking" : "Coverage"}
+              </label>
+              <div className="relative mt-1">
+                <select
+                  id={`${testId}-mode`}
+                  data-testid={`${testId}-mode`}
+                  value={mode}
+                  onChange={(e) => setMode(e.target.value)}
+                  disabled={busy}
+                  className="w-full appearance-none rounded-lg px-3 py-2 pr-9 text-sm text-white outline-none"
+                  style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${halo(accent, 0.35)}` }}
+                >
+                  {modes.map((m) => (
+                    <option key={m.value} value={m.value} style={{ color: "#050508" }}>
+                      {isAf ? m.labelAf : m.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-2.5 top-2.5 h-4 w-4" style={{ color: accent }} />
+              </div>
+            </div>
+          )}
 
           {/* Actions */}
           <div className="mt-4 flex flex-wrap items-center gap-3">
@@ -949,14 +982,20 @@ export default function AdminContentStudio() {
             pipelineLabel={isAf ? "Flitskaarte" : "Flashcards"}
             title={isAf ? "Genereer begrip-flitskaarte" : "Generate concept flashcards"}
             description={isAf
-              ? "Sintetiseer atomiese, tweetalige begrip→verduideliking kaarte uit die bank — nie rou eksamenfragmente nie. Onderwerpe word afgelei sodat onderwerp-flitskaarte werk."
-              : "Synthesise atomic, bilingual concept→explanation cards from the bank — not raw exam fragments. Topics are derived so topic-flashcards work."}
+              ? "Atomiese, tweetalige kaarte oor die HELE KABV Graad 12-leerplan — elke onderwerp gedek (in die bank gegrond waar dit bestaan, andersins uit die leerplan) plus voorgeskrewe letterkunde-werke. Kies die dekking hieronder."
+              : "Atomic, bilingual cards across the WHOLE CAPS Grade 12 syllabus — every topic covered (grounded in the bank where it exists, else from the syllabus) plus prescribed literature set works. Pick the coverage below."}
             endpoint="/api/admin/content-studio/flashcards"
             kind="flashcards"
             testId="gen-flashcards"
             isAf={isAf}
             subjects={subjectList}
             subjectsLoading={bankSubjects.isLoading}
+            modes={[
+              { value: "caps", label: "CAPS — all syllabus topics", labelAf: "KABV — alle leerplan-onderwerpe" },
+              { value: "complete", label: "Complete — CAPS + literature", labelAf: "Volledig — KABV + letterkunde" },
+              { value: "literature", label: "Literature set works only", labelAf: "Letterkunde-voorgeskrewe werke" },
+              { value: "bank", label: "Bank — examined topics only", labelAf: "Bank — geëksamineerde onderwerpe" },
+            ]}
           />
 
           <GeneratorCard

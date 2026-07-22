@@ -38,7 +38,7 @@ const COPY = {
       { text: "CAPS-aligned ✦", color: "#9FF5E8" },
       { text: "10 years of DBE data ★", color: "#FFB7E5" },
       { text: "EN + AF ⚡", color: "#FFE29A" },
-      { text: "real NSC papers ✦", color: "#9FD8FF" },
+      { text: "exam-style drills ✦", color: "#9FD8FF" },
       { text: "AI tutor 24/7 ★", color: "#C5B3FF" },
       { text: "parent reports ⚡", color: "#94F7C5" },
       { text: "streaks + XP ✦", color: "#FFB7E5" },
@@ -52,7 +52,7 @@ const COPY = {
     features: [
       { icon: "📅", color: "#9FF5E8", chipBg: "rgba(159,245,232,.14)", glow: "rgba(159,245,232,.25)", tilt: -1, title: "Dynamic study plans", body: "Rebuilt daily around what you actually got wrong." },
       { icon: "📊", color: "#9FD8FF", chipBg: "rgba(159,216,255,.14)", glow: "rgba(159,216,255,.25)", tilt: 1, title: "DBE-data diagnostics", body: "Ten years of NSC trends — where matrics lose marks." },
-      { icon: "📝", color: "#FFB7E5", chipBg: "rgba(255,183,229,.14)", glow: "rgba(255,183,229,.25)", tilt: -1, title: "Real past papers + memos", body: "Verbatim DBE questions with memos, drilled by topic." },
+      { icon: "📝", color: "#FFB7E5", chipBg: "rgba(255,183,229,.14)", glow: "rgba(255,183,229,.25)", tilt: -1, title: "Exam-style papers + memos", body: "BrainTrack-built practice questions with worked memos, drilled by topic." },
       { icon: "🤖", color: "#C5B3FF", chipBg: "rgba(197,179,255,.14)", glow: "rgba(197,179,255,.25)", tilt: 1, title: "Rizz — your AI tutor", body: "EN + AF, 24/7. Explains it until it clicks." },
       { icon: "👀", color: "#FFE29A", chipBg: "rgba(255,226,154,.14)", glow: "rgba(255,226,154,.25)", tilt: -1, title: "Parent visibility", body: "Weekly reports parents actually read." },
       { icon: "🏆", color: "#94F7C5", chipBg: "rgba(148,247,197,.14)", glow: "rgba(148,247,197,.25)", tilt: 1, title: "XP, streaks & rewards", body: "Confetti for a nailed paper. Crowns for a streak." },
@@ -63,9 +63,9 @@ const COPY = {
     proofSub:
       "Already loaded inside BrainTrack — indexed, verified, searchable by topic.",
     proof: [
-      { icon: "📜", title: "10 years of real NSC papers", detail: "2015 – 2025, sitting by sitting", color: "#9FF5E8", glow: "rgba(159,245,232,.28)" },
+      { icon: "📜", title: "A decade of NSC exam trends", detail: "2015 – 2025, studied sitting by sitting", color: "#9FF5E8", glow: "rgba(159,245,232,.28)" },
       { icon: "🎯", title: "Every CAPS subject covered", detail: "mapped across the full curriculum", color: "#FFB7E5", glow: "rgba(255,183,229,.28)" },
-      { icon: "📝", title: "Official DBE sources, verbatim", detail: "typed word-for-word from the real papers", color: "#9FD8FF", glow: "rgba(159,216,255,.28)" },
+      { icon: "📝", title: "Modelled on real DBE exams", detail: "questions written to match the official format", color: "#9FD8FF", glow: "rgba(159,216,255,.28)" },
       { icon: "🌍", title: "EN + AF, always", detail: "with African-language support built in", color: "#C5B3FF", glow: "rgba(197,179,255,.28)" },
       { icon: "🧠", title: "Examiner patterns studied", detail: "profiled across the DBE archive", color: "#FFE29A", glow: "rgba(255,226,154,.28)" },
     ],
@@ -86,7 +86,7 @@ const COPY = {
     tAskLine:
       "Does your tool know which topics cost matrics the most marks last November? BrainTrack does.",
     tQuote:
-      "“Not a quiz app — a matric readiness ecosystem built on ten years of real DBE outcomes, so no learner walks in blind.”",
+      "“Not a quiz app — a matric readiness ecosystem built on a decade of DBE exam patterns, so no learner walks in blind.”",
     xpEye: "dopamine, but productive",
     xpHead1: "Every session drops ",
     xpHead2: "XP, streaks",
@@ -102,7 +102,7 @@ const COPY = {
     shareEye: "spread the word",
     shareHead: "Share BrainTrack",
     shareMsg:
-      "BrainTrack — Grade 12 matric prep with real NSC past papers, memos and a 24/7 AI tutor. Try it free:",
+      "BrainTrack — Grade 12 matric prep with past-paper practice, memos and a 24/7 AI tutor. Try it free:",
     referralLine: "Refer a friend — you both earn rewards when they join.",
     referralCta: "Get your referral link →",
     footMade: "© 2026 — Made in South Africa",
@@ -131,7 +131,7 @@ const COPY = {
       { text: "KABV-belyn ✦", color: "#9FF5E8" },
       { text: "10 jaar DBE-data ★", color: "#FFB7E5" },
       { text: "AF + EN ⚡", color: "#FFE29A" },
-      { text: "regte NSS-vraestelle ✦", color: "#9FD8FF" },
+      { text: "eksamenstyl-drille ✦", color: "#9FD8FF" },
       { text: "KI-tutor 24/7 ★", color: "#C5B3FF" },
       { text: "ouerverslae ⚡", color: "#94F7C5" },
       { text: "reekse + XP ✦", color: "#FFB7E5" },
@@ -145,7 +145,7 @@ const COPY = {
     features: [
       { icon: "📅", color: "#9FF5E8", chipBg: "rgba(159,245,232,.14)", glow: "rgba(159,245,232,.25)", tilt: -1, title: "Dinamiese studieplanne", body: "Daagliks herbou rondom wat jy verkeerd gekry het." },
       { icon: "📊", color: "#9FD8FF", chipBg: "rgba(159,216,255,.14)", glow: "rgba(159,216,255,.25)", tilt: 1, title: "DBE-datadiagnostiek", body: "Tien jaar se NSS-neigings — waar matrieks punte verloor." },
-      { icon: "📝", color: "#FFB7E5", chipBg: "rgba(255,183,229,.14)", glow: "rgba(255,183,229,.25)", tilt: -1, title: "Regte vraestelle + memo's", body: "Woordelikse DBE-vrae met memo's, per onderwerp gedril." },
+      { icon: "📝", color: "#FFB7E5", chipBg: "rgba(255,183,229,.14)", glow: "rgba(255,183,229,.25)", tilt: -1, title: "Eksamenstyl-vraestelle + memo's", body: "BrainTrack-gemaakte oefenvrae met uitgewerkte memo's, per onderwerp gedril." },
       { icon: "🤖", color: "#C5B3FF", chipBg: "rgba(197,179,255,.14)", glow: "rgba(197,179,255,.25)", tilt: 1, title: "Rizz — jou KI-tutor", body: "AF + EN, 24/7. Verduidelik totdat dit klik." },
       { icon: "👀", color: "#FFE29A", chipBg: "rgba(255,226,154,.14)", glow: "rgba(255,226,154,.25)", tilt: -1, title: "Ouersigbaarheid", body: "Weeklikse verslae wat ouers regtig lees." },
       { icon: "🏆", color: "#94F7C5", chipBg: "rgba(148,247,197,.14)", glow: "rgba(148,247,197,.25)", tilt: 1, title: "XP, reekse & belonings", body: "Konfetti vir 'n geklopte vraestel. Krone vir 'n reeks." },
@@ -156,9 +156,9 @@ const COPY = {
     proofSub:
       "Reeds in BrainTrack gelaai — geïndekseer, geverifieer, per onderwerp deursoekbaar.",
     proof: [
-      { icon: "📜", title: "10 jaar se regte NSS-vraestelle", detail: "2015 – 2025, sitting vir sitting", color: "#9FF5E8", glow: "rgba(159,245,232,.28)" },
+      { icon: "📜", title: "'n Dekade se NSS-eksamenneigings", detail: "2015 – 2025, sitting vir sitting bestudeer", color: "#9FF5E8", glow: "rgba(159,245,232,.28)" },
       { icon: "🎯", title: "Elke KABV-vak gedek", detail: "gekarteer oor die volle kurrikulum", color: "#FFB7E5", glow: "rgba(255,183,229,.28)" },
-      { icon: "📝", title: "Amptelike DBE-bronne, woordeliks", detail: "woord-vir-woord uit die regte vraestelle getik", color: "#9FD8FF", glow: "rgba(159,216,255,.28)" },
+      { icon: "📝", title: "Op regte DBE-eksamens gemodelleer", detail: "vrae geskryf om by die amptelike formaat te pas", color: "#9FD8FF", glow: "rgba(159,216,255,.28)" },
       { icon: "🌍", title: "AF + EN, altyd", detail: "met Afrikataal-ondersteuning ingebou", color: "#C5B3FF", glow: "rgba(197,179,255,.28)" },
       { icon: "🧠", title: "Eksaminatorpatrone bestudeer", detail: "geprofileer oor die DBE-argief", color: "#FFE29A", glow: "rgba(255,226,154,.28)" },
     ],
@@ -179,7 +179,7 @@ const COPY = {
     tAskLine:
       "Weet jou hulpmiddel watter onderwerpe matrieks verlede November die meeste punte gekos het? BrainTrack weet.",
     tQuote:
-      "“Nie 'n vasvra-app nie — 'n matriekgereedheid-ekosisteem gebou op tien jaar se regte DBE-uitkomste, sodat geen leerder blind instap nie.”",
+      "“Nie 'n vasvra-app nie — 'n matriekgereedheid-ekosisteem gebou op 'n dekade se DBE-eksamenpatrone, sodat geen leerder blind instap nie.”",
     xpEye: "dopamien, maar produktief",
     xpHead1: "Elke sessie laat val ",
     xpHead2: "XP, reekse",
@@ -195,7 +195,7 @@ const COPY = {
     shareEye: "sprei die woord",
     shareHead: "Deel BrainTrack",
     shareMsg:
-      "BrainTrack — Graad 12-matriekvoorbereiding met regte NSS-vraestelle, memo's en 'n 24/7 KI-tutor. Probeer dit gratis:",
+      "BrainTrack — Graad 12-matriekvoorbereiding met vraestel-oefening, memo's en 'n 24/7 KI-tutor. Probeer dit gratis:",
     referralLine: "Verwys 'n vriend — julle albei verdien belonings wanneer hulle aansluit.",
     referralCta: "Kry jou verwysingskakel →",
     footMade: "© 2026 — Gemaak in Suid-Afrika",

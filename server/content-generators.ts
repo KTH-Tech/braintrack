@@ -34,7 +34,7 @@
  *   • REJECTS stimulus-dependent questions and STRIPS mark notation before any
  *     text reaches a learner. Both are unit-tested (tests/unit/content-generators).
  */
-import { and, eq, gte, isNotNull, sql } from "drizzle-orm";
+import { and, eq, gte, inArray, isNotNull, sql } from "drizzle-orm";
 import { db } from "./db";
 import {
   dbeVerbatimQuestions,
@@ -50,10 +50,27 @@ import {
   loadTopicPriorities,
   selectSources,
   toFlashcardRows,
+  validateCard,
+  bucketQuestionToTopic,
   type GeneratedCard,
   type SourceQuestion,
   type TopicPriority,
 } from "./flashcard-generator";
+import {
+  enumerateCapsTopics,
+  subjectNameToCode,
+  isLiteratureSubject,
+  getLiteratureWorks,
+  literatureTopicName,
+  topicKeywords,
+  buildSyllabusCardsPrompt,
+  SYLLABUS_CARD_SYSTEM,
+  buildLiteratureCardsPrompt,
+  LITERATURE_CARD_SYSTEM,
+  toCapsFlashcardRows,
+  exceedsQuoteAllowance,
+  type CapsCardSource,
+} from "./caps-syllabus";
 import { NSC_2026_TIMETABLE } from "./data/nsc-2026-timetable";
 
 export { DEFAULT_MODEL };
@@ -1109,4 +1126,417 @@ export async function subjectsWithUsableBank(minSources = 40): Promise<Array<{ s
     .groupBy(dbeVerbatimQuestions.subject)
     .orderBy(sql`count(*) DESC`);
   return rows.filter((r) => r.usable >= minSources);
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// 5) CAPS-SYLLABUS + LITERATURE COVERAGE
+//
+// The bank flashcard path above (generateFlashcardsForSubject) can only cover
+// topics the past papers examined, and it excludes language P2 (set-work
+// literature) entirely. This path closes both gaps:
+//
+//   • It enumerates the OFFICIAL CAPS Grade 12 topic list per subject and
+//     guarantees every topic gets cards — grounded in the bank where the bank
+//     has material for that topic (source_question_id kept), generated from the
+//     syllabus where it does not (source_question_id null; the column is
+//     nullable).
+//   • For language subjects it generates study cards ABOUT the prescribed set
+//     works (themes / characters / plot / context / analysis) without ever
+//     reproducing the copyrighted text.
+//
+// Reuses the same hygiene as the bank path: generateCardsForBatch (which already
+// scrubs + validates), validateCard, stripMarkNotation, bucketQuestionToTopic.
+// Writes are idempotent per (subject, source-tag) so re-runs replace, never
+// accumulate; the bank-derived "ai_humanised" rows are never touched.
+// ═════════════════════════════════════════════════════════════════════════════
+
+function coerceCardTypeLocal(v: unknown): "basic" | "cloze" | "reversed" {
+  return v === "cloze" ? "cloze" : v === "reversed" ? "reversed" : "basic";
+}
+function coerceDifficultyLocal(v: unknown): "easy" | "medium" | "hard" {
+  return v === "easy" || v === "medium" || v === "hard" ? v : "medium";
+}
+function normFront(s: string): string {
+  return s.toLowerCase().replace(/[^a-z0-9à-ɏ ]+/g, " ").replace(/\s+/g, " ").trim();
+}
+
+export interface CapsCoverageOptions {
+  subject: string;
+  model?: string;
+  /** Target cards per CAPS topic (grounded + syllabus combined). */
+  cardsPerTopic?: number;
+  /** Enumerate + generate topic cards (default true). */
+  includeTopics?: boolean;
+  /** Generate prescribed set-work cards for language subjects (default true). */
+  includeLiterature?: boolean;
+  /** Ground topic cards in bank questions where available (default true). */
+  includeBankGrounding?: boolean;
+  /** Cap topics processed this run (cost / preview). */
+  maxTopics?: number;
+  /** Cap set works this run (cost / preview). */
+  maxWorks?: number;
+  /** Cards asked for per set work. */
+  cardsPerWork?: number;
+  /** CAPS topics per syllabus LLM call. */
+  topicBatchSize?: number;
+  /** Max bank sources loaded for grounding. */
+  maxSources?: number;
+}
+
+export interface CapsCoverageResult {
+  subject: string;
+  capsCode: string | null;
+  topicsTotal: number;
+  topicsProcessed: number;
+  topicsCovered: number;
+  topicCoverage: Array<{ topic: string; grounded: number; syllabus: number }>;
+  literatureWorksTotal: number;
+  literatureWorksCovered: string[];
+  groundedCards: number;
+  syllabusCards: number;
+  literatureCards: number;
+  rawCount: number;
+  accepted: number;
+  rejected: number;
+  rejectionRate: number;
+  rejectionsByReason: Record<string, number>;
+  samples: FlashcardSample[];
+  /** EN+AF rows ready for the flashcards table (empty in preview). */
+  rows: any[];
+  /** Source tags this run wrote, for idempotent replacement. */
+  sourcesWritten: CapsCardSource[];
+}
+
+const GROUND_SOURCES_PER_TOPIC = 3;
+
+export async function generateCapsCoverageForSubject(
+  opts: CapsCoverageOptions,
+): Promise<CapsCoverageResult> {
+  const model = opts.model ?? DEFAULT_MODEL;
+  const cardsPerTopic = Math.max(1, opts.cardsPerTopic ?? 2);
+  const includeTopics = opts.includeTopics !== false;
+  const includeLiterature = opts.includeLiterature !== false;
+  const includeBankGrounding = opts.includeBankGrounding !== false;
+  const cardsPerWork = Math.max(1, opts.cardsPerWork ?? 4);
+  const topicBatchSize = Math.max(1, opts.topicBatchSize ?? 6);
+  const maxSources = Math.max(60, opts.maxSources ?? 700);
+
+  const subject = opts.subject;
+  const capsCode = subjectNameToCode(subject);
+  const isLitSubj = isLiteratureSubject(subject);
+  const enumerated = includeTopics ? enumerateCapsTopics(subject) : [];
+  // For literature subjects, the "Literature: Novel/Drama/Poetry/Short Stories"
+  // CAPS topics are covered by the set-works pass (self-contained, per named
+  // work) — a card about "poetry" in the abstract is unanswerable, so those
+  // topics are not carded as generic syllabus topics. Language-structure topics
+  // (grammar, comprehension, writing) are still carded normally.
+  const allTopics = isLitSubj ? enumerated.filter((t) => !/^literature\s*:/i.test(t.name)) : enumerated;
+  const topics = typeof opts.maxTopics === "number" ? allTopics.slice(0, opts.maxTopics) : allTopics;
+  const topicNames = new Set(topics.map((t) => t.name));
+
+  const result: CapsCoverageResult = {
+    subject,
+    capsCode,
+    topicsTotal: allTopics.length,
+    topicsProcessed: topics.length,
+    topicsCovered: 0,
+    topicCoverage: [],
+    literatureWorksTotal: 0,
+    literatureWorksCovered: [],
+    groundedCards: 0,
+    syllabusCards: 0,
+    literatureCards: 0,
+    rawCount: 0,
+    accepted: 0,
+    rejected: 0,
+    rejectionRate: 0,
+    rejectionsByReason: {},
+    samples: [],
+    rows: [],
+    sourcesWritten: [],
+  };
+
+  const openai = getOpenAI();
+  const seen = new Set<string>();
+  const groundedByTopic = new Map<string, number>();
+  const syllabusByTopic = new Map<string, number>();
+  const bump = (m: Map<string, number>, k: string) => m.set(k, (m.get(k) ?? 0) + 1);
+  const reject = (reason: string) => {
+    result.rejected++;
+    result.rejectionsByReason[reason] = (result.rejectionsByReason[reason] ?? 0) + 1;
+  };
+  const groundedSamples: FlashcardSample[] = [];
+  const syllabusSamples: FlashcardSample[] = [];
+  const litSamples: FlashcardSample[] = [];
+
+  // Build CAPS-topic "priorities" so bank sources can be bucketed to CAPS topics
+  // with the very same lexical scheme the bank pipeline uses.
+  const capsPriorities: TopicPriority[] = topics.map((t, i) => ({
+    topicId: null,
+    name: t.name,
+    nameAfrikaans: t.nameAfrikaans,
+    appearancesCount: 1,
+    totalYearsSampled: 0,
+    avgMarksPerAppearance: 0,
+    frequencyRank: i + 1,
+    keywords: topicKeywords(t.name),
+  }));
+  const priByName = new Map(capsPriorities.map((p) => [p.name, p] as const));
+
+  // ── Grounded pass: card the CAPS topics the bank actually examined ──────────
+  if (includeTopics && includeBankGrounding && topics.length > 0) {
+    const isLang = /language|taal|huistaal/i.test(subject);
+    let sources: SourceQuestion[] = [];
+    try {
+      sources = await loadSourceQuestions({
+        subject,
+        limit: maxSources,
+        minQuality: 70,
+        excludePapers: isLang ? [2] : [],
+      });
+    } catch {
+      /* bank may be empty locally — grounding just contributes nothing */
+    }
+    const perTopic = new Map<string, SourceQuestion[]>();
+    for (const s of sources) {
+      const t = bucketQuestionToTopic(`${s.questionText} ${s.memoText.slice(0, 300)}`, capsPriorities);
+      if (!t) continue;
+      const list = perTopic.get(t.name) ?? [];
+      if (list.length < GROUND_SOURCES_PER_TOPIC) {
+        list.push(s);
+        perTopic.set(t.name, list);
+      }
+    }
+    const selected: Array<{ source: SourceQuestion; topic: TopicPriority | null }> = [];
+    for (const [name, list] of perTopic) {
+      for (const s of list) selected.push({ source: s, topic: priByName.get(name) ?? null });
+    }
+    const allowed = [...topicNames];
+    for (let i = 0; i < selected.length; i += 4) {
+      const batch = selected.slice(i, i + 4);
+      const res = await generateCardsForBatch(batch, allowed, { model, cardsPerSource: cardsPerTopic });
+      if (res.error) {
+        reject("llm_error");
+        continue;
+      }
+      result.rawCount += res.rawCount;
+      for (const r of res.rejected) {
+        for (const reason of r.validation.reasons.length ? r.validation.reasons : ["low_score"]) {
+          result.rejectionsByReason[reason] = (result.rejectionsByReason[reason] ?? 0) + 1;
+        }
+        result.rejected++;
+      }
+      for (const { card, validation, source } of res.cards) {
+        const key = normFront(card.front);
+        if (seen.has(key)) { reject("duplicate_front"); continue; }
+        seen.add(key);
+        const topicName = card.topic && topicNames.has(card.topic)
+          ? card.topic
+          : bucketQuestionToTopic(source.questionText, capsPriorities)?.name ?? card.topic ?? "General";
+        result.rows.push(
+          ...toCapsFlashcardRows(
+            { front: card.front, back: card.back, frontAf: card.frontAf, backAf: card.backAf, cardType: card.cardType, difficulty: card.difficulty, topic: topicName },
+            { subject, source: "caps_syllabus", sourceQuestionId: source.id, qualityScore: validation.score, model, capsCode, grounded: true },
+          ),
+        );
+        result.accepted++;
+        result.groundedCards++;
+        bump(groundedByTopic, topicName);
+        if (groundedSamples.length < 4) {
+          groundedSamples.push({
+            topic: topicName, difficulty: card.difficulty, cardType: card.cardType,
+            front: card.front, back: card.back, frontAf: card.frontAf, backAf: card.backAf,
+            provenance: `Bank-grounded · ${source.year} ${source.session} P${source.paperNumber} Q${source.questionNumber} (src #${source.id})`,
+          });
+        }
+      }
+    }
+  }
+
+  // ── Syllabus fill: guarantee every CAPS topic reaches cardsPerTopic ─────────
+  if (includeTopics && topics.length > 0) {
+    const need = topics.filter((t) => (groundedByTopic.get(t.name) ?? 0) < cardsPerTopic);
+    for (let i = 0; i < need.length; i += topicBatchSize) {
+      const batch = need.slice(i, i + topicBatchSize);
+      let parsed: any;
+      try {
+        const completion = await openai.chat.completions.create({
+          model,
+          temperature: 0.4,
+          response_format: { type: "json_object" },
+          messages: [
+            { role: "system", content: SYLLABUS_CARD_SYSTEM },
+            { role: "user", content: buildSyllabusCardsPrompt(subject, batch, cardsPerTopic) },
+          ],
+        });
+        parsed = parseJson(completion.choices[0]?.message?.content);
+      } catch (err: any) {
+        reject(`llm_error`);
+        continue;
+      }
+      const raw: any[] = Array.isArray(parsed?.cards) ? parsed.cards : [];
+      result.rawCount += raw.length;
+      for (const r of raw) {
+        const idx = Number(r?.topic_index);
+        const topic = Number.isInteger(idx) && idx >= 1 && idx <= batch.length ? batch[idx - 1] : null;
+        if (!topic) { reject("untraceable_topic_index"); continue; }
+        const card: GeneratedCard = {
+          front: stripMarkNotation(r?.front),
+          back: stripMarkNotation(r?.back),
+          frontAf: stripMarkNotation(r?.front_af),
+          backAf: stripMarkNotation(r?.back_af),
+          cardType: coerceCardTypeLocal(r?.card_type),
+          difficulty: coerceDifficultyLocal(r?.difficulty),
+          topic: topic.name,
+          hook: null,
+        };
+        const validation = validateCard(card);
+        if (!validation.ok) {
+          for (const reason of validation.reasons.length ? validation.reasons : ["low_score"]) reject(reason);
+          continue;
+        }
+        const key = normFront(card.front);
+        if (seen.has(key)) { reject("duplicate_front"); continue; }
+        seen.add(key);
+        result.rows.push(
+          ...toCapsFlashcardRows(
+            { front: card.front, back: card.back, frontAf: card.frontAf, backAf: card.backAf, cardType: card.cardType, difficulty: card.difficulty, topic: topic.name },
+            { subject, source: "caps_syllabus", sourceQuestionId: null, qualityScore: validation.score, model, capsCode, grounded: false },
+          ),
+        );
+        result.accepted++;
+        result.syllabusCards++;
+        bump(syllabusByTopic, topic.name);
+        if (syllabusSamples.length < 4) {
+          syllabusSamples.push({
+            topic: topic.name, difficulty: card.difficulty, cardType: card.cardType,
+            front: card.front, back: card.back, frontAf: card.frontAf, backAf: card.backAf,
+            provenance: `CAPS syllabus · ${topic.name} (no bank source)`,
+          });
+        }
+      }
+    }
+  }
+
+  // ── Literature pass: study cards about prescribed set works ─────────────────
+  if (includeLiterature && isLiteratureSubject(subject)) {
+    const allWorks = getLiteratureWorks(subject);
+    result.literatureWorksTotal = allWorks.length;
+    const works = typeof opts.maxWorks === "number" ? allWorks.slice(0, opts.maxWorks) : allWorks;
+    for (const work of works) {
+      let parsed: any;
+      try {
+        const completion = await openai.chat.completions.create({
+          model,
+          temperature: 0.45,
+          response_format: { type: "json_object" },
+          messages: [
+            { role: "system", content: LITERATURE_CARD_SYSTEM },
+            { role: "user", content: buildLiteratureCardsPrompt(subject, work, cardsPerWork) },
+          ],
+        });
+        parsed = parseJson(completion.choices[0]?.message?.content);
+      } catch (err: any) {
+        reject("llm_error");
+        continue;
+      }
+      const raw: any[] = Array.isArray(parsed?.cards) ? parsed.cards : [];
+      result.rawCount += raw.length;
+      const topicName = literatureTopicName(work.type);
+      let acceptedForWork = 0;
+      for (const r of raw) {
+        const card: GeneratedCard = {
+          front: stripMarkNotation(r?.front),
+          back: stripMarkNotation(r?.back),
+          frontAf: stripMarkNotation(r?.front_af),
+          backAf: stripMarkNotation(r?.back_af),
+          cardType: coerceCardTypeLocal(r?.card_type),
+          difficulty: coerceDifficultyLocal(r?.difficulty),
+          topic: topicName,
+          hook: null,
+        };
+        // Copyright: never reproduce the work. Reject any side that over-quotes.
+        if ([card.front, card.back, card.frontAf, card.backAf].some((t) => exceedsQuoteAllowance(t))) {
+          reject("copyright_over_quote");
+          continue;
+        }
+        // Self-contained: the card must name the work (the guard against the very
+        // "which novel?" defect the bank literature path suffered from).
+        const titleLc = work.title.toLowerCase();
+        if (!card.front.toLowerCase().includes(titleLc) && !card.back.toLowerCase().includes(titleLc)) {
+          reject("work_not_named");
+          continue;
+        }
+        const validation = validateCard(card);
+        if (!validation.ok) {
+          for (const reason of validation.reasons.length ? validation.reasons : ["low_score"]) reject(reason);
+          continue;
+        }
+        const key = normFront(card.front);
+        if (seen.has(key)) { reject("duplicate_front"); continue; }
+        seen.add(key);
+        const aspect = typeof r?.aspect === "string" ? r.aspect : null;
+        result.rows.push(
+          ...toCapsFlashcardRows(
+            { front: card.front, back: card.back, frontAf: card.frontAf, backAf: card.backAf, cardType: card.cardType, difficulty: card.difficulty, topic: topicName },
+            { subject, source: "caps_literature", sourceQuestionId: null, qualityScore: validation.score, model, capsCode, grounded: false, work: work.title, aspect },
+          ),
+        );
+        result.accepted++;
+        result.literatureCards++;
+        acceptedForWork++;
+        if (litSamples.length < 4) {
+          litSamples.push({
+            topic: topicName, difficulty: card.difficulty, cardType: card.cardType,
+            front: card.front, back: card.back, frontAf: card.frontAf, backAf: card.backAf,
+            provenance: `Literature · "${work.title}"${aspect ? ` (${aspect})` : ""}`,
+          });
+        }
+      }
+      if (acceptedForWork > 0) result.literatureWorksCovered.push(work.title);
+    }
+  }
+
+  // Coverage + interleaved sample mix (grounded, syllabus, literature).
+  for (const t of topics) {
+    const g = groundedByTopic.get(t.name) ?? 0;
+    const s = syllabusByTopic.get(t.name) ?? 0;
+    if (g + s > 0) result.topicsCovered++;
+    result.topicCoverage.push({ topic: t.name, grounded: g, syllabus: s });
+  }
+  for (let i = 0; i < 4 && result.samples.length < 8; i++) {
+    if (groundedSamples[i]) result.samples.push(groundedSamples[i]);
+    if (syllabusSamples[i] && result.samples.length < 8) result.samples.push(syllabusSamples[i]);
+    if (litSamples[i] && result.samples.length < 8) result.samples.push(litSamples[i]);
+  }
+  const denom = result.accepted + result.rejected;
+  result.rejectionRate = denom > 0 ? +((result.rejected / denom) * 100).toFixed(1) : 0;
+  const written = new Set<CapsCardSource>();
+  if (result.groundedCards + result.syllabusCards > 0) written.add("caps_syllabus");
+  if (result.literatureCards > 0) written.add("caps_literature");
+  result.sourcesWritten = [...written];
+  return result;
+}
+
+/**
+ * Insert CAPS-path flashcard rows idempotently. Deletes prior rows for this
+ * subject that carry the same source tags (caps_syllabus / caps_literature),
+ * then inserts the fresh batch — so re-runs replace instead of accumulating, and
+ * the bank-derived "ai_humanised" rows and the verbatim bank are never touched.
+ */
+export async function persistCapsFlashcards(
+  subject: string,
+  rows: any[],
+  sources: CapsCardSource[],
+): Promise<number> {
+  if (rows.length === 0 || sources.length === 0) return 0;
+  await db.transaction(async (tx) => {
+    await tx
+      .delete(flashcardsTable)
+      .where(and(eq(flashcardsTable.subject, subject), inArray(flashcardsTable.source, sources)));
+    for (let i = 0; i < rows.length; i += 200) {
+      await tx.insert(flashcardsTable).values(rows.slice(i, i + 200));
+    }
+  });
+  return rows.length;
 }

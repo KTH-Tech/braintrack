@@ -3172,6 +3172,26 @@ html.light .rainbow-wash-full {
   .bt-tick-digit, .bt-blink-colon, .bt-pulse-ring, .bt-tagline-sweep { animation: none !important; }
 }
 
+/* ── Flashcard graffiti card treatment ─────────────────────────────────────
+   Applied via INLINE style (value contains "bt-") so the global animation
+   kill-switch exempts them; final resting state is the un-transformed element,
+   so if they are ever suppressed the content is still fully visible/legible.
+   bt-spray-reveal — the answer "sprays on" when a card is flipped.
+   bt-stamp-pop    — got/missed tags stamp onto the wall on the recap screen. */
+@keyframes bt-spray-reveal {
+  0%   { opacity: 0; transform: translateY(9px) scale(0.95); }
+  55%  { opacity: 1; }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes bt-stamp-pop {
+  0%   { opacity: 0; transform: scale(0.2); }
+  70%  { opacity: 1; transform: scale(1.18); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [style*="bt-spray-reveal"], [style*="bt-stamp-pop"] { animation: none !important; }
+}
+
 
 /* ============================================================
    BrainTrack Design Tokens — "Luxury Street Graffiti EdTech"

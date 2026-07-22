@@ -28,3 +28,6 @@ test-results
 .afrmemo-work/
 .report-preview/
 _tmp-*
+.scratch-confetti/
+_*.mjs
+_*.mts

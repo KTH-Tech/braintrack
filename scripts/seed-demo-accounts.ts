@@ -74,9 +74,9 @@ const PARENT_EMAIL = "demo.parent@braintrack.invalid";
 // Subjects with genuinely deep released coverage, so attempts draw from real DBE
 // questions. Mathematics is deliberately absent — ~63 released of 2,273, which
 // would produce a thin, repetitive dashboard.
-const DEMO_SUBJECT_NAMES = ["Geography", "Business Studies", "Economics", "Accounting"];
+const DEMO_SUBJECT_NAMES = ["Geography", "Business Studies", "Economics", "Accounting", "Life Sciences", "English First Additional Language"];
 
-const GRADE = 11;
+const GRADE = 12;
 const DAYS_ACTIVE = 24; // how far back the learner's history stretches
 const TARGET_ATTEMPTS = 148;
 const TARGET_ACCURACY = 0.68;

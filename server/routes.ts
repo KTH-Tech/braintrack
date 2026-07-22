@@ -11129,11 +11129,23 @@ Create comprehensive study notes for the topic provided.`;
   });
 
   // POST /api/admin/content-studio/flashcards
-  // Body: { subject? | all?, limit?, preview?, model?, maxSubjects? }
+  // Body: { subject? | all?, limit?, preview?, model?, maxSubjects?, mode? }
+  //
+  // mode selects the coverage pipeline:
+  //   "bank"       (default) — humanised cards from EXAMINED past-paper topics.
+  //   "caps"       — full CAPS Grade 12 topic coverage: every syllabus topic
+  //                  gets cards, grounded in the bank where it has material,
+  //                  generated from the syllabus where it does not.
+  //   "literature" — study cards about the prescribed set works (language subjects).
+  //   "complete"   — CAPS topics + literature in one pass.
+  // The CAPS/literature/complete modes write idempotently (per-subject, per
+  // source-tag replace); "bank" stays additive as before.
   app.post("/api/admin/content-studio/flashcards", isAuthenticated, requireRole("admin"), async (req: any, res) => {
     const preview = !!req.body?.preview && req.body?.preview !== "false";
+    const mode = ["bank", "caps", "literature", "complete"].includes(req.body?.mode) ? req.body.mode : "bank";
     try {
-      const { generateFlashcardsForSubject, persistFlashcards, DEFAULT_MODEL } = await import("./content-generators");
+      const gen = await import("./content-generators");
+      const { generateFlashcardsForSubject, persistFlashcards, generateCapsCoverageForSubject, persistCapsFlashcards, DEFAULT_MODEL } = gen;
       const model = typeof req.body?.model === "string" ? req.body.model : DEFAULT_MODEL;
       const limit = Math.min(400, Math.max(8, Number(req.body?.limit) || (preview ? 12 : 120)));
       const targets = await resolveContentStudioTargets(req.body, preview);
@@ -11142,26 +11154,64 @@ Create comprehensive study notes for the topic provided.`;
       const results: any[] = [];
       for (const subject of targets) {
         try {
-          const r = await generateFlashcardsForSubject({ subject, limit, model, excludeExisting: !preview });
-          const persisted = !preview && r.rows.length > 0 ? await persistFlashcards(r.rows) : 0;
-          results.push({
-            subject,
-            sourcesUsed: r.sourcesUsed,
-            generated: r.rawCount,
-            accepted: r.accepted,
-            rejected: r.rejected,
-            rejectionRate: r.rejectionRate,
-            topTopics: r.topTopics,
-            persisted,
-            samples: preview ? r.samples.slice(0, 5) : [],
-          });
+          if (mode === "bank") {
+            const r = await generateFlashcardsForSubject({ subject, limit, model, excludeExisting: !preview });
+            const persisted = !preview && r.rows.length > 0 ? await persistFlashcards(r.rows) : 0;
+            results.push({
+              subject, mode,
+              sourcesUsed: r.sourcesUsed,
+              generated: r.rawCount,
+              accepted: r.accepted,
+              rejected: r.rejected,
+              rejectionRate: r.rejectionRate,
+              topTopics: r.topTopics,
+              persisted,
+              samples: preview ? r.samples.slice(0, 5) : [],
+            });
+          } else {
+            const includeTopics = mode !== "literature";
+            const includeLiterature = mode !== "caps";
+            const r = await generateCapsCoverageForSubject({
+              subject,
+              model,
+              cardsPerTopic: 2,
+              cardsPerWork: preview ? 3 : 4,
+              includeTopics,
+              includeLiterature,
+              // Preview stays cheap: a few topics / one work. Publish covers all.
+              maxTopics: preview ? 3 : undefined,
+              maxWorks: preview ? 1 : undefined,
+            });
+            const persisted = !preview && r.rows.length > 0
+              ? await persistCapsFlashcards(subject, r.rows, r.sourcesWritten)
+              : 0;
+            results.push({
+              subject, mode,
+              capsCode: r.capsCode,
+              topicsTotal: r.topicsTotal,
+              topicsProcessed: r.topicsProcessed,
+              topicsCovered: r.topicsCovered,
+              literatureWorksTotal: r.literatureWorksTotal,
+              literatureWorksCovered: r.literatureWorksCovered,
+              groundedCards: r.groundedCards,
+              syllabusCards: r.syllabusCards,
+              literatureCards: r.literatureCards,
+              generated: r.rawCount,
+              accepted: r.accepted,
+              rejected: r.rejected,
+              rejectionRate: r.rejectionRate,
+              persisted,
+              samples: preview ? r.samples.slice(0, 6) : [],
+            });
+          }
         } catch (subErr: any) {
-          results.push({ subject, error: safeError(subErr) });
+          results.push({ subject, mode, error: safeError(subErr) });
         }
       }
       return res.json({
         preview,
         model,
+        mode,
         results,
         totals: {
           subjects: results.length,
@@ -19554,6 +19604,60 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
     } catch (err) {
       console.error("Error ending study session:", err);
       res.status(500).json({ error: "Failed to end study session" });
+    }
+  });
+
+  // POST /api/boost-session/complete — close out a ~30-minute multi-subject
+  // Boost Session (client/src/pages/boost-session.tsx). Question serving,
+  // authoritative grading, per-correct coins/XP, progress and wrong-answer
+  // capture for each subject block all run through the EXISTING per-subject
+  // endpoints (GET /api/subjects/:id/boost/quiz + POST …/boost/quiz/submit),
+  // and the session itself is tracked via /api/study-sessions start/end. This
+  // endpoint only does what those don't: tick the daily streak (the same
+  // storage.updateUserStreak call the mini-mock and daily-challenge flows
+  // make), re-check badges, and pay a small once-per-SA-day completion bonus.
+  const boostSessionBonusByDay = new Map<string, string>(); // userId → last SA date the bonus was paid
+  app.post("/api/boost-session/complete", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const questionsAnswered = Number(req.body?.questionsAnswered) || 0;
+      if (questionsAnswered <= 0) {
+        return res.status(400).json({ error: "No questions answered — nothing to record" });
+      }
+
+      const streak = await storage.updateUserStreak(userId).catch(() => null);
+      await storage.checkAndAwardBadges(userId).catch(() => {});
+
+      // Completion bonus is once per SA calendar day (same UTC+2 day key the
+      // boost-quiz session store uses). In-memory is fine here: one small
+      // entry per user, overwritten daily; a restart at worst re-pays 20
+      // coins once.
+      const saDate = new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString().split("T")[0];
+      let bonusCoins = 0;
+      if (boostSessionBonusByDay.get(userId) !== saDate) {
+        try {
+          bonusCoins = 20;
+          await storage.awardCoins(
+            userId,
+            bonusCoins,
+            "boost_session",
+            `Boost Session complete: ${questionsAnswered} questions across your subjects`,
+          );
+          await storage.awardXP(userId, 25, "boost_session_complete").catch(() => {});
+          boostSessionBonusByDay.set(userId, saDate);
+        } catch {
+          bonusCoins = 0;
+        }
+      }
+
+      res.json({
+        success: true,
+        currentStreak: streak?.currentStreak ?? 0,
+        bonusCoins,
+      });
+    } catch (error) {
+      console.error("Error completing boost session:", error);
+      res.status(500).json({ error: "Failed to complete boost session" });
     }
   });
 
