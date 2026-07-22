@@ -10,6 +10,7 @@ import { pathToFileURL } from "url";
 import OpenAI from "openai";
 import { CAPS_TOPICS } from "../client/src/lib/constants";
 import { cleanMemoText } from "./memo-clean";
+import { extractPositionAwareText } from "./pdf-text-layout";
 
 // Lazy OpenAI client used by the AI fallback splitter for unstructured language papers.
 let _ingestionOpenAI: OpenAI | null = null;
@@ -230,9 +231,34 @@ export async function fetchAndParsePDF(url: string, retries = 2): Promise<string
 
       await writeFile(tmpPath, buffer);
 
+      // ── Text extraction ───────────────────────────────────────────
+      // Primary: position-aware (visual reading order). `pdf-parse` emits text
+      // in PDF content-stream order, which scrambles the multi-column tables and
+      // positioned equations used by DBE Mathematics marking guidelines.
+      // Secondary: pdf-parse, kept as a safety net so a pdf.js failure or a
+      // pathological layout can never make a paper *worse* than it is today.
       const parser = new PDFParse({ url: pathToFileURL(tmpPath).href });
       const result = await parser.getText();
-      let text = (result as any).text as string ?? "";
+      const naiveText = (result as any).text as string ?? "";
+
+      let text = naiveText;
+      try {
+        const positionAware = await extractPositionAwareText(buffer);
+        // Guard against pathological layouts: if reading-order extraction
+        // recovers substantially less text than document order did, something
+        // went wrong (encrypted fonts, unusual transforms) — keep the old output.
+        if (positionAware.replace(/\s+/g, "").length >= naiveText.replace(/\s+/g, "").length * 0.9) {
+          text = positionAware;
+        } else {
+          console.warn(
+            `[extract] Position-aware output too short (${positionAware.length} vs ${naiveText.length} chars) — using document order for ${url}`,
+          );
+        }
+      } catch (layoutErr: any) {
+        console.warn(
+          `[extract] Position-aware extraction failed for ${url}: ${layoutErr?.message ?? String(layoutErr)} — using document order`,
+        );
+      }
 
       // ── OCR fallback for scanned / image-only / garbled PDFs ──────
       // Trigger when pdf-parse returns:
@@ -567,9 +593,30 @@ function buildKeywordAlternation(keywords: string[]): string {
     .join("|");
 }
 
+/**
+ * Question-header pattern allowing DBE's *bilingual combined* header form.
+ *
+ * DBE publishes a single marking guideline covering both official languages, and
+ * heads each question with the two keywords joined by a slash:
+ *
+ *     QUESTION/VRAAG 3        QUESTION/ VRAAG 3        VRAAG/QUESTION 3
+ *
+ * A pattern of the form `(?:QUESTION|VRAAG)\s+(\d+)` matches NONE of these: after
+ * "QUESTION" comes "/", not whitespace, and "VRAAG" is not at a line start. This
+ * silently produced zero memo sections for every bilingual paper — which is why
+ * Mathematics (whose memos are all bilingual) had 0 % memo coverage on Paper 2.
+ *
+ * The trailing keyword is optional so plain single-language headers still match.
+ */
+function buildQuestionHeaderAlternation(): string {
+  const alt = buildKeywordAlternation(QUESTION_KEYWORDS);
+  return `(?:${alt})(?:\\s*/\\s*(?:${alt}))?`;
+}
+
 export function splitByQuestionHeaders(text: string): Map<string, string> {
-  // 1) Try multi-language QUESTION headers (relaxed: allow trailing text after the number).
-  const headerAlt = buildKeywordAlternation(QUESTION_KEYWORDS);
+  // 1) Try multi-language QUESTION headers (relaxed: allow trailing text after the
+  //    number, and allow DBE's combined bilingual "QUESTION/VRAAG 3" form).
+  const headerAlt = buildQuestionHeaderAlternation();
   // nosemgrep: javascript.lang.security.audit.detect-non-literal-regexp -- alternation built from a hard-coded keyword whitelist
   const headerRe = new RegExp(
     `(?:^|\\n)\\s*(?:${headerAlt})\\s+(\\d+[A-Z]?)\\b`,
@@ -719,8 +766,10 @@ const MEMO_MARK_ONLY_RE =
  * follows. Without these, the last answer of a section swallows the section
  * footer and the next section's heading.
  */
+// Includes DBE's combined bilingual heading form ("QUESTION/VRAAG 3",
+// "SECTION/AFDELING B") so a bilingual memo's answers stop at the right place.
 const MEMO_BOUNDARY_RE =
-  /^(?:TOTAL\b|GRAND TOTAL\b|SECTION\s+[A-E]\b|QUESTION\s+\d+\b|AFDELING\s+[A-E]\b|VRAAG\s+\d+\b)/i;
+  /^(?:TOTAL\b|GRAND TOTAL\b|(?:SECTION|AFDELING)(?:\s*\/\s*(?:SECTION|AFDELING))?\s+[A-E]\b|(?:QUESTION|VRAAG)(?:\s*\/\s*(?:QUESTION|VRAAG))?\s+\d+\b)/i;
 
 /** Leading question-number token, e.g. "3.2.1" (always at least one dot). */
 const MEMO_NUM_TOKEN_RE = /^(\d{1,2}(?:\.\d{1,2}){1,3})(?:\s+|$)/;
@@ -1374,6 +1423,24 @@ export function pairPapersWithMemos(catalog: DBECatalogEntry[]): PaperMemoPair[]
     }
   }
 
+  // ── Bilingual memo fallback ───────────────────────────────────────
+  // DBE publishes ONE marking guideline covering both official languages — the
+  // 2025 Maths P2 memo is titled "MATHEMATICS P2/ WISKUNDE V2 … Marking
+  // Guidelines/ Nasienriglyne" and contains English and Afrikaans in the same
+  // document. The catalog does not always list that shared PDF under both
+  // languages, so an Afrikaans paper can end up with no memo at all even though
+  // the English memo IS its memo. Where a language-specific memo is genuinely
+  // missing, borrow the memo from another language for the same
+  // subject/year/session/paper.
+  for (const pair of Array.from(pairMap.values())) {
+    if (pair.memo || !pair.paper) continue;
+    const prefix = `${pair.subject}|${pair.year}|${pair.session}|${pair.paperNumber}|`;
+    const donor = Array.from(pairMap.entries()).find(
+      ([key, candidate]) => key.startsWith(prefix) && candidate.language !== pair.language && candidate.memo !== null,
+    );
+    if (donor) pair.memo = donor[1].memo;
+  }
+
   return Array.from(pairMap.values()).filter((p) => p.paper !== null || p.memo !== null);
 }
 
@@ -1568,8 +1635,10 @@ function splitIntoQuestionSections(
 ): Array<{ questionNumber: string; sectionText: string }> {
   const sections: Array<{ questionNumber: string; sectionText: string }> = [];
 
-  // Match top-level question headers: "QUESTION 1", "Question 1", or just "1." at start of line
-  const questionHeaderRegex = /^(?:QUESTION|Question)\s+(\d+)|^(\d+)\.\s+/gm;
+  // Match top-level question headers: "QUESTION 1", "VRAAG 1", DBE's combined
+  // bilingual "QUESTION/VRAAG 1", or just "1." at start of line.
+  const questionHeaderRegex =
+    /^(?:QUESTION|VRAAG)(?:\s*\/\s*(?:QUESTION|VRAAG))?\s+(\d+)|^(\d+)\.\s+/gim;
 
   let lastIndex = 0;
   let lastQNum = "0";
@@ -2597,43 +2666,67 @@ export async function runIngestionBatch(
     console.log(`[FORCE-REINGEST] Cleared existing data for ${options.subject}${options.year ? ` / ${options.year}` : ""}`);
   }
 
-  // Build set of already-completed (subject, year, paperNumber, isMemo) to skip re-ingestion.
-  // IMPORTANT: a paper log row marked "completed" with question_count = 0 is
-  // treated as NOT done — those are failed extractions that should be retried
-  // automatically on the next run. (Memo rows have no question_count, so they
-  // count as done whenever status='completed'.)
+  // Build the set of already-completed work so we can skip it on re-runs.
+  //
+  // This is derived from `dbe_verbatim_questions`, NOT from `dbe_ingestion_log`.
+  // The log table has no `language` column, so a log-derived key can only ever be
+  // `(year, paperNumber, isMemo)` — language-blind. That had a silent and
+  // permanent failure mode: once the English pair for a given paper completed, the
+  // Afrikaans pair for the SAME paper matched the same key and was skipped forever.
+  // Afrikaans Mathematics ended up with 1 081 question rows and zero memo URLs,
+  // and no amount of re-running could repair it because the skip fired first
+  // (only `force: true` would, and that destroys released content).
+  //
+  // The verbatim table carries `language` and `session`, so it can express the
+  // real unit of work — and "do rows actually exist?" is a truer completion
+  // signal than "did a log row get written?" anyway.
+  //
+  // IMPORTANT: a tuple with <= 1 question row is treated as NOT done. 1 is the
+  // sentinel the old splitter wrote when it could not detect any QUESTION/VRAAG
+  // headers and dumped the whole paper as a single Q1 record; those must be
+  // re-parsed.
   const completedKeys = new Set<string>();
+  const tupleKey = (
+    year: number,
+    paperNumber: number,
+    session: string,
+    language: string,
+    isMemo: boolean,
+  ) => `${year}|${paperNumber}|${session}|${language}|${isMemo ? 1 : 0}`;
+
   if (options?.subject && !options?.force) {
-    const existingLogs = await db
+    const existing = await db
       .select({
-        year: dbeIngestionLog.year,
-        paperNumber: dbeIngestionLog.paperNumber,
-        isMemo: dbeIngestionLog.isMemo,
-        questionCount: dbeIngestionLog.questionCount,
+        year: dbeVerbatimQuestions.year,
+        paperNumber: dbeVerbatimQuestions.paperNumber,
+        session: dbeVerbatimQuestions.session,
+        language: dbeVerbatimQuestions.language,
+        questionCount: sql<number>`count(*)::int`,
+        memoUrlCount: sql<number>`count(${dbeVerbatimQuestions.sourceMemoUrl})::int`,
       })
-      .from(dbeIngestionLog)
-      .where(
-        and(
-          eq(dbeIngestionLog.subject, options.subject),
-          eq(dbeIngestionLog.status, "completed")
-        )
+      .from(dbeVerbatimQuestions)
+      .where(eq(dbeVerbatimQuestions.subject, options.subject))
+      .groupBy(
+        dbeVerbatimQuestions.year,
+        dbeVerbatimQuestions.paperNumber,
+        dbeVerbatimQuestions.session,
+        dbeVerbatimQuestions.language,
       );
-    for (const log of existingLogs) {
-      const isMemo = !!log.isMemo;
-      // Skip empty / single-blob paper extractions so they are retried.
-      // question_count == 1 is the sentinel value the old splitter wrote
-      // when it could not detect any QUESTION/VRAAG headers and dumped the
-      // whole paper as a single Q1 record. With the multi-language splitter
-      // and AI fallback now in place, those papers must be re-parsed.
-      if (!isMemo && (!log.questionCount || log.questionCount <= 1)) continue;
-      completedKeys.add(`${log.year}-${log.paperNumber}-${isMemo ? 1 : 0}`);
+
+    for (const row of existing) {
+      if (!row.questionCount || row.questionCount <= 1) continue;
+      completedKeys.add(tupleKey(row.year, row.paperNumber, row.session, row.language, false));
+      // The memo counts as attached only if these rows actually carry its URL.
+      if (row.memoUrlCount > 0) {
+        completedKeys.add(tupleKey(row.year, row.paperNumber, row.session, row.language, true));
+      }
     }
   }
 
   // Track how many distinct years are already in DB for this subject
   const alreadyDoneYears = new Set<number>();
   for (const key of completedKeys) {
-    const yr = Number(key.split("-")[0]);
+    const yr = Number(key.split("|")[0]);
     if (!isNaN(yr)) alreadyDoneYears.add(yr);
   }
 
@@ -2648,9 +2741,9 @@ export async function runIngestionBatch(
       continue;
     }
 
-    // ── Skip already-completed pairs ──────────────────────────────
-    const paperKey = `${pair.year}-${pair.paperNumber}-0`;
-    const memoKey = `${pair.year}-${pair.paperNumber}-1`;
+    // ── Skip already-completed pairs (per language AND session) ───
+    const paperKey = tupleKey(pair.year, pair.paperNumber, pair.session, pair.language, false);
+    const memoKey = tupleKey(pair.year, pair.paperNumber, pair.session, pair.language, true);
     const paperAlreadyDone = completedKeys.has(paperKey);
     const memoAlreadyDone = completedKeys.has(memoKey);
     if ((!pair.paper || paperAlreadyDone) && (!pair.memo || memoAlreadyDone)) {

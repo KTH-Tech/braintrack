@@ -402,12 +402,21 @@ export interface GenerateMcqOptions {
   model?: string;
   batchSize?: number;
   minQuality?: number;
+  /**
+   * Cap the number of sequential OpenAI batches. Preview mode passes 1 so
+   * the endpoint answers in a single-batch wall-time (~15-25s) even when
+   * hygiene rejects everything the model produces — otherwise a bad-luck
+   * subject could loop through five batches and blow past the Cloudflare
+   * 100s origin timeout, dropping the reply and leaving the client hanging.
+   */
+  maxBatches?: number;
 }
 
 export async function generateDailyChallengeMcqs(opts: GenerateMcqOptions): Promise<McqResult> {
   const model = opts.model ?? DEFAULT_MODEL;
   const target = opts.count ?? 20;
   const batchSize = opts.batchSize ?? 5;
+  const maxBatches = Math.max(1, opts.maxBatches ?? Number.POSITIVE_INFINITY);
 
   // Prefer knowledge/comprehension short-answer questions — they convert to
   // clean MCQs far more reliably than multi-mark essay tasks.
@@ -424,7 +433,14 @@ export async function generateDailyChallengeMcqs(opts: GenerateMcqOptions): Prom
   const pool = [...loaded.questions]
     .filter((q) => (q.marks ?? 99) <= 8)
     .sort((a, b) => (a.marks ?? 9) - (b.marks ?? 9) || a.questionText.length - b.questionText.length);
-  const sources = (pool.length >= target ? pool : loaded.questions).slice(0, target * 5);
+  // Cap loaded sources to what maxBatches × batchSize can consume, so preview
+  // mode (maxBatches=1) never buffers 25 rows just to throw 20 away — and,
+  // more importantly, the `sources.length` bound in the batch loop matches
+  // the maxBatches ceiling.
+  const sliceMax = Number.isFinite(maxBatches)
+    ? Math.min(target * 5, maxBatches * batchSize)
+    : target * 5;
+  const sources = (pool.length >= target ? pool : loaded.questions).slice(0, sliceMax);
 
   const result: McqResult = {
     mcqs: [],
@@ -436,10 +452,13 @@ export async function generateDailyChallengeMcqs(opts: GenerateMcqOptions): Prom
 
   const openai = getOpenAI();
   const seen = new Set<string>();
+  let batchesUsed = 0;
 
-  for (let i = 0; i < sources.length && result.mcqs.length < target; i += batchSize) {
+  for (let i = 0; i < sources.length && result.mcqs.length < target && batchesUsed < maxBatches; i += batchSize) {
     const batch = sources.slice(i, i + batchSize);
+    batchesUsed++;
     let parsed: any;
+    const t0 = Date.now();
     try {
       const completion = await openai.chat.completions.create({
         model,
@@ -451,7 +470,9 @@ export async function generateDailyChallengeMcqs(opts: GenerateMcqOptions): Prom
         ],
       });
       parsed = parseJson(completion.choices[0]?.message?.content);
+      console.log(`[daily-challenge] ${opts.subject} batch ${batchesUsed}/${Number.isFinite(maxBatches) ? maxBatches : "∞"}: openai returned ${Array.isArray(parsed?.mcqs) ? parsed.mcqs.length : 0} in ${Date.now() - t0}ms`);
     } catch (err: any) {
+      console.warn(`[daily-challenge] ${opts.subject} batch ${batchesUsed} failed after ${Date.now() - t0}ms: ${err?.message ?? err}`);
       result.rejected.push({ reason: `llm_error:${err?.message ?? err}`, sourceQuestionId: null });
       continue;
     }
@@ -1181,6 +1202,13 @@ export interface CapsCoverageOptions {
   topicBatchSize?: number;
   /** Max bank sources loaded for grounding. */
   maxSources?: number;
+  /**
+   * Preview mode: stop each sub-pass after ONE OpenAI batch. Without this
+   * cap, "preview" for a big bank+syllabus+literature subject can queue up
+   * five sequential model calls and blow past the 100s Cloudflare origin
+   * timeout — leaving the Content Studio Preview spinner hanging.
+   */
+  previewSingleBatch?: boolean;
 }
 
 export interface CapsCoverageResult {
@@ -1220,6 +1248,7 @@ export async function generateCapsCoverageForSubject(
   const cardsPerWork = Math.max(1, opts.cardsPerWork ?? 4);
   const topicBatchSize = Math.max(1, opts.topicBatchSize ?? 6);
   const maxSources = Math.max(60, opts.maxSources ?? 700);
+  const previewSingleBatch = opts.previewSingleBatch === true;
 
   const subject = opts.subject;
   const capsCode = subjectNameToCode(subject);
@@ -1312,9 +1341,14 @@ export async function generateCapsCoverageForSubject(
       for (const s of list) selected.push({ source: s, topic: priByName.get(name) ?? null });
     }
     const allowed = [...topicNames];
-    for (let i = 0; i < selected.length; i += 4) {
+    // Preview: stop after the first batch so a big subject can't queue up
+    // multiple sequential OpenAI calls in this pass alone.
+    const groundedLimit = previewSingleBatch ? Math.min(selected.length, 4) : selected.length;
+    for (let i = 0; i < groundedLimit; i += 4) {
       const batch = selected.slice(i, i + 4);
+      const t0 = Date.now();
       const res = await generateCardsForBatch(batch, allowed, { model, cardsPerSource: cardsPerTopic });
+      console.log(`[caps-coverage] ${subject} grounded batch ${(i / 4) + 1}: ${res.cards.length}/${res.rawCount} in ${Date.now() - t0}ms`);
       if (res.error) {
         reject("llm_error");
         continue;
@@ -1356,9 +1390,12 @@ export async function generateCapsCoverageForSubject(
   // ── Syllabus fill: guarantee every CAPS topic reaches cardsPerTopic ─────────
   if (includeTopics && topics.length > 0) {
     const need = topics.filter((t) => (groundedByTopic.get(t.name) ?? 0) < cardsPerTopic);
-    for (let i = 0; i < need.length; i += topicBatchSize) {
+    // Preview: at most one syllabus batch.
+    const syllabusLimit = previewSingleBatch ? Math.min(need.length, topicBatchSize) : need.length;
+    for (let i = 0; i < syllabusLimit; i += topicBatchSize) {
       const batch = need.slice(i, i + topicBatchSize);
       let parsed: any;
+      const t0 = Date.now();
       try {
         const completion = await openai.chat.completions.create({
           model,
@@ -1370,7 +1407,9 @@ export async function generateCapsCoverageForSubject(
           ],
         });
         parsed = parseJson(completion.choices[0]?.message?.content);
+        console.log(`[caps-coverage] ${subject} syllabus batch ${(i / topicBatchSize) + 1}: ${Array.isArray(parsed?.cards) ? parsed.cards.length : 0} in ${Date.now() - t0}ms`);
       } catch (err: any) {
+        console.warn(`[caps-coverage] ${subject} syllabus batch failed after ${Date.now() - t0}ms: ${err?.message ?? err}`);
         reject(`llm_error`);
         continue;
       }
@@ -1422,9 +1461,14 @@ export async function generateCapsCoverageForSubject(
   if (includeLiterature && isLiteratureSubject(subject)) {
     const allWorks = getLiteratureWorks(subject);
     result.literatureWorksTotal = allWorks.length;
-    const works = typeof opts.maxWorks === "number" ? allWorks.slice(0, opts.maxWorks) : allWorks;
+    const worksCap = typeof opts.maxWorks === "number" ? opts.maxWorks : allWorks.length;
+    // Preview: at most one work, regardless of what the caller passed.
+    const works = allWorks.slice(0, previewSingleBatch ? Math.min(1, worksCap) : worksCap);
+    let workIdx = 0;
     for (const work of works) {
+      workIdx++;
       let parsed: any;
+      const t0 = Date.now();
       try {
         const completion = await openai.chat.completions.create({
           model,
@@ -1436,7 +1480,9 @@ export async function generateCapsCoverageForSubject(
           ],
         });
         parsed = parseJson(completion.choices[0]?.message?.content);
+        console.log(`[caps-coverage] ${subject} literature work ${workIdx}/${works.length} (${work.title}): ${Array.isArray(parsed?.cards) ? parsed.cards.length : 0} in ${Date.now() - t0}ms`);
       } catch (err: any) {
+        console.warn(`[caps-coverage] ${subject} literature work "${work.title}" failed after ${Date.now() - t0}ms: ${err?.message ?? err}`);
         reject("llm_error");
         continue;
       }

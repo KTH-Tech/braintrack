@@ -58,6 +58,17 @@ export function getOpenAI(): OpenAI {
   _openai = new OpenAI({
     apiKey,
     baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+    // Per-request timeout. Without this, an OpenAI stall hangs the whole
+    // request indefinitely — which is exactly what caused Content Studio's
+    // Preview button to "hang forever". 90s is well above the p99 for a
+    // single json_object completion at these prompt sizes; anything longer
+    // means OpenAI has gone sideways and we should bail so the client sees
+    // a proper error toast instead of a silent spinner.
+    timeout: 90_000,
+    // One retry inside the 90s budget covers transient 429s and 5xx without
+    // pushing the total wall-time past the Cloudflare 100s origin timeout
+    // that fronts every request to app.braintrack.tech.
+    maxRetries: 1,
   });
   return _openai;
 }

@@ -26,6 +26,8 @@ import {
   BookOpen,
   GraduationCap,
   HeartHandshake,
+  Sparkles,
+  MessageCircle,
 } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
 import { useAuth } from "@/hooks/use-auth";
@@ -34,6 +36,8 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import iconTransparent from "@/assets/handoff/icon-transparent.png";
 import { ConfettiBurst } from "@/components/confetti-burst";
+import { KthTechChip } from "@/components/brand/KthTechLogo";
+import { PaymentIconsRow, PaystackBadge } from "@/components/brand/PaymentIcons";
 
 type PageState =
   | "plan"
@@ -627,6 +631,134 @@ export default function SubscribePage() {
               <GraduationCap style={{ width: 13, height: 13, color: "#FFE29A" }} />
               {isAf ? "10 jaar NSS-vraestelle + memo's" : "10+ years NSC past papers + memos"}
             </span>
+          </div>
+
+          {/* ── Payment methods trust strip — parents' brains scan for
+               "will my card even work here?" the moment they read a price.
+               Answer that before the pricing tiles: five stylised payment
+               chips (Visa / Mastercard / Amex / Verified by Visa / SecureCode)
+               plus a Paystack processor badge and the KTH-Tech charging-
+               entity chip so parents can see who actually appears on their
+               bank statement.  All inlined SVG — no CDN, no full-colour
+               brand logos. ── */}
+          <div
+            data-testid="subscribe-payment-strip"
+            style={{ maxWidth: 780, margin: "0 auto 18px" }}
+          >
+            <PaymentIconsRow color="#fff" height={26} isAf={isAf} />
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 14,
+                flexWrap: "wrap",
+                marginTop: 14,
+              }}
+            >
+              <PaystackBadge isAf={isAf} />
+              <span style={{ color: "#fff", opacity: 0.35, fontSize: 12 }} aria-hidden>·</span>
+              <span
+                data-testid="subscribe-kth-charging-entity"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
+                  color: "#fff",
+                  fontFamily: "'Poppins',sans-serif",
+                  fontSize: 11.5,
+                  fontWeight: 600,
+                }}
+              >
+                <span>
+                  {isAf
+                    ? "Jy betaal by KTH-Tech (BrainTrack se moedermaatskappy)"
+                    : "You're checking out with KTH-Tech (BrainTrack's parent)"}
+                </span>
+                <KthTechChip size={18} />
+              </span>
+            </div>
+          </div>
+
+          {/* ── Trial summary card — the four things a parent needs to see
+               before they hand over a card, in the same order Paystack will
+               ask them to confirm. Butter (free trial) → matter-of-fact R1
+               → mint (day-14 charge + cancel) → statement descriptor.  Also
+               truthful for adult self-serve: card isn't taken until Paystack
+               step, and the R1 verify line is scoped as "if you enter a card
+               today" so it doesn't overstate for the no-card path. ── */}
+          <div
+            data-testid="subscribe-trial-summary"
+            style={{
+              maxWidth: 620,
+              margin: "0 auto 30px",
+              textAlign: "left",
+              background: "rgba(255,255,255,.03)",
+              border: "1px solid rgba(255,255,255,.1)",
+              borderRadius: 18,
+              padding: "18px 22px",
+              display: "flex",
+              flexDirection: "column",
+              gap: 12,
+            }}
+          >
+            {/* Line 1 — butter accent: 14 days free */}
+            <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
+              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 22, color: "#FFE29A", lineHeight: 1 }}>
+                {isAf ? "14 dae gratis" : "14 days free"}
+              </span>
+              <span style={{ fontSize: 13, color: "#fff", opacity: 0.85 }}>
+                {isAf ? "· volle toegang, geen beperking" : "· full access, no gating"}
+              </span>
+            </div>
+
+            {/* Line 2 — matter-of-fact R1 verify */}
+            <div style={{ fontSize: 13.5, color: "#fff", lineHeight: 1.5 }}>
+              {isAf
+                ? "R1,00 kaartverifikasie vandag as jy 'n kaart byvoeg (POPIA-toestemming, nie-terugbetaalbaar)."
+                : "R1.00 verification charge today if you add a card (POPIA consent, non-refundable)."}
+            </div>
+
+            {/* Line 3 — mint accent: R169 on day 14 · cancel anytime */}
+            <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+              <span
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                  fontWeight: 800,
+                  fontSize: 15,
+                  color: "#9FF5E8",
+                }}
+              >
+                <span style={{ width: 6, height: 6, borderRadius: 999, background: "#9FF5E8" }} aria-hidden />
+                {isAf
+                  ? "R169/maand vanaf dag 14 · Kanselleer enige tyd"
+                  : "R169/month starting day 14 · Cancel anytime"}
+              </span>
+            </div>
+
+            {/* Line 4 — statement descriptor, always shown so the parent
+                 recognises the charge on their bank statement */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                paddingTop: 10,
+                borderTop: "1px dashed rgba(255,255,255,.14)",
+                fontSize: 12,
+                color: "#fff",
+                opacity: 0.85,
+              }}
+            >
+              <ShieldCheck style={{ width: 13, height: 13, color: "#94F7C5", flex: "none" }} />
+              <span>
+                {isAf
+                  ? "Verskyn op jou bankstaat as KTH-TECH"
+                  : "Appears on your statement as KTH-TECH"}
+              </span>
+            </div>
           </div>
         </div>
 

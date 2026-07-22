@@ -3226,3 +3226,17 @@ export const phoneOtpCodes = pgTable(
 );
 
 export type PhoneOtpCode = typeof phoneOtpCodes.$inferSelect;
+
+// NOTE — messaging_sends and users.whatsapp_opt_in
+// ------------------------------------------------
+// These are created by migration 0035_messaging_infra.sql but INTENTIONALLY
+// not declared as Drizzle tables here. The pattern the earlier migration
+// 0034_onboarding_vark_secondary tripped on — declaring a column in the ORM
+// before the DDL exists on prod — took /api/user/journey, /api/subjects and
+// /api/timetable/widgets to 500 for every learner. To keep the messaging
+// scaffolding safe to deploy independently of the migration, all reads and
+// writes to these objects go through raw SQL in
+// server/messaging/{twilio-messaging.ts, nudge-cron.ts} and the
+// PATCH /api/user/whatsapp-opt-in handler. When the column / table are not
+// yet present, those code paths swallow the error and behave like the
+// feature is off — never a 500 for an unrelated endpoint.

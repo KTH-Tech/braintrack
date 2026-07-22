@@ -26,6 +26,7 @@ import {
   LogOut,
   GraduationCap,
   KeyRound,
+  MessageCircle,
 } from "lucide-react";
 import { LearnerHeader } from "@/components/learner-header";
 import { GraffitiSplats } from "@/components/graffiti-splats";
@@ -259,6 +260,13 @@ const T = {
     cancelPassword: "Cancel",
     selectAtLeast4: "Select at least 4 subjects",
     subjectsSelectedLabel: "subjects selected",
+    nudgesEyebrow: "Stay in the loop",
+    nudgesTitle: "Study nudges",
+    nudgesSubtitle: "Short WhatsApp updates on your learner's trial progress",
+    nudgesToggleLabel: "Get study nudges via WhatsApp / SMS",
+    nudgesToggleHint: "Day-3, day-7 and day-12 progress updates during your trial. We'll try WhatsApp first; if it fails we fall back to SMS. Turn this off any time.",
+    nudgesSaved: "Preference saved",
+    nudgesSaveFailed: "Could not save preference",
   },
   af: {
     pageTitle: "Instellings",
@@ -369,6 +377,13 @@ const T = {
     cancelPassword: "Kanselleer",
     selectAtLeast4: "Kies minstens 4 vakke",
     subjectsSelectedLabel: "vakke gekies",
+    nudgesEyebrow: "Bly op hoogte",
+    nudgesTitle: "Studie-nudges",
+    nudgesSubtitle: "Kort WhatsApp-opdaterings oor jou leerder se proef",
+    nudgesToggleLabel: "Ontvang studie-nudges via WhatsApp / SMS",
+    nudgesToggleHint: "Dag-3, dag-7 en dag-12 vorderingsopdaterings tydens jou proef. Ons probeer WhatsApp eerste; misluk dit, val ons terug op SMS. Skakel enige tyd af.",
+    nudgesSaved: "Voorkeur gestoor",
+    nudgesSaveFailed: "Kon nie voorkeur stoor nie",
   },
 } as const;
 
@@ -450,6 +465,14 @@ export default function SettingsPage() {
   const { data: referral } = useQuery<{ code: string; link: string; thisMonthCount: number; maxPerMonth: number }>({
     queryKey: ["/api/user/referral"],
     enabled: user?.role === "learner",
+  });
+
+  // WhatsApp / SMS nudge opt-in state. Backed by a raw-SQL endpoint so the
+  // read gracefully degrades to `false` if migration 0035 hasn't been
+  // applied on this environment yet.
+  const { data: nudgesPref } = useQuery<{ optIn: boolean; migrationPending?: boolean }>({
+    queryKey: ["/api/user/whatsapp-opt-in"],
+    retry: false,
   });
 
   // Prelim exams (Task #359) — load effective dates (learner overrides school).
@@ -547,6 +570,23 @@ export default function SettingsPage() {
       setSelectedSubjects(onboarding.selectedSubjects);
     }
   }, [onboarding]);
+
+  // WhatsApp / SMS nudge preference — feeds server/messaging/twilio-messaging.ts.
+  // Optimistically flip the toggle on click and reconcile on success/failure so
+  // the checkbox feels responsive even on slow networks.
+  const updateWhatsAppOptInMutation = useMutation({
+    mutationFn: async (optIn: boolean) => {
+      return apiRequest("PATCH", "/api/user/whatsapp-opt-in", { optIn });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/user/whatsapp-opt-in"] });
+      toast({ title: t.nudgesSaved });
+    },
+    onError: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/user/whatsapp-opt-in"] });
+      toast({ title: t.nudgesSaveFailed, variant: "destructive" });
+    },
+  });
 
   const updateSubjectsMutation = useMutation({
     mutationFn: async (subjectIds: number[]) => {
@@ -1212,6 +1252,41 @@ export default function SettingsPage() {
                 );
               })}
             </div>
+          </SectionCard>
+
+          {/* ── Study nudges (WhatsApp/SMS opt-in) ── */}
+          <SectionCard
+            color="#9FF5E8"
+            icon={MessageCircle}
+            eyebrow={t.nudgesEyebrow}
+            title={t.nudgesTitle}
+            subtitle={t.nudgesSubtitle}
+            testId="card-nudges"
+            delay={0.22}
+          >
+            <label
+              className="flex items-start gap-3 p-4 rounded-xl cursor-pointer transition-all"
+              style={{
+                background: nudgesPref?.optIn ? "rgba(159,245,232,.08)" : "rgba(255,255,255,.03)",
+                border: nudgesPref?.optIn ? "1.5px solid #9FF5E8" : "1px solid rgba(255,255,255,.1)",
+              }}
+              data-testid="toggle-nudges-optin"
+            >
+              <input
+                type="checkbox"
+                className="mt-1 w-4 h-4 accent-[#9FF5E8] cursor-pointer"
+                checked={!!nudgesPref?.optIn}
+                disabled={updateWhatsAppOptInMutation.isPending || Boolean(nudgesPref?.migrationPending)}
+                onChange={(e) => updateWhatsAppOptInMutation.mutate(e.target.checked)}
+                data-testid="input-nudges-optin"
+              />
+              <div className="min-w-0">
+                <p className="font-bold text-white leading-snug">{t.nudgesToggleLabel}</p>
+                <p className="text-xs text-white mt-1 leading-snug" style={{ opacity: 0.85 }}>
+                  {t.nudgesToggleHint}
+                </p>
+              </div>
+            </label>
           </SectionCard>
 
           {/* ── Refer a Friend — learner only ── */}

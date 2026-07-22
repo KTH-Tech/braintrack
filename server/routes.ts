@@ -216,8 +216,13 @@ export async function getOrCreateLearnerReferralCode(userId: string): Promise<st
     .where(eq(subscriptions.userId, userId))
     .limit(1);
   if (!sub) return null;
-  // Eligibility: only active paid subscribers participate in the referral programme.
-  if (sub.status !== "active") return sub.referralCode ?? null;
+  // Eligibility: trial + active subscribers can share. Every launch-week
+  // learner spends their first 14 days in status="trial" (card-on-file), so
+  // gating on "active" alone would ship the whole cohort with a null code and
+  // an empty share card. Reward payout still requires "active" at the moment
+  // the referee pays — see processLearnerReferralPaidConversion.
+  const ELIGIBLE_STATUSES = new Set(["active", "trial"]);
+  if (!ELIGIBLE_STATUSES.has(sub.status)) return sub.referralCode ?? null;
   if (sub.referralCode) return sub.referralCode;
 
   for (let attempt = 0; attempt < 5; attempt++) {
@@ -6742,6 +6747,37 @@ Create comprehensive study notes for the topic provided.`;
     }
   });
 
+  // Parent-side share: returns the referral code + share link for each linked
+  // child. Parents don't have their own referral code (parents never hold a
+  // subscription — the referral programme rewards the learner whose friends
+  // subscribe), so this endpoint proxies through to the child's code. This
+  // lets a parent tap "Share on WhatsApp" from the parent dashboard on their
+  // child's behalf. The reward still lands on the child's subscription when
+  // two friends convert.
+  app.get("/api/parent/referral/child-links", isAuthenticated, requireRole("parent", "admin"), async (req: any, res) => {
+    try {
+      const parentId = req.user.claims.sub;
+      const linked = await storage.getLearnersForParent(parentId);
+      const baseUrl = process.env.APP_URL || `${req.protocol}://${req.get("host")}`;
+      const children = await Promise.all(
+        linked.map(async (child) => {
+          const code = await getOrCreateLearnerReferralCode(child.learnerUserId);
+          const link = code ? `${baseUrl}/?ref=${code}` : null;
+          return {
+            learnerUserId: child.learnerUserId,
+            learnerName: child.learnerName ?? "",
+            code,
+            link,
+          };
+        }),
+      );
+      return res.json({ children });
+    } catch (err: any) {
+      console.error("Error in /api/parent/referral/child-links:", err);
+      return res.status(500).json({ error: safeError(err) });
+    }
+  });
+
   // Returns the top N referrers ranked by paid conversions
   // (status IN ('converted','rewarded')), plus the current user's own rank
   // and conversion count. Display names are anonymised to first name +
@@ -11295,6 +11331,7 @@ Create comprehensive study notes for the topic provided.`;
   // Body: { subject? | all?, count?, preview?, model?, maxSubjects? }
   app.post("/api/admin/content-studio/daily-challenge", isAuthenticated, requireRole("admin"), async (req: any, res) => {
     const preview = req.body?.preview !== false && req.body?.preview !== "false" ? !!req.body?.preview : false;
+    const routeT0 = Date.now();
     try {
       const { generateDailyChallengeMcqs, persistDailyChallengeMcqs, DEFAULT_MODEL } = await import("./content-generators");
       const model = typeof req.body?.model === "string" ? req.body.model : DEFAULT_MODEL;
@@ -11308,8 +11345,24 @@ Create comprehensive study notes for the topic provided.`;
 
       const results: any[] = [];
       for (const subject of targets) {
+        const subT0 = Date.now();
+        console.log(`[content-studio/daily-challenge] ${preview ? "preview" : "publish"} → ${subject}, count=${count}, maxBatches=${preview ? 3 : "unlimited"}`);
         try {
-          const r = await generateDailyChallengeMcqs({ subject, count, model });
+          // Preview: 3-batch hard cap. Empirically Agricultural Sciences /
+          // Geography / Business Studies get ONE usable MCQ per batch (the
+          // rest reject as stimulus-dependent), so a single-batch cap looks
+          // "broken" to the admin — they click Preview and see a single
+          // sample. Three batches lands 3–5 samples across every subject
+          // tested and still fits well inside the 100s Cloudflare origin
+          // budget (measured ~10-12s wall-time at gpt-4o-mini). Publish
+          // stays unlimited so count=15 can drain the pool.
+          const r = await generateDailyChallengeMcqs({
+            subject,
+            count,
+            model,
+            maxBatches: preview ? 3 : undefined,
+          });
+          console.log(`[content-studio/daily-challenge] ${subject} generator done in ${Date.now() - subT0}ms: ${r.mcqs.length} accepted / ${r.rejected.length} rejected / ${r.sourcesConsidered} considered`);
           const persisted = !preview && r.mcqs.length > 0 ? await persistDailyChallengeMcqs(subject, r.mcqs) : 0;
           results.push({
             subject,
@@ -11324,9 +11377,11 @@ Create comprehensive study notes for the topic provided.`;
             samples: preview ? r.mcqs.slice(0, 5) : [],
           });
         } catch (subErr: any) {
+          console.warn(`[content-studio/daily-challenge] ${subject} generator threw after ${Date.now() - subT0}ms: ${subErr?.message ?? subErr}`);
           results.push({ subject, error: safeError(subErr) });
         }
       }
+      console.log(`[content-studio/daily-challenge] ${preview ? "preview" : "publish"} finished in ${Date.now() - routeT0}ms across ${results.length} subject(s)`);
       return res.json({
         preview,
         model,
@@ -11338,6 +11393,7 @@ Create comprehensive study notes for the topic provided.`;
         },
       });
     } catch (err: any) {
+      console.error(`[content-studio/daily-challenge] fatal after ${Date.now() - routeT0}ms:`, err?.message ?? err);
       return res.status(500).json({ error: safeError(err) });
     }
   });
@@ -11357,6 +11413,7 @@ Create comprehensive study notes for the topic provided.`;
   app.post("/api/admin/content-studio/flashcards", isAuthenticated, requireRole("admin"), async (req: any, res) => {
     const preview = !!req.body?.preview && req.body?.preview !== "false";
     const mode = ["bank", "caps", "literature", "complete"].includes(req.body?.mode) ? req.body.mode : "bank";
+    const routeT0 = Date.now();
     try {
       const gen = await import("./content-generators");
       const { generateFlashcardsForSubject, persistFlashcards, generateCapsCoverageForSubject, persistCapsFlashcards, DEFAULT_MODEL } = gen;
@@ -11373,9 +11430,12 @@ Create comprehensive study notes for the topic provided.`;
 
       const results: any[] = [];
       for (const subject of targets) {
+        const subT0 = Date.now();
+        console.log(`[content-studio/flashcards] ${preview ? "preview" : "publish"} → ${subject} (mode=${mode}, limit=${limit})`);
         try {
           if (mode === "bank") {
             const r = await generateFlashcardsForSubject({ subject, limit, model, excludeExisting: !preview });
+            console.log(`[content-studio/flashcards] ${subject} bank done in ${Date.now() - subT0}ms: ${r.accepted}/${r.rawCount}`);
             const persisted = !preview && r.rows.length > 0 ? await persistFlashcards(r.rows) : 0;
             results.push({
               subject, mode,
@@ -11398,10 +11458,16 @@ Create comprehensive study notes for the topic provided.`;
               cardsPerWork: preview ? 3 : 4,
               includeTopics,
               includeLiterature,
-              // Preview stays cheap: a few topics / one work. Publish covers all.
-              maxTopics: preview ? 3 : undefined,
+              // Preview stays cheap: two topics / one work. Publish covers all.
+              // Two topics keeps the grounded pass at ≤1 OpenAI batch (2×3=6
+              // sources ÷ batchSize 4 = 2 calls) and the syllabus fill at
+              // ≤1 call — worst-case ~4 sequential OpenAI calls that fit in
+              // the 100s Cloudflare origin budget with room to spare.
+              maxTopics: preview ? 2 : undefined,
               maxWorks: preview ? 1 : undefined,
+              previewSingleBatch: preview,
             });
+            console.log(`[content-studio/flashcards] ${subject} caps done in ${Date.now() - subT0}ms: ${r.accepted}/${r.rawCount}, grounded=${r.groundedCards}, syllabus=${r.syllabusCards}, lit=${r.literatureCards}`);
             const persisted = !preview && r.rows.length > 0
               ? await persistCapsFlashcards(subject, r.rows, r.sourcesWritten)
               : 0;
@@ -11425,9 +11491,11 @@ Create comprehensive study notes for the topic provided.`;
             });
           }
         } catch (subErr: any) {
+          console.warn(`[content-studio/flashcards] ${subject} threw after ${Date.now() - subT0}ms: ${subErr?.message ?? subErr}`);
           results.push({ subject, mode, error: safeError(subErr) });
         }
       }
+      console.log(`[content-studio/flashcards] ${preview ? "preview" : "publish"} finished in ${Date.now() - routeT0}ms across ${results.length} subject(s)`);
       return res.json({
         preview,
         model,
@@ -11440,6 +11508,7 @@ Create comprehensive study notes for the topic provided.`;
         },
       });
     } catch (err: any) {
+      console.error(`[content-studio/flashcards] fatal after ${Date.now() - routeT0}ms:`, err?.message ?? err);
       return res.status(500).json({ error: safeError(err) });
     }
   });
@@ -11448,6 +11517,7 @@ Create comprehensive study notes for the topic provided.`;
   // Body: { subject? | all?, count?, preview?, model?, maxSubjects? }
   async function runTipsGenerator(req: any, res: any, kind: "examiner" | "exam") {
     const preview = !!req.body?.preview && req.body?.preview !== "false";
+    const routeT0 = Date.now();
     try {
       const gen = await import("./content-generators");
       const model = typeof req.body?.model === "string" ? req.body.model : gen.DEFAULT_MODEL;
@@ -11461,10 +11531,13 @@ Create comprehensive study notes for the topic provided.`;
 
       const results: any[] = [];
       for (const subject of targets) {
+        const subT0 = Date.now();
+        console.log(`[content-studio/${kind}-tips] ${preview ? "preview" : "publish"} → ${subject}, count=${count}`);
         try {
           const r = kind === "examiner"
             ? await gen.generateExaminerTips({ subject, count, model })
             : await gen.generateExamTips({ subject, count, model });
+          console.log(`[content-studio/${kind}-tips] ${subject} done in ${Date.now() - subT0}ms: ${r.tips.length} tips (${r.rejected.length} rejected)`);
           const persisted = !preview && r.tips.length > 0 ? await gen.persistStudyTips(subject, kind, r.tips, model) : 0;
           results.push({
             subject,
@@ -11476,9 +11549,11 @@ Create comprehensive study notes for the topic provided.`;
             samples: preview ? r.tips.slice(0, 5) : [],
           });
         } catch (subErr: any) {
+          console.warn(`[content-studio/${kind}-tips] ${subject} threw after ${Date.now() - subT0}ms: ${subErr?.message ?? subErr}`);
           results.push({ subject, error: safeError(subErr) });
         }
       }
+      console.log(`[content-studio/${kind}-tips] ${preview ? "preview" : "publish"} finished in ${Date.now() - routeT0}ms across ${results.length} subject(s)`);
       return res.json({
         preview,
         model,
@@ -11490,6 +11565,7 @@ Create comprehensive study notes for the topic provided.`;
         },
       });
     } catch (err: any) {
+      console.error(`[content-studio/${kind}-tips] fatal after ${Date.now() - routeT0}ms:`, err?.message ?? err);
       return res.status(500).json({ error: safeError(err) });
     }
   }
@@ -18865,6 +18941,99 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       graceLapsed: pushResult.graceLapsed ?? 0,
       stuckLinksCount: stuckLinksFound,
     });
+  });
+
+  // ─── Cron: trial-lifecycle Twilio nudges (WhatsApp-first, SMS fallback) ─
+  // Picks up subscriptions that hit day 3 / 7 / 12 (SAST calendar) since the
+  // trial started and sends the corresponding bilingual template via
+  // sendMessage(). Idempotent — messaging_sends has a unique (user_id,
+  // template_key) index so re-runs are no-ops. Bearer CRON_SECRET — same
+  // pattern as the other crons. Body: { dryRun?: boolean }; dryRun resolves
+  // the audience and template variables without contacting Twilio and
+  // without recording a send.
+  app.post("/api/cron/nudges", async (req, res) => {
+    const cronSecret = process.env.CRON_SECRET;
+    if (!cronSecret) {
+      console.error("[NudgeCron] refusing request — CRON_SECRET not configured");
+      return res.status(503).json({ error: "Cron secret not configured" });
+    }
+    if (!cronAuthOk(req.headers.authorization, cronSecret)) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    try {
+      const { runNudgeCron } = await import("./messaging/nudge-cron");
+      const dryRun = req.body?.dryRun === true;
+      const result = await runNudgeCron({ dryRun });
+      res.json({
+        success: true,
+        dryRun: result.dryRun,
+        processed: result.processed,
+        delivered: result.delivered,
+        skipped: result.skipped,
+        errors: result.errors,
+        details: result.details,
+      });
+    } catch (err: any) {
+      console.error("[NudgeCron] run failed:", err?.message ?? err);
+      res.status(500).json({ error: "Failed to run nudge cron", details: err?.message });
+    }
+  });
+
+  // ─── User: read Twilio WhatsApp opt-in state (raw SQL — see note below) ─
+  app.get("/api/user/whatsapp-opt-in", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      try {
+        const result: any = await db.execute(sql`
+          SELECT whatsapp_opt_in AS opt_in FROM users WHERE id = ${userId} LIMIT 1
+        `);
+        const row = (result.rows ?? result)[0];
+        return res.json({ optIn: row?.opt_in === true });
+      } catch (colErr: any) {
+        if (colErr?.code === "42703") {
+          return res.json({ optIn: false, migrationPending: true });
+        }
+        throw colErr;
+      }
+    } catch (err: any) {
+      console.error("[WhatsAppOptIn:get] failed:", err?.message ?? err);
+      res.status(500).json({ error: "Failed to read WhatsApp preference" });
+    }
+  });
+
+  // ─── User: opt in / out of Twilio WhatsApp nudges ────────────────────
+  // Feeds server/messaging/nudge-cron.ts: resolvePreferredChannel() reads
+  // whatsapp_opt_in to decide whether to try WhatsApp first or go straight
+  // to SMS. Raw SQL because the column is added by migration 0035 and NOT
+  // declared in the Drizzle users schema — the ORM path would break every
+  // `SELECT * FROM users` on any DB that hasn't run the migration yet.
+  app.patch("/api/user/whatsapp-opt-in", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const raw = req.body?.optIn;
+      if (typeof raw !== "boolean") {
+        return res.status(400).json({ error: "optIn must be a boolean" });
+      }
+      try {
+        await db.execute(sql`
+          UPDATE users
+             SET whatsapp_opt_in = ${raw}, updated_at = NOW()
+           WHERE id = ${userId}
+        `);
+      } catch (colErr: any) {
+        if (colErr?.code === "42703") {
+          return res.status(503).json({
+            error: "migration_pending",
+            message: "Migration 0035_messaging_infra.sql has not been applied yet — WhatsApp preference storage is unavailable.",
+          });
+        }
+        throw colErr;
+      }
+      res.json({ ok: true, whatsappOptIn: raw });
+    } catch (err: any) {
+      console.error("[WhatsAppOptIn] failed:", err?.message ?? err);
+      res.status(500).json({ error: "Failed to update WhatsApp preference" });
+    }
   });
 
   // ─── Cron: anonymised cohort aggregation ────────────────────────────
