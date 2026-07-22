@@ -11218,11 +11218,15 @@ Create comprehensive study notes for the topic provided.`;
       const results = await releaseEligiblePapers(subject);
       const released = results.filter((r) => r.released);
       const skipped = results.filter((r) => !r.released);
+      // PaperReleaseResult has no `rowsReleased` field — `rowCount` is total
+      // rows in the tuple; when `released` is true, every row in the tuple
+      // flipped, so questions-released == rowCount. (Was a TS-quiet bug in
+      // the first draft: `rowsReleased ?? 0` silently returned 0 always.)
       return res.json({
         scope: subject ?? "all subjects with unreleased rows",
         tuplesConsidered: results.length,
         tuplesReleased: released.length,
-        questionsReleased: released.reduce((s, r) => s + (r.rowsReleased ?? 0), 0),
+        questionsReleased: released.reduce((s, r) => s + (r.rowCount ?? 0), 0),
         tuplesSkipped: skipped.length,
         // Mirror the /verify response shape so the existing summariser at
         // admin-content-studio.tsx:928 (`{passed} passed, {failed} failed of {total}`)
