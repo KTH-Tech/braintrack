@@ -406,7 +406,7 @@ export default function ParentActivateChildPage() {
         return body as ActivateResponse;
       },
       async (): Promise<ActivateResponse> => {
-        const origin = typeof window !== "undefined" ? window.location.origin : "https://app.braintrack.co.za";
+        const origin = typeof window !== "undefined" ? window.location.origin : "https://app.braintrack.tech";
         const first = form.childFirstName.trim() || "Amahle";
         const last = form.childLastName.trim() || "Dlamini";
         return {

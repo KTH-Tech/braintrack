@@ -123,8 +123,8 @@ const aboutBreadcrumb = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   "itemListElement": [
-    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://braintrack.co.za/" },
-    { "@type": "ListItem", "position": 2, "name": "About", "item": "https://braintrack.co.za/about" },
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://braintrack.tech/" },
+    { "@type": "ListItem", "position": 2, "name": "About", "item": "https://braintrack.tech/about" },
   ],
 };
 
@@ -143,10 +143,10 @@ export default function AboutPage() {
   useSEO({
     title: "About BrainTrack™ | Grade 12 CAPS Matric Revision Platform",
     description: "BrainTrack™ is South Africa's Grade 12 Matric exam prep platform — CAPS-aligned weekly plans, 10 years of NSC past papers with memos, AI tutor, and progress tracking.",
-    canonical: "https://braintrack.co.za/about",
+    canonical: "https://braintrack.tech/about",
     ogTitle: "About BrainTrack™ — South Africa's Grade 12 Matric Prep Platform",
     ogDescription: "BrainTrack™ combines CAPS-aligned weekly plans, 10 years of NSC past papers, AI tutor Rizz, and progress tracking to help Grade 12 learners improve Matric marks.",
-    ogUrl: "https://braintrack.co.za/about",
+    ogUrl: "https://braintrack.tech/about",
     jsonLd: aboutBreadcrumb,
   });
   const c = t[language];

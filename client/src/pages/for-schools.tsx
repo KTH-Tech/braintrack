@@ -439,19 +439,19 @@ export default function ForSchoolsPage() {
     title: "For Schools | BrainTrack — Partnership FAQ for Principals & HODs",
     description:
       "Everything South African schools need to know about partnering with BrainTrack: how it works, the research behind it, POPIA compliance, subjects covered, cost and the fundraising model.",
-    canonical: "https://braintrack.co.za/for-schools",
+    canonical: "https://braintrack.tech/for-schools",
     ogTitle: "For Schools — Partner With BrainTrack™",
     ogDescription:
       "Answers for principals, HODs and governing bodies considering a BrainTrack partnership — how it works, POPIA compliance, cost and the fundraising model.",
-    ogUrl: "https://braintrack.co.za/for-schools",
+    ogUrl: "https://braintrack.tech/for-schools",
     locale: en ? "en_ZA" : "af_ZA",
     jsonLd: [
       {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: "https://braintrack.co.za/" },
-          { "@type": "ListItem", position: 2, name: "For Schools", item: "https://braintrack.co.za/for-schools" },
+          { "@type": "ListItem", position: 1, name: "Home", item: "https://braintrack.tech/" },
+          { "@type": "ListItem", position: 2, name: "For Schools", item: "https://braintrack.tech/for-schools" },
         ],
       },
       faqJsonLd,

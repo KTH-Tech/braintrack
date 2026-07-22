@@ -315,7 +315,7 @@ export default function PrintableCalendar() {
           />
           <h1 className="text-2xl font-semibold">{text.title}</h1>
           <p className="text-white">{text.subtitle}</p>
-          <p className="text-sm mt-1">www.braintrack.co.za</p>
+          <p className="text-sm mt-1">www.braintrack.tech</p>
         </div>
 
         {viewMode === "single" ? (

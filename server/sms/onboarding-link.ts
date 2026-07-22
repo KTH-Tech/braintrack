@@ -38,7 +38,7 @@ export function publicBaseUrl(req?: { protocol?: string; get?: (h: string) => st
     const host = req.get("host");
     if (host) return `${req.protocol}://${host}`;
   }
-  return "https://app.braintrack.co.za";
+  return "https://app.braintrack.tech";
 }
 
 /**

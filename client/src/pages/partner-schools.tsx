@@ -334,12 +334,12 @@ export default function PartnerSchools() {
   useSEO({
     title: t.seoTitle,
     description: t.seoDesc,
-    canonical: "https://braintrack.co.za/partner-schools",
+    canonical: "https://braintrack.tech/partner-schools",
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "Organization",
       name: "BrainTrack",
-      url: "https://braintrack.co.za",
+      url: "https://braintrack.tech",
       description: t.seoDesc,
       offers: {
         "@type": "Offer",

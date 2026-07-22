@@ -77,8 +77,8 @@ const featuresBreadcrumb = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   "itemListElement": [
-    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://braintrack.co.za/" },
-    { "@type": "ListItem", "position": 2, "name": "Features", "item": "https://braintrack.co.za/features" },
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://braintrack.tech/" },
+    { "@type": "ListItem", "position": 2, "name": "Features", "item": "https://braintrack.tech/features" },
   ],
 };
 
@@ -160,11 +160,11 @@ export default function FeaturesPage() {
     title: "Features | BrainTrack™ CAPS Study Plan & NSC Past Papers",
     description:
       "Explore BrainTrack™ features: CAPS weekly study plan, NSC past papers with memos, gap detection, Rizz AI tutor, gamified progress & parent dashboard. R169/month.",
-    canonical: "https://braintrack.co.za/features",
+    canonical: "https://braintrack.tech/features",
     ogTitle: "BrainTrack™ Features — CAPS Plan, NSC Past Papers & AI Tutor",
     ogDescription:
       "CAPS-aligned study plan, 10 years of NSC past papers with memos, gap detection, Rizz AI tutor, and progress tracking for Grade 12 Matric. Try free for 14 days.",
-    ogUrl: "https://braintrack.co.za/features",
+    ogUrl: "https://braintrack.tech/features",
     jsonLd: featuresBreadcrumb,
   });
 

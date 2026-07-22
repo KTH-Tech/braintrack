@@ -176,7 +176,7 @@ export default function SubscribePage() {
     description: isAf
       ? "Begin jou 14-dae gratis proeftydperk. R169/maand daarna. Volle toegang tot NSC-vraestelle, KI-tutor, vordering-nasporing en meer."
       : "Start your 14-day free trial. R169/month thereafter. Full access to NSC past papers, AI tutor, progress tracking and more.",
-    canonical: "https://braintrack.co.za/subscribe",
+    canonical: "https://braintrack.tech/subscribe",
   });
 
   useEffect(() => {

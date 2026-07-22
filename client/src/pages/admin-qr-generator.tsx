@@ -29,7 +29,7 @@ export default function AdminQrGeneratorPage() {
   });
 
   const origin = typeof window !== "undefined" ? window.location.origin : "";
-  const [value, setValue] = useState(origin || "https://app.braintrack.co.za");
+  const [value, setValue] = useState(origin || "https://app.braintrack.tech");
   const [size, setSize] = useState<Size>(512);
   const [colorIdx, setColorIdx] = useState(1); // pastel cyan
   const [copied, setCopied] = useState(false);
@@ -129,7 +129,7 @@ export default function AdminQrGeneratorPage() {
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
                     data-testid="input-qr-value"
-                    placeholder="https://app.braintrack.co.za"
+                    placeholder="https://app.braintrack.tech"
                     className="flex-1 rounded-xl px-3 py-2.5 text-sm text-white outline-none"
                     style={{ background: "#0a0b12", border: "1.5px solid rgba(159,245,232,0.4)" }}
                   />

@@ -375,7 +375,7 @@ export default function LandingPage() {
     title: "BrainTrack™ | Grade 12 Matric Past Papers, Memos & AI Tutor — South Africa",
     description:
       "Pass Matric with confidence. 10 years of NSC past papers + memos, CAPS-aligned weekly study plan, AI tutor and parent reports. Built for SA Grade 12. R169/month — 14 days free.",
-    canonical: "https://braintrack.co.za/",
+    canonical: "https://braintrack.tech/",
     ogTitle: "Matric Past Papers, Memos & AI Tutor for Grade 12 SA | BrainTrack™",
     ogDescription:
       "10 years of NSC past papers + memos, CAPS-aligned weekly revision, AI tutor and parent reports. R169/month — 14 days free.",

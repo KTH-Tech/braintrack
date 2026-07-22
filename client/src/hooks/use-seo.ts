@@ -4,7 +4,7 @@ import { useEffect } from "react";
 // Every learner-facing page inherits these unless explicitly overridden. They
 // carry the geo signals search engines use to surface us as a South African
 // Grade 12 study platform (not a generic global edtech).
-const SITE_ORIGIN = "https://braintrack.co.za";
+const SITE_ORIGIN = "https://braintrack.tech";
 const DEFAULT_OG_IMAGE = `${SITE_ORIGIN}/og-image.png`;
 const SITE_LOCALE = "en_ZA";
 const GEO_REGION = "ZA";

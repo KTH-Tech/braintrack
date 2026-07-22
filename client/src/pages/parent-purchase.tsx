@@ -18,7 +18,7 @@ export default function ParentPurchasePage() {
     description: isAf
       ? "Brain Boost: R169/maand met 14 dae gratis. Kanselleer enige tyd."
       : "Brain Boost: R169/month with 14 days free. Cancel anytime.",
-    canonical: "https://app.braintrack.co.za/parent-purchase",
+    canonical: "https://app.braintrack.tech/parent-purchase",
   });
 
   const homeHref = isAuthenticated ? "/parent" : "/";

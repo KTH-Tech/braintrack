@@ -3742,7 +3742,7 @@ export async function registerRoutes(
                 to: learner.email,
                 firstName: learner.firstName ?? "",
                 language: learner.preferredLanguage === "af" ? "af" : "en",
-                dashboardUrl: `${process.env.APP_URL ?? process.env.PUBLIC_BASE_URL ?? "https://app.braintrack.co.za"}/dashboard`,
+                dashboardUrl: `${process.env.APP_URL ?? process.env.PUBLIC_BASE_URL ?? "https://app.braintrack.tech"}/dashboard`,
                 isRenewal: false,
                 planName: "Brain Boost",
                 amountRands: sub.priceRands ?? 169,
@@ -3767,7 +3767,7 @@ export async function registerRoutes(
                 to: learner.email,
                 firstName: learner.firstName ?? "",
                 language: learner.preferredLanguage === "af" ? "af" : "en",
-                dashboardUrl: `${process.env.APP_URL ?? process.env.PUBLIC_BASE_URL ?? "https://app.braintrack.co.za"}/dashboard`,
+                dashboardUrl: `${process.env.APP_URL ?? process.env.PUBLIC_BASE_URL ?? "https://app.braintrack.tech"}/dashboard`,
                 isRenewal: true,
                 planName: "Brain Boost",
                 amountRands: sub.priceRands ?? 169,
@@ -3952,7 +3952,7 @@ export async function registerRoutes(
                 to: learner.email,
                 firstName: learner.firstName ?? "",
                 language: learner.preferredLanguage === "af" ? "af" : "en",
-                dashboardUrl: `${process.env.APP_URL ?? process.env.PUBLIC_BASE_URL ?? "https://app.braintrack.co.za"}/dashboard`,
+                dashboardUrl: `${process.env.APP_URL ?? process.env.PUBLIC_BASE_URL ?? "https://app.braintrack.tech"}/dashboard`,
                 isRenewal: false,
                 planName: "Brain Boost",
                 amountRands: sub.priceRands ?? 169,
@@ -3981,7 +3981,7 @@ export async function registerRoutes(
                 to: learner.email,
                 firstName: learner.firstName ?? "",
                 language: learner.preferredLanguage === "af" ? "af" : "en",
-                dashboardUrl: `${process.env.APP_URL ?? process.env.PUBLIC_BASE_URL ?? "https://app.braintrack.co.za"}/dashboard`,
+                dashboardUrl: `${process.env.APP_URL ?? process.env.PUBLIC_BASE_URL ?? "https://app.braintrack.tech"}/dashboard`,
                 isRenewal: true,
                 planName: "Brain Boost",
                 amountRands: sub.priceRands ?? 169,
@@ -8944,7 +8944,7 @@ Create comprehensive study notes for the topic provided.`;
         return res.status(400).json({ error: "School code already exists. Please use a different code." });
       }
 
-      const baseUrl = process.env.APP_URL ?? process.env.PUBLIC_BASE_URL ?? 'https://app.braintrack.co.za';
+      const baseUrl = process.env.APP_URL ?? process.env.PUBLIC_BASE_URL ?? 'https://app.braintrack.tech';
       
       const referralUrl = `${baseUrl}/purchase?ref=${finalCode}`;
       
@@ -9233,7 +9233,7 @@ Create comprehensive study notes for the topic provided.`;
         return res.status(404).json({ error: "Partner school not found" });
       }
 
-      const baseUrl = process.env.APP_URL ?? process.env.PUBLIC_BASE_URL ?? 'https://app.braintrack.co.za';
+      const baseUrl = process.env.APP_URL ?? process.env.PUBLIC_BASE_URL ?? 'https://app.braintrack.tech';
       
       const referralUrl = `${baseUrl}/purchase?ref=${school.schoolCode}`;
       
@@ -21516,7 +21516,7 @@ p{color:#cfcfd9;line-height:1.5;font-size:15px;margin:8px 0}
 a{color:#28c9d6;text-decoration:none}</style></head>
 <body><div class="card"><h1>${title}</h1><p>${message}</p>
 <p style="margin-top:20px;font-size:13px;color:#888">You can re-enable scheduled reports anytime from the parent dashboard.</p>
-<p style="margin-top:20px"><a href="https://app.braintrack.co.za/parent-dashboard">Open parent dashboard →</a></p></div></body></html>`);
+<p style="margin-top:20px"><a href="https://app.braintrack.tech/parent-dashboard">Open parent dashboard →</a></p></div></body></html>`);
     };
 
     try {
@@ -21838,7 +21838,7 @@ a{color:#28c9d6;text-decoration:none}</style></head>
               heading: `New School Enquiry #${enquiry.id}`,
               bodyHtml: `<p>A new school has expressed interest in BrainTrack:</p><ul><li><b>School:</b> ${schoolName}</li><li><b>Contact:</b> ${contactPerson}</li><li><b>Email:</b> ${email}</li><li><b>Phone:</b> ${phone ?? "—"}</li><li><b>Learners:</b> ${numLearners ?? "—"}</li></ul>`,
               ctaLabel: "View in Admin",
-              ctaUrl: `${process.env.APP_URL ?? "https://braintrack.co.za"}/admin/schools`,
+              ctaUrl: `${process.env.APP_URL ?? "https://braintrack.tech"}/admin/schools`,
             }).catch(() => {});
           }
         } catch (_) { /* non-critical */ }
@@ -22251,7 +22251,7 @@ a{color:#28c9d6;text-decoration:none}</style></head>
         bodyHtml: `<p>This is a test email sent from the BrainTrack Admin Console.</p>
 <p>If you are reading this, transactional email is correctly configured and delivering to <strong>${user.email}</strong>.</p>`,
         ctaLabel: "Go to Admin Console",
-        ctaUrl: "https://app.braintrack.co.za/learn/admin/reports",
+        ctaUrl: "https://app.braintrack.tech/learn/admin/reports",
         language: "en",
       });
 

@@ -187,7 +187,7 @@ export const ONBOARDING_PREVIEW_SAMPLE = {
   subjectMark: 65,
   /** Deliberately self-describing — shown in the consent link block. */
   consentUrl:
-    "https://braintrack.co.za/parent-consent?token=preview-sample-token-not-real",
+    "https://braintrack.tech/parent-consent?token=preview-sample-token-not-real",
   subjects: [
     { code: "MATH", name: "Mathematics" },
     { code: "PHYS", name: "Physical Sciences" },

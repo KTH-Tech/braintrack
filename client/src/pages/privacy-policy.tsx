@@ -11,7 +11,7 @@ export default function PrivacyPolicyPage() {
   useSEO({
     title: "Privacy Policy & POPIA Compliance | BrainTrack",
     description: "BrainTrack privacy policy covering POPIA compliance, data protection, learner data security, and your rights as a South African user. Powered by KTH Tech.",
-    canonical: "https://braintrack.co.za/privacy-policy",
+    canonical: "https://braintrack.tech/privacy-policy",
   });
 
   return (
@@ -130,7 +130,7 @@ export default function PrivacyPolicyPage() {
           <ul className="list-disc list-inside space-y-2">
             <li>{isAf ? "Alle data word met TLS/SSL-enkripsie oorgedra" : "All data is transmitted using TLS/SSL encryption"}</li>
             <li>{isAf ? "Wagwoorde word gehash en gesout met industrie-standaard algoritmes" : "Passwords are hashed and salted using industry-standard algorithms"}</li>
-            <li>{isAf ? "Betalingsinligting word deur PCI-DSS-nakoming verskaffers (Netcash) verwerk" : "Payment information is processed by PCI-DSS compliant providers (Netcash)"}</li>
+            <li>{isAf ? "Betalingsinligting word deur PCI-DSS-nakoming verskaffers (Paystack) verwerk" : "Payment information is processed by PCI-DSS compliant providers (Paystack)"}</li>
             <li>{isAf ? "Gereelde sekuriteitsbeoordelings en -opdaterings word uitgevoer" : "Regular security assessments and updates are performed"}</li>
             <li>{isAf ? "Toegang tot persoonlike inligting is beperk tot gemagtigde personeel alleen" : "Access to personal information is restricted to authorized personnel only"}</li>
             <li>{isAf ? "Data word gestoor op veilige wolkbedieners in die EU (Frankfurt) en VSA via Supabase en Render — beide volledig GDPR-nakoming en aanvaarbare derdeland vir POPIA-oordragte" : "Data is stored on secure cloud servers in the EU (Frankfurt) and USA via Supabase and Render — both fully GDPR-compliant and acceptable third countries for POPIA transfers"}</li>
@@ -190,16 +190,16 @@ export default function PrivacyPolicyPage() {
             {isAf
               ? "Alle betalingsverwerking word veilig hanteer deur "
               : "All payment processing is handled securely by "}
-            <strong>Netcash</strong>
+            <strong>Paystack</strong>
             {isAf
               ? ", 'n geregistreerde Suid-Afrikaanse betalingsdiensverskaffer wat ten volle PCI-DSS-nakoming is."
               : ", a registered South African Payment Service Provider that is fully PCI-DSS compliant."}
           </p>
           <ul className="list-disc list-inside space-y-2">
-            <li>{isAf ? "Betaling geskied via DebiCheck-mandaat of 'n herhalende kaarttoken wat veilig by Netcash gestoor word" : "Payment is made via DebiCheck mandate or a recurring card token securely held by Netcash"}</li>
-            <li>{isAf ? "Jou kaart- of bankbesonderhede word direk op Netcash se platform ingevoer, nooit op BrainTrack nie" : "Your card or banking details are entered directly on Netcash's platform, never on BrainTrack"}</li>
+            <li>{isAf ? "Betaling geskied via 'n herhalende kaartmagtiging wat veilig by Paystack gestoor word" : "Payment is made via a recurring card authorisation securely held by Paystack"}</li>
+            <li>{isAf ? "Jou kaart- of bankbesonderhede word direk op Paystack se platform ingevoer, nooit op BrainTrack nie" : "Your card or banking details are entered directly on Paystack's platform, never on BrainTrack"}</li>
             <li>{isAf ? "Ons ontvang slegs 'n bevestiging van suksesvolle betaling — geen kaartnommers, CVV-kodes of rekeningnommers nie" : "We only receive a confirmation of successful payment — no card numbers, CVV codes, or account numbers"}</li>
-            <li>{isAf ? "Netcash handhaaf bankvlak-sekuriteit en PCI-DSS-enkripsie vir alle transaksies" : "Netcash maintains bank-level security and PCI-DSS encryption for all transactions"}</li>
+            <li>{isAf ? "Paystack handhaaf bankvlak-sekuriteit en PCI-DSS-enkripsie vir alle transaksies" : "Paystack maintains bank-level security and PCI-DSS encryption for all transactions"}</li>
             <li>{isAf ? "Vir terugbetalings of betalingsgeskille, kontak ons by learn@kth-tech.com" : "For refunds or payment disputes, contact us at learn@kth-tech.com"}</li>
           </ul>
         </div>
@@ -213,7 +213,7 @@ export default function PrivacyPolicyPage() {
               : "We may share your information with trusted third parties only as necessary:"}
           </p>
           <ul className="list-disc list-inside space-y-2">
-            <li><strong>{isAf ? "Betalingsverwerking:" : "Payment Processing:"}</strong> {isAf ? "Netcash (Suid-Afrika) — vir DebiCheck-mandaat of herhalende kaarttoken. Geen kaart- of bankdata word met BrainTrack gedeel nie." : "Netcash (South Africa) — for DebiCheck mandate or recurring card token. No card or banking data is shared with BrainTrack."}</li>
+            <li><strong>{isAf ? "Betalingsverwerking:" : "Payment Processing:"}</strong> {isAf ? "Paystack (Suid-Afrika) — vir herhalende kaartmagtiging. Geen kaart- of bankdata word met BrainTrack gedeel nie." : "Paystack (South Africa) — for recurring card authorisation. No card or banking data is shared with BrainTrack."}</li>
             <li><strong>{isAf ? "KI-Tutor:" : "AI Tutor:"}</strong> {isAf ? "OpenAI (VSA) — jou KI-Tutor-boodskappe word na OpenAI gestuur vir verwerking. Geen identifiseerbare persoonlike inligting word saam met boodskappe gestuur nie." : "OpenAI (USA) — your AI Tutor messages are sent to OpenAI for processing. No identifiable personal information is sent alongside messages."}</li>
             <li><strong>{isAf ? "Databasis en Berging:" : "Database & Storage:"}</strong> {isAf ? "Supabase (VSA / EU) — jou leerdata, vorderingrekords en stemnote-opnames word op Supabase se veilige infrastruktuur gestoor." : "Supabase (USA / EU) — your learning data, progress records, and voice note recordings are stored on Supabase's secure infrastructure."}</li>
             <li><strong>{isAf ? "Bediener-hosting:" : "Server Hosting:"}</strong> {isAf ? "Render (Frankfurt, EU) — die BrainTrack-toepassing loop op Render se wolkbedieners in die EU." : "Render (Frankfurt, EU) — the BrainTrack application runs on Render's cloud servers in the EU."}</li>

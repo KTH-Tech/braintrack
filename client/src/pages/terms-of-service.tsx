@@ -14,7 +14,7 @@ export default function TermsOfServicePage() {
   useSEO({
     title: "Terms & Conditions | BrainTrack",
     description: "BrainTrack terms and conditions covering platform usage, CAPS alignment, intellectual property, data protection and learner responsibilities. Powered by BrainTrack.",
-    canonical: "https://braintrack.co.za/terms-of-service",
+    canonical: "https://braintrack.tech/terms-of-service",
   });
 
   const sections = {
@@ -107,7 +107,7 @@ export default function TermsOfServicePage() {
         content: [
           "Access to BrainTrack\u2122 requires a paid subscription at R169 per month.",
           "Subscriptions are purchased by a parent or guardian on behalf of the learner.",
-          "Payment is processed securely through Netcash, our third-party payment provider, via DebiCheck mandate or recurring card token. BrainTrack does not store any banking or card information."
+          "Payment is processed securely through Paystack, our third-party payment provider, via recurring card authorisation. BrainTrack does not store any banking or card information."
         ],
         bullets: [
           "Subscriptions grant access for one learner account",
@@ -263,7 +263,7 @@ export default function TermsOfServicePage() {
         content: [
           "Toegang tot BrainTrack\u2122 vereis 'n betaalde intekening teen R169 per maand.",
           "Intekenings word deur 'n ouer of voog namens die leerder aangekoop.",
-          "Betaling word veilig deur Netcash, ons derdeparty-betalingsverskaffer, verwerk via DebiCheck-mandaat of herhalende kaarttoken. BrainTrack stoor geen bank- of kaartinligting nie."
+          "Betaling word veilig deur Paystack, ons derdeparty-betalingsverskaffer, verwerk via herhalende kaartmagtiging. BrainTrack stoor geen bank- of kaartinligting nie."
         ],
         bullets: [
           "Intekenings verleen toegang vir een leerderrekening",

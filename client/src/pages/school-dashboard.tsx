@@ -703,7 +703,7 @@ export default function SchoolDashboardPage() {
           <p>
             {t.generated}: {generatedDate} · {t.printAnon}
           </p>
-          <p>braintrack.co.za</p>
+          <p>braintrack.tech</p>
         </div>
       </main>
 

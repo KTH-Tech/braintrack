@@ -137,17 +137,17 @@ export default function PastPapersPage() {
   useSEO({
     title: "NSC Grade 12 Past Papers 2015–2024 | All Subjects | BrainTrack™",
     description: "Access 10 years of official DBE NSC Grade 12 past exam papers with memos for all CAPS subjects — Mathematics, Physical Sciences, English, Afrikaans, Life Sciences, Business Studies and more.",
-    canonical: "https://braintrack.co.za/past-papers",
+    canonical: "https://braintrack.tech/past-papers",
     ogTitle: "NSC Grade 12 Past Papers 2015–2024 — All CAPS Subjects | BrainTrack™",
     ogDescription: "10 years of official DBE NSC past exam papers with memos for every Grade 12 CAPS subject. Free to browse — practise with real Matric-level questions.",
-    ogUrl: "https://braintrack.co.za/past-papers",
+    ogUrl: "https://braintrack.tech/past-papers",
     jsonLd: [
       {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
         "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://braintrack.co.za/" },
-          { "@type": "ListItem", "position": 2, "name": "NSC Past Papers", "item": "https://braintrack.co.za/past-papers" },
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://braintrack.tech/" },
+          { "@type": "ListItem", "position": 2, "name": "NSC Past Papers", "item": "https://braintrack.tech/past-papers" },
         ],
       },
       // CollectionPage + ItemList of Course entries — one per Matric subject
@@ -157,7 +157,7 @@ export default function PastPapersPage() {
         "@context": "https://schema.org",
         "@type": "CollectionPage",
         "name": "Grade 12 NSC Past Papers — All Subjects",
-        "url": "https://braintrack.co.za/past-papers",
+        "url": "https://braintrack.tech/past-papers",
         "inLanguage": ["en-ZA", "af-ZA"],
         "about": {
           "@type": "EducationalOccupationalCredential",
@@ -178,7 +178,7 @@ export default function PastPapersPage() {
               "provider": {
                 "@type": "EducationalOrganization",
                 "name": "BrainTrack",
-                "sameAs": "https://braintrack.co.za",
+                "sameAs": "https://braintrack.tech",
               },
               "educationalLevel": "Grade 12",
               "inLanguage": ["en-ZA", "af-ZA"],
