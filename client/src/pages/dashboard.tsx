@@ -790,9 +790,9 @@ export default function DashboardPage() {
 
       {/* ── Main ── */}
       <div className="bt-dash-main" style={{ flex: 1, padding: "34px 40px", minWidth: 0, position: "relative", overflow: "hidden" }}>
-        {/* Decorative blurred glows + full graffiti scatter (doodles, emoji, hype tags) */}
-        <div aria-hidden style={{ position: "absolute", top: -40, right: -40, width: 340, height: 340, background: "radial-gradient(circle,rgba(255,183,229,.12),transparent 65%)", filter: "blur(24px)", pointerEvents: "none" }} />
-        <div aria-hidden style={{ position: "absolute", bottom: "10%", left: -60, width: 300, height: 300, background: "radial-gradient(circle,rgba(159,245,232,.1),transparent 65%)", filter: "blur(24px)", pointerEvents: "none" }} />
+        {/* Graffiti scatter only. The two blurred radial "glow" blobs that used
+            to sit here were removed — soft bloom read as cheap neon against the
+            flat sticker cards. The wall texture carries the depth now. */}
         <GraffitiSplats variant="full" opacity={0.55} />
 
         {/* ── Header row ── */}
@@ -1096,7 +1096,7 @@ export default function DashboardPage() {
             alignItems: "center",
             gap: 20,
             flexWrap: "wrap",
-            boxShadow: "0 10px 30px rgba(148,247,197,.22)",
+            boxShadow: "5px 5px 0 0 rgba(148,247,197,.85)",
           }}
         >
           <div
@@ -1163,7 +1163,7 @@ export default function DashboardPage() {
                 borderRadius: 20,
                 padding: "20px 22px",
                 transform: `rotate(${tilt}deg)`,
-                boxShadow: `0 10px 30px ${hex}40`,
+                boxShadow: `5px 5px 0 0 ${hex}`,
                 transition: "transform .25s",
               }}
               onMouseEnter={(e) => (e.currentTarget.style.transform = "rotate(0deg) translateY(-6px)")}
@@ -1273,7 +1273,7 @@ export default function DashboardPage() {
                   <Link href={missionHref}>
                     <button
                       style={{ marginTop: 16, width: "100%", fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 14, color: "#050508", background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", border: "none", borderRadius: 10, padding: 13, cursor: "pointer", transition: "all .2s" }}
-                      onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(159,245,232,.35)"; }}
+                      onMouseEnter={(e) => { e.currentTarget.style.transform = "translate(-2px,-2px)"; e.currentTarget.style.boxShadow = "6px 6px 0 0 rgba(159,245,232,.9)"; }}
                       onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}
                     >
                       {t.runIt}
@@ -1420,7 +1420,7 @@ export default function DashboardPage() {
             justifyContent: "space-between",
             gap: 20,
             flexWrap: "wrap",
-            boxShadow: `0 10px 30px ${ac.halo}`,
+            boxShadow: `5px 5px 0 0 ${ac.hex}`,
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
@@ -1610,14 +1610,14 @@ export default function DashboardPage() {
                       padding: "18px 20px",
                       cursor: "pointer",
                       transform: `rotate(${tilt}deg)`,
-                      boxShadow: `0 8px 24px ${hex}33`,
+                      boxShadow: `5px 5px 0 0 ${hex}`,
                       transition: "transform .25s, box-shadow .25s",
                       display: "flex",
                       flexDirection: "column",
                       gap: 12,
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.transform = "rotate(0deg) translateY(-6px)"; e.currentTarget.style.boxShadow = `0 14px 34px ${hex}55`; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.transform = `rotate(${tilt}deg)`; e.currentTarget.style.boxShadow = `0 8px 24px ${hex}33`; }}
+                    onMouseEnter={(e) => { e.currentTarget.style.transform = "rotate(0deg) translate(-3px,-3px)"; e.currentTarget.style.boxShadow = `9px 9px 0 0 ${hex}`; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.transform = `rotate(${tilt}deg)`; e.currentTarget.style.boxShadow = `5px 5px 0 0 ${hex}`; }}
                   >
                     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                       {isImg ? head : (
@@ -1682,7 +1682,7 @@ export default function DashboardPage() {
                           cursor: "pointer",
                           transition: "all .2s",
                         }}
-                        onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.borderColor = hex; e.currentTarget.style.boxShadow = `0 10px 26px ${hex}40`; }}
+                        onMouseEnter={(e) => { e.currentTarget.style.transform = "translate(-3px,-3px)"; e.currentTarget.style.borderColor = hex; e.currentTarget.style.boxShadow = `7px 7px 0 0 ${hex}`; }}
                         onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; e.currentTarget.style.borderColor = `${hex}66`; e.currentTarget.style.boxShadow = "none"; }}
                       >
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 10 }}>

@@ -192,10 +192,15 @@ h3 { font-size: 1.25rem; line-height: 1.25; }
   --bt-cyan: #6EE7F9;
   --bt-alert: #FF8DA1;
   --bt-success: #94F7C5;
-  --bt-glow-aqua: rgba(159,245,232,.35);
-  --bt-glow-purple: rgba(197,179,255,.35);
-  --bt-glow-yellow: rgba(255,226,154,.35);
-  --bt-glow-sky: rgba(159,216,255,.35);
+  /* Glow tokens are deliberately transparent. The brand moved off neon
+     bloom onto flat sticker-slap shadows — any `box-shadow: 0 0 Npx
+     var(--bt-glow-*)` left in a page now renders invisibly instead of
+     needing 250+ per-file edits. Do NOT give these colour again; use a
+     hard-offset shadow (see .bt-card) if a surface needs lift. */
+  --bt-glow-aqua: transparent;
+  --bt-glow-purple: transparent;
+  --bt-glow-yellow: transparent;
+  --bt-glow-sky: transparent;
   --bt-rainbow: linear-gradient(95deg,#FFB7E5,#FFE29A,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5);
   --bt-cta: linear-gradient(100deg,#9FF5E8,#C5B3FF);
 
@@ -211,14 +216,21 @@ h3 { font-size: 1.25rem; line-height: 1.25; }
   -webkit-text-fill-color: transparent;
   animation: bt-rainbow 6s linear infinite;
 }
+/* Sticker-slap card. The shadow is hard-offset with ZERO blur so the card
+   reads as a printed sticker pressed onto the wall — the graffiti move —
+   rather than a neon sign bleeding light. Hover lifts toward the shadow
+   and deepens the offset, like peeling a corner. */
 .bt-card {
   background: linear-gradient(160deg, var(--bt-card-2), var(--bt-card));
-  border: 1.5px solid var(--a, var(--bt-aqua));
+  border: 2.5px solid var(--a, var(--bt-aqua));
   border-radius: 22px;
-  box-shadow: 0 10px 34px var(--glow, var(--bt-glow-aqua));
-  transition: transform .25s;
+  box-shadow: 5px 5px 0 0 var(--a, var(--bt-aqua));
+  transition: transform .18s ease, box-shadow .18s ease;
 }
-.bt-card:hover { transform: translateY(-8px); }
+.bt-card:hover {
+  transform: translate(-3px, -3px) rotate(-.35deg);
+  box-shadow: 9px 9px 0 0 var(--a, var(--bt-aqua));
+}
 .bt-btn {
   font-family: 'Poppins', system-ui, sans-serif; font-weight: 800; font-size: 16px;
   color: var(--bt-bg); background: var(--bt-rainbow); background-size: 200% 100%;
@@ -3225,10 +3237,12 @@ html.light .rainbow-wash-full {
   --bt-whatsapp: #25D366;
 
   /* ---- Glows (accent shadow per colour) ---- */
-  --bt-glow-aqua:   rgba(159,245,232,.35);
-  --bt-glow-purple: rgba(197,179,255,.35);
-  --bt-glow-yellow: rgba(255,226,154,.35);
-  --bt-glow-sky:    rgba(159,216,255,.35);
+  /* See the note on the first definition of these tokens — transparent on
+     purpose so leftover neon-bloom shadows render invisibly. */
+  --bt-glow-aqua:   transparent;
+  --bt-glow-purple: transparent;
+  --bt-glow-yellow: transparent;
+  --bt-glow-sky:    transparent;
 
   /* ---- Type ---- */
   --bt-font:        'Poppins', system-ui, sans-serif;
@@ -3256,15 +3270,18 @@ html.light .rainbow-wash-full {
   animation:bt-rainbow 6s linear infinite;
 }
 
-/* Neon card — pass an accent via --a and --glow */
+/* Sticker card — pass an accent via --a. Hard-offset shadow, no blur. */
 .bt-card {
   background:linear-gradient(160deg,var(--bt-card-2),var(--bt-card));
-  border:1.5px solid var(--a,var(--bt-aqua));
+  border:2.5px solid var(--a,var(--bt-aqua));
   border-radius:var(--bt-r-lg);
-  box-shadow:0 10px 34px var(--glow,var(--bt-glow-aqua));
-  transition:transform .25s;
+  box-shadow:5px 5px 0 0 var(--a,var(--bt-aqua));
+  transition:transform .18s ease, box-shadow .18s ease;
 }
-.bt-card:hover { transform:translateY(-8px); }
+.bt-card:hover {
+  transform:translate(-3px,-3px) rotate(-.35deg);
+  box-shadow:9px 9px 0 0 var(--a,var(--bt-aqua));
+}
 
 /* Primary CTA */
 .bt-btn {
