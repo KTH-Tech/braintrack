@@ -54,15 +54,19 @@ export default function AdminQrGeneratorPage() {
       text,
       {
         width: size,
-        margin: 2,
+        // A QR only scans as DARK modules on a LIGHT field with a real quiet
+        // zone. The old pale-modules-on-#0a0a0a render was effectively
+        // dark-on-dark and failed most cameras. Modules are now dark ink on
+        // white with a 4-module margin; the pastel is a decorative frame only.
+        margin: 4,
         errorCorrectionLevel: "H", // survives a logo/sticker over the middle
-        color: { dark: fg, light: "#0a0a0a" },
+        color: { dark: "#050508", light: "#ffffff" },
       },
       (err) => {
         if (err) setError(isAf ? "Kon nie QR skep nie" : "Could not generate QR");
       },
     );
-  }, [value, size, fg, isAf]);
+  }, [value, size, isAf]);
 
   function download() {
     const canvas = canvasRef.current;
@@ -233,14 +237,18 @@ export default function AdminQrGeneratorPage() {
             <div className="flex flex-col items-center gap-3">
               <div
                 className="rounded-2xl p-4"
-                style={{ background: "#0a0a0a", border: "1.5px solid rgba(159,245,232,0.35)" }}
+                style={{ background: "#0a0a0a", border: `1.5px solid ${fg}` }}
               >
-                <canvas
-                  ref={canvasRef}
-                  data-testid="canvas-qr"
-                  className="block"
-                  style={{ width: 240, height: 240, imageRendering: "pixelated" }}
-                />
+                {/* White quiet-zone card — the QR is the deliberate light
+                    exception to the dark palette, so it actually scans. */}
+                <div className="rounded-xl p-3" style={{ background: "#ffffff" }}>
+                  <canvas
+                    ref={canvasRef}
+                    data-testid="canvas-qr"
+                    className="block"
+                    style={{ width: 240, height: 240, imageRendering: "pixelated" }}
+                  />
+                </div>
               </div>
               <p className="text-sm font-bold flex items-center gap-1.5" style={{ color: fg }}>
                 <QrIcon className="w-4 h-4" />

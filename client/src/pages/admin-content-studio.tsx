@@ -10,6 +10,7 @@ import { useLanguage } from "@/lib/language-context";
 import {
   FileText, Sparkles, BookOpenCheck, CalendarRange,
   Loader2, CheckCircle2, AlertTriangle, Square, Activity, Clock,
+  Layers, GraduationCap, Timer, ListChecks, Eye, Send, ChevronDown,
 } from "lucide-react";
 
 const HEX = {
@@ -493,6 +494,224 @@ function ActionCard({
   );
 }
 
+// ─── Content generator card (scope + preview + publish) ─────────────────────
+
+interface BankSubject { subject: string; usable: number; }
+
+type GenKind = "flashcards" | "daily" | "examiner" | "exam";
+
+interface GeneratorCardProps {
+  accent: NeonHex;
+  icon: React.ReactNode;
+  pipelineLabel: string;
+  title: string;
+  description: string;
+  endpoint: string;
+  kind: GenKind;
+  testId: string;
+  isAf: boolean;
+  subjects: BankSubject[];
+  subjectsLoading: boolean;
+}
+
+/** Renders one generated sample item, shaped by generator kind. */
+function SampleItem({ kind, s, accent, isAf }: { kind: GenKind; s: any; accent: NeonHex; isAf: boolean }) {
+  const box: React.CSSProperties = {
+    background: "rgba(255,255,255,0.035)",
+    border: `1px solid ${halo(accent, 0.3)}`,
+  };
+  if (kind === "flashcards") {
+    return (
+      <div className="rounded-xl p-3 text-sm" style={box}>
+        <div className="text-[10px] uppercase tracking-wider" style={{ color: accent }}>
+          {s.topic ?? "General"} · {s.difficulty} · {s.cardType}
+        </div>
+        <div className="mt-1 font-semibold text-white">Q: {s.front}</div>
+        <div className="mt-0.5 text-white">A: {s.back}</div>
+        <div className="mt-1 text-white">AF · {s.frontAf} → {s.backAf}</div>
+        <div className="mt-1 text-[10px] text-white opacity-80">{s.provenance}</div>
+      </div>
+    );
+  }
+  if (kind === "daily") {
+    return (
+      <div className="rounded-xl p-3 text-sm" style={box}>
+        <div className="text-[10px] uppercase tracking-wider" style={{ color: accent }}>
+          {s.topic ?? "General"} · {s.difficulty}
+        </div>
+        <div className="mt-1 font-semibold text-white">{s.question}</div>
+        <ol className="mt-1 space-y-0.5">
+          {(s.options ?? []).map((o: string, i: number) => (
+            <li key={i} className="text-white" style={i === s.correctIndex ? { color: accent, fontWeight: 700 } : undefined}>
+              {String.fromCharCode(65 + i)}. {o}{i === s.correctIndex ? "  ✓" : ""}
+            </li>
+          ))}
+        </ol>
+        {s.explanation && <div className="mt-1 text-white">{isAf ? "Verduideliking" : "Why"}: {s.explanation}</div>}
+        <div className="mt-1 text-[10px] text-white opacity-80">{s.provenance}</div>
+      </div>
+    );
+  }
+  // examiner / exam tips
+  return (
+    <div className="rounded-xl p-3 text-sm" style={box}>
+      <div className="text-[10px] uppercase tracking-wider" style={{ color: accent }}>
+        {String(s.category ?? "general").replace(/_/g, " ")}{s.paperNumber ? ` · P${s.paperNumber}` : ""}
+      </div>
+      <div className="mt-1 font-semibold text-white">{s.tip}</div>
+      <div className="mt-0.5 text-white">AF · {s.tipAf}</div>
+      {Array.isArray(s.evidence) && s.evidence.length > 0 && (
+        <div className="mt-1 text-[10px] text-white opacity-80">
+          {s.evidence.map((e: any, i: number) => (
+            <span key={i}>{[e.year, e.paper ? `P${e.paper}` : null].filter(Boolean).join(" ")}{e.note ? `: ${e.note}` : ""}{i < s.evidence.length - 1 ? " · " : ""}</span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function GeneratorCard({
+  accent, icon, pipelineLabel, title, description, endpoint, kind, testId, isAf, subjects, subjectsLoading,
+}: GeneratorCardProps) {
+  const { toast } = useToast();
+  const [subject, setSubject] = useState<string>("");  // "" = all usable subjects
+  const [samples, setSamples] = useState<any[]>([]);
+  const [stat, setStat] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const [phase, setPhase] = useState<"idle" | "previewing" | "publishing">("idle");
+
+  const busy = phase !== "idle";
+
+  async function run(preview: boolean) {
+    setPhase(preview ? "previewing" : "publishing");
+    setError("");
+    if (preview) { setSamples([]); setStat(""); }
+    try {
+      const body: Record<string, unknown> = preview ? { preview: true } : { preview: false };
+      if (subject) body.subject = subject; else body.all = true;
+      const res = await apiRequest("POST", endpoint, body);
+      const data = await res.json();
+      const first = data?.results?.[0];
+      if (preview) {
+        setSamples(Array.isArray(first?.samples) ? first.samples : []);
+        const parts: string[] = [];
+        if (first) {
+          if (typeof first.accepted === "number") parts.push(`${first.accepted} ${isAf ? "goedgekeur" : "accepted"}`);
+          if (typeof first.rejectionRate === "number") parts.push(`${first.rejectionRate}% ${isAf ? "verwerp" : "rejected"}`);
+          if (typeof first.stimulusRejectPct === "number") parts.push(`${first.stimulusRejectPct}% ${isAf ? "stimulus-afhanklik" : "stimulus-dependent"}`);
+          if (first.error) { setError(first.error); }
+        }
+        setStat(`${first?.subject ?? ""} — ${parts.join(" · ")}`);
+      } else {
+        const persisted = data?.totals?.persisted ?? 0;
+        const subj = data?.totals?.subjects ?? 0;
+        setStat(isAf ? `${persisted} gepubliseer oor ${subj} vak(ke)` : `${persisted} published across ${subj} subject(s)`);
+        toast({ title, description: isAf ? `${persisted} items gepubliseer` : `${persisted} items published to learners` });
+        if (data?.results?.some((r: any) => r.error)) {
+          setError(data.results.filter((r: any) => r.error).map((r: any) => `${r.subject}: ${r.error}`).join("; "));
+        }
+      }
+    } catch (e: any) {
+      setError(e?.message ?? String(e));
+      toast({ title, description: e?.message ?? String(e), variant: "destructive" });
+    } finally {
+      setPhase("idle");
+    }
+  }
+
+  return (
+    <NeonShell color={accent} className="p-6" testId={`card-${testId}`}>
+      <div className="flex items-start gap-4">
+        <div
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
+          style={{ background: "rgba(255,255,255,0.035)", border: `1px solid ${halo(accent, 0.45)}`, color: accent }}
+        >
+          {icon}
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="text-[11px] uppercase tracking-wider" style={{ color: accent }}>{pipelineLabel}</div>
+            <AdminBadge color={HEX.mint}>{isAf ? "Voorskou eers" : "Preview first"}</AdminBadge>
+          </div>
+          <h3 className="mt-1 text-lg font-semibold text-white">{title}</h3>
+          <p className="mt-2 text-sm leading-relaxed text-white">{description}</p>
+
+          {/* Scope selector */}
+          <div className="mt-4">
+            <label className="text-[10px] uppercase tracking-wider text-white" htmlFor={`${testId}-scope`}>
+              {isAf ? "Omvang" : "Scope"}
+            </label>
+            <div className="relative mt-1">
+              <select
+                id={`${testId}-scope`}
+                data-testid={`${testId}-scope`}
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                disabled={busy || subjectsLoading}
+                className="w-full appearance-none rounded-lg px-3 py-2 pr-9 text-sm text-white outline-none"
+                style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${halo(accent, 0.35)}` }}
+              >
+                <option value="" style={{ color: "#050508" }}>
+                  {isAf ? "Alle bruikbare vakke" : "All usable subjects"}
+                </option>
+                {subjects.map((s) => (
+                  <option key={s.subject} value={s.subject} style={{ color: "#050508" }}>
+                    {s.subject} ({s.usable.toLocaleString()})
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-2.5 top-2.5 h-4 w-4" style={{ color: accent }} />
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <AdminButton color={accent} onClick={() => run(true)} disabled={busy} testId={`${testId}-preview`}>
+              {phase === "previewing" ? <><Loader2 className="h-3.5 w-3.5 animate-spin" />{isAf ? "Voorskou…" : "Previewing…"}</> : <><Eye className="h-3.5 w-3.5" />{isAf ? "Voorskou" : "Preview"}</>}
+            </AdminButton>
+            <AdminButton
+              color={accent}
+              solid
+              onClick={() => run(false)}
+              disabled={busy}
+              testId={`${testId}-publish`}
+              title={isAf ? "Genereer en publiseer aan leerders" : "Generate and publish to learners"}
+            >
+              {phase === "publishing" ? <><Loader2 className="h-3.5 w-3.5 animate-spin" />{isAf ? "Publiseer…" : "Publishing…"}</> : <><Send className="h-3.5 w-3.5" />{isAf ? "Publiseer" : "Publish"}</>}
+            </AdminButton>
+
+            {stat && (
+              <span className="inline-flex items-center gap-1.5 text-xs text-white" data-testid={`${testId}-stat`}>
+                <CheckCircle2 className="h-3.5 w-3.5" style={{ color: HEX.mint }} />
+                {stat}
+              </span>
+            )}
+            {error && (
+              <span className="inline-flex items-center gap-1.5 text-xs text-white" data-testid={`${testId}-error`}>
+                <AlertTriangle className="h-3.5 w-3.5" style={{ color: HEX.pink }} />
+                {error}
+              </span>
+            )}
+          </div>
+
+          {/* Preview samples */}
+          {samples.length > 0 && (
+            <div className="mt-4 space-y-2" data-testid={`${testId}-samples`}>
+              <div className="text-[10px] uppercase tracking-wider text-white">
+                {isAf ? "Voorskou van gegenereerde inhoud" : "Preview of generated content"}
+              </div>
+              {samples.map((s, i) => (
+                <SampleItem key={i} kind={kind} s={s} accent={accent} isAf={isAf} />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </NeonShell>
+  );
+}
+
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function AdminContentStudio() {
@@ -505,6 +724,8 @@ export default function AdminContentStudio() {
   // disk rather than what is actually in the database.
   const health = useQuery<HealthTotals>({ queryKey: ["/api/admin/dbe-ingestion/health"] });
   const runStatus = useQuery<RunAllStatus>({ queryKey: ["/api/admin/dbe-ingestion/run-all/status"] });
+  const bankSubjects = useQuery<{ subjects: BankSubject[] }>({ queryKey: ["/api/admin/content-studio/subjects"] });
+  const subjectList = bankSubjects.data?.subjects ?? [];
 
   const jobLive = runStatus.data?.state === "running" || runStatus.data?.state === "stalled";
   const t = health.data?.totals;
@@ -693,6 +914,81 @@ export default function AdminContentStudio() {
               af
                 ? `${d?.schedulesRegenerated ?? 0} skedules hergenereer`
                 : `${d?.schedulesRegenerated ?? 0} schedules regenerated`}
+          />
+        </div>
+
+        {/* ── Study-material generators ──────────────────────────────────── */}
+        <h2 className="mb-1 mt-10 text-sm uppercase tracking-wider text-white">
+          {isAf ? "Studiemateriaal-genereerders" : "Study-material generators"}
+        </h2>
+        <p className="mb-4 max-w-3xl text-xs text-white">
+          {isAf
+            ? "Verander die ingenome DBE-bank in leerder-gerigte materiaal. Kies 'n vak (of alle bruikbare vakke), doen 'n voorskou van die uitset, en publiseer dan aan leerders. Merknotasie word gestroop en stimulus-afhanklike vrae word verwerp."
+            : "Turn the ingested DBE bank into learner-facing material. Pick a subject (or all usable subjects), preview the output, then publish to learners. Mark notation is stripped and stimulus-dependent questions are rejected."}
+        </p>
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <GeneratorCard
+            accent={HEX.mint}
+            icon={<ListChecks className="h-6 w-6" />}
+            pipelineLabel={isAf ? "Daaglikse uitdaging" : "Daily challenge"}
+            title={isAf ? "Genereer daaglikse-uitdaging vrae" : "Generate daily-challenge MCQs"}
+            description={isAf
+              ? "Bou behoorlike meervoudigekeusevrae (vraag, opsies, korrekte antwoord, verduideliking) uit die verbatim-bank, in die vorm wat die daaglikse uitdaging benodig — sodat leerders regte DBE-vrae kry, nie generiese sjablone nie."
+              : "Build proper MCQs (question, options, correct answer, explanation) from the verbatim bank in the exact shape the daily challenge needs — so learners get real DBE questions instead of generic templates."}
+            endpoint="/api/admin/content-studio/daily-challenge"
+            kind="daily"
+            testId="gen-daily"
+            isAf={isAf}
+            subjects={subjectList}
+            subjectsLoading={bankSubjects.isLoading}
+          />
+
+          <GeneratorCard
+            accent={HEX.violet}
+            icon={<Layers className="h-6 w-6" />}
+            pipelineLabel={isAf ? "Flitskaarte" : "Flashcards"}
+            title={isAf ? "Genereer begrip-flitskaarte" : "Generate concept flashcards"}
+            description={isAf
+              ? "Sintetiseer atomiese, tweetalige begrip→verduideliking kaarte uit die bank — nie rou eksamenfragmente nie. Onderwerpe word afgelei sodat onderwerp-flitskaarte werk."
+              : "Synthesise atomic, bilingual concept→explanation cards from the bank — not raw exam fragments. Topics are derived so topic-flashcards work."}
+            endpoint="/api/admin/content-studio/flashcards"
+            kind="flashcards"
+            testId="gen-flashcards"
+            isAf={isAf}
+            subjects={subjectList}
+            subjectsLoading={bankSubjects.isLoading}
+          />
+
+          <GeneratorCard
+            accent={HEX.amber}
+            icon={<GraduationCap className="h-6 w-6" />}
+            pipelineLabel={isAf ? "Eksaminator-wenke" : "Examiner tips"}
+            title={isAf ? "Genereer eksaminator-wenke" : "Generate examiner tips"}
+            description={isAf
+              ? "Ontgin die bank en memo's vir wat punte verdien: herhalende vraagstamme, puntetoekenning-patrone, bevelwoorde, en memo-bewoording — met jaar/vraestel-verwysings."
+              : "Mine the bank and memos for what earns marks: recurring stems, mark-allocation patterns, command words, and memo phrasing — cited to year/paper."}
+            endpoint="/api/admin/content-studio/examiner-tips"
+            kind="examiner"
+            testId="gen-examiner-tips"
+            isAf={isAf}
+            subjects={subjectList}
+            subjectsLoading={bankSubjects.isLoading}
+          />
+
+          <GeneratorCard
+            accent={HEX.blue}
+            icon={<Timer className="h-6 w-6" />}
+            pipelineLabel={isAf ? "Eksamen-wenke" : "Exam tips"}
+            title={isAf ? "Genereer eksamen-tegniek wenke" : "Generate exam-technique tips"}
+            description={isAf
+              ? "Praktiese tegniek per vak: tyd-per-punt uit die werklike SACAI-tydsduur en punt-totale, vraag-volgorde strategie, en algemene punt-verlies foute uit die memo's."
+              : "Practical technique per subject: time-per-mark from the real SACAI durations and mark totals, question-order strategy, and common mark-losing mistakes from the memos."}
+            endpoint="/api/admin/content-studio/exam-tips"
+            kind="exam"
+            testId="gen-exam-tips"
+            isAf={isAf}
+            subjects={subjectList}
+            subjectsLoading={bankSubjects.isLoading}
           />
         </div>
       </div>

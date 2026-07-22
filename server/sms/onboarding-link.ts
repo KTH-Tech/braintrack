@@ -41,6 +41,17 @@ export function publicBaseUrl(req?: { protocol?: string; get?: (h: string) => st
   return "https://app.braintrack.co.za";
 }
 
+/**
+ * Build the one-time onboarding-claim URL for a signed token. Pure and
+ * exported so the SMS path, the parent-share path, and unit tests all mint
+ * the exact same shape. The token is percent-encoded (JWTs are URL-safe but
+ * this is belt-and-braces for any future token class).
+ */
+export function buildOnboardingClaimUrl(baseUrl: string, token: string): string {
+  const base = (baseUrl ?? "").replace(/\/$/, "");
+  return `${base}/api/auth/onboarding-claim?token=${encodeURIComponent(token)}`;
+}
+
 function messageCopy(language: "en" | "af", url: string): string {
   if (language === "af") {
     return `BrainTrack: Tik om jou aanmeldingsvasvra te begin: ${url} (skakel verval oor 24h, eenmalig).`;
@@ -79,7 +90,7 @@ export async function issueAndSendOnboardingLink(
     { algorithm: "HS256", expiresIn: TOKEN_TTL_SECONDS },
   );
   const base = (baseUrl ?? publicBaseUrl()).replace(/\/$/, "");
-  const url = `${base}/api/auth/onboarding-claim?token=${encodeURIComponent(token)}`;
+  const url = buildOnboardingClaimUrl(base, token);
 
   // Persist the jti BEFORE sending so we can enforce single-use even if the
   // process crashes between Twilio ack and DB write.
@@ -145,6 +156,68 @@ export async function issueAndSendOnboardingLink(
     })
     .where(eq(onboardingLinkTokens.jti, jti));
   return { ok: true, jti, url, messageSid: send.messageSid };
+}
+
+// ─── Parent-shared onboarding link (mint only — NO Twilio send) ──────────────
+// The parent-onboarding "share step" hands the link over itself (WhatsApp deep
+// link the parent taps, copy-link, QR). So here we MINT + persist the exact
+// same single-use, 24h, signed onboarding token as the SMS path — but we do
+// NOT send anything. The parent-dashboard "opened link" badge already polls
+// onboarding_link_tokens.usedAt per learner, so a parent-shared link lights up
+// that badge the moment the child claims it, with no extra plumbing.
+
+export interface IssueShareableLinkOptions {
+  /** The LEARNER's user id — onboarding-claim establishes THEIR session. */
+  userId: string;
+  /**
+   * The child's cell if the parent supplied one (recorded for audit/parity
+   * with the SMS path). Optional — the token is delivered by the parent, not
+   * by us, so a number is not required. Never store a password here.
+   */
+  sentTo?: string | null;
+  baseUrl?: string;
+}
+
+export interface IssueShareableLinkResult {
+  jti: string;
+  url: string;
+  expiresAt: Date;
+}
+
+/**
+ * Mint + persist a single-use onboarding link for the parent to share. Same
+ * token class, TTL and claim endpoint as issueAndSendOnboardingLink, but with
+ * no Twilio call: channel "parent_share", deliveryStatus "shared" (terminal —
+ * nothing polls a carrier we never handed the message to).
+ */
+export async function issueShareableOnboardingLink(
+  opts: IssueShareableLinkOptions,
+): Promise<IssueShareableLinkResult> {
+  const { userId, sentTo, baseUrl } = opts;
+  const jti = randomUUID();
+  const nowSec = Math.floor(Date.now() / 1000);
+  const expSec = nowSec + TOKEN_TTL_SECONDS;
+  const expiresAt = new Date(expSec * 1000);
+  const token = jwt.sign(
+    { sub: userId, purpose: ONBOARDING_PURPOSE, jti } as Record<string, unknown>,
+    getSecret(),
+    { algorithm: "HS256", expiresIn: TOKEN_TTL_SECONDS },
+  );
+  const base = (baseUrl ?? publicBaseUrl()).replace(/\/$/, "");
+  const url = buildOnboardingClaimUrl(base, token);
+
+  await db.insert(onboardingLinkTokens).values({
+    jti,
+    userId,
+    // sentTo is NOT NULL in the schema — use the child cell if we have one,
+    // else a self-describing marker (never a password / never child PII).
+    sentTo: sentTo && sentTo.trim().length > 0 ? sentTo.trim() : "parent_share",
+    channel: "parent_share",
+    deliveryStatus: "shared",
+    expiresAt,
+  });
+
+  return { jti, url, expiresAt };
 }
 
 export interface VerifyOnboardingLinkResult {

@@ -39,6 +39,13 @@ export const activateChildSchema = z.object({
   childLastName: z.string().trim().min(1).max(80),
   /** Optional — when blank a login handle is generated (never mailed). */
   childEmail: z.string().trim().toLowerCase().email().max(200).optional().or(z.literal("")),
+  /**
+   * Optional — the child's cell. NOT used to create the account (never stored
+   * on the learner row); the endpoint uses it only to target the parent's
+   * WhatsApp deep link (wa.me/<number>) and to record `sentTo` on the shared
+   * onboarding link. A password is NEVER placed here.
+   */
+  childCell: z.string().trim().min(9).max(20).optional().or(z.literal("")),
   schoolName: z.string().trim().min(1).max(200),
   /** Present only when the parent picked a partner school from the search. */
   schoolId: z.number().int().positive().nullable().optional(),

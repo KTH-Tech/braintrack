@@ -996,8 +996,8 @@ export async function generateReportPdfBuffer(
           64,
         );
         step(1, t(
-          "Sign in at app.braintrack.co.za with this same email address and open the Parent Dashboard.",
-          "Meld aan by app.braintrack.co.za met hierdie selfde e-posadres en maak die Ouer-paneelbord oop.",
+          "Sign in at braintrack.tech with this same email address and open the Parent Dashboard.",
+          "Meld aan by braintrack.tech met hierdie selfde e-posadres en maak die Ouer-paneelbord oop.",
         ), AQUA);
         step(2, t(
           "Choose \"Link a learner\" and enter the activation code from your BrainTrack welcome email.",

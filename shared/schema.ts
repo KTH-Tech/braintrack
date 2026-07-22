@@ -2282,6 +2282,39 @@ export const subjectDailyChallenges = pgTable(
   (table) => [index("subject_daily_challenges_subject_idx").on(table.subject)],
 );
 
+// Examiner & exam tips produced by server/content-generators.ts.
+//   kind = 'examiner' → "what earns marks" per subject/topic, mined from the
+//          verbatim bank + examiner_profiles (command words, mark-allocation
+//          patterns, recurring stems, memo phrasing), with year/paper citations.
+//   kind = 'exam'     → practical technique per subject: time-per-mark from the
+//          real SACAI durations + paper mark totals, question-order strategy,
+//          common mark-losing mistakes from the memos.
+// Bilingual (tip/tipAf). `evidence` carries the citations/derivation so a tip
+// can always be traced back to real DBE material. One row per generated tip.
+export const subjectStudyTips = pgTable(
+  "subject_study_tips",
+  {
+    id: serial("id").primaryKey(),
+    subject: text("subject").notNull(),
+    kind: varchar("kind", { length: 16 }).notNull(), // 'examiner' | 'exam'
+    topic: text("topic"),                            // nullable — subject-wide when null
+    paperNumber: integer("paper_number"),            // nullable — subject-wide when null
+    category: varchar("category", { length: 48 }).notNull().default("general"),
+    tip: text("tip").notNull(),
+    tipAf: text("tip_af").notNull(),
+    evidence: jsonb("evidence").default([]),         // [{year,paper,note}] / derivation
+    sourceQuestionIds: integer("source_question_ids").array(),
+    model: text("model"),
+    generatedAt: timestamp("generated_at").defaultNow(),
+  },
+  (table) => [
+    index("subject_study_tips_subject_kind_idx").on(table.subject, table.kind),
+  ],
+);
+
+export type SubjectStudyTip = typeof subjectStudyTips.$inferSelect;
+export type InsertSubjectStudyTip = typeof subjectStudyTips.$inferInsert;
+
 export const userReferrals = pgTable(
   "user_referrals",
   {

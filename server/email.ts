@@ -228,17 +228,17 @@ function buildHtmlWrapper(opts: {
               </p>
               <p style="margin:0 0 10px;font-family:Arial,Helvetica,sans-serif;font-size:12px;
                         font-weight:600;color:#ffffff;text-align:center;letter-spacing:0.4px;">
-                <a href="https://braintrack.co.za" style="color:#9FD8FF;text-decoration:none;">braintrack.co.za</a>
+                <a href="https://braintrack.tech" style="color:#9FD8FF;text-decoration:none;">braintrack.tech</a>
                 &nbsp;·&nbsp;
                 <a href="mailto:learn@kth-tech.com" style="color:#9FD8FF;text-decoration:none;">learn@kth-tech.com</a>
               </p>
               <p style="margin:0 0 10px;font-family:Arial,Helvetica,sans-serif;font-size:11px;
                         color:#ffffff;text-align:center;letter-spacing:0.2px;">
-                <a href="https://braintrack.co.za" style="color:#9FD8FF;text-decoration:none;">Website</a>
+                <a href="https://braintrack.tech" style="color:#9FD8FF;text-decoration:none;">Website</a>
                 &nbsp;&nbsp;|&nbsp;&nbsp;
-                <a href="https://app.braintrack.co.za/dashboard" style="color:#9FD8FF;text-decoration:none;">Dashboard</a>
+                <a href="https://braintrack.tech/dashboard" style="color:#9FD8FF;text-decoration:none;">Dashboard</a>
                 &nbsp;&nbsp;|&nbsp;&nbsp;
-                <a href="https://app.braintrack.co.za/subscribe" style="color:#9FD8FF;text-decoration:none;">Subscribe</a>
+                <a href="https://braintrack.tech/subscribe" style="color:#9FD8FF;text-decoration:none;">Subscribe</a>
                 &nbsp;&nbsp;|&nbsp;&nbsp;
                 <a href="mailto:learn@kth-tech.com" style="color:#9FD8FF;text-decoration:none;">Contact Us</a>
               </p>
@@ -499,7 +499,7 @@ export type EmailPreviewType =
   | "exam-countdown"
   | "inactivity-nudge";
 
-const SAMPLE_BASE_URL = "https://braintrack.co.za";
+const SAMPLE_BASE_URL = "https://braintrack.tech";
 
 export function getEmailPreview(
   type: EmailPreviewType,
@@ -1025,7 +1025,7 @@ export async function sendBrandedEmail(opts: BrandedEmailOpts): Promise<BrandedE
   const html = buildHtmlWrapper({ heading, bodyHtml, ctaLabel, ctaUrl, language });
 
   const plainText = textBody
-    ?? `${heading}\n\n${bodyHtml.replace(/<[^>]+>/g, " ").replace(/\s{2,}/g, " ").trim()}${ctaLabel && ctaUrl ? `\n\n${ctaLabel}: ${ctaUrl}` : ""}\n\n— BrainTrack\nhttps://braintrack.co.za`;
+    ?? `${heading}\n\n${bodyHtml.replace(/<[^>]+>/g, " ").replace(/\s{2,}/g, " ").trim()}${ctaLabel && ctaUrl ? `\n\n${ctaLabel}: ${ctaUrl}` : ""}\n\n— BrainTrack\nhttps://braintrack.tech`;
 
   // Task #666 — prefer Resend when configured, fall back to SendGrid otherwise.
   const resendResult = await sendViaResend({ to, subject, html, text: plainText, attachments });
@@ -1251,7 +1251,7 @@ function buildSchoolEnquiryConfirmationPayload(opts: {
       <p>We're excited about the possibility of supporting your learners as they prepare for their NSC exams. 🎓</p>
     `,
     ctaLabel: "Learn more about BrainTrack for Schools",
-    ctaUrl: "https://braintrack.co.za",
+    ctaUrl: "https://braintrack.tech",
   };
 }
 

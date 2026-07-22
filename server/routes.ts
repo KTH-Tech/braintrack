@@ -30,7 +30,7 @@ import { z } from "zod";
 import rateLimit from "express-rate-limit";
 import { paymentLimiter } from "./middleware/payment-limiter";
 import { smsResendLimiter, releaseSmsResendSlot, SMS_RESEND_LIMITS } from "./middleware/sms-resend-limiter";
-import { issueAndSendOnboardingLink, verifyAndConsumeOnboardingLink, publicBaseUrl } from "./sms/onboarding-link";
+import { issueAndSendOnboardingLink, issueShareableOnboardingLink, verifyAndConsumeOnboardingLink, publicBaseUrl } from "./sms/onboarding-link";
 import { sendSms, isTwilioConfigured, toE164 } from "./sms/twilio";
 import {
   isNetcashConfigured,
@@ -4694,8 +4694,35 @@ export async function registerRoutes(
         return res.status(result.status).json({ error: result.error, message: result.message });
       }
 
+      // Mint the shareable activation link (single-use, 24h, signed onboarding
+      // token → /api/auth/onboarding-claim → session → /onboarding). The PARENT
+      // shares it themselves (WhatsApp deep link / copy / QR on the next screen);
+      // we do NOT send anything here. Best-effort: a mint failure must never
+      // fail the account creation — the parent still has the on-screen
+      // credentials. The link carries a TOKEN, never the password.
+      const childCellNorm =
+        parsed.data.childCell && isValidSACell(parsed.data.childCell)
+          ? normaliseSACell(parsed.data.childCell)
+          : null;
+      let activationUrl: string | null = null;
+      let activationExpiresAt: string | null = null;
+      try {
+        const share = await issueShareableOnboardingLink({
+          userId: result.learnerId,
+          sentTo: childCellNorm,
+          baseUrl: publicBaseUrl(req),
+        });
+        activationUrl = share.url;
+        activationExpiresAt = share.expiresAt.toISOString();
+      } catch (err: any) {
+        console.error(
+          "[parent-activate-child] shareable link mint failed (non-fatal):",
+          err?.message ?? err,
+        );
+      }
+
       // The plaintext password exists ONLY in this response body. Do not add
-      // logging here.
+      // logging here. `activationUrl` carries a token — never the password.
       return res.status(201).json({
         ok: true,
         learnerId: result.learnerId,
@@ -4703,6 +4730,9 @@ export async function registerRoutes(
         password: result.password,
         usernameGenerated: result.usernameGenerated,
         learnerName: `${parsed.data.childFirstName} ${parsed.data.childLastName}`.trim(),
+        activationUrl,
+        activationExpiresAt,
+        childCell: childCellNorm,
       });
     } catch (err: any) {
       // Unique-index race on users.email (extremely unlikely) or any other
@@ -11010,6 +11040,189 @@ Create comprehensive study notes for the topic provided.`;
       return res.status(500).json({ error: safeError(err) });
     }
   });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  // CONTENT STUDIO — learner-facing study-material generators (server/content-generators.ts)
+  //
+  // Each generator is scopeable to one subject or (bounded) to all usable
+  // subjects, and supports preview:true — generate + validate + return samples,
+  // writing NOTHING — so an admin sees the output before it goes live. These
+  // INSERT/REPLACE only into flashcards / subject_daily_challenges /
+  // subject_study_tips; they never touch the verbatim bank.
+  // ───────────────────────────────────────────────────────────────────────────
+
+  // GET /api/admin/content-studio/subjects — subjects that have usable bank
+  // content, for the scoping dropdown.
+  app.get("/api/admin/content-studio/subjects", isAuthenticated, requireRole("admin"), async (_req: any, res) => {
+    try {
+      const { subjectsWithUsableBank } = await import("./content-generators");
+      const subjects = await subjectsWithUsableBank();
+      return res.json({ subjects });
+    } catch (err: any) {
+      return res.status(500).json({ error: safeError(err) });
+    }
+  });
+
+  // Resolve the target subjects from a request body. Preview always collapses to
+  // a single subject to keep it fast and cheap; publish across "all" is bounded.
+  async function resolveContentStudioTargets(body: any, preview: boolean): Promise<string[]> {
+    const subject = typeof body?.subject === "string" && body.subject.trim() ? body.subject.trim() : null;
+    if (subject) return [subject];
+    if (body?.all) {
+      const { subjectsWithUsableBank } = await import("./content-generators");
+      const all = (await subjectsWithUsableBank()).map((s) => s.subject);
+      if (preview) return all.slice(0, 1);
+      const cap = Math.min(20, Math.max(1, Number(body?.maxSubjects) || 8));
+      return all.slice(0, cap);
+    }
+    return [];
+  }
+
+  // POST /api/admin/content-studio/daily-challenge
+  // Body: { subject? | all?, count?, preview?, model?, maxSubjects? }
+  app.post("/api/admin/content-studio/daily-challenge", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    const preview = req.body?.preview !== false && req.body?.preview !== "false" ? !!req.body?.preview : false;
+    try {
+      const { generateDailyChallengeMcqs, persistDailyChallengeMcqs, DEFAULT_MODEL } = await import("./content-generators");
+      const model = typeof req.body?.model === "string" ? req.body.model : DEFAULT_MODEL;
+      const count = Math.min(30, Math.max(3, Number(req.body?.count) || 15));
+      const targets = await resolveContentStudioTargets(req.body, preview);
+      if (targets.length === 0) return res.status(400).json({ error: "Provide a subject or set all:true" });
+
+      const results: any[] = [];
+      for (const subject of targets) {
+        try {
+          const r = await generateDailyChallengeMcqs({ subject, count, model });
+          const persisted = !preview && r.mcqs.length > 0 ? await persistDailyChallengeMcqs(subject, r.mcqs) : 0;
+          results.push({
+            subject,
+            sourcesConsidered: r.sourcesConsidered,
+            rejectedStimulus: r.rejectedStimulus,
+            stimulusRejectPct: r.sourcesConsidered > 0 ? +((r.rejectedStimulus / r.sourcesConsidered) * 100).toFixed(1) : 0,
+            generated: r.rawCount,
+            accepted: r.mcqs.length,
+            rejected: r.rejected.length,
+            rejectionRate: r.rawCount > 0 ? +((r.rejected.length / r.rawCount) * 100).toFixed(1) : 0,
+            persisted,
+            samples: preview ? r.mcqs.slice(0, 5) : [],
+          });
+        } catch (subErr: any) {
+          results.push({ subject, error: safeError(subErr) });
+        }
+      }
+      return res.json({
+        preview,
+        model,
+        results,
+        totals: {
+          subjects: results.length,
+          accepted: results.reduce((s, r) => s + (r.accepted ?? 0), 0),
+          persisted: results.reduce((s, r) => s + (r.persisted ?? 0), 0),
+        },
+      });
+    } catch (err: any) {
+      return res.status(500).json({ error: safeError(err) });
+    }
+  });
+
+  // POST /api/admin/content-studio/flashcards
+  // Body: { subject? | all?, limit?, preview?, model?, maxSubjects? }
+  app.post("/api/admin/content-studio/flashcards", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    const preview = !!req.body?.preview && req.body?.preview !== "false";
+    try {
+      const { generateFlashcardsForSubject, persistFlashcards, DEFAULT_MODEL } = await import("./content-generators");
+      const model = typeof req.body?.model === "string" ? req.body.model : DEFAULT_MODEL;
+      const limit = Math.min(400, Math.max(8, Number(req.body?.limit) || (preview ? 12 : 120)));
+      const targets = await resolveContentStudioTargets(req.body, preview);
+      if (targets.length === 0) return res.status(400).json({ error: "Provide a subject or set all:true" });
+
+      const results: any[] = [];
+      for (const subject of targets) {
+        try {
+          const r = await generateFlashcardsForSubject({ subject, limit, model, excludeExisting: !preview });
+          const persisted = !preview && r.rows.length > 0 ? await persistFlashcards(r.rows) : 0;
+          results.push({
+            subject,
+            sourcesUsed: r.sourcesUsed,
+            generated: r.rawCount,
+            accepted: r.accepted,
+            rejected: r.rejected,
+            rejectionRate: r.rejectionRate,
+            topTopics: r.topTopics,
+            persisted,
+            samples: preview ? r.samples.slice(0, 5) : [],
+          });
+        } catch (subErr: any) {
+          results.push({ subject, error: safeError(subErr) });
+        }
+      }
+      return res.json({
+        preview,
+        model,
+        results,
+        totals: {
+          subjects: results.length,
+          accepted: results.reduce((s, r) => s + (r.accepted ?? 0), 0),
+          persisted: results.reduce((s, r) => s + (r.persisted ?? 0), 0),
+        },
+      });
+    } catch (err: any) {
+      return res.status(500).json({ error: safeError(err) });
+    }
+  });
+
+  // POST /api/admin/content-studio/examiner-tips  and  /exam-tips
+  // Body: { subject? | all?, count?, preview?, model?, maxSubjects? }
+  async function runTipsGenerator(req: any, res: any, kind: "examiner" | "exam") {
+    const preview = !!req.body?.preview && req.body?.preview !== "false";
+    try {
+      const gen = await import("./content-generators");
+      const model = typeof req.body?.model === "string" ? req.body.model : gen.DEFAULT_MODEL;
+      const count = Math.min(10, Math.max(3, Number(req.body?.count) || 6));
+      const targets = await resolveContentStudioTargets(req.body, preview);
+      if (targets.length === 0) return res.status(400).json({ error: "Provide a subject or set all:true" });
+
+      const results: any[] = [];
+      for (const subject of targets) {
+        try {
+          const r = kind === "examiner"
+            ? await gen.generateExaminerTips({ subject, count, model })
+            : await gen.generateExamTips({ subject, count, model });
+          const persisted = !preview && r.tips.length > 0 ? await gen.persistStudyTips(subject, kind, r.tips, model) : 0;
+          results.push({
+            subject,
+            basis: r.basis,
+            generated: r.rawCount,
+            accepted: r.tips.length,
+            rejected: r.rejected.length,
+            persisted,
+            samples: preview ? r.tips.slice(0, 5) : [],
+          });
+        } catch (subErr: any) {
+          results.push({ subject, error: safeError(subErr) });
+        }
+      }
+      return res.json({
+        preview,
+        model,
+        results,
+        totals: {
+          subjects: results.length,
+          accepted: results.reduce((s, r) => s + (r.accepted ?? 0), 0),
+          persisted: results.reduce((s, r) => s + (r.persisted ?? 0), 0),
+        },
+      });
+    } catch (err: any) {
+      return res.status(500).json({ error: safeError(err) });
+    }
+  }
+
+  app.post("/api/admin/content-studio/examiner-tips", isAuthenticated, requireRole("admin"), (req: any, res) =>
+    runTipsGenerator(req, res, "examiner"),
+  );
+  app.post("/api/admin/content-studio/exam-tips", isAuthenticated, requireRole("admin"), (req: any, res) =>
+    runTipsGenerator(req, res, "exam"),
+  );
 
   // POST /api/admin/dbe-ingestion/fix-hashes
   // Re-fetches PDFs for entries with failed verification, recomputes normalised hash,
@@ -18995,9 +19208,76 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       const subjectByName = new Map(subjectRows.map(s => [s.name, s]));
       const subjectNames = subjectRows.map(s => s.name);
 
-      const { dbeVerbatimQuestions } = await import("@shared/schema");
+      const { dbeVerbatimQuestions, flashcards } = await import("@shared/schema");
 
-      const rows = await db
+      // ── Prefer humanised cards (server/content-generators.ts) ────────────────
+      // The humanised `flashcards` table holds atomic, second-person, mark-
+      // notation-stripped, stimulus-free cards. Serve those for any subject that
+      // has them (in the requested language, EN fallback); subjects without
+      // humanised cards fall through to the raw verbatim path below unchanged —
+      // so this is a strict improvement with zero regression when the table is
+      // empty. `ai_humanised` gates out the 95 legacy raw-copy rows.
+      const humanisedCards: Array<{
+        id: string; subject: string; subjectCode: string; topic: string;
+        topicCode: string; type: "basic"; front: string; back: string;
+      }> = [];
+      const subjectsWithHumanised = new Set<string>();
+      try {
+        const hrows = await db
+          .select({
+            id: flashcards.id,
+            subject: flashcards.subject,
+            topic: flashcards.topic,
+            front: flashcards.front,
+            back: flashcards.back,
+            language: flashcards.language,
+          })
+          .from(flashcards)
+          .where(
+            and(
+              inArray(flashcards.subject, subjectNames),
+              eq(flashcards.source, "ai_humanised"),
+              inArray(flashcards.language, [lang, "en"]),
+              sql`(${flashcards.verificationFlag} IS NULL OR ${flashcards.verificationFlag} <> 'needs_review')`,
+            ),
+          )
+          .limit(8000);
+        // Per subject prefer the requested language; fall back to EN.
+        const bySubjLang = new Map<string, typeof hrows>();
+        for (const r of hrows) {
+          const list = bySubjLang.get(r.subject) ?? [];
+          list.push(r);
+          bySubjLang.set(r.subject, list);
+        }
+        const HUMAN_CAP = 200;
+        for (const [subjName, list] of bySubjLang) {
+          const wanted = list.filter(r => r.language === lang);
+          const chosen = wanted.length > 0 ? wanted : list.filter(r => r.language === "en");
+          if (chosen.length === 0) continue;
+          subjectsWithHumanised.add(subjName);
+          const subj = subjectByName.get(subjName);
+          const subjectCode = subj ? String(subj.id) : `name:${subjName}`;
+          for (const r of chosen.slice(0, HUMAN_CAP)) {
+            const topicName = r.topic && r.topic.trim().length > 0 ? r.topic.trim() : "General";
+            humanisedCards.push({
+              id: `fc-${r.id}`,
+              subject: subj?.name ?? subjName,
+              subjectCode,
+              topic: topicName,
+              topicCode: `${subjectCode}::${topicName.toLowerCase()}`,
+              type: "basic",
+              front: r.front,
+              back: r.back,
+            });
+          }
+        }
+      } catch (humErr) {
+        console.warn("[flashcards/deck] humanised lookup failed, using verbatim only:", humErr);
+      }
+
+      // Raw verbatim fallback — only for subjects that have no humanised cards.
+      const verbatimSubjects = subjectNames.filter(s => !subjectsWithHumanised.has(s));
+      const rows = verbatimSubjects.length === 0 ? [] : await db
         .select({
           id: dbeVerbatimQuestions.id,
           subject: dbeVerbatimQuestions.subject,
@@ -19009,7 +19289,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         .from(dbeVerbatimQuestions)
         .where(
           and(
-            inArray(dbeVerbatimQuestions.subject, subjectNames),
+            inArray(dbeVerbatimQuestions.subject, verbatimSubjects),
             sql`${dbeVerbatimQuestions.releasedAt} IS NOT NULL`,
             sql`${dbeVerbatimQuestions.memoText} IS NOT NULL`,
             sql`length(trim(${dbeVerbatimQuestions.memoText})) > 0`,
@@ -19061,7 +19341,8 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         });
       }
 
-      res.json({ cards });
+      // Humanised cards lead the deck; raw verbatim fills subjects without them.
+      res.json({ cards: [...humanisedCards, ...cards] });
     } catch (err: any) {
       console.error("Error loading flashcard deck:", err);
       res.status(500).json({ error: "Failed to load flashcards" });
