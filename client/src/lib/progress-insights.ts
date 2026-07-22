@@ -42,6 +42,26 @@ export interface ActivityDay {
   correctAnswers: number;
 }
 
+/**
+ * Per-topic mastery row surfaced on the Progress page.
+ *
+ * Comes from the `topic_mastery` table which the marking pipeline populates
+ * from `attempts` + error-type classification — that is a REAL, per-topic
+ * signal, separate from `dbe_verbatim_questions.topic` (which is NULL on
+ * released rows and cannot ground a topic view). `masteryScore` is 0-100 and
+ * `masteryBand` is `"red" | "amber" | "green"` on the same 60/75 thresholds
+ * the CAPS pipeline uses everywhere else (see server/caps-intelligence.ts).
+ */
+export interface TopicMasteryEntry {
+  topicId: number;
+  topicName: string;
+  subjectId: number;
+  subjectName: string;
+  masteryScore: number;
+  masteryBand: "red" | "amber" | "green";
+  questionsAttempted: number;
+}
+
 export interface ProgressStats {
   overallAccuracy: number;
   studyStreak: number;
@@ -50,6 +70,10 @@ export interface ProgressStats {
   subjectProgress: SubjectProgress[];
   weakTopics: { topicId: number; topicName: string; subjectName: string; accuracy: number }[];
   recentActivity: ActivityDay[];
+  /** Topic-level mastery from `topic_mastery`. Empty when nothing is banded. */
+  topicMastery?: TopicMasteryEntry[];
+  /** Total minutes logged in `study_sessions` over the last 14 days. */
+  studyMinutes14d?: number;
 }
 
 /* ── Activity ─────────────────────────────────────────────────────────────── */
@@ -157,6 +181,74 @@ export function pickFocusSubjects(
   return (subjects ?? [])
     .filter((s) => (s.questionsAttempted ?? 0) >= minQuestions && (s.accuracy ?? 0) < target)
     .sort((a, b) => a.accuracy - b.accuracy)
+    .slice(0, limit);
+}
+
+/* ── Topics ───────────────────────────────────────────────────────────────── */
+
+/**
+ * Guard: don't brand a topic weak/strong off a single attempt. Same threshold
+ * as `pickFocusSubjects` — two answered questions is the minimum evidence.
+ */
+export const TOPIC_MIN_QUESTIONS = 2;
+
+/**
+ * Coverage summary of the learner's topic-mastery pool. Feeds the "Coverage"
+ * tile subtitle so a headline number ("11 of 25 topics green") is grounded in
+ * countable rows rather than vibes.
+ */
+export interface TopicCoverageSummary {
+  total: number;
+  green: number;
+  amber: number;
+  red: number;
+  /** Topics with at least TOPIC_MIN_QUESTIONS answered — the graded pool. */
+  graded: number;
+}
+
+export function summariseTopicMastery(
+  entries: TopicMasteryEntry[] | null | undefined,
+): TopicCoverageSummary {
+  const rows = entries ?? [];
+  let green = 0, amber = 0, red = 0, graded = 0;
+  for (const t of rows) {
+    if ((t.questionsAttempted ?? 0) >= TOPIC_MIN_QUESTIONS) graded += 1;
+    if (t.masteryBand === "green") green += 1;
+    else if (t.masteryBand === "amber") amber += 1;
+    else if (t.masteryBand === "red") red += 1;
+  }
+  return { total: rows.length, green, amber, red, graded };
+}
+
+/**
+ * The two topics currently in the "green" band, strongest first. Used to
+ * balance the weak-topic panel — a page that ONLY shows what a learner is bad
+ * at reads as a report card, not progress.
+ */
+export function pickTopicStrengths(
+  entries: TopicMasteryEntry[] | null | undefined,
+  limit = 3,
+): TopicMasteryEntry[] {
+  return (entries ?? [])
+    .filter((t) => t.masteryBand === "green" && (t.questionsAttempted ?? 0) >= TOPIC_MIN_QUESTIONS)
+    .sort((a, b) => b.masteryScore - a.masteryScore)
+    .slice(0, limit);
+}
+
+/**
+ * Weakest topics — the honest "focus here next" list. Filters out topics that
+ * haven't been answered enough times to have a real read.
+ */
+export function pickTopicFocus(
+  entries: TopicMasteryEntry[] | null | undefined,
+  limit = 5,
+): TopicMasteryEntry[] {
+  return (entries ?? [])
+    .filter((t) =>
+      (t.masteryBand === "red" || t.masteryBand === "amber") &&
+      (t.questionsAttempted ?? 0) >= TOPIC_MIN_QUESTIONS,
+    )
+    .sort((a, b) => a.masteryScore - b.masteryScore)
     .slice(0, limit);
 }
 

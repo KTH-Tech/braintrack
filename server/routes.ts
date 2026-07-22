@@ -8119,6 +8119,71 @@ Create comprehensive study notes for the topic provided.`;
         }
       }
 
+      // Per-topic mastery — the real per-topic signal (from the marking
+      // pipeline, not from `dbe_verbatim_questions.topic` which is NULL on
+      // released rows). Restricted to topics inside the learner's selected
+      // subjects so the coverage view doesn't leak topics from unrelated
+      // curricula. Ordered strongest→weakest so the client can pick from
+      // either end for "strengths" vs "focus".
+      let topicMasteryList: Array<{
+        topicId: number;
+        topicName: string;
+        subjectId: number;
+        subjectName: string;
+        masteryScore: number;
+        masteryBand: "red" | "amber" | "green";
+        questionsAttempted: number;
+      }> = [];
+      if (stats.questionsAnswered > 0) {
+        const filteredIds = filteredSubjects.map(s => s.id);
+        const tmRows = filteredIds.length > 0
+          ? await db
+              .select({
+                topicId: topicMastery.topicId,
+                subjectId: topicMastery.subjectId,
+                masteryScore: topicMastery.masteryScore,
+                masteryBand: topicMastery.masteryBand,
+                questionsAttempted: topicMastery.questionsAttempted,
+                topicName: topics.name,
+                subjectName: subjects.name,
+              })
+              .from(topicMastery)
+              .innerJoin(topics, eq(topics.id, topicMastery.topicId))
+              .innerJoin(subjects, eq(subjects.id, topicMastery.subjectId))
+              .where(and(
+                eq(topicMastery.userId, userId),
+                inArray(topicMastery.subjectId, filteredIds),
+              ))
+              .orderBy(desc(topicMastery.masteryScore))
+              .limit(60)
+          : [];
+        topicMasteryList = tmRows.map(r => ({
+          topicId: r.topicId,
+          topicName: r.topicName,
+          subjectId: r.subjectId,
+          subjectName: r.subjectName,
+          masteryScore: r.masteryScore,
+          masteryBand: (r.masteryBand === "green" || r.masteryBand === "amber" ? r.masteryBand : "red"),
+          questionsAttempted: r.questionsAttempted,
+        }));
+      }
+
+      // Total minutes logged in `study_sessions` over the same 14-day window
+      // used by `recentActivity`. Time-on-task, not extrapolated from question
+      // count — a learner who reads a topic for an hour and answers nothing
+      // still gets credit for showing up.
+      let studyMinutes14d = 0;
+      if (stats.questionsAnswered > 0) {
+        const windowStart14 = new Date();
+        windowStart14.setDate(windowStart14.getDate() - 13);
+        windowStart14.setHours(0, 0, 0, 0);
+        const [minsRow] = await db
+          .select({ total: sql<number>`COALESCE(SUM(${studySessions.durationSeconds}), 0)` })
+          .from(studySessions)
+          .where(and(eq(studySessions.userId, userId), gte(studySessions.startedAt, windowStart14)));
+        studyMinutes14d = Math.round(Number(minsRow?.total ?? 0) / 60);
+      }
+
       res.json({
         overallAccuracy: stats.accuracy,
         studyStreak: stats.studyStreak,
@@ -8127,6 +8192,8 @@ Create comprehensive study notes for the topic provided.`;
         subjectProgress,
         weakTopics,
         recentActivity,
+        topicMastery: topicMasteryList,
+        studyMinutes14d,
       });
     } catch (error) {
       console.error("Error fetching progress:", error);
@@ -16443,6 +16510,102 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       return res.json({ subject, challenge: rows[0] });
     } catch (err: any) {
       return res.status(500).json({ error: safeError(err) });
+    }
+  });
+
+  // GET /api/learner/daily-motivation — one tip + one Rizz line per learner
+  // per SAST day. Deterministic (userId, date) → same pair all day, fresh pair
+  // tomorrow. Selection lives in ./daily-motivation.ts — keeping the route
+  // handler thin. Never calls OpenAI: this loads on dashboard first paint and
+  // must be instant and offline-safe.
+  //
+  // Tip source: subject_study_tips filtered to the learner's selectedSubjects
+  // if that table has rows for those subjects; otherwise the in-code
+  // CURATED_TIPS fallback (40+ bilingual generic exam-technique tips). The
+  // response's `source` field reports which one served this request so we can
+  // watch subject-tip coverage grow.
+  app.get("/api/learner/daily-motivation", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+      const {
+        sastDateKey,
+        pickDailyRizz,
+        pickDailyTip,
+        toClientRizz,
+        toClientTip,
+        CURATED_TIPS,
+      } = await import("./daily-motivation");
+      const { subjectStudyTips } = await import("@shared/schema");
+
+      // Learner preferred language: query param wins so a mid-session language
+      // toggle takes effect immediately, then stored preference, then "en".
+      const [userRow] = await db
+        .select({ preferredLanguage: users.preferredLanguage })
+        .from(users)
+        .where(eq(users.id, userId));
+      const lang = resolveRequestLang(req.query.lang, userRow?.preferredLanguage);
+
+      // Learner subjects: onboarding_results.selected_subjects → subjects.name.
+      // Empty selection is normal for pre-onboarding admins in preview mode —
+      // we just fall through to the generic tip pool.
+      const [obRow] = await db
+        .select({ selectedSubjects: onboardingResults.selectedSubjects })
+        .from(onboardingResults)
+        .where(eq(onboardingResults.userId, userId))
+        .orderBy(desc(onboardingResults.completedAt))
+        .limit(1);
+      const subjectIds: number[] = Array.isArray(obRow?.selectedSubjects) ? obRow!.selectedSubjects : [];
+      let subjectNames: string[] = [];
+      if (subjectIds.length > 0) {
+        const subjRows = await db
+          .select({ name: subjects.name })
+          .from(subjects)
+          .where(inArray(subjects.id, subjectIds));
+        subjectNames = subjRows.map(r => r.name);
+      }
+
+      // Try subject_study_tips first — this table may not exist / may be
+      // empty on some environments. Wrap in try/catch so an ingestion gap
+      // never breaks the dashboard.
+      let dbTipPool: Array<{ en: string; af: string; subject: string | null }> = [];
+      let tipSource: "db" | "fallback" = "fallback";
+      if (subjectNames.length > 0) {
+        try {
+          const dbTips = await db
+            .select({
+              subject: subjectStudyTips.subject,
+              tip: subjectStudyTips.tip,
+              tipAf: subjectStudyTips.tipAf,
+            })
+            .from(subjectStudyTips)
+            .where(inArray(subjectStudyTips.subject, subjectNames));
+          if (dbTips.length > 0) {
+            dbTipPool = dbTips.map(t => ({ en: t.tip, af: t.tipAf, subject: t.subject }));
+            tipSource = "db";
+          }
+        } catch (err) {
+          // Table missing / permission issue / SQL error — fall through to
+          // the curated pool. Log so we notice if it happens in prod.
+          console.warn("[DailyMotivation] subject_study_tips lookup failed, using curated fallback:", (err as any)?.message);
+        }
+      }
+
+      const dateKey = sastDateKey();
+      const tip = pickDailyTip(userId, dateKey, dbTipPool, CURATED_TIPS as unknown as typeof dbTipPool);
+      const rizz = pickDailyRizz(userId, dateKey);
+
+      res.json({
+        tip: toClientTip(tip as any),
+        rizz: toClientRizz(rizz),
+        date: dateKey,
+        lang,
+        source: { tip: tipSource, rizz: "curated" as const },
+      });
+    } catch (err: any) {
+      console.error("[DailyMotivation] GET /api/learner/daily-motivation error:", err);
+      res.status(500).json({ error: safeError(err) });
     }
   });
 

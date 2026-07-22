@@ -340,6 +340,14 @@ const T = {
     streakNudge: "Don't break it now — keep the fire going.",
     worthLabel: "worth",
     prelimNote: "Prelim dates are set by your school/province (typically Aug–mid Sep). Finals per the official DBE NSC Oct/Nov 2026 timetable.",
+    boostSessionTitle: "Boost Session",
+    boostSessionTag: "30 min · all your subjects",
+    boostSessionDesc: "One guided sprint of real DBE questions rotating through every subject you take.",
+    boostSessionCta: "Start 30-min Boost →",
+    dailyBoostHeading: "Daily Boost",
+    dailyBoostSub: "one for the head, one for the heart",
+    dailyBoostTipEyebrow: "TIP OF THE DAY",
+    dailyBoostRizzEyebrow: "RIZZ SAYS",
   },
   af: {
     signOut: "Uitteken",
@@ -478,6 +486,14 @@ const T = {
     streakNudge: "Moenie dit nou breek nie — hou die vuur brandend.",
     worthLabel: "werd",
     prelimNote: "Vooreksamendatums word deur jou skool/provinsie bepaal (gewoonlik Aug tot middel Sep). Finale eksamens volg die amptelike DBE NSC Okt/Nov 2026-rooster.",
+    boostSessionTitle: "Boost-sessie",
+    boostSessionTag: "30 min · al jou vakke",
+    boostSessionDesc: "Een begeleide sessie met regte DBE-vrae wat deur elkeen van jou vakke roteer.",
+    boostSessionCta: "Begin 30-min Boost →",
+    dailyBoostHeading: "Daaglikse Boost",
+    dailyBoostSub: "een vir die kop, een vir die hart",
+    dailyBoostTipEyebrow: "WENK VAN DIE DAG",
+    dailyBoostRizzEyebrow: "RIZZ SÊ",
   },
 } as const;
 
@@ -537,6 +553,22 @@ export default function DashboardPage() {
     daily: { questionsAnswered: number; questionsGoal: number; pct: number };
     settings: { dailyQuestionsGoal: number; weeklyDaysGoal: number };
   }>({ queryKey: ["/api/learner/goals"], staleTime: 60000 });
+
+  // Daily Boost — one tip + one Rizz line per learner per SAST day. The
+  // server keys off the SAST date so the pair is stable within the day and
+  // rotates at midnight SAST. We include today's SAST date in the queryKey
+  // so React Query treats a new day as a fresh query and auto-refetches
+  // when the browser is left open overnight. lang is on the querystring so
+  // a language toggle re-fetches in the new language (endpoint honors ?lang=).
+  const todaySast = new Date().toLocaleDateString("en-CA", { timeZone: "Africa/Johannesburg" });
+  const { data: dailyBoost } = useQuery<{
+    tip: { text: string; textAf: string; subject: string | null };
+    rizz: { text: string; textAf: string };
+    date: string;
+  }>({
+    queryKey: [`/api/learner/daily-motivation?lang=${language}&d=${todaySast}`],
+    staleTime: 12 * 60 * 60 * 1000, // 12h — never re-fetches within the same day
+  });
   const { varkPrimary, style: varkStyle, insights: varkInsights } = useVark();
 
   type Countdown = { days: number; hours: number; minutes: number; seconds: number };
@@ -912,6 +944,97 @@ export default function DashboardPage() {
           </div>
         )}
 
+        {/* ═══ Daily Boost — one tip, one Rizz line, refreshes at SAST midnight ═══
+             Rendered near the top of the dashboard on purpose: it's a "first
+             thing you see when you open the app" nudge. Falls back to a
+             skeleton silently on first paint / error — never blocks the rest
+             of the page. */}
+        {dailyBoost && (
+          <div
+            data-testid="daily-boost-section"
+            className="bt-grid-2col"
+            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}
+          >
+            {/* Rizz motivational card */}
+            <div
+              data-testid="daily-boost-rizz"
+              style={{
+                background: "linear-gradient(140deg,rgba(197,179,255,.14),rgba(255,183,229,.10)), #050508",
+                border: "1.5px solid #C5B3FF",
+                borderRadius: 20,
+                padding: "18px 20px",
+                display: "flex",
+                alignItems: "flex-start",
+                gap: 14,
+              }}
+            >
+              <img
+                src={rizzAvatar}
+                alt="Rizz"
+                style={{ width: 54, height: 54, borderRadius: 14, objectFit: "cover", border: "1.5px solid #C5B3FF", flex: "none" }}
+              />
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.5, textTransform: "uppercase", color: "#C5B3FF" }}>
+                  {t.dailyBoostRizzEyebrow}
+                </div>
+                <div
+                  data-testid="daily-boost-rizz-text"
+                  style={{ fontFamily: "'Poppins',sans-serif", fontSize: 15, fontWeight: 600, color: "#fff", lineHeight: 1.45, marginTop: 4 }}
+                >
+                  {isAf ? dailyBoost.rizz.textAf : dailyBoost.rizz.text}
+                </div>
+              </div>
+            </div>
+
+            {/* Daily Tip card */}
+            <div
+              data-testid="daily-boost-tip"
+              style={{
+                background: "linear-gradient(140deg,rgba(159,245,232,.14),rgba(148,247,197,.10)), #050508",
+                border: "1.5px solid #9FF5E8",
+                borderRadius: 20,
+                padding: "18px 20px",
+                display: "flex",
+                alignItems: "flex-start",
+                gap: 14,
+              }}
+            >
+              <div
+                aria-hidden
+                style={{
+                  width: 54,
+                  height: 54,
+                  borderRadius: 14,
+                  border: "1.5px solid #9FF5E8",
+                  background: "rgba(159,245,232,.10)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flex: "none",
+                }}
+              >
+                <Lightbulb style={{ width: 26, height: 26, color: "#9FF5E8" }} />
+              </div>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.5, textTransform: "uppercase", color: "#9FF5E8" }}>
+                  {t.dailyBoostTipEyebrow}
+                  {dailyBoost.tip.subject && (
+                    <span data-testid="daily-boost-tip-subject" style={{ color: "#fff", fontWeight: 700, marginLeft: 8 }}>
+                      · {dailyBoost.tip.subject}
+                    </span>
+                  )}
+                </div>
+                <div
+                  data-testid="daily-boost-tip-text"
+                  style={{ fontFamily: "'Poppins',sans-serif", fontSize: 15, fontWeight: 600, color: "#fff", lineHeight: 1.45, marginTop: 4 }}
+                >
+                  {isAf ? dailyBoost.tip.textAf : dailyBoost.tip.text}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* ═══ Next-exam hero ═══ */}
         <div
           data-testid="learner-command-hero"
@@ -957,6 +1080,68 @@ export default function DashboardPage() {
               onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
             >
               {t.startRevision}
+            </button>
+          </Link>
+        </div>
+
+        {/* ═══ Boost Session — 30 min of revision across ALL selected subjects ═══ */}
+        <div
+          data-testid="boost-session-card"
+          style={{
+            background: "linear-gradient(120deg,rgba(148,247,197,.13),rgba(159,245,232,.09)), #050508",
+            border: "1.5px solid #94F7C5",
+            borderRadius: 20,
+            padding: "20px 26px",
+            display: "flex",
+            alignItems: "center",
+            gap: 20,
+            flexWrap: "wrap",
+            boxShadow: "0 10px 30px rgba(148,247,197,.22)",
+          }}
+        >
+          <div
+            aria-hidden
+            style={{
+              width: 52,
+              height: 52,
+              flex: "none",
+              borderRadius: 16,
+              background: "rgba(148,247,197,.16)",
+              border: "1px solid #94F7C5",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Timer style={{ width: 26, height: 26, color: "#94F7C5" }} />
+          </div>
+          <div style={{ flex: 1, minWidth: 220 }}>
+            <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#94F7C5", transform: "rotate(-2deg)", display: "inline-block" }}>
+              {t.boostSessionTag} ⚡
+            </div>
+            <div style={{ fontSize: 22, fontWeight: 900, letterSpacing: -0.5, color: "#fff" }}>{t.boostSessionTitle} 🚀</div>
+            <div style={{ fontSize: 13, color: "#fff" }}>{t.boostSessionDesc}</div>
+          </div>
+          <Link href="/boost-session">
+            <button
+              data-testid="button-start-boost-session"
+              style={{
+                fontFamily: "'Poppins',sans-serif",
+                fontWeight: 800,
+                fontSize: 14,
+                color: "#050508",
+                background: "linear-gradient(100deg,#94F7C5,#9FF5E8)",
+                border: "none",
+                borderRadius: 10,
+                padding: "13px 26px",
+                whiteSpace: "nowrap",
+                cursor: "pointer",
+                transition: "transform .2s",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
+            >
+              {t.boostSessionCta}
             </button>
           </Link>
         </div>

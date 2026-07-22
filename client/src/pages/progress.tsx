@@ -1,9 +1,47 @@
+/**
+ * client/src/pages/progress.tsx — the learner's honest self-view.
+ *
+ * WHAT PROGRESS MEANS (mirrored per-tile below):
+ *
+ *   1. MISSION READINESS   — the cross-app score also shown on the Dashboard.
+ *                            Kept identical to `calcReadiness` for consistency
+ *                            (the e2e spec `tests/e2e/study-readiness.spec.ts`
+ *                            asserts the three surfaces agree).
+ *   2. PROGRESS RECIPE     — the honest 4-part composite (accuracy 30 +
+ *                            volume 30 + coverage 25 + consistency 15) that
+ *                            answers "what is progress measured against?".
+ *                            Every ingredient traces back to a real DB source
+ *                            (see `client/src/lib/readiness.ts`).
+ *   3. TREND               — the last 14 days off `attempts`, plus this-week
+ *                            vs last-week (`/api/user/weekly-comparison`) and
+ *                            time on task (`/api/learner/goals.weekly.studyMinutes`).
+ *   4. COVERAGE            — per-subject accuracy off `user_progress`, plus
+ *                            per-topic mastery bands off `topic_mastery`
+ *                            (the marking pipeline's real per-topic signal —
+ *                            NOT `dbe_verbatim_questions.topic` which is NULL
+ *                            on released rows).
+ *   5. NEXT MOVE           — one prescriptive next action from
+ *                            `pickNextMove`, biased to the weakest started
+ *                            subject.
+ *   6. MILESTONES          — real dated achievements: personal-best per subject
+ *                            (`/api/user/personal-bests`) + next badge
+ *                            (`/api/user/next-milestone`).
+ *
+ * Every metric on this page must be traceable to a real DB source. If the
+ * evidence isn't there, the page says so with a one-line note in the empty
+ * state — it never invents a placeholder number.
+ */
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLanguage } from "@/lib/language-context";
 import { formatDate } from "@/lib/formatters";
-import { calcReadiness, readinessBandLabel } from "@/lib/readiness";
+import {
+  calcReadiness,
+  calcReadinessBreakdown,
+  readinessBandLabel,
+  type ReadinessPart,
+} from "@/lib/readiness";
 import {
   ArrowLeft,
   ArrowRight,
@@ -16,27 +54,54 @@ import {
   CheckCircle,
   Rocket,
   Compass,
+  Layers,
+  Trophy,
+  Sparkles,
+  Zap,
+  Clock,
 } from "lucide-react";
 import { getSubjectIcon } from "@/lib/vark";
 import { GraffitiSplats } from "@/components/graffiti-splats";
 import { LearnerHeader } from "@/components/learner-header";
 import { YouVsYouChart } from "@/components/you-vs-you-chart";
 import { NextMilestoneWidget } from "@/components/next-milestone-widget";
+import { PersonalBestsWidget } from "@/components/personal-bests-widget";
 import {
   type ProgressStats,
   type SubjectProgress,
+  type TopicMasteryEntry,
   hasAnyActivity,
   summariseActivity,
   dayAccuracy,
   splitSubjects,
   improvementOf,
   pickNextMove,
+  pickTopicFocus,
+  pickTopicStrengths,
+  summariseTopicMastery,
   accuracyHex,
 } from "@/lib/progress-insights";
 
 /* Opaque card base — the graffiti scatter sits behind the page and bled
    through when these were translucent, so every card paints #050508 first. */
 const CARD_BG = "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508";
+
+/* Palette (pastels only — no grey text ever). */
+const HEX = {
+  sky: "#9FD8FF",
+  aqua: "#9FF5E8",
+  mint: "#94F7C5",
+  yellow: "#FFE29A",
+  pink: "#FFB7E5",
+  purple: "#C5B3FF",
+  alert: "#FF8DA1",
+} as const;
+
+/* Colour ramp keyed to mastery band, so a "Coverage" tile matches the badges
+   in the topic pool below it. */
+function bandHex(band: "red" | "amber" | "green"): string {
+  return band === "green" ? HEX.mint : band === "amber" ? HEX.yellow : HEX.alert;
+}
 
 function Panel({
   hex,
@@ -75,12 +140,85 @@ function Panel({
   );
 }
 
+/**
+ * One of the four ingredients in the Progress Recipe. Shows the ingredient's
+ * contribution to the composite (e.g. 18.9/30), the raw underlying signal
+ * (e.g. 63% accuracy), a bar, and the source-of-truth description.
+ */
+function RecipeTile({
+  hex,
+  icon: Icon,
+  title,
+  part,
+  rawLabel,
+  source,
+  testid,
+}: {
+  hex: string;
+  icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
+  title: string;
+  part: ReadinessPart;
+  rawLabel: string;
+  source: string;
+  testid?: string;
+}) {
+  const pct = Math.min(100, (part.value / part.cap) * 100);
+  return (
+    <div
+      className="relative rounded-2xl p-4 overflow-hidden transition-transform hover:-translate-y-1"
+      style={{ background: CARD_BG, border: `1.5px solid ${hex}`, boxShadow: `0 0 0 1px ${hex}33` }}
+      data-testid={testid}
+    >
+      <span aria-hidden className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2" style={{ borderColor: hex }} />
+      <span aria-hidden className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2" style={{ borderColor: hex }} />
+      <div className="flex items-start gap-3">
+        <div className="w-9 h-9 rounded-lg bg-white/[.03] flex items-center justify-center shrink-0" style={{ border: `1.5px solid ${hex}` }}>
+          <Icon className="w-4 h-4" style={{ color: hex }} />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: hex }}>{title}</p>
+          <div className="flex items-baseline gap-1 mt-0.5">
+            <span
+              className="text-xl font-black tabular-nums leading-none"
+              style={{ color: hex }}
+              data-testid={testid ? `${testid}-value` : undefined}
+            >
+              {part.empty ? "—" : part.value}
+            </span>
+            <span className="text-[11px] font-semibold text-white leading-none">/ {part.cap}</span>
+          </div>
+        </div>
+      </div>
+      <div className="mt-3 h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+        <div
+          className="h-full rounded-full transition-[width] duration-700"
+          style={{ width: `${pct}%`, background: hex }}
+        />
+      </div>
+      <p className="text-[11px] font-semibold text-white mt-2 leading-snug">
+        {rawLabel}
+      </p>
+      <p className="text-[10px] font-semibold mt-1 leading-snug" style={{ color: hex }}>
+        {source}
+      </p>
+    </div>
+  );
+}
+
 export default function ProgressPage() {
   const { language } = useLanguage();
   const isAf = language === "af";
 
   const { data: stats, isLoading } = useQuery<ProgressStats>({
     queryKey: ["/api/user/progress"],
+  });
+
+  const { data: goals } = useQuery<{
+    weekly: { studyMinutes: number; activeDays: number };
+    daily: { questionsAnswered: number; questionsGoal: number };
+  } | null>({
+    queryKey: ["/api/learner/goals"],
+    staleTime: 60_000,
   });
 
   const started = hasAnyActivity(stats);
@@ -92,7 +230,28 @@ export default function ProgressPage() {
   const streak = stats?.studyStreak ?? 0;
   const papers = stats?.totalPapersCompleted ?? 0;
   const questions = stats?.totalQuestionsAttempted ?? 0;
-  const readiness = calcReadiness({ accuracy: acc, studyStreak: streak, questionsAnswered: questions });
+
+  /* Two readiness numbers, on purpose:
+     • Mission Readiness — legacy 3-part, matches Dashboard. Same testid.
+     • Progress Recipe — 4-part honest composite with source-of-truth breakdown. */
+  const missionReadiness = calcReadiness({
+    accuracy: acc,
+    studyStreak: streak,
+    questionsAnswered: questions,
+  });
+  const breakdown = calcReadinessBreakdown({
+    accuracy: acc,
+    questionsAnswered: questions,
+    subjectsEnrolled: stats?.subjectProgress?.length ?? 0,
+    subjectsStarted: activeSubjects.length,
+    studyStreak: streak,
+  });
+
+  const topicSummary = summariseTopicMastery(stats?.topicMastery);
+  const topicStrengths = pickTopicStrengths(stats?.topicMastery, 3);
+  const topicFocus = pickTopicFocus(stats?.topicMastery, 5);
+  const studyMinutes14d = stats?.studyMinutes14d ?? 0;
+  const studyMinutesThisWeek = goals?.weekly?.studyMinutes ?? 0;
 
   /* "What do I do next?" — one sentence, derived only from what the data can
      actually prove (see client/src/lib/progress-insights.ts). */
@@ -152,8 +311,11 @@ export default function ProgressPage() {
     acc >= 55 ? (isAf ? "Op Koers"    : "On Track") :
     acc >= 40 ? (isAf ? "Bou Momentum": "Building Momentum") :
                 (isAf ? "Ontluik"     : "Emerging");
-  const rankHex = acc >= 70 ? "#9FD8FF" : acc >= 40 ? "#FFE29A" : "#FFB7E5";
-  const readinessHex = readiness >= 75 ? "#9FD8FF" : readiness >= 40 ? "#FFE29A" : "#FFB7E5";
+  const rankHex = acc >= 70 ? HEX.sky : acc >= 40 ? HEX.yellow : HEX.pink;
+  const missionHex =
+    missionReadiness >= 75 ? HEX.sky : missionReadiness >= 40 ? HEX.yellow : HEX.pink;
+  const recipeHex =
+    breakdown.total >= 75 ? HEX.mint : breakdown.total >= 55 ? HEX.yellow : HEX.pink;
   const R = 52;
   const C = 2 * Math.PI * R;
   const offset = C - (Math.min(100, Math.max(0, acc)) / 100) * C;
@@ -165,7 +327,7 @@ export default function ProgressPage() {
         backHref="/dashboard"
         backLabel={isAf ? "Tuis" : "Home"}
         title={isAf ? "Vordering" : "Progress"}
-        titleColor="#9FF5E8"
+        titleColor={HEX.aqua}
         maxWidthClassName="max-w-7xl"
       />
 
@@ -181,9 +343,8 @@ export default function ProgressPage() {
           {/* ── Hero ──────────────────────────────────────────────────────── */}
           <div
             className="relative overflow-hidden rounded-3xl p-6 sm:p-8 md:p-10"
-            style={{ background: CARD_BG, border: "1.5px solid #9FD8FF", boxShadow: "0 0 0 1px rgba(159,216,255,0.28)" }}
+            style={{ background: CARD_BG, border: `1.5px solid ${HEX.sky}`, boxShadow: `0 0 0 1px rgba(159,216,255,0.28)` }}
           >
-            {/* Grid texture */}
             <div
               aria-hidden
               className="absolute inset-0 pointer-events-none opacity-[0.08]"
@@ -198,29 +359,27 @@ export default function ProgressPage() {
             <div
               aria-hidden
               className="absolute left-0 right-0 h-px pointer-events-none progress-hero-scan"
-              style={{ background: "linear-gradient(90deg, transparent, #9FD8FF 20%, #C5B3FF 50%, #FFB7E5 80%, transparent)" }}
+              style={{ background: `linear-gradient(90deg, transparent, ${HEX.sky} 20%, ${HEX.purple} 50%, ${HEX.pink} 80%, transparent)` }}
             />
             <div
               aria-hidden
               className="absolute top-0 left-0 right-0 h-[3px]"
-              style={{ background: "linear-gradient(90deg, #FFE29A, #FFE29A, #94F7C5, #9FF5E8, #9FD8FF, #C5B3FF, #FFB7E5)" }}
+              style={{ background: `linear-gradient(90deg, ${HEX.yellow}, ${HEX.yellow}, ${HEX.mint}, ${HEX.aqua}, ${HEX.sky}, ${HEX.purple}, ${HEX.pink})` }}
             />
-            <span aria-hidden className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2" style={{ borderColor: "#9FD8FF" }} />
-            <span aria-hidden className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2" style={{ borderColor: "#9FD8FF" }} />
-            <span aria-hidden className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2" style={{ borderColor: "#9FD8FF" }} />
-            <span aria-hidden className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2" style={{ borderColor: "#9FD8FF" }} />
+            <span aria-hidden className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2" style={{ borderColor: HEX.sky }} />
+            <span aria-hidden className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2" style={{ borderColor: HEX.sky }} />
+            <span aria-hidden className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2" style={{ borderColor: HEX.sky }} />
+            <span aria-hidden className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2" style={{ borderColor: HEX.sky }} />
 
             <div className="relative flex flex-col lg:flex-row lg:items-center gap-8">
               <div className="flex-1 space-y-4 min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-white/[.03]" style={{ border: "1px solid rgba(159,216,255,0.55)" }}>
-                    <span className="w-1.5 h-1.5 rounded-full progress-hero-pulse" style={{ background: "#9FD8FF" }} />
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#9FD8FF" }}>
+                  <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-white/[.03]" style={{ border: `1px solid ${HEX.sky}8C` }}>
+                    <span className="w-1.5 h-1.5 rounded-full progress-hero-pulse" style={{ background: HEX.sky }} />
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: HEX.sky }}>
                       {isAf ? "Prestasieverslag" : "Performance Report"}
                     </span>
                   </div>
-                  {/* Rank is a read of measured accuracy — meaningless before
-                      there is any, so it only appears once data exists. */}
                   {started && (
                     <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-white/[.03]" style={{ border: `1px solid ${rankHex}` }}>
                       <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: rankHex }}>
@@ -228,9 +387,9 @@ export default function ProgressPage() {
                       </span>
                     </div>
                   )}
-                  <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-white/[.03]" style={{ border: "1px solid rgba(255,226,154,0.55)" }}>
-                    <Flame className="w-3 h-3" style={{ color: "#FFE29A" }} />
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#FFE29A" }}>
+                  <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-white/[.03]" style={{ border: `1px solid ${HEX.yellow}8C` }}>
+                    <Flame className="w-3 h-3" style={{ color: HEX.yellow }} />
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: HEX.yellow }}>
                       {streak} {isAf ? (streak === 1 ? "dag" : "dae") : (streak === 1 ? "day" : "days")}
                     </span>
                   </div>
@@ -241,7 +400,7 @@ export default function ProgressPage() {
                   aria-level={1}
                   className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-[0.98]"
                   style={{
-                    background: "linear-gradient(90deg, #FFE29A, #FFE29A, #94F7C5, #9FF5E8, #9FD8FF, #C5B3FF, #FFB7E5)",
+                    background: `linear-gradient(90deg, ${HEX.yellow}, ${HEX.yellow}, ${HEX.mint}, ${HEX.aqua}, ${HEX.sky}, ${HEX.purple}, ${HEX.pink})`,
                     WebkitBackgroundClip: "text",
                     WebkitTextFillColor: "transparent",
                     backgroundClip: "text",
@@ -252,44 +411,46 @@ export default function ProgressPage() {
                 <p className="text-white font-medium text-base sm:text-lg max-w-xl">
                   {started
                     ? (isAf
-                        ? "'n Lewendige missiekonsole vir jou matriekreis — elke vraestel, elke streep, elke oorwinning."
-                        : "A live mission console for your matric journey — every paper, every streak, every win.")
+                        ? "Elke syfer hier is uit jou eie werk gemeet — geen versinsel nie."
+                        : "Every number here is measured from your own work — nothing invented.")
                     : (isAf
                         ? "Hier land jou syfers sodra jy begin oefen. Op die oomblik is dit 'n skoon bladsy — kom ons vul dit."
                         : "This is where your numbers land once you start practising. Right now it's a clean page — let's fill it.")}
                 </p>
 
-                {/* Readiness — labelled so the percentage means something. */}
+                {/* Mission Readiness — the cross-app number.
+                    Same testid, same formula, so /dashboard, /progress and
+                    /study-calendar always agree (see study-readiness.spec.ts). */}
                 <div className="pt-2">
-                  <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center justify-between mb-1.5 gap-2 flex-wrap">
                     <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">
                       {isAf ? "Missie Gereedheid" : "Mission Readiness"}
                     </span>
-                    <span data-testid="mission-readiness-value" className="text-[11px] font-bold" style={{ color: readinessHex }}>
-                      {readiness}% · {readinessBandLabel(readiness, isAf)}
+                    <span data-testid="mission-readiness-value" className="text-[11px] font-bold" style={{ color: missionHex }}>
+                      {missionReadiness}% · {readinessBandLabel(missionReadiness, isAf)}
                     </span>
                   </div>
                   <div className="relative h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}>
                     <div
                       className="absolute top-0 left-0 bottom-0 rounded-full transition-[width] duration-700"
                       style={{
-                        width: `${readiness}%`,
-                        background: "linear-gradient(90deg, #FFE29A, #FFE29A, #94F7C5, #9FF5E8, #9FD8FF, #C5B3FF, #FFB7E5)",
+                        width: `${missionReadiness}%`,
+                        background: `linear-gradient(90deg, ${HEX.yellow}, ${HEX.yellow}, ${HEX.mint}, ${HEX.aqua}, ${HEX.sky}, ${HEX.purple}, ${HEX.pink})`,
                       }}
                     />
                   </div>
                   <p className="text-[11px] font-semibold text-white mt-1.5">
                     {isAf
-                      ? "Gebaseer op akkuraatheid, hoeveel vrae jy beantwoord het, en jou streep."
-                      : "Based on your accuracy, how many questions you've answered, and your streak."}
+                      ? "Dieselfde syfer as op jou dashboard. Kyk hieronder vir die volle uiteensetting."
+                      : "The same number your dashboard shows. Full breakdown below."}
                   </p>
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 pt-1">
                   {[
-                    { k: isAf ? "Vraestelle" : "Papers",    v: papers,    hex: "#C5B3FF" },
-                    { k: isAf ? "Vrae"       : "Questions", v: questions, hex: "#FFE29A" },
-                    { k: isAf ? "Streep"     : "Streak",    v: streak,    hex: "#FFE29A" },
+                    { k: isAf ? "Vraestelle" : "Papers",    v: papers,    hex: HEX.purple },
+                    { k: isAf ? "Vrae"       : "Questions", v: questions, hex: HEX.yellow },
+                    { k: isAf ? "Streep"     : "Streak",    v: streak,    hex: HEX.yellow },
                   ].map(({ k, v, hex }) => (
                     <div key={k} className="rounded-xl bg-white/[.03] px-3 py-2" style={{ border: `1px solid ${hex}55` }}>
                       <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-white">{k}</div>
@@ -302,7 +463,7 @@ export default function ProgressPage() {
                   <Link href="/dashboard">
                     <button
                       className="px-4 py-2 rounded-xl bg-white/[.03] font-bold text-sm hover:bg-white/10"
-                      style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
+                      style={{ color: HEX.sky, border: `1.5px solid ${HEX.sky}` }}
                       data-testid="button-back"
                     >
                       <ArrowLeft className="w-3.5 h-3.5 inline mr-1.5" />
@@ -312,16 +473,18 @@ export default function ProgressPage() {
                 </div>
               </div>
 
-              {/* Accuracy dial */}
+              {/* Accuracy dial — the visual anchor of the hero. Still just
+                  accuracy (not the composite) because it is the number the
+                  learner most-often thinks about when asked "how am I doing?". */}
               <div className="relative flex-shrink-0 self-center">
                 <svg width="160" height="160" viewBox="0 0 140 140" className="relative">
                   <defs>
                     <linearGradient id="accDialStroke" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#FFE29A" />
-                      <stop offset="25%" stopColor="#FFE29A" />
-                      <stop offset="50%" stopColor="#9FF5E8" />
-                      <stop offset="75%" stopColor="#C5B3FF" />
-                      <stop offset="100%" stopColor="#FFB7E5" />
+                      <stop offset="0%" stopColor={HEX.yellow} />
+                      <stop offset="25%" stopColor={HEX.yellow} />
+                      <stop offset="50%" stopColor={HEX.aqua} />
+                      <stop offset="75%" stopColor={HEX.purple} />
+                      <stop offset="100%" stopColor={HEX.pink} />
                     </linearGradient>
                   </defs>
                   <circle cx="70" cy="70" r={R} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="8" />
@@ -392,20 +555,102 @@ export default function ProgressPage() {
             </div>
           ) : (
             <>
+              {/* ── Progress Recipe ─ the honest 4-part composite ──────────
+                  Answers the question "what does progress measure?" by naming
+                  the four ingredients and showing each one's contribution to
+                  the composite. Every tile carries its raw signal + source. */}
+              <Panel
+                hex={recipeHex}
+                icon={Layers}
+                title={isAf ? "Vorderingsresep" : "Progress Recipe"}
+                subtitle={
+                  started
+                    ? (isAf
+                        ? `Vier bestanddele. Elkeen uit jou eie data. Totaal: ${breakdown.total} / 100 (${readinessBandLabel(breakdown.total, isAf)}).`
+                        : `Four ingredients. Each drawn from your own data. Total: ${breakdown.total} / 100 (${readinessBandLabel(breakdown.total, isAf)}).`)
+                    : (isAf
+                        ? "Elke bestanddeel vul op sodra jy oefen."
+                        : "Each ingredient fills up as you practise.")
+                }
+                testid="panel-recipe"
+              >
+                <div className="p-4 sm:p-5">
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4" data-testid="recipe-tiles">
+                    <RecipeTile
+                      hex={HEX.sky}
+                      icon={Target}
+                      title={isAf ? "Akkuraatheid" : "Accuracy"}
+                      part={breakdown.accuracy}
+                      rawLabel={
+                        breakdown.accuracy.empty
+                          ? (isAf ? "Nog geen antwoorde nie." : "No answers yet.")
+                          : `${breakdown.accuracy.raw}% ${isAf ? "reg oor" : "correct across"} ${questions} ${isAf ? "vrae" : "questions"}`
+                      }
+                      source={isAf ? "Bron: attempts.is_correct" : "Source: attempts.is_correct"}
+                      testid="recipe-accuracy"
+                    />
+                    <RecipeTile
+                      hex={HEX.yellow}
+                      icon={Zap}
+                      title={isAf ? "Volume" : "Volume"}
+                      part={breakdown.volume}
+                      rawLabel={
+                        breakdown.volume.empty
+                          ? (isAf ? "Beantwoord vrae om hierdie balk te vul." : "Answer questions to fill this bar.")
+                          : `${breakdown.volume.raw} / 300 ${isAf ? "vrae aangepak" : "questions attempted"}`
+                      }
+                      source={isAf ? "Bron: attempts (aantal)" : "Source: attempts (count)"}
+                      testid="recipe-volume"
+                    />
+                    <RecipeTile
+                      hex={HEX.mint}
+                      icon={Layers}
+                      title={isAf ? "Vakdekking" : "Coverage"}
+                      part={breakdown.coverage}
+                      rawLabel={
+                        breakdown.coverage.empty
+                          ? (isAf ? "Kies vakke om hierdie balk te ontsluit." : "Pick subjects to unlock this bar.")
+                          : `${activeSubjects.length} / ${stats.subjectProgress.length} ${isAf ? "vakke begin" : "subjects started"}`
+                      }
+                      source={isAf ? "Bron: user_progress · onboarding_results" : "Source: user_progress · onboarding_results"}
+                      testid="recipe-coverage"
+                    />
+                    <RecipeTile
+                      hex={HEX.pink}
+                      icon={Flame}
+                      title={isAf ? "Konsekwentheid" : "Consistency"}
+                      part={breakdown.consistency}
+                      rawLabel={
+                        breakdown.consistency.empty
+                          ? (isAf ? "Studeer vandag om jou streep te begin." : "Study today to start your streak.")
+                          : `${breakdown.consistency.raw}-${isAf ? "dag streep" : "day streak"} (${isAf ? "kap by 7" : "caps at 7"})`
+                      }
+                      source={isAf ? "Bron: user_streaks.current_streak" : "Source: user_streaks.current_streak"}
+                      testid="recipe-consistency"
+                    />
+                  </div>
+                  <p className="text-[11px] font-semibold text-white mt-4 leading-snug">
+                    {isAf
+                      ? "Elke balk is 'n aparte sein. Twee groen balke en twee rooi wys wat om reg te maak — nie net 'n enkele nommer nie."
+                      : "Each bar is a separate signal. Two green and two red bars tell you what to fix — not just a single number."}
+                  </p>
+                </div>
+              </Panel>
+
               {/* ── Next move — the "what do I do now?" answer ─────────────── */}
               <div
                 className="relative rounded-2xl overflow-hidden p-6 sm:p-7"
-                style={{ background: CARD_BG, border: "1.5px solid #94F7C5", boxShadow: "0 0 0 1px rgba(148,247,197,0.28)" }}
+                style={{ background: CARD_BG, border: `1.5px solid ${HEX.mint}`, boxShadow: `0 0 0 1px rgba(148,247,197,0.28)` }}
                 data-testid="next-move-card"
               >
-                <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: "#94F7C5" }} />
-                <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: "#94F7C5" }} />
+                <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: HEX.mint }} />
+                <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: HEX.mint }} />
                 <div className="flex flex-col sm:flex-row sm:items-center gap-5">
-                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 bg-white/[.03]" style={{ border: "1.5px solid #94F7C5" }}>
-                    <Compass className="w-7 h-7" style={{ color: "#94F7C5" }} />
+                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 bg-white/[.03]" style={{ border: `1.5px solid ${HEX.mint}` }}>
+                    <Compass className="w-7 h-7" style={{ color: HEX.mint }} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#94F7C5", transform: "rotate(-1.5deg)", display: "inline-block" }}>
+                    <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: HEX.mint, transform: "rotate(-1.5deg)", display: "inline-block" }}>
                       {isAf ? "jou volgende skuif" : "your next move"}
                     </p>
                     <h2 className="text-white font-black text-xl sm:text-2xl leading-tight mt-0.5" data-testid="next-move-title">
@@ -416,7 +661,7 @@ export default function ProgressPage() {
                   <Link href={nextMoveCopy.href}>
                     <button
                       className="w-full sm:w-auto px-5 py-3 rounded-xl font-bold text-sm shrink-0 bg-white/[.03] hover:bg-white/10 whitespace-nowrap"
-                      style={{ color: "#94F7C5", border: "1.5px solid #94F7C5" }}
+                      style={{ color: HEX.mint, border: `1.5px solid ${HEX.mint}` }}
                       data-testid="next-move-cta"
                     >
                       {nextMoveCopy.cta}
@@ -429,7 +674,7 @@ export default function ProgressPage() {
               {/* ── Brand-new learner: no counters, just a runway ──────────── */}
               {!started ? (
                 <Panel
-                  hex="#C5B3FF"
+                  hex={HEX.purple}
                   icon={Rocket}
                   title={isAf ? "Jou vakke staan gereed" : "Your subjects are ready"}
                   subtitle={isAf
@@ -441,7 +686,7 @@ export default function ProgressPage() {
                     {(stats.subjectProgress ?? []).length > 0 ? (
                       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                         {stats.subjectProgress.map((subject, idx) => {
-                          const stops = ["#9FF5E8", "#9FD8FF", "#FFB7E5", "#C5B3FF", "#FFE29A", "#94F7C5"];
+                          const stops = [HEX.aqua, HEX.sky, HEX.pink, HEX.purple, HEX.yellow, HEX.mint];
                           const hex = stops[idx % stops.length];
                           return (
                             <Link key={subject.subjectId} href={`/subject/${subject.subjectId}`}>
@@ -479,10 +724,10 @@ export default function ProgressPage() {
                   {/* ── Headline counters ─────────────────────────────────── */}
                   <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                     {([
-                      { label: isAf ? "Studie-reeks" : "Study Streak", value: stats.studyStreak,             unit: isAf ? "dae" : "days", icon: Flame,       hex: "#FFE29A", testid: "stat-streak" },
-                      { label: isAf ? "Akkuraatheid" : "Accuracy",     value: stats.overallAccuracy,         unit: "%",                   icon: Target,      hex: "#9FD8FF", testid: "stat-accuracy" },
-                      { label: isAf ? "Vraestelle"   : "Papers Done",  value: stats.totalPapersCompleted,    unit: "",                    icon: BookOpen,    hex: "#C5B3FF", testid: "stat-papers" },
-                      { label: isAf ? "Vrae"         : "Questions",    value: stats.totalQuestionsAttempted, unit: "",                    icon: CheckCircle, hex: "#FFE29A", testid: "stat-questions" },
+                      { label: isAf ? "Studie-reeks" : "Study Streak", value: stats.studyStreak,             unit: isAf ? "dae" : "days", icon: Flame,       hex: HEX.yellow, testid: "stat-streak" },
+                      { label: isAf ? "Akkuraatheid" : "Accuracy",     value: stats.overallAccuracy,         unit: "%",                   icon: Target,      hex: HEX.sky,    testid: "stat-accuracy" },
+                      { label: isAf ? "Vraestelle"   : "Papers Done",  value: stats.totalPapersCompleted,    unit: "",                    icon: BookOpen,    hex: HEX.purple, testid: "stat-papers" },
+                      { label: isAf ? "Vrae"         : "Questions",    value: stats.totalQuestionsAttempted, unit: "",                    icon: CheckCircle, hex: HEX.yellow, testid: "stat-questions" },
                     ]).map(({ label, value, unit, icon: Icon, hex, testid }) => (
                       <div
                         key={label}
@@ -506,16 +751,16 @@ export default function ProgressPage() {
                     ))}
                   </div>
 
-                  {/* ── Trend: real per-day series off `attempts` ──────────── */}
+                  {/* ── Trend: 14-day chart + week-over-week + time on task ─ */}
                   <Panel
-                    hex="#FFE29A"
+                    hex={HEX.yellow}
                     icon={Calendar}
-                    title={isAf ? "Laaste 14 dae" : "Last 14 days"}
+                    title={isAf ? "Neiging" : "Trend"}
                     subtitle={
                       activity.totalQuestions > 0
                         ? (isAf
-                            ? `${activity.totalQuestions} vrae oor ${activity.activeDays} ${activity.activeDays === 1 ? "dag" : "dae"} · ${activity.accuracy}% akkuraat`
-                            : `${activity.totalQuestions} questions across ${activity.activeDays} ${activity.activeDays === 1 ? "day" : "days"} · ${activity.accuracy}% accurate`)
+                            ? `${activity.totalQuestions} vrae oor ${activity.activeDays} ${activity.activeDays === 1 ? "dag" : "dae"} · ${activity.accuracy}% akkuraat oor 14 dae`
+                            : `${activity.totalQuestions} questions across ${activity.activeDays} ${activity.activeDays === 1 ? "day" : "days"} · ${activity.accuracy}% accurate over 14 days`)
                         : (isAf ? "Nog niks hierdie twee weke nie" : "Nothing logged these two weeks")
                     }
                     testid="panel-activity"
@@ -527,9 +772,6 @@ export default function ProgressPage() {
                             {stats.recentActivity.map((day, index) => {
                               const dAcc = dayAccuracy(day);
                               const hex = accuracyHex(dAcc);
-                              // Scale against the learner's own best day so a
-                              // 5-question day is still legible; floor at 6% so
-                              // an empty day reads as an intentional gap.
                               const pct = activity.bestDay > 0
                                 ? Math.max(6, Math.round((day.questionsAnswered / activity.bestDay) * 100))
                                 : 6;
@@ -555,11 +797,12 @@ export default function ProgressPage() {
                             <span>{formatDate(stats.recentActivity[0].date, language, { day: "numeric", month: "short" })}</span>
                             <span>{isAf ? "Vandag" : "Today"}</span>
                           </div>
-                          <div className="grid grid-cols-3 gap-2 mt-4">
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4">
                             {[
-                              { k: isAf ? "Aktiewe dae" : "Active days", v: `${activity.activeDays}/${activity.windowDays}`, hex: "#94F7C5" },
-                              { k: isAf ? "Beste dag"   : "Best day",    v: `${activity.bestDay}`,                          hex: "#C5B3FF" },
-                              { k: isAf ? "Akkuraat"    : "Accurate",    v: `${activity.accuracy}%`,                        hex: "#9FD8FF" },
+                              { k: isAf ? "Aktiewe dae" : "Active days", v: `${activity.activeDays}/${activity.windowDays}`, hex: HEX.mint },
+                              { k: isAf ? "Beste dag"   : "Best day",    v: `${activity.bestDay}`,                          hex: HEX.purple },
+                              { k: isAf ? "Akkuraat"    : "Accurate",    v: `${activity.accuracy}%`,                        hex: HEX.sky },
+                              { k: isAf ? "Studietyd 14d" : "Study time 14d", v: `${studyMinutes14d}m`,                    hex: HEX.pink },
                             ].map(({ k, v, hex }) => (
                               <div key={k} className="rounded-xl bg-white/[.03] px-3 py-2" style={{ border: `1px solid ${hex}55` }}>
                                 <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-white">{k}</div>
@@ -580,16 +823,67 @@ export default function ProgressPage() {
                     </div>
                   </Panel>
 
-                  {/* ── Week-over-week + next badge (existing real endpoints) ─ */}
+                  {/* Week-over-week — the YouVsYou comparison stays intact. */}
                   <div className="grid gap-6 lg:grid-cols-2">
                     <YouVsYouChart isAf={isAf} />
-                    <NextMilestoneWidget isAf={isAf} />
+                    <div
+                      className="h-full p-5 flex flex-col gap-3"
+                      style={{ background: CARD_BG, border: `1.5px solid ${HEX.pink}`, borderRadius: 20, boxShadow: `0 0 0 1px ${HEX.pink}33` }}
+                      data-testid="panel-time-on-task"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-9 h-9 rounded-xl bg-white/[.03] flex items-center justify-center shrink-0" style={{ border: `1.5px solid ${HEX.pink}` }}>
+                          <Clock className="w-4 h-4" style={{ color: HEX.pink }} />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: HEX.pink }}>
+                            {isAf ? "Tyd op die taak" : "Time on task"}
+                          </p>
+                          <p className="text-lg font-bold text-white leading-tight">
+                            {isAf ? "Werklik voor die skerm gespandeer" : "Actually spent studying"}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="rounded-xl bg-white/[.03] px-3 py-3" style={{ border: `1px solid ${HEX.pink}55` }}>
+                          <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-white">
+                            {isAf ? "Hierdie week" : "This week"}
+                          </div>
+                          <div className="text-2xl font-black mt-0.5" style={{ color: HEX.pink }} data-testid="time-week">
+                            {studyMinutesThisWeek}<span className="text-sm font-semibold text-white ml-1">m</span>
+                          </div>
+                          <div className="text-[10px] font-semibold text-white mt-0.5">
+                            {isAf ? "van study_sessions" : "from study_sessions"}
+                          </div>
+                        </div>
+                        <div className="rounded-xl bg-white/[.03] px-3 py-3" style={{ border: `1px solid ${HEX.purple}55` }}>
+                          <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-white">
+                            {isAf ? "Laaste 14 dae" : "Last 14 days"}
+                          </div>
+                          <div className="text-2xl font-black mt-0.5" style={{ color: HEX.purple }} data-testid="time-14d">
+                            {studyMinutes14d}<span className="text-sm font-semibold text-white ml-1">m</span>
+                          </div>
+                          <div className="text-[10px] font-semibold text-white mt-0.5">
+                            {isAf ? "gestapelde sessies" : "stacked sessions"}
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-[11px] font-semibold text-white leading-snug">
+                        {studyMinutes14d === 0 && studyMinutesThisWeek === 0
+                          ? (isAf
+                              ? "Sessietyd word aangeteken sodra jy 'n vraestel begin — dan meet ons ook hoe lank jy studeer."
+                              : "Session time starts logging the moment you open a paper — that's when we can measure how long you study.")
+                          : (isAf
+                              ? "Sessieduur uit study_sessions.duration_seconds. Nie afgelei uit die aantal vrae nie."
+                              : "Session duration from study_sessions.duration_seconds. Not inferred from question count.")}
+                      </p>
+                    </div>
                   </div>
 
-                  {/* ── Subjects ──────────────────────────────────────────── */}
+                  {/* ── Coverage: per-subject + per-topic ─────────────────── */}
                   <div className="grid gap-6 lg:grid-cols-2">
                     <Panel
-                      hex="#9FD8FF"
+                      hex={HEX.sky}
                       icon={TrendingUp}
                       title={isAf ? "Vakvordering" : "Subject Progress"}
                       subtitle={isAf
@@ -600,7 +894,7 @@ export default function ProgressPage() {
                       <div className="p-5 space-y-3">
                         {activeSubjects.length > 0 ? (
                           activeSubjects.map((subject: SubjectProgress, idx: number) => {
-                            const stops = ["#9FF5E8", "#9FD8FF", "#FFB7E5", "#C5B3FF", "#FFE29A", "#94F7C5"];
+                            const stops = [HEX.aqua, HEX.sky, HEX.pink, HEX.purple, HEX.yellow, HEX.mint];
                             const hex = stops[idx % stops.length];
                             const barColor = accuracyHex(subject.accuracy);
                             const delta = improvementOf(subject);
@@ -625,12 +919,10 @@ export default function ProgressPage() {
                                   </div>
                                   <div className="flex items-center justify-between mt-2.5 text-[11px] font-semibold text-white uppercase tracking-widest gap-2">
                                     <span>{subject.questionsAttempted} {isAf ? "vrae" : "Qs"}</span>
-                                    {/* Only shown when the learner gave a mark
-                                        during onboarding — no baseline, no claim. */}
                                     {delta !== null && (
                                       <span
                                         className="inline-flex items-center gap-1 normal-case tracking-normal"
-                                        style={{ color: delta >= 0 ? "#94F7C5" : "#FF8DA1" }}
+                                        style={{ color: delta >= 0 ? HEX.mint : HEX.alert }}
                                         data-testid={`subject-delta-${subject.subjectId}`}
                                       >
                                         {delta >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
@@ -653,8 +945,6 @@ export default function ProgressPage() {
                           </div>
                         )}
 
-                        {/* Untouched subjects as compact chips rather than a
-                            column of identical 0% bars. */}
                         {idleSubjects.length > 0 && (
                           <div className="pt-2">
                             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white mb-2">
@@ -679,21 +969,143 @@ export default function ProgressPage() {
                       </div>
                     </Panel>
 
-                    {/* Focus areas. Labelled as SUBJECTS, because that is what
-                        the data is — the endpoint's `weakTopics` are subject
-                        rows in topic clothing, and dbe_verbatim_questions.topic
-                        is NULL across the board, so real topic granularity
-                        does not exist to show. */}
+                    {/* Topic Coverage — the real per-topic breakdown, off
+                        topic_mastery. Present only when the marking pipeline
+                        has produced enough banded rows; otherwise the panel
+                        says "topic breakdown coming soon" honestly. */}
                     <Panel
-                      hex="#FFB7E5"
-                      icon={TrendingDown}
-                      title={isAf ? "Vakke om op te fokus" : "Subjects to focus on"}
-                      subtitle={isAf ? "Onder 70% na ten minste 2 vrae" : "Under 70% after at least 2 questions"}
-                      testid="panel-focus-subjects"
+                      hex={HEX.purple}
+                      icon={Layers}
+                      title={isAf ? "Onderwerp-vaardigheid" : "Topic Mastery"}
+                      subtitle={
+                        topicSummary.total > 0
+                          ? (isAf
+                              ? `${topicSummary.green} groen · ${topicSummary.amber} amber · ${topicSummary.red} rooi (${topicSummary.graded} gegradeer)`
+                              : `${topicSummary.green} green · ${topicSummary.amber} amber · ${topicSummary.red} red (${topicSummary.graded} graded)`)
+                          : (isAf
+                              ? "Onderwerp-uiteensetting kom sodra jy meer aanpak"
+                              : "Topic breakdown appears as you attempt more")
+                      }
+                      testid="panel-topic-mastery"
                     >
-                      <div className="p-5 space-y-3">
-                        {stats.weakTopics.length > 0 ? (
-                          stats.weakTopics.slice(0, 5).map((topic) => {
+                      <div className="p-5 space-y-4">
+                        {topicSummary.total > 0 ? (
+                          <>
+                            {/* Coverage strip — 3 counters colour-matched to
+                                the bands they represent. */}
+                            <div className="grid grid-cols-3 gap-2">
+                              {[
+                                { k: isAf ? "Groen" : "Green", v: topicSummary.green, hex: HEX.mint },
+                                { k: isAf ? "Amber" : "Amber", v: topicSummary.amber, hex: HEX.yellow },
+                                { k: isAf ? "Rooi"  : "Red",   v: topicSummary.red,   hex: HEX.alert },
+                              ].map(({ k, v, hex }) => (
+                                <div key={k} className="rounded-xl bg-white/[.03] px-3 py-2" style={{ border: `1px solid ${hex}55` }}>
+                                  <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-white">{k}</div>
+                                  <div className="text-lg font-black" style={{ color: hex }}>{v}</div>
+                                </div>
+                              ))}
+                            </div>
+
+                            {topicStrengths.length > 0 && (
+                              <div>
+                                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white mb-2 flex items-center gap-1.5">
+                                  <Sparkles className="w-3 h-3" style={{ color: HEX.mint }} />
+                                  {isAf ? "Sterkpunte" : "Strengths"}
+                                </p>
+                                <div className="space-y-2" data-testid="topic-strengths">
+                                  {topicStrengths.map((t: TopicMasteryEntry) => (
+                                    <div
+                                      key={t.topicId}
+                                      className="flex items-center justify-between gap-2 p-3 rounded-xl bg-white/[.03]"
+                                      style={{ border: `1px solid ${HEX.mint}55` }}
+                                      data-testid={`topic-strength-${t.topicId}`}
+                                    >
+                                      <div className="min-w-0 flex-1">
+                                        <p className="font-bold text-white text-[13px] truncate">{t.topicName}</p>
+                                        <p className="text-[10px] font-semibold text-white truncate">{t.subjectName}</p>
+                                      </div>
+                                      <span className="font-black text-base shrink-0" style={{ color: HEX.mint }}>
+                                        {t.masteryScore}%
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {topicFocus.length > 0 ? (
+                              <div>
+                                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white mb-2 flex items-center gap-1.5">
+                                  <Target className="w-3 h-3" style={{ color: HEX.alert }} />
+                                  {isAf ? "Fokus hier volgende" : "Focus here next"}
+                                </p>
+                                <div className="space-y-2" data-testid="topic-focus">
+                                  {topicFocus.map((t: TopicMasteryEntry) => {
+                                    const hex = bandHex(t.masteryBand);
+                                    return (
+                                      <Link key={t.topicId} href={`/subject/${t.subjectId}`}>
+                                        <div
+                                          className="flex items-center justify-between gap-2 p-3 rounded-xl bg-white/[.03] cursor-pointer transition-all hover:-translate-y-0.5"
+                                          style={{ border: `1px solid ${hex}55` }}
+                                          data-testid={`topic-focus-${t.topicId}`}
+                                        >
+                                          <div className="min-w-0 flex-1">
+                                            <p className="font-bold text-white text-[13px] truncate">{t.topicName}</p>
+                                            <p className="text-[10px] font-semibold text-white truncate">
+                                              {t.subjectName} · {t.questionsAttempted} {isAf ? "vrae" : "Qs"}
+                                            </p>
+                                          </div>
+                                          <span className="font-black text-base shrink-0" style={{ color: hex }}>
+                                            {t.masteryScore}%
+                                          </span>
+                                          <ArrowRight className="w-4 h-4 shrink-0" style={{ color: hex }} />
+                                        </div>
+                                      </Link>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="text-center py-6 rounded-2xl bg-white/[.03] border border-white/10 p-4">
+                                <p className="font-bold text-white text-sm">
+                                  {isAf ? "Elke onderwerp is amber of beter" : "Every topic is amber or better"}
+                                </p>
+                                <p className="text-[11px] text-white mt-1">
+                                  {isAf ? "Bly aan die gang om die groen band te bereik." : "Keep going to reach the green band."}
+                                </p>
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <div className="text-center py-8 rounded-2xl bg-white/[.03] border border-white/10 p-6">
+                            <Layers className="w-7 h-7 mx-auto mb-3 text-white" />
+                            <p className="font-bold text-white">
+                              {isAf ? "Onderwerp-uiteensetting kom binnekort" : "Topic breakdown coming soon"}
+                            </p>
+                            <p className="text-sm text-white mt-1">
+                              {isAf
+                                ? "Sodra jy elke onderwerp 'n paar keer probeer het, verskyn die bande hier."
+                                : "Once you've attempted each topic a few times, the bands appear here."}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </Panel>
+                  </div>
+
+                  {/* Focus subjects (unchanged) — labelled as SUBJECTS
+                      because that is what stats.weakTopics actually is. */}
+                  <Panel
+                    hex={HEX.pink}
+                    icon={TrendingDown}
+                    title={isAf ? "Vakke om op te fokus" : "Subjects to focus on"}
+                    subtitle={isAf ? "Onder 70% na ten minste 2 vrae" : "Under 70% after at least 2 questions"}
+                    testid="panel-focus-subjects"
+                  >
+                    <div className="p-5 space-y-3">
+                      {stats.weakTopics.length > 0 ? (
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          {stats.weakTopics.slice(0, 6).map((topic) => {
                             const hex = accuracyHex(topic.accuracy);
                             return (
                               <Link key={topic.topicId} href={`/subject/${topic.topicId}`}>
@@ -711,25 +1123,43 @@ export default function ProgressPage() {
                                 </div>
                               </Link>
                             );
-                          })
-                        ) : (
-                          <div className="text-center py-10 rounded-2xl bg-white/[.03] border border-white/10 p-6">
-                            <Target className="w-7 h-7 mx-auto mb-3 text-white" />
-                            <p className="font-bold text-white">
-                              {activeSubjects.length > 0
-                                ? (isAf ? "Niks onder 70% nie" : "Nothing below 70%")
-                                : (isAf ? "Nog nie genoeg data nie" : "Not enough data yet")}
-                            </p>
-                            <p className="text-sm text-white mt-1">
-                              {activeSubjects.length > 0
-                                ? (isAf ? "Elke vak wat jy aangepak het, hou stand. Hou so aan." : "Every subject you've worked on is holding up. Keep it there.")
-                                : (isAf ? "Beantwoord 'n paar vrae per vak — dan wys ons waar om te fokus." : "Answer a few questions per subject and we'll show you where to focus.")}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    </Panel>
-                  </div>
+                          })}
+                        </div>
+                      ) : (
+                        <div className="text-center py-10 rounded-2xl bg-white/[.03] border border-white/10 p-6">
+                          <Target className="w-7 h-7 mx-auto mb-3 text-white" />
+                          <p className="font-bold text-white">
+                            {activeSubjects.length > 0
+                              ? (isAf ? "Niks onder 70% nie" : "Nothing below 70%")
+                              : (isAf ? "Nog nie genoeg data nie" : "Not enough data yet")}
+                          </p>
+                          <p className="text-sm text-white mt-1">
+                            {activeSubjects.length > 0
+                              ? (isAf ? "Elke vak wat jy aangepak het, hou stand. Hou so aan." : "Every subject you've worked on is holding up. Keep it there.")
+                              : (isAf ? "Beantwoord 'n paar vrae per vak — dan wys ons waar om te fokus." : "Answer a few questions per subject and we'll show you where to focus.")}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </Panel>
+
+                  {/* ── Milestones: personal bests + next badge ────────────
+                      Both widgets already exist and pull from real endpoints,
+                      but the page was previously missing personal-bests. */}
+                  <Panel
+                    hex={HEX.yellow}
+                    icon={Trophy}
+                    title={isAf ? "Mylpale" : "Milestones"}
+                    subtitle={isAf
+                      ? "Werklike prestasies uit personal_bests en jou kentekens"
+                      : "Real achievements from personal_bests and your badges"}
+                    testid="panel-milestones"
+                  >
+                    <div className="p-5 grid gap-5 lg:grid-cols-2">
+                      <PersonalBestsWidget isAf={isAf} />
+                      <NextMilestoneWidget isAf={isAf} />
+                    </div>
+                  </Panel>
                 </>
               )}
             </>

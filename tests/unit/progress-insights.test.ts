@@ -11,6 +11,7 @@ import { describe, it, expect } from "vitest";
 import {
   type ProgressStats,
   type SubjectProgress,
+  type TopicMasteryEntry,
   hasAnyActivity,
   summariseActivity,
   dayAccuracy,
@@ -19,11 +20,27 @@ import {
   pickFocusSubjects,
   pickNextMove,
   accuracyHex,
+  pickTopicFocus,
+  pickTopicStrengths,
+  summariseTopicMastery,
   BAND_STRONG,
   BAND_OK,
   BAND_WEAK,
   BAND_IDLE,
 } from "../../client/src/lib/progress-insights";
+
+function topic(over: Partial<TopicMasteryEntry> = {}): TopicMasteryEntry {
+  return {
+    topicId: 1,
+    topicName: "Macroeconomics",
+    subjectId: 10,
+    subjectName: "Economics",
+    masteryScore: 50,
+    masteryBand: "red",
+    questionsAttempted: 5,
+    ...over,
+  };
+}
 
 function subject(over: Partial<SubjectProgress> = {}): SubjectProgress {
   return {
@@ -241,6 +258,59 @@ describe("pickNextMove", () => {
       ],
     }));
     expect(move.kind).not.toBe("practise_weakest");
+  });
+});
+
+describe("pickTopicFocus", () => {
+  it("returns red/amber topics weakest first, ignoring green and thinly-answered rows", () => {
+    const focus = pickTopicFocus([
+      topic({ topicId: 1, masteryBand: "red",   masteryScore: 41, questionsAttempted: 8 }),
+      topic({ topicId: 2, masteryBand: "amber", masteryScore: 68, questionsAttempted: 6 }),
+      topic({ topicId: 3, masteryBand: "green", masteryScore: 88, questionsAttempted: 10 }),
+      topic({ topicId: 4, masteryBand: "red",   masteryScore: 32, questionsAttempted: 1 }), // too thin
+      topic({ topicId: 5, masteryBand: "red",   masteryScore: 55, questionsAttempted: 12 }),
+    ]);
+    expect(focus.map(t => t.topicId)).toEqual([1, 5, 2]);
+  });
+
+  it("respects the limit", () => {
+    const many = Array.from({ length: 8 }, (_, i) =>
+      topic({ topicId: i + 1, masteryScore: 20 + i, masteryBand: "red", questionsAttempted: 5 }));
+    expect(pickTopicFocus(many, 3)).toHaveLength(3);
+  });
+
+  it("handles missing lists", () => {
+    expect(pickTopicFocus(null)).toEqual([]);
+    expect(pickTopicFocus(undefined)).toEqual([]);
+  });
+});
+
+describe("pickTopicStrengths", () => {
+  it("returns only green topics with real evidence, best first", () => {
+    const strong = pickTopicStrengths([
+      topic({ topicId: 1, masteryBand: "green", masteryScore: 88, questionsAttempted: 10 }),
+      topic({ topicId: 2, masteryBand: "green", masteryScore: 92, questionsAttempted: 9  }),
+      topic({ topicId: 3, masteryBand: "amber", masteryScore: 70, questionsAttempted: 10 }),
+      topic({ topicId: 4, masteryBand: "green", masteryScore: 95, questionsAttempted: 1  }), // too thin
+    ]);
+    expect(strong.map(t => t.topicId)).toEqual([2, 1]);
+  });
+});
+
+describe("summariseTopicMastery", () => {
+  it("counts topics per band and the graded pool", () => {
+    const s = summariseTopicMastery([
+      topic({ masteryBand: "green", questionsAttempted: 5 }),
+      topic({ masteryBand: "amber", questionsAttempted: 4 }),
+      topic({ masteryBand: "amber", questionsAttempted: 2 }),
+      topic({ masteryBand: "red",   questionsAttempted: 3 }),
+      topic({ masteryBand: "red",   questionsAttempted: 1 }), // graded pool excludes this
+    ]);
+    expect(s).toEqual({ total: 5, green: 1, amber: 2, red: 2, graded: 4 });
+  });
+
+  it("returns zeros for a missing list", () => {
+    expect(summariseTopicMastery(null)).toEqual({ total: 0, green: 0, amber: 0, red: 0, graded: 0 });
   });
 });
 
