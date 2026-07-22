@@ -143,6 +143,37 @@ const COPY = {
     footSafeguarding: "Safeguarding",
     footAdmin: "Admin",
     footPowered: "KTH Tech",
+    // ── Redesigned footer (4-col + legal entity + Paystack badges) ────────
+    footTagline: "Grade 12 Matric prep for South Africa.",
+    footBadges: "Powered by Paystack · Verified by Visa · Mastercard SecureCode",
+    footLegalEntity:
+      "© 2026 KTH Projects (Pty) Ltd trading as KTH-Tech · Reg 2025/627290/07",
+    footStatementNote: "Charges appear on your statement as KTH-TECH",
+    footLangNote: "Available in English + Afrikaans",
+    footEmail: "hello@braintrack.tech",
+    colLearnTitle: "Learn",
+    colLearn: [
+      { href: "/features", label: "Features" },
+      { href: "/features#how-it-works", label: "How it works" },
+      { href: "/for-schools", label: "For schools" },
+      { href: "/features#parents", label: "For parents" },
+      { href: "/features#study-plan", label: "Study plan" },
+    ],
+    colCompanyTitle: "Company",
+    colCompany: [
+      { href: "/about", label: "About" },
+      { href: "/blog", label: "Blog" },
+      { href: "mailto:hello@braintrack.tech", label: "Contact" },
+      { href: "/partner-schools", label: "Partner schools" },
+    ],
+    colLegalTitle: "Legal",
+    colLegal: [
+      { href: "/terms-of-service", label: "Terms" },
+      { href: "/privacy-policy", label: "Privacy" },
+      { href: "/cookie-policy", label: "Cookies" },
+      { href: "/refund-policy", label: "Refund policy" },
+      { href: "/privacy-policy", label: "POPIA consent" },
+    ],
   },
   af: {
     tFeatures: "Funksies",
@@ -240,6 +271,37 @@ const COPY = {
     footSafeguarding: "Beskerming",
     footAdmin: "Admin",
     footPowered: "KTH Tech",
+    // ── Herontwerpte voetskrif (4-kolom + regsentiteit + Paystack-tekens) ─
+    footTagline: "Graad 12-matriekvoorbereiding vir Suid-Afrika.",
+    footBadges: "Aangedryf deur Paystack · Verified by Visa · Mastercard SecureCode",
+    footLegalEntity:
+      "© 2026 KTH Projects (Pty) Ltd handel dryf as KTH-Tech · Reg 2025/627290/07",
+    footStatementNote: "Bedrae verskyn op jou staat as KTH-TECH",
+    footLangNote: "Beskikbaar in Engels + Afrikaans",
+    footEmail: "hello@braintrack.tech",
+    colLearnTitle: "Leer",
+    colLearn: [
+      { href: "/features", label: "Kenmerke" },
+      { href: "/features#how-it-works", label: "Hoe dit werk" },
+      { href: "/for-schools", label: "Vir Skole" },
+      { href: "/features#parents", label: "Vir Ouers" },
+      { href: "/features#study-plan", label: "Studieplan" },
+    ],
+    colCompanyTitle: "Maatskappy",
+    colCompany: [
+      { href: "/about", label: "Omtrent" },
+      { href: "/blog", label: "Blog" },
+      { href: "mailto:hello@braintrack.tech", label: "Kontak" },
+      { href: "/partner-schools", label: "Vennootskole" },
+    ],
+    colLegalTitle: "Regte",
+    colLegal: [
+      { href: "/terms-of-service", label: "Bepalings" },
+      { href: "/privacy-policy", label: "Privaatheid" },
+      { href: "/cookie-policy", label: "Koekies" },
+      { href: "/refund-policy", label: "Terugbetalingsbeleid" },
+      { href: "/privacy-policy", label: "POPIA-toestemming" },
+    ],
   },
 } as const;
 
@@ -521,6 +583,13 @@ export default function LandingPage() {
           .btl-quote { font-size: 15px !important; padding: 20px 22px !important; }
           .btl-foot { padding: 36px 22px !important; flex-direction: column; align-items: flex-start !important; }
           .btl-foot-links { gap: 16px 18px !important; }
+          .btl-foot-cols { grid-template-columns: repeat(2,1fr) !important; gap: 32px !important; }
+          .btl-foot-bottom { grid-template-columns: 1fr !important; gap: 10px !important; text-align: center !important; }
+          .btl-foot-bottom > * { text-align: center !important; justify-content: center !important; }
+          .btl-foot-badges span { flex-wrap: wrap; justify-content: center; }
+        }
+        @media (max-width: 520px) {
+          .btl-foot-cols { grid-template-columns: 1fr !important; gap: 28px !important; }
         }
         @media (max-width: 480px) {
           .btl-nav { padding: 12px 10px !important; gap: 6px !important; }
@@ -1010,8 +1079,25 @@ export default function LandingPage() {
         </Reveal>
       </div>
 
-      {/* ── Footer ──────────────────────────────────────────── */}
-      <div className="btl-foot" style={{ position: "relative", marginTop: 120, borderTop: "1px solid rgba(255,255,255,.08)", padding: "52px 48px 46px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 24, background: "linear-gradient(180deg,rgba(255,255,255,.022),transparent 70%)" }}>
+      {/* ── Footer (4-column, conversion-conscious) ─────────────
+          Task-1 rework: replaces the old single-row link strip.
+          Columns: Brand + tagline + email · Learn · Company · Legal.
+          Payment badges pill above the columns. Bottom bar carries the
+          full legal-entity line, the Paystack statement-descriptor note
+          and the KTH-Tech mark. All accent colours drawn from the
+          existing pastel palette — no grey ever (see feedback_no-grey).
+          Rainbow top-edge accent kept from the previous footer. */}
+      <footer
+        className="btl-foot-v2"
+        data-testid="landing-footer"
+        aria-label="Site footer"
+        style={{
+          position: "relative",
+          marginTop: 120,
+          borderTop: "1px solid rgba(255,255,255,.08)",
+          background: "linear-gradient(180deg,rgba(255,255,255,.022),transparent 70%)",
+        }}
+      >
         <div
           aria-hidden
           style={{
@@ -1020,34 +1106,217 @@ export default function LandingPage() {
             animation: "bt-rainbow 9s linear infinite", opacity: 0.55,
           }}
         />
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-          <img src={iconTransparent} alt="" className="btl-logo-img" style={{ width: 52, height: 52, objectFit: "contain" }} />
-          <RainbowWordmark size={16} />
-          <span style={{ fontSize: 14, color: "#fff", opacity: 0.92, marginLeft: 10 }}>{t.footMade}</span>
-          {/* Official KTH Tech mark — currentColor inherits the white text colour. */}
-          <a
-            href="https://kth-tech.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            data-testid="link-footer-kth"
-            aria-label="KTH Tech"
-            style={{ display: "inline-flex", alignItems: "center", gap: 8, marginLeft: 14, color: "#fff", textDecoration: "none" }}
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "52px 32px 32px" }}>
+          {/* Payment badges pill row — sets billing expectation up-front. */}
+          <div
+            className="btl-foot-badges"
+            data-testid="footer-payment-badges"
+            style={{
+              display: "flex", justifyContent: "center", flexWrap: "wrap",
+              gap: 10, marginBottom: 40,
+            }}
           >
-            <KthMark size={40} />
-            <span style={{ fontSize: 14, fontWeight: 700 }}>{t.footPowered}</span>
-          </a>
+            <span
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 10,
+                fontSize: 12.5, fontWeight: 700, color: "#fff",
+                letterSpacing: ".3px",
+                border: "1.5px solid rgba(159,245,232,.55)",
+                borderRadius: 999, padding: "9px 20px",
+                background: "rgba(159,245,232,.06)",
+              }}
+            >
+              <span aria-hidden style={{ color: "#9FF5E8" }}>✓</span>
+              {t.footBadges}
+            </span>
+          </div>
+
+          {/* 4-column grid: Brand · Learn · Company · Legal */}
+          <div
+            className="btl-foot-cols"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1.4fr 1fr 1fr 1fr",
+              gap: 40,
+            }}
+          >
+            {/* Column 1 — Brand */}
+            <div>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                <img
+                  src={iconTransparent}
+                  alt=""
+                  className="btl-logo-img"
+                  style={{ width: 44, height: 44, objectFit: "contain" }}
+                />
+                <RainbowWordmark size={20} />
+              </div>
+              <div style={{ fontSize: 14, lineHeight: 1.6, color: "#fff", opacity: 0.92, marginBottom: 14 }}>
+                {t.footTagline}
+              </div>
+              <a
+                href={`mailto:${t.footEmail}`}
+                data-testid="link-footer-email"
+                className="btl-foot-link"
+                style={{
+                  display: "inline-flex", alignItems: "center",
+                  fontSize: 13.5, fontWeight: 700,
+                  color: "#9FF5E8", textDecoration: "none",
+                  minHeight: 44,
+                  "--h": "#FFB7E5",
+                } as React.CSSProperties}
+              >
+                {t.footEmail}
+              </a>
+            </div>
+
+            {/* Column 2 — Learn */}
+            <nav aria-label={t.colLearnTitle}>
+              <div style={{
+                fontSize: 11, fontWeight: 900, letterSpacing: "1.8px",
+                textTransform: "uppercase", color: "#9FF5E8", marginBottom: 16,
+              }}>
+                {t.colLearnTitle}
+              </div>
+              <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 4 }}>
+                {t.colLearn.map((l) => (
+                  <li key={l.label}>
+                    <Link href={l.href}>
+                      <span
+                        className="btl-foot-link"
+                        data-testid={`footer-learn-${l.label.toLowerCase().replace(/\s+/g, "-")}`}
+                        style={{
+                          fontSize: 13.5, fontWeight: 600, color: "#fff",
+                          minHeight: 44, display: "inline-flex", alignItems: "center",
+                          cursor: "pointer",
+                          "--h": "#9FF5E8",
+                        } as React.CSSProperties}
+                      >
+                        {l.label}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            {/* Column 3 — Company */}
+            <nav aria-label={t.colCompanyTitle}>
+              <div style={{
+                fontSize: 11, fontWeight: 900, letterSpacing: "1.8px",
+                textTransform: "uppercase", color: "#9FD8FF", marginBottom: 16,
+              }}>
+                {t.colCompanyTitle}
+              </div>
+              <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 4 }}>
+                {t.colCompany.map((l) => {
+                  const isMail = l.href.startsWith("mailto:");
+                  const testId = `footer-company-${l.label.toLowerCase().replace(/\s+/g, "-")}`;
+                  const cellStyle = {
+                    fontSize: 13.5, fontWeight: 600, color: "#fff",
+                    minHeight: 44, display: "inline-flex", alignItems: "center",
+                    cursor: "pointer", textDecoration: "none",
+                    "--h": "#9FD8FF",
+                  } as React.CSSProperties;
+                  return (
+                    <li key={l.label}>
+                      {isMail ? (
+                        <a href={l.href} data-testid={testId} className="btl-foot-link" style={cellStyle}>
+                          {l.label}
+                        </a>
+                      ) : (
+                        <Link href={l.href}>
+                          <span className="btl-foot-link" data-testid={testId} style={cellStyle}>
+                            {l.label}
+                          </span>
+                        </Link>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </nav>
+
+            {/* Column 4 — Legal */}
+            <nav aria-label={t.colLegalTitle}>
+              <div style={{
+                fontSize: 11, fontWeight: 900, letterSpacing: "1.8px",
+                textTransform: "uppercase", color: "#FFE29A", marginBottom: 16,
+              }}>
+                {t.colLegalTitle}
+              </div>
+              <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 4 }}>
+                {t.colLegal.map((l) => (
+                  <li key={l.label}>
+                    <Link href={l.href}>
+                      <span
+                        className="btl-foot-link"
+                        data-testid={`footer-legal-${l.label.toLowerCase().replace(/\s+/g, "-")}`}
+                        style={{
+                          fontSize: 13.5, fontWeight: 600, color: "#fff",
+                          minHeight: 44, display: "inline-flex", alignItems: "center",
+                          cursor: "pointer",
+                          "--h": "#FFE29A",
+                        } as React.CSSProperties}
+                      >
+                        {l.label}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
+
+          {/* Bottom bar — legal entity · statement descriptor · KTH-Tech mark.
+              Language toggle already lives in the sticky nav (top of page),
+              so we surface it here as a text mention only — no duplicate. */}
+          <div
+            className="btl-foot-bottom"
+            style={{
+              marginTop: 40, paddingTop: 22,
+              borderTop: "1px solid rgba(255,255,255,.08)",
+              display: "grid",
+              gridTemplateColumns: "1.5fr 1fr 1fr",
+              gap: 24,
+              alignItems: "center",
+            }}
+          >
+            <div
+              data-testid="footer-legal-entity"
+              style={{ fontSize: 12, lineHeight: 1.55, color: "#fff", opacity: 0.9 }}
+            >
+              {t.footLegalEntity}
+            </div>
+            <div
+              data-testid="footer-statement-note"
+              style={{ fontSize: 12, lineHeight: 1.55, color: "#fff", opacity: 0.9, textAlign: "center" }}
+            >
+              {t.footStatementNote}
+            </div>
+            <div
+              data-testid="footer-bottom-right"
+              style={{ fontSize: 12, lineHeight: 1.55, color: "#fff", textAlign: "right", display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 12, flexWrap: "wrap" }}
+            >
+              <span data-testid="footer-lang-note" style={{ opacity: 0.9 }}>{t.footLangNote}</span>
+              <a
+                href="https://kth-tech.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-testid="link-footer-kth"
+                aria-label="KTH Tech"
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  color: "#fff", textDecoration: "none",
+                }}
+              >
+                <KthMark size={28} />
+                <span style={{ fontWeight: 700 }}>{t.footPowered}</span>
+              </a>
+            </div>
+          </div>
         </div>
-        <div className="btl-foot-links" style={{ display: "flex", gap: 26, fontSize: 13, fontWeight: 600, flexWrap: "wrap" }}>
-          <Link href="/privacy-policy"><span className="btl-foot-link" style={{ "--h": "#9FD8FF" } as React.CSSProperties}>{t.footPrivacy}</span></Link>
-          <Link href="/terms-of-service"><span className="btl-foot-link" style={{ "--h": "#FFB7E5" } as React.CSSProperties}>{t.footTerms}</span></Link>
-          <Link href="/privacy-policy"><span className="btl-foot-link" style={{ "--h": "#C5B3FF" } as React.CSSProperties}>{t.footPopia}</span></Link>
-          <Link href="/refund-policy"><span className="btl-foot-link" style={{ "--h": "#FFE29A" } as React.CSSProperties}>{t.footBilling}</span></Link>
-          <Link href="/terms-of-service"><span className="btl-foot-link" style={{ "--h": "#94F7C5" } as React.CSSProperties}>{t.footSafeguarding}</span></Link>
-          {/* Owner shortcut — the sign-in page grants admin via the
-              ADMIN_EMAILS allowlist, so this is just a convenient door. */}
-          <Link href="/signin?returnTo=/learn/admin"><span className="btl-foot-link" data-testid="link-footer-admin" style={{ "--h": "#FFE29A" } as React.CSSProperties}>{t.footAdmin}</span></Link>
-        </div>
-      </div>
+      </footer>
 
       {modal}
     </div>
