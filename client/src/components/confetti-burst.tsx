@@ -45,7 +45,10 @@ const KEYFRAMES = `
      durations (see buildParticles), the whole burst reads as it drifts
      down slowly and sparkles the whole way. */
   88%  { opacity: 1; }
-  100% { transform: translate3d(calc(-50% + var(--bx) + var(--dx)), calc(-50% + var(--by) + 96vh), 0) scale(0.82) rotate(var(--spin)); opacity: 0; }
+  /* Fall distance bumped 96vh → 140vh so top-of-page shards (starting
+     ~-55vh below their 44% anchor = ~-11vh from viewport top) fully exit
+     the bottom edge instead of stalling around 85vh. */
+  100% { transform: translate3d(calc(-50% + var(--bx) + var(--dx)), calc(-50% + var(--by) + 140vh), 0) scale(0.82) rotate(var(--spin)); opacity: 0; }
 }
 @keyframes bt-gshimmer {
   0%,100% { filter: hue-rotate(-22deg) saturate(1.35) brightness(1); }
@@ -177,18 +180,30 @@ type Particle = {
   icon?: { pathIndex: number; color: string };
 };
 
-/** Build the particle field once. A center-origin POP: every shard starts at
- *  the middle, fires outward along a random vector, then gravity + drift carry
- *  it down and off-screen while it tumbles and hue-shifts. */
+/** Build the particle field once. TOP-EDGE GLITTER FALL: shards enter from
+ *  above the viewport (spread across the full width) and drift down through
+ *  the whole screen — like real glitter or snow falling from the top. The
+ *  center POP flash (bloom + core + rings, rendered separately in the
+ *  ConfettiBurst layer) still fires at ~44% so there's a bright celebration
+ *  moment; the glitter falls around and through it.
+ *
+ *  Coordinate system: shards are anchored `top: 50%; left: 50%` in the
+ *  layer, so `bx` (in vw) and `by` (in vh) offset them from viewport
+ *  centre. To start above the top edge with full-width horizontal scatter:
+ *    - bx: -50..+50 vw (spans full viewport width)
+ *    - by: -60..-52 vh (safely above the top edge, staggered so particles
+ *          don't all enter on the same line)
+ *  The bt-gpop 100% keyframe adds +96vh, so a particle starting at by=-55vh
+ *  ends around +41vh — well below the bottom edge. */
 function buildParticles(count: number): Particle[] {
   const out: Particle[] = [];
   for (let i = 0; i < count; i++) {
-    const angle = Math.random() * Math.PI * 2;
-    const rx = 12 + Math.random() * 36; // vw radius
-    const ry = 8 + Math.random() * 30; // vh radius
-    const bx = Math.cos(angle) * rx;
-    const by = Math.sin(angle) * ry;
-    const dx = (Math.random() - 0.5) * 12;
+    // Full-width horizontal scatter: any point along the top edge.
+    const bx = (Math.random() - 0.5) * 100; // -50..+50 vw
+    // Above the viewport, staggered so they enter in a band not a line.
+    const by = -60 + Math.random() * 8; // -60..-52 vh
+    // Sideways drift as they fall — gentle, like real glitter.
+    const dx = (Math.random() - 0.5) * 8;
     const spin = 540 + Math.random() * 720;
 
     const i1 = Math.floor(Math.random() * PALETTE.length);
@@ -275,7 +290,7 @@ function buildParticles(count: number): Particle[] {
  * then removes itself. Fully suppressed for prefers-reduced-motion users.
  * `count` is kept for backwards compatibility with existing mounts.
  */
-export function ConfettiBurst({ count = 90 }: { count?: number }) {
+export function ConfettiBurst({ count = 220 }: { count?: number }) {
   const [reduced] = useState(prefersReducedMotion);
   const [active, setActive] = useState(false);
   const particles = useMemo(() => buildParticles(count), [count]);
