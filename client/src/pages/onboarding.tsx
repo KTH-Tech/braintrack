@@ -690,7 +690,12 @@ export default function OnboardingPage() {
         parentEmail: parentEmail.trim(),
         language: language === "af" ? "af" : "en",
       });
-      return r as unknown as { ok: boolean; url: string; delivery: "sent" | "not_configured" | "failed" };
+      // apiRequest resolves a fetch Response — the body must be parsed. Casting
+      // the Response straight to the payload type silently handed back the
+      // Response's own `url` (the API endpoint), so the learner's "share this
+      // with your parent" link pointed at /api/onboarding/parent-consent/request,
+      // and the missing `delivery` field always fell through to manual-share copy.
+      return (await r.json()) as { ok: boolean; url: string; delivery: "sent" | "not_configured" | "failed" };
     },
     onSuccess: (data) => {
       setConsentLink(data.url);
