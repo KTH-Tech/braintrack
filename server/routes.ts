@@ -1324,6 +1324,23 @@ async function checkTutorLimit(
 // RBAC — Role-Based Access Control
 // ============================================
 
+/**
+ * H-4 (security audit): require a `X-Confirm-Destroy: I understand` header
+ * on endpoints that wipe irreplaceable content (DBE bank clear-* / restart).
+ * All three are already admin-locked, so this guards the "stolen admin
+ * session posts once and the whole bank is gone" scenario — a curl or fetch
+ * from a hijacked browser will not carry the header unless someone typed it.
+ */
+function requireDestroyConfirm(req: any, res: any, next: any): any {
+  const header = req.headers["x-confirm-destroy"];
+  if (typeof header !== "string" || header !== "I understand") {
+    return res.status(428).json({
+      error: "This is a destructive operation. Send header 'X-Confirm-Destroy: I understand' to proceed.",
+    });
+  }
+  return next();
+}
+
 function requireRole(...roles: string[]): any {
   return async (req: any, res: any, next: any) => {
     if (!req.isAuthenticated || !req.isAuthenticated()) {
@@ -4233,6 +4250,16 @@ export async function registerRoutes(
         return res.status(400).json({ error: "Invalid consent data", details: validation.error.issues });
       }
       const { parentId, learnerId, consentMethod } = validation.data;
+      // H-1: any authenticated user could previously write an arbitrary
+      // (parentId, learnerId) consent row from the body — falsifying POPIA
+      // audit trail. Require the caller to be one of the two parties
+      // (admins bypass for legitimate back-office corrections).
+      const callerId = req.user.claims.sub;
+      const callerRow = await authStorage.getUser(callerId);
+      const isSelfClaim = callerId === parentId || callerId === learnerId;
+      if (!isSelfClaim && callerRow?.role !== "admin") {
+        return res.status(403).json({ error: "Forbidden" });
+      }
       const ipAddress = req.headers["x-forwarded-for"]?.toString().split(",")[0].trim() || req.socket?.remoteAddress || undefined;
       const userAgent = req.headers["user-agent"] || undefined;
       const record = await storage.createConsentRecord({ parentId, learnerId, consentMethod, ipAddress, userAgent });
@@ -4258,6 +4285,20 @@ export async function registerRoutes(
       if (isNaN(id)) {
         return res.status(400).json({ error: "Invalid consent record ID" });
       }
+      // H-1: load the row first so we can verify the caller has standing to
+      // revoke it. Previously anyone authenticated could revoke ANY numeric
+      // consent id — a POPIA audit hole even without production impact.
+      const { consentRecords } = await import("@shared/schema");
+      const [existing] = await db.select().from(consentRecords).where(eq(consentRecords.id, id)).limit(1);
+      if (!existing) {
+        return res.status(404).json({ error: "Consent record not found" });
+      }
+      const callerId = req.user.claims.sub;
+      const callerRow = await authStorage.getUser(callerId);
+      const isParty = callerId === existing.parentId || callerId === existing.learnerId;
+      if (!isParty && callerRow?.role !== "admin") {
+        return res.status(403).json({ error: "Forbidden" });
+      }
       const revoked = await storage.revokeConsent(id);
       if (!revoked) {
         return res.status(404).json({ error: "Consent record not found" });
@@ -4282,6 +4323,17 @@ export async function registerRoutes(
   app.get("/api/consent/:learnerId", isAuthenticated, async (req: any, res) => {
     try {
       const { learnerId } = req.params;
+      // H-1: any authenticated user could previously read any learner's
+      // consent record (parentId, IP, UA). Restrict to the learner themselves,
+      // their linked parent, or an admin.
+      const callerId = req.user.claims.sub;
+      const callerRow = await authStorage.getUser(callerId);
+      const isSelf = callerId === learnerId;
+      const isLinkedParent =
+        callerRow?.role === "parent" && (await storage.isParentOfLearner(callerId, learnerId));
+      if (!isSelf && !isLinkedParent && callerRow?.role !== "admin") {
+        return res.status(403).json({ error: "Forbidden" });
+      }
       const record = await storage.getConsentRecord(learnerId);
       if (!record) {
         return res.status(404).json({ error: "No active consent record found" });
@@ -7912,8 +7964,12 @@ Create comprehensive study notes for the topic provided.`;
         return res.status(400).json({ valid: false, message: "Invalid code format" });
       }
       
-      // For demo/testing purposes - accept test codes
-      if (code === "TEST123456" || code === "DEMO2025") {
+      // For demo/testing purposes - accept test codes.
+      // M-5: NODE_ENV guard so prod never surfaces the demo credentials.
+      if (
+        process.env.NODE_ENV !== "production" &&
+        (code === "TEST123456" || code === "DEMO2025")
+      ) {
         return res.json({
           valid: true,
           learnerName: "Demo Learner",
@@ -7958,8 +8014,12 @@ Create comprehensive study notes for the topic provided.`;
         return res.status(400).json({ success: false, message: "Missing required fields" });
       }
 
-      // For demo/testing purposes
-      if (code === "TEST123456" || code === "DEMO2025") {
+      // For demo/testing purposes.
+      // M-5: NODE_ENV guard so prod never accepts the demo credentials.
+      if (
+        process.env.NODE_ENV !== "production" &&
+        (code === "TEST123456" || code === "DEMO2025")
+      ) {
         return res.json({
           success: true,
           message: "Account activated successfully! Please log in to continue.",
@@ -14642,7 +14702,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
   });
 
   // POST /api/admin/dbe-ingestion/restart — clear failed/pending logs for a subject, then re-run full pipeline
-  app.post("/api/admin/dbe-ingestion/restart", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+  app.post("/api/admin/dbe-ingestion/restart", isAuthenticated, requireRole("admin"), requireDestroyConfirm, async (req: any, res) => {
     const { subject } = req.body;
     if (!subject) return res.status(400).json({ error: "subject is required" });
     if (ingestionRunning.get(subject)) {
@@ -14737,7 +14797,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
   });
 
   // POST /api/admin/dbe-ingestion/clear-subject — wipe ingestion data for ONE subject (no re-ingest)
-  app.post("/api/admin/dbe-ingestion/clear-subject", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+  app.post("/api/admin/dbe-ingestion/clear-subject", isAuthenticated, requireRole("admin"), requireDestroyConfirm, async (req: any, res) => {
     try {
       const { subject } = req.body ?? {};
       if (!subject || typeof subject !== "string") {
@@ -14821,7 +14881,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
   });
 
   // POST /api/admin/dbe-ingestion/clear-all — wipe ALL ingestion data (papers, questions, coverage, frequency, logs)
-  app.post("/api/admin/dbe-ingestion/clear-all", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+  app.post("/api/admin/dbe-ingestion/clear-all", isAuthenticated, requireRole("admin"), requireDestroyConfirm, async (req: any, res) => {
     try {
       const adminId = req.user.claims.sub;
       await storage.insertAuditLog({
@@ -15291,7 +15351,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       const wantVerbatim = source === "verbatim" || source === "all";
       const wantAi = source === "ai" || source === "all";
 
-      const verbatimRows = wantVerbatim
+      const verbatimRowsRaw = wantVerbatim
         ? await (async () => {
             // Task #394 — release-gate: learners only see released rows.
             const conditions = [
@@ -15305,6 +15365,22 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
               .orderBy(dbeVerbatimQuestions.year, dbeVerbatimQuestions.paperNumber, dbeVerbatimQuestions.questionNumber);
           })()
         : [];
+
+      // Content-render audit finding: 2,287 released rows have <15 chars of
+      // question text (COLUMN A/B stubs and other junk); 1,457 reference an
+      // extract/passage/figure that was never captured. Filter both out at
+      // serve time so learners never open a question they cannot answer from
+      // the card alone. gateSource() is a pure, unit-tested check.
+      const { gateSource } = await import("./exam-source-hygiene");
+      const verbatimRows = verbatimRowsRaw.filter((r: any) =>
+        gateSource({
+          questionText: r.questionText,
+          memoText: r.memoText,
+          stimulusText: r.stimulusText,
+          needsStimulus: r.needsStimulus,
+          mcqOptions: r.mcqOptions,
+        }).usable,
+      );
 
       const aiRows = wantAi && !year && !paperNumber
         ? await db.select().from(dbeSimulatedQuestions)
@@ -15711,9 +15787,22 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
 
       const { isMemoContentless } = await import("./memo-clean");
       const { parseMemoToScheme } = await import("./memo-marker");
+      // Also drop questions the audit flagged as unanswerable-from-the-card:
+      // truncated "COLUMN A / COLUMN B" stubs (question_text < 25 chars), and
+      // questions that reference a FIGURE / Information block / extract that
+      // we never captured. gateSource() is a pure, tested check.
+      const { gateSource } = await import("./exam-source-hygiene");
       const markable = candidates.filter((r) => {
         if (isMemoContentless(r.memoText)) return false;
-        return Boolean(parseMemoToScheme(r.memoText ?? "", r.marks ?? 1));
+        if (!parseMemoToScheme(r.memoText ?? "", r.marks ?? 1)) return false;
+        const v = gateSource({
+          questionText: r.questionText,
+          memoText: r.memoText,
+          stimulusText: r.stimulusText,
+          needsStimulus: r.needsStimulus,
+          mcqOptions: r.mcqOptions as any,
+        });
+        return v.usable;
       });
 
       // If filtering leaves us short (a very thin subject), fall back to the
@@ -15925,11 +16014,26 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         sql`${vqT.releasedAt} IS NOT NULL`,
       ];
       conds.push(session === null ? sql`${vqT.session} IS NULL` : eq(vqT.session, session));
-      const rows = await db
+      const rowsRaw = await db
         .select()
         .from(vqT)
         .where(and(...conds))
         .orderBy(vqT.questionNumber);
+
+      // Same hygiene filter as /api/dbe/questions and mini-mock: drop
+      // truncated stubs and unanswerable stimulus-referring questions so a
+      // full paper never opens with a "Refer to Information B" that isn't
+      // in the ingested corpus.
+      const { gateSource } = await import("./exam-source-hygiene");
+      const rows = rowsRaw.filter((r: any) =>
+        gateSource({
+          questionText: r.questionText,
+          memoText: r.memoText,
+          stimulusText: r.stimulusText,
+          needsStimulus: r.needsStimulus,
+          mcqOptions: r.mcqOptions,
+        }).usable,
+      );
 
       const totalMarks = rows.reduce((s, r) => s + (r.marks ?? 0), 0);
       // Default exam time per DBE convention: 1 minute per mark, 90–180 mins
