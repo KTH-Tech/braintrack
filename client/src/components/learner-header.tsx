@@ -52,7 +52,7 @@ export function LearnerHeader({
             <Link href={backHref}>
               <button
                 data-testid="link-home"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0"
+                className="inline-flex items-center justify-center gap-2 min-w-[44px] min-h-[44px] px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0"
                 style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
               >
                 <ArrowLeft className="w-4 h-4" />
@@ -71,7 +71,7 @@ export function LearnerHeader({
             {actions}
             <button
               onClick={toggleLanguage}
-              className="px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
+              className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
               style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
               data-testid="button-language-toggle"
             >
@@ -81,7 +81,7 @@ export function LearnerHeader({
               onClick={() => logout()}
               data-testid="button-logout"
               aria-label={isAf ? "Uitteken" : "Sign Out"}
-              className="inline-flex items-center px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
+              className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
               style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}
             >
               <LogOut className="w-4 h-4 sm:mr-2" />

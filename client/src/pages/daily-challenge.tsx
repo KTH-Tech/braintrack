@@ -540,8 +540,11 @@ export default function DailyChallengePage() {
           />
         ) : (
           <>
-            {/* Stepper rail */}
-            <div className="relative flex items-center gap-1.5" data-testid="progress-dots" style={{ animation: "bt-fadeup .5s both" }}>
+            {/* Stepper rail — the visible pill is 10px tall for compactness,
+                but each button expands its tap zone to a 44px vertical band via
+                py-4 -my-4 so thumbs (esp. minor learners on entry-level phones)
+                can hit the right question without the dots overlapping. */}
+            <div className="relative flex items-stretch gap-1.5" data-testid="progress-dots" style={{ animation: "bt-fadeup .5s both" }}>
               {questions.map((_, i) => {
                 const answered = selectedAnswers[i] !== null;
                 const isCurrent = i === currentQuestion;
@@ -549,17 +552,22 @@ export default function DailyChallengePage() {
                   <button
                     key={i}
                     onClick={() => setCurrentQuestion(i)}
-                    className="relative h-2.5 min-h-0 p-0 flex-1 rounded-full transition-all duration-300 border-0"
-                    style={
-                      isCurrent
-                        ? { background: RAINBOW_GRADIENT }
-                        : answered
-                        ? { background: "#9FF5E8", opacity: 0.7 }
-                        : { background: "rgba(255,255,255,.1)" }
-                    }
+                    className="relative flex items-center justify-center min-h-0 p-0 py-4 -my-4 flex-1 border-0 bg-transparent"
                     data-testid={`button-progress-${i}`}
                     aria-label={`${isAf ? "Vraag" : "Question"} ${i + 1}${answered ? ` (${isAf ? "beantwoord" : "answered"})` : ""}`}
-                  />
+                  >
+                    <span
+                      aria-hidden
+                      className="block h-2.5 w-full rounded-full transition-all duration-300"
+                      style={
+                        isCurrent
+                          ? { background: RAINBOW_GRADIENT }
+                          : answered
+                          ? { background: "#9FF5E8", opacity: 0.7 }
+                          : { background: "rgba(255,255,255,.1)" }
+                      }
+                    />
+                  </button>
                 );
               })}
             </div>

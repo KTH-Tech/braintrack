@@ -132,7 +132,7 @@ export function GoalProgress({ isAf }: GoalProgressProps) {
           <button
             onClick={openModal}
             aria-label={isAf ? "Stel doelwitte" : "Set goals"}
-            className="p-1.5 rounded-lg text-white transition-colors"
+            className="inline-flex items-center justify-center w-11 h-11 rounded-lg text-white transition-colors"
             style={{ background: "transparent", border: "1px solid rgba(255,255,255,.14)", cursor: "pointer" }}
             onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#9FF5E8")}
             onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,.14)")}

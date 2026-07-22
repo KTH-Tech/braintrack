@@ -334,6 +334,14 @@ export function registerPaystackRoutes(app: Express, isAuthenticated: any) {
             // same charge is never double-applied.
             break;
           }
+          if (purpose === "admin_test") {
+            // Admin dashboard "test payment" smoke-check. Intentionally does
+            // NOTHING to any subscription — it just proves Paystack →
+            // webhook → this handler is wired end-to-end. The R1 stays with
+            // Paystack until the admin refunds it in the Paystack dashboard.
+            console.log(`[paystack] admin_test smoke charge succeeded, reference=${d?.reference}`);
+            break;
+          }
           // KTH Tech runs several products/plans through this one Paystack
           // account. This webhook URL only ever receives BrainTrack events
           // because it's registered against BrainTrack's own plan-scoped

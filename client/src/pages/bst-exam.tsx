@@ -326,7 +326,7 @@ export default function BSTExamPage() {
           onClick={() => setLanguage("en")}
           aria-pressed={!isAf}
           aria-label="English"
-          className={`min-h-0 inline-flex items-center gap-1 px-2 py-1 rounded text-[11px] font-semibold transition-colors ${
+          className={`min-h-[40px] min-w-[44px] inline-flex items-center justify-center gap-1 px-3 py-2 rounded text-xs font-semibold transition-colors ${
             !isAf ? "bg-primary/15 text-primary" : "text-white hover:text-foreground"
           }`}
           data-testid="button-lang-en"
@@ -338,7 +338,7 @@ export default function BSTExamPage() {
           onClick={() => setLanguage("af")}
           aria-pressed={isAf}
           aria-label="Afrikaans"
-          className={`min-h-0 inline-flex items-center gap-1 px-2 py-1 rounded text-[11px] font-semibold transition-colors ${
+          className={`min-h-[40px] min-w-[44px] inline-flex items-center justify-center gap-1 px-3 py-2 rounded text-xs font-semibold transition-colors ${
             isAf ? "bg-primary/15 text-primary" : "text-white hover:text-foreground"
           }`}
           data-testid="button-lang-af"
@@ -349,7 +349,7 @@ export default function BSTExamPage() {
       <Link href="/dashboard">
         <button
           type="button"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0"
+          className="inline-flex items-center justify-center gap-1.5 min-h-[44px] min-w-[44px] px-3 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0"
           style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
           title={isAf ? "Tuis" : "Home"}
           aria-label={isAf ? "Tuis" : "Home"}
@@ -362,7 +362,7 @@ export default function BSTExamPage() {
       <button
         type="button"
         onClick={() => logout()}
-        className="min-h-0 p-1.5 rounded-lg text-foreground hover:bg-white/5 transition-colors border-0 bg-transparent"
+        className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] p-2 rounded-lg text-foreground hover:bg-white/5 transition-colors border-0 bg-transparent"
         title={isAf ? "Uitteken" : "Sign Out"}
         aria-label={isAf ? "Uitteken" : "Sign Out"}
         data-testid="button-logout"
@@ -474,19 +474,19 @@ export default function BSTExamPage() {
               </Button>
             </Card>
           ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-[minmax(0,1fr)] sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {papers.map(p => (
                 <button
                   key={p.id}
                   onClick={() => { setSelectedPaperId(p.id); setExamState("rules"); }}
                   data-testid={`card-paper-${p.id}`}
-                  className="group text-left rounded-2xl p-5 bg-card border border-border hover:border-primary/50 transition-all duration-200"
+                  className="group text-left rounded-2xl p-5 bg-card border border-border hover:border-primary/50 transition-all duration-200 min-w-0 w-full"
                 >
-                  <div className="flex items-start gap-3 mb-4">
+                  <div className="flex items-start gap-3 mb-4 min-w-0">
                     <div className="flex items-center justify-center w-9 h-9 rounded-xl flex-shrink-0 bg-primary/10 border border-primary/30">
                       <FileText className="w-4 h-4 text-primary" />
                     </div>
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <p className="font-semibold text-sm text-foreground">{t.paper} {p.paperNumber}</p>
                       <p className="text-xs text-white mt-0.5 leading-snug truncate">{p.name}</p>
                     </div>

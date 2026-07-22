@@ -2699,6 +2699,13 @@ export async function registerRoutes(
         userId,
         ...data,
         selectedSubjects,
+        // Persist the VARK questionnaire result on the onboarding_results row
+        // itself so it's queryable without cracking rawAnswersJson. Both
+        // columns are nullable (migration 0034_onboarding_vark_secondary.sql)
+        // and drizzle drops unknown fields silently, so an unmigrated DB
+        // won't 500 — it just won't record these two columns.
+        selectedVark: data.varkPrimary ?? null,
+        selectedVarkSecondary: data.varkSecondary ?? null,
       });
 
       // POPIA audit: log ToS + Privacy Policy acceptance at onboarding completion
@@ -11158,6 +11165,45 @@ Create comprehensive study notes for the topic provided.`;
   });
 
   // POST /api/admin/dbe-ingestion/verify — re-fetch PDFs and verify content hashes
+  // POST /api/admin/test-payment — launch-day Paystack smoke test.
+  // Initialises a R1.00 card-only transaction against the admin's own email
+  // and returns the Paystack authorization_url for the admin to open + pay
+  // in a new tab. metadata.purpose = "admin_test" so paystack.ts routes the
+  // webhook past the card-capture and trial-conversion branches — it does NOT
+  // create a subscription or store an authorization_code. Purely a "does the
+  // wire work end to end?" check. Rate-limited to 5/hour (paymentLimiter).
+  app.post("/api/admin/test-payment", isAuthenticated, requireRole("admin"), paymentLimiter, async (req: any, res) => {
+    try {
+      const email = String(req.body?.email || req.dbUser?.email || "").trim();
+      if (!email) return res.status(400).json({ error: "email_required" });
+      const appUrl = (process.env.APP_URL || publicBaseUrl(req)).replace(/\/+$/, "");
+      const data = await paystackFetch("/transaction/initialize", {
+        method: "POST",
+        body: JSON.stringify({
+          email,
+          amount: 100, // R1.00 in kobo — same as card-capture, safe against fraud filters
+          currency: "ZAR",
+          channels: ["card"],
+          callback_url: `${appUrl}/admin?paystack=return`,
+          metadata: {
+            purpose: "admin_test",
+            initiatedBy: req.user.claims.sub,
+            initiatedByEmail: email,
+            product: "BrainTrack admin smoke test",
+          },
+        }),
+      });
+      return res.json({
+        authorizationUrl: data.authorization_url,
+        reference: data.reference,
+        amountRands: 1,
+      });
+    } catch (err: any) {
+      console.error("[admin/test-payment] failed:", err?.message ?? err);
+      return res.status(502).json({ error: "initialize_failed", message: err?.message ?? "Could not start test payment." });
+    }
+  });
+
   app.post("/api/admin/dbe-ingestion/verify", isAuthenticated, requireRole("admin"), async (req: any, res) => {
     const { subject, year } = req.body;
     try {
@@ -15378,7 +15424,6 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
           memoText: r.memoText,
           stimulusText: r.stimulusText,
           needsStimulus: r.needsStimulus,
-          mcqOptions: r.mcqOptions,
         }).usable,
       );
 
@@ -15800,7 +15845,6 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
           memoText: r.memoText,
           stimulusText: r.stimulusText,
           needsStimulus: r.needsStimulus,
-          mcqOptions: r.mcqOptions as any,
         });
         return v.usable;
       });
@@ -16031,7 +16075,6 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
           memoText: r.memoText,
           stimulusText: r.stimulusText,
           needsStimulus: r.needsStimulus,
-          mcqOptions: r.mcqOptions,
         }).usable,
       );
 

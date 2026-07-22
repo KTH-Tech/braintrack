@@ -6,12 +6,35 @@
 // presence (owner decision) — the bot lives in signed-in areas only.
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
+import {
+  CalendarClock,
+  BarChart3,
+  ClipboardCheck,
+  Bot,
+  Eye,
+  Trophy,
+  ScrollText,
+  Target,
+  FileCheck,
+  Globe2,
+  Brain,
+  Flame,
+  Crown,
+  Zap,
+  Sparkles,
+  Share2,
+  ArrowRight,
+  Rocket,
+  Layers,
+} from "lucide-react";
 import { useSEO } from "@/hooks/use-seo";
 import { useLanguage } from "@/lib/language-context";
 import { useRolePromptNav } from "@/components/role-prompt-modal";
 import iconTransparent from "@/assets/handoff/icon-transparent.png";
 import muralTransparent from "@/assets/handoff/mural-transparent.png";
 import { KthMark } from "@/components/kth-mark";
+import { ReviewsRibbon } from "@/components/landing/reviews-ribbon";
+import { RizzDemo } from "@/components/landing/rizz-demo";
 
 const RAINBOW =
   "linear-gradient(95deg,#FFB7E5,#FFE29A,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)";
@@ -208,6 +231,35 @@ const COPY = {
     footPowered: "KTH Tech",
   },
 } as const;
+
+// Feature-card icons (Lucide) — index-aligned with COPY.<lang>.features so the
+// icon stays consistent across EN/AF without duplicating JSX inside COPY.
+// Keeping this outside COPY lets us swap emoji-only strings for real vector
+// icons while preserving the `as const` typing of the copy tables.
+const FEATURE_ICONS = [
+  <CalendarClock size={26} strokeWidth={2.2} aria-hidden />,
+  <BarChart3 size={26} strokeWidth={2.2} aria-hidden />,
+  <ClipboardCheck size={26} strokeWidth={2.2} aria-hidden />,
+  <Bot size={26} strokeWidth={2.2} aria-hidden />,
+  <Eye size={26} strokeWidth={2.2} aria-hidden />,
+  <Trophy size={26} strokeWidth={2.2} aria-hidden />,
+];
+
+// Proof-band icons (Lucide) — index-aligned with COPY.<lang>.proof.
+const PROOF_ICONS = [
+  <ScrollText size={30} strokeWidth={2.2} aria-hidden />,
+  <Target size={30} strokeWidth={2.2} aria-hidden />,
+  <FileCheck size={30} strokeWidth={2.2} aria-hidden />,
+  <Globe2 size={30} strokeWidth={2.2} aria-hidden />,
+  <Brain size={30} strokeWidth={2.2} aria-hidden />,
+];
+
+// XP-strip stat icons — index-aligned with COPY.<lang>.xpStats.
+const XP_ICONS = [
+  <Zap size={22} strokeWidth={2.4} aria-hidden />,
+  <Flame size={22} strokeWidth={2.4} aria-hidden />,
+  <Crown size={22} strokeWidth={2.4} aria-hidden />,
+];
 
 // Permanent Marker scatter marks around the hero — positions from the comp.
 const SCATTER: Array<{
@@ -531,11 +583,14 @@ export default function LandingPage() {
                 fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 16,
                 color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
                 animation: "bt-rainbow 5s linear infinite", border: "none",
-                borderRadius: 10, padding: "16px 36px", whiteSpace: "nowrap",
+                borderRadius: 10, padding: "16px 32px 16px 36px", whiteSpace: "nowrap",
                 cursor: "pointer",
+                display: "inline-flex", alignItems: "center", gap: 10,
               }}
             >
+              <Rocket size={18} strokeWidth={2.6} aria-hidden />
               {t.ctaStart}
+              <ArrowRight size={18} strokeWidth={2.6} aria-hidden />
             </button>
           </div>
         </div>
@@ -556,10 +611,24 @@ export default function LandingPage() {
         </div>
       </div>
 
+      {/* ── Reviews ribbon ───────────────────────────────────
+          Marquee of pilot testimonials — pauses on hover, marked SAMPLE
+          on every card so the reviews aren't mistaken for endorsements. */}
+      <ReviewsRibbon language={language} />
+
       {/* ── Features ────────────────────────────────────────── */}
       <div className="btl-sec" style={{ maxWidth: 1100, margin: "104px auto 0", padding: "0 32px" }}>
         <Reveal style={{ textAlign: "center", marginBottom: 58 }}>
-          <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#FFB7E5", fontSize: 17, letterSpacing: ".5px", transform: "rotate(-2deg)" }}>{t.tDrop}</div>
+          <div
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 10,
+              fontFamily: "'Permanent Marker',cursive", color: "#FFB7E5",
+              fontSize: 17, letterSpacing: ".5px", transform: "rotate(-2deg)",
+            }}
+          >
+            <Layers size={20} strokeWidth={2.4} color="#FFB7E5" aria-hidden />
+            <span>{t.tDrop}</span>
+          </div>
           <div className="btl-sec-head" style={{ fontSize: 42, fontWeight: 900, letterSpacing: "-1.4px", lineHeight: 1.12, marginTop: 10 }}>
             {t.tDropHead1}
             <span style={{ color: "#9FD8FF" }}>{t.tDropHead2}</span>
@@ -577,8 +646,20 @@ export default function LandingPage() {
                   padding: 28, cursor: "default", width: "100%",
                 } as React.CSSProperties}
               >
-                <div className="btl-fchip" style={{ width: 54, height: 54, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", background: f.chipBg, marginBottom: 18, fontSize: 24 }}>
-                  {f.icon}
+                <div
+                  className="btl-fchip"
+                  style={{
+                    width: 54, height: 54, borderRadius: 16,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    background: f.chipBg, marginBottom: 18,
+                    color: f.color, // Lucide inherits color; the emoji stays as fallback below
+                    border: `1px solid ${f.color}`,
+                    boxShadow: `0 6px 18px ${f.glow}`,
+                  }}
+                >
+                  <span aria-hidden style={{ color: f.color, display: "inline-flex" }}>
+                    {FEATURE_ICONS[i] ?? f.icon}
+                  </span>
                 </div>
                 <div style={{ fontWeight: 800, fontSize: 18.5, letterSpacing: "-.2px", marginBottom: 9 }}>{f.title}</div>
                 <div style={{ fontSize: 15, lineHeight: 1.62, color: "#fff", opacity: 0.9 }}>{f.body}</div>
@@ -587,6 +668,10 @@ export default function LandingPage() {
           ))}
         </div>
       </div>
+
+      {/* ── Rizz interactive demo ─────────────────────────────
+          Three real Grade-12 MCQs; correct answers fire ConfettiBurst. */}
+      <RizzDemo language={language} />
 
       {/* ── Proof band: the receipts ────────────────────────── */}
       <div className="btl-sec" style={{ maxWidth: 1100, margin: "112px auto 0", padding: "0 32px" }}>
@@ -608,7 +693,16 @@ export default function LandingPage() {
             }}
           />
           <Reveal style={{ position: "relative", textAlign: "center", maxWidth: 720, margin: "0 auto 46px" }}>
-            <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#9FF5E8", fontSize: 17, letterSpacing: ".5px", transform: "rotate(-2deg)" }}>{t.proofEye}</div>
+            <div
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 10,
+                fontFamily: "'Permanent Marker',cursive", color: "#9FF5E8",
+                fontSize: 17, letterSpacing: ".5px", transform: "rotate(-2deg)",
+              }}
+            >
+              <FileCheck size={20} strokeWidth={2.4} color="#9FF5E8" aria-hidden />
+              <span>{t.proofEye}</span>
+            </div>
             <div className="btl-sec-head" style={{ fontSize: 44, fontWeight: 900, letterSpacing: "-1.6px", lineHeight: 1.1, marginTop: 10 }}>
               {t.proofHead1}
               <span style={{ background: HEADLINE_GRADIENT, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>{t.proofHead2}</span>
@@ -647,7 +741,22 @@ export default function LandingPage() {
                     boxShadow: "0 10px 34px " + p.glow, width: "100%", boxSizing: "border-box",
                   } as React.CSSProperties}
                 >
-                  <div aria-hidden style={{ fontSize: 30, lineHeight: 1, marginBottom: 12 }}>{p.icon}</div>
+                  <div
+                    aria-hidden
+                    style={{
+                      width: 52, height: 52, borderRadius: 14,
+                      display: "inline-flex", alignItems: "center", justifyContent: "center",
+                      marginBottom: 12,
+                      color: p.color,
+                      background: "rgba(255,255,255,.05)",
+                      border: `1.2px solid ${p.color}`,
+                      boxShadow: `0 6px 20px ${p.glow}`,
+                    }}
+                  >
+                    <span style={{ color: p.color, display: "inline-flex" }}>
+                      {PROOF_ICONS[i] ?? p.icon}
+                    </span>
+                  </div>
                   <div style={{ fontSize: 17, fontWeight: 900, color: p.color, letterSpacing: "-.4px", lineHeight: 1.3 }}>
                     {p.title}
                   </div>
@@ -662,7 +771,16 @@ export default function LandingPage() {
       {/* ── Positioning: the ecosystem ──────────────────────── */}
       <div className="btl-sec" style={{ maxWidth: 1100, margin: "116px auto 0", padding: "0 32px" }}>
         <Reveal style={{ textAlign: "center", marginBottom: 58 }}>
-          <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#9FF5E8", fontSize: 17, letterSpacing: ".5px", transform: "rotate(-2deg)" }}>{t.tPosEye}</div>
+          <div
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 10,
+              fontFamily: "'Permanent Marker',cursive", color: "#9FF5E8",
+              fontSize: 17, letterSpacing: ".5px", transform: "rotate(-2deg)",
+            }}
+          >
+            <Globe2 size={20} strokeWidth={2.4} color="#9FF5E8" aria-hidden />
+            <span>{t.tPosEye}</span>
+          </div>
           <div className="btl-sec-head" style={{ fontSize: 42, fontWeight: 900, letterSpacing: "-1.4px", lineHeight: 1.12, marginTop: 10 }}>
             {t.tPosHead1}
             <span style={{ background: HEADLINE_GRADIENT, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>{t.tPosHead2}</span>
@@ -723,15 +841,33 @@ export default function LandingPage() {
         <Reveal>
           <div className="btl-xp-card" style={{ background: "linear-gradient(120deg,rgba(255,183,229,.1),rgba(159,216,255,.09),rgba(197,179,255,.1))", border: "1px solid rgba(255,255,255,.1)", borderRadius: 28, padding: 52, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 44, flexWrap: "wrap" }}>
             <div style={{ maxWidth: 490 }}>
-              <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#9FF5E8", fontSize: 17, letterSpacing: ".5px", transform: "rotate(-2deg)" }}>{t.xpEye}</div>
+              <div
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 10,
+                  fontFamily: "'Permanent Marker',cursive", color: "#9FF5E8",
+                  fontSize: 17, letterSpacing: ".5px", transform: "rotate(-2deg)",
+                }}
+              >
+                <Sparkles size={20} strokeWidth={2.4} color="#9FF5E8" aria-hidden />
+                <span>{t.xpEye}</span>
+              </div>
               <div className="btl-xp-head" style={{ fontSize: 35, fontWeight: 900, letterSpacing: "-1.2px", lineHeight: 1.16, marginTop: 10 }}>
                 {t.xpHead1}<span style={{ color: "#9FD8FF" }}>{t.xpHead2}</span>{t.xpHead3}
               </div>
               <div style={{ marginTop: 14, fontSize: 16, lineHeight: 1.68, color: "#fff", opacity: 0.92 }}>{t.xpBody}</div>
             </div>
             <div className="btl-xp-stats" style={{ display: "flex", gap: 18, flexWrap: "wrap" }}>
-              {t.xpStats.map((s) => (
+              {t.xpStats.map((s, i) => (
                 <div key={s.label} style={{ background: "rgba(5,5,8,.6)", border: `1.5px solid ${s.color}`, borderRadius: 20, padding: "24px 28px", textAlign: "center", minWidth: 116, animation: "bt-wiggle 6s ease-in-out infinite" }}>
+                  <div
+                    aria-hidden
+                    style={{
+                      color: s.color, marginBottom: 6,
+                      display: "inline-flex", alignItems: "center", justifyContent: "center",
+                    }}
+                  >
+                    {XP_ICONS[i]}
+                  </div>
                   <div style={{ fontSize: 32, fontWeight: 900, letterSpacing: "-1px", color: s.color }}>{s.value}</div>
                   <div style={{ fontSize: 12.5, fontWeight: 700, letterSpacing: "1.6px", color: "#fff", textTransform: "uppercase", marginTop: 4 }}>{s.label}</div>
                 </div>
@@ -745,7 +881,16 @@ export default function LandingPage() {
       <div className="btl-sec" style={{ maxWidth: 1100, margin: "116px auto 0", padding: "0 32px" }}>
         <Reveal>
           <div data-testid="share-braintrack" style={{ textAlign: "center" }}>
-            <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#FFE29A", fontSize: 16, letterSpacing: ".5px", transform: "rotate(-2deg)" }}>{t.shareEye}</div>
+            <div
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 10,
+                fontFamily: "'Permanent Marker',cursive", color: "#FFE29A",
+                fontSize: 16, letterSpacing: ".5px", transform: "rotate(-2deg)",
+              }}
+            >
+              <Share2 size={18} strokeWidth={2.4} color="#FFE29A" aria-hidden />
+              <span>{t.shareEye}</span>
+            </div>
             <div style={{ fontSize: 27, fontWeight: 900, letterSpacing: "-.9px", marginTop: 8, color: "#fff" }}>{t.shareHead}</div>
             <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap", marginTop: 18 }}>
               {shareLinks.map((s) => (

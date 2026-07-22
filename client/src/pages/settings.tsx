@@ -1110,7 +1110,7 @@ export default function SettingsPage() {
                                 max="2026-10-15"
                                 value={p1}
                                 onChange={(e) => setPrelimDate(subject.id, 1, e.target.value)}
-                                className={`mt-1 h-9 text-xs ${fieldClass}`}
+                                className={`mt-1 h-11 text-sm ${fieldClass}`}
                                 style={fieldStyle}
                                 data-testid={`prelim-${subject.id}-p1`}
                               />
@@ -1125,7 +1125,7 @@ export default function SettingsPage() {
                                 max="2026-10-15"
                                 value={p2}
                                 onChange={(e) => setPrelimDate(subject.id, 2, e.target.value)}
-                                className={`mt-1 h-9 text-xs ${fieldClass}`}
+                                className={`mt-1 h-11 text-sm ${fieldClass}`}
                                 style={fieldStyle}
                                 data-testid={`prelim-${subject.id}-p2`}
                               />

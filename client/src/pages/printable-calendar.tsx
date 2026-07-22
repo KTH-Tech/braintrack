@@ -116,7 +116,7 @@ export default function PrintableCalendar() {
       days.push(
         <div
           key={day}
-          className={`border border-gray-200 dark:border-gray-700 p-1 min-h-[60px] ${
+          className={`border border-gray-200 dark:border-gray-700 p-1 min-h-[60px] min-w-0 overflow-hidden ${
             compact ? "min-h-[40px]" : "min-h-[80px]"
           } ${hasExam ? "bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700" : ""}`}
         >
@@ -124,9 +124,9 @@ export default function PrintableCalendar() {
             {day}
           </div>
           {hasExam && !compact && (
-            <div className="text-xs text-foreground mt-1">
+            <div className="text-xs text-foreground mt-1 min-w-0">
               {exams.map((e, i) => (
-                <div key={i} className="truncate">
+                <div key={i} className="truncate min-w-0">
                   {e.subject}
                 </div>
               ))}

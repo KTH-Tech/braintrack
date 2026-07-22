@@ -10,7 +10,7 @@ import { ONBOARDING_QUESTIONS, GRADE_12_SUBJECTS } from "@/lib/constants";
 import { ArrowLeft, ArrowRight, Loader2, Globe, Check, Sparkles, Search, Eye, RotateCcw, ShieldCheck, MailCheck, AlertTriangle, Copy, Link2, Clock } from "lucide-react";
 import iconTransparent from "@/assets/handoff/icon-transparent.png";
 import { GraffitiSplats } from "@/components/graffiti-splats";
-import { type VarkStyle, VARK_STYLES } from "@/lib/vark";
+import { type VarkStyle, VARK_STYLES, VARK_QUESTIONS, scoreVarkAnswers } from "@/lib/vark";
 import { useLanguage } from "@/lib/language-context";
 import { useAuth } from "@/hooks/use-auth";
 import {
@@ -211,6 +211,13 @@ type PersistedState = {
   answers: Answers;
   varkPrimary: VarkStyle | null;
   varkSecondary: VarkStyle | null;
+  // Per-question answers for the VARK questionnaire, keyed by VARK_QUESTIONS[i].id.
+  // Kept alongside the committed primary/secondary so a mid-questionnaire reload
+  // returns the learner to their current step rather than restarting.
+  varkAnswers: Record<string, string>;
+  // Position within the VARK phase. 0..VARK_QUESTIONS.length-1 = a question,
+  // VARK_QUESTIONS.length = the result view.
+  varkStep: number;
   subjectMarks: SubjectMark[];
   selectedSubjects: string[];
   schoolName?: string;
@@ -263,6 +270,23 @@ function loadPersistedState(): PersistedState | null {
     const varkPrimary: VarkStyle | null = isVark(obj.varkPrimary) ? obj.varkPrimary : null;
     const varkSecondary: VarkStyle | null =
       isVark(obj.varkSecondary) && obj.varkSecondary !== varkPrimary ? obj.varkSecondary : null;
+    // Per-question answers: only keep entries where BOTH the key matches one
+    // of our questions and the value matches one of that question's options.
+    // A wildly stale draft (older question set, different values) is discarded
+    // silently rather than blowing up the resume path.
+    const rawVarkAnswers =
+      obj.varkAnswers && typeof obj.varkAnswers === "object" && !Array.isArray(obj.varkAnswers)
+        ? (obj.varkAnswers as Record<string, unknown>)
+        : {};
+    const varkAnswers: Record<string, string> = {};
+    for (const q of VARK_QUESTIONS) {
+      const val = rawVarkAnswers[q.id];
+      if (typeof val === "string" && q.options.some((o) => o.value === val)) {
+        varkAnswers[q.id] = val;
+      }
+    }
+    const rawVarkStep = typeof obj.varkStep === "number" ? Math.floor(obj.varkStep) : 0;
+    const varkStep = Math.max(0, Math.min(VARK_QUESTIONS.length, rawVarkStep));
     const subjectMarks: SubjectMark[] = Array.isArray(obj.subjectMarks)
       ? obj.subjectMarks.filter(isSubjectMark).map((s) => ({
           subjectCode: s.subjectCode,
@@ -290,6 +314,8 @@ function loadPersistedState(): PersistedState | null {
       answers,
       varkPrimary,
       varkSecondary,
+      varkAnswers,
+      varkStep,
       subjectMarks,
       selectedSubjects,
       schoolName,
@@ -332,6 +358,14 @@ const T = {
     studyHoursHeading: "How many hours per day can you study?",
     varkHeading: "How do you learn best?",
     varkHint: "Select your preferred learning styles.",
+    varkQuestionnaireSubtitle: "Twelve quick scenarios — pick what actually sounds like you.",
+    varkScenarioProgress: "Scenario {n} of {total}",
+    varkResultHeading: "Your learning profile",
+    varkResultSubtitle: "Based on your 12 answers — this is how your brain likes to be taught.",
+    varkPrimaryHeading: "Your primary style",
+    varkSecondaryHeading: "Also strong in",
+    varkNoSecondary: "Your primary style is really clear — no strong secondary this time.",
+    varkRetakeBtn: "Retake questionnaire",
     consentSent: "Consent link sent!",
     consentSentDesc: "We emailed your parent. Ask them to approve your account.",
     consentNotConfigured: "Email not configured",
@@ -507,6 +541,14 @@ const T = {
     studyHoursHeading: "Hoeveel uur per dag kan jy studeer?",
     varkHeading: "Hoe leer jy die beste?",
     varkHint: "Kies jou voorkeur leermetodes.",
+    varkQuestionnaireSubtitle: "Twaalf vinnige scenario's — kies wat régtig soos jy klink.",
+    varkScenarioProgress: "Scenario {n} van {total}",
+    varkResultHeading: "Jou leerprofiel",
+    varkResultSubtitle: "Gebaseer op jou 12 antwoorde — só hou jou brein daarvan om geleer te word.",
+    varkPrimaryHeading: "Jou primêre styl",
+    varkSecondaryHeading: "Ook sterk in",
+    varkNoSecondary: "Jou primêre styl is baie duidelik — geen sterk sekondêre keer nie.",
+    varkRetakeBtn: "Doen weer",
     consentSent: "Toestemmingsskakel gestuur!",
     consentSentDesc: "Ons het jou ouer ge-epos. Vra hulle om jou rekening goed te keur.",
     consentNotConfigured: "E-pos nie opgestel nie",
@@ -950,6 +992,20 @@ export default function OnboardingPage() {
   });
   const [varkPrimary, setVarkPrimary] = useState<VarkStyle | null>(persisted?.varkPrimary ?? null);
   const [varkSecondary, setVarkSecondary] = useState<VarkStyle | null>(persisted?.varkSecondary ?? null);
+  // Per-question answers + position within the VARK phase. Position is 0..11
+  // for a specific question and VARK_QUESTIONS.length (12) for the result view
+  // that renders the scored primary + secondary before advancing.
+  const [varkAnswers, setVarkAnswers] = useState<Record<string, string>>(
+    persisted?.varkAnswers ?? {},
+  );
+  const [varkStep, setVarkStep] = useState<number>(
+    // Resume where the learner left off. A persisted step of VARK_QUESTIONS.length
+    // means they'd already reached the result view; otherwise they were mid-quiz.
+    // If neither has a persisted value but varkPrimary is set (an old draft from
+    // before the questionnaire existed, or a preview seed) start at the result
+    // view instead of forcing them to redo the assessment.
+    persisted?.varkStep ?? (persisted?.varkPrimary ? VARK_QUESTIONS.length : 0),
+  );
   const [subjectMarks, setSubjectMarks] = useState<SubjectMark[]>(persisted?.subjectMarks ?? []);
   const [selectedSubjects, setSelectedSubjects] = useState<Set<string>>(
     new Set(persisted?.selectedSubjects ?? [])
@@ -976,6 +1032,8 @@ export default function OnboardingPage() {
     setAnswers({ focus_duration: 45 });
     setVarkPrimary(null);
     setVarkSecondary(null);
+    setVarkAnswers({});
+    setVarkStep(0);
     setSubjectMarks([]);
     setSelectedSubjects(new Set());
     setSchoolName("");
@@ -1019,6 +1077,8 @@ export default function OnboardingPage() {
         answers,
         varkPrimary,
         varkSecondary,
+        varkAnswers,
+        varkStep,
         subjectMarks,
         selectedSubjects: Array.from(selectedSubjects),
         schoolName,
@@ -1033,7 +1093,7 @@ export default function OnboardingPage() {
     } catch {
       // ignore storage errors (quota, private mode)
     }
-  }, [hydrated, inPreview, currentStep, phase, language, answers, varkPrimary, varkSecondary, subjectMarks, selectedSubjects, schoolName, schoolId, grade, parentEmail, firstName, lastName, idNumber]);
+  }, [hydrated, inPreview, currentStep, phase, language, answers, varkPrimary, varkSecondary, varkAnswers, varkStep, subjectMarks, selectedSubjects, schoolName, schoolId, grade, parentEmail, firstName, lastName, idNumber]);
 
   // Task #43 — Debounced school name search against partnerSchools.
   useEffect(() => {
@@ -1228,6 +1288,15 @@ export default function OnboardingPage() {
       return subjectMarks.length >= 6;
     }
     if (phase === "vark") {
+      // Questionnaire mode: the current scenario must have an answer before
+      // the learner can advance (auto-advance still fires as soon as they pick
+      // — this gate is what enables the visible Next button).
+      if (varkStep < VARK_QUESTIONS.length) {
+        const q = VARK_QUESTIONS[varkStep];
+        return typeof varkAnswers[q.id] === "string";
+      }
+      // Result view: primary must be committed (set by the useEffect below
+      // when the questionnaire is complete, or from a persisted / preview seed).
       return varkPrimary !== null;
     }
     if (phase === "school") {
@@ -1276,10 +1345,20 @@ export default function OnboardingPage() {
       } else {
         celebrate(PHASE_CHEERS[language].vark);
         setPhase("vark");
+        // Entering the VARK phase — if we already have a committed primary
+        // (persisted from a previous session, or a preview seed), skip to the
+        // result view rather than re-asking questions the learner has already
+        // answered. Otherwise start the questionnaire from question 0.
+        setVarkStep(varkPrimary ? VARK_QUESTIONS.length : 0);
       }
     } else if (phase === "vark") {
-      celebrate(PHASE_CHEERS[language].subjects);
-      setPhase("subjects");
+      // Sub-step machine: 0..11 = a scenario, 12 = the scored result view.
+      if (varkStep < VARK_QUESTIONS.length) {
+        setVarkStep((prev) => prev + 1);
+      } else {
+        celebrate(PHASE_CHEERS[language].subjects);
+        setPhase("subjects");
+      }
     } else if (phase === "subjects") {
       celebrate(PHASE_CHEERS[language].school);
       setPhase("school");
@@ -1314,11 +1393,56 @@ export default function OnboardingPage() {
       setPhase("subjects");
     } else if (phase === "subjects") {
       setPhase("vark");
+      // Returning to VARK from a later phase — land on the result view so the
+      // learner sees their profile summary rather than being dropped back into
+      // question 1. Retake button still available from there.
+      setVarkStep(varkPrimary ? VARK_QUESTIONS.length : 0);
     } else if (phase === "vark") {
-      setPhase("questions");
+      // Within the VARK phase: step backwards through the questionnaire (or
+      // out of the result view), and only leave the phase entirely when
+      // already at question 0.
+      if (varkStep > 0) {
+        setVarkStep((prev) => prev - 1);
+      } else {
+        setPhase("questions");
+      }
     } else if (currentStep > 0) {
       setCurrentStep((prev) => prev - 1);
     }
+  };
+
+  // ── VARK questionnaire helpers ──────────────────────────────────────────
+  // Commit the scored result to varkPrimary/varkSecondary as soon as the
+  // learner lands on the result view AND has actually answered at least one
+  // scenario. Guarding on answer count avoids clobbering a preview-seeded
+  // primary (or a persisted result) with the all-zero default from an empty
+  // answers map. Re-runs when they retake: retake clears both answers and
+  // committed primary, then this fires again as new answers roll in.
+  const varkResultView = varkStep >= VARK_QUESTIONS.length;
+  useEffect(() => {
+    if (!varkResultView) return;
+    if (Object.keys(varkAnswers).length === 0) return;
+    const scored = scoreVarkAnswers(varkAnswers);
+    setVarkPrimary(scored.primary);
+    setVarkSecondary(scored.secondary);
+    // Committing derived state — the answers map is what's live.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [varkResultView, varkAnswers]);
+
+  // Pick an option for the current scenario, then auto-advance (matches the
+  // conversational pattern the primary questions phase uses).
+  const handleVarkSelect = (questionId: string, optionValue: string) => {
+    setVarkAnswers((prev) => ({ ...prev, [questionId]: optionValue }));
+    if (advanceTimer.current) clearTimeout(advanceTimer.current);
+    advanceTimer.current = setTimeout(() => handleNextRef.current(), 420);
+  };
+
+  const handleVarkRetake = () => {
+    if (advanceTimer.current) clearTimeout(advanceTimer.current);
+    setVarkAnswers({});
+    setVarkPrimary(null);
+    setVarkSecondary(null);
+    setVarkStep(0);
   };
 
   // ── Preview phase jumping ────────────────────────────────────────────────
@@ -1367,6 +1491,12 @@ export default function OnboardingPage() {
     }
     setPreviewDone(false);
     if (target === "questions") setCurrentStep(0);
+    if (target === "vark") {
+      // Preview jumped straight to VARK. If we seeded a primary above (or one
+      // was already set), land on the result view so the admin sees the
+      // finished profile screen. Otherwise start the questionnaire.
+      setVarkStep(varkPrimary ? VARK_QUESTIONS.length : 0);
+    }
     setPhase(target);
   };
 
@@ -1661,6 +1791,7 @@ export default function OnboardingPage() {
             <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-white truncate">
               {phaseNames[phaseIdx]}
               {phase === "questions" && ` · ${currentStep + 1}/${ONBOARDING_QUESTIONS.length}`}
+              {phase === "vark" && varkStep < VARK_QUESTIONS.length && ` · ${varkStep + 1}/${VARK_QUESTIONS.length}`}
             </span>
             <span
               className="text-[15px] shrink-0"
@@ -1897,7 +2028,13 @@ export default function OnboardingPage() {
             </section>
           )}
 
-          {/* ── PHASE: VARK ────────────────────────────────────────────────── */}
+          {/* ── PHASE: VARK ──────────────────────────────────────────────────
+              A real assessment (not self-selection). Twelve SA-context
+              scenarios, one per screen, tallied into a primary + optional
+              secondary VARK style. When on the final result view (varkStep ==
+              VARK_QUESTIONS.length) we display the profile using the same
+              VARK_STYLES icons the dashboard uses so what the learner sees
+              here matches what they see later. ────────────────────────────── */}
           {!previewDone && phase === "vark" && (
             <section
               data-testid="card-vark"
@@ -1910,94 +2047,197 @@ export default function OnboardingPage() {
             >
               <div aria-hidden className="h-[3px]" style={{ background: `linear-gradient(95deg, ${BRAND.pink}, ${BRAND.yellow}, ${BRAND.mint}, ${BRAND.cyan}, ${BRAND.purple})` }} />
               <div className="p-5 sm:p-8 space-y-6">
-                <h2 className="text-white font-extrabold leading-[1.15] text-[26px] sm:text-[34px] tracking-tight">
-                  {t.varkHeading}
-                </h2>
-                <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white">
-                  {t.primaryStyleLabel}
-                </p>
-
-                <div className="grid grid-cols-2 gap-3">
-                  {(Object.entries(VARK_STYLES) as [VarkStyle, typeof VARK_STYLES[VarkStyle]][]).map(([key, style], i) => {
-                    const isPrimary = varkPrimary === key;
-                    const tint = CONFETTI_COLORS[i % CONFETTI_COLORS.length];
-                    return (
-                      <button
-                        key={key}
-                        type="button"
-                        aria-pressed={isPrimary}
-                        onClick={() => {
-                          if (isPrimary) {
-                            setVarkPrimary(null);
-                          } else {
-                            setVarkPrimary(key);
-                            if (varkSecondary === key) setVarkSecondary(null);
-                          }
-                        }}
-                        data-testid={`vark-primary-${key}`}
-                        className="relative rounded-2xl p-4 text-left min-h-[124px]"
-                        style={{
-                          background: isPrimary ? `${tint}1F` : "rgba(255,255,255,.03)",
-                          border: `1.5px solid ${isPrimary ? tint : "rgba(255,255,255,.14)"}`,
-                          
-                          transition: "background .2s ease, border-color .2s ease, box-shadow .2s ease",
-                          animation: anim(`bt-fadeup .4s cubic-bezier(.22,1,.36,1) ${0.05 * i}s both`),
-                        }}
-                      >
-                        {isPrimary && (
-                          <span
-                            className="absolute top-2.5 right-2.5 w-6 h-6 rounded-full flex items-center justify-center"
-                            style={{ background: tint }}
-                          >
-                            <Check className="w-3.5 h-3.5" style={{ color: BRAND.ground }} />
-                          </span>
-                        )}
-                        <span className="text-4xl block mb-2 leading-none">{style.icon}</span>
-                        <p className="font-extrabold text-white text-base leading-tight">
-                          {language === "en" ? style.label : style.labelAf}
-                        </p>
-                        <p className="text-white text-[13px] mt-1 leading-snug">
-                          {language === "en" ? style.tagline : style.taglineAf}
-                        </p>
-                      </button>
-                    );
-                  })}
+                {/* Header + bilingual scenario progress dots (one dot per
+                    question, active dot grows wider, completed dots filled). */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span
+                    className="inline-block px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-[0.14em]"
+                    style={{ background: BRAND.purple, color: BRAND.ground }}
+                  >
+                    {t.phaseBrain}
+                  </span>
+                  {varkStep < VARK_QUESTIONS.length && (
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white">
+                      {t.varkScenarioProgress
+                        .replace("{n}", String(varkStep + 1))
+                        .replace("{total}", String(VARK_QUESTIONS.length))}
+                    </span>
+                  )}
                 </div>
 
-                {varkPrimary && (
-                  <div className="space-y-3" style={{ animation: anim("bt-fadeup .4s cubic-bezier(.22,1,.36,1) both") }}>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white">
-                      {t.secondaryStyleLabel}
-                    </p>
-                    <div className="grid grid-cols-3 gap-2">
-                      {(Object.entries(VARK_STYLES) as [VarkStyle, typeof VARK_STYLES[VarkStyle]][])
-                        .filter(([key]) => key !== varkPrimary)
-                        .map(([key, style]) => {
-                          const isSelected = varkSecondary === key;
-                          return (
-                            <button
-                              key={key}
-                              type="button"
-                              aria-pressed={isSelected}
-                              onClick={() => setVarkSecondary(isSelected ? null : key)}
-                              data-testid={`vark-secondary-${key}`}
-                              className="rounded-2xl p-3 text-center min-h-[76px]"
-                              style={{
-                                background: isSelected ? `${BRAND.purple}1F` : "rgba(255,255,255,.03)",
-                                border: `1.5px solid ${isSelected ? BRAND.purple : "rgba(255,255,255,.14)"}`,
-                                transition: "background .2s ease, border-color .2s ease",
-                              }}
-                            >
-                              <span className="text-2xl block leading-none">{style.icon}</span>
-                              <p className="text-[12px] font-bold text-white mt-1.5 leading-tight">
-                                {language === "en" ? style.label : style.labelAf}
-                              </p>
-                            </button>
-                          );
-                        })}
-                    </div>
+                <h2 className="text-white font-extrabold leading-[1.15] text-[26px] sm:text-[34px] tracking-tight">
+                  {varkStep < VARK_QUESTIONS.length
+                    ? (language === "en"
+                        ? VARK_QUESTIONS[varkStep].promptEn
+                        : VARK_QUESTIONS[varkStep].promptAf)
+                    : t.varkResultHeading}
+                </h2>
+                <p className="text-white text-[14px] leading-relaxed">
+                  {varkStep < VARK_QUESTIONS.length ? t.varkQuestionnaireSubtitle : t.varkResultSubtitle}
+                </p>
+
+                {/* Scenario progress dots — visible on every questionnaire
+                    step, hidden on the result view. */}
+                {varkStep < VARK_QUESTIONS.length && (
+                  <div
+                    className="flex items-center justify-center gap-1.5"
+                    data-testid="vark-progress-dots"
+                    aria-label={t.varkScenarioProgress
+                      .replace("{n}", String(varkStep + 1))
+                      .replace("{total}", String(VARK_QUESTIONS.length))}
+                  >
+                    {VARK_QUESTIONS.map((q, i) => {
+                      const isActive = i === varkStep;
+                      const isAnswered = typeof varkAnswers[q.id] === "string";
+                      return (
+                        <span
+                          key={q.id}
+                          aria-hidden
+                          style={{
+                            width: isActive ? 24 : 8,
+                            height: 8,
+                            borderRadius: 999,
+                            background: isActive
+                              ? `linear-gradient(90deg, ${BRAND.cyan}, ${BRAND.purple})`
+                              : isAnswered
+                                ? BRAND.mint
+                                : "rgba(255,255,255,.18)",
+                            transition: "all .35s cubic-bezier(.22,1,.36,1)",
+                          }}
+                        />
+                      );
+                    })}
                   </div>
                 )}
+
+                {/* ── Questionnaire mode: one scenario, four options ─────── */}
+                {varkStep < VARK_QUESTIONS.length && (() => {
+                  const question = VARK_QUESTIONS[varkStep];
+                  const selected = varkAnswers[question.id];
+                  return (
+                    <div className="grid grid-cols-1 gap-3" role="radiogroup" aria-label={
+                      language === "en" ? question.promptEn : question.promptAf
+                    }>
+                      {question.options.map((option, i) => {
+                        const isSel = selected === option.value;
+                        return (
+                          <button
+                            key={option.value}
+                            type="button"
+                            role="radio"
+                            aria-checked={isSel}
+                            onClick={() => handleVarkSelect(question.id, option.value)}
+                            data-testid={`vark-q-${varkStep}-option-${option.style}`}
+                            className="w-full text-left flex items-center gap-3 rounded-2xl px-4 py-4 min-h-[64px]"
+                            style={{
+                              background: isSel ? `${BRAND.purple}1F` : "rgba(255,255,255,.03)",
+                              border: `1.5px solid ${isSel ? BRAND.purple : "rgba(255,255,255,.14)"}`,
+                              transition: "background .2s ease, border-color .2s ease",
+                              animation: anim(`bt-fadeup .4s cubic-bezier(.22,1,.36,1) ${0.04 * i}s both`),
+                            }}
+                          >
+                            <span
+                              className="shrink-0 rounded-full flex items-center justify-center"
+                              style={{
+                                width: 26,
+                                height: 26,
+                                background: isSel ? BRAND.purple : "transparent",
+                                border: `1.5px solid ${isSel ? BRAND.purple : "rgba(255,255,255,.32)"}`,
+                              }}
+                            >
+                              {isSel && <Check className="w-4 h-4" style={{ color: BRAND.ground }} />}
+                            </span>
+                            <span className="flex-1 text-white font-semibold text-[16px] sm:text-lg leading-snug">
+                              {language === "en" ? option.labelEn : option.labelAf}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  );
+                })()}
+
+                {/* ── Result view: primary (large) + optional secondary ──── */}
+                {varkResultView && varkPrimary && (() => {
+                  const primaryMeta = VARK_STYLES[varkPrimary];
+                  const secondaryMeta = varkSecondary ? VARK_STYLES[varkSecondary] : null;
+                  return (
+                    <div className="space-y-4" data-testid="vark-result">
+                      <div
+                        className="rounded-2xl p-5 sm:p-6"
+                        data-testid={`vark-result-primary-${varkPrimary}`}
+                        style={{
+                          background: `${BRAND.purple}1F`,
+                          border: `1.5px solid ${BRAND.purple}`,
+                          animation: anim("bt-fadeup .45s cubic-bezier(.22,1,.36,1) both"),
+                        }}
+                      >
+                        <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white">
+                          {t.varkPrimaryHeading}
+                        </p>
+                        <div className="flex items-center gap-4 mt-2">
+                          <span className="text-6xl leading-none">{primaryMeta.icon}</span>
+                          <div className="min-w-0">
+                            <p className="text-white font-extrabold text-[24px] sm:text-[28px] leading-tight">
+                              {language === "en" ? primaryMeta.label : primaryMeta.labelAf}
+                            </p>
+                            <p className="text-white text-[14px] mt-1 leading-snug">
+                              {language === "en" ? primaryMeta.tagline : primaryMeta.taglineAf}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {secondaryMeta ? (
+                        <div
+                          className="rounded-2xl p-4 sm:p-5"
+                          data-testid={`vark-result-secondary-${varkSecondary}`}
+                          style={{
+                            background: `${BRAND.cyan}14`,
+                            border: `1px solid ${BRAND.cyan}66`,
+                            animation: anim("bt-fadeup .45s cubic-bezier(.22,1,.36,1) .08s both"),
+                          }}
+                        >
+                          <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white">
+                            {t.varkSecondaryHeading}
+                          </p>
+                          <div className="flex items-center gap-3 mt-2">
+                            <span className="text-4xl leading-none">{secondaryMeta.icon}</span>
+                            <div className="min-w-0">
+                              <p className="text-white font-extrabold text-[18px] leading-tight">
+                                {language === "en" ? secondaryMeta.label : secondaryMeta.labelAf}
+                              </p>
+                              <p className="text-white text-[13px] mt-0.5 leading-snug">
+                                {language === "en" ? secondaryMeta.tagline : secondaryMeta.taglineAf}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div
+                          className="rounded-2xl px-4 py-3"
+                          data-testid="vark-result-no-secondary"
+                          style={{ background: "rgba(255,255,255,.04)", border: "1px solid rgba(255,255,255,.14)" }}
+                        >
+                          <p className="text-white text-[13px] leading-relaxed">
+                            {t.varkNoSecondary}
+                          </p>
+                        </div>
+                      )}
+
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={handleVarkRetake}
+                        data-testid="button-vark-retake"
+                        className="w-full sm:w-auto min-h-[48px] px-5 text-[14px] font-bold rounded-2xl text-white hover:bg-white/[0.06]"
+                      >
+                        <RotateCcw className="w-4 h-4 mr-2" aria-hidden />
+                        {t.varkRetakeBtn}
+                      </Button>
+                    </div>
+                  );
+                })()}
 
                 <div className="flex gap-3 pt-2">
                   <Button variant="outline" className={ghostBtn} onClick={handleBack} data-testid="button-back-vark">

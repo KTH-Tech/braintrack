@@ -1992,7 +1992,90 @@ export default function AdminDashboardPage() {
             })}
           </div>
         </section>
+
+        <TestPaymentSection />
       </main>
     </div>
+  );
+}
+
+/* ── Launch-day Paystack smoke test ─────────────────────────────────────
+   Fires a live R1.00 Paystack transaction (metadata.purpose="admin_test")
+   against the admin's own email and opens the payment URL in a new tab.
+   The webhook explicitly no-ops on admin_test — nothing subscribes, nothing
+   activates. Purely proves the full wire works end-to-end before launch.
+   The R1 charge stays with Paystack; refund it manually if desired. */
+function TestPaymentSection() {
+  const { user } = useAuth();
+  const { language } = useLanguage();
+  const isAf = language === "af";
+  const { toast } = useToast();
+  const [email, setEmail] = useState(user?.email ?? "");
+  useEffect(() => { if (user?.email && !email) setEmail(user.email); }, [user?.email, email]);
+
+  const testPayment = useMutation({
+    mutationFn: async () => (await apiRequest("POST", "/api/admin/test-payment", { email })).json(),
+    onSuccess: (data: any) => {
+      if (data?.authorizationUrl) {
+        toast({
+          title: isAf ? "Toets-betaling gereed" : "Test payment ready",
+          description: isAf ? "Maak Paystack oop en betaal die R1 om te bevestig." : "Opening Paystack — pay the R1 to confirm the flow.",
+        });
+        window.open(data.authorizationUrl, "_blank", "noopener,noreferrer");
+      }
+    },
+    onError: (e: any) => {
+      toast({
+        title: isAf ? "Toets-betaling het gefaal" : "Test payment failed",
+        description: e?.message ?? "Paystack init failed. Check PAYSTACK_SECRET_KEY.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  return (
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
+      <NeonShell color="#9FF5E8" className="p-5" testId="admin-test-payment-section">
+        <div className="flex flex-col sm:flex-row sm:items-end gap-4">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1.5">
+              <CreditCard className="w-5 h-5" style={{ color: "#9FF5E8" }} aria-hidden />
+              <h3 className="text-white font-extrabold text-lg leading-tight">
+                {isAf ? "Toets-betaling (R1)" : "Test payment (R1)"}
+              </h3>
+            </div>
+            <p className="text-white text-[13px] leading-relaxed">
+              {isAf
+                ? "Vuur 'n regstreekse R1 Paystack-transaksie af om die volle vloei end-to-end te bevestig. Geen intekening, geen proeftydperk word aktiveer nie."
+                : "Fires a live R1 Paystack transaction to prove the full wire works end-to-end. No subscription is created, no trial activated."}
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="admin@example.com"
+              aria-label={isAf ? "E-pos" : "Email"}
+              className="h-11 rounded-xl px-3 text-white text-sm outline-none"
+              style={{ background: "rgba(0,0,0,0.35)", border: "1px solid rgba(255,255,255,0.16)", minWidth: 220 }}
+              data-testid="input-test-payment-email"
+            />
+            <button
+              onClick={() => testPayment.mutate()}
+              disabled={!email || testPayment.isPending}
+              className="h-11 px-5 rounded-xl font-extrabold text-[#050508] disabled:opacity-40 inline-flex items-center gap-2 whitespace-nowrap"
+              style={{ background: "linear-gradient(100deg,#9FF5E8,#94F7C5)", border: "none" }}
+              data-testid="button-test-payment"
+            >
+              {testPayment.isPending
+                ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden />
+                : <CreditCard className="w-4 h-4" aria-hidden />}
+              {isAf ? "Stuur R1" : "Send R1"}
+            </button>
+          </div>
+        </div>
+      </NeonShell>
+    </section>
   );
 }

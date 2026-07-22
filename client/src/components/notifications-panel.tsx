@@ -90,7 +90,7 @@ export function NotificationsPanel({ isAf = false }: NotificationsPanelProps) {
     <div className="relative" ref={panelRef}>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="relative flex items-center justify-center w-8 h-8 rounded-lg border border-border text-white hover:text-foreground hover:bg-muted/50 transition-all"
+        className="relative flex items-center justify-center w-11 h-11 rounded-lg border border-border text-white hover:text-foreground hover:bg-muted/50 transition-all"
         aria-label={isAf ? "Kennisgewings" : "Notifications"}
         data-testid="button-notifications"
       >

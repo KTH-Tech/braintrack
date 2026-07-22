@@ -1217,7 +1217,7 @@ export default function DashboardPage() {
                   const initial = (subject.name || "?").trim().charAt(0).toUpperCase();
                   return (
                     <Link key={subject.id} href={`/subject/${subject.id}`}>
-                      <div data-testid={`subject-card-${subject.id}`} style={{ display: "flex", alignItems: "center", gap: 16, cursor: "pointer" }}>
+                      <div data-testid={`subject-card-${subject.id}`} style={{ display: "flex", alignItems: "center", gap: 16, cursor: "pointer", minHeight: 44, padding: "2px 0" }}>
                         <div style={{ width: 40, height: 40, flex: "none", borderRadius: 12, background: `${hex}26`, color: hex, fontWeight: 800, fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>
                           {initial}
                         </div>
@@ -1837,16 +1837,26 @@ export default function DashboardPage() {
         @media (max-width: 860px) {
           .bt-dash-sidebar { width: 200px !important; padding: 18px 10px !important; }
           .bt-dash-main { padding: 20px 14px !important; }
-          .bt-grid-stats, .bt-grid-2col, .bt-grid-quick, .bt-grid-focus, .bt-grid-vibe, .bt-grid-game { grid-template-columns: 1fr !important; }
+          /* minmax(0,1fr) — the plain 1fr defaults to minmax(auto,1fr) which
+             lets grid items grow to their min-content width. On mobile the
+             subject-mastery + focus-area cards contain nowrap text that
+             pushed the column to 413px inside a 295px parent, clipping the
+             right edge. minmax(0, ...) forces the column to honour the
+             container. */
+          .bt-grid-stats, .bt-grid-2col, .bt-grid-quick, .bt-grid-focus, .bt-grid-vibe, .bt-grid-game { grid-template-columns: minmax(0, 1fr) !important; }
+          .bt-grid-2col > *, .bt-grid-quick > *, .bt-grid-focus > *, .bt-grid-vibe > *, .bt-grid-game > *, .bt-grid-stats > * { min-width: 0 !important; }
         }
         @media (max-width: 1280px) and (min-width: 861px) {
-          .bt-grid-stats { grid-template-columns: repeat(2, 1fr) !important; }
-          .bt-grid-quick, .bt-grid-focus, .bt-grid-game { grid-template-columns: repeat(2, 1fr) !important; }
+          .bt-grid-stats { grid-template-columns: repeat(2, minmax(0,1fr)) !important; }
+          .bt-grid-quick, .bt-grid-focus, .bt-grid-game { grid-template-columns: repeat(2, minmax(0,1fr)) !important; }
         }
         @media (max-width: 520px) {
           .bt-dash-sidebar { width: 60px !important; padding: 14px 6px !important; align-items: center !important; }
           .bt-dash-navlabel { display: none !important; }
-          .bt-dash-navitem { justify-content: center !important; padding: 12px !important; }
+          /* min-w/min-h 44 keeps the primary sidebar icons on Apple/WCAG's 44px
+             tap-target minimum on iPhone SE-ish screens; centered padding
+             collapses to icon-only. */
+          .bt-dash-navitem { justify-content: center !important; padding: 12px !important; min-width: 44px !important; min-height: 44px !important; }
           .bt-dash-logo { justify-content: center !important; padding: 0 0 16px !important; }
           .bt-dash-logo-img { width: 32px !important; height: 32px !important; }
           .bt-dash-streak { display: none !important; }

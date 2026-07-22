@@ -556,6 +556,15 @@ export const onboardingResults = pgTable(
     goals: text("goals").array().notNull(),
     preferredLanguage: text("preferred_language").notNull().default("en"),
     selectedSubjects: integer("selected_subjects").array().notNull().default([]),
+    // VARK questionnaire result — the questionnaire (client/src/lib/vark.ts
+    // VARK_QUESTIONS + scoreVarkAnswers) tallies 12 scenario answers into a
+    // primary VARK style and, when the runner-up is within 20% of the primary,
+    // an optional secondary. Both columns are additive/nullable so existing
+    // rows (created before migration 0034) stay valid, and the runtime write
+    // path (server/routes.ts /api/onboarding) also tolerates the column being
+    // missing — nothing here can regress an unmigrated DB.
+    selectedVark: text("selected_vark"),
+    selectedVarkSecondary: text("selected_vark_secondary"),
     rawAnswersJson: jsonb("raw_answers_json"),
     traitsJson: jsonb("traits_json"),
     recommendationsJson: jsonb("recommendations_json"),

@@ -85,7 +85,8 @@ export function AppRatingPrompt() {
           </div>
           <button
             onClick={handleClose}
-            className="text-white hover:text-foreground transition-colors p-1 rounded-lg hover:bg-muted/50 shrink-0"
+            aria-label={isAf ? "Sluit" : "Close"}
+            className="text-white hover:text-foreground transition-colors inline-flex items-center justify-center w-11 h-11 -m-2 rounded-lg hover:bg-muted/50 shrink-0"
             data-testid="button-rating-close"
           >
             <X className="w-4 h-4" />

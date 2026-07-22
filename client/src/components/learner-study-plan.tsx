@@ -350,7 +350,7 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
                   <Link href={`/subject/${subjectId}`} key={subjectId}>
                     <span
                       data-testid={`readiness-pill-${subjectId}`}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold transition-transform hover:-translate-y-0.5"
+                      className="inline-flex items-center gap-1.5 min-h-[44px] px-3 py-2 rounded-lg text-[11px] font-bold transition-transform hover:-translate-y-0.5"
                       style={{
                         background: `${n.hex}14`,
                         border: `1px solid ${n.hex}`,

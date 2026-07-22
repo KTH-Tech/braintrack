@@ -853,19 +853,30 @@ export default function ExamReadyPage() {
                                 paperIdx += 1;
                                 const hex = PASTELS[paperIdx % PASTELS.length];
                                 const isSelected = selectedSubject === paper.subjectCode && selectedPaperNum === paper.paperNumber;
+                                const selectThisPaper = () => {
+                                  setSelectedSubject(paper.subjectCode);
+                                  setSelectedPaperNum(paper.paperNumber);
+                                  setSelectedPaperId(null);
+                                };
                                 return (
                                   <div
                                     key={`${paper.subjectCode}-${paper.paperNumber}`}
-                                    className="p-3 cursor-pointer transition-all"
+                                    className="p-3 cursor-pointer transition-all min-h-[44px]"
                                     style={{
                                       borderRadius: 14,
                                       background: isSelected ? `${hex}14` : "rgba(255,255,255,.03)",
                                       border: isSelected ? `1.5px solid ${hex}` : "1px solid rgba(255,255,255,.1)",
                                     }}
-                                    onClick={() => {
-                                      setSelectedSubject(paper.subjectCode);
-                                      setSelectedPaperNum(paper.paperNumber);
-                                      setSelectedPaperId(null);
+                                    role="button"
+                                    tabIndex={0}
+                                    aria-pressed={isSelected}
+                                    aria-label={`${name} paper ${paper.paperNumber}, ${paper.totalMarks} marks, ${paper.duration}`}
+                                    onClick={selectThisPaper}
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter" || e.key === " ") {
+                                        e.preventDefault();
+                                        selectThisPaper();
+                                      }
                                     }}
                                     data-testid={`sim-paper-${paper.subjectCode}-${paper.paperNumber}`}
                                   >
