@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/lib/language-context";
+import { useSEO } from "@/hooks/use-seo";
 import { apiRequest } from "@/lib/queryClient";
 import { Loader2, CheckCircle2, XCircle, Sparkles, BookOpen, Brain, Trophy, Globe } from "lucide-react";
 
@@ -16,6 +17,16 @@ export default function ActivatePage() {
   const { toast } = useToast();
   const { language, toggleLanguage } = useLanguage();
   const isAf = language === "af";
+
+  // Transactional deep-link — noindex so short activation URLs never accrue
+  // thin duplicate index pages.
+  useSEO({
+    title: "Activate your BrainTrack account | BrainTrack",
+    description:
+      "Enter your BrainTrack activation code to unlock your Grade 12 study plan, past papers and AI tutor.",
+    canonical: "https://braintrack.tech/activate",
+    noIndex: true,
+  });
   const [code, setCode] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [acceptPopia, setAcceptPopia] = useState(false);

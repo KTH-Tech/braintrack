@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLanguage } from "@/lib/language-context";
+import { useSEO } from "@/hooks/use-seo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Printer, ChevronLeft, ChevronRight, Download, Calendar } from "lucide-react";
@@ -49,6 +50,16 @@ export default function PrintableCalendar() {
   const { language, setLanguage } = useLanguage();
   const [currentMonthIndex, setCurrentMonthIndex] = useState(9);
   const [viewMode, setViewMode] = useState<"single" | "full">("single");
+
+  useSEO({
+    title: "NSC 2026 Exam Timetable & Printable Study Calendar | BrainTrack",
+    description:
+      "Free printable NSC 2026 exam timetable and Grade 12 study calendar for South African matrics. Official DBE dates, month-by-month planner, English & Afrikaans.",
+    canonical: "https://braintrack.tech/calendar",
+    ogTitle: "NSC 2026 Exam Timetable & Printable Study Calendar — BrainTrack",
+    ogDescription:
+      "Official Grade 12 NSC 2026 exam dates in a printable, month-by-month study planner. Free for South African matrics. EN & AF.",
+  });
 
   const t = {
     en: {

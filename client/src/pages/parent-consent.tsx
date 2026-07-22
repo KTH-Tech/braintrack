@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2, CheckCircle2, AlertTriangle, CreditCard, ShieldCheck } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
+import { useSEO } from "@/hooks/use-seo";
 
 // Task #43 — Public confirmation landing for parent-consent email links.
 // Reads ?token=… . No auth is required — the JWT is the bearer of trust.
@@ -20,6 +21,16 @@ export default function ParentConsentPage() {
   const [reason, setReason] = useState<string | null>(null);
   const [cardCaptured, setCardCaptured] = useState(false);
   const [token, setToken] = useState<string>("");
+
+  // Token-scoped landing (only reached from the parent-consent email link).
+  // Must be noindex — otherwise crawlers try each unique token URL and log 4xx.
+  useSEO({
+    title: "Parent consent | BrainTrack",
+    description:
+      "Confirm your consent so your Grade 12 learner can start their BrainTrack free trial.",
+    canonical: "https://braintrack.tech/parent-consent",
+    noIndex: true,
+  });
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);

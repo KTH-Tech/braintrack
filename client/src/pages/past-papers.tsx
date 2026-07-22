@@ -135,10 +135,10 @@ const pill = (hex: string): CSSProperties => ({
 
 export default function PastPapersPage() {
   useSEO({
-    title: "NSC Grade 12 Past Papers 2015–2024 | All Subjects | BrainTrack™",
+    title: "NSC Grade 12 Past Papers 2015–2025 | All Subjects | BrainTrack™",
     description: "Access 10 years of official DBE NSC Grade 12 past exam papers with memos for all CAPS subjects — Mathematics, Physical Sciences, English, Afrikaans, Life Sciences, Business Studies and more.",
     canonical: "https://braintrack.tech/past-papers",
-    ogTitle: "NSC Grade 12 Past Papers 2015–2024 — All CAPS Subjects | BrainTrack™",
+    ogTitle: "NSC Grade 12 Past Papers 2015–2025 — All CAPS Subjects | BrainTrack™",
     ogDescription: "10 years of official DBE NSC past exam papers with memos for every Grade 12 CAPS subject. Free to browse — practise with real Matric-level questions.",
     ogUrl: "https://braintrack.tech/past-papers",
     jsonLd: [
@@ -174,7 +174,7 @@ export default function PastPapersPage() {
               "@type": "Course",
               "name": `Grade 12 ${s.name} — NSC Past Papers & Memos`,
               "alternateName": `Graad 12 ${s.nameAf}`,
-              "description": `10 years of official DBE NSC Grade 12 ${s.name} past exam papers and memorandums (2015–2024) for CAPS-aligned Matric revision.`,
+              "description": `10 years of official DBE NSC Grade 12 ${s.name} past exam papers and memorandums (2015–2025) for CAPS-aligned Matric revision.`,
               "provider": {
                 "@type": "EducationalOrganization",
                 "name": "BrainTrack",

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/lib/language-context";
+import { useSEO } from "@/hooks/use-seo";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest } from "@/lib/queryClient";
 import { Loader2, Sparkles, ArrowRight, Users, Globe } from "lucide-react";
@@ -19,6 +20,15 @@ export default function ParentOnboardingPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const isAf = language === "af";
+
+  // Signed-in transactional flow — noindex.
+  useSEO({
+    title: "Parent sign-up | BrainTrack",
+    description:
+      "Create a BrainTrack parent account and activate your Grade 12 learner's study plan.",
+    canonical: "https://braintrack.tech/parent-onboarding",
+    noIndex: true,
+  });
 
   const [parentFirstName, setParentFirstName] = useState((user as any)?.firstName ?? "");
   const [parentLastName, setParentLastName] = useState((user as any)?.lastName ?? "");

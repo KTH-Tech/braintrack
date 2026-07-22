@@ -1,113 +1,129 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- BrainTrack sitemap — production domain braintrack.tech.
+     Only the public marketing surface is listed. Auth-gated pages
+     (dashboard, subjects, tutor, exam-*, admin, transactional deep links)
+     are disallowed in robots.txt and intentionally omitted here.
+     Bilingual EN/AF is served from the same URL via the in-app language
+     toggle, so each entry declares both hreflang alternates on itself. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
 
   <url>
-    <loc>https://braintrack.app/</loc>
-    <lastmod>2026-05-26</lastmod>
+    <loc>https://braintrack.tech/</loc>
+    <lastmod>2026-07-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://braintrack.app/"/>
-    <xhtml:link rel="alternate" hreflang="af-ZA" href="https://braintrack.app/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://braintrack.app/"/>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://braintrack.tech/"/>
+    <xhtml:link rel="alternate" hreflang="af-ZA" href="https://braintrack.tech/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://braintrack.tech/"/>
   </url>
 
   <url>
-    <loc>https://braintrack.app/features</loc>
-    <lastmod>2026-05-26</lastmod>
+    <loc>https://braintrack.tech/features</loc>
+    <lastmod>2026-07-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://braintrack.app/features"/>
-    <xhtml:link rel="alternate" hreflang="af-ZA" href="https://braintrack.app/features"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://braintrack.app/features"/>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://braintrack.tech/features"/>
+    <xhtml:link rel="alternate" hreflang="af-ZA" href="https://braintrack.tech/features"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://braintrack.tech/features"/>
   </url>
 
   <url>
-    <loc>https://braintrack.app/past-papers</loc>
-    <lastmod>2026-05-26</lastmod>
+    <loc>https://braintrack.tech/past-papers</loc>
+    <lastmod>2026-07-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://braintrack.app/past-papers"/>
-    <xhtml:link rel="alternate" hreflang="af-ZA" href="https://braintrack.app/past-papers"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://braintrack.app/past-papers"/>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://braintrack.tech/past-papers"/>
+    <xhtml:link rel="alternate" hreflang="af-ZA" href="https://braintrack.tech/past-papers"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://braintrack.tech/past-papers"/>
   </url>
 
   <url>
-    <loc>https://braintrack.app/subscribe</loc>
-    <lastmod>2026-05-26</lastmod>
+    <loc>https://braintrack.tech/subscribe</loc>
+    <lastmod>2026-07-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://braintrack.app/subscribe"/>
-    <xhtml:link rel="alternate" hreflang="af-ZA" href="https://braintrack.app/subscribe"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://braintrack.app/subscribe"/>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://braintrack.tech/subscribe"/>
+    <xhtml:link rel="alternate" hreflang="af-ZA" href="https://braintrack.tech/subscribe"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://braintrack.tech/subscribe"/>
   </url>
 
   <url>
-    <loc>https://braintrack.app/about</loc>
-    <lastmod>2026-05-26</lastmod>
+    <loc>https://braintrack.tech/for-schools</loc>
+    <lastmod>2026-07-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://braintrack.tech/for-schools"/>
+    <xhtml:link rel="alternate" hreflang="af-ZA" href="https://braintrack.tech/for-schools"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://braintrack.tech/for-schools"/>
+  </url>
+
+  <url>
+    <loc>https://braintrack.tech/partner-schools</loc>
+    <lastmod>2026-07-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://braintrack.app/about"/>
-    <xhtml:link rel="alternate" hreflang="af-ZA" href="https://braintrack.app/about"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://braintrack.app/about"/>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://braintrack.tech/partner-schools"/>
+    <xhtml:link rel="alternate" hreflang="af-ZA" href="https://braintrack.tech/partner-schools"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://braintrack.tech/partner-schools"/>
   </url>
 
   <url>
-    <loc>https://braintrack.app/research</loc>
-    <lastmod>2026-05-26</lastmod>
+    <loc>https://braintrack.tech/about</loc>
+    <lastmod>2026-07-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://braintrack.app/research"/>
-    <xhtml:link rel="alternate" hreflang="af-ZA" href="https://braintrack.app/research"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://braintrack.app/research"/>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://braintrack.tech/about"/>
+    <xhtml:link rel="alternate" hreflang="af-ZA" href="https://braintrack.tech/about"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://braintrack.tech/about"/>
   </url>
 
   <url>
-    <loc>https://braintrack.app/calendar</loc>
-    <lastmod>2026-05-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://braintrack.app/calendar"/>
-    <xhtml:link rel="alternate" hreflang="af-ZA" href="https://braintrack.app/calendar"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://braintrack.app/calendar"/>
-  </url>
-
-  <url>
-    <loc>https://braintrack.app/partner-schools</loc>
-    <lastmod>2026-05-26</lastmod>
+    <loc>https://braintrack.tech/research</loc>
+    <lastmod>2026-07-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://braintrack.app/partner-schools"/>
-    <xhtml:link rel="alternate" hreflang="af-ZA" href="https://braintrack.app/partner-schools"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://braintrack.app/partner-schools"/>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://braintrack.tech/research"/>
+    <xhtml:link rel="alternate" hreflang="af-ZA" href="https://braintrack.tech/research"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://braintrack.tech/research"/>
   </url>
 
   <url>
-    <loc>https://braintrack.app/privacy-policy</loc>
-    <lastmod>2026-05-26</lastmod>
+    <loc>https://braintrack.tech/calendar</loc>
+    <lastmod>2026-07-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://braintrack.tech/calendar"/>
+    <xhtml:link rel="alternate" hreflang="af-ZA" href="https://braintrack.tech/calendar"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://braintrack.tech/calendar"/>
+  </url>
+
+  <url>
+    <loc>https://braintrack.tech/privacy-policy</loc>
+    <lastmod>2026-07-22</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>https://braintrack.app/terms-of-service</loc>
-    <lastmod>2026-05-26</lastmod>
+    <loc>https://braintrack.tech/terms-of-service</loc>
+    <lastmod>2026-07-22</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>https://braintrack.app/cookie-policy</loc>
-    <lastmod>2026-05-26</lastmod>
+    <loc>https://braintrack.tech/cookie-policy</loc>
+    <lastmod>2026-07-22</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>https://braintrack.app/activate</loc>
-    <lastmod>2026-05-26</lastmod>
+    <loc>https://braintrack.tech/refund-policy</loc>
+    <lastmod>2026-07-22</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.2</priority>
+    <priority>0.3</priority>
   </url>
 
 </urlset>

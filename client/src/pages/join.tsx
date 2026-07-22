@@ -4,6 +4,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 import { apiRequest } from "@/lib/queryClient";
 import { useLanguage } from "@/lib/language-context";
+import { useSEO } from "@/hooks/use-seo";
 import { useToast } from "@/hooks/use-toast";
 import iconTransparent from "@/assets/handoff/icon-transparent.png";
 import { Loader2, School, CheckCircle2, Phone, User, Hash, Globe, ChevronRight, RotateCcw } from "lucide-react";
@@ -107,6 +108,16 @@ export default function JoinPage() {
   const isAf = language === "af";
   const t = T[language];
   const { toast } = useToast();
+
+  // Partner-school deep link — each URL carries a per-school code, so we
+  // suppress indexing to avoid thousands of thin-content permutations.
+  useSEO({
+    title: "Join BrainTrack via your school | BrainTrack",
+    description:
+      "Verify your mobile number and join BrainTrack through your partner school. Grade 12 matric prep in English and Afrikaans.",
+    canonical: "https://braintrack.tech/join",
+    noIndex: true,
+  });
 
   const [step, setStep] = useState<"details" | "otp" | "done">("details");
   const [form, setForm] = useState({ firstName: "", lastName: "", phone: "", language: language, parentEmail: "" });

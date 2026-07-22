@@ -1,7 +1,27 @@
+# BrainTrack robots — production domain is braintrack.tech.
+# Public marketing surface is fully open to search + AI crawlers; anything
+# behind auth (dashboards, exam sessions, admin, transactional deep links)
+# is disallowed so it never accumulates thin/duplicate index pages.
+
 User-agent: Googlebot
 Allow: /
 
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
 User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
 Allow: /
 
 User-agent: *
@@ -10,14 +30,16 @@ Allow: /about
 Allow: /features
 Allow: /research
 Allow: /subscribe
+Allow: /for-schools
+Allow: /partner-schools
+Allow: /past-papers
+Allow: /calendar
 Allow: /privacy-policy
 Allow: /terms-of-service
 Allow: /cookie-policy
-Allow: /past-papers
-Allow: /partner-schools
-Allow: /activate
-Allow: /calendar
+Allow: /refund-policy
 
+# Auth-gated learner surface — indexing would leak thin pages and dead links.
 Disallow: /dashboard
 Disallow: /subjects
 Disallow: /subject/
@@ -25,29 +47,53 @@ Disallow: /tutor
 Disallow: /smart-tutor
 Disallow: /progress
 Disallow: /exam-ready
-Disallow: /settings
-Disallow: /parent-dashboard
-Disallow: /onboarding
-Disallow: /purchase
-Disallow: /parent-purchase
 Disallow: /exam-mode
 Disallow: /exam-session
+Disallow: /exam/
+Disallow: /settings
+Disallow: /onboarding
+Disallow: /parent-dashboard
+Disallow: /parent-onboarding
+Disallow: /parent-consent
+Disallow: /parent
+Disallow: /parent-purchase
+Disallow: /purchase
 Disallow: /daily-challenge
 Disallow: /study-calendar
 Disallow: /bst-exam
 Disallow: /dbe-practice
+Disallow: /dbe-portal
 Disallow: /flashcards
 Disallow: /rewards
+Disallow: /store
+Disallow: /my-notes
+Disallow: /journey
+Disallow: /revision
+Disallow: /boost-session
+Disallow: /prelim-timetable
 Disallow: /role-select
+Disallow: /waiting-for-parent
+Disallow: /school
+Disallow: /school-onboarding
+Disallow: /school/dashboard
+Disallow: /join/
+Disallow: /activate
+Disallow: /admin-signin
+Disallow: /admin/
 Disallow: /learn/admin/
+
+# Partner deep-links — carry tracking source, no SEO value on their own.
 Disallow: /sms
 Disallow: /sms-founding
 Disallow: /d6
 Disallow: /d6-app
 Disallow: /d6-schools
-Disallow: /school
 Disallow: /learner
 Disallow: /ref
 Disallow: /outreach
 
-Sitemap: https://braintrack.app/sitemap.xml
+# API + service-worker + hot-reload internals — never index.
+Disallow: /api/
+Disallow: /sw.js
+
+Sitemap: https://braintrack.tech/sitemap.xml

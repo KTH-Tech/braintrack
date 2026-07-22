@@ -57,6 +57,13 @@ const COPY = {
     heroSub:
       "A CAPS-aligned matric ecosystem — diagnostics, study plans and parent visibility, all in one.",
     ctaStart: "Start free — 14 days",
+    // Compact trust strip under the primary CTA — R169 anchor, cancel-anytime
+    // risk reducer and POPIA-alignment. Keeps the hero copy tight while adding
+    // the specificity search + conversion research says converts SA edtech.
+    trustPrice: "R169/month after trial",
+    trustCancel: "Cancel anytime",
+    trustPopia: "POPIA-compliant",
+    trustSecure: "Paystack secure billing",
     marquee: [
       { text: "CAPS-aligned ✦", color: "#9FF5E8" },
       { text: "10 years of DBE data ★", color: "#FFB7E5" },
@@ -150,6 +157,10 @@ const COPY = {
     heroSub:
       "'n KABV-belynde matriek-ekosisteem — diagnostiek, studieplanne en ouersigbaarheid, alles in een.",
     ctaStart: "Begin gratis — 14 dae",
+    trustPrice: "R169/maand ná proeftydperk",
+    trustCancel: "Kanselleer enige tyd",
+    trustPopia: "POPIA-nakomend",
+    trustSecure: "Paystack veilige betaling",
     marquee: [
       { text: "KABV-belyn ✦", color: "#9FF5E8" },
       { text: "10 jaar DBE-data ★", color: "#FFB7E5" },
@@ -371,6 +382,63 @@ export default function LandingPage() {
   const { handleCta, modal } = useRolePromptNav();
   const en = language === "en";
 
+  // FAQPage JSON-LD — five highest-intent SA matric-parent questions.
+  // Kept short + literal so Google can lift them into rich-result FAQ blocks
+  // on the SERP. Update copy here rather than duplicating a landing FAQ block.
+  const landingJsonLd: Record<string, unknown>[] = [
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "Is BrainTrack aligned with the South African CAPS curriculum?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text:
+              "Yes. Every subject, weekly plan and practice paper on BrainTrack is built to the official DBE CAPS curriculum for Grade 12, including English HL/FAL, Afrikaans HL/EAT, Mathematics, Physical Sciences, Life Sciences, Accounting, Business Studies, Economics, Geography, History, Life Orientation, CAT and IT.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "How much does BrainTrack cost?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text:
+              "BrainTrack is R169 per learner per month after a 14-day free trial. Billing is handled securely by Paystack in South African Rand. You can cancel any time from the parent dashboard — no lock-in.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Does BrainTrack cover the NSC 2026 past papers and memos?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text:
+              "BrainTrack indexes ten years of NSC past papers and official memos (2015–2025) across every CAPS subject, plus exam-style practice questions written by BrainTrack examiners in the DBE format for NSC 2026 preparation.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Is BrainTrack available in Afrikaans as well as English?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text:
+              "Yes. The full platform — content, AI tutor, parent reports and past-paper library — is bilingual in English and Afrikaans, with a language toggle on every page.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Is BrainTrack safe for learners and POPIA-compliant?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text:
+              "Yes. BrainTrack is POPIA-compliant. Learner accounts under 18 require a parent-consent step with a once-off R1 Paystack card verification, no card details are ever stored by BrainTrack, and parents receive a weekly progress report.",
+          },
+        },
+      ],
+    },
+  ];
+
   useSEO({
     title: "BrainTrack™ | Grade 12 Matric Past Papers, Memos & AI Tutor — South Africa",
     description:
@@ -379,6 +447,7 @@ export default function LandingPage() {
     ogTitle: "Matric Past Papers, Memos & AI Tutor for Grade 12 SA | BrainTrack™",
     ogDescription:
       "10 years of NSC past papers + memos, CAPS-aligned weekly revision, AI tutor and parent reports. R169/month — 14 days free.",
+    jsonLd: landingJsonLd,
   });
 
   // Social share intents — plain links, no SDKs. https://braintrack.tech is
@@ -592,6 +661,30 @@ export default function LandingPage() {
               {t.ctaStart}
               <ArrowRight size={18} strokeWidth={2.6} aria-hidden />
             </button>
+          </div>
+          {/* Trust strip — above-the-fold price + risk-reducer + POPIA + billing
+              partner. Owner request: put the R169 anchor near the primary CTA
+              so scrolling parents see it in the first 3 seconds. */}
+          <div
+            data-testid="hero-trust-strip"
+            style={{
+              display: "flex", justifyContent: "center", flexWrap: "wrap",
+              gap: "8px 22px", marginTop: 18, fontSize: 13.5, fontWeight: 700,
+              color: "#fff", letterSpacing: ".2px",
+            }}
+          >
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <span style={{ color: "#9FF5E8" }}>✓</span>{t.trustPrice}
+            </span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <span style={{ color: "#FFB7E5" }}>✓</span>{t.trustCancel}
+            </span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <span style={{ color: "#C5B3FF" }}>✓</span>{t.trustPopia}
+            </span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <span style={{ color: "#FFE29A" }}>✓</span>{t.trustSecure}
+            </span>
           </div>
         </div>
       </div>

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/lib/language-context";
+import { useSEO } from "@/hooks/use-seo";
 import { apiRequest } from "@/lib/queryClient";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2, School, ArrowRight, Globe, CheckCircle } from "lucide-react";
@@ -16,6 +17,15 @@ export default function SchoolOnboardingPage() {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const isAf = language === "af";
+
+  // Application form, not a marketing page — noindex.
+  useSEO({
+    title: "School partnership application | BrainTrack",
+    description:
+      "Apply to bring BrainTrack to your South African high school. No cost to schools, POPIA-aligned, English & Afrikaans.",
+    canonical: "https://braintrack.tech/school-onboarding",
+    noIndex: true,
+  });
 
   const [schoolName, setSchoolName] = useState("");
   const [contactPerson, setContactPerson] = useState("");
