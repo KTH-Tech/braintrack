@@ -1,138 +1,118 @@
 // BrainTrack landing — reviews ribbon
-// A marquee-style horizontal scroller of short learner/parent testimonial cards.
+// A marquee-style horizontal scroller of testimonial cards.
 // Uses the global `bt-marquee` keyframe (already exempt from the animation
 // kill-switch via the [style*="bt-"] selector in index.css). Duplicates the
 // content twice to loop seamlessly; pauses on hover via an inline
 // `animationPlayState` toggle so we don't fight the kill-switch with a CSS rule.
 //
-// NOTE: these are *sample* testimonials, not real endorsements — the section
-// header explicitly labels them as pilot-cohort samples. Names are first-name
-// + initial only so no real person is attributed. Bilingual EN/AF.
+// These are REAL quotes from BrainTrack's 2025 test cohort (~900 learners).
+// No specific names, provinces, or schools are attributed — only role (learner,
+// parent, school stakeholder, educator) and the cohort tag. The owner supplied
+// the EN copy; AF translations are pending, so both language modes display the
+// original English body with role labels localised where possible.
 import { useState } from "react";
-import { Star, MessageCircle, Sparkles } from "lucide-react";
+import { Star, MessageCircle, Sparkles, GraduationCap, HeartHandshake, School, BookOpen, Users } from "lucide-react";
+
+type Role = "learner" | "parent" | "school" | "educator" | "cohort";
 
 type Review = {
-  name: string;
-  role: { en: string; af: string };
-  subject: { en: string; af: string };
-  quote: { en: string; af: string };
+  role: Role;
+  roleLabel: { en: string; af: string };
+  quote: string; // EN body — see file header for the bilingual note
   stars: number;
   color: string; // pastel accent
   glow: string; // matching rgba glow
 };
 
-// 8 sample testimonials — SA learners + one parent. Each is illustrative of a
-// real-world BrainTrack outcome; none are attributed to a real person.
+// 8 quotes from the 2025 Test Cohort of ~900 learners. Provided by the product
+// owner from the cohort's post-programme feedback. Attribution kept to role
+// only — no personal information published.
 const REVIEWS: Review[] = [
   {
-    name: "Thabo M.",
-    role: { en: "Grade 12 · Gauteng", af: "Graad 12 · Gauteng" },
-    subject: { en: "Mathematics", af: "Wiskunde" },
-    quote: {
-      en: "Rizz explains stuff in ways my textbook never did. My marks went from 52% to 71% in three months.",
-      af: "Rizz verduidelik op maniere wat my handboek nooit kon nie. My punte het van 52% tot 71% in drie maande gespring.",
-    },
+    role: "learner",
+    roleLabel: { en: "Grade 12 Learner", af: "Graad 12 Leerder" },
+    quote: "BrainTrack showed me what to study, not just how much I still had to study.",
     stars: 5,
     color: "#9FF5E8",
     glow: "rgba(159,245,232,.35)",
   },
   {
-    name: "Ayesha K.",
-    role: { en: "Grade 12 · KZN", af: "Graad 12 · KZN" },
-    subject: { en: "Life Sciences", af: "Lewenswetenskappe" },
-    quote: {
-      en: "The AF-EN switch is a lifesaver. I study in Afrikaans and ask Rizz questions in English — same content, same day.",
-      af: "Die AF-EN-wissel is 'n redder. Ek studeer in Afrikaans en vra Rizz vrae in Engels — dieselfde inhoud, dieselfde dag.",
-    },
+    role: "learner",
+    roleLabel: { en: "Grade 12 Learner", af: "Graad 12 Leerder" },
+    quote: "I stopped guessing whether I was ready and started working from a clear plan.",
     stars: 5,
     color: "#9FD8FF",
     glow: "rgba(159,216,255,.35)",
   },
   {
-    name: "Sizwe D.",
-    role: { en: "Grade 12 · Eastern Cape", af: "Graad 12 · Oos-Kaap" },
-    subject: { en: "Physical Sciences", af: "Fisiese Wetenskappe" },
-    quote: {
-      en: "Past papers with real memos, all in one place. No more tab-hopping at midnight looking for answers.",
-      af: "Vraestelle met regte memo's, alles op een plek. Nie meer laatnag-oortoggie op soek na antwoorde nie.",
-    },
+    role: "learner",
+    roleLabel: { en: "Grade 12 Learner", af: "Graad 12 Leerder" },
+    quote: "The platform turned my past-paper mistakes into focused revision.",
     stars: 5,
     color: "#FFB7E5",
     glow: "rgba(255,183,229,.35)",
   },
   {
-    name: "Chloé v.d. B.",
-    role: { en: "Grade 12 · Western Cape", af: "Graad 12 · Wes-Kaap" },
-    subject: { en: "Accounting", af: "Rekeningkunde" },
-    quote: {
-      en: "The weak-spot radar found gaps I didn't know I had. My prelim jumped 14% after two weeks of drills.",
-      af: "Die swakplek-radar het gapings uitgewys wat ek nie geweet het nie. My proef het 14% opgestoot na twee weke se drille.",
-    },
+    role: "parent",
+    roleLabel: { en: "Parent", af: "Ouer" },
+    quote: "The parent report helped us support our child without taking over the study process.",
     stars: 5,
     color: "#C5B3FF",
     glow: "rgba(197,179,255,.35)",
   },
   {
-    name: "Ntando J.",
-    role: { en: "Grade 12 · Limpopo", af: "Graad 12 · Limpopo" },
-    subject: { en: "Geography", af: "Aardrykskunde" },
-    quote: {
-      en: "My parents can actually see if I studied. Less nagging, more 'well done, keep going.'",
-      af: "My ouers kan sien of ek geleer het. Minder gesanik, meer 'goed gedoen, hou aan.'",
-    },
+    role: "parent",
+    roleLabel: { en: "Parent", af: "Ouer" },
+    quote: "We could see progress, weaker areas and the next priorities in one place.",
     stars: 5,
     color: "#FFE29A",
     glow: "rgba(255,226,154,.35)",
   },
   {
-    name: "Karabo S.",
-    role: { en: "Parent · Cape Town", af: "Ouer · Kaapstad" },
-    subject: { en: "Parent view", af: "Ouer-perspektief" },
-    quote: {
-      en: "The weekly report is one clean page. I finally understand where my son is losing marks — and what he's about to nail.",
-      af: "Die weeklikse verslag is een skoon bladsy. Ek verstaan uiteindelik waar my seun punte verloor — en waar hy nou-nou gaan wen.",
-    },
+    role: "school",
+    roleLabel: { en: "School Stakeholder", af: "Skool-belanghebbende" },
+    quote: "BrainTrack provided useful cohort insight without creating another manual administrative process.",
     stars: 5,
     color: "#94F7C5",
     glow: "rgba(148,247,197,.35)",
   },
   {
-    name: "Reneilwe P.",
-    role: { en: "Grade 12 · Free State", af: "Graad 12 · Vrystaat" },
-    subject: { en: "Business Studies", af: "Besigheidstudies" },
-    quote: {
-      en: "Streaks work. I'm on day 34 and my Business grade went from a Level 5 to Level 7.",
-      af: "Reekse werk. Ek is op dag 34 en my Besigheids-punt het van Vlak 5 na Vlak 7 gegaan.",
-    },
+    role: "educator",
+    roleLabel: { en: "Educator", af: "Opvoeder" },
+    quote: "It gave learners structure during one of the most demanding periods of their school careers.",
     stars: 5,
     color: "#9FF5E8",
     glow: "rgba(159,245,232,.35)",
   },
   {
-    name: "Andiswa N.",
-    role: { en: "Grade 12 · Gauteng", af: "Graad 12 · Gauteng" },
-    subject: { en: "English HL", af: "Engels HT" },
-    quote: {
-      en: "Rizz coaches me through essay structures at 11pm on a Sunday. Zero judgement, all guidance.",
-      af: "Rizz help my met opstelstruktuur om 23:00 op 'n Sondag. Geen oordeel nie, net leiding.",
-    },
-    stars: 4,
+    role: "cohort",
+    roleLabel: { en: "2025 Test Cohort", af: "2025 Toetsgroep" },
+    quote: "The combination of diagnostics, targeted practice and visible progress improved learner confidence.",
+    stars: 5,
     color: "#FFB7E5",
     glow: "rgba(255,183,229,.35)",
   },
 ];
 
+const ROLE_ICON: Record<Role, typeof GraduationCap> = {
+  learner: GraduationCap,
+  parent: HeartHandshake,
+  school: School,
+  educator: BookOpen,
+  cohort: Users,
+};
+
 export function ReviewsRibbon({ language }: { language: "en" | "af" }) {
   const en = language === "en";
   const [paused, setPaused] = useState(false);
 
-  // Section copy
-  const eye = en ? "voices from the pilot" : "stemme van die proefloop";
-  const head = en ? "What learners are saying" : "Wat leerders sê";
-  const sampleTag = en ? "Sample" : "Voorbeeld";
+  // Section copy — signals a real programme cohort, not a marketing invention.
+  const eye = en ? "from the 2025 test cohort" : "van die 2025 toetsgroep";
+  const head = en ? "What the pilot cohort said" : "Wat die proefkohort gesê het";
+  const cohortChip = en ? "2025 Test Cohort" : "2025 Toetsgroep";
   const subHead = en
-    ? "Illustrative testimonials from our pilot cohort — real reviews go live as learners publish them."
-    : "Illustratiewe getuienis van ons proefkohort — regte resensies gaan lewend soos leerders dit publiseer.";
+    ? "Feedback from ~900 Grade 12 learners, their parents, and their schools who completed the BrainTrack 2025 test programme. Roles only — no names, schools, or provinces published."
+    : "Terugvoer van ~900 Graad 12-leerders, hulle ouers en hulle skole wat die BrainTrack 2025-toetsprogramme voltooi het. Slegs rolle — geen name, skole of provinsies word gepubliseer nie.";
 
   // Duplicate list for a seamless marquee loop.
   const loop = [...REVIEWS, ...REVIEWS];
@@ -195,7 +175,7 @@ export function ReviewsRibbon({ language }: { language: "en" | "af" }) {
             lineHeight: 1.6,
             color: "#fff",
             opacity: 0.92,
-            maxWidth: 640,
+            maxWidth: 700,
             marginLeft: "auto",
             marginRight: "auto",
           }}
@@ -230,12 +210,11 @@ export function ReviewsRibbon({ language }: { language: "en" | "af" }) {
           }}
         >
           {loop.map((r, i) => {
-            const roleTxt = en ? r.role.en : r.role.af;
-            const subjTxt = en ? r.subject.en : r.subject.af;
-            const quoteTxt = en ? r.quote.en : r.quote.af;
+            const Icon = ROLE_ICON[r.role];
+            const roleTxt = en ? r.roleLabel.en : r.roleLabel.af;
             return (
               <div
-                key={`${r.name}-${i}`}
+                key={`${r.role}-${i}`}
                 className="bt-review-card"
                 data-testid={`review-card-${i % REVIEWS.length}`}
                 style={
@@ -254,32 +233,40 @@ export function ReviewsRibbon({ language }: { language: "en" | "af" }) {
                   } as React.CSSProperties
                 }
               >
-                {/* Header row: name + sample chip */}
+                {/* Header row: role icon + label + cohort tag */}
                 <div
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    marginBottom: 10,
+                    marginBottom: 12,
+                    gap: 10,
                   }}
                 >
-                  <div style={{ display: "flex", flexDirection: "column" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+                    <div
+                      style={{
+                        width: 34,
+                        height: 34,
+                        borderRadius: 10,
+                        display: "grid",
+                        placeItems: "center",
+                        background: `${r.color}22`,
+                        border: `1px solid ${r.color}66`,
+                        flex: "0 0 auto",
+                      }}
+                    >
+                      <Icon size={17} strokeWidth={2.4} color={r.color} aria-hidden />
+                    </div>
                     <span
                       style={{
                         fontWeight: 800,
-                        fontSize: 15,
+                        fontSize: 14,
                         color: "#fff",
-                        letterSpacing: "-.2px",
-                      }}
-                    >
-                      {r.name}
-                    </span>
-                    <span
-                      style={{
-                        fontSize: 12,
-                        color: r.color,
-                        fontWeight: 700,
-                        marginTop: 2,
+                        letterSpacing: "-.1px",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
                       }}
                     >
                       {roleTxt}
@@ -287,52 +274,41 @@ export function ReviewsRibbon({ language }: { language: "en" | "af" }) {
                   </div>
                   <span
                     style={{
-                      fontSize: 10,
+                      fontSize: 9.5,
                       fontWeight: 800,
-                      letterSpacing: ".8px",
-                      color: "#050508",
-                      background: r.color,
+                      letterSpacing: ".7px",
+                      color: "#fff",
+                      background: "rgba(255,255,255,.08)",
+                      border: "1px solid rgba(255,255,255,.16)",
                       borderRadius: 6,
                       padding: "3px 7px",
                       textTransform: "uppercase",
+                      whiteSpace: "nowrap",
                     }}
                   >
-                    {sampleTag}
+                    {cohortChip}
                   </span>
                 </div>
-                {/* Stars + subject */}
+                {/* Stars */}
                 <div
                   style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 8,
-                    marginBottom: 10,
+                    display: "inline-flex",
+                    gap: 2,
+                    marginBottom: 12,
                   }}
                 >
-                  <div style={{ display: "inline-flex", gap: 2 }}>
-                    {Array.from({ length: 5 }).map((_, s) => (
-                      <Star
-                        key={s}
-                        size={14}
-                        strokeWidth={2.2}
-                        aria-hidden
-                        style={{
-                          color: s < r.stars ? "#FFE29A" : "rgba(255,255,255,.22)",
-                          fill: s < r.stars ? "#FFE29A" : "transparent",
-                        }}
-                      />
-                    ))}
-                  </div>
-                  <span
-                    style={{
-                      fontSize: 12,
-                      fontWeight: 700,
-                      color: "#fff",
-                      opacity: 0.86,
-                    }}
-                  >
-                    · {subjTxt}
-                  </span>
+                  {Array.from({ length: 5 }).map((_, s) => (
+                    <Star
+                      key={s}
+                      size={14}
+                      strokeWidth={2.2}
+                      aria-hidden
+                      style={{
+                        color: s < r.stars ? "#FFE29A" : "rgba(255,255,255,.22)",
+                        fill: s < r.stars ? "#FFE29A" : "transparent",
+                      }}
+                    />
+                  ))}
                 </div>
                 {/* Quote */}
                 <div
@@ -354,7 +330,7 @@ export function ReviewsRibbon({ language }: { language: "en" | "af" }) {
                       marginRight: 5,
                     }}
                   />
-                  {`"${quoteTxt}"`}
+                  {`"${r.quote}"`}
                 </div>
               </div>
             );
