@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Loader2, Mail, CheckCircle2, CreditCard, Send, RefreshCw } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
@@ -7,6 +7,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { GraffitiSplats } from "@/components/graffiti-splats";
+import { ConfettiBurst } from "@/components/confetti-burst";
 
 // Gate screen for minor learners whose parent hasn't yet granted consent +
 // captured a card. Polls subscription status; the moment consent + card land
@@ -102,6 +103,22 @@ export default function WaitingForParentPage() {
   const { toast } = useToast();
   const [showEmailInput, setShowEmailInput] = useState(false);
   const [newEmail, setNewEmail] = useState("");
+  // Fires the exam-completion sparkle ONCE if we arrived here fresh from
+  // onboarding (?welcome=1). We strip the flag off the URL immediately so a
+  // refresh, a poll bounce, or a back-and-forward doesn't re-celebrate the
+  // same moment. Reload-safe: sessionStorage would also work but the URL
+  // param is naturally scoped to this navigation.
+  const [showWelcome] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    const params = new URLSearchParams(window.location.search);
+    return params.get("welcome") === "1";
+  });
+  useEffect(() => {
+    if (!showWelcome || typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    url.searchParams.delete("welcome");
+    window.history.replaceState({}, "", url.toString());
+  }, [showWelcome]);
 
   const { data: sub, isLoading: subLoading } = useQuery<SubStatus>({
     queryKey: ["/api/user/subscription-status"],
@@ -153,6 +170,7 @@ export default function WaitingForParentPage() {
 
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center px-4 py-12 overflow-hidden" style={{ background: "#050508", color: "#fff" }} data-testid="waiting-for-parent-page">
+      {showWelcome && <ConfettiBurst />}
       <GraffitiSplats variant="full" opacity={0.4} />
       <div className="relative z-10 w-full max-w-md">
         <div

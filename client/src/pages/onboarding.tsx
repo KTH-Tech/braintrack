@@ -1215,9 +1215,12 @@ export default function OnboardingPage() {
       });
       // Minors can't self-activate a trial — they wait for the parent to
       // approve + add a card; adults go on to /subscribe as before.
+      // `?welcome=1` tells the landing page this is a fresh profile creation
+      // — it fires ConfettiBurst once, then cleans the flag from the URL so a
+      // refresh doesn't re-celebrate the same moment.
       const isoDob = buildIsoDob(dobDay, dobMonth, dobYear);
       const minor = isoDob ? ageFromIsoDob(isoDob) < 18 : false;
-      setLocation(minor ? "/waiting-for-parent" : "/subscribe");
+      setLocation((minor ? "/waiting-for-parent" : "/subscribe") + "?welcome=1");
     },
     onError: () => {
       const tStr = T[language];

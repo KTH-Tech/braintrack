@@ -26,6 +26,7 @@ import { useSEO } from "@/hooks/use-seo";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import iconTransparent from "@/assets/handoff/icon-transparent.png";
+import { ConfettiBurst } from "@/components/confetti-burst";
 
 type PageState =
   | "plan"
@@ -152,6 +153,20 @@ export default function SubscribePage() {
 
   const [pageState, setPageState] = useState<PageState>("plan");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  // Fires the exam-completion sparkle ONCE when the learner arrives fresh
+  // from onboarding (?welcome=1). We strip the flag from the URL right
+  // away so a refresh, a payment-callback bounce, or a back-and-forward
+  // doesn't re-celebrate the same profile-creation moment.
+  const [showWelcome] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return new URLSearchParams(window.location.search).get("welcome") === "1";
+  });
+  useEffect(() => {
+    if (!showWelcome || typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    url.searchParams.delete("welcome");
+    window.history.replaceState({}, "", url.toString());
+  }, [showWelcome]);
   const [parentCell, setParentCell] = useState("");
   const [learnerCell, setLearnerCell] = useState("");
   const [smsResult, setSmsResult] = useState<SmsResult | null>(null);
@@ -451,6 +466,8 @@ export default function SubscribePage() {
   return (
     <div style={{ minHeight: "100vh", background: "#050508", overflowX: "hidden", color: "#fff" }}>
       <style>{SCOPED_CSS}</style>
+
+      {showWelcome && <ConfettiBurst />}
 
       {/* ── Nav ─────────────────────────────────────────────── */}
       <div

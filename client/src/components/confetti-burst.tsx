@@ -84,11 +84,15 @@ function prefersReducedMotion() {
 }
 
 /* ── Cute pastel icon particles ────────────────────────────────────────
-   Inline SVG paths for the icons that mix into the glitter — sparkle, star,
-   heart, flower, cloud, lightning, moon. Each entry is `[path, viewBox]`.
-   We render them as filled shapes in a random pastel colour so they read as
-   "cute vibe" scattered through the holographic shards. */
+   Inline SVG paths for the icons that mix into the glitter. Two clusters:
+   the original "cute" set (sparkle, star, heart, flower, cloud, lightning,
+   moon, rainbow) plus a "street" set (crown, flame, diamond, headphones,
+   music note, speech bubble) so the burst reads as pastel-graffiti — the
+   BrainTrack aesthetic — instead of soft-pastel-only. Each entry is
+   `[path, viewBox]`; we render them as filled shapes in a random pastel
+   colour so they read as small graphic silhouettes at 14–26px. */
 const ICONS: Array<[string, string]> = [
+  // ── Cute cluster ───────────────────────────────────────────────────
   // 4-point sparkle
   ["M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z", "0 0 24 24"],
   // 5-point star
@@ -105,6 +109,20 @@ const ICONS: Array<[string, string]> = [
   ["M15 3 a 9 9 0 1 0 6 15 A 7 7 0 0 1 15 3 Z", "0 0 24 24"],
   // Rainbow arc
   ["M2 20 A 10 10 0 0 1 22 20 h -3 A 7 7 0 0 0 5 20 Z M6 20 A 6 6 0 0 1 18 20 h -3 A 3 3 0 0 0 9 20 Z", "0 0 24 24"],
+
+  // ── Street cluster ─────────────────────────────────────────────────
+  // Crown — three spikes, one gem-notched bar
+  ["M3 18 h 18 l -1 -10 l -4 4 l -3 -8 l -3 8 l -4 -4 Z M5 20 h 14 v 2 h -14 z", "0 0 24 24"],
+  // Fire flame — teardrop with a rising inner tongue
+  ["M12 2 c 0 4 -5 5 -5 11 a 5 5 0 0 0 10 0 c 0 -3 -2 -4 -2 -7 c 0 -2 -1.5 -3 -3 -4 Z M10.5 14 a 2 2 0 1 0 3 0 c 0 -1.5 -1.5 -2 -1.5 -3.5 c -.6 1 -1.5 2 -1.5 3.5 Z", "0 0 24 24"],
+  // Diamond gem — brilliant cut with top facets
+  ["M4 9 L8 3 L16 3 L20 9 L12 22 Z M4 9 h 16 M8 3 L12 9 L16 3 M10 9 L12 22 L14 9", "0 0 24 24"],
+  // Headphones — chunky pads + arc band
+  ["M4 20 v -7 h 4 v 7 z M16 20 v -7 h 4 v 7 z M4 13 v -1 c 0 -4.4 3.6 -8 8 -8 s 8 3.6 8 8 v 1", "0 0 24 24"],
+  // Music note — eighth note with flag
+  ["M9 3 v 13.5 a 3.5 3.5 0 1 0 3 3.5 V 7 l 8 -2 v -3 z", "0 0 24 24"],
+  // Speech bubble — rounded rectangle with tail
+  ["M4 4 h 16 a 2 2 0 0 1 2 2 v 9 a 2 2 0 0 1 -2 2 h -8 l -5 4 v -4 h -3 a 2 2 0 0 1 -2 -2 v -9 a 2 2 0 0 1 2 -2 z", "0 0 24 24"],
 ];
 
 type Particle = {

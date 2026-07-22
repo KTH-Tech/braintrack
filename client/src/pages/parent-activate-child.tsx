@@ -6,6 +6,7 @@ import { useLanguage } from "@/lib/language-context";
 import { useToast } from "@/hooks/use-toast";
 import { GraffitiSplats } from "@/components/graffiti-splats";
 import { ShareQr } from "@/components/share-qr";
+import { ConfettiBurst } from "@/components/confetti-burst";
 import {
   isOnboardingPreview,
   createPreviewGate,
@@ -482,6 +483,9 @@ export default function ParentActivateChildPage() {
   if (credentials) {
     return (
       <div className="relative min-h-screen flex flex-col items-center justify-center px-4 py-12 overflow-hidden" style={{ background: "#050508", color: "#fff", fontFamily: "'Poppins',sans-serif" }} data-testid="activate-child-success">
+        {/* Profile-created celebration — fires once when the credentials
+            first render. ConfettiBurst self-removes when the burst is done. */}
+        <ConfettiBurst />
         <GraffitiSplats variant="full" opacity={0.35} />
         <div className="relative z-10 w-full max-w-lg">
           <div className="rounded-3xl overflow-hidden" style={cardStyle}>
