@@ -2699,13 +2699,13 @@ export async function registerRoutes(
         userId,
         ...data,
         selectedSubjects,
-        // Persist the VARK questionnaire result on the onboarding_results row
-        // itself so it's queryable without cracking rawAnswersJson. Both
-        // columns are nullable (migration 0034_onboarding_vark_secondary.sql)
-        // and drizzle drops unknown fields silently, so an unmigrated DB
-        // won't 500 — it just won't record these two columns.
-        selectedVark: data.varkPrimary ?? null,
-        selectedVarkSecondary: data.varkSecondary ?? null,
+        // selectedVark / selectedVarkSecondary removed with the schema revert:
+        // declaring them in shared/schema.ts before migration 0034 was applied
+        // to prod took down every read of onboarding_results (see the
+        // regression note on that schema block). VARK still persists on
+        // users.vark_primary / users.vark_secondary from the /api/onboarding
+        // handler above — no learner data is lost. Re-add these two lines
+        // AFTER migration 0034 has actually been applied to prod.
       });
 
       // POPIA audit: log ToS + Privacy Policy acceptance at onboarding completion

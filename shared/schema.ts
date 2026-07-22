@@ -563,8 +563,14 @@ export const onboardingResults = pgTable(
     // rows (created before migration 0034) stay valid, and the runtime write
     // path (server/routes.ts /api/onboarding) also tolerates the column being
     // missing — nothing here can regress an unmigrated DB.
-    selectedVark: text("selected_vark"),
-    selectedVarkSecondary: text("selected_vark_secondary"),
+    // — CAUSED LIVE REGRESSION — the claim above about "tolerating an
+    // unmigrated DB" was WRONG for reads. Drizzle's typed SELECT projects
+    // every schema column, so declaring these here without applying
+    // migration 0034 made every read of onboarding_results 500 on prod,
+    // taking down /api/subjects (returns []), /api/timetable/widgets
+    // (nextExam=null), and /api/user/journey (500). Reverted 2026-07-22.
+    // VARK still persists via users.vark_primary / users.vark_secondary.
+    // Re-add these two columns AFTER migration 0034 is confirmed applied.
     rawAnswersJson: jsonb("raw_answers_json"),
     traitsJson: jsonb("traits_json"),
     recommendationsJson: jsonb("recommendations_json"),
