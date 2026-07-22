@@ -48,6 +48,7 @@ import { GoalProgress } from "@/components/goal-progress";
 import { YouVsYouChart } from "@/components/you-vs-you-chart";
 import { PersonalBestsWidget } from "@/components/personal-bests-widget";
 import { useEarliestPrelimDate, FINALS_DATE } from "@/components/exam-countdown";
+import { ReferralShareCard } from "@/components/referral-share-card";
 import { GraffitiSplats } from "@/components/graffiti-splats";
 
 const BADGE_INFO: Record<string, { name: string; nameAfrikaans: string; icon: any; color: string }> = {
@@ -1315,8 +1316,13 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* ── Exam countdown — DBE 2026 ── */}
-        <div style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: "1px solid rgba(255,255,255,.08)", borderRadius: 24, padding: 26 }}>
+        {/* ── Exam countdown — DBE 2026 ──
+            The two clocks (prelims + finals). Both run on REAL per-learner
+            data — prelims from the learner's own timetable via
+            useEarliestPrelimDate, finals from the shared FINALS_DATE — so
+            don't replace these with a hard-coded pair. Sticker-slap frame,
+            no bloom. */}
+        <div style={{ background: "#050508", border: "2.5px solid #FFE29A", borderRadius: 24, boxShadow: "6px 6px 0 0 #FFE29A", padding: 26 }}>
           <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 8 }}>
             <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 18, color: "#fff" }}>{t.examCountdownHeading}</div>
             <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
@@ -1330,9 +1336,9 @@ export default function DashboardPage() {
               <Link href="/settings">
                 <div
                   data-testid="countdown-prelims-empty"
-                  style={{ height: "100%", background: "rgba(5,5,8,.6)", border: "1.5px solid #9FF5E8", borderRadius: 16, padding: "16px 18px", cursor: "pointer", transition: "transform .2s" }}
-                  onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-4px)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
+                  style={{ height: "100%", background: "#050508", border: "2.5px solid #9FF5E8", borderRadius: 16, boxShadow: "5px 5px 0 0 #9FF5E8", padding: "16px 18px", cursor: "pointer", transition: "transform .18s ease, box-shadow .18s ease" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = "translate(-3px,-3px)"; e.currentTarget.style.boxShadow = "9px 9px 0 0 #9FF5E8"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "5px 5px 0 0 #9FF5E8"; }}
                 >
                   <div style={{ display: "inline-block", fontSize: 10, fontWeight: 800, letterSpacing: 1.5, padding: "3px 8px", borderRadius: 6, background: "rgba(159,245,232,.12)", color: "#9FF5E8", textTransform: "uppercase" }}>{t.prelimsLabel}</div>
                   <div style={{ fontSize: 26, fontWeight: 900, color: "#9FF5E8", marginTop: 10 }}>{t.setupLink}</div>
@@ -1342,9 +1348,9 @@ export default function DashboardPage() {
             ) : (
               <div
                 data-testid="countdown-prelims"
-                style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #9FF5E8", borderRadius: 16, padding: "16px 18px", transition: "transform .2s" }}
-                onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-4px)")}
-                onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
+                style={{ background: "#050508", border: "2.5px solid #9FF5E8", borderRadius: 16, boxShadow: "5px 5px 0 0 #9FF5E8", padding: "16px 18px", transition: "transform .18s ease, box-shadow .18s ease" }}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = "translate(-3px,-3px)"; e.currentTarget.style.boxShadow = "9px 9px 0 0 #9FF5E8"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "5px 5px 0 0 #9FF5E8"; }}
               >
                 <div style={{ display: "inline-block", fontSize: 10, fontWeight: 800, letterSpacing: 1.5, padding: "3px 8px", borderRadius: 6, background: "rgba(159,245,232,.12)", color: "#9FF5E8", textTransform: "uppercase" }}>{t.prelimsLabel}</div>
                 <div className="tabular-nums" style={{ fontSize: 26, fontWeight: 900, color: "#9FF5E8", marginTop: 10 }}>
@@ -1363,9 +1369,9 @@ export default function DashboardPage() {
             {/* Finals tile */}
             <div
               data-testid="countdown-finals"
-              style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #FFB7E5", borderRadius: 16, padding: "16px 18px", transition: "transform .2s" }}
-              onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-4px)")}
-              onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
+              style={{ background: "#050508", border: "2.5px solid #FFB7E5", borderRadius: 16, boxShadow: "5px 5px 0 0 #FFB7E5", padding: "16px 18px", transition: "transform .18s ease, box-shadow .18s ease" }}
+              onMouseEnter={(e) => { e.currentTarget.style.transform = "translate(-3px,-3px)"; e.currentTarget.style.boxShadow = "9px 9px 0 0 #FFB7E5"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "5px 5px 0 0 #FFB7E5"; }}
             >
               <div style={{ display: "inline-block", fontSize: 10, fontWeight: 800, letterSpacing: 1.5, padding: "3px 8px", borderRadius: 6, background: "rgba(255,183,229,.12)", color: "#FFB7E5", textTransform: "uppercase" }}>{t.finalsLabel}</div>
               <div className="tabular-nums" style={{ fontSize: 26, fontWeight: 900, color: "#FFB7E5", marginTop: 10 }}>
@@ -1384,9 +1390,9 @@ export default function DashboardPage() {
                   return (
                     <div
                       key={i}
-                      style={{ background: "rgba(5,5,8,.6)", border: `1.5px solid ${hex}`, borderRadius: 16, padding: "16px 18px", transition: "transform .2s" }}
-                      onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-4px)")}
-                      onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
+                      style={{ background: "#050508", border: `2.5px solid ${hex}`, borderRadius: 16, boxShadow: `5px 5px 0 0 ${hex}`, padding: "16px 18px", transition: "transform .18s ease, box-shadow .18s ease" }}
+                      onMouseEnter={(e) => { e.currentTarget.style.transform = "translate(-3px,-3px)"; e.currentTarget.style.boxShadow = `9px 9px 0 0 ${hex}`; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = `5px 5px 0 0 ${hex}`; }}
                     >
                       <div style={{ display: "inline-block", fontSize: 10, fontWeight: 800, letterSpacing: 1.5, padding: "3px 8px", borderRadius: 6, background: `${hex}1F`, color: hex, textTransform: "uppercase" }}>
                         {t.paperLabel} {item.nextPaperNumber}
@@ -1406,6 +1412,10 @@ export default function DashboardPage() {
           </div>
           <div style={{ marginTop: 14, fontSize: 13, color: "#fff" }}>{t.prelimNote}</div>
         </div>
+
+        {/* ── Referral share — surfaced on home, not buried in Settings ──
+            Self-hides when the learner has no referral code yet. */}
+        <ReferralShareCard isAf={isAf} />
 
         {/* ── Prep status — graffiti sticker banner ── */}
         <div
