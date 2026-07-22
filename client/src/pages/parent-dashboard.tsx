@@ -24,6 +24,11 @@ import { PageHeader } from "@/components/page-header";
 import { VARK_STYLES } from "@/lib/vark";
 import { BrandThemeToggle } from "@/components/theme-toggle";
 import iconTransparent from "@/assets/handoff/icon-transparent.png";
+// Daily Boost card mirrors the learner dashboard pattern — bilingual (EN/AF),
+// one tip + one Rizz motivation, refreshes at SAST midnight. Rizz avatar is
+// the same handoff asset the learner dashboard uses so the two surfaces speak
+// the same visual language.
+import rizzAvatar from "@/assets/handoff/rizz-avatar.png";
 import { calcReadiness, readinessBand } from "@/lib/readiness";
 import { downloadBlob } from "@/lib/download-file";
 
@@ -1502,6 +1507,23 @@ export default function ParentDashboardPage() {
     staleTime: 5 * 60_000,
   });
 
+  // Daily Boost — mirrors the learner dashboard pattern (dashboard.tsx). The
+  // server hands parents and learners the same tip + Rizz motivation pair,
+  // keyed off the SAST calendar day so the message is stable within the day
+  // and rotates at midnight SAST. Including today's SAST date in the queryKey
+  // means React Query treats a new day as a new query and auto-refetches if
+  // the browser is left open overnight. `lang=` is on the querystring so
+  // toggling language re-fetches in the new language.
+  const todaySast = new Date().toLocaleDateString("en-CA", { timeZone: "Africa/Johannesburg" });
+  const { data: dailyBoost } = useQuery<{
+    tip: { text: string; textAf: string; subject: string | null };
+    rizz: { text: string; textAf: string };
+    date: string;
+  }>({
+    queryKey: [`/api/learner/daily-motivation?lang=${language}&d=${todaySast}`],
+    staleTime: 12 * 60 * 60 * 1000, // 12h — never re-fetches within the same day
+  });
+
   const readiness = readinessData?.readiness ?? [];
   const activityFeed = activityData?.feed ?? [];
   // Defensive: server should always populate these but guard against partial payloads.
@@ -2001,6 +2023,98 @@ export default function ParentDashboardPage() {
                 )}
               </div>
             </section>
+
+            {/* ═══ Daily Boost — mirrors the learner dashboard (dashboard.tsx line 947).
+                 One tip + one Rizz motivation, bilingual, refreshes at SAST midnight.
+                 Rendered here — right under the child picker + learner-context line —
+                 so it's the first thing a parent reads before diving into stats. Falls
+                 back to nothing silently on first paint / error so the rest of the
+                 dashboard never blocks on it. */}
+            {dailyBoost && (
+              <div
+                data-testid="daily-boost-section"
+                className="bt-grid-2col"
+                style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}
+              >
+                {/* Rizz motivational card */}
+                <div
+                  data-testid="daily-boost-rizz"
+                  style={{
+                    background: "linear-gradient(140deg,rgba(197,179,255,.14),rgba(255,183,229,.10)), #050508",
+                    border: `1.5px solid ${PASTEL.purple}`,
+                    borderRadius: 20,
+                    padding: "18px 20px",
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: 14,
+                  }}
+                >
+                  <img
+                    src={rizzAvatar}
+                    alt="Rizz"
+                    style={{ width: 54, height: 54, borderRadius: 14, objectFit: "cover", border: `1.5px solid ${PASTEL.purple}`, flex: "none" }}
+                  />
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.5, textTransform: "uppercase", color: PASTEL.purple }}>
+                      {isAf ? "RIZZ SÊ" : "RIZZ SAYS"}
+                    </div>
+                    <div
+                      data-testid="daily-boost-rizz-text"
+                      style={{ fontFamily: "'Poppins',sans-serif", fontSize: 15, fontWeight: 600, color: "#fff", lineHeight: 1.45, marginTop: 4 }}
+                    >
+                      {isAf ? dailyBoost.rizz.textAf : dailyBoost.rizz.text}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Daily Tip card */}
+                <div
+                  data-testid="daily-boost-tip"
+                  style={{
+                    background: "linear-gradient(140deg,rgba(159,245,232,.14),rgba(148,247,197,.10)), #050508",
+                    border: `1.5px solid ${PASTEL.cyan}`,
+                    borderRadius: 20,
+                    padding: "18px 20px",
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: 14,
+                  }}
+                >
+                  <div
+                    aria-hidden
+                    style={{
+                      width: 54,
+                      height: 54,
+                      borderRadius: 14,
+                      border: `1.5px solid ${PASTEL.cyan}`,
+                      background: "rgba(159,245,232,.10)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flex: "none",
+                    }}
+                  >
+                    <Lightbulb style={{ width: 26, height: 26, color: PASTEL.cyan }} />
+                  </div>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.5, textTransform: "uppercase", color: PASTEL.cyan }}>
+                      {isAf ? "WENK VAN DIE DAG" : "TIP OF THE DAY"}
+                      {dailyBoost.tip.subject && (
+                        <span data-testid="daily-boost-tip-subject" style={{ color: "#fff", fontWeight: 700, marginLeft: 8 }}>
+                          · {dailyBoost.tip.subject}
+                        </span>
+                      )}
+                    </div>
+                    <div
+                      data-testid="daily-boost-tip-text"
+                      style={{ fontFamily: "'Poppins',sans-serif", fontSize: 15, fontWeight: 600, color: "#fff", lineHeight: 1.45, marginTop: 4 }}
+                    >
+                      {isAf ? dailyBoost.tip.textAf : dailyBoost.tip.text}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* ── Headline stats — the five numbers a parent actually wants ───── */}
             {(() => {

@@ -15,7 +15,11 @@ import { GraffitiSplats } from "@/components/graffiti-splats";
 
 interface JourneyEvent {
   id: string;
-  type: "onboarding" | "first_quiz" | "subject" | "badge" | "mastery" | "streak" | "paper" | "daily";
+  // "milestone" was added server-side to carry the running "N Questions
+  // Answered" total (separate from "first_quiz" which is a single moment).
+  // Keeping it in the union so TypeScript doesn't blow up in strict mode when
+  // the server payload lands with milestone events.
+  type: "onboarding" | "first_quiz" | "subject" | "badge" | "mastery" | "streak" | "paper" | "daily" | "milestone";
   title: string;
   titleAf: string;
   description: string;
@@ -55,6 +59,7 @@ const EVENT_ICONS: Record<string, any> = {
   streak:     Flame,
   paper:      Brain,
   daily:      Sparkles,
+  milestone:  Rocket,
 };
 
 /* Map each event type to one stop on the guideline pastel cycle. */
@@ -67,6 +72,7 @@ const EVENT_HEX: Record<string, string> = {
   streak:     "#FFE29A",
   paper:      "#C5B3FF",
   daily:      "#FFB7E5",
+  milestone:  "#94F7C5",
 };
 
 const marker = (color: string, size = 16): CSSProperties => ({
@@ -155,11 +161,22 @@ export default function JourneyPage() {
   const t = T[language];
   const params = new URLSearchParams(window.location.search);
   const isParentView = params.get("parent") === "1";
+  // Parents with more than one linked learner land here with ?learnerId=<id>.
+  // Without threading that through both the fetch URL and the queryKey the
+  // parent would always see the FIRST child's journey (server falls back to
+  // the first linked learner when no learnerId is on the query), and React
+  // Query would cache the response under a shared key so switching children
+  // in the parent shell wouldn't re-fetch. Both problems fixed by including
+  // learnerId in the URL and the cache key.
+  const requestedLearnerId = isParentView ? params.get("learnerId") : null;
+  const journeyUrl = requestedLearnerId
+    ? `/api/user/journey?learnerId=${encodeURIComponent(requestedLearnerId)}`
+    : "/api/user/journey";
   const backHref = isParentView ? "/parent" : "/dashboard";
   const backLabel = isParentView ? t.backTitle : t.homeTitle;
 
   const { data: journey, isLoading } = useQuery<JourneyData>({
-    queryKey: ["/api/user/journey"],
+    queryKey: [journeyUrl],
   });
 
   const events = journey?.events ?? [];
@@ -205,7 +222,16 @@ export default function JourneyPage() {
         />
 
         {/* ── Hero ── */}
-        <section className="relative" style={{ animation: "bt-fadeup .5s both" }}>
+        {/* Previously carried `animation: bt-fadeup .5s both`. On production
+            Chrome the animation timeline sometimes never ticks past frame 0
+            (currentTime stuck at 0 while playState reports "running"), and
+            with `both` fill-mode the element stays at the 0% keyframe —
+            opacity: 0 — so the entire section renders invisibly. Every
+            section on this page shared the same stall. The fix is to just
+            render at rest: the sections are only ever the FIRST thing the
+            user sees on this page, so a fade-in adds nothing worth risking
+            an invisible page for. */}
+        <section className="relative">
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
             <div className="flex-1 min-w-0 space-y-4">
               <div className="inline-flex items-center gap-2">
@@ -290,8 +316,8 @@ export default function JourneyPage() {
                 background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
                 border: "1.5px solid #6EE7F9",
                 borderRadius: 22,
-                
-                animation: "bt-fadeup .5s .05s both",
+                // No bt-fadeup — see hero section for why the animation was
+                // removed (stalls at opacity: 0 on live prod).
               }}
               data-testid="rizz-narrator"
             >
@@ -324,7 +350,7 @@ export default function JourneyPage() {
 
             {/* ── Stats bar — 5 pastel chips ── */}
             {journey?.stats && (
-              <section className="grid grid-cols-2 sm:grid-cols-5 gap-3" style={{ animation: "bt-fadeup .5s .1s both" }}>
+              <section className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                 {[
                   { label: t.statDays,      value: journey.stats.totalDays,         hex: "#9FF5E8", Icon: Calendar,   testid: "stat-days"      },
                   { label: t.statBadges,    value: journey.stats.badgesEarned,      hex: "#9FD8FF", Icon: Trophy,     testid: "stat-badges"    },
@@ -369,7 +395,7 @@ export default function JourneyPage() {
             )}
 
             {/* ── Completed timeline ── */}
-            <section className="space-y-3" style={{ animation: "bt-fadeup .5s .15s both" }}>
+            <section className="space-y-3">
               <h2 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.28em] text-white">
                 <CheckCircle2 className="w-3.5 h-3.5" style={{ color: "#9FF5E8" }} />
                 {t.completedMilestones}
@@ -480,7 +506,7 @@ export default function JourneyPage() {
 
             {/* ── Upcoming goals ── */}
             {!isParentView && upcoming.length > 0 && (
-              <section className="space-y-3" style={{ animation: "bt-fadeup .5s .2s both" }}>
+              <section className="space-y-3">
                 <h2 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.28em] text-white">
                   <Lock className="w-3.5 h-3.5" style={{ color: "#C5B3FF" }} />
                   {t.upcomingGoals}
@@ -534,8 +560,8 @@ export default function JourneyPage() {
                   background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
                   border: "1.5px solid #FFB7E5",
                   borderRadius: 22,
-                  
-                  animation: "bt-fadeup .5s .25s both",
+                  // No bt-fadeup — see hero section for why the animation was
+                  // removed (stalls at opacity: 0 on live prod).
                 }}
                 data-testid="journey-cta"
               >
