@@ -11204,6 +11204,39 @@ Create comprehensive study notes for the topic provided.`;
     }
   });
 
+  // POST /api/admin/dbe-ingestion/release-gate — the actual "publish past
+  // papers to learners" action. Runs the release gate (server/release-gate.ts
+  // releaseEligiblePapers) which flips `released_at` on every (subject, year,
+  // paper, session, language) tuple that clears the memo-coverage threshold.
+  // Additive only — never un-releases. The Content Studio Publish button used
+  // to be wired to /verify, which just checked integrity and never actually
+  // published anything.
+  app.post("/api/admin/dbe-ingestion/release-gate", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    try {
+      const subject = typeof req.body?.subject === "string" && req.body.subject.trim() ? req.body.subject.trim() : undefined;
+      const { releaseEligiblePapers } = await import("./release-gate");
+      const results = await releaseEligiblePapers(subject);
+      const released = results.filter((r) => r.released);
+      const skipped = results.filter((r) => !r.released);
+      return res.json({
+        scope: subject ?? "all subjects with unreleased rows",
+        tuplesConsidered: results.length,
+        tuplesReleased: released.length,
+        questionsReleased: released.reduce((s, r) => s + (r.rowsReleased ?? 0), 0),
+        tuplesSkipped: skipped.length,
+        // Mirror the /verify response shape so the existing summariser at
+        // admin-content-studio.tsx:928 (`{passed} passed, {failed} failed of {total}`)
+        // still reads correctly when the button targets this endpoint.
+        passed: released.length,
+        failed: skipped.length,
+        total: results.length,
+      });
+    } catch (err: any) {
+      console.error("[dbe-ingestion/release-gate]", err?.message ?? err);
+      return res.status(500).json({ error: safeError(err) });
+    }
+  });
+
   app.post("/api/admin/dbe-ingestion/verify", isAuthenticated, requireRole("admin"), async (req: any, res) => {
     const { subject, year } = req.body;
     try {

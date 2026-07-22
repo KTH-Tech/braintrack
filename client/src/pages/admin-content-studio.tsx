@@ -916,11 +916,11 @@ export default function AdminContentStudio() {
             kind="sync"
             title={isAf ? "Publiseer vraestelle aan leerders" : "Publish past papers to learners"}
             description={isAf
-              ? "Bevestig dat elke ingenome vraestel sigbaar is op die leerder se Vraestelle-bladsy en dat lêerhasse korrek is."
-              : "Verify every ingested paper is visible on the learner Past Papers page and that file hashes are sound."}
-            endpoint="/api/admin/dbe-ingestion/verify"
-            actionLabel={isAf ? "Publiseer & bevestig" : "Publish & verify"}
-            runningLabel={isAf ? "Bevestig tans…" : "Verifying…"}
+              ? "Loop die vrystellings-hek: elke vraestel wat die memo-drempel gehaal het, word aan leerders vrygestel. Bykomend — nooit ongepubliseer nie."
+              : "Runs the release gate: every ingested (subject, year, paper, session, language) tuple that clears the memo-coverage threshold flips to released. Additive only — nothing is ever un-released."}
+            endpoint="/api/admin/dbe-ingestion/release-gate"
+            actionLabel={isAf ? "Publiseer" : "Publish"}
+            runningLabel={isAf ? "Publiseer tans…" : "Publishing…"}
             testId="btn-publish-papers"
             isAf={isAf}
             summarise={(d, af) =>
