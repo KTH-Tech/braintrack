@@ -109,6 +109,18 @@ const ICONS: Array<[string, string]> = [
   ["M15 3 a 9 9 0 1 0 6 15 A 7 7 0 0 1 15 3 Z", "0 0 24 24"],
   // Rainbow arc
   ["M2 20 A 10 10 0 0 1 22 20 h -3 A 7 7 0 0 0 5 20 Z M6 20 A 6 6 0 0 1 18 20 h -3 A 3 3 0 0 0 9 20 Z", "0 0 24 24"],
+  // Butterfly — figure-eight wings + a stubby body
+  ["M12 8 C 12 4 4 4 4 10 C 4 14 8 15 12 12 M12 8 C 12 4 20 4 20 10 C 20 14 16 15 12 12 M12 12 C 12 16 4 16 4 18 C 4 20 8 21 12 18 M12 12 C 12 16 20 16 20 18 C 20 20 16 21 12 18 M11 6 h 2 v 14 h -2 Z", "0 0 24 24"],
+  // Balloon — pear teardrop + a tiny knot at the base
+  ["M12 3 c -4 0 -7 3 -7 7 c 0 4 3 8 7 11 c 4 -3 7 -7 7 -11 c 0 -4 -3 -7 -7 -7 z M11 21 h 2 v 2 h -2 z", "0 0 24 24"],
+  // Sun starburst — filled 8-point radiant
+  ["M12 3 L13 9 L18 5 L15 10 L21 11 L15 13 L18 18 L13 15 L12 21 L11 15 L6 18 L9 13 L3 11 L9 10 L6 5 L11 9 Z", "0 0 24 24"],
+  // Cherries — a pair with crossing stems
+  ["M7 16 a 3 3 0 1 0 6 0 a 3 3 0 1 0 -6 0 z M13 16 a 3 3 0 1 0 6 0 a 3 3 0 1 0 -6 0 z M10 13 c 0 -5 4 -8 9 -9 M16 13 c 0 -4 3 -7 5 -8", "0 0 24 24"],
+  // Cupcake — icing dome on a wrapper with a lil' fluted rim
+  ["M6 22 h 12 v -6 h -12 z M6 16 c 0 -4 3 -7 6 -7 s 6 3 6 7 z M9 16 l 3 -3 l 3 3 M8 22 v -6 M12 22 v -6 M16 22 v -6", "0 0 24 24"],
+  // Ribbon bow — two triangular loops meeting at a small knot
+  ["M12 10 L5 6 v 8 z M12 10 L19 6 v 8 z M11 8 h 2 v 6 h -2 z M10 14 h 4 v 3 h -4 z", "0 0 24 24"],
 
   // ── Street cluster ─────────────────────────────────────────────────
   // Crown — three spikes, one gem-notched bar
