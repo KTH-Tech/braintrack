@@ -19,6 +19,13 @@ import {
   Landmark,
   ChevronRight,
   XCircle,
+  ShieldCheck,
+  Lock,
+  Star,
+  Clock,
+  BookOpen,
+  GraduationCap,
+  HeartHandshake,
 } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
 import { useAuth } from "@/hooks/use-auth";
@@ -74,6 +81,17 @@ interface SubStatusResp {
   parentView?: ParentViewInfo | null;
 }
 
+/** Shape of GET /api/exam-countdown — real NSC 2026 dates baked into the API.
+ *  Used here to render legitimate urgency ("prelims in N days") without
+ *  fabricated scarcity or countdown timers. */
+interface ExamCountdownResp {
+  nextExam: "prelims" | "finals" | "done";
+  preliminaryExams: { daysRemaining: number; label: string; labelAf: string };
+  finalExams: { daysRemaining: number; label: string; labelAf: string };
+  urgencyMessage: string;
+  urgencyMessageAf: string;
+}
+
 const CTA_GRADIENT =
   "linear-gradient(100deg,#FFB7E5,#FFE29A,#9FF5E8,#C5B3FF,#FFB7E5)";
 const HEADLINE_GRADIENT =
@@ -99,6 +117,7 @@ const SCOPED_CSS = `
     .bts-nav-links { display:none !important; }
     .bts-head { font-size: 36px !important; letter-spacing: -1px !important; }
     .bts-grid2 { grid-template-columns: 1fr !important; }
+    .bts-guarantee-grid { grid-template-columns: 1fr !important; }
   }
 `;
 
@@ -221,6 +240,13 @@ export default function SubscribePage() {
   } = useQuery<SubStatusResp>({
     queryKey: ["/api/user/subscription-status"],
     enabled: !authLoading && isAuthenticated,
+  });
+
+  // Real DBE-anchored exam countdown — powers the honest urgency line on the
+  // hero ("prelims in N days"). Public endpoint, safe to fetch on any state.
+  const { data: examCountdown } = useQuery<ExamCountdownResp>({
+    queryKey: ["/api/exam-countdown"],
+    staleTime: 5 * 60 * 1000,
   });
   const minorPending = Boolean(subStatus?.parentFlow?.pending);
 
@@ -508,15 +534,46 @@ export default function SubscribePage() {
       </div>
 
       {/* ── Pricing ─────────────────────────────────────────── */}
-      <div data-testid="subscribe-plan-panel" style={{ maxWidth: 1000, margin: "0 auto", padding: "64px 32px 100px" }}>
+      <div data-testid="subscribe-plan-panel" style={{ maxWidth: 1000, margin: "0 auto", padding: "56px 32px 100px" }}>
         <div style={{ textAlign: "center" }}>
           {/* Adult learner journey rail — /subscribe is the LAST onboarding
               step, not a standalone pricing page. */}
           {isAuthenticated && <JourneyRail isAf={isAf} />}
+
+          {/* Legit urgency: exam-countdown-driven, no fake timers. Prelims
+              show if within 45 days, else finals. Source: /api/exam-countdown
+              (DBE-anchored dates). */}
+          {examCountdown && examCountdown.nextExam !== "done" && (
+            <div
+              data-testid="subscribe-exam-urgency"
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 8,
+                marginBottom: 14,
+                fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 13,
+                color: "#050508", background: "#FFE29A",
+                borderRadius: 999, padding: "6px 14px",
+              }}
+            >
+              <Clock style={{ width: 14, height: 14 }} />
+              {(() => {
+                const prelims = examCountdown.preliminaryExams.daysRemaining;
+                const finals = examCountdown.finalExams.daysRemaining;
+                if (prelims > 0 && prelims <= 45) {
+                  return isAf
+                    ? `${prelims} dae tot voorlopige eksamens — beplan die laaste stukkie nou`
+                    : `${prelims} days until prelims — plan the last stretch now`;
+                }
+                return isAf
+                  ? `${finals} dae tot NSS-finaal — begin sonder om te wag`
+                  : `${finals} days until NSC finals — start without waiting`;
+              })()}
+            </div>
+          )}
+
           <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#FFE29A", fontSize: 18, transform: "rotate(-2deg)" }}>
             {isAuthenticated
               ? (isAf ? "laaste stap — aktiveer jou 14 gratis dae 🚀" : "last step — activate your 14 free days 🚀")
-              : (isAf ? "een plan. alles ontsluit." : "one plan. everything unlocked.")}
+              : (isAf ? "matriek prep. bekostigbaar. no gimmicks." : "matric prep. affordable. no gimmicks.")}
           </div>
           <div
             role="heading"
@@ -525,15 +582,51 @@ export default function SubscribePage() {
             data-testid="subscribe-heading"
             style={{ fontSize: 52, fontWeight: 900, letterSpacing: "-2px", margin: "8px 0 10px", fontFamily: "'Poppins',sans-serif", color: "#fff" }}
           >
-            {isAf ? "14 dae op ons. " : "14 days on us. "}
+            {isAf ? "14 dae gratis. " : "14 days free. "}
             <span style={{ background: HEADLINE_GRADIENT, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>
-              {isAf ? "Dan net R169." : "Then just R169."}
+              {isAf ? "Dan R169/maand." : "Then R169/month."}
             </span>
           </div>
-          <div style={{ fontSize: 17, color: "#fff", opacity: 0.942, maxWidth: 560, margin: "0 auto 44px", lineHeight: 1.6 }}>
+          <div
+            data-testid="subscribe-hero-subline"
+            style={{ fontSize: 17.5, color: "#fff", maxWidth: 620, margin: "0 auto 12px", lineHeight: 1.6, fontWeight: 500 }}
+          >
             {isAf
-              ? "Volle toegang vir 14 dae, geen kaart nodig om te begin nie. Daarna is dit R169/maand — maandeliks gefaktureer · kanselleer enige tyd in die app."
-              : "Full access for 14 days, no card needed to start. After that it's R169/month — billed monthly · cancel anytime in the app."}
+              ? "R5,63 per dag. Minder as een tutor-sessie per maand. Kanselleer enige tyd — geen boete, geen oproepe."
+              : "R5.63 a day. Less than one tutor session per month. Cancel anytime — no penalty, no phone calls."}
+          </div>
+          <div
+            style={{ fontSize: 14, color: "#fff", maxWidth: 620, margin: "0 auto 28px", lineHeight: 1.55 }}
+          >
+            {isAf
+              ? "Vir ouers wat 'n minderjarige aktiveer: R1 vandag om die kaart te verifieer (POPIA-toestemming). Geen ander heffing tot dag 15 nie."
+              : "Parents activating a minor pay R1 today to verify the card (POPIA consent). No other charge until day 15."}
+          </div>
+
+          {/* ── Trust-signal stack (above the CTA — this is the moment the parent's brain says "is this legit?") ── */}
+          <div
+            data-testid="subscribe-trust-stack"
+            style={{
+              display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap",
+              maxWidth: 780, margin: "0 auto 40px",
+            }}
+          >
+            <span style={trustPillStyle}>
+              <Lock style={{ width: 13, height: 13, color: "#94F7C5" }} />
+              {isAf ? "Paystack veilige fakturering" : "Paystack secure billing"}
+            </span>
+            <span style={trustPillStyle}>
+              <ShieldCheck style={{ width: 13, height: 13, color: "#9FD8FF" }} />
+              {isAf ? "POPIA-nakomend" : "POPIA compliant"}
+            </span>
+            <span style={trustPillStyle}>
+              <BookOpen style={{ width: 13, height: 13, color: "#FFB7E5" }} />
+              {isAf ? "KABV-belyn · NSS 2026" : "CAPS-aligned · NSC 2026"}
+            </span>
+            <span style={trustPillStyle}>
+              <GraduationCap style={{ width: 13, height: 13, color: "#FFE29A" }} />
+              {isAf ? "10 jaar NSS-vraestelle + memo's" : "10+ years NSC past papers + memos"}
+            </span>
           </div>
         </div>
 
@@ -553,8 +646,8 @@ export default function SubscribePage() {
           <div style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.1)", borderRadius: 24, padding: 32, display: "flex", flexDirection: "column" }}>
             <div style={{ fontWeight: 800, fontSize: 18, color: "#fff" }}>{isAf ? "Gratis proeftydperk" : "Free trial"}</div>
             <div style={{ fontSize: 46, fontWeight: 900, letterSpacing: "-1px", margin: "8px 0 2px", color: "#fff" }}>{isAf ? "14 dae" : "14 days"}</div>
-            <div style={{ fontSize: 14, color: "#fff", opacity: 0.942, marginBottom: 20 }}>
-              {isAf ? "Volle platform. Geen kaart om te begin nie." : "Full platform. No card to start."}
+            <div style={{ fontSize: 14, color: "#fff", marginBottom: 20 }}>
+              {isAf ? "Volle platform. Volle toegang. Geen verrassings." : "Full platform. Full access. No surprises."}
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 12, flex: 1 }}>
               {trialPerks.map((tp) => (
@@ -605,8 +698,13 @@ export default function SubscribePage() {
               data-testid="button-subscribe-cta"
               style={{ ...OUTLINE_BTN_STYLE, width: "100%" }}
             >
-              {isAf ? "Begin 14-dae gratis proeftydperk" : "Start 14-day free trial"}
+              {isAf ? "Begin 14 gratis dae" : "Start 14 days free"}
             </button>
+            <p style={{ textAlign: "center", fontSize: 12, color: "#fff", margin: "10px 0 0", lineHeight: 1.55 }}>
+              {isAf
+                ? "Opset neem 60 sekondes. Geen verborgde fooie."
+                : "Setup takes 60 seconds. No hidden fees."}
+            </p>
           </div>
 
           {/* ── Premium card ── */}
@@ -633,10 +731,10 @@ export default function SubscribePage() {
               <span style={{ fontSize: 46, fontWeight: 900, letterSpacing: "-1px", color: "#fff" }}>R169</span>
               <span style={{ fontSize: 16, fontWeight: 700, color: "#fff" }}>{isAf ? "/maand" : "/month"}</span>
             </div>
-            <div style={{ fontSize: 14, color: "#fff", opacity: 0.942, marginBottom: 20 }}>
+            <div style={{ fontSize: 14, color: "#fff", marginBottom: 20 }}>
               {isAf
-                ? "Per leerder · maandeliks gefaktureer · kanselleer enige tyd in die app"
-                : "Per learner · billed monthly · cancel anytime in the app"}
+                ? "Per leerder · maandeliks · kanselleer enige tyd in Instellings"
+                : "Per learner · billed monthly · cancel anytime in Settings"}
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 12, flex: 1 }}>
               {premiumPerks.map((pp) => (
@@ -652,22 +750,170 @@ export default function SubscribePage() {
               data-testid="button-subscribe-premium-cta"
               style={{ ...RAINBOW_BTN_STYLE, width: "100%", marginTop: 22 }}
             >
-              {isAf ? "Kry Premium — R169/m" : "Get Premium — R169/m"}
+              {isAf ? "Begin 14 gratis dae" : "Start 14 days free"}
             </button>
+            <p style={{ textAlign: "center", fontSize: 12, color: "#fff", margin: "10px 0 0", lineHeight: 1.55 }}>
+              {isAf
+                ? "Kanselleer voor dag 14 en jy word nooit gehef nie."
+                : "Cancel before day 14 and you're never charged."}
+            </p>
           </div>
         </div>
 
-        {/* Trust row */}
-        <div style={{ display: "flex", gap: 22, justifyContent: "center", flexWrap: "wrap", marginTop: 36, fontSize: 13.5, color: "#fff", opacity: 0.942 }}>
-          <span>{isAf ? "🔒 Fakturering is ouer-beheer" : "🔒 Billing is parent-owned"}</span>
-          <span>{isAf ? "🇿🇦 Plaaslike pryse, geen buitelandse valuta" : "🇿🇦 Local pricing, no forex"}</span>
+        {/* ── R1 verify explainer — parents scan for gotchas; put the answer
+             directly under the pricing cards where the doubt lives ── */}
+        <div style={{ maxWidth: 820, margin: "26px auto 0" }}>
+          <div
+            data-testid="subscribe-r1-explainer"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "auto 1fr",
+              gap: 14,
+              alignItems: "flex-start",
+              background: "rgba(255,255,255,.03)",
+              border: "1px solid rgba(255,255,255,.1)",
+              borderRadius: 18,
+              padding: "18px 22px",
+            }}
+          >
+            <div
+              style={{
+                width: 42, height: 42, borderRadius: 12, flex: "none",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                background: "rgba(148,247,197,.16)", border: "1px solid rgba(148,247,197,.5)",
+              }}
+            >
+              <ShieldCheck style={{ width: 20, height: 20, color: "#94F7C5" }} />
+            </div>
+            <div>
+              <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#94F7C5", marginBottom: 4 }}>
+                {isAf ? "wat is die R1?" : "what's the R1?"}
+              </div>
+              <p style={{ fontSize: 14, color: "#fff", margin: 0, lineHeight: 1.6 }}>
+                {isAf
+                  ? "As jy 'n minderjarige aktiveer, vra Paystack R1 om die kaart aan die ouer te koppel — dis hoe POPIA-toestemming rekord hou. Dit is een keer, geen ander heffing tot dag 15 nie. Volwasse leerders wat vir hulself aanmeld, hoef geen kaart in te lees om te begin nie."
+                  : "For parents activating a minor, Paystack takes R1 to confirm the card belongs to you — that's how POPIA consent is recorded. It's one-off, non-refundable, and there is no other charge until day 15. Adult learners activating themselves don't need to enter a card to start the trial."}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Real 2025 cohort testimonials (parent-first). Sourced from
+             client/src/components/landing/reviews-ribbon.tsx — same corpus,
+             three short cards, no fabrication. ── */}
+        <div style={{ maxWidth: 820, margin: "36px auto 0" }}>
+          <div style={{ textAlign: "center", marginBottom: 18 }}>
+            <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#FFB7E5", fontSize: 15, transform: "rotate(-1.5deg)" }}>
+              {isAf ? "van die 2025 toetsgroep" : "from the 2025 test cohort"}
+            </div>
+            <div style={{ fontSize: 20, fontWeight: 800, color: "#fff", marginTop: 6 }}>
+              {isAf ? "~900 leerders. Regte terugvoer." : "~900 learners. Real feedback."}
+            </div>
+          </div>
+          <div className="bts-grid2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
+            {SUBSCRIBE_TESTIMONIALS.map((r) => (
+              <div
+                key={r.quoteEn}
+                data-testid={`testimonial-${r.role}`}
+                style={{
+                  background: "linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.015))",
+                  border: `1.5px solid ${r.color}`,
+                  borderRadius: 18,
+                  padding: "18px 18px 16px",
+                  display: "flex", flexDirection: "column", gap: 10,
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <div
+                    style={{
+                      width: 30, height: 30, borderRadius: 9,
+                      display: "grid", placeItems: "center",
+                      background: `${r.color}22`, border: `1px solid ${r.color}66`,
+                    }}
+                  >
+                    <r.Icon size={14} strokeWidth={2.4} color={r.color} aria-hidden />
+                  </div>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: "#fff" }}>
+                    {isAf ? r.roleAf : r.roleEn}
+                  </span>
+                </div>
+                <div style={{ display: "inline-flex", gap: 2 }}>
+                  {Array.from({ length: 5 }).map((_, s) => (
+                    <Star key={s} size={12} strokeWidth={2.2} aria-hidden style={{ color: "#FFE29A", fill: "#FFE29A" }} />
+                  ))}
+                </div>
+                <div style={{ fontSize: 13.5, lineHeight: 1.55, color: "#fff", fontStyle: "italic" }}>
+                  {`"${isAf ? r.quoteEn : r.quoteEn}"`}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Cancel / refund / trust footer — softer honest language;
+             matches refund-policy.tsx (no money-back guarantee promised). ── */}
+        <div style={{ maxWidth: 820, margin: "36px auto 0" }}>
+          <div
+            data-testid="subscribe-guarantee-block"
+            className="bts-guarantee-grid"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: 14,
+            }}
+          >
+            <div style={cancelBlockStyle}>
+              <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#9FF5E8", marginBottom: 4 }}>
+                {isAf ? "kanselleer regtig" : "actually cancel"}
+              </div>
+              <p style={{ fontSize: 13.5, color: "#fff", margin: 0, lineHeight: 1.55 }}>
+                {isAf
+                  ? "Instellings → Intekening → Kanselleer. Onmiddellik. Geen oproepe, geen e-posse, geen kansellasiegelde."
+                  : "Settings → Subscription → Cancel. Immediate. No calls, no emails, no cancellation fees."}
+              </p>
+            </div>
+            <div style={cancelBlockStyle}>
+              <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFE29A", marginBottom: 4 }}>
+                {isAf ? "geen verrassings" : "no gotchas"}
+              </div>
+              <p style={{ fontSize: 13.5, color: "#fff", margin: 0, lineHeight: 1.55 }}>
+                {isAf
+                  ? "Kanselleer voor dag 14 en jy word nooit R169 gehef nie. Geen kontrakte, geen langtermyn-vasklouings."
+                  : "Cancel before day 14 and you're never charged R169. No contracts, no long-term lock-in."}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Local trust row (kept lean; SA-specific proof points) */}
+        <div style={{ display: "flex", gap: 22, justifyContent: "center", flexWrap: "wrap", marginTop: 30, fontSize: 13.5, color: "#fff" }}>
+          <span>{isAf ? "🔒 Fakturering deur die ouer beheer" : "🔒 Billing controlled by the parent"}</span>
+          <span>{isAf ? "🇿🇦 Rand-pryse, geen buitelandse valuta" : "🇿🇦 Rand pricing, no forex"}</span>
           <span>{isAf ? "🎓 Skool-grootmaatlisensies beskikbaar" : "🎓 School bulk licences available"}</span>
         </div>
 
-        <p style={{ textAlign: "center", color: "#fff", opacity: 0.94, fontSize: 12, marginTop: 28, padding: "0 16px", lineHeight: 1.7 }}>
-          {isAf
-            ? "Deur voort te gaan, stem jy in tot ons Diensvoorwaardes en Privaatheidsbeleid. Ons sal vir jou 'n herinnering stuur voor jou proeftydperk verval."
-            : "By continuing, you agree to our Terms of Service and Privacy Policy. We'll send you a reminder before your trial expires."}
+        <p style={{ textAlign: "center", color: "#fff", fontSize: 12, marginTop: 26, padding: "0 16px", lineHeight: 1.7 }}>
+          {isAf ? (
+            <>
+              {"Deur voort te gaan stem jy in tot ons "}
+              <Link href="/terms-of-service"><span style={{ color: "#9FD8FF", cursor: "pointer" }}>Diensvoorwaardes</span></Link>
+              {", "}
+              <Link href="/privacy-policy"><span style={{ color: "#9FD8FF", cursor: "pointer" }}>Privaatheidsbeleid</span></Link>
+              {" en "}
+              <Link href="/refund-policy"><span style={{ color: "#9FD8FF", cursor: "pointer" }}>Terugbetalingsbeleid</span></Link>
+              {". Ons stuur 'n herinnering voor jou proeftydperk eindig."}
+            </>
+          ) : (
+            <>
+              {"By continuing you agree to our "}
+              <Link href="/terms-of-service"><span style={{ color: "#9FD8FF", cursor: "pointer" }}>Terms of Service</span></Link>
+              {", "}
+              <Link href="/privacy-policy"><span style={{ color: "#9FD8FF", cursor: "pointer" }}>Privacy Policy</span></Link>
+              {" and "}
+              <Link href="/refund-policy"><span style={{ color: "#9FD8FF", cursor: "pointer" }}>Refund Policy</span></Link>
+              {". We'll send a reminder before your trial ends."}
+            </>
+          )}
         </p>
 
         <div style={{ display: "flex", justifyContent: "center", marginTop: 24 }}>
@@ -683,6 +929,59 @@ export default function SubscribePage() {
     </div>
   );
 }
+
+// ── Testimonial constants ────────────────────────────────────────────
+// These three quotes are copied verbatim from
+// client/src/components/landing/reviews-ribbon.tsx — the 2025 test cohort
+// (~900 learners) corpus. Selected for CRO on /subscribe: two parent voices
+// (the payer) + one learner voice, all short enough to scan on mobile.
+const SUBSCRIBE_TESTIMONIALS = [
+  {
+    role: "parent-1",
+    roleEn: "Parent",
+    roleAf: "Ouer",
+    quoteEn: "The parent report helped us support our child without taking over the study process.",
+    Icon: HeartHandshake,
+    color: "#C5B3FF",
+  },
+  {
+    role: "learner-1",
+    roleEn: "Grade 12 Learner",
+    roleAf: "Graad 12 Leerder",
+    quoteEn: "BrainTrack showed me what to study, not just how much I still had to study.",
+    Icon: GraduationCap,
+    color: "#9FF5E8",
+  },
+  {
+    role: "parent-2",
+    roleEn: "Parent",
+    roleAf: "Ouer",
+    quoteEn: "We could see progress, weaker areas and the next priorities in one place.",
+    Icon: HeartHandshake,
+    color: "#FFE29A",
+  },
+] as const;
+
+const trustPillStyle: React.CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 6,
+  fontFamily: "'Poppins',sans-serif",
+  fontSize: 12.5,
+  fontWeight: 700,
+  color: "#fff",
+  background: "rgba(255,255,255,.05)",
+  border: "1px solid rgba(255,255,255,.14)",
+  borderRadius: 999,
+  padding: "7px 12px",
+};
+
+const cancelBlockStyle: React.CSSProperties = {
+  background: "rgba(255,255,255,.03)",
+  border: "1px solid rgba(255,255,255,.1)",
+  borderRadius: 16,
+  padding: "16px 18px",
+};
 
 function PaymentPickerScreen({
   isAf,
