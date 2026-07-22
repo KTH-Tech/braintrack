@@ -257,9 +257,18 @@ export default function PastPapersPage() {
 
   // Filter SUBJECTS to only those the learner is enrolled in.
   // /api/subjects already returns only the learner's enrolled subjects.
-  const { data: enrolledSubjectsRaw } = useQuery<{ code: string }[]>({
+  const { data: enrolledSubjectsRaw, isError: subjectsFailed } = useQuery<{ code: string }[]>({
     queryKey: ["/api/subjects"],
-    select: (data: any[]) => data.map((s) => ({ code: s.code as string })),
+    // Guard the shape. /api/subjects returns an array on success but an
+    // `{ error }` object on a 500 (e.g. a schema/column drift like the 0034
+    // regression). Calling .map() on that object throws inside `select`,
+    // which React Query surfaces as a render error and blanks the whole
+    // page — the "error on past papers" learners were hitting. Anything
+    // that isn't an array now degrades to "no enrolled subjects" instead.
+    select: (data: any) =>
+      Array.isArray(data)
+        ? data.map((s) => ({ code: s?.code as string })).filter((s) => Boolean(s.code))
+        : [],
   });
   const enrolledCodes = new Set<string>(enrolledSubjectsRaw?.map((s) => s.code) ?? []);
   // Only show subjects the learner is enrolled in — never fall back to all subjects
@@ -419,7 +428,25 @@ export default function PastPapersPage() {
                   </div>
                   <p className="text-xs text-white mt-0.5 mb-3" style={{ opacity: 0.9 }}>10 {text.years}</p>
                   <div className="space-y-1.5 max-h-[500px] overflow-y-auto pr-1">
-                    {hasNoEnrollment ? (
+                    {subjectsFailed ? (
+                      /* Server-side failure — distinct from "you haven't picked
+                         subjects yet", otherwise an outage reads as the learner's
+                         fault and they get sent to re-do onboarding for nothing. */
+                      <div className="py-6 text-center space-y-3" data-testid="past-papers-subjects-error">
+                        <p className="text-sm text-white">
+                          {language === "af"
+                            ? "Ons kon nie jou vakke laai nie. Dis aan ons kant, nie joune nie."
+                            : "We couldn't load your subjects. That's on our side, not yours."}
+                        </p>
+                        <button
+                          onClick={() => window.location.reload()}
+                          className="px-4 py-2 text-xs transition-all hover:bg-white/5"
+                          style={SECONDARY_BTN}
+                        >
+                          {language === "af" ? "Probeer weer" : "Try again"}
+                        </button>
+                      </div>
+                    ) : hasNoEnrollment ? (
                       <div className="py-6 text-center space-y-3">
                         <p className="text-sm text-white">
                           {language === "af"

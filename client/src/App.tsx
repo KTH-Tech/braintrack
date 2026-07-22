@@ -412,16 +412,40 @@ function RequireParentRoute({ children }: { children: React.ReactNode }) {
           This page is for linked parent accounts.
         </h1>
         <p className="text-sm text-white mt-3">
-          Your account is not registered as a parent. If you believe this is an
-          error, please contact support.
+          You're signed in, but this account isn't registered as a parent.
         </p>
-        <a
-          href="/dashboard"
-          className="inline-block mt-5 text-xs font-bold underline text-white"
-          data-testid="link-dashboard"
+        {/* Show the account we actually resolved. Without this the block is
+            undiagnosable — "can't get into parent view" is nearly always a
+            learner/admin account hitting /parent, and naming the role turns a
+            mystery into a one-line fix. */}
+        <p
+          className="text-xs text-white mt-4 rounded-lg border border-white/20 px-3 py-2 inline-block"
+          data-testid="parent-only-role"
         >
-          Back to dashboard
-        </a>
+          Signed in as <strong>{user?.email ?? "unknown account"}</strong>
+          <br />
+          Role: <strong>{user?.role ?? "none"}</strong> — needs <strong>parent</strong>
+        </p>
+        <p className="text-xs text-white mt-3">
+          Sign out and sign in with the parent account you used to activate your
+          learner, or ask support to switch this account's role.
+        </p>
+        <div className="mt-5 flex items-center justify-center gap-4">
+          <a
+            href="/dashboard"
+            className="text-xs font-bold underline text-white"
+            data-testid="link-dashboard"
+          >
+            Back to dashboard
+          </a>
+          <a
+            href="/api/auth/logout"
+            className="text-xs font-bold underline text-white"
+            data-testid="link-parent-block-signout"
+          >
+            Sign out
+          </a>
+        </div>
       </div>
     </div>
   );
