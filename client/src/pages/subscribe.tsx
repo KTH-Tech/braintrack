@@ -38,6 +38,7 @@ import iconTransparent from "@/assets/handoff/icon-transparent.png";
 import { ConfettiBurst } from "@/components/confetti-burst";
 import { KthTechChip } from "@/components/brand/KthTechLogo";
 import { PaymentIconsRow, PaystackBadge } from "@/components/brand/PaymentIcons";
+import { PaymentThankYou } from "@/components/payment-thank-you";
 
 type PageState =
   | "plan"
@@ -231,6 +232,10 @@ export default function SubscribePage() {
     // Task #771 — opening #resend from a push notification jumps straight to
     // the success screen so the parent can hit "Resend WhatsApp link".
     if (resendHashRef.current) setPageState("success");
+    // QA hatch: /subscribe?preview=thankyou renders the post-payment screen
+    // without having to run a real card through Paystack. Read-only — it sets
+    // page state and nothing else, so it cannot grant access or skip billing.
+    if (params.get("preview") === "thankyou") setPageState("payment_success");
   }, []);
 
   // Journey branching — role-aware view of /subscribe. Minor learners never
@@ -403,11 +408,15 @@ export default function SubscribePage() {
   }
 
   if (pageState === "payment_success") {
+    // The poster-styled thank-you. `trial` / `lapsed` never reach this state
+    // (see the guard where payment_success is set), so anything landing here
+    // with a real billing method is a paid conversion; a null method means we
+    // got here straight off the R1 card-verification path.
     return (
-      <PaymentSuccessScreen
+      <PaymentThankYou
         isAf={isAf}
         navigate={navigate}
-        billingMethod={paymentBillingMethod}
+        variant={paymentBillingMethod ? "subscription_active" : "trial_started"}
       />
     );
   }
