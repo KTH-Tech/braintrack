@@ -209,15 +209,18 @@ export default function JourneyPage() {
       />
 
       <main className="relative max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-8">
-        {/* Ambient pastel auras */}
+        {/* Ambient pastel auras — hidden on the smallest viewports because a
+            420px+380px blurred pastel wash sits on top of Rizz + the first
+            content cards on a 375px-wide phone, and reads as if the cards are
+            overlapping the mascot. They only add ambience on ≥sm anyway. */}
         <div
           aria-hidden
-          className="pointer-events-none absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full blur-[120px] opacity-40"
+          className="pointer-events-none absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full blur-[120px] opacity-40 hidden md:block"
           style={{ background: "#9FF5E8" }}
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute top-40 -right-24 w-[380px] h-[380px] rounded-full blur-[120px] opacity-30"
+          className="pointer-events-none absolute top-40 -right-24 w-[380px] h-[380px] rounded-full blur-[120px] opacity-30 hidden md:block"
           style={{ background: "#FFB7E5" }}
         />
 
@@ -231,8 +234,15 @@ export default function JourneyPage() {
             render at rest: the sections are only ever the FIRST thing the
             user sees on this page, so a fade-in adds nothing worth risking
             an invisible page for. */}
-        <section className="relative">
-          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+        <section className="relative pb-4 sm:pb-6">
+          {/* items-start (was items-end): with items-end and a text block
+              taller than Rizz on desktop, Rizz sat at the very bottom of the
+              flex row so the next section's top edge visually kissed his
+              feet — the timeline card read as sitting on top of the mascot.
+              Top-alignment puts him in the same eyeline as the headline, and
+              pb-4 sm:pb-6 on the section gives him his own breathing room
+              before the space-y-8 gap to the narrator card. */}
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 lg:gap-8">
             <div className="flex-1 min-w-0 space-y-4">
               <div className="inline-flex items-center gap-2">
                 <Rocket
@@ -263,18 +273,21 @@ export default function JourneyPage() {
               <span style={marker("#FFB7E5", 15)}>{t.hypeLine}</span>
             </div>
 
-            {/* Rizz — standing full-body mascot (official handoff art, sneakers and all).
-                Always visible so the journey page reads as Rizz-hosted, not just text;
-                the sticker callouts progressively appear once there's room so nothing
-                crowds the 375px header/hero the way the old dashboard sidebar once did. */}
+            {/* Rizz — standing full-body mascot (official handoff art). Was
+                160×192 with stickers offset −14/−60/−34 OUTSIDE the box, so
+                the mascot's visible footprint on mobile ran 220px wide and
+                intruded into the next section's vertical space. Now 128×154
+                on mobile (still legible, no longer domineering), 160×192
+                back on lg+, and every sticker sits INSIDE the mascot's
+                bounding box so nothing can extend into a neighbouring
+                section again. */}
             <div
-              className="relative shrink-0 mx-auto lg:mx-0"
-              style={{ width: 160, height: 192 }}
+              className="relative shrink-0 mx-auto lg:mx-0 mb-2 lg:mb-0 w-32 h-[154px] lg:w-40 lg:h-48"
               data-testid="journey-rizz-mascot"
             >
               <div
                 aria-hidden
-                className="pointer-events-none absolute inset-0 rounded-full blur-[50px] opacity-60"
+                className="pointer-events-none absolute inset-0 rounded-full blur-[40px] lg:blur-[50px] opacity-50 lg:opacity-60"
                 style={{ background: "#B388FF" }}
               />
               <img
@@ -287,16 +300,16 @@ export default function JourneyPage() {
                   height: "100%",
                   objectFit: "contain",
                   animation: "bt-float 6s ease-in-out infinite",
-                  filter: "drop-shadow(0 16px 26px rgba(179,136,255,.35))",
+                  filter: "drop-shadow(0 12px 22px rgba(179,136,255,.32))",
                 }}
               />
-              <span className="hidden sm:inline-flex" style={sticker("#9FF5E8", -8, { top: -8, left: -14 })}>
+              <span className="hidden sm:inline-flex" style={sticker("#9FF5E8", -8, { top: 4, left: 4 })}>
                 {t.sticker1}
               </span>
-              <span className="hidden lg:inline-flex" style={sticker("#FFE29A", 7, { top: 26, right: -60 })}>
+              <span className="hidden lg:inline-flex" style={sticker("#FFE29A", 7, { top: 40, right: 4 })}>
                 {t.sticker2}
               </span>
-              <span className="hidden lg:inline-flex" style={sticker("#FFB7E5", -6, { bottom: 8, left: -34 })}>
+              <span className="hidden lg:inline-flex" style={sticker("#FFB7E5", -6, { bottom: 8, left: 4 })}>
                 {t.sticker3}
               </span>
             </div>
