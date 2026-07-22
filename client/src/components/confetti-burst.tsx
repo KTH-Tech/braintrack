@@ -38,12 +38,29 @@ const KEYFRAMES = `
   0%   { transform: translate3d(-50%,-50%,0) scale(0.2) rotate(0deg); opacity: 0; }
   7%   { opacity: 1; }
   16%  { transform: translate3d(calc(-50% + var(--bx)), calc(-50% + var(--by)), 0) scale(1) rotate(160deg); opacity: 1; }
-  78%  { opacity: 1; }
+  /* Long visible tail — was 16% → 78% at opacity:1, then 78% → 100% fade (a
+     sharp 22% of the total duration = ~0.6s cliff). Now opacity holds all
+     the way to 88%, then the last 12% is a soft fade so particles linger
+     visibly before disappearing. Combined with the longer particle
+     durations (see buildParticles), the whole burst reads as it drifts
+     down slowly and sparkles the whole way. */
+  88%  { opacity: 1; }
   100% { transform: translate3d(calc(-50% + var(--bx) + var(--dx)), calc(-50% + var(--by) + 96vh), 0) scale(0.82) rotate(var(--spin)); opacity: 0; }
 }
 @keyframes bt-gshimmer {
   0%,100% { filter: hue-rotate(-22deg) saturate(1.35) brightness(1); }
   50%     { filter: hue-rotate(72deg)  saturate(1.75) brightness(1.24); }
+}
+/* Twinkle — a short, sharp brightness+scale flash that fires a few times
+   per particle over the burst lifetime. Randomised delay + duration per
+   particle so the sparkle reads as scattered starbursts across the whole
+   layer, not a synchronised strobe. */
+@keyframes bt-gtwinkle {
+  0%, 100%   { filter: brightness(1)   drop-shadow(0 0 0    rgba(255,255,255,0)); transform: scale(1); }
+  45%        { filter: brightness(1)   drop-shadow(0 0 0    rgba(255,255,255,0)); transform: scale(1); }
+  55%        { filter: brightness(2.4) drop-shadow(0 0 12px rgba(255,255,255,.9)); transform: scale(1.35); }
+  60%        { filter: brightness(1.2) drop-shadow(0 0 3px  rgba(255,255,255,.4)); transform: scale(1.05); }
+  70%        { filter: brightness(1)   drop-shadow(0 0 0    rgba(255,255,255,0)); transform: scale(1); }
 }
 @keyframes bt-gbloom {
   0%   { transform: translate(-50%,-50%) scale(0.3); opacity: 0; }
@@ -150,6 +167,10 @@ type Particle = {
   delay: number;
   shimmerDur: number;
   shimmerDelay: number;
+  /** Twinkle flash cadence — sharp brightness+scale pulse, staggered per
+   *  particle so the layer sparkles randomly instead of strobing in sync. */
+  twinkleDur: number;
+  twinkleDelay: number;
   /** When set, this particle renders as an SVG icon instead of a shape span.
    *  The colour is a solid pastel (not the holographic gradient) so the icon
    *  reads as a legible silhouette. */
@@ -224,10 +245,20 @@ function buildParticles(count: number): Particle[] {
       height,
       radius,
       background: holo,
-      duration: 2.6 + Math.random() * 1.7,
+      // Was 2.6-4.3s. Bumped to 4.2-6.3s so the whole burst reads as it
+      // drifts down slowly instead of tumbling off screen — combined with
+      // the longer bt-gpop opacity tail (see keyframe), particles linger
+      // visibly for the whole fall.
+      duration: 4.2 + Math.random() * 2.1,
       delay: Math.random() * 0.2,
       shimmerDur: 0.7 + Math.random() * 0.85,
       shimmerDelay: Math.random() * 0.5,
+      // Twinkle cadence — a sharp brightness+scale flash. Randomised per
+      // particle so the sparkle scatters across the layer instead of
+      // strobing in sync. 1.4-2.4s per twinkle, staggered start delay
+      // up to 3s so early particles sparkle first, late ones later.
+      twinkleDur: 1.4 + Math.random() * 1.0,
+      twinkleDelay: Math.random() * 3.0,
       icon,
     });
   }
@@ -348,11 +379,14 @@ export function ConfettiBurst({ count = 90 }: { count?: number }) {
           ["--by" as string]: p.by,
           ["--dx" as string]: p.dx,
           ["--spin" as string]: p.spin,
-          // Two bt- animations: pop/gravity + hue-shift sparkle. Inline "bt-"
-          // keeps both exempt from the global animation kill-switch.
+          // Three bt- animations: pop/gravity + hue-shift + white sparkle
+          // flash. Inline "bt-" keeps them exempt from the global animation
+          // kill-switch. The twinkle infinitely loops with a per-particle
+          // stagger so the sparkle scatters instead of strobing in sync.
           animation:
             `bt-gpop ${p.duration.toFixed(2)}s cubic-bezier(.12,.62,.24,1) ${p.delay.toFixed(2)}s both, ` +
-            `bt-gshimmer ${p.shimmerDur.toFixed(2)}s ease-in-out ${p.shimmerDelay.toFixed(2)}s infinite`,
+            `bt-gshimmer ${p.shimmerDur.toFixed(2)}s ease-in-out ${p.shimmerDelay.toFixed(2)}s infinite, ` +
+            `bt-gtwinkle ${p.twinkleDur.toFixed(2)}s ease-in-out ${p.twinkleDelay.toFixed(2)}s infinite`,
         };
         if (p.icon) {
           const [d, viewBox] = ICONS[p.icon.pathIndex];
