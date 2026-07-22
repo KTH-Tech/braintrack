@@ -4998,11 +4998,14 @@ export async function registerRoutes(
 
       const allSubjects = await storage.getAllSubjects();
 
-      // Return only the learner's onboarded subjects; fall back to all if
-      // onboarding is not yet complete (selectedIds is empty).
+      // A learner sees ONLY their onboarded subjects — never the full catalogue.
+      // The old fallback returned every subject when selectedIds was empty, so
+      // any account without a completed selection (a fresh signup, or an admin
+      // previewing) saw all 62 subjects. Empty now returns [], and the dashboard
+      // renders a "choose your subjects" prompt for that state.
       const result = selectedIds.length > 0
         ? allSubjects.filter(s => selectedIds.includes(s.id))
-        : allSubjects;
+        : [];
 
       // Annotate each subject with a count of topics that have curated notes.
       // This lets the Subjects page show a quality indicator on subject cards.

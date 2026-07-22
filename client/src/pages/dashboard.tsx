@@ -608,9 +608,12 @@ export default function DashboardPage() {
   };
 
   const selectedSubjectIds = profile?.selectedSubjects || [];
+  // Only the learner's chosen subjects — never the whole catalogue. With no
+  // selection this is [], which renders the "select your subjects" prompt below
+  // instead of dumping all 62 subjects onto the dashboard.
   const filteredSubjects = selectedSubjectIds.length > 0
     ? subjects?.filter((s: any) => selectedSubjectIds.includes(s.id))
-    : (subjects ?? []);
+    : [];
 
   const navLinks = NAV_LINKS(t);
 
