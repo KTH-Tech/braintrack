@@ -1177,8 +1177,10 @@ export async function generateReportPdfBuffer(
       y += SPACE.tight;
       emptyState(
         t(
-          "Need a hand? Reply to this email or contact support@braintrack.co.za and we will help you get set up.",
-          "Hulp nodig? Antwoord op hierdie e-pos of kontak support@braintrack.co.za en ons sal u help om reg te kom.",
+          // braintrack.co.za is not a domain we own — mail to it bounces. The
+          // single support address for the whole product is learn@kth-tech.com.
+          "Need a hand? Reply to this email or contact learn@kth-tech.com and we will help you get set up.",
+          "Hulp nodig? Antwoord op hierdie e-pos of kontak learn@kth-tech.com en ons sal u help om reg te kom.",
         ),
         AQUA,
         TINT_AQUA,

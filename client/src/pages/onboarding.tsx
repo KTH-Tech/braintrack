@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { ONBOARDING_QUESTIONS, GRADE_12_SUBJECTS } from "@/lib/constants";
-import { ArrowLeft, ArrowRight, Loader2, Globe, Check, Sparkles, Search, Eye, RotateCcw } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2, Globe, Check, Sparkles, Search, Eye, RotateCcw, ShieldCheck, MailCheck, AlertTriangle, Copy, Link2, Clock } from "lucide-react";
 import iconTransparent from "@/assets/handoff/icon-transparent.png";
 import { GraffitiSplats } from "@/components/graffiti-splats";
 import { type VarkStyle, VARK_STYLES } from "@/lib/vark";
@@ -19,6 +19,13 @@ import {
   installPreviewWriteTripwire,
   ONBOARDING_PREVIEW_SAMPLE,
 } from "@/lib/onboarding-preview";
+import {
+  type ConsentDelivery,
+  parentEmailIssue,
+  isValidParentEmail,
+  consentShareMode,
+  canLeaveConsentPhase,
+} from "@/lib/parent-consent";
 
 interface SubjectMark {
   subjectCode: string;
@@ -376,6 +383,34 @@ const T = {
     manualShareLabel: "Manual share — email not configured",
     copyLinkBtn: "Copy link",
     consentSkipHint: "We've sent a consent request to your parent/guardian. You can continue once they confirm — or continue now to explore the free tier.",
+    // ── Parent consent, expanded ───────────────────────────────────────────
+    consentWhyMinorTitle: "You're under 18, so a grown-up signs off",
+    consentWhyMinorBody: "South African law (POPIA) says a parent or guardian has to approve before we can use your info for the full BrainTrack experience. One click from them and you're through.",
+    consentWhyAdultTitle: "You're 18+, so this one's optional",
+    consentWhyAdultBody: "You can approve your own account. If you'd still like a parent or guardian to follow your progress, add their email — otherwise skip straight ahead.",
+    consentTrustTitle: "What they'll get",
+    consentTrustPoint1: "One email with your name and a single Approve button.",
+    consentTrustPoint2: "No signup, no password, no payment — one click and it's done.",
+    consentTrustPoint3: "We only use their address for this consent and your progress reports. Never sold, never spammed.",
+    parentEmailErrEmpty: "Add your parent or guardian's email address.",
+    parentEmailErrInvalid: "That doesn't look like an email address yet — check for a typo.",
+    parentEmailErrSelf: "That's your own address. It has to be a parent or guardian's.",
+    consentSentTitle: "Sent — check with your parent",
+    consentSentBody: "The approval email is on its way to {email}. Ask them to look in their inbox (and the spam folder) and tap Approve.",
+    consentDidntArriveBtn: "Didn't arrive? Send them the link yourself",
+    consentNotConfiguredTitle: "You'll need to send this one yourself",
+    consentNotConfiguredBody: "Email isn't switched on here, so we couldn't deliver it. Copy the link below and send it to your parent or guardian on WhatsApp — it does exactly the same thing.",
+    consentFailedTitle: "The email didn't go through",
+    consentFailedBody: "We couldn't deliver it to {email}. Send the link below to your parent or guardian yourself, or fix the address and try again.",
+    consentLinkLabel: "Your parent's approval link",
+    copiedBtn: "Copied!",
+    copyFailedHint: "Couldn't copy automatically — tap the link above to select it.",
+    changeEmailBtn: "Use a different address",
+    sendAgainBtn: "Send again",
+    consentWaitingTitle: "While you wait",
+    consentWaitingBody: "Nothing's on hold — finish setting up and start studying now. The moment your parent approves, Smart Tutor and full exam mode unlock automatically.",
+    consentRequiredHint: "Send the request to your parent or guardian to finish setting up.",
+    consentOptionalHint: "Optional — you can finish without this.",
     preparingClassroomTitle: "Preparing your classroom…",
     preparingClassroomDesc: "Saving your profile and seeding your subjects.",
     consentRequestReady: "Consent request ready",
@@ -523,6 +558,34 @@ const T = {
     manualShareLabel: "Handmatige deel — e-pos nie gekonfigureer nie",
     copyLinkBtn: "Kopieer skakel",
     consentSkipHint: "Ons het 'n toestemming-versoek aan jou ouer/voog gestuur. Jy kan nou voortgaan en die gratis-vlak verken totdat hulle bevestig.",
+    // ── Ouertoestemming, uitgebrei ─────────────────────────────────────────
+    consentWhyMinorTitle: "Jy's onder 18, so 'n grootmens teken af",
+    consentWhyMinorBody: "Suid-Afrikaanse wet (POPIA) sê 'n ouer of voog moet goedkeur voordat ons jou inligting vir die volle BrainTrack-ervaring kan gebruik. Een klik van hulle en jy's deur.",
+    consentWhyAdultTitle: "Jy's 18+, so hierdie een is opsioneel",
+    consentWhyAdultBody: "Jy kan jou eie rekening goedkeur. As jy nog steeds wil hê 'n ouer of voog moet jou vordering volg, voeg hul e-pos by — anders spring sommer verder.",
+    consentTrustTitle: "Wat hulle gaan kry",
+    consentTrustPoint1: "Een e-pos met jou naam en 'n enkele Keur Goed-knoppie.",
+    consentTrustPoint2: "Geen registrasie, geen wagwoord, geen betaling nie — een klik en dis klaar.",
+    consentTrustPoint3: "Ons gebruik hul adres net vir hierdie toestemming en jou vorderingsverslae. Nooit verkoop nie, nooit gespam nie.",
+    parentEmailErrEmpty: "Voeg jou ouer of voog se e-posadres by.",
+    parentEmailErrInvalid: "Dit lyk nog nie soos 'n e-posadres nie — kyk vir 'n tikfout.",
+    parentEmailErrSelf: "Dis jou eie adres. Dit moet 'n ouer of voog s'n wees.",
+    consentSentTitle: "Gestuur — gaan kyk saam met jou ouer",
+    consentSentBody: "Die goedkeuring-e-pos is op pad na {email}. Vra hulle om in hul inbox (en die gemorspos-vouer) te kyk en Keur Goed te tik.",
+    consentDidntArriveBtn: "Nie ontvang nie? Stuur self die skakel",
+    consentNotConfiguredTitle: "Hierdie een moet jy self stuur",
+    consentNotConfiguredBody: "E-pos is nie hier aangeskakel nie, so ons kon dit nie aflewer nie. Kopieer die skakel hieronder en stuur dit op WhatsApp aan jou ouer of voog — dit doen presies dieselfde ding.",
+    consentFailedTitle: "Die e-pos het nie deurgekom nie",
+    consentFailedBody: "Ons kon dit nie aan {email} aflewer nie. Stuur self die skakel hieronder aan jou ouer of voog, of maak die adres reg en probeer weer.",
+    consentLinkLabel: "Jou ouer se goedkeuringskakel",
+    copiedBtn: "Gekopieer!",
+    copyFailedHint: "Kon nie outomaties kopieer nie — tik die skakel hierbo om dit te merk.",
+    changeEmailBtn: "Gebruik 'n ander adres",
+    sendAgainBtn: "Stuur weer",
+    consentWaitingTitle: "Terwyl jy wag",
+    consentWaitingBody: "Niks is op hou nie — maak klaar met opstel en begin nou studeer. Sodra jou ouer goedkeur, ontsluit Smart Tutor en die volle eksamen-modus outomaties.",
+    consentRequiredHint: "Stuur die versoek aan jou ouer of voog om klaar te maak met opstel.",
+    consentOptionalHint: "Opsioneel — jy kan klaarmaak sonder dit.",
     preparingClassroomTitle: "Berei jou klaskamer voor…",
     preparingClassroomDesc: "Stoor jou profiel en laai jou vakke.",
     consentRequestReady: "Toestemming-versoek gereed",
@@ -774,7 +837,17 @@ export default function OnboardingPage() {
   const anim = (value: string) => (reduced ? undefined : value);
   const [hydrated, setHydrated] = useState(false);
   const [currentStep, setCurrentStep] = useState<number>(persisted?.currentStep ?? 0);
-  const [phase, setPhase] = useState<Phase>(persisted?.phase ?? "questions");
+  // Date of birth is deliberately NOT persisted (privacy — see the dob state
+  // below), so a learner who reloads while on the last screen comes back with
+  // no age. Age now decides whether parental consent is required at all, and
+  // "unknown age" must never resolve to "adult, carry on" — that would let a
+  // minor skip the POPIA gate (and get routed to /subscribe) just by
+  // refreshing. So a restored `parent_consent` phase without a DOB in memory
+  // rewinds one step to `school`, where identity is re-collected.
+  const restoredPhase: Phase = persisted?.phase ?? "questions";
+  const [phase, setPhase] = useState<Phase>(
+    restoredPhase === "parent_consent" ? "school" : restoredPhase,
+  );
   // Task #43 — School linking + parent contact captured during onboarding.
   const [schoolName, setSchoolName] = useState<string>(persisted?.schoolName ?? "");
   const [schoolId, setSchoolId] = useState<number | null>(persisted?.schoolId ?? null);
@@ -813,7 +886,23 @@ export default function OnboardingPage() {
   const [schoolSearching, setSchoolSearching] = useState(false);
   const [parentEmail, setParentEmail] = useState<string>(persisted?.parentEmail ?? "");
   const [consentLink, setConsentLink] = useState<string | null>(null);
-  const [consentDelivery, setConsentDelivery] = useState<"sent" | "not_configured" | "failed" | null>(null);
+  const [consentDelivery, setConsentDelivery] = useState<ConsentDelivery | null>(null);
+  // The address the request actually went to. Held separately from
+  // `parentEmail` so the confirmation keeps naming the right person even after
+  // the learner edits the field to try a different one.
+  const [consentSentTo, setConsentSentTo] = useState<string | null>(null);
+  // Has the learner asked to see the raw link on the happy path? On `sent` the
+  // link is deliberately tucked away (the email is the delivery mechanism);
+  // on the manual paths it is the headline and this is forced open.
+  const [showConsentLink, setShowConsentLink] = useState(false);
+  // Transient "Copied!" acknowledgement, and the fallback hint shown when the
+  // clipboard API is unavailable (older mobile browsers, insecure contexts).
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [copyFailed, setCopyFailed] = useState(false);
+  const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (copyTimer.current) clearTimeout(copyTimer.current); }, []);
+  // Whether the learner has reopened the form to try a different address.
+  const [editingParentEmail, setEditingParentEmail] = useState(false);
   const [subjectFilter, setSubjectFilter] = useState("");
   const [subjectCategory, setSubjectCategory] = useState<string>("__all__");
   const { language, setLanguage } = useLanguage();
@@ -1125,6 +1214,15 @@ export default function OnboardingPage() {
     setAnswers((prev) => ({ ...prev, [currentQuestion.id]: value[0] }));
   };
 
+  // Age drives the whole consent branch (copy, requirement, gating), so it is
+  // derived here — ahead of canProceed and the consent mutation — rather than
+  // down with the render-only helpers.
+  const isoDobNow = buildIsoDob(dobDay, dobMonth, dobYear);
+  const isMinor = isoDobNow ? ageFromIsoDob(isoDobNow) < 18 : false;
+  const learnerEmail = (user as { email?: string | null } | null | undefined)?.email ?? null;
+  const parentEmailProblem = parentEmailIssue(parentEmail, learnerEmail);
+  const parentEmailReady = isValidParentEmail(parentEmail, learnerEmail);
+
   const canProceed = () => {
     if (phase === "subjects") {
       return subjectMarks.length >= 6;
@@ -1144,10 +1242,14 @@ export default function OnboardingPage() {
       );
     }
     if (phase === "parent_consent") {
-      // POPIA compliance — learner must at minimum send a consent request before
-      // continuing. consentLink is set once the mutation succeeds (email sent or
-      // manual-share link generated), so this acts as a soft gate: send → proceed.
-      return consentLink !== null;
+      // POPIA compliance — a MINOR must at minimum have sent a consent request
+      // before continuing (consentLink is set once the mutation succeeds, by
+      // email or manual-share link), so this is a soft gate: send → proceed.
+      //
+      // Adults are never gated. This previously returned `consentLink !== null`
+      // unconditionally, which trapped every 18+ learner on the last screen of
+      // onboarding unless they emailed a "parent" they don't need.
+      return canLeaveConsentPhase({ isMinor, consentRequested: consentLink !== null });
     }
     if (!currentQuestion) return false;
     const answer = answers[currentQuestion.id];
@@ -1296,6 +1398,13 @@ export default function OnboardingPage() {
     onSuccess: (data) => {
       setConsentLink(data.url);
       setConsentDelivery(data.delivery);
+      setConsentSentTo(parentEmail.trim());
+      setEditingParentEmail(false);
+      setLinkCopied(false);
+      setCopyFailed(false);
+      // On the manual paths the link IS the delivery mechanism, so it opens
+      // automatically; on the happy path it stays tucked behind "didn't arrive?".
+      setShowConsentLink(consentShareMode(data.delivery) === "manual");
       if (inPreview) {
         toast({
           title: isAf ? "Voorskou — geen e-pos gestuur nie" : "Preview — no email was sent",
@@ -1318,6 +1427,28 @@ export default function OnboardingPage() {
       });
     },
   });
+
+  /**
+   * Copy the consent link with a visible acknowledgement. `navigator.clipboard`
+   * is undefined on insecure origins and older mobile browsers, so failure is
+   * surfaced as a "select it yourself" hint rather than swallowed — a silent
+   * no-op here would leave a learner believing they'd copied the one thing
+   * standing between them and a working account.
+   */
+  const handleCopyConsentLink = async () => {
+    if (!consentLink) return;
+    if (copyTimer.current) clearTimeout(copyTimer.current);
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error("clipboard unavailable");
+      await navigator.clipboard.writeText(consentLink);
+      setCopyFailed(false);
+      setLinkCopied(true);
+      copyTimer.current = setTimeout(() => setLinkCopied(false), 2200);
+    } catch {
+      setLinkCopied(false);
+      setCopyFailed(true);
+    }
+  };
 
   const questionText = currentQuestion
     ? (language === "en" ? currentQuestion.questionEn : currentQuestion.questionAf)
@@ -1383,9 +1514,6 @@ export default function OnboardingPage() {
   const phaseOrder: Phase[] = ["questions", "vark", "subjects", "school", "parent_consent"];
   const phaseIdx = phaseOrder.indexOf(phase);
   const phaseNames = [t.phaseYou, t.phaseBrain, t.phaseSubjects, t.phaseSchool, t.phaseDone];
-
-  const isoDobNow = buildIsoDob(dobDay, dobMonth, dobYear);
-  const isMinor = isoDobNow ? ageFromIsoDob(isoDobNow) < 18 : false;
 
   // Shared button styles — large tap targets, brand gradient.
   const primaryBtn =
@@ -2435,65 +2563,281 @@ export default function OnboardingPage() {
                   ))}
                 </div>
 
-                <div className="rounded-2xl p-4 sm:p-5" style={{ background: "rgba(255,255,255,.04)", border: "1px solid rgba(255,255,255,.12)" }}>
-                  <h3 className="text-white font-extrabold text-xl leading-tight mb-2">{t.parentConsentHeading}</h3>
-                  <p className="text-white text-[14px] leading-relaxed mb-4">{t.parentConsentHint}</p>
+                {/* ── Parental consent ────────────────────────────────────
+                    Three honest outcomes, three different screens:
+                      • not sent yet  — explain WHY, then ask for the address.
+                      • delivery "sent"        — reassure, link tucked away.
+                      • "not_configured"/"failed" — the learner is the courier,
+                        so the link becomes the headline and copy is primary.
+                    Requirement is age-conditional: hard for minors (POPIA),
+                    plainly optional for adults. ─────────────────────────── */}
+                {(() => {
+                  const shareMode = consentShareMode(consentDelivery);
+                  const requested = consentLink !== null;
+                  const manual = requested && shareMode === "manual";
+                  const sentTo = consentSentTo ?? parentEmail.trim();
+                  // Panel accent follows the outcome: mint = handled for you,
+                  // yellow = your turn to act, neutral = nothing sent yet.
+                  const accent = !requested ? BRAND.cyan : manual ? BRAND.yellow : BRAND.mint;
+                  const showForm = !requested || editingParentEmail;
 
-                  <Input
-                    type="email"
-                    value={parentEmail}
-                    onChange={(e) => setParentEmail(e.target.value)}
-                    placeholder={t.parentEmailPlaceholder}
-                    aria-label={t.parentEmailLabel}
-                    className="h-14 rounded-2xl text-white text-base px-4"
-                    style={{ background: "rgba(0,0,0,.35)", border: "1px solid rgba(255,255,255,.16)" }}
-                    data-testid="input-parent-email"
-                  />
+                  const emailErrorText =
+                    parentEmailProblem === "invalid" ? t.parentEmailErrInvalid :
+                    parentEmailProblem === "self" ? t.parentEmailErrSelf :
+                    null;
+                  // Only nag once they've typed something — an untouched field
+                  // showing a red error is hostile, not helpful.
+                  const showEmailError = emailErrorText !== null && parentEmail.trim().length > 0;
 
-                  <Button
-                    variant="outline"
-                    className="mt-3 w-full sm:w-auto h-13 min-h-[52px] px-5 text-[15px] font-bold rounded-2xl bg-transparent text-white border border-white/25 hover:bg-white/[0.06]"
-                    onClick={() => consentMutation.mutate()}
-                    disabled={!/.+@.+\..+/.test(parentEmail.trim()) || consentMutation.isPending}
-                    data-testid="button-send-consent"
-                  >
-                    {consentMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
-                    {consentLink ? t.resendBtn : t.sendConsentEmailBtn}
-                  </Button>
-
-                  {consentLink && (
+                  return (
                     <div
-                      className="mt-3 rounded-2xl p-4 space-y-2"
-                      style={{ background: "rgba(0,0,0,.4)", border: "1px solid rgba(255,255,255,.14)" }}
-                      data-testid="consent-link-block"
+                      className="rounded-2xl p-4 sm:p-5"
+                      style={{ background: `${accent}10`, border: `1px solid ${accent}55` }}
+                      data-testid="parent-consent-panel"
                     >
-                      <p className="text-[11px] font-bold text-white uppercase tracking-[0.14em]">
-                        {consentDelivery === "sent" ? t.emailSentLabel : t.manualShareLabel}
-                      </p>
-                      <p className="text-[12px] break-all text-white select-all" data-testid="consent-link-url">{consentLink}</p>
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="ghost"
-                        className="text-white min-h-[44px]"
-                        onClick={() => navigator.clipboard?.writeText(consentLink).catch(() => {})}
-                        data-testid="button-copy-consent-link"
-                      >
-                        {t.copyLinkBtn}
-                      </Button>
-                    </div>
-                  )}
+                      {/* Why this exists — the part a 17-year-old actually needs. */}
+                      <div className="flex items-start gap-3">
+                        <div
+                          className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                          style={{ border: `1px solid ${accent}66`, background: `${accent}14` }}
+                        >
+                          <ShieldCheck className="w-5 h-5" style={{ color: accent }} aria-hidden />
+                        </div>
+                        <div className="min-w-0">
+                          <h3 className="text-white font-extrabold text-lg sm:text-xl leading-tight">
+                            {isMinor ? t.consentWhyMinorTitle : t.consentWhyAdultTitle}
+                          </h3>
+                          <p className="text-white text-[14px] leading-relaxed mt-1.5">
+                            {isMinor ? t.consentWhyMinorBody : t.consentWhyAdultBody}
+                          </p>
+                        </div>
+                      </div>
 
-                  {consentLink ? (
-                    <p className="text-[12px] mt-3" style={{ color: BRAND.mint }}>{t.consentSkipHint}</p>
-                  ) : (
-                    <p className="text-[12px] mt-3" style={{ color: BRAND.yellow }}>
-                      {language === "af"
-                        ? "Stuur eers die toestemmings-e-pos om voort te gaan."
-                        : "Please send a consent request to your parent/guardian to continue."}
-                    </p>
-                  )}
-                </div>
+                      {/* Trust: exactly what the parent receives, and that their
+                          address is not used for anything else. */}
+                      <div
+                        className="mt-4 rounded-2xl p-4"
+                        style={{ background: "rgba(0,0,0,.28)", border: "1px solid rgba(255,255,255,.12)" }}
+                        data-testid="consent-trust-panel"
+                      >
+                        <p className="text-[11px] font-bold uppercase tracking-[0.14em]" style={{ color: accent }}>
+                          {t.consentTrustTitle}
+                        </p>
+                        <ul className="mt-2 space-y-1.5">
+                          {[t.consentTrustPoint1, t.consentTrustPoint2, t.consentTrustPoint3].map((point) => (
+                            <li key={point} className="flex items-start gap-2 text-white text-[13px] leading-relaxed">
+                              <Check className="w-4 h-4 mt-0.5 shrink-0" style={{ color: accent }} aria-hidden />
+                              <span>{point}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {/* ── Ask for the address ─────────────────────────── */}
+                      {showForm && (
+                        <div className="mt-4">
+                          <label
+                            htmlFor="parent-email-input"
+                            className="block text-[12px] font-bold text-white mb-1.5"
+                          >
+                            {t.parentEmailLabel}
+                            {!isMinor && (
+                              <span className="font-semibold ml-1.5" style={{ color: BRAND.cyan }}>
+                                {t.consentOptionalHint}
+                              </span>
+                            )}
+                          </label>
+                          <Input
+                            id="parent-email-input"
+                            type="email"
+                            inputMode="email"
+                            autoComplete="email"
+                            value={parentEmail}
+                            onChange={(e) => setParentEmail(e.target.value)}
+                            placeholder={t.parentEmailPlaceholder}
+                            aria-label={t.parentEmailLabel}
+                            aria-invalid={showEmailError || undefined}
+                            aria-describedby={showEmailError ? "parent-email-error" : undefined}
+                            className="h-14 rounded-2xl text-white text-base px-4"
+                            style={{
+                              background: "rgba(0,0,0,.35)",
+                              border: `1px solid ${showEmailError ? "#FF8DA1" : "rgba(255,255,255,.16)"}`,
+                            }}
+                            data-testid="input-parent-email"
+                          />
+                          {showEmailError && (
+                            <p
+                              id="parent-email-error"
+                              role="alert"
+                              className="text-[12px] font-semibold mt-1.5 flex items-start gap-1.5"
+                              style={{ color: "#FF8DA1" }}
+                              data-testid="parent-email-error"
+                            >
+                              <AlertTriangle className="w-3.5 h-3.5 mt-[2px] shrink-0" aria-hidden />
+                              <span>{emailErrorText}</span>
+                            </p>
+                          )}
+
+                          <div className="flex flex-wrap gap-2 mt-3">
+                            <Button
+                              variant="outline"
+                              className="w-full sm:w-auto min-h-[52px] px-5 text-[15px] font-bold rounded-2xl bg-transparent text-white border border-white/25 hover:bg-white/[0.06]"
+                              onClick={() => consentMutation.mutate()}
+                              disabled={!parentEmailReady || consentMutation.isPending}
+                              data-testid="button-send-consent"
+                            >
+                              {consentMutation.isPending
+                                ? <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                : <Sparkles className="w-4 h-4 mr-2" />}
+                              {requested ? t.sendAgainBtn : t.sendConsentEmailBtn}
+                            </Button>
+                            {requested && (
+                              <Button
+                                variant="ghost"
+                                className="w-full sm:w-auto min-h-[52px] px-4 text-[14px] font-bold rounded-2xl text-white hover:bg-white/[0.06]"
+                                onClick={() => setEditingParentEmail(false)}
+                                data-testid="button-cancel-change-email"
+                              >
+                                {T[language].backBtn}
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* ── Outcome ─────────────────────────────────────── */}
+                      {requested && !editingParentEmail && (
+                        <div className="mt-4 space-y-3" data-testid="consent-outcome">
+                          <div
+                            className="rounded-2xl p-4"
+                            style={{ background: "rgba(0,0,0,.28)", border: `1px solid ${accent}66` }}
+                            data-testid={manual ? "consent-manual-share" : "consent-sent-confirmation"}
+                          >
+                            <div className="flex items-start gap-2.5">
+                              {manual
+                                ? <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: accent }} aria-hidden />
+                                : <MailCheck className="w-5 h-5 shrink-0 mt-0.5" style={{ color: accent }} aria-hidden />}
+                              <div className="min-w-0">
+                                <p className="font-extrabold text-white text-[15px] leading-tight">
+                                  {consentDelivery === "sent" ? t.consentSentTitle
+                                    : consentDelivery === "failed" ? t.consentFailedTitle
+                                    : t.consentNotConfiguredTitle}
+                                </p>
+                                <p className="text-white text-[13px] leading-relaxed mt-1">
+                                  {(consentDelivery === "sent" ? t.consentSentBody
+                                    : consentDelivery === "failed" ? t.consentFailedBody
+                                    : t.consentNotConfiguredBody
+                                  ).replace("{email}", sentTo)}
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* On the happy path the link is a fallback, so it
+                                hides behind a disclosure. On the manual paths
+                                it is the whole point and is already open. */}
+                            {!manual && !showConsentLink && (
+                              <Button
+                                variant="ghost"
+                                className="mt-2 min-h-[44px] px-3 text-[13px] font-bold rounded-xl text-white hover:bg-white/[0.06]"
+                                onClick={() => setShowConsentLink(true)}
+                                data-testid="button-reveal-consent-link"
+                              >
+                                <Link2 className="w-4 h-4 mr-2" aria-hidden />
+                                {t.consentDidntArriveBtn}
+                              </Button>
+                            )}
+
+                            {(manual || showConsentLink) && (
+                              <div
+                                className="mt-3 rounded-xl p-3.5"
+                                style={{ background: "rgba(0,0,0,.45)", border: `1px solid ${accent}55` }}
+                                data-testid="consent-link-block"
+                              >
+                                <p className="text-[11px] font-bold uppercase tracking-[0.14em]" style={{ color: accent }}>
+                                  {t.consentLinkLabel}
+                                </p>
+                                <p
+                                  className="text-[12px] break-all text-white select-all mt-1.5 leading-relaxed"
+                                  data-testid="consent-link-url"
+                                >
+                                  {consentLink}
+                                </p>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  className="mt-2.5 w-full sm:w-auto min-h-[48px] px-5 text-[14px] font-bold rounded-xl bg-transparent border"
+                                  style={{ color: linkCopied ? BRAND.mint : "#ffffff", borderColor: linkCopied ? BRAND.mint : "rgba(255,255,255,.25)" }}
+                                  onClick={handleCopyConsentLink}
+                                  data-testid="button-copy-consent-link"
+                                >
+                                  {linkCopied
+                                    ? <Check className="w-4 h-4 mr-2" aria-hidden />
+                                    : <Copy className="w-4 h-4 mr-2" aria-hidden />}
+                                  {linkCopied ? t.copiedBtn : t.copyLinkBtn}
+                                </Button>
+                                {copyFailed && (
+                                  <p
+                                    role="status"
+                                    className="text-[12px] font-semibold mt-2"
+                                    style={{ color: BRAND.yellow }}
+                                    data-testid="consent-copy-failed"
+                                  >
+                                    {t.copyFailedHint}
+                                  </p>
+                                )}
+                              </div>
+                            )}
+
+                            {/* The simulated gate result is delivery:"sent", so
+                                without this the preview panel would claim an
+                                email went out — the one thing preview mode
+                                promises never happens. */}
+                            {inPreview && (
+                              <p
+                                className="text-[12px] font-bold mt-2"
+                                style={{ color: PREVIEW_AMBER }}
+                                data-testid="consent-preview-note"
+                              >
+                                {isAf
+                                  ? "Voorskou — geen e-pos is gestuur nie en die skakel hierbo is voorbeelddata."
+                                  : "Preview — no email was sent, and the link above is sample data."}
+                              </p>
+                            )}
+
+                            <Button
+                              variant="ghost"
+                              className="mt-2 min-h-[44px] px-3 text-[13px] font-bold rounded-xl text-white hover:bg-white/[0.06]"
+                              onClick={() => { setEditingParentEmail(true); setLinkCopied(false); setCopyFailed(false); }}
+                              data-testid="button-change-parent-email"
+                            >
+                              {t.changeEmailBtn}
+                            </Button>
+                          </div>
+
+                          {/* What the learner does while the parent decides. */}
+                          <div
+                            className="rounded-2xl p-4"
+                            style={{ background: `${BRAND.cyan}12`, border: `1px solid ${BRAND.cyan}44` }}
+                            data-testid="consent-waiting-panel"
+                          >
+                            <p className="text-[11px] font-bold uppercase tracking-[0.14em] flex items-center gap-1.5" style={{ color: BRAND.cyan }}>
+                              <Clock className="w-3.5 h-3.5" aria-hidden />
+                              {t.consentWaitingTitle}
+                            </p>
+                            <p className="text-white text-[13px] leading-relaxed mt-1.5">{t.consentWaitingBody}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Requirement reminder — only ever a blocker for minors. */}
+                      {isMinor && !requested && (
+                        <p className="text-[12px] font-semibold mt-3" style={{ color: BRAND.yellow }} data-testid="consent-required-hint">
+                          {t.consentRequiredHint}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })()}
 
                 {/* Hand-off: what actually happens next. */}
                 <div className="rounded-2xl p-4 sm:p-5" style={{ background: `${BRAND.mint}12`, border: `1px solid ${BRAND.mint}44` }}>

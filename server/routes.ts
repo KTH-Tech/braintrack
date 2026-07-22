@@ -8041,6 +8041,51 @@ Create comprehensive study notes for the topic provided.`;
           accuracy: sp.accuracy,
         }));
 
+      // Recent activity — a real 14-day series off `attempts`. This used to be
+      // a hardcoded `[]`, so the Progress page's activity grid could never
+      // render for anyone. Days are bucketed in SAST (matching /api/learner/goals)
+      // rather than UTC, so a 01:00 study session lands on the day the learner
+      // thinks it did. The series is zero-filled so a quiet week reads honestly
+      // as quiet instead of vanishing — but a learner who has never attempted
+      // anything gets `[]`, which the client renders as a "start here" state
+      // rather than a wall of zeros.
+      const recentActivity: { date: string; questionsAnswered: number; correctAnswers: number }[] = [];
+      const ACTIVITY_WINDOW_DAYS = 14;
+      if (stats.questionsAnswered > 0) {
+        const windowStart = new Date();
+        windowStart.setDate(windowStart.getDate() - (ACTIVITY_WINDOW_DAYS - 1));
+        windowStart.setHours(0, 0, 0, 0);
+        const dayRows = await db
+          .select({
+            day: sql<string>`DATE(${attempts.createdAt} AT TIME ZONE 'Africa/Johannesburg')`,
+            answered: count(),
+            correct: sql<number>`COALESCE(SUM(CASE WHEN ${attempts.isCorrect} THEN 1 ELSE 0 END), 0)`,
+          })
+          .from(attempts)
+          .where(and(eq(attempts.userId, userId), gte(attempts.createdAt, windowStart)))
+          .groupBy(sql`DATE(${attempts.createdAt} AT TIME ZONE 'Africa/Johannesburg')`);
+
+        const byDay = new Map(
+          dayRows.map(r => [
+            String(r.day).slice(0, 10),
+            { answered: Number(r.answered ?? 0), correct: Number(r.correct ?? 0) },
+          ]),
+        );
+        // Oldest → newest, so the client can read it as a left-to-right trend.
+        for (let i = ACTIVITY_WINDOW_DAYS - 1; i >= 0; i--) {
+          const d = new Date();
+          d.setHours(12, 0, 0, 0);
+          d.setDate(d.getDate() - i);
+          const key = d.toLocaleDateString("en-CA", { timeZone: "Africa/Johannesburg" });
+          const hit = byDay.get(key);
+          recentActivity.push({
+            date: key,
+            questionsAnswered: hit?.answered ?? 0,
+            correctAnswers: hit?.correct ?? 0,
+          });
+        }
+      }
+
       res.json({
         overallAccuracy: stats.accuracy,
         studyStreak: stats.studyStreak,
@@ -8048,7 +8093,7 @@ Create comprehensive study notes for the topic provided.`;
         totalPapersCompleted: stats.papersCompleted,
         subjectProgress,
         weakTopics,
-        recentActivity: [],
+        recentActivity,
       });
     } catch (error) {
       console.error("Error fetching progress:", error);
@@ -17209,12 +17254,23 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         }
       }
 
-      const [userRow, onboarding, badgeRows, streakRow, progressRows] = await Promise.all([
+      const [userRow, onboarding, badgeRows, streakRow, progressRows, activityRows] = await Promise.all([
         db.select().from(users).where(eq(users.id, userId)).limit(1),
         db.select().from(onboardingResults).where(eq(onboardingResults.userId, userId)).limit(1),
         db.select().from(userBadges).where(eq(userBadges.userId, userId)),
         db.select().from(userStreaks).where(eq(userStreaks.userId, userId)).limit(1),
         db.execute(sql`SELECT SUM(questions_attempted) AS total_q, SUM(papers_completed) AS total_papers FROM user_progress WHERE user_id = ${userId}`),
+        // Real timeline anchors. The events below used to be stamped with the
+        // ONBOARDING date, so "First Question Answered" and "10 Exam Papers
+        // Completed" both claimed to have happened the moment the learner
+        // signed up — three events piled on one day, in an order that never
+        // occurred. A journey that invents its own dates is worse than no
+        // journey, so read when these things actually happened.
+        db.execute(sql`
+          SELECT MIN(created_at) AS first_attempt_at,
+                 MAX(created_at) AS latest_attempt_at
+          FROM attempts WHERE user_id = ${userId}
+        `),
       ]);
 
       const learnerUser = userRow[0];
@@ -17224,6 +17280,11 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       const totalQ = Number((progressRows.rows[0] as any)?.total_q ?? 0);
       const totalPapers = Number((progressRows.rows[0] as any)?.total_papers ?? 0);
       const totalDays = Number(streak?.totalDaysActive ?? 0);
+      const activityRow = activityRows.rows[0] as { first_attempt_at?: string | Date | null; latest_attempt_at?: string | Date | null } | undefined;
+      const toIso = (v: string | Date | null | undefined): string | null =>
+        v ? new Date(v).toISOString() : null;
+      const firstAttemptAt = toIso(activityRow?.first_attempt_at);
+      const latestAttemptAt = toIso(activityRow?.latest_attempt_at);
       const currentStreak = Number(streak?.currentStreak ?? 0);
 
       const learnerName = learnerUser?.firstName || "Learner";
@@ -17244,15 +17305,32 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         });
       }
 
-      if (totalQ >= 1) {
+      // "First question" is a moment; "148 answered" is a running total. Cramming
+      // both into one event produced the contradiction "First Question Answered —
+      // you've answered 148 questions in total". They are two separate events now,
+      // and the first one is dated when it actually happened.
+      if (totalQ >= 1 && firstAttemptAt) {
         events.push({
           id: "first_quiz",
           type: "first_quiz",
           title: "First Question Answered",
           titleAf: "Eerste Vraag Beantwoord",
-          description: `You've answered ${totalQ} question${totalQ !== 1 ? "s" : ""} in total.`,
-          descriptionAf: `Jy het altesaam ${totalQ} vraag${totalQ !== 1 ? "e" : ""} beantwoord.`,
-          date: ob?.completedAt?.toISOString() || new Date().toISOString(),
+          description: "You started practising. This is where the work begins.",
+          descriptionAf: "Jy het begin oefen. Hier begin die werk.",
+          date: firstAttemptAt,
+          isCompleted: true,
+        });
+      }
+
+      if (totalQ >= 1 && latestAttemptAt) {
+        events.push({
+          id: "questions_total",
+          type: "milestone",
+          title: `${totalQ} Question${totalQ !== 1 ? "s" : ""} Answered`,
+          titleAf: `${totalQ} Vra${totalQ !== 1 ? "e" : "ag"} Beantwoord`,
+          description: `Across ${totalDays} active day${totalDays !== 1 ? "s" : ""} of study.`,
+          descriptionAf: `Oor ${totalDays} aktiewe studiedag${totalDays !== 1 ? "e" : ""}.`,
+          date: latestAttemptAt,
           isCompleted: true,
           highlight: true,
         });
@@ -17264,12 +17342,32 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
           type: "paper",
           title: `${totalPapers} Exam Paper${totalPapers !== 1 ? "s" : ""} Completed`,
           titleAf: `${totalPapers} Vraestel${totalPapers !== 1 ? "le" : ""} Voltooi`,
-          description: "You have completed full exam papers.",
-          descriptionAf: "Jy het volledige vraestelle voltooi.",
-          date: ob?.completedAt?.toISOString() || new Date().toISOString(),
+          description: `You have worked through ${totalPapers} full past paper${totalPapers !== 1 ? "s" : ""} under exam conditions.`,
+          descriptionAf: `Jy het ${totalPapers} volledige vraestel${totalPapers !== 1 ? "le" : ""} onder eksamentoestande deurgewerk.`,
+          date: latestAttemptAt || ob?.completedAt?.toISOString() || new Date().toISOString(),
           isCompleted: true,
         });
       }
+
+      // What each badge means, so the timeline entry carries information rather
+      // than repeating the date shown next to it.
+      const badgeBlurbs: Record<string, { en: string; af: string }> = {
+        streak_3:       { en: "Three days in a row. The habit is forming.",          af: "Drie dae agtereenvolgens. Die gewoonte vorm." },
+        streak_7:       { en: "A full week without missing a day.",                  af: "'n Volle week sonder om 'n dag te mis." },
+        streak_14:      { en: "Two weeks of daily study. Serious consistency.",      af: "Twee weke se daaglikse studie. Ware konsekwentheid." },
+        streak_30:      { en: "A month straight. This is what exam-ready looks like.", af: "'n Volle maand. Dit is hoe eksamengereed lyk." },
+        questions_10:   { en: "Your first ten questions are behind you.",            af: "Jou eerste tien vrae is agter die rug." },
+        questions_50:   { en: "Fifty questions of real past-paper practice.",        af: "Vyftig vrae se werklike vraestel-oefening." },
+        questions_100:  { en: "A hundred questions. The pattern recognition starts here.", af: "Honderd vrae. Patroonherkenning begin hier." },
+        questions_500:  { en: "Five hundred questions. Very few learners get here.", af: "Vyfhonderd vrae. Baie min leerders kom hier." },
+        accuracy_70:    { en: "Holding above 70% — a solid pass range.",             af: "Bo 70% — 'n stewige slaagvlak." },
+        accuracy_80:    { en: "Holding above 80% — distinction territory.",          af: "Bo 80% — onderskeidingsgebied." },
+        accuracy_90:    { en: "Holding above 90%. Outstanding work.",                af: "Bo 90%. Uitstekende werk." },
+        subject_mastery:{ en: "You have mastered a full subject.",                   af: "Jy het 'n volle vak bemeester." },
+        exam_complete:  { en: "You have worked a paper end to end under exam conditions.", af: "Jy het 'n vraestel end-tot-end onder eksamentoestande gedoen." },
+        first_paper:    { en: "Your first full past paper, done.",                   af: "Jou eerste volledige vraestel, klaar." },
+        high_score:     { en: "You scored above 80% on a paper.",                    af: "Jy het bo 80% op 'n vraestel behaal." },
+      };
 
       for (const badge of badges) {
         const badgeLabels: Record<string, { en: string; af: string }> = {
@@ -17296,8 +17394,11 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
           type: "badge",
           title: label.en,
           titleAf: label.af,
-          description: `Earned: ${new Date(badge.earnedAt!).toLocaleDateString("en-ZA")}`,
-          descriptionAf: `Verdien: ${new Date(badge.earnedAt!).toLocaleDateString("af-ZA")}`,
+          // The date is already the event's own field and the timeline renders
+          // it, so "Earned: 2026/06/30" just said the same thing twice. Say what
+          // the badge actually represents instead.
+          description: badgeBlurbs[badge.badgeCode]?.en ?? "Badge earned.",
+          descriptionAf: badgeBlurbs[badge.badgeCode]?.af ?? "Kenteken verdien.",
           date: badge.earnedAt!.toISOString(),
           isCompleted: true,
         });
@@ -17326,6 +17427,25 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       if (badges.length < 5) upcomingGoals.push({ title: "Earn 5 Badges", titleAf: "Verdien 5 Kentekens", progress: Math.round((badges.length / 5) * 100) });
       if (currentStreak < 7) upcomingGoals.push({ title: "7-Day Streak", titleAf: "7-Dag Reeks", progress: Math.round((currentStreak / 7) * 100) });
       if (totalPapers < 3) upcomingGoals.push({ title: "Complete 3 Papers", titleAf: "Voltooi 3 Vraestelle", progress: Math.round((totalPapers / 3) * 100) });
+
+      // Every threshold above is a "less than" test, so a learner who has passed
+      // all of them saw an EMPTY goals list — the journey stopped having a future
+      // exactly when they were doing best. Scale the next target off where they
+      // actually are so there is always something ahead.
+      if (upcomingGoals.length === 0) {
+        const nextQ = totalQ < 500 ? 500 : Math.ceil((totalQ + 1) / 500) * 500;
+        upcomingGoals.push({
+          title: `Answer ${nextQ} Questions`,
+          titleAf: `Beantwoord ${nextQ} Vrae`,
+          progress: Math.round((totalQ / nextQ) * 100),
+        });
+        const nextStreak = currentStreak < 14 ? 14 : currentStreak < 30 ? 30 : Math.ceil((currentStreak + 1) / 30) * 30;
+        upcomingGoals.push({
+          title: `${nextStreak}-Day Streak`,
+          titleAf: `${nextStreak}-Dag Reeks`,
+          progress: Math.round((currentStreak / nextStreak) * 100),
+        });
+      }
 
       // Rizz comments
       const rizzComments = [
