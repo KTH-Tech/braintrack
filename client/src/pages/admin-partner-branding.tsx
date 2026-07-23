@@ -382,8 +382,11 @@ export default function AdminPartnerBrandingPage() {
                       <div className="mt-2 text-[11px] text-white">{isAf ? "Leerder:" : "Learner:"} {isAf ? "U Kind" : "Your Child"}</div>
                       {(partnerName || hasAnyLogo) && (
                         <div className="mt-2 flex items-center gap-3">
+                          {/* Preview must match the real report — the
+                              "In partnership with" phrase was removed there
+                              (2026-07-23), so it must not appear here either. */}
                           <span className="text-[10px]" style={{ color: "#c4b5fd" }}>
-                            {isAf ? "In vennootskap met:" : "In partnership with:"} {partnerName || "—"}
+                            {partnerName || "—"}
                           </span>
                           {hasAnyLogo && (
                             <img src={currentLogoSrc!} alt={isAf ? "Vennootlogo" : "Partner logo"} className="h-5 object-contain bg-white rounded px-1" />

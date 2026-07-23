@@ -290,8 +290,12 @@ export default function TutorPage() {
     queryKey: ["/api/user/onboarding"],
   });
 
-  const { data: subjects } = useQuery<Subject[]>({
+  const { data: subjects, isError: subjectsFailed } = useQuery<Subject[]>({
     queryKey: ["/api/subjects"],
+    // Guard the shape: this endpoint returns an array on success but an
+    // { error } object on a 500. Anything non-array becomes [] so the
+    // pickers show an honest empty state instead of throwing.
+    select: (data: any) => (Array.isArray(data) ? data : []),
   });
 
   const { data: capsTopics } = useQuery<Topic[]>({
@@ -494,10 +498,18 @@ export default function TutorPage() {
     });
   };
 
-  const selectedSubjectIds = profile?.selectedSubjects || [];
-  const filteredSubjects = selectedSubjectIds.length > 0 
-    ? subjects?.filter(s => selectedSubjectIds.includes(s.id)) 
-    : subjects;
+  // /api/subjects is ALREADY scoped to the learner's onboarded subjects
+  // server-side (routes.ts — "A learner sees ONLY their onboarded subjects").
+  // This used to intersect it a second time against profile.selectedSubjects,
+  // which could only ever shrink the list — and when the two sources
+  // disagreed (stale onboarding_results, ids that no longer resolve) the
+  // intersection came back EMPTY, so the Study Notes and tutor subject
+  // dropdowns rendered zero options with no explanation. Trust the server.
+  const filteredSubjects = subjects;
+  // Distinguish "still loading" from "genuinely none" so the pickers can say
+  // which, instead of silently showing an empty menu.
+  const subjectsLoading = subjects === undefined && !subjectsFailed;
+  const noSubjects = Array.isArray(subjects) && subjects.length === 0;
 
   return (
     <div className="min-h-screen flex flex-col text-white overflow-x-hidden relative" style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}>
@@ -695,9 +707,25 @@ export default function TutorPage() {
                       <SelectValue placeholder={t.selectSubjectPlaceholder} />
                     </SelectTrigger>
                     <SelectContent>
+                      {/* Never render a silently empty menu — say why. */}
+                      {subjectsLoading && (
+                        <div className="px-3 py-2 text-sm" style={{ color: "#fff" }}>
+                          {isAf ? "Laai vakke…" : "Loading subjects…"}
+                        </div>
+                      )}
+                      {subjectsFailed && (
+                        <div className="px-3 py-2 text-sm" style={{ color: "#FF8DA1" }}>
+                          {isAf ? "Kon nie vakke laai nie." : "Couldn't load subjects."}
+                        </div>
+                      )}
+                      {noSubjects && (
+                        <div className="px-3 py-2 text-sm" style={{ color: "#fff" }}>
+                          {isAf ? "Kies eers jou vakke in Instellings." : "Pick your subjects in Settings first."}
+                        </div>
+                      )}
                       {filteredSubjects?.map((subject) => (
                         <SelectItem key={subject.id} value={subject.id.toString()}>
-                          {subject.name}
+                          {isAf ? subject.nameAfrikaans : subject.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -1532,9 +1560,24 @@ export default function TutorPage() {
                 <SelectValue placeholder={t.selectSubjectBottomPlaceholder} />
               </SelectTrigger>
               <SelectContent>
+                {subjectsLoading && (
+                  <div className="px-3 py-2 text-xs" style={{ color: "#fff" }}>
+                    {isAf ? "Laai vakke…" : "Loading subjects…"}
+                  </div>
+                )}
+                {subjectsFailed && (
+                  <div className="px-3 py-2 text-xs" style={{ color: "#FF8DA1" }}>
+                    {isAf ? "Kon nie vakke laai nie." : "Couldn't load subjects."}
+                  </div>
+                )}
+                {noSubjects && (
+                  <div className="px-3 py-2 text-xs" style={{ color: "#fff" }}>
+                    {isAf ? "Kies eers jou vakke." : "Pick your subjects first."}
+                  </div>
+                )}
                 {filteredSubjects?.map((s) => (
                   <SelectItem key={s.id} value={s.id.toString()}>
-                    {s.name}
+                    {isAf ? s.nameAfrikaans : s.name}
                   </SelectItem>
                 ))}
               </SelectContent>

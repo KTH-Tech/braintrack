@@ -127,10 +127,10 @@ async function sendReportEmail(opts: {
     ? `Vorderingsverslag — ${learnerName}`
     : `Progress Report — ${learnerName}`;
 
+  // Owner removed the "In partnership with" framing (2026-07-23). The partner
+  // is still credited by name; only the phrase is gone.
   const partnerBlock = partnerName
-    ? isAf
-      ? `<p style="color:#ffffff;font-size:13px;">In vennootskap met <strong style="color:#00E5FF;">${partnerName}</strong>.</p>`
-      : `<p style="color:#ffffff;font-size:13px;">In partnership with <strong style="color:#00E5FF;">${partnerName}</strong>.</p>`
+    ? `<p style="color:#ffffff;font-size:13px;"><strong style="color:#00E5FF;">${partnerName}</strong></p>`
     : "";
 
   const unsubBlock = isAf

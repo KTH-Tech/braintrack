@@ -854,8 +854,10 @@ export async function generateReportPdfBuffer(
       }
       if (partnerDisplayName) {
         const partnerW = CONTENT_W - (hasPartnerLogo ? 90 : 10);
+        // Owner removed the "In partnership with" framing (2026-07-23) — the
+        // partner name still appears on the report, just without the phrase.
         const fitted = fitOneLine(
-          `${t("In partnership with", "In vennootskap met")}: ${partnerDisplayName}`,
+          partnerDisplayName,
           F.regular,
           8,
           6.5,
