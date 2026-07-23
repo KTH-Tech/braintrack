@@ -536,22 +536,70 @@ export function mcqToSeedItem(m: GeneratedMcq) {
 }
 
 /**
- * Replace the daily-challenge pool for a subject with fresh, correctly-shaped
- * MCQs. Per-subject replace (delete-then-insert) so re-runs never accumulate or
- * leave the old wrong-shape rows behind. Additive across subjects.
+ * Grow the daily-challenge pool for a subject. Each Publish ACCUMULATES onto
+ * what is already banked rather than replacing it, so clicking Publish ten
+ * times builds a pool ten runs deep — which is the only way to reach a
+ * 30-day rotation, since one run can't drain that much in a single request.
+ *
+ * Why it used to replace: delete-then-insert guaranteed no stale, wrong-shape
+ * rows survived a generator change. Accumulating reintroduces that risk, so
+ * two guards stand in for it —
+ *   1. Dedupe on the normalised question stem, so a re-run that regenerates
+ *      the same MCQ tops up rather than double-banking it.
+ *   2. `replace: true` still does the old destructive behaviour, for when a
+ *      generator change means the existing pool genuinely must be dropped.
+ *
+ * Returns the pool's TOTAL size after the write (not the number added), so
+ * the admin UI can show the pool growing.
  */
-export async function persistDailyChallengeMcqs(subject: string, mcqs: GeneratedMcq[]): Promise<number> {
+export async function persistDailyChallengeMcqs(
+  subject: string,
+  mcqs: GeneratedMcq[],
+  opts: { replace?: boolean } = {},
+): Promise<number> {
   if (mcqs.length === 0) return 0;
-  const items = mcqs.map(mcqToSeedItem);
+  const incoming = mcqs.map(mcqToSeedItem);
+
+  // Stem is the identity of an MCQ here — same question re-generated with
+  // reshuffled options is still the same question to a learner.
+  const key = (q: { question?: string }) =>
+    (q.question ?? "").toLowerCase().replace(/\s+/g, " ").trim();
+
+  let total = 0;
   await db.transaction(async (tx) => {
+    const [existing] = await tx
+      .select({ questionsJson: subjectDailyChallenges.questionsJson })
+      .from(subjectDailyChallenges)
+      .where(eq(subjectDailyChallenges.subject, subject))
+      .limit(1);
+
+    const prior: any[] =
+      opts.replace || !existing?.questionsJson
+        ? []
+        : Array.isArray(existing.questionsJson)
+          ? (existing.questionsJson as any[])
+          : [];
+
+    const seen = new Set(prior.map(key));
+    const merged = [...prior];
+    for (const item of incoming) {
+      const k = key(item);
+      if (seen.has(k)) continue;
+      seen.add(k);
+      merged.push(item);
+    }
+
+    // Single row per subject, so this stays delete-then-insert mechanically —
+    // the difference is that `merged` now carries the prior pool forward.
     await tx.delete(subjectDailyChallenges).where(eq(subjectDailyChallenges.subject, subject));
     await tx.insert(subjectDailyChallenges).values({
       subject,
-      questionsJson: items,
-      totalQuestions: items.length,
+      questionsJson: merged,
+      totalQuestions: merged.length,
     });
+    total = merged.length;
   });
-  return items.length;
+  return total;
 }
 
 // ═════════════════════════════════════════════════════════════════════════════

@@ -11340,6 +11340,11 @@ Create comprehensive study notes for the topic provided.`;
       // leaving the spinner hanging forever. Publish uses the full count.
       const publishCount = Math.min(30, Math.max(3, Number(req.body?.count) || 15));
       const count = preview ? 5 : publishCount;
+      // Publish ACCUMULATES by default — each run grows the subject's pool, so
+      // repeated clicks build toward a 30-day rotation. Pass replace:true to
+      // wipe the existing pool first (only needed after a generator change
+      // makes previously-banked questions wrong-shaped).
+      const replace = req.body?.replace === true || req.body?.replace === "true";
       const targets = await resolveContentStudioTargets(req.body, preview);
       if (targets.length === 0) return res.status(400).json({ error: "Provide a subject or set all:true" });
 
@@ -11363,7 +11368,11 @@ Create comprehensive study notes for the topic provided.`;
             maxBatches: preview ? 3 : undefined,
           });
           console.log(`[content-studio/daily-challenge] ${subject} generator done in ${Date.now() - subT0}ms: ${r.mcqs.length} accepted / ${r.rejected.length} rejected / ${r.sourcesConsidered} considered`);
-          const persisted = !preview && r.mcqs.length > 0 ? await persistDailyChallengeMcqs(subject, r.mcqs) : 0;
+          // `poolTotal` is the pool size AFTER the write, not the number added
+          // — that's what makes repeated Publish clicks legible as growth.
+          const poolTotal = !preview && r.mcqs.length > 0
+            ? await persistDailyChallengeMcqs(subject, r.mcqs, { replace })
+            : 0;
           results.push({
             subject,
             sourcesConsidered: r.sourcesConsidered,
@@ -11373,7 +11382,10 @@ Create comprehensive study notes for the topic provided.`;
             accepted: r.mcqs.length,
             rejected: r.rejected.length,
             rejectionRate: r.rawCount > 0 ? +((r.rejected.length / r.rawCount) * 100).toFixed(1) : 0,
-            persisted,
+            // Kept as `persisted` for the existing admin UI, but it now means
+            // "pool size after this run" rather than "rows written this run".
+            persisted: poolTotal,
+            poolTotal,
             samples: preview ? r.mcqs.slice(0, 5) : [],
           });
         } catch (subErr: any) {
