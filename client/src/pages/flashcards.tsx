@@ -418,7 +418,9 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
       <div className="flex flex-col items-center justify-center py-12 space-y-6" style={{ animation: "bt-fadeup .5s both" }}>
         <div
           className="w-20 h-20 rounded-2xl flex items-center justify-center"
-          style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: "1.5px solid #FFE29A", boxShadow: "0 0 0 1.5px rgba(255,226,154,0.45), 0 12px 26px rgba(0,0,0,0.5)" }}
+          /* Sticker-slap, no bloom — the old double ring + soft drop shadow
+             read as a glow, which the brand has moved off. */
+          style={{ background: "#050508", border: "2.5px solid #FFE29A", boxShadow: "6px 6px 0 0 #FFE29A", transform: "rotate(-2deg)" }}
         >
           <Trophy className="w-10 h-10" style={{ color: "#FFE29A" }} />
         </div>
@@ -443,11 +445,13 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
           )}
         </div>
         <div className="grid grid-cols-2 gap-4 w-full max-w-xs">
-          <div className="rounded-xl p-4 text-center" style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: "1.5px solid #94F7C5" }}>
+          {/* Score stickers — opposite tilts so the pair reads as two labels
+              slapped on the wall rather than a tidy stat grid. */}
+          <div className="rounded-xl p-4 text-center" style={{ background: "#050508", border: "2.5px solid #94F7C5", boxShadow: "5px 5px 0 0 #94F7C5", transform: "rotate(-1.5deg)" }}>
             <p className="text-3xl font-bold" style={{ color: "#94F7C5" }}>{totalGot}</p>
             <p className="text-xs font-semibold mt-1" style={{ color: "#94F7C5" }}>{isAf ? "Geweet ✓" : "Got it ✓"}</p>
           </div>
-          <div className="rounded-xl p-4 text-center" style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: "1.5px solid #FF8DA1" }}>
+          <div className="rounded-xl p-4 text-center" style={{ background: "#050508", border: "2.5px solid #FF8DA1", boxShadow: "5px 5px 0 0 #FF8DA1", transform: "rotate(1.5deg)" }}>
             <p className="text-3xl font-bold" style={{ color: "#FF8DA1" }}>{totalMissed}</p>
             <p className="text-xs font-semibold mt-1" style={{ color: "#FF8DA1" }}>{isAf ? "Gemis ✗" : "Missed ✗"}</p>
           </div>
@@ -940,10 +944,13 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
           <div
             className="absolute inset-0 rounded-2xl border-2 p-6 sm:p-8 flex flex-col items-center justify-center overflow-y-auto"
             style={{
-              background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
-              boxShadow: "0 16px 34px rgba(0,0,0,0.55)",
+              background: "#050508",
+              // Hard offset in the accent colour, not a blurred black drop —
+              // on a #000 page a soft dark shadow is invisible anyway, so it
+              // was pure cost. This reads as a printed sticker edge.
+              boxShadow: "7px 7px 0 0 #9FF5E8",
               backfaceVisibility: "hidden",
-              borderColor: swipeDelta > 30 ? "rgba(148,247,197,0.7)" : swipeDelta < -30 ? "rgba(255,141,161,0.7)" : "rgba(159,245,232,0.45)",
+              borderColor: swipeDelta > 30 ? "#94F7C5" : swipeDelta < -30 ? "#FF8DA1" : "#9FF5E8",
               transition: swipeDelta !== 0 ? "border-color 0.1s" : "border-color 0.3s",
               WebkitOverflowScrolling: "touch",
             }}
@@ -980,11 +987,13 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
           <div
             className="absolute inset-0 rounded-2xl border-2 p-6 sm:p-8 flex flex-col items-center justify-center overflow-y-auto"
             style={{
-              background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
-              boxShadow: "0 16px 34px rgba(0,0,0,0.55)",
+              background: "#050508",
+              // Mirrored face, so the offset is flipped to -7px — after the
+              // rotateY(180deg) it lands on the same visual side as the front.
+              boxShadow: "-7px 7px 0 0 #94F7C5",
               backfaceVisibility: "hidden",
               transform: "rotateY(180deg)",
-              borderColor: swipeDelta > 30 ? "rgba(148,247,197,0.7)" : swipeDelta < -30 ? "rgba(255,141,161,0.7)" : "rgba(148,247,197,0.5)",
+              borderColor: swipeDelta > 30 ? "#94F7C5" : swipeDelta < -30 ? "#FF8DA1" : "#94F7C5",
               transition: swipeDelta !== 0 ? "border-color 0.1s" : "border-color 0.3s",
               WebkitOverflowScrolling: "touch",
             }}
