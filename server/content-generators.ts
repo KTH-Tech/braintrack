@@ -1010,34 +1010,74 @@ Write ${count} exam-technique tips for this subject, spread across the categorie
   return result;
 }
 
-/** Replace study tips of one kind for a subject. Additive across subjects/kinds. */
+/**
+ * Grow the study-tips pool for one (subject, kind). Each Publish ACCUMULATES
+ * onto the existing tips rather than replacing them, so repeated runs build
+ * toward a 30-day rotation — one run can't produce 30 usable tips in a single
+ * request, so the pool has to grow across passes.
+ *
+ * subject_study_tips is one row per tip (unlike the single-row daily-challenge
+ * table), so accumulation is insert-new-only:
+ *   • Dedupe on the normalised tip text, so a re-run that regenerates the same
+ *     tip tops up rather than double-banking it.
+ *   • `replace: true` restores the old destructive wipe, for when a generator
+ *     change means the banked tips must be dropped.
+ *
+ * Returns the pool's TOTAL size after the write (not the number added), so the
+ * admin UI can show tips growing toward the 30-day target.
+ */
 export async function persistStudyTips(
   subject: string,
   kind: "examiner" | "exam",
   tips: GeneratedTip[],
   model: string,
+  opts: { replace?: boolean } = {},
 ): Promise<number> {
-  if (tips.length === 0) return 0;
+  if (tips.length === 0 && !opts.replace) return 0;
+
+  const key = (s: string) => s.toLowerCase().replace(/\s+/g, " ").trim();
+
+  let total = 0;
   await db.transaction(async (tx) => {
-    await tx
-      .delete(subjectStudyTips)
+    if (opts.replace) {
+      await tx
+        .delete(subjectStudyTips)
+        .where(and(eq(subjectStudyTips.subject, subject), eq(subjectStudyTips.kind, kind)));
+    }
+
+    const existing = await tx
+      .select({ tip: subjectStudyTips.tip })
+      .from(subjectStudyTips)
       .where(and(eq(subjectStudyTips.subject, subject), eq(subjectStudyTips.kind, kind)));
-    await tx.insert(subjectStudyTips).values(
-      tips.map((t) => ({
-        subject,
-        kind,
-        topic: t.topic,
-        paperNumber: t.paperNumber,
-        category: t.category.slice(0, 48),
-        tip: t.tip,
-        tipAf: t.tipAf,
-        evidence: t.evidence,
-        sourceQuestionIds: t.sourceQuestionIds,
-        model,
-      })),
-    );
+    const seen = new Set(existing.map((r) => key(r.tip ?? "")));
+
+    const fresh = tips.filter((t) => {
+      const k = key(t.tip);
+      if (seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    });
+
+    if (fresh.length > 0) {
+      await tx.insert(subjectStudyTips).values(
+        fresh.map((t) => ({
+          subject,
+          kind,
+          topic: t.topic,
+          paperNumber: t.paperNumber,
+          category: t.category.slice(0, 48),
+          tip: t.tip,
+          tipAf: t.tipAf,
+          evidence: t.evidence,
+          sourceQuestionIds: t.sourceQuestionIds,
+          model,
+        })),
+      );
+    }
+
+    total = seen.size;
   });
-  return tips.length;
+  return total;
 }
 
 // ═════════════════════════════════════════════════════════════════════════════

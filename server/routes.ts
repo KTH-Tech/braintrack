@@ -11536,8 +11536,14 @@ Create comprehensive study notes for the topic provided.`;
       // Preview asks for just 3 tips (client renders 5 max anyway) so the
       // single OpenAI call finishes well inside the request timeout — same
       // reason as daily-challenge/flashcards.
-      const publishCount = Math.min(10, Math.max(3, Number(req.body?.count) || 6));
+      // Publish now targets up to 30 (a full ~month rotation) and ACCUMULATES,
+      // so even when a single run yields fewer, repeated Publish clicks build
+      // the pool toward 30 days of tips.
+      const publishCount = Math.min(30, Math.max(3, Number(req.body?.count) || 30));
       const count = preview ? 3 : publishCount;
+      // Accumulate by default; replace:true wipes first (after a generator
+      // change that makes banked tips wrong-shaped).
+      const replace = req.body?.replace === true || req.body?.replace === "true";
       const targets = await resolveContentStudioTargets(req.body, preview);
       if (targets.length === 0) return res.status(400).json({ error: "Provide a subject or set all:true" });
 
@@ -11550,14 +11556,19 @@ Create comprehensive study notes for the topic provided.`;
             ? await gen.generateExaminerTips({ subject, count, model })
             : await gen.generateExamTips({ subject, count, model });
           console.log(`[content-studio/${kind}-tips] ${subject} done in ${Date.now() - subT0}ms: ${r.tips.length} tips (${r.rejected.length} rejected)`);
-          const persisted = !preview && r.tips.length > 0 ? await gen.persistStudyTips(subject, kind, r.tips, model) : 0;
+          // poolTotal = tips banked for this (subject, kind) AFTER the run, so
+          // repeated Publish clicks read as the pool growing toward 30.
+          const poolTotal = !preview && r.tips.length > 0
+            ? await gen.persistStudyTips(subject, kind, r.tips, model, { replace })
+            : 0;
           results.push({
             subject,
             basis: r.basis,
             generated: r.rawCount,
             accepted: r.tips.length,
             rejected: r.rejected.length,
-            persisted,
+            persisted: poolTotal,
+            poolTotal,
             samples: preview ? r.tips.slice(0, 5) : [],
           });
         } catch (subErr: any) {
