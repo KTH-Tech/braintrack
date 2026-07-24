@@ -213,13 +213,13 @@ interface MiniMockQuestion {
   marks: number;
   topic: string | null;
   cognitiveLevel: string | null;
-  year: number;
-  paperNumber: number;
+  // Simulated questions are original + self-contained, so they carry no source
+  // paper — year/paperNumber are null and mcqOptions is null.
+  year: number | null;
+  paperNumber: number | null;
   mcqOptions: Array<{ letter: string; text: string }> | null;
-  // The passage/extract a question refers to, when captured. Null = the
-  // question is self-contained (the server drops anything that references a
-  // stimulus we don't have, so this is never a dangling reference).
   stimulusText?: string | null;
+  simulated?: boolean;
 }
 
 const COUNT_OPTIONS = [5, 8, 10, 12, 15];
@@ -347,7 +347,18 @@ export default function ExamMiniMockPage() {
       const data = await r.json();
       const qs2: MiniMockQuestion[] = data.questions ?? [];
       if (qs2.length === 0) {
-        setStartError(isAf ? "Geen vrae beskikbaar nie. Kies 'n ander vak of onderwerp." : "No questions available. Try a different subject or topic.");
+        // contentPreparing = the simulated pool for this subject isn't ready
+        // yet (nothing has cleared the 92% quality bar). Say so honestly rather
+        // than implying the learner did something wrong.
+        setStartError(
+          data.contentPreparing
+            ? (isAf
+                ? "Ons berei tans oefenvrae vir hierdie vak voor. Kom binnekort terug."
+                : "We're still preparing practice questions for this subject. Check back soon.")
+            : (isAf
+                ? "Geen vrae beskikbaar nie. Kies 'n ander vak of onderwerp."
+                : "No questions available. Try a different subject or topic."),
+        );
         return;
       }
       setQuestions(qs2);
@@ -525,7 +536,9 @@ export default function ExamMiniMockPage() {
             )}
             <ExamQuestionText text={currentQ.questionText} className="text-base text-white" />
             <p className="text-xs text-white" style={{ opacity: 0.85 }}>
-              {isAf ? "Bron: DBE" : "Source: DBE"} {currentQ.year} · {isAf ? "Vraestel" : "Paper"} {currentQ.paperNumber}
+              {currentQ.simulated || currentQ.year == null
+                ? (isAf ? "BrainTrack-oefenvraag · KABV-belyn" : "BrainTrack practice question · CAPS-aligned")
+                : `${isAf ? "Bron: DBE" : "Source: DBE"} ${currentQ.year} · ${isAf ? "Vraestel" : "Paper"} ${currentQ.paperNumber}`}
             </p>
 
             {currentQ.mcqOptions && currentQ.mcqOptions.length > 0 ? (

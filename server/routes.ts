@@ -16007,98 +16007,71 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         .where(eq(users.id, userId));
       const requestedLang = resolveRequestLang(req.query.lang, userRow?.preferredLanguage);
 
-      const { dbeVerbatimQuestions: vqT } = await import("@shared/schema");
-      // The release gate works per PAPER: a paper clears at 60% memo coverage,
-      // so up to 40% of the questions it releases carry no memo. In a mini-mock
-      // that is a question the marker cannot grade against anything — the
-      // learner answers and gets nothing back. Require a usable memo per
-      // QUESTION here. Across the released corpus this excludes ~23% of rows,
-      // which is the correct trade: fewer questions, all of them markable.
-      const baseConditions = [
-        eq(vqT.subject, subject),
-        sql`${vqT.releasedAt} IS NOT NULL`,
-        sql`${vqT.memoText} IS NOT NULL`,
-        sql`length(trim(${vqT.memoText})) >= 20`,
+      // Learners are served SIMULATED, examiner-grounded questions — never raw
+      // verbatim. The simulated pool (dbe_simulated_questions) is generated FROM
+      // the verbatim examiner patterns and must clear a 92% quality bar; only
+      // rows that clear it AND carry a gradable memo reach a learner. A subject
+      // with nothing qualifying yet returns an empty set + contentPreparing —
+      // we NEVER fall back to verbatim (that's the stimulus-dependent, "reël 1 /
+      // Binki" content the learner can't answer).
+      const { dbeSimulatedQuestions: sqT } = await import("@shared/schema");
+      const { isMemoContentless } = await import("./memo-clean");
+      const { parseMemoToScheme } = await import("./memo-marker");
+
+      // Examiner-grounded fidelity bar. dbe_simulated_questions.quality_score is
+      // 0–100; the generator's target is 92, so served content must clear it.
+      const SIM_QUALITY_BAR = 92;
+
+      const simConds = [
+        eq(sqT.subject, subject),
+        sql`${sqT.memoText} IS NOT NULL`,
+        sql`length(trim(${sqT.memoText})) >= 20`,
+        sql`COALESCE(${sqT.qualityScore}, 0) >= ${SIM_QUALITY_BAR}`,
       ];
-      if (topic) baseConditions.push(eq(vqT.topic, topic));
+      if (topic) simConds.push(eq(sqT.topic, topic));
 
-      // Decide the session language up front from actual availability, so the
-      // whole session is consistent rather than mixed.
-      const availability = await db
-        .select({ language: vqT.language, n: sql<number>`COUNT(*)::int` })
-        .from(vqT)
-        .where(and(...baseConditions))
-        .groupBy(vqT.language);
-      const availableFor = (l: LangCode) =>
-        availability.find((a) => a.language === toDbLanguage(l))?.n ?? 0;
-
-      const servedLang: LangCode =
-        availableFor(requestedLang) > 0
-          ? requestedLang
-          : availableFor(requestedLang === "af" ? "en" : "af") > 0
-            ? (requestedLang === "af" ? "en" : "af")
-            : requestedLang;
-
-      // A memo can be long enough to pass the length check and still carry no
-      // gradable content once marker instructions and layout codes are stripped
-      // — "A C Enige volgorde M194 F37 (2)" cleans down to "A C (2)" and yields
-      // no scheme, so the learner answers and gets nothing back. That is ~0.9%
-      // of memo-bearing rows. Over-fetch and drop them so every question in a
-      // mini-mock can actually be graded.
       const candidates = await db
         .select()
-        .from(vqT)
-        .where(and(...baseConditions, eq(vqT.language, toDbLanguage(servedLang))))
+        .from(sqT)
+        .where(and(...simConds))
         .orderBy(sql`RANDOM()`)
         .limit(count * 3);
 
-      const { isMemoContentless } = await import("./memo-clean");
-      const { parseMemoToScheme } = await import("./memo-marker");
-      // Also drop questions the audit flagged as unanswerable-from-the-card:
-      // truncated "COLUMN A / COLUMN B" stubs (question_text < 25 chars), and
-      // questions that reference a FIGURE / Information block / extract that
-      // we never captured. gateSource() is a pure, tested check.
-      const { gateSource } = await import("./exam-source-hygiene");
-      const markable = candidates.filter((r) => {
-        if (isMemoContentless(r.memoText)) return false;
-        if (!parseMemoToScheme(r.memoText ?? "", r.marks ?? 1)) return false;
-        const v = gateSource({
-          questionText: r.questionText,
-          memoText: r.memoText,
-          stimulusText: r.stimulusText,
-          needsStimulus: r.needsStimulus,
-        });
-        return v.usable;
-      });
-
-      // If filtering leaves us short (a very thin subject), fall back to the
-      // unfiltered draw rather than handing back an empty mini-mock.
-      // NEVER fall back to the unfiltered draw. `candidates` includes
-      // stimulus-dependent questions — "Watter stemming word deur die neweteks
-      // in reël 1 geskep?", "Waarom het Binki … gedra?" — that reference a
-      // poem / comprehension passage the learner can't see, so they are
-      // unanswerable. A short mock of answerable questions beats a full one
-      // with dead questions in it. If markable is empty, return an empty set
-      // and let the client show an honest "not enough ready content" state.
+      // Same gradability guard as before — a memo must clean down to a real
+      // marking scheme, else the learner answers and gets nothing back.
+      const markable = candidates.filter(
+        (r) => !isMemoContentless(r.memoText) && !!parseMemoToScheme(r.memoText ?? "", r.marks ?? 1),
+      );
       const rows = markable.slice(0, count);
 
-      const questions = rows.map((r) => ({
+      const questions = rows.map((r, i) => ({
         id: r.id,
-        questionNumber: r.questionNumber,
+        // Simulated rows have no paper question-number; number them in order.
+        questionNumber: String(i + 1),
         questionText: r.questionText,
         marks: r.marks ?? 1,
         topic: r.topic,
         cognitiveLevel: r.cognitiveLevel,
-        year: r.year,
-        paperNumber: r.paperNumber,
-        mcqOptions: r.mcqOptions,
-        // The passage/extract the question refers to, when we captured it, so
-        // the learner reads the source instead of guessing at "reël 1".
-        // gateSource already dropped anything that references a stimulus we
-        // DON'T have, so a null here means the question is self-contained.
-        stimulusText: r.stimulusText ?? null,
+        // Simulated questions are original + self-contained: no source paper,
+        // no MCQ letter bank, no unseen passage.
+        year: null,
+        paperNumber: null,
+        mcqOptions: null,
+        stimulusText: null,
+        simulated: true,
       }));
-      res.json({ subject, topic, questions, language: languageMeta(requestedLang, servedLang) });
+
+      // NOTE: dbe_simulated_questions has no language column yet, so this serves
+      // whatever the generator produced (currently EN). Afrikaans needs the
+      // simulated generator + schema extended before AF mini-mocks fill.
+      res.json({
+        subject,
+        topic,
+        questions,
+        simulated: true,
+        contentPreparing: questions.length === 0,
+        language: languageMeta(requestedLang, requestedLang),
+      });
     } catch (err: any) {
       res.status(500).json({ error: safeError(err) });
     }
@@ -16114,16 +16087,21 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       if (!questionId || typeof answer !== "string") {
         return res.status(400).json({ error: "questionId and answer required" });
       }
-      const { dbeVerbatimQuestions: vqT } = await import("@shared/schema");
-      // Task #394 — release-gate: refuse to mark answers against questions
-      // that haven't passed the ≥98% memo + mark coverage check, so a learner
-      // cannot indirectly access un-released content by guessing IDs.
-      const [row] = await db
+      const { dbeSimulatedQuestions: sqT } = await import("@shared/schema");
+      // Learners are marked against the SIMULATED pool (exactly what they were
+      // served). Gate on the same 92% quality bar so a guessed ID can't reach
+      // un-ready content. Cast to `any` for the marking helpers below: a
+      // simulated row carries memoText / marks / subject / topic / questionText
+      // — everything the memo marker and attempt recorder use — it just lacks
+      // the verbatim-only MCQ + paper fields, so the MCQ branch never fires and
+      // the memo-driven path runs.
+      const [rowRaw] = await db
         .select()
-        .from(vqT)
-        .where(and(eq(vqT.id, Number(questionId)), sql`${vqT.releasedAt} IS NOT NULL`))
+        .from(sqT)
+        .where(and(eq(sqT.id, Number(questionId)), sql`COALESCE(${sqT.qualityScore}, 0) >= 92`))
         .limit(1);
-      if (!row) return res.status(404).json({ error: "Question not found" });
+      if (!rowRaw) return res.status(404).json({ error: "Question not found" });
+      const row: any = rowRaw;
 
       let result: any;
 
