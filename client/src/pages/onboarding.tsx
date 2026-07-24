@@ -703,14 +703,21 @@ const T = {
 } as const;
 
 // ── Brand palette (official Rizz brand sheet) ───────────────────────────────
+// Aligned to the app-wide graffiti palette (see the other learner pages +
+// index.css tokens). Onboarding used to run on its own greyer palette
+// (#0D0D14 ground, #1C1C26 card, muddier pink/purple/yellow) which is why it
+// read as off-brand next to every other page. Ground is now pure black per
+// the house rule; card is the same near-black the dashboard cards use; the
+// accents are the canonical pastels. Every `BRAND.x` reference downstream
+// re-skins for free.
 const BRAND = {
-  pink: "#FF7EC6",
-  purple: "#B388FF",
-  cyan: "#6EE7F9",
-  yellow: "#FFD166",
+  pink: "#FFB7E5",
+  purple: "#C5B3FF",
+  cyan: "#9FD8FF",
+  yellow: "#FFE29A",
   mint: "#94F7C5",
-  ground: "#0D0D14",
-  card: "#1C1C26",
+  ground: "#000000",
+  card: "#050508",
 } as const;
 
 const CONFETTI_COLORS = [BRAND.pink, BRAND.purple, BRAND.cyan, BRAND.yellow, BRAND.mint];
@@ -1650,9 +1657,12 @@ export default function OnboardingPage() {
 
   // Shared button styles — large tap targets, brand gradient.
   const primaryBtn =
-    "h-14 px-6 text-base font-bold rounded-2xl text-[#0D0D14] shadow-md flex-1 sm:flex-none disabled:opacity-40";
+    "h-14 px-6 text-base font-bold rounded-2xl text-black flex-1 sm:flex-none disabled:opacity-40";
   const primaryBtnStyle = {
     background: `linear-gradient(95deg, ${BRAND.cyan}, ${BRAND.mint}, ${BRAND.yellow})`,
+    // Sticker-slap: hard black offset instead of the old soft `shadow-md`
+    // blur, so the CTA reads as a printed sticker pressed on the wall.
+    boxShadow: "4px 4px 0 0 rgba(0,0,0,.85)",
   } as const;
   const ghostBtn =
     "h-14 px-5 text-base font-bold rounded-2xl bg-transparent text-white border border-white/25 hover:border-white/60 hover:bg-white/[0.06] flex-1 sm:flex-none";
@@ -1743,7 +1753,7 @@ export default function OnboardingPage() {
 
       <header
         className="relative z-40 sticky top-0"
-        style={{ background: "rgba(13,13,20,.92)", borderBottom: "1px solid rgba(255,255,255,.10)", backdropFilter: "blur(10px)" }}
+        style={{ background: "rgba(5,5,8,.92)", borderBottom: "1px solid rgba(255,255,255,.10)", backdropFilter: "blur(10px)" }}
       >
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2 min-w-0">
@@ -1858,7 +1868,10 @@ export default function OnboardingPage() {
               className="rounded-3xl overflow-hidden"
               style={{
                 background: BRAND.card,
-                border: "1px solid rgba(255,255,255,.12)",
+                // Sticker-slap: fat accent border + hard offset shadow (no
+                // blur), the gravity move used across the app's cards.
+                border: `2.5px solid ${BRAND.cyan}`,
+                boxShadow: `7px 7px 0 0 ${BRAND.cyan}`,
                 animation: anim("bt-fadeup .45s cubic-bezier(.22,1,.36,1) both"),
               }}
             >
@@ -2044,7 +2057,8 @@ export default function OnboardingPage() {
               className="rounded-3xl overflow-hidden"
               style={{
                 background: BRAND.card,
-                border: "1px solid rgba(255,255,255,.12)",
+                border: `2.5px solid ${BRAND.purple}`,
+                boxShadow: `7px 7px 0 0 ${BRAND.purple}`,
                 animation: anim("bt-fadeup .45s cubic-bezier(.22,1,.36,1) both"),
               }}
             >
@@ -2269,7 +2283,8 @@ export default function OnboardingPage() {
               className="rounded-3xl overflow-hidden"
               style={{
                 background: BRAND.card,
-                border: "1px solid rgba(255,255,255,.12)",
+                border: `2.5px solid ${BRAND.mint}`,
+                boxShadow: `7px 7px 0 0 ${BRAND.mint}`,
                 animation: anim("bt-fadeup .45s cubic-bezier(.22,1,.36,1) both"),
               }}
             >
