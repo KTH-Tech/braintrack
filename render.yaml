@@ -24,6 +24,13 @@ services:
     region: frankfurt  # closest to South Africa; change to 'ohio' if latency differs
     plan: standard     # upgrade to 'pro' at 63+ schools
     buildCommand: npm install && npm run build
+    # Applies additive-only, idempotent pending migrations (0033, 0035) against
+    # the live DB AFTER build and BEFORE traffic cutover. The runtime has no
+    # migrate step, so without this the new code would read columns the DB
+    # doesn't have and 500 (the 0034-class regression). If it fails, the deploy
+    # aborts and the old version keeps serving. Safe to run repeatedly — every
+    # migration it touches is IF NOT EXISTS. See script/predeploy-migrate.ts.
+    preDeployCommand: npx tsx script/predeploy-migrate.ts
     # The build emits dist/index.cjs (see script/build.ts) — starting
     # dist/index.js crashes the service on boot with MODULE_NOT_FOUND.
     startCommand: npm run start
