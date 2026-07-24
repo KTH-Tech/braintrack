@@ -216,6 +216,10 @@ interface MiniMockQuestion {
   year: number;
   paperNumber: number;
   mcqOptions: Array<{ letter: string; text: string }> | null;
+  // The passage/extract a question refers to, when captured. Null = the
+  // question is self-contained (the server drops anything that references a
+  // stimulus we don't have, so this is never a dangling reference).
+  stimulusText?: string | null;
 }
 
 const COUNT_OPTIONS = [5, 8, 10, 12, 15];
@@ -502,6 +506,23 @@ export default function ExamMiniMockPage() {
                 {currentQ.marks} {isAf ? "merke" : "marks"}
               </span>
             </div>
+            {/* Passage/extract the question refers to — shown above the
+                question so "reël 1", "die teks", a comprehension character are
+                readable. Only present when the question actually needs it. */}
+            {currentQ.stimulusText && currentQ.stimulusText.trim().length > 0 && (
+              <div
+                className="rounded-2xl p-4 mb-1"
+                style={{ background: "#050508", border: "2px solid #9FD8FF", boxShadow: "4px 4px 0 0 #9FD8FF" }}
+                data-testid="mini-mock-stimulus"
+              >
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] mb-2" style={{ color: "#9FD8FF" }}>
+                  {isAf ? "Lees die teks" : "Read the text"}
+                </p>
+                <p className="text-sm text-white whitespace-pre-line leading-relaxed">
+                  {currentQ.stimulusText}
+                </p>
+              </div>
+            )}
             <ExamQuestionText text={currentQ.questionText} className="text-base text-white" />
             <p className="text-xs text-white" style={{ opacity: 0.85 }}>
               {isAf ? "Bron: DBE" : "Source: DBE"} {currentQ.year} · {isAf ? "Vraestel" : "Paper"} {currentQ.paperNumber}

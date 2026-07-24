@@ -213,16 +213,8 @@ export default function JourneyPage() {
             420px+380px blurred pastel wash sits on top of Rizz + the first
             content cards on a 375px-wide phone, and reads as if the cards are
             overlapping the mascot. They only add ambience on ≥sm anyway. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full blur-[120px] opacity-40 hidden md:block"
-          style={{ background: "#9FF5E8" }}
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute top-40 -right-24 w-[380px] h-[380px] rounded-full blur-[120px] opacity-30 hidden md:block"
-          style={{ background: "#FFB7E5" }}
-        />
+        {/* Ambient blur-glow blobs removed — they were the haze behind the
+            cards. The wall texture (GraffitiSplats) carries the depth now. */}
 
         {/* ── Hero ── */}
         {/* Previously carried `animation: bt-fadeup .5s both`. On production
@@ -285,11 +277,7 @@ export default function JourneyPage() {
               className="relative shrink-0 mx-auto lg:mx-0 mb-2 lg:mb-0 w-32 h-[154px] lg:w-40 lg:h-48"
               data-testid="journey-rizz-mascot"
             >
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-0 rounded-full blur-[40px] lg:blur-[50px] opacity-50 lg:opacity-60"
-                style={{ background: "#B388FF" }}
-              />
+              {/* Purple blur-halo behind Rizz removed — pure glow. */}
               <img
                 src={rizzMascot}
                 alt={isAf ? "Rizz, jou studiemaat" : "Rizz, your study buddy"}
@@ -300,7 +288,6 @@ export default function JourneyPage() {
                   height: "100%",
                   objectFit: "contain",
                   animation: "bt-float 6s ease-in-out infinite",
-                  filter: "drop-shadow(0 12px 22px rgba(179,136,255,.32))",
                 }}
               />
               {/* Stickers removed — they sat ON TOP of Rizz's face/chest
@@ -325,9 +312,10 @@ export default function JourneyPage() {
             <section
               className="relative rounded-3xl p-5 sm:p-6 overflow-hidden"
               style={{
-                background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
-                border: "1.5px solid #6EE7F9",
+                background: "#050508",
+                border: "2.5px solid #6EE7F9",
                 borderRadius: 22,
+                boxShadow: "6px 6px 0 0 #6EE7F9",
                 // No bt-fadeup — see hero section for why the animation was
                 // removed (stalls at opacity: 0 on live prod).
               }}
@@ -375,19 +363,22 @@ export default function JourneyPage() {
                       key={label}
                       className="relative p-4 text-center overflow-hidden transition-transform"
                       style={{
-                        // No glow — the app-wide rule is border + flat card, no
-                        // zero-offset shadows. These chips shipped with glows
-                        // after that rule landed and stood out as off-brand.
-                        background: "rgba(255,255,255,.03)",
-                        border: `1.5px solid ${hex}`,
+                        // Sticker-slap: pure-black card, fat border, hard
+                        // offset shadow (no blur). Reads as a printed sticker,
+                        // not a neon chip glowing on black.
+                        background: "#050508",
+                        border: `2.5px solid ${hex}`,
                         borderRadius: 20,
+                        boxShadow: `4px 4px 0 0 ${hex}`,
                         transform: `rotate(${i % 2 === 0 ? -1 : 1}deg)`,
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = "rotate(0deg) translateY(-6px)";
+                        e.currentTarget.style.transform = "rotate(0deg) translate(-3px,-3px)";
+                        e.currentTarget.style.boxShadow = `7px 7px 0 0 ${hex}`;
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.transform = `rotate(${i % 2 === 0 ? -1 : 1}deg)`;
+                        e.currentTarget.style.boxShadow = `4px 4px 0 0 ${hex}`;
                       }}
                       data-testid={testid}
                     >

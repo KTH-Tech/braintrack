@@ -1185,11 +1185,7 @@ export default function TutorPage() {
                 // avatar crop with no callouts, which read as a chat icon
                 // rather than the character the page is named after.
                 <div className="relative mb-5 w-[190px] h-[190px] sm:w-[240px] sm:h-[240px]">
-                  <div
-                    aria-hidden
-                    className="pointer-events-none absolute inset-0 rounded-full blur-[50px] opacity-60"
-                    style={{ background: "#B388FF" }}
-                  />
+                  {/* Purple blur-halo removed — pure glow. */}
                   <img
                     src={rizzMascot}
                     alt={isAf ? "Rizz, jou studiemaat" : "Rizz, your study buddy"}
@@ -1200,7 +1196,6 @@ export default function TutorPage() {
                       height: "100%",
                       objectFit: "contain",
                       animation: "bt-float 6s ease-in-out infinite",
-                      filter: "drop-shadow(0 16px 26px rgba(179,136,255,.35))",
                     }}
                   />
                   <span className="hidden sm:inline-flex" style={tutorSticker("#9FF5E8", -8, { top: 2, left: -26 })}>

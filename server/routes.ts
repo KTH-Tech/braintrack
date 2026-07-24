@@ -11312,6 +11312,78 @@ Create comprehensive study notes for the topic provided.`;
     }
   });
 
+  // GET /api/admin/content-studio/pool
+  //   • no query        → per-subject summary counts of everything banked
+  //   • ?subject=<name> → the actual batches for that subject (questions,
+  //                        flashcards, examiner tips, exam tips) so an admin
+  //                        can read what was created, not just how many.
+  // This is the "look at the batches" view — read-only, admin-only.
+  app.get("/api/admin/content-studio/pool", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    try {
+      const { subjectDailyChallenges, flashcards, subjectStudyTips } = await import("@shared/schema");
+      const subject = typeof req.query.subject === "string" ? req.query.subject.trim() : "";
+
+      if (!subject) {
+        // Summary across all subjects, one grouped query per table.
+        const dc = await db
+          .select({ subject: subjectDailyChallenges.subject, n: subjectDailyChallenges.totalQuestions })
+          .from(subjectDailyChallenges);
+        const fc = await db
+          .select({ subject: flashcards.subject, n: sql<number>`count(*)::int` })
+          .from(flashcards)
+          .groupBy(flashcards.subject);
+        const tips = await db
+          .select({ subject: subjectStudyTips.subject, kind: subjectStudyTips.kind, n: sql<number>`count(*)::int` })
+          .from(subjectStudyTips)
+          .groupBy(subjectStudyTips.subject, subjectStudyTips.kind);
+
+        const bySubject = new Map<string, any>();
+        const row = (s: string) =>
+          bySubject.get(s) ?? bySubject.set(s, { subject: s, dailyChallenge: 0, flashcards: 0, examinerTips: 0, examTips: 0 }).get(s);
+        for (const r of dc) row(r.subject).dailyChallenge = r.n ?? 0;
+        for (const r of fc) row(r.subject).flashcards = r.n ?? 0;
+        for (const r of tips) {
+          const t = row(r.subject);
+          if (r.kind === "examiner") t.examinerTips = r.n ?? 0;
+          else if (r.kind === "exam") t.examTips = r.n ?? 0;
+        }
+        const summary = [...bySubject.values()].sort((a, b) => a.subject.localeCompare(b.subject));
+        return res.json({ mode: "summary", subjects: summary });
+      }
+
+      // Detail for one subject — the full banked batches.
+      const [dcRow] = await db
+        .select()
+        .from(subjectDailyChallenges)
+        .where(eq(subjectDailyChallenges.subject, subject))
+        .limit(1);
+      const questions = Array.isArray(dcRow?.questionsJson) ? (dcRow!.questionsJson as any[]) : [];
+
+      const cards = await db
+        .select()
+        .from(flashcards)
+        .where(eq(flashcards.subject, subject))
+        .limit(500);
+
+      const allTips = await db
+        .select()
+        .from(subjectStudyTips)
+        .where(eq(subjectStudyTips.subject, subject));
+
+      return res.json({
+        mode: "detail",
+        subject,
+        dailyChallenge: { total: questions.length, generatedAt: dcRow?.generatedAt ?? null, questions },
+        flashcards: cards,
+        examinerTips: allTips.filter((t) => t.kind === "examiner"),
+        examTips: allTips.filter((t) => t.kind === "exam"),
+      });
+    } catch (err: any) {
+      console.error("Error in /api/admin/content-studio/pool:", err);
+      return res.status(500).json({ error: safeError(err) });
+    }
+  });
+
   // Resolve the target subjects from a request body. Preview always collapses to
   // a single subject to keep it fast and cheap; publish across "all" is bounded.
   async function resolveContentStudioTargets(body: any, preview: boolean): Promise<string[]> {
@@ -16001,7 +16073,14 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
 
       // If filtering leaves us short (a very thin subject), fall back to the
       // unfiltered draw rather than handing back an empty mini-mock.
-      const rows = (markable.length >= count ? markable : candidates).slice(0, count);
+      // NEVER fall back to the unfiltered draw. `candidates` includes
+      // stimulus-dependent questions — "Watter stemming word deur die neweteks
+      // in reël 1 geskep?", "Waarom het Binki … gedra?" — that reference a
+      // poem / comprehension passage the learner can't see, so they are
+      // unanswerable. A short mock of answerable questions beats a full one
+      // with dead questions in it. If markable is empty, return an empty set
+      // and let the client show an honest "not enough ready content" state.
+      const rows = markable.slice(0, count);
 
       const questions = rows.map((r) => ({
         id: r.id,
@@ -16013,6 +16092,11 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         year: r.year,
         paperNumber: r.paperNumber,
         mcqOptions: r.mcqOptions,
+        // The passage/extract the question refers to, when we captured it, so
+        // the learner reads the source instead of guessing at "reël 1".
+        // gateSource already dropped anything that references a stimulus we
+        // DON'T have, so a null here means the question is self-contained.
+        stimulusText: r.stimulusText ?? null,
       }));
       res.json({ subject, topic, questions, language: languageMeta(requestedLang, servedLang) });
     } catch (err: any) {
