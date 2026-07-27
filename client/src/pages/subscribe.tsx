@@ -1166,11 +1166,13 @@ function PaymentPickerScreen({
       : "Secure payment processed by Paystack. You will be redirected to the Paystack checkout page.",
   };
 
-  async function handlePaystackCheckout() {
+  async function handlePaystackCheckout(product?: "exam_boost") {
     setLoadingMethod("card");
     setErrorMsg(null);
     try {
-      const res = await apiRequest("POST", "/api/paystack/initialize", {});
+      // product picks WHICH offer (server owns the amounts): omitted =
+      // R169/month Brain Boost; "exam_boost" = once-off R550 season pass.
+      const res = await apiRequest("POST", "/api/paystack/initialize", product ? { product } : {});
       const data = await res.json() as {
         authorizationUrl?: string;
         alreadyActive?: boolean;
@@ -1207,6 +1209,24 @@ function PaymentPickerScreen({
   }
 
   const anyLoading = loadingMethod !== null;
+
+  // ?offer=exam-boost — the once-off R550 Exam Boost (July–Nov season pass).
+  // When selected there is NO free trial and NO recurring billing: one
+  // payment, access to 30 Nov 2026, done. The landing-page offer card links
+  // here with this flag.
+  const wantsExamBoost =
+    typeof window !== "undefined" &&
+    new URLSearchParams(window.location.search).get("offer") === "exam-boost";
+  const boost = {
+    charge: isAf ? "Eenmalige betaling" : "Once-off payment",
+    chargeDetail: isAf
+      ? "Exam Boost: R550 een keer · volle toegang tot 30 November 2026 · geen proeftydperk, geen maandelikse heffings, geen outomatiese hernuwing nie. Verskyn op jou staat as KTH-TECH."
+      : "Exam Boost: R550 once · full access until 30 November 2026 · no trial, no monthly charges, no auto-renewal. Appears on your statement as KTH-TECH.",
+    button: isAf ? "Betaal R550 een keer" : "Pay R550 once-off",
+    buttonSub: isAf
+      ? "Eksamenseisoen-toegang tot 30 Nov. Geen verdere heffings nie."
+      : "Exam-season access to 30 Nov. No further charges, ever.",
+  };
 
   return (
     <WallScreen>
@@ -1251,14 +1271,15 @@ function PaymentPickerScreen({
         </div>
       )}
 
-      {/* Charge summary */}
+      {/* Charge summary — Exam Boost swaps in the once-off copy and drops
+          every mention of the free trial. */}
       <div style={{ marginBottom: 28 }}>
-        <WallCallout color="#FFE29A">
-          <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#FFE29A", margin: "0 0 4px" }}>
-            {t.charge}
+        <WallCallout color={wantsExamBoost ? "#94F7C5" : "#FFE29A"}>
+          <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: wantsExamBoost ? "#94F7C5" : "#FFE29A", margin: "0 0 4px" }}>
+            {wantsExamBoost ? boost.charge : t.charge}
           </p>
-          <p style={{ fontWeight: 800, fontSize: 17, color: "#FFE29A", margin: 0, lineHeight: 1.5 }}>
-            {t.chargeDetail}
+          <p style={{ fontWeight: 800, fontSize: 17, color: wantsExamBoost ? "#94F7C5" : "#FFE29A", margin: 0, lineHeight: 1.5 }}>
+            {wantsExamBoost ? boost.chargeDetail : t.chargeDetail}
           </p>
         </WallCallout>
       </div>
@@ -1266,7 +1287,7 @@ function PaymentPickerScreen({
       {/* Paystack checkout — sole payment provider */}
       <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 28 }}>
         <button
-          onClick={handlePaystackCheckout}
+          onClick={() => handlePaystackCheckout(wantsExamBoost ? "exam_boost" : undefined)}
           disabled={anyLoading}
           className="bts-method-btn"
           data-testid="button-paystack-checkout"
@@ -1288,12 +1309,14 @@ function PaymentPickerScreen({
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                <span style={{ fontWeight: 700, color: "#fff" }}>{t.paystack}</span>
+                <span style={{ fontWeight: 700, color: "#fff" }}>{wantsExamBoost ? boost.button : t.paystack}</span>
                 <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#94F7C5" }}>
                   {t.paystackBadge}
                 </span>
               </div>
-              <p style={{ fontSize: 13.5, color: "#fff", opacity: 0.94, lineHeight: 1.55, margin: 0 }}>{t.paystackDesc}</p>
+              <p style={{ fontSize: 13.5, color: "#fff", opacity: 0.94, lineHeight: 1.55, margin: 0 }}>
+                {wantsExamBoost ? boost.buttonSub : t.paystackDesc}
+              </p>
             </div>
             <ChevronRight style={{ width: 20, height: 20, flex: "none", marginTop: 2, color: "#94F7C5" }} />
           </div>

@@ -94,14 +94,23 @@ export async function recordEventOnce(eventId: string, eventType: string, payloa
   }
 }
 
+/** Exam Boost: once-off R550, access through the end of the NSC finals
+ *  (30 Nov 2026, SAST). No recurring billing, no trial — one payment,
+ *  season-long access, hard end date. */
+export const EXAM_BOOST_PRICE_MINOR = 55000; // R550.00 in cents
+export const EXAM_BOOST_END = new Date("2026-11-30T23:59:59+02:00");
+
 async function activateSubscription(opts: {
   userId: string;
   customerCode?: string | null;
   subscriptionCode?: string | null;
   amountMinor?: number | null;
   nextPaymentDate?: string | null;
+  /** "premium" (R169/month recurring, default) or "exam_boost" (R550 once-off). */
+  product?: "premium" | "exam_boost";
 }): Promise<void> {
-  const { userId, customerCode, subscriptionCode, amountMinor, nextPaymentDate } = opts;
+  const { userId, customerCode, subscriptionCode, amountMinor, nextPaymentDate, product } = opts;
+  const isExamBoost = product === "exam_boost";
   const [existing] = await db.select({ id: subscriptions.id })
     .from(subscriptions)
     .where(eq(subscriptions.userId, userId));
@@ -110,16 +119,23 @@ async function activateSubscription(opts: {
     userId,
     userRole: "learner",
     status: "active",
-    plan: "premium",
-    priceRands: amountMinor ? Math.round(amountMinor / 100) : 169,
+    plan: isExamBoost ? "exam_boost" : "premium",
+    priceRands: amountMinor ? Math.round(amountMinor / 100) : isExamBoost ? 550 : 169,
     paymentProvider: "paystack",
     billingMethod: "paystack",
     startDate: new Date(),
-    nextRenewalAt: nextPaymentDate ? new Date(nextPaymentDate) : null,
+    // Once-off: never renews; access runs to the fixed season end instead.
+    nextRenewalAt: isExamBoost ? null : nextPaymentDate ? new Date(nextPaymentDate) : null,
     lastPaymentStatus: "paid",
     lastPaymentAt: new Date(),
     updatedAt: new Date(),
   };
+  if (isExamBoost) {
+    values.endDate = EXAM_BOOST_END;
+    // A once-off purchase must clear any trial bookkeeping so the day-14
+    // autocharge cron can never also bill this learner R169.
+    values.trialEndsAt = null;
+  }
   if (customerCode) values.paystackCustomerCode = customerCode;
   if (subscriptionCode) values.paystackSubscriptionCode = subscriptionCode;
 
@@ -232,20 +248,34 @@ export function registerPaystackRoutes(app: Express, isAuthenticated: any) {
       }
 
       const appUrl = (process.env.APP_URL || "").replace(/\/+$/, "");
+      // The product is chosen server-side off a whitelisted body flag — the
+      // client can pick WHICH product, never the amount.
+      const isExamBoost = req.body?.product === "exam_boost";
+      const body = isExamBoost
+        ? {
+            email: user.email,
+            // Once-off transaction: NO plan attached, so Paystack never
+            // creates a recurring subscription from this charge.
+            amount: EXAM_BOOST_PRICE_MINOR,
+            currency: "ZAR",
+            callback_url: `${appUrl}/subscribe?paystack=return`,
+            metadata: { userId, product: "exam_boost", purpose: "exam_boost" },
+          }
+        : {
+            email: user.email,
+            plan: planCode(),
+            // Paystack requires a non-zero amount on initialize even when a plan
+            // is supplied ("Invalid Amount Sent" otherwise). The plan's own
+            // amount takes precedence for the actual charge; this is in minor
+            // units (R169.00 = 16900 cents).
+            amount: 16900,
+            currency: "ZAR",
+            callback_url: `${appUrl}/subscribe?paystack=return`,
+            metadata: { userId, product: "BrainTrack Premium" },
+          };
       const data = await paystackFetch("/transaction/initialize", {
         method: "POST",
-        body: JSON.stringify({
-          email: user.email,
-          plan: planCode(),
-          // Paystack requires a non-zero amount on initialize even when a plan
-          // is supplied ("Invalid Amount Sent" otherwise). The plan's own
-          // amount takes precedence for the actual charge; this is in minor
-          // units (R169.00 = 16900 cents).
-          amount: 16900,
-          currency: "ZAR",
-          callback_url: `${appUrl}/subscribe?paystack=return`,
-          metadata: { userId, product: "BrainTrack Premium" },
-        }),
+        body: JSON.stringify(body),
       });
 
       return res.json({ authorizationUrl: data.authorization_url, reference: data.reference });
@@ -268,12 +298,18 @@ export function registerPaystackRoutes(app: Express, isAuthenticated: any) {
       if (paid) {
         // Trust the userId we set at initialize time, not anything client-sent.
         const userId = data?.metadata?.userId || req.user.claims.sub;
+        // Exam Boost only counts when the verified amount actually covers the
+        // R550 — the product label alone can't unlock season access.
+        const isExamBoost =
+          data?.metadata?.product === "exam_boost" &&
+          (data?.amount ?? 0) >= EXAM_BOOST_PRICE_MINOR;
         await activateSubscription({
           userId,
           customerCode: data?.customer?.customer_code ?? null,
           subscriptionCode: null,
           amountMinor: data?.amount ?? null,
           nextPaymentDate: null,
+          product: isExamBoost ? "exam_boost" : "premium",
         });
       }
       return res.json({ paid, status: data?.status ?? "unknown" });
@@ -340,6 +376,24 @@ export function registerPaystackRoutes(app: Express, isAuthenticated: any) {
             // webhook → this handler is wired end-to-end. The R1 stays with
             // Paystack until the admin refunds it in the Paystack dashboard.
             console.log(`[paystack] admin_test smoke charge succeeded, reference=${d?.reference}`);
+            break;
+          }
+          if (purpose === "exam_boost") {
+            // Once-off R550 Exam Boost — season access to 30 Nov, no
+            // recurring subscription. Amount is verified server-side so a
+            // relabelled cheaper charge can never unlock it.
+            if (userId && (d?.amount ?? 0) >= EXAM_BOOST_PRICE_MINOR) {
+              await activateSubscription({
+                userId,
+                customerCode: d?.customer?.customer_code ?? null,
+                subscriptionCode: null,
+                amountMinor: d?.amount ?? null,
+                nextPaymentDate: null,
+                product: "exam_boost",
+              });
+            } else {
+              console.warn(`[paystack] exam_boost charge ignored — userId=${!!userId}, amount=${d?.amount}`);
+            }
             break;
           }
           // KTH Tech runs several products/plans through this one Paystack

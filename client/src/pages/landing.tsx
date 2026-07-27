@@ -752,6 +752,54 @@ export default function LandingPage() {
         </div>
       </div>
 
+      {/* ── Exam Boost — once-off season offer ─────────────────
+          R550 once, access to 30 Nov 2026, NO trial and NO recurring billing.
+          Links to /subscribe?offer=exam-boost, where the checkout drops all
+          trial copy and runs a once-off Paystack charge. */}
+      <div className="btl-sec" style={{ maxWidth: 760, margin: "56px auto 0", padding: "0 32px" }}>
+        <a
+          href="/subscribe?offer=exam-boost"
+          data-testid="offer-exam-boost"
+          style={{
+            display: "block", textDecoration: "none",
+            background: "#050508", border: "2.5px solid #FFE29A",
+            borderRadius: 22, boxShadow: "7px 7px 0 0 #FFE29A",
+            padding: "clamp(20px,4vw,30px)", transform: "rotate(-.4deg)",
+          }}
+        >
+          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
+            <div style={{ flex: "1 1 300px", minWidth: 0 }}>
+              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
+                {language === "af" ? "Eksamenseisoen-spesiaal" : "Exam season special"}
+              </span>
+              <div style={{ fontSize: "clamp(24px,5vw,32px)", fontWeight: 900, letterSpacing: -0.8, color: "#fff", margin: "6px 0 8px" }}>
+                {language === "af" ? "Exam Boost — R550 een keer" : "Exam Boost — R550 once-off"}
+              </div>
+              <p style={{ fontSize: 14.5, lineHeight: 1.65, color: "#fff", margin: 0 }}>
+                {language === "af"
+                  ? "Volle toegang van vandag tot 30 November 2026 — regdeur die rekord- en NSS-eindeksamens. Een betaling. Geen proeftydperk, geen maandelikse heffings, geen outomatiese hernuwing nie."
+                  : "Full access from today to 30 November 2026 — right through prelims and the NSC finals. One payment. No trial, no monthly charges, no auto-renewal."}
+              </p>
+            </div>
+            <div
+              style={{
+                flex: "0 0 auto", background: "#FFE29A", color: "#050508",
+                fontWeight: 900, fontSize: 16, borderRadius: 12,
+                padding: "14px 26px", boxShadow: "4px 4px 0 0 rgba(0,0,0,.85)",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {language === "af" ? "Kry Exam Boost →" : "Get Exam Boost →"}
+            </div>
+          </div>
+          <p style={{ fontSize: 12, color: "#fff", opacity: 0.85, margin: "12px 0 0" }}>
+            {language === "af"
+              ? "Of kies eerder Brain Boost teen R169/maand met 14 dae gratis — albei sluit alles in. Verskyn op jou staat as KTH-TECH."
+              : "Prefer monthly? Brain Boost is R169/month with 14 days free — both include everything. Appears on your statement as KTH-TECH."}
+          </p>
+        </a>
+      </div>
+
       {/* ── Marquee ─────────────────────────────────────────── */}
       <div style={{ overflow: "hidden", borderTop: "1px solid rgba(255,255,255,.07)", borderBottom: "1px solid rgba(255,255,255,.07)", padding: "14px 0", margin: "40px 0 0" }}>
         <div
