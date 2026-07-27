@@ -50,6 +50,26 @@ const KEYFRAMES = `
      the bottom edge instead of stalling around 85vh. */
   100% { transform: translate3d(calc(-50% + var(--bx) + var(--dx)), calc(-50% + var(--by) + 140vh), 0) scale(0.82) rotate(var(--spin)); opacity: 0; }
 }
+/* WOW POP — the explosion stage. A burst particle detonates from dead
+   centre: flung to its radial vector in the first 11% with a 1.18×
+   overshoot (that snap is what reads as a "pop"), hangs, then gravity
+   takes it down and off-screen with the same slow-fade tail as the rain.
+   The rain (bt-gpop, above) keeps falling from the top the whole time, so
+   the moment reads: BANG → glitter everywhere → gentle rain. */
+@keyframes bt-gburst {
+  0%   { transform: translate3d(-50%,-50%,0) scale(0.1) rotate(0deg); opacity: 0; }
+  4%   { opacity: 1; }
+  11%  { transform: translate3d(calc(-50% + var(--bx)), calc(-50% + var(--by)), 0) scale(1.18) rotate(140deg); opacity: 1; }
+  18%  { transform: translate3d(calc(-50% + var(--bx)), calc(-50% + var(--by)), 0) scale(1) rotate(200deg); opacity: 1; }
+  88%  { opacity: 1; }
+  100% { transform: translate3d(calc(-50% + var(--bx) + var(--dx)), calc(-50% + var(--by) + 120vh), 0) scale(0.8) rotate(var(--spin)); opacity: 0; }
+}
+/* One-shot white detonation flash across the whole screen — 260ms. */
+@keyframes bt-gflash {
+  0%   { opacity: 0; }
+  18%  { opacity: 0.42; }
+  100% { opacity: 0; }
+}
 @keyframes bt-gshimmer {
   0%,100% { filter: hue-rotate(-22deg) saturate(1.35) brightness(1); }
   50%     { filter: hue-rotate(72deg)  saturate(1.75) brightness(1.24); }
@@ -178,6 +198,9 @@ type Particle = {
    *  The colour is a solid pastel (not the holographic gradient) so the icon
    *  reads as a legible silhouette. */
   icon?: { pathIndex: number; color: string };
+  /** "burst" = detonates outward from centre (the WOW pop), "rain" = falls
+   *  from above the top edge. Picks the keyframe in the renderer. */
+  kind: "burst" | "rain";
 };
 
 /** Build the particle field once. TOP-EDGE GLITTER FALL: shards enter from
@@ -197,13 +220,27 @@ type Particle = {
  *  ends around +41vh — well below the bottom edge. */
 function buildParticles(count: number): Particle[] {
   const out: Particle[] = [];
+  // Two-stage WOW: ~40% of particles DETONATE outward from centre on mount
+  // (the pop), the rest rain from the top edge — so the moment reads
+  // BANG → glitter everywhere → gentle rain keeps falling.
+  const burstCount = Math.round(count * 0.4);
   for (let i = 0; i < count; i++) {
-    // Full-width horizontal scatter: any point along the top edge.
-    const bx = (Math.random() - 0.5) * 100; // -50..+50 vw
-    // Above the viewport, staggered so they enter in a band not a line.
-    const by = -60 + Math.random() * 8; // -60..-52 vh
-    // Sideways drift as they fall — gentle, like real glitter.
-    const dx = (Math.random() - 0.5) * 8;
+    const isBurst = i < burstCount;
+    let bx: number, by: number, dx: number;
+    if (isBurst) {
+      // Radial explosion vector from dead centre — every direction, hard.
+      const angle = Math.random() * Math.PI * 2;
+      bx = Math.cos(angle) * (16 + Math.random() * 30); // 16–46vw fling
+      by = Math.sin(angle) * (12 + Math.random() * 24); // 12–36vh fling
+      dx = (Math.random() - 0.5) * 14;
+    } else {
+      // Full-width horizontal scatter: any point along the top edge.
+      bx = (Math.random() - 0.5) * 100; // -50..+50 vw
+      // Above the viewport, staggered so they enter in a band not a line.
+      by = -60 + Math.random() * 8; // -60..-52 vh
+      // Sideways drift as they fall — gentle, like real glitter.
+      dx = (Math.random() - 0.5) * 8;
+    }
     const spin = 540 + Math.random() * 720;
 
     const i1 = Math.floor(Math.random() * PALETTE.length);
@@ -260,12 +297,10 @@ function buildParticles(count: number): Particle[] {
       height,
       radius,
       background: holo,
-      // Was 2.6-4.3s. Bumped to 4.2-6.3s so the whole burst reads as it
-      // drifts down slowly instead of tumbling off screen — combined with
-      // the longer bt-gpop opacity tail (see keyframe), particles linger
-      // visibly for the whole fall.
-      duration: 4.2 + Math.random() * 2.1,
-      delay: Math.random() * 0.2,
+      // Burst shards fire IMMEDIATELY and live a touch shorter (snappier);
+      // rain starts a beat after the bang and drifts long and slow.
+      duration: isBurst ? 3.4 + Math.random() * 1.4 : 4.2 + Math.random() * 2.1,
+      delay: isBurst ? Math.random() * 0.08 : 0.25 + Math.random() * 0.7,
       shimmerDur: 0.7 + Math.random() * 0.85,
       shimmerDelay: Math.random() * 0.5,
       // Twinkle cadence — a sharp brightness+scale flash. Randomised per
@@ -275,6 +310,7 @@ function buildParticles(count: number): Particle[] {
       twinkleDur: 1.4 + Math.random() * 1.0,
       twinkleDelay: Math.random() * 3.0,
       icon,
+      kind: isBurst ? "burst" : "rain",
     });
   }
   return out;
@@ -321,6 +357,19 @@ export function ConfettiBurst({ count = 220 }: { count?: number }) {
       className="pointer-events-none fixed inset-0 overflow-hidden"
       style={{ zIndex: 9999 }}
     >
+      {/* ── Detonation flash — one 260ms full-screen white pulse that sells
+          the BANG before the shards register. mix-blend screen so it brightens
+          rather than washes out the page. */}
+      <span
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "radial-gradient(circle at 50% 44%, #FFFFFF 0%, rgba(255,255,255,.6) 30%, rgba(255,255,255,0) 70%)",
+          mixBlendMode: "screen",
+          animation: "bt-gflash 0.26s ease-out both",
+        }}
+      />
+
       {/* ── Center POP ─────────────────────────────────────────────── */}
       {/* Soft holographic bloom */}
       <span
@@ -399,7 +448,7 @@ export function ConfettiBurst({ count = 220 }: { count?: number }) {
           // kill-switch. The twinkle infinitely loops with a per-particle
           // stagger so the sparkle scatters instead of strobing in sync.
           animation:
-            `bt-gpop ${p.duration.toFixed(2)}s cubic-bezier(.12,.62,.24,1) ${p.delay.toFixed(2)}s both, ` +
+            `${p.kind === "burst" ? "bt-gburst" : "bt-gpop"} ${p.duration.toFixed(2)}s cubic-bezier(.12,.62,.24,1) ${p.delay.toFixed(2)}s both, ` +
             `bt-gshimmer ${p.shimmerDur.toFixed(2)}s ease-in-out ${p.shimmerDelay.toFixed(2)}s infinite, ` +
             `bt-gtwinkle ${p.twinkleDur.toFixed(2)}s ease-in-out ${p.twinkleDelay.toFixed(2)}s infinite`,
         };
