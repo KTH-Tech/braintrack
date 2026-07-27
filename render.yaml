@@ -30,7 +30,9 @@ services:
     # doesn't have and 500 (the 0034-class regression). If it fails, the deploy
     # aborts and the old version keeps serving. Safe to run repeatedly — every
     # migration it touches is IF NOT EXISTS. See script/predeploy-migrate.ts.
-    preDeployCommand: npx tsx script/predeploy-migrate.ts
+    # -y: never prompt in the non-interactive deploy shell (a prompt would
+    # hang the preDeploy and abort the whole deploy).
+    preDeployCommand: npx -y tsx script/predeploy-migrate.ts
     # The build emits dist/index.cjs (see script/build.ts) — starting
     # dist/index.js crashes the service on boot with MODULE_NOT_FOUND.
     startCommand: npm run start
