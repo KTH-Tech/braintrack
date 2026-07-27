@@ -435,6 +435,154 @@ function Reveal({
   );
 }
 
+/** BrainTrack vs. other matric sites — the animated head-to-head wall.
+ *  Copy lives in COPY.cmpRows (EN+AF, written when this section was first
+ *  designed; the section itself was never rendered until now). Scroll-triggered
+ *  via the file's useInView: headers slam in from opposite sides, the VS badge
+ *  pops with overshoot, rows stagger up 110ms apart. All keyframes bt- prefixed
+ *  (kill-switch exempt) and fully disabled under prefers-reduced-motion. */
+function CompareWall({ t, language }: { t: any; language: string }) {
+  const [ref, inView] = useInView<HTMLDivElement>();
+  return (
+    <div
+      ref={ref}
+      className={`btl-sec ${inView ? "bt-cmp-in" : ""}`}
+      style={{ maxWidth: 1020, margin: "104px auto 0", padding: "0 32px" }}
+      data-testid="section-compare"
+    >
+      <style>{`
+        .bt-cmp-row, .bt-cmp-vs, .bt-cmp-head-l, .bt-cmp-head-r { opacity: 0; }
+        .bt-cmp-in .bt-cmp-head-l { animation: bt-cmp-left .5s cubic-bezier(.22,.75,.3,1) both; }
+        .bt-cmp-in .bt-cmp-head-r { animation: bt-cmp-right .5s cubic-bezier(.22,.75,.3,1) both; }
+        .bt-cmp-in .bt-cmp-vs { animation: bt-cmp-pop .55s cubic-bezier(.34,1.56,.64,1) .22s both; }
+        .bt-cmp-in .bt-cmp-row { animation: bt-cmp-up .5s cubic-bezier(.22,.75,.3,1) both; animation-delay: calc(.18s + var(--i) * .11s); }
+        @keyframes bt-cmp-left  { from { opacity: 0; transform: translateX(-48px); } to { opacity: 1; transform: none; } }
+        @keyframes bt-cmp-right { from { opacity: 0; transform: translateX(48px); }  to { opacity: 1; transform: none; } }
+        @keyframes bt-cmp-pop   { 0% { opacity: 0; transform: scale(.3) rotate(-16deg); } 70% { opacity: 1; transform: scale(1.18) rotate(4deg); } 100% { opacity: 1; transform: scale(1) rotate(-2deg); } }
+        @keyframes bt-cmp-up    { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+        @media (prefers-reduced-motion: reduce) {
+          .bt-cmp-row, .bt-cmp-vs, .bt-cmp-head-l, .bt-cmp-head-r { opacity: 1; animation: none !important; }
+        }
+        .bt-cmp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 14px; }
+        .bt-cmp-crit { grid-column: 1 / -1; }
+        @media (max-width: 700px) { .bt-cmp-grid { grid-template-columns: 1fr; } }
+      `}</style>
+
+      <div style={{ textAlign: "center", marginBottom: 34 }}>
+        <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
+          {t.compareEye}
+        </span>
+        <div className="btl-sec-head" style={{ fontSize: 38, fontWeight: 900, letterSpacing: "-1.2px", lineHeight: 1.14, marginTop: 10, color: "#fff" }}>
+          {t.compareHead1}
+          <span style={{ background: "linear-gradient(95deg,#FFB7E5,#FFE29A,#9FF5E8,#9FD8FF,#C5B3FF)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>
+            {t.compareHead2}
+          </span>
+        </div>
+        <p className="btl-sec-sub" style={{ marginTop: 12, fontSize: 15.5, lineHeight: 1.6, color: "#fff", opacity: 0.92, maxWidth: 640, margin: "12px auto 0" }}>
+          {t.compareSub}
+        </p>
+      </div>
+
+      {/* Split headers + VS badge */}
+      <div style={{ position: "relative", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 16 }}>
+        <div
+          className="bt-cmp-head-l"
+          style={{
+            background: "#050508", border: "2px solid rgba(255,255,255,.35)", borderRadius: 14,
+            padding: "12px 16px", textAlign: "center", transform: "rotate(-.5deg)",
+            fontFamily: "'Bebas Neue','Impact','Arial Black',sans-serif",
+            fontSize: 19, letterSpacing: 2.5, textTransform: "uppercase", color: "#fff",
+          }}
+        >
+          {t.cmpOther}
+        </div>
+        <div
+          className="bt-cmp-head-r"
+          style={{
+            background: "#94F7C5", border: "2.5px solid #050508", borderRadius: 14,
+            boxShadow: "5px 5px 0 0 rgba(148,247,197,.45)",
+            padding: "12px 16px", textAlign: "center", transform: "rotate(.5deg)",
+            fontFamily: "'Bebas Neue','Impact','Arial Black',sans-serif",
+            fontSize: 19, letterSpacing: 2.5, textTransform: "uppercase", color: "#050508", fontWeight: 800,
+          }}
+        >
+          {t.cmpUs}
+        </div>
+        <span
+          className="bt-cmp-vs"
+          aria-hidden
+          style={{
+            position: "absolute", left: "50%", top: "50%", transform: "translate(-50%,-50%)",
+            background: "#FFE29A", color: "#050508", border: "3px solid #050508",
+            borderRadius: 999, width: 54, height: 54, display: "flex", alignItems: "center", justifyContent: "center",
+            fontFamily: "'Permanent Marker',cursive", fontSize: 20, zIndex: 2,
+            boxShadow: "3px 3px 0 0 rgba(0,0,0,.85)",
+          }}
+        >
+          VS
+        </span>
+      </div>
+
+      {/* Rows — other (muted) vs BrainTrack (mint sticker), staggered reveal */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+        {(t.cmpRows as Array<{ criterion: string; other: string; otherIcon: string; otherColor: string; us: string }>).map((r, i) => (
+          <div key={r.criterion} className="bt-cmp-row" style={{ ["--i" as string]: i }}>
+            <p
+              className="bt-cmp-crit"
+              style={{
+                fontFamily: "'Bebas Neue','Impact','Arial Black',sans-serif",
+                fontSize: 14, letterSpacing: 2.5, textTransform: "uppercase",
+                color: "#9FD8FF", margin: "0 0 7px",
+              }}
+            >
+              {r.criterion}
+            </p>
+            <div className="bt-cmp-grid">
+              <div
+                style={{
+                  background: "#050508", border: "1.5px solid rgba(255,255,255,.22)", borderRadius: 12,
+                  padding: "12px 15px", display: "flex", alignItems: "center", gap: 10,
+                  color: "#fff", fontSize: 14, transform: "rotate(-.3deg)",
+                }}
+              >
+                <span style={{ color: r.otherColor, fontWeight: 900, fontSize: 16, flex: "none" }}>{r.otherIcon}</span>
+                <span style={{ opacity: 0.9 }}>{r.other}</span>
+              </div>
+              <div
+                style={{
+                  background: "#050508", border: "2.5px solid #94F7C5", borderRadius: 12,
+                  boxShadow: "4px 4px 0 0 #94F7C5",
+                  padding: "12px 15px", display: "flex", alignItems: "center", gap: 10,
+                  color: "#fff", fontSize: 14, fontWeight: 700, transform: "rotate(.3deg)",
+                }}
+              >
+                <span style={{ color: "#94F7C5", fontWeight: 900, fontSize: 16, flex: "none" }}>✓</span>
+                <span>{r.us}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ textAlign: "center", marginTop: 34 }}>
+        <a
+          href="/subscribe"
+          data-testid="compare-cta"
+          style={{
+            display: "inline-block", background: "#FFE29A", color: "#050508",
+            border: "3px solid #050508", borderRadius: 12,
+            boxShadow: "5px 5px 0 0 rgba(255,226,154,.5)",
+            padding: "15px 32px", fontWeight: 900, fontSize: 15.5,
+            textDecoration: "none", transform: "rotate(-.5deg)",
+          }}
+        >
+          {t.compareCta}
+        </a>
+      </div>
+    </div>
+  );
+}
+
 export default function LandingPage() {
   const { language, toggleLanguage } = useLanguage();
   const t = COPY[language];
@@ -1115,6 +1263,9 @@ export default function LandingPage() {
           </div>
         </Reveal>
       </div>
+
+      {/* ── BrainTrack vs. other matric sites — animated head-to-head ── */}
+      <CompareWall t={t} language={language} />
 
       {/* ── Reviews ribbon ───────────────────────────────────
           Pilot-cohort testimonials. Moved down here (owner call) so it reads

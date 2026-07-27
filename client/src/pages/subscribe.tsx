@@ -1220,8 +1220,8 @@ function PaymentPickerScreen({
   const boost = {
     charge: isAf ? "Eenmalige betaling" : "Once-off payment",
     chargeDetail: isAf
-      ? "Exam Boost: R550 een keer · volle toegang tot 30 November 2026 · geen proeftydperk, geen maandelikse heffings, geen outomatiese hernuwing nie. Verskyn op jou staat as KTH-TECH."
-      : "Exam Boost: R550 once · full access until 30 November 2026 · no trial, no monthly charges, no auto-renewal. Appears on your statement as KTH-TECH.",
+      ? "Exam Boost: R550 een keer · volle toegang tot 30 November 2026 · geen proeftydperk, geen maandelikse heffings, geen outomatiese hernuwing nie. Nie-terugbetaalbaar (in die mate wat die wet toelaat). Verskyn op jou staat as KTH-TECH."
+      : "Exam Boost: R550 once · full access until 30 November 2026 · no trial, no monthly charges, no auto-renewal. Non-refundable (to the extent permitted by law). Appears on your statement as KTH-TECH.",
     button: isAf ? "Betaal R550 een keer" : "Pay R550 once-off",
     buttonSub: isAf
       ? "Eksamenseisoen-toegang tot 30 Nov. Geen verdere heffings nie."

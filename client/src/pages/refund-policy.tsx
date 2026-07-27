@@ -49,11 +49,13 @@ export default function RefundPolicyPage() {
         content: [
           "BrainTrack™ does not issue refunds for partial months or unused days within a billing period.",
           "Once a billing period begins, the subscription fee for that period is non-refundable, except where a refund is required by these terms or by applicable South African consumer law.",
-          "If you believe a charge was made in error, raise it within 7 days through your subscription settings in the app (Settings → Subscription) and it will be reviewed in line with these terms."
+          "If you believe a charge was made in error, raise it within 7 days through your subscription settings in the app (Settings → Subscription) and it will be reviewed in line with these terms.",
+          "The Exam Boost once-off purchase (R550, access until 30 November 2026) is a single, non-recurring payment. It is final and non-refundable to the extent permitted by applicable South African law, and access continues until the end date regardless of how much of the service is used. Nothing in this policy limits any right you may have under consumer protection legislation that cannot lawfully be excluded."
         ],
         bullets: [
           "No refunds for partial months",
           "No refunds for unused access within a paid period",
+          "Exam Boost once-off purchases are final and non-refundable (to the extent permitted by law)",
           "Disputed charges must be raised in the app within 7 days",
         ],
       },
@@ -124,11 +126,13 @@ export default function RefundPolicyPage() {
         content: [
           "BrainTrack™ reik nie terugbetalings uit vir gedeeltelike maande of ongebruikte dae binne 'n faktureringssiklus nie.",
           "Sodra 'n faktureringssiklus begin, is die intekeningsfooi vir daardie tydperk nie-terugbetaalbaar nie, behalwe waar 'n terugbetaling deur hierdie bepalings of deur toepaslike Suid-Afrikaanse verbruikersreg vereis word.",
-          "As jy glo dat 'n heffing per abuis gemaak is, meld dit binne 7 dae aan via jou intekeninginstellings in die app (Instellings → Intekening), en dit sal in lyn met hierdie bepalings hersien word."
+          "As jy glo dat 'n heffing per abuis gemaak is, meld dit binne 7 dae aan via jou intekeninginstellings in die app (Instellings → Intekening), en dit sal in lyn met hierdie bepalings hersien word.",
+          "Die Exam Boost eenmalige aankoop (R550, toegang tot 30 November 2026) is 'n enkele, nie-herhalende betaling. Dit is finaal en nie-terugbetaalbaar in die mate wat toepaslike Suid-Afrikaanse reg toelaat, en toegang duur voort tot die einddatum ongeag hoeveel van die diens gebruik word. Niks in hierdie beleid beperk enige reg wat jy ingevolge verbruikersbeskermingswetgewing het wat nie wettiglik uitgesluit kan word nie."
         ],
         bullets: [
           "Geen terugbetalings vir gedeeltelike maande nie",
           "Geen terugbetalings vir ongebruikte toegang binne 'n betaalde tydperk nie",
+          "Exam Boost eenmalige aankope is finaal en nie-terugbetaalbaar (in die mate wat die wet toelaat)",
           "Betwiste heffings moet binne 7 dae in die app aangemeld word",
         ],
       },
