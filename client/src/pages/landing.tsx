@@ -34,7 +34,6 @@ import iconTransparent from "@/assets/handoff/icon-transparent.png";
 import muralTransparent from "@/assets/handoff/mural-transparent.png";
 import { KthMark } from "@/components/kth-mark";
 import { KthTechChip } from "@/components/brand/KthTechLogo";
-import { SpraySmear } from "@/components/graffiti-splats";
 import { ReviewsRibbon } from "@/components/landing/reviews-ribbon";
 import { RizzDemo } from "@/components/landing/rizz-demo";
 
@@ -578,6 +577,32 @@ function CompareWall({ t, language }: { t: any; language: string }) {
         >
           {t.compareCta}
         </a>
+
+        {/* Share the head-to-head — WhatsApp is THE SA share channel; the
+            og-image.jpg preview renders on the receiving side. */}
+        <div style={{ marginTop: 16 }}>
+          <a
+            href={`https://wa.me/?text=${encodeURIComponent(
+              (language === "af"
+                ? "BrainTrack vs ander matriekwebwerwe — kyk self na die vergelyking 🎓 "
+                : "BrainTrack vs other matric sites — see the head-to-head for yourself 🎓 ") +
+              "https://braintrack.tech/",
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="compare-share-whatsapp"
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              background: "#25D366", color: "#fff",
+              border: "2.5px solid #050508", borderRadius: 10,
+              boxShadow: "4px 4px 0 0 rgba(37,211,102,.45)",
+              padding: "11px 22px", fontWeight: 800, fontSize: 14,
+              textDecoration: "none", transform: "rotate(.4deg)",
+            }}
+          >
+            {language === "af" ? "Deel op WhatsApp" : "Share on WhatsApp"}
+          </a>
+        </div>
       </div>
     </div>
   );
@@ -1307,29 +1332,9 @@ export default function LandingPage() {
             zIndex: 1,
           }}
         />
-        {/* Paint drips — SpraySmear at very low opacity, corner cosmetic. */}
-        <span
-          aria-hidden
-          data-testid="footer-splat-top-right"
-          style={{
-            position: "absolute", top: -30, right: -40,
-            width: 260, height: 90, opacity: 0.14, pointerEvents: "none",
-            transform: "rotate(-6deg)", zIndex: 0,
-          }}
-        >
-          <SpraySmear color="#C5B3FF" />
-        </span>
-        <span
-          aria-hidden
-          data-testid="footer-splat-bottom-left"
-          style={{
-            position: "absolute", bottom: -34, left: -50,
-            width: 220, height: 80, opacity: 0.11, pointerEvents: "none",
-            transform: "rotate(4deg)", zIndex: 0,
-          }}
-        >
-          <SpraySmear color="#9FF5E8" />
-        </span>
+        {/* Paint-smear decorations removed — at 0.11-0.14 opacity on pure
+            black they rendered as dirty dark smudges, not pastel spray
+            (owner screenshot, 2026-07-27). Clean wall, nothing else. */}
 
         <div style={{ position: "relative", zIndex: 2, maxWidth: 1200, margin: "0 auto", padding: "40px 32px 24px" }}>
           {/* Owner call: clean footer — the 3-column SEO link grid was removed

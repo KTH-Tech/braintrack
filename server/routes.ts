@@ -11405,21 +11405,42 @@ Create comprehensive study notes for the topic provided.`;
   app.get("/api/admin/simulator/overview", isAuthenticated, requireRole("admin"), async (_req: any, res) => {
     try {
       const { dbeSimulatedQuestions: sqT } = await import("@shared/schema");
-      const stats = await db
-        .select({
-          subject: sqT.subject,
-          total: sql<number>`count(*)::int`,
-          avgQuality: sql<number>`round(avg(coalesce(${sqT.qualityScore},0)))::int`,
-          ge92: sql<number>`count(*) filter (where coalesce(${sqT.qualityScore},0) >= 92)::int`,
-          withStimulus: sql<number>`count(*) filter (where ${sqT.stimulusText} is not null)::int`,
-          released: sql<number>`count(*) filter (where ${sqT.releasedAt} is not null)::int`,
-          unreleasedEligible: sql<number>`count(*) filter (where ${sqT.releasedAt} is null and coalesce(${sqT.qualityScore},0) >= 92)::int`,
-          latestVersion: sql<number>`coalesce(max(${sqT.releaseVersion}), 0)::int`,
-          topics: sql<number>`count(distinct ${sqT.topic})::int`,
-        })
-        .from(sqT)
-        .groupBy(sqT.subject)
-        .orderBy(sqT.subject);
+      let stats: Array<{ subject: string; total: number; avgQuality: number; ge92: number; withStimulus: number; released: number; unreleasedEligible: number; latestVersion: number; topics: number }>;
+      let migrationPending = false;
+      try {
+        stats = await db
+          .select({
+            subject: sqT.subject,
+            total: sql<number>`count(*)::int`,
+            avgQuality: sql<number>`round(avg(coalesce(${sqT.qualityScore},0)))::int`,
+            ge92: sql<number>`count(*) filter (where coalesce(${sqT.qualityScore},0) >= 92)::int`,
+            withStimulus: sql<number>`count(*) filter (where ${sqT.stimulusText} is not null)::int`,
+            released: sql<number>`count(*) filter (where ${sqT.releasedAt} is not null)::int`,
+            unreleasedEligible: sql<number>`count(*) filter (where ${sqT.releasedAt} is null and coalesce(${sqT.qualityScore},0) >= 92)::int`,
+            latestVersion: sql<number>`coalesce(max(${sqT.releaseVersion}), 0)::int`,
+            topics: sql<number>`count(distinct ${sqT.topic})::int`,
+          })
+          .from(sqT)
+          .groupBy(sqT.subject)
+          .orderBy(sqT.subject);
+      } catch {
+        // Migrations 0036/0037 not applied yet (stimulus_text / released_at
+        // missing) — degrade to the pre-migration columns via raw SQL so the
+        // Simulator still lists subjects WITH working Generate buttons,
+        // instead of an empty page. Release stays disabled until migrated.
+        migrationPending = true;
+        console.warn("[simulator/overview] falling back to pre-0036/0037 columns — run the pending migrations");
+        const r = await db.execute<{ subject: string; total: number; avgquality: number; ge92: number; topics: number }>(sql`
+          SELECT subject, COUNT(*)::int AS total,
+                 ROUND(AVG(COALESCE(quality_score,0)))::int AS avgquality,
+                 COUNT(*) FILTER (WHERE COALESCE(quality_score,0) >= 92)::int AS ge92,
+                 COUNT(DISTINCT topic)::int AS topics
+            FROM dbe_simulated_questions GROUP BY subject ORDER BY subject`);
+        stats = (r.rows ?? []).map((x) => ({
+          subject: x.subject, total: x.total, avgQuality: x.avgquality, ge92: x.ge92,
+          withStimulus: 0, released: 0, unreleasedEligible: 0, latestVersion: 0, topics: x.topics,
+        }));
+      }
 
       // CRITICAL: list every subject with a usable INGESTED bank, not just
       // ones that already have simulated rows. Otherwise a subject at zero
@@ -11438,7 +11459,7 @@ Create comprehensive study notes for the topic provided.`;
         }
       }
       const subjects = [...bySubject.values()].sort((a, b) => a.subject.localeCompare(b.subject));
-      return res.json({ subjects, releaseBar: 92 });
+      return res.json({ subjects, releaseBar: 92, migrationPending });
     } catch (err: any) {
       console.error("Error in /api/admin/simulator/overview:", err);
       return res.status(500).json({ error: safeError(err) });
@@ -12824,16 +12845,9 @@ Return one entry per question, same order as input. JSON: { "scores": [{ "idx": 
       // Persist to DB so learners can see them
       const { dbeSimulatedQuestions, examPapers, questions: questionsTable, subjects: subjectsTable, topics: topicsTbl } = await import("@shared/schema");
       for (const q of generated) {
-        await db.insert(dbeSimulatedQuestions).values({
+        const baseRow = {
           subject,
           questionText: q.questionText,
-          // Generated supporting paragraph/passage — stored alongside the
-          // question so passage-based items render self-contained to learners.
-          stimulusText:
-            typeof q.stimulusText === "string" && q.stimulusText.trim().length >= 40
-              ? q.stimulusText.trim().slice(0, 4000)
-              : null,
-          language: "en", // generator currently produces English; AF generation lands next
           memoText: q.memoText,
           marks: q.marks,
           cognitiveLevel: q.cognitiveLevel,
@@ -12846,8 +12860,26 @@ Return one entry per question, same order as input. JSON: { "scores": [{ "idx": 
             markingScheme: Array.isArray(q.markingScheme) ? q.markingScheme : [],
             markingLogic,
           },
-          batchId: result.finishedAt
-        });
+          batchId: result.finishedAt,
+        };
+        try {
+          await db.insert(dbeSimulatedQuestions).values({
+            ...baseRow,
+            // Generated supporting paragraph/passage — stored alongside the
+            // question so passage-based items render self-contained.
+            stimulusText:
+              typeof q.stimulusText === "string" && q.stimulusText.trim().length >= 40
+                ? q.stimulusText.trim().slice(0, 4000)
+                : null,
+            language: "en", // generator currently produces English; AF next
+          });
+        } catch {
+          // Migration 0036 not applied yet — bank the question without the
+          // new columns rather than losing the whole batch. The passage is
+          // dropped for this row; regenerate after migrating to get passages.
+          console.warn("[SIMULATE] insert fell back to pre-0036 columns — run pending migrations");
+          await db.insert(dbeSimulatedQuestions).values(baseRow);
+        }
       }
 
       // === STEP 4: Publish to learner content ===
@@ -16133,13 +16165,32 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       ];
       if (topic) simConds.push(eq(sqT.topic, topic));
 
-      const candidates = await db
-        .select()
-        .from(sqT)
-        .where(and(...simConds))
-        // Best score first, then random within — variety without starving.
-        .orderBy(sql`COALESCE(${sqT.qualityScore}, 0) DESC, RANDOM()`)
-        .limit(count * 3);
+      let candidates: any[];
+      try {
+        candidates = await db
+          .select()
+          .from(sqT)
+          .where(and(...simConds))
+          // Best score first, then random within — variety without starving.
+          .orderBy(sql`COALESCE(${sqT.qualityScore}, 0) DESC, RANDOM()`)
+          .limit(count * 3);
+      } catch {
+        // Migrations 0036/0037 not applied — drizzle's typed SELECT projects
+        // the new columns and fails. Serve via raw SQL on the pre-migration
+        // columns so learners still get questions (without passages).
+        console.warn("[mini-mock] falling back to pre-0036 columns — run pending migrations");
+        const r = await db.execute<any>(sql`
+          SELECT id, subject, question_text AS "questionText", memo_text AS "memoText",
+                 marks, cognitive_level AS "cognitiveLevel", topic,
+                 quality_score AS "qualityScore"
+            FROM dbe_simulated_questions
+           WHERE subject = ${subject}
+             AND memo_text IS NOT NULL AND length(trim(memo_text)) >= 20
+             ${topic ? sql`AND topic = ${topic}` : sql``}
+           ORDER BY COALESCE(quality_score,0) DESC, RANDOM()
+           LIMIT ${count * 3}`);
+        candidates = (r.rows ?? []).map((x) => ({ ...x, stimulusText: null }));
+      }
 
       // Same gradability guard as before — a memo must clean down to a real
       // marking scheme, else the learner answers and gets nothing back.
@@ -16203,11 +16254,22 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       // the memo-driven path runs.
       // Mark against the simulated pool by id (no quality cutoff — the learner
       // was served the best available, so any served question must be markable).
-      const [rowRaw] = await db
-        .select()
-        .from(sqT)
-        .where(eq(sqT.id, Number(questionId)))
-        .limit(1);
+      let rowRaw: any;
+      try {
+        [rowRaw] = await db
+          .select()
+          .from(sqT)
+          .where(eq(sqT.id, Number(questionId)))
+          .limit(1);
+      } catch {
+        // Pre-0036/0037 DB — same raw-SQL fallback as the serve endpoint so
+        // marking never breaks while migrations are pending.
+        const r = await db.execute<any>(sql`
+          SELECT id, subject, question_text AS "questionText", memo_text AS "memoText",
+                 marks, cognitive_level AS "cognitiveLevel", topic, metadata
+            FROM dbe_simulated_questions WHERE id = ${Number(questionId)} LIMIT 1`);
+        rowRaw = (r.rows ?? [])[0];
+      }
       if (!rowRaw) return res.status(404).json({ error: "Question not found" });
       const row: any = rowRaw;
 
