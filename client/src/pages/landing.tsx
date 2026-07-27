@@ -1181,6 +1181,85 @@ export default function LandingPage() {
         </span>
 
         <div style={{ position: "relative", zIndex: 2, maxWidth: 1200, margin: "0 auto", padding: "40px 32px 24px" }}>
+          {/* ── SEO link grid (owner: "seo optimised footer") ─────────────
+              Crawlable, keyword-rich internal anchors that push landing-page
+              equity at the queries SA parents/learners actually search
+              ("grade 12 past papers", "NSC exam timetable", "matric study
+              plan"). Plain <a href> so the links exist as real anchors for
+              crawlers; every target is a real registered route — no dead
+              links, ever. Sits above the brand row; the gravity-wall
+              minimal row below is unchanged. */}
+          <div
+            data-testid="footer-seo-grid"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))",
+              gap: "26px 32px",
+              paddingBottom: 30,
+              marginBottom: 30,
+              borderBottom: "1px solid rgba(255,255,255,.08)",
+            }}
+          >
+            {([
+              {
+                head: language === "af" ? "Matriekvoorbereiding" : "Matric Prep",
+                accent: "#9FF5E8",
+                links: [
+                  { label: language === "af" ? "Graad 12-vraestelle & memo's" : "Grade 12 Past Papers & Memos", href: "/past-papers" },
+                  { label: language === "af" ? "NSS 2026-eksamenrooster" : "NSC 2026 Exam Timetable", href: "/calendar" },
+                  { label: language === "af" ? "KABV-studieplanne & KI-tutor" : "CAPS Study Plans & AI Tutor", href: "/features" },
+                  { label: language === "af" ? "Exam Boost — R550 een keer" : "Exam Boost — R550 Once-Off", href: "/subscribe?offer=exam-boost" },
+                ],
+              },
+              {
+                head: language === "af" ? "Skole & Ouers" : "Schools & Parents",
+                accent: "#9FD8FF",
+                links: [
+                  { label: language === "af" ? "BrainTrack vir Skole" : "BrainTrack for Schools", href: "/for-schools" },
+                  { label: language === "af" ? "Vennootskole" : "Partner Schools", href: "/partner-schools" },
+                  { label: language === "af" ? "Navorsing & metodologie" : "Research & Methodology", href: "/research" },
+                  { label: language === "af" ? "Oor BrainTrack" : "About BrainTrack", href: "/about" },
+                ],
+              },
+              {
+                head: language === "af" ? "Regsinligting" : "Legal",
+                accent: "#FFB7E5",
+                links: [
+                  { label: language === "af" ? "Diensbepalings" : "Terms of Service", href: "/terms-of-service" },
+                  { label: language === "af" ? "Privaatheidsbeleid (POPIA)" : "Privacy Policy (POPIA)", href: "/privacy-policy" },
+                  { label: language === "af" ? "Terugbetalingsbeleid" : "Refund Policy", href: "/refund-policy" },
+                  { label: language === "af" ? "Koekiebeleid" : "Cookie Policy", href: "/cookie-policy" },
+                ],
+              },
+            ]).map((col) => (
+              <nav key={col.head} aria-label={col.head}>
+                <p
+                  style={{
+                    fontFamily: "'Bebas Neue','Impact','Arial Black',sans-serif",
+                    fontSize: 14, fontWeight: 800, letterSpacing: 2.5,
+                    textTransform: "uppercase", color: col.accent,
+                    margin: "0 0 12px",
+                  }}
+                >
+                  {col.head}
+                </p>
+                <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 9 }}>
+                  {col.links.map((l) => (
+                    <li key={l.href}>
+                      <a
+                        href={l.href}
+                        className="btl-foot-link"
+                        style={{ fontSize: 13.5, lineHeight: 1.5, color: "#fff", textDecoration: "none", ["--h" as string]: col.accent }}
+                      >
+                        {l.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            ))}
+          </div>
+
           <div
             className="btl-foot-row-min"
             style={{
