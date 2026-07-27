@@ -5,7 +5,10 @@ import { useEffect } from "react";
 // carry the geo signals search engines use to surface us as a South African
 // Grade 12 study platform (not a generic global edtech).
 const SITE_ORIGIN = "https://braintrack.tech";
-const DEFAULT_OG_IMAGE = `${SITE_ORIGIN}/og-image.png`;
+// Generated 1200×630 (118KB) from the hero mural via sharp — the old
+// /og-image.png reference pointed at a file that never existed, so every
+// WhatsApp/Facebook share rendered with NO preview image.
+const DEFAULT_OG_IMAGE = `${SITE_ORIGIN}/og-image.jpg`;
 const SITE_LOCALE = "en_ZA";
 const GEO_REGION = "ZA";
 const GEO_PLACENAME = "South Africa";

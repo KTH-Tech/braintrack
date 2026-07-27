@@ -11405,7 +11405,7 @@ Create comprehensive study notes for the topic provided.`;
   app.get("/api/admin/simulator/overview", isAuthenticated, requireRole("admin"), async (_req: any, res) => {
     try {
       const { dbeSimulatedQuestions: sqT } = await import("@shared/schema");
-      const rows = await db
+      const stats = await db
         .select({
           subject: sqT.subject,
           total: sql<number>`count(*)::int`,
@@ -11420,7 +11420,25 @@ Create comprehensive study notes for the topic provided.`;
         .from(sqT)
         .groupBy(sqT.subject)
         .orderBy(sqT.subject);
-      return res.json({ subjects: rows, releaseBar: 92 });
+
+      // CRITICAL: list every subject with a usable INGESTED bank, not just
+      // ones that already have simulated rows. Otherwise a subject at zero
+      // has no row → no Generate button → nothing can ever be generated
+      // (a dead end, since the DBE portal's generate buttons moved here).
+      const { subjectsWithUsableBank } = await import("./content-generators");
+      const bank = await subjectsWithUsableBank().catch(() => [] as Array<{ subject: string }>);
+      const bySubject = new Map(stats.map((s) => [s.subject, s]));
+      for (const b of bank) {
+        if (!bySubject.has(b.subject)) {
+          bySubject.set(b.subject, {
+            subject: b.subject,
+            total: 0, avgQuality: 0, ge92: 0, withStimulus: 0,
+            released: 0, unreleasedEligible: 0, latestVersion: 0, topics: 0,
+          });
+        }
+      }
+      const subjects = [...bySubject.values()].sort((a, b) => a.subject.localeCompare(b.subject));
+      return res.json({ subjects, releaseBar: 92 });
     } catch (err: any) {
       console.error("Error in /api/admin/simulator/overview:", err);
       return res.status(500).json({ error: safeError(err) });

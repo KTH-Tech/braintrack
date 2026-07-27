@@ -112,12 +112,12 @@ export default function AdminSimulatorPage() {
         ) : !data?.subjects?.length ? (
           <div style={{ background: "#050508", border: `2.5px solid ${P.butter}`, boxShadow: `5px 5px 0 0 ${P.butter}`, borderRadius: 18, padding: 26 }}>
             <p style={{ margin: 0, fontWeight: 700 }}>
-              {isAf ? "Nog geen gesimuleerde inhoud nie." : "No simulated content yet."}
+              {isAf ? "Geen vakke met ingeneemde inhoud nie." : "No subjects with ingested content yet."}
             </p>
             <p style={{ margin: "6px 0 0", fontSize: 13.5, opacity: 0.92 }}>
               {isAf
-                ? "Gaan na die DBE Portaal om regte vraestelle in te neem, kom dan terug en genereer hier."
-                : "Ingest real papers in the DBE Portal first, then come back here and generate."}
+                ? "Elke vak met 'n bruikbare ingeneemde bank verskyn hier met 'n Genereer-knoppie — neem eers regte vraestelle in by die DBE Portaal."
+                : "Every subject with a usable ingested bank shows here with a Generate button — ingest real papers in the DBE Portal first."}
             </p>
           </div>
         ) : (
