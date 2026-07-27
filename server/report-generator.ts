@@ -408,7 +408,41 @@ export async function generateReportPdfBuffer(
 
   const hasPartnerLogo = partnerLogoBuffer !== null;
   const hasPartnerRow = !!partnerDisplayName || hasPartnerLogo;
-  const HEADER_H = hasPartnerRow ? 178 : 152;
+
+  // ── Optional graffiti masthead artwork ────────────────────────────────────
+  // If the owner drops their designed header at attached_assets/
+  // parent-report-header.png (or .jpg), it becomes the full-width masthead —
+  // it already carries the BrainTrack wordmark + taglines, so the code then
+  // skips its own logo/title and draws only a slim info bar (real learner
+  // name/date) beneath the art. IMPORTANT: export the artwork WITHOUT the
+  // sample learner-info strip — real data is drawn by this generator, never
+  // baked into the image. Fully guarded: any read/metadata failure falls back
+  // to the standard masthead.
+  let headerArt: { buf: Buffer; h: number } | null = null;
+  try {
+    const fs = await import("node:fs");
+    const path = await import("node:path");
+    for (const name of ["parent-report-header.png", "parent-report-header.jpg"]) {
+      const p = path.join(process.cwd(), "attached_assets", name);
+      if (fs.existsSync(p)) {
+        const buf = fs.readFileSync(p);
+        const sharp = (await import("sharp")).default;
+        const meta = await sharp(buf).metadata();
+        if (meta.width && meta.height) {
+          const A4_W = 595.28;
+          headerArt = { buf, h: (A4_W * meta.height) / meta.width };
+        }
+        break;
+      }
+    }
+  } catch (err) {
+    console.warn("[ReportGenerator] header art unusable — standard masthead:", err instanceof Error ? err.message : String(err));
+    headerArt = null;
+  }
+  const INFO_BAR_H = 46;
+  const HEADER_H = headerArt
+    ? Math.round(headerArt.h) + INFO_BAR_H
+    : hasPartnerRow ? 178 : 152;
 
   return new Promise<Buffer>((resolve, reject) => {
     const doc = new PDFDocument({
@@ -757,6 +791,16 @@ export async function generateReportPdfBuffer(
 
     doc.rect(0, 0, doc.page.width, HEADER_H).fillColor(NEAR_BLACK).fill();
 
+    if (headerArt) {
+      // Owner's graffiti masthead, full-width. It brings its own logo/title,
+      // so the standard logo + report title are skipped below.
+      try {
+        doc.image(headerArt.buf, 0, 0, { width: doc.page.width });
+      } catch (err) {
+        console.warn("[ReportGenerator] header art draw failed:", err instanceof Error ? err.message : String(err));
+      }
+    }
+
     // Pastel accent strip along the bottom of the band — the brand signature,
     // restrained to a 3pt rule so it reads executive, not loud.
     const segW = doc.page.width / STRIPE.length;
@@ -764,6 +808,7 @@ export async function generateReportPdfBuffer(
       doc.rect(i * segW, HEADER_H - 3, segW + 1, 3).fillColor(c).fill();
     });
 
+    if (!headerArt) {
     try {
       doc.image(BRAND_LOGO_BUFFER, LEFT, 24, { fit: [146, 38] });
     } catch (err) {
@@ -777,10 +822,12 @@ export async function generateReportPdfBuffer(
         .fontSize(24)
         .text("BrainTrack", LEFT, 30, { lineBreak: false });
     }
+    }
 
     /* Report title — the ONE place Permanent Marker is allowed to shout.
        Auto-fits down to a 15pt floor; below that a marker face is illegible,
        so we swap to Poppins Bold rather than print mush. */
+    if (!headerArt) {
     const TITLE_MIN = 15;
     let titleSize = 26;
     doc.font(F.display);
@@ -798,10 +845,12 @@ export async function generateReportPdfBuffer(
       .fontSize(titleFitsAsMarker ? titleSize : 22)
       .fillColor(AQUA)
       .text(reportTitle, LEFT, 74, { width: CONTENT_W, lineBreak: false });
+    }
 
-    /* Meta row — label above value, left and right stacks. */
-    const metaLabelY = 116;
-    const metaValueY = 127;
+    /* Meta row — label above value, left and right stacks. With the art
+       masthead these sit in the slim info bar drawn under the artwork. */
+    const metaLabelY = headerArt ? Math.round(headerArt.h) + 9 : 116;
+    const metaValueY = headerArt ? Math.round(headerArt.h) + 20 : 127;
     const metaLabel = (txt: string, x: number, w: number, align: "left" | "right") => {
       doc
         .fillColor(SKY)
@@ -829,7 +878,10 @@ export async function generateReportPdfBuffer(
     metaLabel(t("Report Date", "Verslagdatum"), LEFT + CONTENT_W / 2, CONTENT_W / 2, "right");
     metaValue(generatedAtLabel, LEFT + CONTENT_W / 2, CONTENT_W / 2, "right");
 
-    if (hasPartnerRow) {
+    // With the art masthead the slim info bar has no room for the partner
+    // row — the partner still appears in the report email. Standard masthead
+    // keeps it exactly as before.
+    if (hasPartnerRow && !headerArt) {
       const partnerY = 150;
       if (partnerLogoBuffer) {
         try {
