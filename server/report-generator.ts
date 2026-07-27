@@ -65,6 +65,14 @@ export interface ReportGeneratorOpts {
    * true so existing callers keep their behaviour.
    */
   hasLinkedLearner?: boolean;
+  /**
+   * Which masthead artwork slot to use: "parent" reads
+   * attached_assets/parent-report-header.png, "school" reads
+   * attached_assets/school-report-header.png. Defaults to "parent". A future
+   * school-report PDF passes "school" and gets its own graffiti masthead
+   * with zero further wiring.
+   */
+  headerVariant?: "parent" | "school";
 }
 
 /* ── Brand palette — Luxury Street Graffiti (executive / print mode) ──────── */
@@ -164,6 +172,7 @@ export async function generateReportPdfBuffer(
     lang,
     partnerBranding = {},
     hasLinkedLearner = true,
+    headerVariant = "parent",
   } = opts;
   const isAf = lang === "af";
   const t = (en: string, af: string) => (isAf ? af : en);
@@ -422,7 +431,11 @@ export async function generateReportPdfBuffer(
   try {
     const fs = await import("node:fs");
     const path = await import("node:path");
-    for (const name of ["parent-report-header.png", "parent-report-header.jpg"]) {
+    const artNames =
+      headerVariant === "school"
+        ? ["school-report-header.png", "school-report-header.jpg"]
+        : ["parent-report-header.png", "parent-report-header.jpg"];
+    for (const name of artNames) {
       const p = path.join(process.cwd(), "attached_assets", name);
       if (fs.existsSync(p)) {
         const buf = fs.readFileSync(p);
