@@ -347,34 +347,21 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
                 data-testid={`btn-ingest-all-years-${row.subject}`}>
                 {isPipelineRunning || isIngesting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />} Ingest All Years
               </button>
+              {/* Generation moved OUT of this portal (owner spec: DBE Portal =
+                  ingest the real papers ONLY). The old "Build Questions" and
+                  "Crunch ×10" buttons now live on the Simulator screen, which
+                  adds quality stats + versioned Release. This link hands over
+                  once a subject has ingested content to generate from. */}
               {hasQuestions && (
-                <button
+                <a
+                  href="/admin/simulator"
                   className={neonBtn}
-                  style={aiBlocked
-                    ? { color: "#ffffff", border: "1px solid rgba(255,255,255,0.25)", background: "transparent", cursor: "not-allowed" }
-                    : { color: "#050508", background: "linear-gradient(100deg,#9FD8FF,#C5B3FF)", border: "none" }}
-                  disabled={isPipelineRunning || isSimulating || aiBlocked}
-                  onClick={(e) => { e.stopPropagation(); if (!aiBlocked) onSimulate(row.subject); }}
-                  title={aiBlocked ? "Requires OpenAI API key — configure AI_INTEGRATIONS_OPENAI_API_KEY to enable" : "Use OpenAI to generate 50 practice questions from ingested content (batched, mastery-aware)"}
-                  data-testid={`btn-simulate-${row.subject}`}>
-                  {isSimulating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
-                  Build Questions
-                  {aiBlocked && <span className="ml-1 text-[9px] font-black uppercase tracking-[0.1em] px-1 py-0.5 rounded" style={{ background: "rgba(255,183,229,0.15)", color: "#FFB7E5", border: "1px solid rgba(255,183,229,0.3)" }}>No key</span>}
-                </button>
-              )}
-              {ingestionComplete && (
-                <button
-                  className={neonBtn}
-                  style={aiBlocked
-                    ? { color: "#ffffff", border: "1px solid rgba(255,255,255,0.25)", background: "transparent", cursor: "not-allowed" }
-                    : { color: "#050508", background: "linear-gradient(100deg,#9FD8FF,#C5B3FF)", border: "none" }}
-                  disabled={isPipelineRunning || isSimulating || isAnyCrunchRunning || aiBlocked}
-                  onClick={(e) => { e.stopPropagation(); if (!aiBlocked) onCrunchSubject(row.subject, 10); }}
-                  title={aiBlocked ? "Requires OpenAI API key" : "Generate 10 high-quality AI practice papers in one fast batch for this subject"}
-                  data-testid={`btn-crunch-subject-${row.subject}`}>
-                  <Zap className="w-3.5 h-3.5" /> Crunch ×10
-                  {aiBlocked && <span className="ml-1 text-[9px] font-black uppercase tracking-[0.1em] px-1 py-0.5 rounded" style={{ background: "rgba(255,183,229,0.15)", color: "#FFB7E5", border: "1px solid rgba(255,183,229,0.3)" }}>No key</span>}
-                </button>
+                  style={{ color: "#050508", background: "linear-gradient(100deg,#94F7C5,#9FF5E8)", border: "none", textDecoration: "none" }}
+                  onClick={(e) => e.stopPropagation()}
+                  title="Generate simulated questions (with supporting passages) and release them to learners — on the Simulator screen"
+                  data-testid={`btn-open-simulator-${row.subject}`}>
+                  <Zap className="w-3.5 h-3.5" /> Simulator →
+                </a>
               )}
               {hasQuestions && (row.memoCoverage === undefined || (row.memoCoverage ?? 100) < 100) && (
                 <button
