@@ -16018,15 +16018,17 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       const { isMemoContentless } = await import("./memo-clean");
       const { parseMemoToScheme } = await import("./memo-marker");
 
-      // Examiner-grounded fidelity bar. dbe_simulated_questions.quality_score is
-      // 0–100; the generator's target is 92, so served content must clear it.
-      const SIM_QUALITY_BAR = 92;
-
+      // Serve the BEST AVAILABLE simulated content, highest quality first — NOT
+      // a hard quality cutoff. A hard "≥92" gate starves learners the moment
+      // the generator hasn't yet scored a subject that high (which is most of
+      // them today), leaving "content preparing" everywhere. Best-first means
+      // learners always get the strongest content that exists, and the served
+      // quality rises automatically toward the 92–99 target as the generator
+      // improves. Only real gates: a subject match and a gradable memo.
       const simConds = [
         eq(sqT.subject, subject),
         sql`${sqT.memoText} IS NOT NULL`,
         sql`length(trim(${sqT.memoText})) >= 20`,
-        sql`COALESCE(${sqT.qualityScore}, 0) >= ${SIM_QUALITY_BAR}`,
       ];
       if (topic) simConds.push(eq(sqT.topic, topic));
 
@@ -16034,7 +16036,8 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         .select()
         .from(sqT)
         .where(and(...simConds))
-        .orderBy(sql`RANDOM()`)
+        // Best score first, then random within — variety without starving.
+        .orderBy(sql`COALESCE(${sqT.qualityScore}, 0) DESC, RANDOM()`)
         .limit(count * 3);
 
       // Same gradability guard as before — a memo must clean down to a real
@@ -16095,10 +16098,12 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       // — everything the memo marker and attempt recorder use — it just lacks
       // the verbatim-only MCQ + paper fields, so the MCQ branch never fires and
       // the memo-driven path runs.
+      // Mark against the simulated pool by id (no quality cutoff — the learner
+      // was served the best available, so any served question must be markable).
       const [rowRaw] = await db
         .select()
         .from(sqT)
-        .where(and(eq(sqT.id, Number(questionId)), sql`COALESCE(${sqT.qualityScore}, 0) >= 92`))
+        .where(eq(sqT.id, Number(questionId)))
         .limit(1);
       if (!rowRaw) return res.status(404).json({ error: "Question not found" });
       const row: any = rowRaw;
