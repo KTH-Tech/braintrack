@@ -2201,6 +2201,11 @@ export const dbeSimulatedQuestions = pgTable(
     // here without a matching allowlisted migration (the 0034 lesson).
     stimulusText: text("stimulus_text"),
     language: varchar("language", { length: 8 }).notNull().default("en"),
+    // Versioned releases (migration 0037): the Simulator screen's Release
+    // button stamps eligible rows with released_at + the subject's next
+    // version. Cumulative — releases only ever ADD to the released pool.
+    releasedAt: timestamp("released_at", { withTimezone: true }),
+    releaseVersion: integer("release_version"),
     marks: integer("marks"),
     cognitiveLevel: text("cognitive_level")
       .default("knowledge")

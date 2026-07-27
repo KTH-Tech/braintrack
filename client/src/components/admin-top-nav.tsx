@@ -16,6 +16,7 @@ import {
   QrCode,
   School,
   Footprints,
+  Zap,
 } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
 import iconTransparent from "@/assets/handoff/icon-transparent.png";
@@ -29,6 +30,7 @@ export type AdminNavKey =
   | "partner-branding"
   | "content-editor"
   | "content-studio"
+  | "simulator"
   | "dbe-portal"
   | "schools"
   | "qr"
@@ -70,6 +72,7 @@ const NAV_GROUPS: NavGroup[] = [
       { key: "products", href: "/learn/admin/products", labelEn: "Products", labelAf: "Produkte", Icon: Package },
       { key: "content-editor", href: "/learn/admin/content", labelEn: "Content Editor", labelAf: "Inhoudsredigeerder", Icon: FileEdit },
       { key: "content-studio", href: "/admin/content-studio", labelEn: "Content Studio", labelAf: "Inhoudstudio", Icon: Database },
+      { key: "simulator", href: "/admin/simulator", labelEn: "Simulator", labelAf: "Simulator", Icon: Zap },
       { key: "dbe-portal", href: "/learn/admin/dbe-portal", labelEn: "DBE Portal", labelAf: "DBE Portaal", Icon: FileText },
     ],
   },

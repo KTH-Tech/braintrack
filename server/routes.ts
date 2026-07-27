@@ -11399,6 +11399,72 @@ Create comprehensive study notes for the topic provided.`;
     return [];
   }
 
+  // ── Simulator screen ──────────────────────────────────────────────────────
+  // GET /api/admin/simulator/overview — per-subject state of the simulated
+  // pool: how much exists, its quality, passages, and release versions.
+  app.get("/api/admin/simulator/overview", isAuthenticated, requireRole("admin"), async (_req: any, res) => {
+    try {
+      const { dbeSimulatedQuestions: sqT } = await import("@shared/schema");
+      const rows = await db
+        .select({
+          subject: sqT.subject,
+          total: sql<number>`count(*)::int`,
+          avgQuality: sql<number>`round(avg(coalesce(${sqT.qualityScore},0)))::int`,
+          ge92: sql<number>`count(*) filter (where coalesce(${sqT.qualityScore},0) >= 92)::int`,
+          withStimulus: sql<number>`count(*) filter (where ${sqT.stimulusText} is not null)::int`,
+          released: sql<number>`count(*) filter (where ${sqT.releasedAt} is not null)::int`,
+          unreleasedEligible: sql<number>`count(*) filter (where ${sqT.releasedAt} is null and coalesce(${sqT.qualityScore},0) >= 92)::int`,
+          latestVersion: sql<number>`coalesce(max(${sqT.releaseVersion}), 0)::int`,
+          topics: sql<number>`count(distinct ${sqT.topic})::int`,
+        })
+        .from(sqT)
+        .groupBy(sqT.subject)
+        .orderBy(sqT.subject);
+      return res.json({ subjects: rows, releaseBar: 92 });
+    } catch (err: any) {
+      console.error("Error in /api/admin/simulator/overview:", err);
+      return res.status(500).json({ error: safeError(err) });
+    }
+  });
+
+  // POST /api/admin/simulator/release { subject }
+  // Stamps every unreleased row at/above the quality bar with released_at and
+  // the subject's NEXT version number. Cumulative and idempotent-per-state:
+  // running it twice releases nothing new the second time.
+  app.post("/api/admin/simulator/release", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    try {
+      const subject = typeof req.body?.subject === "string" ? req.body.subject.trim() : "";
+      if (!subject) return res.status(400).json({ error: "subject required" });
+      const RELEASE_BAR = 92;
+      const { dbeSimulatedQuestions: sqT } = await import("@shared/schema");
+
+      const [{ maxV }] = await db
+        .select({ maxV: sql<number>`coalesce(max(${sqT.releaseVersion}), 0)::int` })
+        .from(sqT)
+        .where(eq(sqT.subject, subject));
+      const nextVersion = (maxV ?? 0) + 1;
+
+      const updated = await db
+        .update(sqT)
+        .set({ releasedAt: new Date(), releaseVersion: nextVersion })
+        .where(and(
+          eq(sqT.subject, subject),
+          sql`${sqT.releasedAt} IS NULL`,
+          sql`coalesce(${sqT.qualityScore},0) >= ${RELEASE_BAR}`,
+        ))
+        .returning({ id: sqT.id });
+
+      if (updated.length === 0) {
+        return res.json({ released: 0, version: maxV ?? 0, message: "Nothing eligible — generate more or improve quality first." });
+      }
+      console.log(`[simulator] released v${nextVersion} for ${subject}: ${updated.length} question(s)`);
+      return res.json({ released: updated.length, version: nextVersion });
+    } catch (err: any) {
+      console.error("Error in /api/admin/simulator/release:", err);
+      return res.status(500).json({ error: safeError(err) });
+    }
+  });
+
   // POST /api/admin/content-studio/daily-challenge
   // Body: { subject? | all?, count?, preview?, model?, maxSubjects? }
   app.post("/api/admin/content-studio/daily-challenge", isAuthenticated, requireRole("admin"), async (req: any, res) => {
