@@ -1553,6 +1553,40 @@ export default function DBEPortal() {
         </div>
       </div>
 
+      {/* What-each-button-does legend. Native <details> so it's collapsible
+          without state and works on touch (the per-button title= tooltips
+          don't). Two groups: ingest the real DBE papers vs. generate + serve
+          simulated content. */}
+      <details style={{ margin: "16px 40px 0", border: "2px solid #9FD8FF", borderRadius: 14, boxShadow: "4px 4px 0 0 #9FD8FF", background: "#050508" }}>
+        <summary style={{ cursor: "pointer", padding: "12px 16px", fontWeight: 800, color: "#9FD8FF", fontSize: 13, letterSpacing: 0.3 }}>
+          {language === "af" ? "Wat doen elke knoppie?" : "What each button does"}
+        </summary>
+        <div style={{ padding: "0 16px 16px", display: "grid", gap: 14 }}>
+          <div>
+            <p style={{ fontWeight: 800, color: "#FFE29A", fontSize: 12, textTransform: "uppercase", letterSpacing: 1, margin: "0 0 6px" }}>
+              {language === "af" ? "1 · Neem regte DBE-inhoud in" : "1 · Ingest real DBE content"}
+            </p>
+            <ul style={{ margin: 0, paddingLeft: 18, color: "#fff", fontSize: 13, lineHeight: 1.7 }}>
+              <li><strong>Run ingestion</strong> — downloads the actual DBE past papers, memos & supporting docs and extracts the verbatim questions (the source material).</li>
+              <li><strong>Force reingest</strong> — re-downloads & replaces everything for a subject. Use after a bad/partial ingest.</li>
+              <li><strong>Fill Missing</strong> — re-fetches memos only for questions that came in without one.</li>
+              <li><strong>Verify</strong> — checks ingested content integrity (hashes, coverage). <strong>Fix All</strong> repairs flagged rows. <strong>Clear</strong> deletes a subject's ingested data.</li>
+            </ul>
+          </div>
+          <div>
+            <p style={{ fontWeight: 800, color: "#94F7C5", fontSize: 12, textTransform: "uppercase", letterSpacing: 1, margin: "0 0 6px" }}>
+              {language === "af" ? "2 · Genereer gesimuleerde inhoud (wat leerders sien)" : "2 · Generate simulated content (what learners see)"}
+            </p>
+            <ul style={{ margin: 0, paddingLeft: 18, color: "#fff", fontSize: 13, lineHeight: 1.7 }}>
+              <li><strong>Build Questions</strong> — AI-generates ~50 original practice questions for a subject, grounded in the ingested examiner patterns.</li>
+              <li><strong>Crunch ×10</strong> — generates 10 more in one fast batch. Each run <strong>accumulates</strong> onto the subject's pool (it doesn't replace).</li>
+              <li>Learners are served the <strong>best-scoring</strong> simulated questions — quality rises toward the 99% target as you generate more.</li>
+              <li><strong>Rebuild Mastery</strong> recomputes learner mastery from attempts. <strong>Restart</strong> restarts a stalled pipeline.</li>
+            </ul>
+          </div>
+        </div>
+      </details>
+
       {/* OpenAI key missing banner */}
       {!openaiReady && !openAiBannerDismissed && (
         <div className="border-b border-[#FFE29A]/40 bg-[#FFE29A]/10" role="alert" data-testid="openai-missing-banner">
