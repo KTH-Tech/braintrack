@@ -467,12 +467,27 @@ export default function ForSchoolsPage() {
         .btfs-nav-cta:hover { transform: translateY(-2px); }
         .btfs-logo-img { transition: transform .25s; }
         .btfs-logo-img:hover { transform: scale(1.15) rotate(-4deg); }
-        .btfs-chip { transition: transform .2s; }
-        .btfs-chip:hover { transform: translateY(-3px); }
-        .btfs-btn-primary { transition: transform .2s; }
-        .btfs-btn-primary:hover { transform: translateY(-2px); }
-        .btfs-btn-outline { transition: border-color .2s, transform .2s; }
-        .btfs-btn-outline:hover { border-color: rgba(255,255,255,.7); transform: translateY(-2px); }
+        /* ── Entrance kit (owner: "animate more") ──────────────────────
+           Hero elements rise in sequence via --d delays; fact chips pop in
+           with an overshoot bounce, staggered by --i. All bt- prefixed and
+           killed under prefers-reduced-motion. */
+        /* fill-mode backwards + from-only keyframes: the element is hidden
+           through its delay, animates in, then the animation RELEASES it —
+           so inline tilts and hover transforms keep working afterwards
+           (fill:both would lock transform forever and kill the hovers). */
+        .btfs-in { animation: bt-fs-up .55s cubic-bezier(.22,.75,.3,1) backwards; animation-delay: var(--d, 0s); }
+        @keyframes bt-fs-up { from { opacity: 0; transform: translateY(26px); } }
+        @keyframes bt-fs-pop { 0% { opacity: 0; transform: scale(.4) rotate(-8deg); } 70% { opacity: 1; transform: scale(1.12) rotate(2deg); } }
+        .btfs-chip { animation: bt-fs-pop .5s cubic-bezier(.34,1.56,.64,1) backwards; animation-delay: calc(.5s + var(--i, 0) * .07s); transition: transform .18s, box-shadow .18s; }
+        .btfs-chip:hover { transform: translate(-2px,-2px) rotate(-1deg); box-shadow: 3px 3px 0 0 currentColor; }
+        /* Sticker-slap CTAs — hard offset, no blur (house rule: no glow). */
+        .btfs-btn-primary { transition: transform .18s, box-shadow .18s; box-shadow: 4px 4px 0 0 rgba(148,247,197,.55); }
+        .btfs-btn-primary:hover { transform: translate(-2px,-2px) rotate(-.6deg); box-shadow: 7px 7px 0 0 rgba(148,247,197,.75); }
+        .btfs-btn-outline { transition: border-color .2s, transform .18s, box-shadow .18s; }
+        .btfs-btn-outline:hover { border-color: #fff; transform: translate(-2px,-2px) rotate(.6deg); box-shadow: 4px 4px 0 0 rgba(255,255,255,.5); }
+        @media (prefers-reduced-motion: reduce) {
+          .btfs-in, .btfs-chip { opacity: 1; animation: none !important; }
+        }
         .btfs-faq { border-top: 1px solid rgba(255,255,255,.1); }
         .btfs-faq:first-of-type { border-top: none; }
         .btfs-faq summary { list-style: none; cursor: pointer; }
@@ -553,22 +568,21 @@ export default function ForSchoolsPage() {
         <GraffitiSplats variant="hero" opacity={0.45} />
 
         {/* Floating orbs */}
-        <div aria-hidden style={{ position: "absolute", top: -40, left: "8%", width: 340, height: 340, borderRadius: "50%", background: "radial-gradient(circle,rgba(159,216,255,.35),transparent 70%)", filter: "blur(50px)", pointerEvents: "none", animation: "bt-float 9s ease-in-out infinite" }} />
-        <div aria-hidden style={{ position: "absolute", top: 120, right: "4%", width: 300, height: 300, borderRadius: "50%", background: "radial-gradient(circle,rgba(255,183,229,.3),transparent 70%)", filter: "blur(55px)", pointerEvents: "none", animation: "bt-float 11s ease-in-out infinite reverse" }} />
-        <div aria-hidden style={{ position: "absolute", top: 60, left: "44%", width: 260, height: 260, borderRadius: "50%", background: "radial-gradient(circle,rgba(197,179,255,.28),transparent 70%)", filter: "blur(50px)", pointerEvents: "none", animation: "bt-glowpulse 6s ease-in-out infinite" }} />
+        {/* Blur-glow blobs removed — house rule: no bloom. The entrance
+            choreography (btfs-in / chip pops) carries the energy instead. */}
 
         {/* Hero */}
         <div style={{ textAlign: "center", marginBottom: 40, position: "relative", zIndex: 2 }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 12, fontWeight: 800, letterSpacing: "1.5px", textTransform: "uppercase", color: "#9FF5E8", border: "1.5px solid rgba(159,245,232,.4)", borderRadius: 999, padding: "8px 18px", marginBottom: 18 }}>
+          <div className="btfs-in" style={{ ["--d" as string]: ".05s", display: "inline-flex", alignItems: "center", gap: 8, fontSize: 12, fontWeight: 800, letterSpacing: "1.5px", textTransform: "uppercase", color: "#9FF5E8", border: "1.5px solid rgba(159,245,232,.4)", borderRadius: 999, padding: "8px 18px", marginBottom: 18 }}>
             {t.badge}
           </div>
-          <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#9FD8FF", fontSize: 18, transform: "rotate(-2deg)" }}>{t.eyebrow}</div>
+          <div className="btfs-in" style={{ ["--d" as string]: ".14s", fontFamily: "'Permanent Marker',cursive", color: "#9FD8FF", fontSize: 18, transform: "rotate(-2deg)" }}>{t.eyebrow}</div>
           <div
             role="heading"
             aria-level={1}
-            className="btfs-head"
+            className="btfs-head btfs-in"
             data-testid="text-forschools-title"
-            style={{ fontSize: 54, fontWeight: 900, letterSpacing: "-2.5px", lineHeight: 1.06, margin: "8px 0 16px", fontFamily: "'Poppins',sans-serif", color: "#fff" }}
+            style={{ ["--d" as string]: ".22s", fontSize: 54, fontWeight: 900, letterSpacing: "-2.5px", lineHeight: 1.06, margin: "8px 0 16px", fontFamily: "'Poppins',sans-serif", color: "#fff" }}
           >
             {t.head1}
             <span
@@ -582,11 +596,11 @@ export default function ForSchoolsPage() {
               {t.headAccent}
             </span>
           </div>
-          <div data-testid="text-forschools-subtitle" style={{ fontSize: 18, color: "#fff", opacity: 0.94, maxWidth: 660, margin: "0 auto", lineHeight: 1.6 }}>
+          <div className="btfs-in" data-testid="text-forschools-subtitle" style={{ ["--d" as string]: ".32s", fontSize: 18, color: "#fff", opacity: 0.94, maxWidth: 660, margin: "0 auto", lineHeight: 1.6 }}>
             {t.sub}
           </div>
 
-          <div className="btfs-hero-ctas" style={{ display: "flex", justifyContent: "center", gap: 14, marginTop: 30, flexWrap: "wrap" }}>
+          <div className="btfs-hero-ctas btfs-in" style={{ ["--d" as string]: ".42s", display: "flex", justifyContent: "center", gap: 14, marginTop: 30, flexWrap: "wrap" }}>
             <Link href="/partner-schools">
               <button
                 className="btfs-btn-primary"
@@ -627,7 +641,7 @@ export default function ForSchoolsPage() {
                 key={fact}
                 className="btfs-chip"
                 data-testid={`chip-quickfact-${i}`}
-                style={{ fontSize: 13, fontWeight: 800, color, border: `1.5px solid ${color}`, borderRadius: 999, padding: "9px 16px" }}
+                style={{ ["--i" as string]: i, fontSize: 13, fontWeight: 800, color, border: `1.5px solid ${color}`, borderRadius: 999, padding: "9px 16px" }}
               >
                 {fact}
               </span>
