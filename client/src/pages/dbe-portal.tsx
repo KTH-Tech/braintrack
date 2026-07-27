@@ -277,8 +277,22 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
   const ghostBtn = "h-7 text-[11px] gap-1 inline-flex items-center justify-center rounded-[10px] px-2.5 font-bold transition-colors disabled:opacity-40 disabled:cursor-not-allowed";
 
   return (
-    <div style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }} data-testid={`subject-row-${row.subject}`}>
-      <div className="flex items-center gap-3 cursor-pointer hover:bg-white/[0.03] transition-colors" style={{ padding: "12px 4px" }} onClick={() => {
+    // Sticker card per subject (owner: portal read as a flat wall of hairline
+    // rows). Border + hard-offset shadow in the pipeline-state accent, so the
+    // list scans as a stack of state-coloured stickers: aqua done, yellow
+    // running, pink failed, sky idle.
+    <div
+      style={{
+        background: "#050508",
+        border: `2px solid ${open ? accent : `${accent}66`}`,
+        borderRadius: 16,
+        boxShadow: open ? `5px 5px 0 0 ${accent}` : "none",
+        marginBottom: 12,
+        transition: "border-color .15s ease, box-shadow .15s ease",
+      }}
+      data-testid={`subject-row-${row.subject}`}
+    >
+      <div className="flex items-center gap-3 cursor-pointer hover:bg-white/[0.03] transition-colors" style={{ padding: "12px 14px", borderRadius: 14 }} onClick={() => {
         const next = !open;
         setOpen(next);
         try {
@@ -333,7 +347,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
       </div>
 
       {open && (
-        <div className="space-y-4" style={{ padding: "12px 4px 16px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+        <div className="space-y-4" style={{ padding: "12px 14px 16px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
           {/* Action buttons */}
           <div className="space-y-2">
             <div className="uppercase text-white" style={{ fontSize: 11, fontWeight: 700, letterSpacing: "1px" }}>Actions</div>

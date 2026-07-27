@@ -1198,15 +1198,11 @@ export default function TutorPage() {
                       animation: "bt-float 6s ease-in-out infinite",
                     }}
                   />
-                  <span className="hidden sm:inline-flex" style={tutorSticker("#9FF5E8", -8, { top: 2, left: -26 })}>
-                    {t.sticker1}
-                  </span>
-                  <span className="hidden lg:inline-flex" style={tutorSticker("#FFE29A", 7, { top: 44, right: -66 })}>
-                    {t.sticker2}
-                  </span>
-                  <span className="hidden lg:inline-flex" style={tutorSticker("#FFB7E5", -6, { bottom: 22, left: -52 })}>
-                    {t.sticker3}
-                  </span>
+                  {/* Sticker callouts REMOVED — same owner ruling as the journey
+                      page: absolutely-positioned tags sat across Rizz's face at
+                      common widths. Rizz stands clean; the taglines live in the
+                      heading copy below instead. Do not re-add overlapping
+                      stickers here. */}
                   <span
                     aria-hidden
                     className="absolute bottom-3 left-3 w-4 h-4 rounded-full"
