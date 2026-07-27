@@ -638,7 +638,9 @@ function OverviewSubjectGrid({ subjects, status, statusLoading, seedSubject, gen
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-3">
       {sortedSubjects.map((s) => {
-        const total = s.questionsExtracted + s.simulatedCount;
+        // Verbatim panel: Live/Empty reflects INGESTED papers only. Simulated
+        // counts belong to the Simulator screen.
+        const total = s.questionsExtracted;
         const isRunning = s.isRunning || s.pipelinePhase === "ingesting" || s.pipelinePhase === "rebuilding_mastery" || s.pipelinePhase === "filling_missing";
         const ready = total > 0 && !isRunning;
         const hasNothing = total === 0 && !isRunning;
@@ -665,24 +667,18 @@ function OverviewSubjectGrid({ subjects, status, statusLoading, seedSubject, gen
                 <div className="truncate text-white" style={{ fontSize: 14, fontWeight: 700 }}>
                   {s.subject}
                 </div>
+                {/* DBE Portal is the VERBATIM panel — real ingested papers
+                    only. Simulated/AI content (and its counts) lives on the
+                    Simulator screen. */}
                 <div className="text-[11px] text-white mt-0.5">
-                  {total > 0 ? (
+                  {s.questionsExtracted > 0 ? (
                     <>
-                      <span style={{ color: "#9FF5E8" }}>{formatNumber(s.questionsExtracted, language)}</span> <span className="text-white">verbatim</span>
-                      <span className="text-white"> · </span>
-                      <span style={{ color: "#C5B3FF" }}>{formatNumber(s.simulatedCount, language)}</span> <span className="text-white">AI</span>
+                      <span style={{ color: "#9FF5E8" }}>{formatNumber(s.questionsExtracted, language)}</span> <span className="text-white">verbatim questions</span>
                     </>
                   ) : (
-                    <span className="text-white">No questions yet</span>
+                    <span className="text-white">Not ingested yet</span>
                   )}
                 </div>
-                {(s.flashcardsCount || s.quizzesCount || s.dailyChallengesCount) ? (
-                  <div className="flex flex-wrap gap-x-2 gap-y-0.5 text-[10px] text-white mt-1">
-                    {s.flashcardsCount ? <span>🃏 {s.flashcardsCount} cards</span> : null}
-                    {s.quizzesCount ? <span>🧠 {s.quizzesCount} quizzes</span> : null}
-                    {s.dailyChallengesCount ? <span>⚡ {s.dailyChallengesCount} daily</span> : null}
-                  </div>
-                ) : null}
               </div>
               {isRunning ? (
                 <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.1em] rounded-md px-2 py-0.5 whitespace-nowrap" style={{ color: "#FFE29A", border: "1px solid #FFE29A" }}>
@@ -723,15 +719,11 @@ function OverviewSubjectGrid({ subjects, status, statusLoading, seedSubject, gen
                 {seedSubject.isPending && seedSubject.variables === s.subject ? <Loader2 className="w-3 h-3 animate-spin" /> : <Play className="w-3 h-3" />}
                 {hasNothing ? "Seed" : "Re-seed"}
               </button>
-              <button
-                className={neonBtn}
-                style={openaiReady === false ? { color: "#ffffff", border: "1px solid rgba(255,255,255,0.25)", background: "transparent", cursor: "not-allowed" } : purpleBtnStyle}
-                disabled={isRunning || generateAi.isPending || openaiReady === false}
-                onClick={() => { if (openaiReady !== false) generateAi.mutate(s.subject); }}
-                title={openaiReady === false ? "Requires OpenAI API key — configure AI_INTEGRATIONS_OPENAI_API_KEY" : "Generate AI practice questions for this subject"}
-                data-testid={`btn-ai-${s.subject}`}>
-                <Sparkles className="w-3 h-3" /> AI
-              </button>
+              {/* Generation moved to the Simulator (verbatim/simulated split).
+                  This hands off once the subject has an ingested bank. */}
+              <a className={neonBtn} style={purpleBtnStyle} href="/admin/simulator" data-testid={`btn-to-simulator-${s.subject}`} title="Generate & release simulated questions on the Simulator screen">
+                <Sparkles className="w-3 h-3" /> Simulator →
+              </a>
               <a className={ghostBtn} style={ghostStyle} href={`/api/admin/dbe-ingestion/export?subject=${encodeURIComponent(s.subject)}&format=json&minQuality=98`} download data-testid={`btn-download-json-${s.subject}`}>
                 <Download className="w-3 h-3" /> JSON
               </a>
