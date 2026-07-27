@@ -12627,8 +12627,18 @@ Requirements:
 - Cognitive level focus for this batch: ${focusLevel}
 - Include a complete, accurate marking memo for EACH question
 - Do NOT repeat questions from previous batches — vary topics and question stems
+- SUPPORTING MATERIAL: if a question's format requires source material (a
+  comprehension paragraph, short literary extract, case study, data scenario,
+  advertisement, or table described in prose), you MUST write that material
+  yourself in "stimulusText" — a complete, ORIGINAL text (60-200 words)
+  written by you for this question. NEVER reference a text you have not
+  provided ("the passage", "line 7", a named real poem/novel) without
+  including the full text in stimulusText. NEVER reproduce copyrighted works
+  — invent original passages in authentic NSC register. Questions that need
+  no source text must omit stimulusText entirely. The memo must be gradable
+  from the stimulusText + question alone.
 ${masteryContext}${markingLogicPrompt}
-Return JSON: { "questions": [{ "questionText": "...", "memoText": "...", "marks": N, "cognitiveLevel": "knowledge|application|higher_order", "topic": "...", "markingScheme": [{ "criterion": "...", "marks": N }] }] }`,
+Return JSON: { "questions": [{ "questionText": "...", "stimulusText": "... (only when required)", "memoText": "...", "marks": N, "cognitiveLevel": "knowledge|application|higher_order", "topic": "...", "markingScheme": [{ "criterion": "...", "marks": N }] }] }`,
               },
               { role: "user", content: JSON.stringify(batchSample) },
             ],
@@ -12678,7 +12688,7 @@ Return JSON: { "questions": [{ "questionText": "...", "memoText": "...", "marks"
 - difficulty_appropriate (0-100): Is difficulty appropriate for NSC?
 Return one entry per question, same order as input. JSON: { "scores": [{ "idx": 0, "curriculum_alignment": N, "cognitive_accuracy": N, "memo_quality": N, "exam_style": N, "difficulty_appropriate": N }] }`,
             },
-            { role: "user", content: JSON.stringify(generated.map((q: any, i: number) => ({ idx: i, questionText: q.questionText, memoText: q.memoText, marks: q.marks, cognitiveLevel: q.cognitiveLevel, topic: q.topic }))) },
+            { role: "user", content: JSON.stringify(generated.map((q: any, i: number) => ({ idx: i, questionText: q.questionText, stimulusText: typeof q.stimulusText === "string" ? q.stimulusText.slice(0, 900) : undefined, memoText: q.memoText, marks: q.marks, cognitiveLevel: q.cognitiveLevel, topic: q.topic }))) },
           ],
           temperature: 0.1,
           max_tokens: 3000,
@@ -12733,6 +12743,13 @@ Return one entry per question, same order as input. JSON: { "scores": [{ "idx": 
         await db.insert(dbeSimulatedQuestions).values({
           subject,
           questionText: q.questionText,
+          // Generated supporting paragraph/passage — stored alongside the
+          // question so passage-based items render self-contained to learners.
+          stimulusText:
+            typeof q.stimulusText === "string" && q.stimulusText.trim().length >= 40
+              ? q.stimulusText.trim().slice(0, 4000)
+              : null,
+          language: "en", // generator currently produces English; AF generation lands next
           memoText: q.memoText,
           marks: q.marks,
           cognitiveLevel: q.cognitiveLevel,
@@ -16055,12 +16072,14 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         marks: r.marks ?? 1,
         topic: r.topic,
         cognitiveLevel: r.cognitiveLevel,
-        // Simulated questions are original + self-contained: no source paper,
-        // no MCQ letter bank, no unseen passage.
+        // Simulated questions carry no source paper or MCQ letter bank. The
+        // generated supporting paragraph (when the question needs one) ships
+        // with the question, so passage-based items are fully answerable —
+        // the client renders it in the "Read the text" panel.
         year: null,
         paperNumber: null,
         mcqOptions: null,
-        stimulusText: null,
+        stimulusText: r.stimulusText ?? null,
         simulated: true,
       }));
 

@@ -2194,6 +2194,13 @@ export const dbeSimulatedQuestions = pgTable(
     subject: text("subject").notNull(),
     questionText: text("question_text").notNull(),
     memoText: text("memo_text"),
+    // ORIGINAL generated supporting material (comprehension paragraph, poem,
+    // case study, data scenario) the question refers to. NULL = question is
+    // fully self-contained. Columns exist via migration 0036, which the
+    // predeploy migrator applies before this code serves — do NOT add columns
+    // here without a matching allowlisted migration (the 0034 lesson).
+    stimulusText: text("stimulus_text"),
+    language: varchar("language", { length: 8 }).notNull().default("en"),
     marks: integer("marks"),
     cognitiveLevel: text("cognitive_level")
       .default("knowledge")

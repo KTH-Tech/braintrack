@@ -40,6 +40,7 @@ const REPO_ROOT = join(__dirname, "..");
 const PENDING_IDEMPOTENT = [
   "migrations/0033_content_studio_prod_sync.sql",
   "migrations/0035_messaging_infra.sql",
+  "migrations/0036_simulated_stimulus_language.sql",
 ];
 
 async function main() {
