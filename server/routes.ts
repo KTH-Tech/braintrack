@@ -1077,9 +1077,30 @@ const OFF_TOPIC_RESPONSE_AF = "Ek is hier om jou slegs met jou Graad 12 CAPS stu
 const PROFANITY_RESPONSE_EN = "Hey, let's keep it clean and focused on your studies! I'm here to help you ace your matric exams. What subject can I help you with?";
 const PROFANITY_RESPONSE_AF = "Hey, kom ons hou dit skoon en gefokus op jou studies! Ek is hier om jou te help om jou matriekeksamen te slaag. Met watter vak kan ek jou help?";
 
-const openai = new OpenAI({
-  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+// Lazy: constructing the OpenAI client at module load throws "Missing
+// credentials" if neither AI_INTEGRATIONS_OPENAI_API_KEY nor OPENAI_API_KEY is
+// set — and because this module is imported at boot, that crash takes the WHOLE
+// server down before it can listen, so Render's /api/health check fails and the
+// deploy is rolled back (the old build keeps serving). Deferring construction to
+// first use means a missing/rotated key only degrades AI features (Rizz etc.),
+// never downs the site or blocks a deploy. The Proxy keeps every `openai.x` call
+// site unchanged.
+let _openaiClient: OpenAI | null = null;
+function getOpenAI(): OpenAI {
+  if (!_openaiClient) {
+    _openaiClient = new OpenAI({
+      apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY,
+      baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+    });
+  }
+  return _openaiClient;
+}
+const openai = new Proxy({} as OpenAI, {
+  get(_t, prop) {
+    const c = getOpenAI();
+    const v = (c as any)[prop];
+    return typeof v === "function" ? v.bind(c) : v;
+  },
 });
 
 // ============================================

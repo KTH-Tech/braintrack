@@ -34,8 +34,16 @@ const REQUIRED_ENV_VARS = [
 
 const REQUIRED_PROD_ENV_VARS: string[] = [
   "ADMIN_EMAILS",                       // admin allowlist (comma-separated)
-  "AI_INTEGRATIONS_OPENAI_API_KEY",     // Smart Tutor + memo helpers
 ];
+
+// The OpenAI key is an EITHER/OR requirement, checked separately below: every
+// call site reads `AI_INTEGRATIONS_OPENAI_API_KEY || OPENAI_API_KEY`, so the
+// boot gate must accept either. Requiring the AI_INTEGRATIONS_ name specifically
+// (as this list used to) crashed the boot on Render — which sets OPENAI_API_KEY,
+// not the Replit-style var — so every deploy failed its health check and rolled
+// back to the previous build while the site appeared to "not update". Never put
+// one specific OpenAI-key name back in the required list.
+const OPENAI_KEY_VARS = ["AI_INTEGRATIONS_OPENAI_API_KEY", "OPENAI_API_KEY"];
 
 // REPL_ID / REPLIT_DOMAINS were prod-required because Replit OIDC was the only
 // login path. The app now also deploys to Render, where those don't exist —
@@ -67,6 +75,10 @@ function validateEnvironment() {
       if (!process.env[envVar]) {
         missing.push(envVar);
       }
+    }
+    // OpenAI key: satisfied by EITHER accepted name (see OPENAI_KEY_VARS).
+    if (!OPENAI_KEY_VARS.some((v) => process.env[v])) {
+      missing.push(`one of [${OPENAI_KEY_VARS.join(" | ")}]`);
     }
     for (const envVar of RECOMMENDED_PROD_ENV_VARS) {
       if (!process.env[envVar]) {
