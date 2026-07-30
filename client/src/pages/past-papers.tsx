@@ -26,6 +26,7 @@ import {
   Check
 } from "lucide-react";
 import { Link } from "wouter";
+import { PublicFooter } from "@/components/public-footer";
 
 const DBE_BASE_URL = "https://www.education.gov.za/Curriculum/NationalSeniorCertificate(NSC)Examinations/NSCPastExaminationpapers.aspx";
 
@@ -980,6 +981,8 @@ export default function PastPapersPage() {
           </TabsContent>
         </Tabs>
       </div>
+
+      <PublicFooter />
     </div>
   );
 }

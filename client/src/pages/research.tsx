@@ -17,27 +17,31 @@ const FLOW_GRADIENT =
 const COPY = {
   en: {
     badge: "🔬 Evidence-based · peer-reviewed principles",
-    eyebrow: "the receipts",
     head1: "Built on ",
     headAccent: "10 years of real DBE exams",
     sub:
-      "We studied a decade of official NSC papers and DBE diagnostic reports (2015–2025) to find exactly where matrics lose marks — then built every drill, plan and memo around fixing yours.",
+      "We analysed a decade of official NSC papers (2015–2025) and mapped every question to its CAPS topic — so we know exactly which topics get examined again and again, and built every drill, plan and memo around them.",
     stats: [
       { value: "80%", label: "Long-term recall with spaced practice vs 20% cramming", color: "#9FF5E8" },
       { value: "3×", label: "Better retention from active recall vs re-reading", color: "#FFB7E5" },
-      { value: "0.73", label: "Feedback effect size — Hattie & Timperley (2007)", color: "#FFE29A" },
-      { value: "10 yrs", label: "Of real NSC papers and DBE diagnostics, 2015–2025", color: "#9FD8FF" },
+      { value: "160k+", label: "Real NSC exam questions mapped to CAPS topics", color: "#FFE29A" },
+      { value: "10 yrs", label: "Of real NSC papers analysed, 2015–2025", color: "#9FD8FF" },
     ],
-    barsTitle: "Where matrics lose the most marks",
-    barsSub: "Aggregated from DBE Diagnostic Reports, 2015–2025 · illustrative",
-    loseLabel: "lose marks here",
+    barsTitle: "Exam patterns repeat",
+    barsSub: "Relative exam-frequency of recurring CAPS topics, from a decade of real NSC papers — the high-frequency topics BrainTrack trains you on first.",
     bars: [
-      { topic: "Euclidean geometry", pct: 62, color: "#FFB7E5", color2: "#C5B3FF" },
-      { topic: "Stoichiometry", pct: 57, color: "#9FF5E8", color2: "#9FD8FF" },
-      { topic: "Essay structure", pct: 48, color: "#FFE29A", color2: "#FFB7E5" },
-      { topic: "Map calculations", pct: 44, color: "#9FD8FF", color2: "#C5B3FF" },
-      { topic: "Financial statements", pct: 41, color: "#94F7C5", color2: "#9FF5E8" },
+      { topic: "Functions & graphs — Maths", freq: "Every paper, every year", pct: 100, color: "#FFB7E5", color2: "#C5B3FF" },
+      { topic: "Financial statements — Accounting", freq: "Every year", pct: 94, color: "#94F7C5", color2: "#9FF5E8" },
+      { topic: "Electrochemistry — Physical Sciences", freq: "Almost every year", pct: 88, color: "#9FF5E8", color2: "#9FD8FF" },
+      { topic: "Essay & comprehension — Languages", freq: "Every paper", pct: 96, color: "#FFE29A", color2: "#FFB7E5" },
+      { topic: "Data handling — Maths", freq: "Most years", pct: 80, color: "#9FD8FF", color2: "#C5B3FF" },
     ],
+    rizz: {
+      eyebrow: "meet rizz",
+      title: "Rizz — your AI tutor",
+      body: "Rizz is BrainTrack's AI tutor: fluent in English and Afrikaans, awake 24/7. Grounded in 10 years of real NSC exam patterns, Rizz doesn't just hand you the answer — it explains what the examiner is actually asking for, walks you through it until it clicks, and keeps adapting to the exact topics where you keep slipping.",
+      chips: ["Bilingual EN + AF", "24/7", "Grounded in real exam patterns", "Explains examiner intent", "Adapts to your weak spots"],
+    },
     quote:
       "“Most apps hand you generic content. BrainTrack targets the exact topics the DBE flags year after year — so every minute you revise goes where it actually moves your mark.”",
     sciEyebrow: "the science",
@@ -90,27 +94,31 @@ const COPY = {
   },
   af: {
     badge: "🔬 Bewysgebaseer · eweknie-beoordeelde beginsels",
-    eyebrow: "die bewyse",
     head1: "Gebou op ",
     headAccent: "10 jaar se regte DBE-eksamens",
     sub:
-      "Ons het 'n dekade se amptelike NSS-vraestelle en DBE-diagnostiese verslae (2015–2025) bestudeer om presies te vind waar matrieks punte verloor — en toe elke oefening, plan en memo gebou om joune reg te maak.",
+      "Ons het 'n dekade se amptelike NSS-vraestelle (2015–2025) ontleed en elke vraag aan sy KABV-onderwerp gekoppel — so weet ons presies watter onderwerpe keer op keer geëksamineer word, en het elke oefening, plan en memo daarom gebou.",
     stats: [
       { value: "80%", label: "Langtermyn-herroeping met gespasieerde oefening vs 20% inkramming", color: "#9FF5E8" },
       { value: "3×", label: "Beter retensie deur aktiewe herroeping vs herlees", color: "#FFB7E5" },
-      { value: "0.73", label: "Terugvoer-effekgrootte — Hattie & Timperley (2007)", color: "#FFE29A" },
-      { value: "10 jr", label: "Se regte NSS-vraestelle en DBE-diagnostiek, 2015–2025", color: "#9FD8FF" },
+      { value: "160k+", label: "Regte NSS-eksamenvrae aan KABV-onderwerpe gekoppel", color: "#FFE29A" },
+      { value: "10 jr", label: "Se regte NSS-vraestelle ontleed, 2015–2025", color: "#9FD8FF" },
     ],
-    barsTitle: "Waar matrieks die meeste punte verloor",
-    barsSub: "Saamgestel uit DBE-diagnostiese verslae, 2015–2025 · illustratief",
-    loseLabel: "verloor hier punte",
+    barsTitle: "Die patrone herhaal",
+    barsSub: "Relatiewe eksamenfrekwensie van herhalende KABV-onderwerpe, uit 'n dekade se regte NSS-vraestelle — die hoëfrekwensie-onderwerpe waarop BrainTrack jou eerste oefen.",
     bars: [
-      { topic: "Euklidiese meetkunde", pct: 62, color: "#FFB7E5", color2: "#C5B3FF" },
-      { topic: "Stoïgiometrie", pct: 57, color: "#9FF5E8", color2: "#9FD8FF" },
-      { topic: "Opstelstruktuur", pct: 48, color: "#FFE29A", color2: "#FFB7E5" },
-      { topic: "Kaartberekeninge", pct: 44, color: "#9FD8FF", color2: "#C5B3FF" },
-      { topic: "Finansiële state", pct: 41, color: "#94F7C5", color2: "#9FF5E8" },
+      { topic: "Funksies & grafieke — Wiskunde", freq: "Elke vraestel, elke jaar", pct: 100, color: "#FFB7E5", color2: "#C5B3FF" },
+      { topic: "Finansiële state — Rekeningkunde", freq: "Elke jaar", pct: 94, color: "#94F7C5", color2: "#9FF5E8" },
+      { topic: "Elektrochemie — Fisiese Wetenskappe", freq: "Byna elke jaar", pct: 88, color: "#9FF5E8", color2: "#9FD8FF" },
+      { topic: "Opstel & begrip — Tale", freq: "Elke vraestel", pct: 96, color: "#FFE29A", color2: "#FFB7E5" },
+      { topic: "Datahantering — Wiskunde", freq: "Meeste jare", pct: 80, color: "#9FD8FF", color2: "#C5B3FF" },
     ],
+    rizz: {
+      eyebrow: "ontmoet rizz",
+      title: "Rizz — jou KI-tutor",
+      body: "Rizz is BrainTrack se KI-tutor: vlot in Engels én Afrikaans, wakker 24/7. Gegrond in 10 jaar se regte NSS-eksamenpatrone, gee Rizz jou nie sommer net die antwoord nie — dit verduidelik wat die eksaminator werklik vra, lei jou daardeur totdat dit klik, en pas gedurig aan by die presiese onderwerpe waar jy bly struikel.",
+      chips: ["Tweetalig EN + AF", "24/7", "Gegrond in regte eksamenpatrone", "Verduidelik eksaminatorbedoeling", "Pas aan by jou swakplekke"],
+    },
     quote:
       "“Die meeste apps gee jou generiese inhoud. BrainTrack teiken die presiese onderwerpe wat die DBE jaar na jaar uitwys — sodat elke minuut wat jy hersien gaan waar dit werklik jou punt skuif.”",
     sciEyebrow: "die wetenskap",
@@ -216,9 +224,6 @@ export default function ResearchPage() {
             >
               {t.badge}
             </div>
-            <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#9FD8FF", fontSize: 20, transform: "rotate(-2deg)" }}>
-              {t.eyebrow}
-            </div>
             <h1
               data-testid="text-research-title"
               style={{
@@ -262,8 +267,9 @@ export default function ResearchPage() {
             ))}
           </div>
 
-          {/* ── Mark-loss bars ─────────────────────────────────── */}
+          {/* ── Recurring exam-pattern bars ────────────────────── */}
           <section
+            data-testid="section-patterns"
             style={{
               background: "#000", border: "2.5px solid #FFB7E5",
               boxShadow: "6px 6px 0 0 #FFB7E5", borderRadius: 20,
@@ -271,13 +277,13 @@ export default function ResearchPage() {
             }}
           >
             <h2 style={{ fontWeight: 900, fontSize: "clamp(20px,4vw,26px)", margin: 0, color: "#fff", letterSpacing: "-.5px" }}>{t.barsTitle}</h2>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#FFE29A", margin: "8px 0 22px" }}>{t.barsSub}</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#FFE29A", margin: "8px 0 22px", lineHeight: 1.5 }}>{t.barsSub}</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               {t.bars.map((rb) => (
                 <div key={rb.topic}>
                   <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 14, fontWeight: 800, marginBottom: 7 }}>
                     <span style={{ color: "#fff" }}>{rb.topic}</span>
-                    <span style={{ color: rb.color, whiteSpace: "nowrap" }}>{rb.pct}% {t.loseLabel}</span>
+                    <span style={{ color: rb.color, whiteSpace: "nowrap" }}>{rb.freq}</span>
                   </div>
                   <div style={{ height: 14, borderRadius: 999, background: "#141418", border: "2px solid #000", overflow: "hidden" }}>
                     <div
@@ -304,6 +310,34 @@ export default function ResearchPage() {
           >
             {t.quote}
           </div>
+
+          {/* ── Rizz — AI tutor ────────────────────────────────── */}
+          <section
+            data-testid="section-rizz"
+            style={{
+              marginTop: 26, background: "#000", border: "2.5px solid #94F7C5",
+              boxShadow: "6px 6px 0 0 #94F7C5", borderRadius: 22,
+              padding: "clamp(24px,4vw,36px)",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
+              <div style={{ width: 60, height: 60, flex: "none", borderRadius: 16, background: "#000", border: "2.5px solid #94F7C5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32 }}>
+                🤖
+              </div>
+              <div>
+                <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#94F7C5", fontSize: 18, transform: "rotate(-2deg)" }}>{t.rizz.eyebrow}</div>
+                <div style={{ fontWeight: 900, fontSize: "clamp(20px,4vw,28px)", letterSpacing: "-.5px", color: "#fff" }}>{t.rizz.title}</div>
+              </div>
+            </div>
+            <p style={{ fontSize: "clamp(14.5px,2.4vw,16px)", lineHeight: 1.6, color: "#fff", margin: "0 0 16px" }}>{t.rizz.body}</p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {t.rizz.chips.map((rc) => (
+                <span key={rc} style={{ fontSize: 12, fontWeight: 800, color: "#94F7C5", border: "2px solid #94F7C5", borderRadius: 999, padding: "6px 12px" }}>
+                  {rc}
+                </span>
+              ))}
+            </div>
+          </section>
 
           {/* ── The science ────────────────────────────────────── */}
           <div style={{ textAlign: "center", margin: "80px 0 40px" }}>

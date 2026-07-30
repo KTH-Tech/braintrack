@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   BookOpen, Target, BarChart3, Trophy, Wrench, Users,
-  Check, Copy, Share2, Gift,
+  Check, Copy, Share2, Gift, Linkedin,
 } from "lucide-react";
 import { ConfettiBurst } from "@/components/confetti-burst";
 import { rizzMascot } from "@/components/rizz-brand";
@@ -385,6 +385,29 @@ export function PaymentThankYou({
               >
                 <Share2 style={{ width: 16, height: 16 }} />
                 WhatsApp
+              </a>
+              <a
+                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareLink)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-testid="button-share-linkedin"
+                style={{
+                  flex: "0 0 auto",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 7,
+                  background: "#0A66C2",
+                  color: "#fff",
+                  borderRadius: 10,
+                  padding: "12px 18px",
+                  fontWeight: 800,
+                  fontSize: 14,
+                  textDecoration: "none",
+                  minHeight: 44,
+                }}
+              >
+                <Linkedin style={{ width: 16, height: 16 }} />
+                LinkedIn
               </a>
             </div>
           </div>

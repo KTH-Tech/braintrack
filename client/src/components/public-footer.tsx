@@ -53,10 +53,10 @@ export function PublicFooter() {
   const t = COPY[language];
   const isAf = language === "af";
 
+  // Social policy: WhatsApp + LinkedIn only (Facebook/X/Instagram/TikTok removed).
   const shareLinks = [
     { label: "WhatsApp", color: "#94F7C5", testid: "footer-share-whatsapp", href: `https://wa.me/?text=${encodeURIComponent(`${t.shareMsg} ${SHARE_URL}`)}` },
-    { label: "Facebook", color: "#9FD8FF", testid: "footer-share-facebook", href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(SHARE_URL)}` },
-    { label: "X", color: "#C5B3FF", testid: "footer-share-x", href: `https://twitter.com/intent/tweet?url=${encodeURIComponent(SHARE_URL)}&text=${encodeURIComponent(t.shareMsg)}` },
+    { label: "LinkedIn", color: "#9FD8FF", testid: "footer-share-linkedin", href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(SHARE_URL)}` },
   ];
 
   return (

@@ -79,3 +79,15 @@ export function buildWhatsAppDeepLink(
   const number = normaliseWaNumber(childCell);
   return number ? `https://wa.me/${number}?text=${text}` : `https://wa.me/?text=${text}`;
 }
+
+/**
+ * Build the LinkedIn share link the parent taps. Opens LinkedIn's share
+ * composer for the activation URL. LinkedIn's `share-offsite` endpoint accepts
+ * ONLY a `url` param — it carries no prefilled message text — so, like the rest
+ * of this module, it leaks no personal data beyond the (signed-token)
+ * activation link itself.
+ */
+export function buildLinkedInShareLink(activationUrl: string): string {
+  const url = encodeURIComponent((activationUrl ?? "").trim());
+  return `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
+}

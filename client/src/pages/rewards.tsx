@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/language-context";
 import { formatDate } from "@/lib/formatters";
 import { useLocation } from "wouter";
-import { Flame, Star, Zap, Target, Trophy, GraduationCap, Award, BookOpen, Coins, Lock, Loader2, ShoppingBag, ArrowRight, Users, Copy, Check, Share2, Sparkles, Medal } from "lucide-react";
+import { Flame, Star, Zap, Target, Trophy, GraduationCap, Award, BookOpen, Coins, Lock, Loader2, ShoppingBag, ArrowRight, Users, Copy, Check, Share2, Linkedin, Sparkles, Medal } from "lucide-react";
 import { GraffitiSplats } from "@/components/graffiti-splats";
 import { LearnerHeader } from "@/components/learner-header";
 import { useState } from "react";
@@ -56,6 +56,8 @@ const T = {
     copied: "Copied",
     copy: "Copy",
     whatsappTitle: "Share on WhatsApp",
+    linkedinTitle: "Share on LinkedIn",
+    linkedin: "LinkedIn",
     progressToReward: "Progress to next reward",
     paidReferrals: "paid referrals",
     earnedLabel: "Earned",
@@ -104,6 +106,8 @@ const T = {
     copied: "Gekopieer",
     copy: "Kopieer",
     whatsappTitle: "Deel op WhatsApp",
+    linkedinTitle: "Deel op LinkedIn",
+    linkedin: "LinkedIn",
     progressToReward: "Voortgang na volgende beloning",
     paidReferrals: "betaalde verwysings",
     earnedLabel: "Verdien",
@@ -246,6 +250,13 @@ export default function RewardsPage() {
       ? `Hi! Sluit by my aan op BrainTrack om vir die NSC eksamens voor te berei: ${link}`
       : `Hey! Join me on BrainTrack to prep for the NSC exams: ${link}`;
     const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
+  const handleLinkedIn = () => {
+    const link = referralCode?.link ?? referral?.link;
+    if (!link) return;
+    const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(link)}`;
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
@@ -590,6 +601,17 @@ export default function RewardsPage() {
                         >
                           <Share2 className="w-3.5 h-3.5" />
                           {t.webShare}
+                        </button>
+                        <button
+                          onClick={handleLinkedIn}
+                          disabled={!(referralCode?.link ?? referral?.link)}
+                          title={t.linkedinTitle}
+                          className="inline-flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-bold hover:opacity-90 transition-opacity disabled:opacity-50 shrink-0"
+                          style={{ background: "#0A66C2", color: "#fff" }}
+                          data-testid="button-linkedin-referral"
+                        >
+                          <Linkedin className="w-3.5 h-3.5" />
+                          {t.linkedin}
                         </button>
                       </div>
                     </div>
