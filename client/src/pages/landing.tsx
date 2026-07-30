@@ -371,11 +371,15 @@ function useInView<T extends HTMLElement>(): [React.RefObject<T>, boolean] {
   const ref = useRef<T>(null);
   const [inView, setInView] = useState(false);
   useEffect(() => {
+    // Fail-safe FIRST — set unconditionally, before any early return. Nothing
+    // may ever stay invisible: not if the ref never attaches, not if the
+    // observer never fires (throttled tab, odd embed, exotic browser). A blank
+    // section is a launch bug; a slightly-early reveal is not.
+    const failSafe = window.setTimeout(() => setInView(true), 1500);
     const el = ref.current;
-    if (!el) return;
-    if (prefersReducedMotion() || typeof IntersectionObserver === "undefined") {
+    if (!el || prefersReducedMotion() || typeof IntersectionObserver === "undefined") {
       setInView(true);
-      return;
+      return () => window.clearTimeout(failSafe);
     }
     const io = new IntersectionObserver(
       (entries) => {
@@ -391,10 +395,6 @@ function useInView<T extends HTMLElement>(): [React.RefObject<T>, boolean] {
       { threshold: 0.01, rootMargin: "0px 0px 25% 0px" },
     );
     io.observe(el);
-    // Fail-safe: nothing may ever stay invisible. If the observer hasn't
-    // fired within 4s of mount (odd embed, throttled tab, exotic browser),
-    // reveal regardless.
-    const failSafe = window.setTimeout(() => setInView(true), 4000);
     return () => { io.disconnect(); window.clearTimeout(failSafe); };
   }, []);
   return [ref, inView];
@@ -448,17 +448,20 @@ function CompareWall({ t, language }: { t: any; language: string }) {
       data-testid="section-compare"
     >
       <style>{`
-        .bt-cmp-row, .bt-cmp-vs, .bt-cmp-head-l, .bt-cmp-head-r { opacity: 0; }
+        /* Entrance is TRANSFORM-ONLY — content is NEVER hidden by default, so a
+           failed/never-firing scroll observer can only cost the animation, never
+           the content. (A prior opacity:0-by-default version left the whole
+           table invisible when the reveal didn't fire — an ~800px black void.) */
         .bt-cmp-in .bt-cmp-head-l { animation: bt-cmp-left .5s cubic-bezier(.22,.75,.3,1) both; }
         .bt-cmp-in .bt-cmp-head-r { animation: bt-cmp-right .5s cubic-bezier(.22,.75,.3,1) both; }
         .bt-cmp-in .bt-cmp-vs { animation: bt-cmp-pop .55s cubic-bezier(.34,1.56,.64,1) .22s both; }
         .bt-cmp-in .bt-cmp-row { animation: bt-cmp-up .5s cubic-bezier(.22,.75,.3,1) both; animation-delay: calc(.18s + var(--i) * .11s); }
-        @keyframes bt-cmp-left  { from { opacity: 0; transform: translateX(-48px); } to { opacity: 1; transform: none; } }
-        @keyframes bt-cmp-right { from { opacity: 0; transform: translateX(48px); }  to { opacity: 1; transform: none; } }
-        @keyframes bt-cmp-pop   { 0% { opacity: 0; transform: scale(.3) rotate(-16deg); } 70% { opacity: 1; transform: scale(1.18) rotate(4deg); } 100% { opacity: 1; transform: scale(1) rotate(-2deg); } }
-        @keyframes bt-cmp-up    { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+        @keyframes bt-cmp-left  { from { transform: translateX(-48px); } to { transform: none; } }
+        @keyframes bt-cmp-right { from { transform: translateX(48px); }  to { transform: none; } }
+        @keyframes bt-cmp-pop   { 0% { transform: scale(.3) rotate(-16deg); } 70% { transform: scale(1.18) rotate(4deg); } 100% { transform: scale(1) rotate(-2deg); } }
+        @keyframes bt-cmp-up    { from { transform: translateY(24px); } to { transform: none; } }
         @media (prefers-reduced-motion: reduce) {
-          .bt-cmp-row, .bt-cmp-vs, .bt-cmp-head-l, .bt-cmp-head-r { opacity: 1; animation: none !important; }
+          .bt-cmp-row, .bt-cmp-vs, .bt-cmp-head-l, .bt-cmp-head-r { animation: none !important; }
         }
         .bt-cmp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 14px; }
         .bt-cmp-crit { grid-column: 1 / -1; }
