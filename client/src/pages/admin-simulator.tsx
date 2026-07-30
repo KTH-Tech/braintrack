@@ -77,7 +77,15 @@ export default function AdminSimulatorPage() {
   const isAf = language === "af";
   const { toast } = useToast();
   const qc = useQueryClient();
-  const [busySubject, setBusySubject] = useState<string | null>(null);
+  // Busy state is tracked PER SUBJECT (subject → which op is running) so an
+  // in-flight generate/release on one subject never disables the buttons on the
+  // others. A single shared `busySubject` used to lock the whole grid — clicking
+  // Generate on one card froze every other card until it finished.
+  const [busyOps, setBusyOps] = useState<Record<string, "simulate" | "release" | "mcq">>({});
+  const markBusy = (s: string, op: "simulate" | "release" | "mcq") =>
+    setBusyOps((p) => ({ ...p, [s]: op }));
+  const clearBusy = (s: string) =>
+    setBusyOps((p) => { const n = { ...p }; delete n[s]; return n; });
 
   // Toolbar state (all client-side over fetched subjects)
   const [genCount, setGenCount] = useState<GenCount>(10);
@@ -101,9 +109,9 @@ export default function AdminSimulatorPage() {
       const r = await apiRequest("POST", "/api/admin/dbe-ingestion/simulate-subject", { subject, count: genCount });
       return r.json();
     },
-    onMutate: (s) => setBusySubject(s),
-    onSettled: () => {
-      setBusySubject(null);
+    onMutate: (s) => markBusy(s, "simulate"),
+    onSettled: (_d, _e, s) => {
+      clearBusy(s);
       qc.invalidateQueries({ queryKey: ["/api/admin/simulator/overview"] });
     },
     onSuccess: (d: any) =>
@@ -122,9 +130,9 @@ export default function AdminSimulatorPage() {
       const r = await apiRequest("POST", "/api/admin/simulator/generate-mcq", { subject, count: genCount });
       return r.json();
     },
-    onMutate: (s) => setBusySubject(s),
-    onSettled: () => {
-      setBusySubject(null);
+    onMutate: (s) => markBusy(s, "mcq"),
+    onSettled: (_d, _e, s) => {
+      clearBusy(s);
       qc.invalidateQueries({ queryKey: ["/api/admin/simulator/overview"] });
     },
     onSuccess: (d: any) =>
@@ -143,9 +151,9 @@ export default function AdminSimulatorPage() {
       const r = await apiRequest("POST", "/api/admin/simulator/release", { subject });
       return r.json();
     },
-    onMutate: (s) => setBusySubject(s),
-    onSettled: () => {
-      setBusySubject(null);
+    onMutate: (s) => markBusy(s, "release"),
+    onSettled: (_d, _e, s) => {
+      clearBusy(s);
       qc.invalidateQueries({ queryKey: ["/api/admin/simulator/overview"] });
     },
     onSuccess: (d: any) =>
@@ -267,7 +275,11 @@ export default function AdminSimulatorPage() {
   }
 
   const bulkBusy = bulkGen !== null || bulkRel !== null;
-  const anyBusy = crunch.isPending || release.isPending || bulkBusy || covGen !== null;
+  // anyBusy is used ONLY to gate the whole-grid bulk actions + single-flight
+  // sequences (coverage/high-yield). Per-subject buttons gate on their OWN
+  // subject via `busyOps` so one card never blocks another.
+  const anyIndividualBusy = Object.keys(busyOps).length > 0;
+  const anyBusy = anyIndividualBusy || bulkBusy || covGen !== null;
 
   // ── Readiness classification ────────────────────────────────────────────
   // ready   → has unreleased-eligible content (can release now)
@@ -609,7 +621,13 @@ export default function AdminSimulatorPage() {
               <div style={{ display: "grid", gap: 16 }}>
                 {visible.map((s) => {
                   const accent = ACCENTS[Math.abs(hash(s.subject)) % ACCENTS.length];
-                  const busy = busySubject === s.subject && (crunch.isPending || release.isPending);
+                  // Per-subject busy: which op (if any) is running for THIS card.
+                  const subjOp = busyOps[s.subject];
+                  const subjBusy = !!subjOp;
+                  // This card's generate/release/mcq buttons lock only for this
+                  // subject (or during a whole-grid bulk run) — never because a
+                  // DIFFERENT subject is busy.
+                  const lockThis = subjBusy || bulkBusy;
                   const canRelease = s.unreleasedEligible > 0;
                   const r = readiness(s);
                   const releasedPct = s.total > 0 ? Math.min(100, (s.released / s.total) * 100) : 0;
@@ -688,29 +706,14 @@ export default function AdminSimulatorPage() {
                       </div>
 
                       <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                        {/* Single generation CTA (was duplicated as "Generate" +
+                            "Generate Exam Paper", both hitting the same endpoint).
+                            Produces exam questions + memo + supporting material that
+                            feed /exam/full once released. */}
                         <button
                           onClick={() => crunch.mutate(s.subject)}
-                          disabled={anyBusy}
+                          disabled={lockThis}
                           data-testid={`sim-generate-${s.subject}`}
-                          style={{
-                            display: "inline-flex", alignItems: "center", gap: 7,
-                            background: "transparent", color: accent,
-                            border: `2px solid ${accent}`, borderRadius: 10,
-                            padding: "10px 16px", fontWeight: 800, fontSize: 13.5,
-                            cursor: anyBusy ? "not-allowed" : "pointer", opacity: anyBusy && !busy ? 0.5 : 1,
-                            minHeight: 44,
-                          }}
-                        >
-                          {busy && crunch.isPending ? <Loader2 className="animate-spin" style={{ width: 15, height: 15 }} /> : <Zap style={{ width: 15, height: 15 }} />}
-                          {t("Generate", "Genereer")} ×{genCount}
-                        </button>
-                        {/* Same generation endpoint, surfaced explicitly as EXAM
-                            content so the owner knows it feeds /exam/full once
-                            released (questions + memo + supporting material). */}
-                        <button
-                          onClick={() => crunch.mutate(s.subject)}
-                          disabled={anyBusy}
-                          data-testid={`sim-generate-exam-${s.subject}`}
                           title={t(
                             "Generates exam questions + memo + supporting material → feeds Full Exam once released",
                             "Genereer eksamenvrae + memo + ondersteunende materiaal → voed die Volle Eksamen sodra vrygestel",
@@ -718,14 +721,14 @@ export default function AdminSimulatorPage() {
                           style={{
                             display: "inline-flex", alignItems: "center", gap: 7,
                             background: "transparent", color: accent,
-                            border: `2px dashed ${accent}`, borderRadius: 10,
+                            border: `2px solid ${accent}`, borderRadius: 10,
                             padding: "10px 16px", fontWeight: 800, fontSize: 13.5,
-                            cursor: anyBusy ? "not-allowed" : "pointer", opacity: anyBusy && !busy ? 0.5 : 1,
+                            cursor: lockThis ? "not-allowed" : "pointer", opacity: lockThis && subjOp !== "simulate" ? 0.5 : 1,
                             minHeight: 44,
                           }}
                         >
-                          {busy && crunch.isPending ? <Loader2 className="animate-spin" style={{ width: 15, height: 15 }} /> : <FileText style={{ width: 15, height: 15 }} />}
-                          {t("Generate Exam Paper", "Genereer Eksamenvraestel")} ×{genCount}
+                          {subjOp === "simulate" ? <Loader2 className="animate-spin" style={{ width: 15, height: 15 }} /> : <Zap style={{ width: 15, height: 15 }} />}
+                          {t("Generate Exam", "Genereer Eksamen")} ×{genCount}
                         </button>
                         {/* Read-only QA — verify stored scores meet the
                             release criteria before/after release. */}
@@ -769,7 +772,7 @@ export default function AdminSimulatorPage() {
                             CAPS topics (missing first), genCount each. */}
                         <button
                           onClick={() => generateHighYield(s.subject)}
-                          disabled={anyBusy}
+                          disabled={covGen !== null || lockThis}
                           data-testid={`sim-highyield-${s.subject}`}
                           title={t(`Generate for this subject's HIGH-YIELD (top exam-frequency) CAPS topics — missing first, ×${genCount} each`, `Genereer vir hierdie vak se HOË-OPBRENGS (top eksamenfrekwensie) KABV-onderwerpe — ontbrekende eerste, ×${genCount} elk`)}
                           style={{
@@ -777,9 +780,9 @@ export default function AdminSimulatorPage() {
                             background: P.butter, color: "#050508",
                             border: `2px solid ${P.butter}`, borderRadius: 10,
                             padding: "10px 16px", fontWeight: 900, fontSize: 13.5,
-                            cursor: anyBusy ? "not-allowed" : "pointer",
-                            opacity: anyBusy ? 0.55 : 1,
-                            boxShadow: anyBusy ? "none" : "3px 3px 0 0 rgba(0,0,0,.85)",
+                            cursor: covGen !== null || lockThis ? "not-allowed" : "pointer",
+                            opacity: covGen !== null || lockThis ? 0.55 : 1,
+                            boxShadow: covGen !== null || lockThis ? "none" : "3px 3px 0 0 rgba(0,0,0,.85)",
                             minHeight: 44,
                           }}
                         >
@@ -792,28 +795,28 @@ export default function AdminSimulatorPage() {
                             producer for the learner quiz surface. */}
                         <button
                           onClick={() => mcq.mutate(s.subject)}
-                          disabled={anyBusy}
+                          disabled={lockThis}
                           data-testid={`sim-mcq-${s.subject}`}
                           title={t(`Generate daily-quiz MCQs, ×${genCount}, and release only solver-confirmed keys (on-syllabus)`, `Genereer daaglikse-toets MCV, ×${genCount}, en stel net solver-bevestigde sleutels vry (op-sillabus)`)}
                           style={{
                             display: "inline-flex", alignItems: "center", gap: 7,
-                            background: busySubject === s.subject && mcq.isPending ? "transparent" : accent,
-                            color: busySubject === s.subject && mcq.isPending ? "#fff" : "#050508",
+                            background: subjOp === "mcq" ? "transparent" : accent,
+                            color: subjOp === "mcq" ? "#fff" : "#050508",
                             border: `2px solid ${accent}`, borderRadius: 10,
                             padding: "10px 16px", fontWeight: 900, fontSize: 13.5,
-                            cursor: anyBusy ? "not-allowed" : "pointer",
-                            opacity: anyBusy && !(busySubject === s.subject && mcq.isPending) ? 0.55 : 1,
+                            cursor: lockThis ? "not-allowed" : "pointer",
+                            opacity: lockThis && subjOp !== "mcq" ? 0.55 : 1,
                             minHeight: 44,
                           }}
                         >
-                          {busySubject === s.subject && mcq.isPending
+                          {subjOp === "mcq"
                             ? <Loader2 className="animate-spin" style={{ width: 15, height: 15 }} />
                             : <ClipboardCheck style={{ width: 15, height: 15 }} />}
                           {t("Quiz MCQs", "Toets MCV")}
                         </button>
                         <button
                           onClick={() => release.mutate(s.subject)}
-                          disabled={anyBusy || !canRelease}
+                          disabled={lockThis || !canRelease}
                           title={canRelease ? undefined : t(`Needs unreleased questions at ≥${releaseBar}% quality`, `Benodig vrae ≥${releaseBar}% wat nog nie vrygestel is nie`)}
                           data-testid={`sim-release-${s.subject}`}
                           style={{
@@ -822,13 +825,13 @@ export default function AdminSimulatorPage() {
                             color: canRelease ? "#050508" : "#fff",
                             border: `2px solid ${accent}`, borderRadius: 10,
                             padding: "10px 16px", fontWeight: 900, fontSize: 13.5,
-                            cursor: anyBusy || !canRelease ? "not-allowed" : "pointer",
-                            opacity: !canRelease ? 0.45 : anyBusy && !busy ? 0.5 : 1,
+                            cursor: lockThis || !canRelease ? "not-allowed" : "pointer",
+                            opacity: !canRelease ? 0.45 : lockThis && subjOp !== "release" ? 0.5 : 1,
                             boxShadow: canRelease ? "3px 3px 0 0 rgba(0,0,0,.85)" : "none",
                             minHeight: 44,
                           }}
                         >
-                          {busy && release.isPending ? <Loader2 className="animate-spin" style={{ width: 15, height: 15 }} /> : <Rocket style={{ width: 15, height: 15 }} />}
+                          {subjOp === "release" ? <Loader2 className="animate-spin" style={{ width: 15, height: 15 }} /> : <Rocket style={{ width: 15, height: 15 }} />}
                           {t("Release", "Stel vry")} → v{s.latestVersion + 1}
                         </button>
                       </div>
