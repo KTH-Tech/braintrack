@@ -1,448 +1,129 @@
-// BrainTrack "For Schools" — public partnership FAQ page answering the due-
-// diligence questions principals, HODs and governing bodies ask before
-// bringing BrainTrack to their learners. Same "Luxury Street Graffiti EdTech"
-// visual language as research.tsx: sticky blur nav, floating radial orbs,
-// graffiti scatter, rainbow headline. Content-dense by nature (10 Q&A) so it's
-// presented as a grouped, collapsed-by-default accordion rather than a wall
-// of text. Bilingual EN/AF.
+// BrainTrack "For Schools" — reframed as a DISTRIBUTION-CHANNEL pitch, not
+// enterprise/admin software. BrainTrack is a consumer app for SA Grade 12
+// LEARNERS; on this page the school is simply the fastest way to get that app
+// into their matrics' hands. Learner benefit leads; the school's role is three
+// simple steps. Pure-black street-graffiti design: sticker cards with hard
+// offset shadows (zero blur), pure #fff/#000 text (no grey, no faded white),
+// bt- prefixed keyframes. Bilingual EN/AF. Shared PublicNav + PublicFooter.
 import { Link } from "wouter";
 import { useSEO } from "@/hooks/use-seo";
 import { useLanguage } from "@/lib/language-context";
-import { GraffitiSplats } from "@/components/graffiti-splats";
-import iconTransparent from "@/assets/handoff/icon-transparent.png";
+import { PublicNav } from "@/components/public-nav";
+import { PublicFooter } from "@/components/public-footer";
 
-const CTA_GRADIENT =
-  "linear-gradient(100deg,#FFB7E5,#FFE29A,#9FF5E8,#C5B3FF,#FFB7E5)";
-const HEADLINE_GRADIENT =
-  "linear-gradient(95deg,#9FD8FF,#9FF5E8,#C5B3FF,#FFB7E5)";
-const RAINBOW_ANIM =
-  "linear-gradient(95deg,#9FD8FF,#9FF5E8,#C5B3FF,#FFB7E5,#FFE29A)";
+const WORDMARK_GRADIENT =
+  "linear-gradient(95deg,#9FD8FF,#94F7C5,#FFE29A,#FFB7E5,#C5B3FF)";
+const CONTACT_EMAIL = "learn@kth-tech.com";
 
-// A FAQ answer is a sequence of plain paragraphs and/or labelled bullet
-// blocks — richer than a single string (the source material is itself listy
-// in places) without turning the whole page into bullet soup, since the
-// question itself stays collapsed until the visitor opens it.
-type FaqParagraph = string | { label: string; bullets: readonly string[] };
-type FaqItem = { q: string; paragraphs: readonly FaqParagraph[] };
-type FaqGroup = {
-  tag: string;
-  title: string;
-  emoji: string;
-  color: string;
-  chipBg: string;
-  glow: string;
-  items: readonly FaqItem[];
-};
+type Card = { icon: string; color: string; title: string; body: string };
+type Step = { color: string; title: string; body: string };
 
 const COPY = {
   en: {
-    tFeatures: "Features",
-    tPartner: "Partner Schools",
-    tEnter: "Enter the app →",
-    badge: "🏫 For principals, HODs & governing bodies",
-    eyebrow: "answers for schools",
-    head1: "Answers for schools ",
-    headAccent: "considering a BrainTrack partnership",
-    sub: "Straight, transparent answers to the questions principals, HODs and governing bodies ask before bringing BrainTrack to their learners — how it works, what it costs, and how we handle POPIA.",
-    heroCtaPrimary: "Apply for partnership →",
-    heroCtaSecondary: "Email our team",
+    badge: "🎓 For principals, HODs & Grade 12 teams",
+    eyebrow: "put the app in their hands",
+    h1: "Give your matrics the app that gets them ready",
+    sub: "BrainTrack is the matric app your Grade 12s actually study on — CAPS-aligned diagnostics, real NSC past papers, worked memos and a 24/7 AI tutor. Your school's only job is getting it into their hands. We handle everything else.",
+    ctaPrimary: "Partner with BrainTrack →",
+    ctaSecondary: "Email our team",
+    proof: "Launching with 63 pilot schools across South Africa.",
     facts: [
-      "No cost to schools",
-      "5 NSC subjects — growing",
-      "10+ years of DBE data",
+      "No cost to the school",
+      "Zero admin for staff",
       "POPIA-aligned by design",
-      "Zero admin burden",
+      "EN + AF, every subject",
+      "Onboarded in minutes",
     ],
-    faqEyebrow: "the details",
-    faqHead1: "Frequently asked by ",
-    faqHeadAccent: "school leadership",
-    faqSub: "Ten questions we get asked most often — grouped so you can jump straight to what matters to you. Tap a question to expand it.",
-    groups: [
-      {
-        tag: "For Learners & Schools",
-        title: "What learners and staff actually get",
-        emoji: "🎓",
-        color: "#9FF5E8",
-        chipBg: "rgba(159,245,232,.14)",
-        glow: "rgba(159,245,232,.18)",
-        items: [
-          {
-            q: "How does BrainTrack work, day to day, for learners and staff?",
-            paragraphs: [
-              {
-                label: "For learners",
-                bullets: [
-                  "Diagnostic assessments that pinpoint strengths and weaknesses, topic by topic",
-                  "Fully CAPS-aligned content across every supported subject",
-                  "A dynamic study plan built around subject choices, prelim performance, the NSC exam schedule and current readiness",
-                  "Personalised revision recommendations and continuous exam-readiness feedback",
-                  "Motivation and engagement mechanics, plus support for different (VARK) learning styles",
-                ],
-              },
-              {
-                label: "For schools (optional)",
-                bullets: [
-                  "Anonymised class and cohort insights",
-                  "Trends in common learning challenges",
-                  "Engagement reports",
-                  "Academic readiness insights per subject area",
-                ],
-              },
-              "All of this comes with minimal administrative burden and no extra infrastructure required.",
-            ],
-          },
-          {
-            q: "Why is BrainTrack different from traditional revision methods?",
-            paragraphs: [
-              "Traditional methods lean on general revision, memorisation and simply putting in more hours. BrainTrack takes a different approach: targeted intervention, academic readiness and data-driven support.",
-              "It helps learners understand exactly what they don't understand yet, where their biggest risk areas are, and where to focus their limited study time for the greatest impact.",
-            ],
-          },
-        ],
-      },
-      {
-        tag: "Research & Quality",
-        title: "The science and the quality control",
-        emoji: "🔬",
-        color: "#9FD8FF",
-        chipBg: "rgba(159,216,255,.14)",
-        glow: "rgba(159,216,255,.18)",
-        items: [
-          {
-            q: "What research and methodology sit behind the platform?",
-            paragraphs: [
-              "BrainTrack is built on CAPS guidelines, NSC exam patterns, and more than 10 years of historical assessment and exam data — combined with learner-engagement and behavioural-reinforcement principles, diagnostic intervention models, and personalised learning-support theory.",
-              "The consistent focus across all of it: early risk identification, consistent study habits, learner motivation and exam readiness — building academic discipline, preparation, confidence and consistency.",
-            ],
-          },
-          {
-            q: "Which subjects are supported?",
-            paragraphs: [
-              "Currently the highest-impact NSC subjects: Mathematics, Mathematical Literacy, Physical Sciences, Life Sciences and Accounting.",
-              "Subject coverage is continuously expanding to more CAPS subjects.",
-            ],
-          },
-          {
-            q: "How is quality and accuracy assured?",
-            paragraphs: [
-              "All content is CAPS-aligned and regularly updated in line with DBE guidelines. Every piece is moderated and reviewed, then analysed against real performance patterns and exam trends.",
-              "Quality control is continuous — for accuracy, relevance and academic standard, not a once-off check.",
-            ],
-          },
-        ],
-      },
-      {
-        tag: "Partnership & Funding",
-        title: "How the partnership works",
-        emoji: "🤝",
-        color: "#FFB7E5",
-        chipBg: "rgba(255,183,229,.14)",
-        glow: "rgba(255,183,229,.18)",
-        items: [
-          {
-            q: "Does this create any administrative or technical burden for staff?",
-            paragraphs: [
-              "No. The BrainTrack team handles technical support, user support, onboarding, communication support and platform management centrally.",
-              {
-                label: "School involvement can be as light as",
-                bullets: [
-                  "Approving communication to parents",
-                  "Sharing information with parents",
-                  "Optional collaboration on academic support",
-                ],
-              },
-            ],
-          },
-          {
-            q: "How does the fundraising / contribution model work?",
-            paragraphs: [
-              "A transparent partnership model: schools receive a monthly contribution for active, paying learners who joined via the school.",
-              {
-                label: "What that means for the school",
-                bullets: [
-                  "No financial risk to the school",
-                  "No purchase requirement",
-                  "No infrastructure cost",
-                  "Full transparency on participation and reporting",
-                ],
-              },
-              {
-                label: "What schools receive",
-                bullets: [
-                  "Monthly summaries",
-                  "Anonymised engagement data",
-                  "Financial reporting on referrals and participation",
-                ],
-              },
-            ],
-          },
-          {
-            q: "Why would a school get involved?",
-            paragraphs: [
-              "This isn't aggressive marketing aimed at learners — the focus is academic support, learner readiness and access to structured tools.",
-              "Many schools are under growing pressure around matric results, learner wellbeing, exam preparation and parent expectations. BrainTrack is built to supplement existing academic support, not replace it.",
-            ],
-          },
-        ],
-      },
-      {
-        tag: "Trust & Compliance",
-        title: "POPIA, cost and obligations",
-        emoji: "🔒",
-        color: "#C5B3FF",
-        chipBg: "rgba(197,179,255,.14)",
-        glow: "rgba(197,179,255,.18)",
-        items: [
-          {
-            q: "How is POPIA and data protection handled?",
-            paragraphs: [
-              "A secure-by-design approach: responsible data management, POPIA awareness built into every feature, anonymised school-level reporting, limited access to sensitive data, and secure platform architecture.",
-              "Schools never receive sensitive individual learner data without appropriate consent.",
-            ],
-          },
-          {
-            q: "Is there any cost or contractual obligation for schools?",
-            paragraphs: [
-              {
-                label: "In short",
-                bullets: ["No cost to participate", "No exclusivity", "No long-term obligations"],
-              },
-              "Participation stays voluntary and flexible, for as long as it makes sense for your school.",
-            ],
-          },
-        ],
-      },
-    ],
-    closingEyebrow: "one core focus",
-    closingHead: "Ready to partner with BrainTrack?",
-    closingBody:
-      "BrainTrack was built on one core focus: helping South African matric learners prepare in a more structured, purposeful and academically ready way for the NSC exam — through early intervention, personalised support, learner engagement and data-driven preparation. It's not a replacement for schools or teachers, but a supplementary academic-support ecosystem working alongside schools, learners and parents.",
-    closingCtaPrimary: "Apply for partnership →",
-    closingCtaSecondary: "Email our team",
+    appHead: "What lands in your learners' hands",
+    appSub: "It's not admin software for your office — it's the app your matrics open at 9pm the night before a test.",
+    appCards: [
+      { icon: "📅", color: "#9FF5E8", title: "Dynamic study plans", body: "Rebuilt daily around exactly what each learner got wrong." },
+      { icon: "📊", color: "#9FD8FF", title: "A decade of DBE data", body: "Ten years of NSC trends showing where matrics lose marks." },
+      { icon: "📝", color: "#FFB7E5", title: "Past papers + memos", body: "Exam-style questions with worked memos, drilled topic by topic." },
+      { icon: "🤖", color: "#C5B3FF", title: "Rizz, the 24/7 AI tutor", body: "EN + AF, any hour. Explains it until it finally clicks." },
+      { icon: "🏆", color: "#FFE29A", title: "XP, streaks & rewards", body: "Motivation mechanics that keep learners coming back." },
+      { icon: "👀", color: "#94F7C5", title: "Reports parents read", body: "Weekly progress updates families actually open." },
+    ] as readonly Card[],
+    stepHead: "Your part is simple",
+    stepSub: "No new systems, no teacher training, no marking. Three steps and your Grade 12s are in.",
+    steps: [
+      { color: "#9FD8FF", title: "Say yes", body: "Fill in one partnership form. We set your school up with a unique join code and QR poster." },
+      { color: "#FFB7E5", title: "Share it", body: "Learners scan the QR or enter the code — and they're onboarded onto the app in minutes." },
+      { color: "#94F7C5", title: "See the cohort", body: "Optional, anonymised class insights show engagement and exam readiness per subject." },
+    ] as readonly Step[],
+    trustHead: "Zero risk. Zero admin.",
+    trustSub: "The pitch is helping your matrics win — not selling your office another dashboard to manage.",
+    trust: [
+      { color: "#9FF5E8", title: "No cost, no contract", body: "No licence fee, no exclusivity, no lock-in. Take part for as long as it makes sense." },
+      { color: "#C5B3FF", title: "POPIA-aligned by design", body: "Secure by design. Schools only ever see anonymised, school-level reporting." },
+      { color: "#FFE29A", title: "We carry the load", body: "Onboarding, tech, learner support and comms are handled by the BrainTrack team, centrally." },
+    ] as readonly Step[],
+    closeEyebrow: "put the app in their hands",
+    closeHead: "Ready to get your matrics ready?",
+    closeBody: "Join the 63 pilot schools launching with BrainTrack. Get the matric app into your Grade 12s' hands — we'll handle the rest.",
+    closeCtaPrimary: "Partner with BrainTrack →",
+    closeCtaSecondary: "Email our team",
   },
   af: {
-    tFeatures: "Funksies",
-    tPartner: "Vennootskole",
-    tEnter: "Betree die app →",
-    badge: "🏫 Vir skoolhoofde, departementshoofde & beheerliggame",
-    eyebrow: "antwoorde vir skole",
-    head1: "Antwoorde vir skole ",
-    headAccent: "wat 'n BrainTrack-vennootskap oorweeg",
-    sub: "Reguit, deursigtige antwoorde op die vrae wat skoolhoofde, departementshoofde en beheerliggame vra voordat hulle BrainTrack na hul leerders bring — hoe dit werk, wat dit kos, en hoe ons POPIA hanteer.",
-    heroCtaPrimary: "Doen aansoek vir vennootskap →",
-    heroCtaSecondary: "E-pos ons span",
+    badge: "🎓 Vir skoolhoofde, departementshoofde & Graad 12-spanne",
+    eyebrow: "sit die app in hul hande",
+    h1: "Gee jou matrieks die app wat hulle gereed kry",
+    sub: "BrainTrack is die matriek-app waarop jou Graad 12's werklik studeer — KABV-belynde diagnostiek, regte NSS-vraestelle, uitgewerkte memo's en 'n 24/7 KI-tutor. Jou skool se enigste taak is om dit in hul hande te kry. Ons hanteer al die res.",
+    ctaPrimary: "Vennoot met BrainTrack →",
+    ctaSecondary: "E-pos ons span",
+    proof: "Ons begin met 63 loodsskole regoor Suid-Afrika.",
     facts: [
-      "Geen koste vir skole nie",
-      "5 NSS-vakke — groeiend",
-      "10+ jaar se DBE-data",
+      "Geen koste vir die skool nie",
+      "Geen administrasie vir personeel nie",
       "POPIA-belyn per ontwerp",
-      "Geen administratiewe las nie",
+      "EN + AF, elke vak",
+      "Binne minute aan boord",
     ],
-    faqEyebrow: "die besonderhede",
-    faqHead1: "Gereeld gevra deur ",
-    faqHeadAccent: "skoolleierskap",
-    faqSub: "Tien vrae wat ons die meeste gevra word — gegroepeer sodat jy reguit kan spring na wat vir jou saak maak. Tik op 'n vraag om dit oop te maak.",
-    groups: [
-      {
-        tag: "Vir Leerders & Skole",
-        title: "Wat leerders en personeel werklik kry",
-        emoji: "🎓",
-        color: "#9FF5E8",
-        chipBg: "rgba(159,245,232,.14)",
-        glow: "rgba(159,245,232,.18)",
-        items: [
-          {
-            q: "Hoe funksioneer BrainTrack prakties vir leerders en personeel?",
-            paragraphs: [
-              {
-                label: "Vir leerders",
-                bullets: [
-                  "Diagnostiese assesserings wat sterk- en swakpunte per onderwerp identifiseer",
-                  "Volledig KABV-belynde inhoud oor elke ondersteunde vak",
-                  "'n Dinamiese studieplan gebou rondom vakkeuses, voorlopige uitslae, die NSS-eksamenrooster en huidige gereedheid",
-                  "Gepersonaliseerde hersieningsaanbevelings en deurlopende terugvoer oor eksamengereedheid",
-                  "Motivering- en betrokkenheidsmeganika, plus ondersteuning vir verskillende (VARK) leerstyle",
-                ],
-              },
-              {
-                label: "Vir skole (opsioneel)",
-                bullets: [
-                  "Geanonimiseerde klas- en kohort-insigte",
-                  "Neigings in algemene leeruitdagings",
-                  "Betrokkenheidsverslae",
-                  "Akademiese gereedheidsinsigte per vakgebied",
-                ],
-              },
-              "Dit alles kom met minimale administratiewe las en geen ekstra infrastruktuur is nodig nie.",
-            ],
-          },
-          {
-            q: "Waarom is BrainTrack anders as tradisionele hersieningsmetodes?",
-            paragraphs: [
-              "Tradisionele metodes steun op algemene hersiening, memorisering en bloot meer ure insit. BrainTrack volg 'n ander benadering: geteikende ingryping, akademiese gereedheid en datagedrewe ondersteuning.",
-              "Dit help leerders presies verstaan wat hulle nog nie verstaan nie, waar hul grootste risiko-areas lê, en waar om hul beperkte studietyd te fokus vir die grootste impak.",
-            ],
-          },
-        ],
-      },
-      {
-        tag: "Navorsing & Gehalte",
-        title: "Die wetenskap en gehaltebeheer",
-        emoji: "🔬",
-        color: "#9FD8FF",
-        chipBg: "rgba(159,216,255,.14)",
-        glow: "rgba(159,216,255,.18)",
-        items: [
-          {
-            q: "Watter navorsing en metodologie ondersteun die platform?",
-            paragraphs: [
-              "BrainTrack is gebou op KABV-riglyne, NSS-eksamenpatrone, en meer as 10 jaar se historiese assesserings- en eksamendata — gekombineer met leerder-betrokkenheid- en gedragsversterkingsbeginsels, diagnostiese ingrypingsmodelle, en gepersonaliseerde leerondersteuningsteorie.",
-              "Die deurlopende fokus regoor alles: vroeë risiko-identifisering, konsekwente studiegewoontes, leerdermotivering en eksamengereedheid — wat akademiese dissipline, voorbereiding, selfvertroue en konsekwentheid bou.",
-            ],
-          },
-          {
-            q: "Watter vakke word ondersteun?",
-            paragraphs: [
-              "Tans die hoë-impak NSS-vakke: Wiskunde, Wiskundige Geletterdheid, Fisiese Wetenskappe, Lewenswetenskappe en Rekeningkunde.",
-              "Vakdekking brei deurlopend uit na meer KABV-vakke.",
-            ],
-          },
-          {
-            q: "Hoe word kwaliteit en akkuraatheid verseker?",
-            paragraphs: [
-              "Alle inhoud is KABV-belyn en word gereeld opgedateer in lyn met DBO-riglyne. Elke stuk word gemodereer en hersien, en dan ontleed teen werklike prestasiepatrone en eksamenneigings.",
-              "Gehaltebeheer is deurlopend — vir akkuraatheid, relevansie en akademiese standaard, nie 'n eenmalige toets nie.",
-            ],
-          },
-        ],
-      },
-      {
-        tag: "Vennootskap & Befondsing",
-        title: "Hoe die vennootskap werk",
-        emoji: "🤝",
-        color: "#FFB7E5",
-        chipBg: "rgba(255,183,229,.14)",
-        glow: "rgba(255,183,229,.18)",
-        items: [
-          {
-            q: "Is daar enige administratiewe of tegniese las op personeel?",
-            paragraphs: [
-              "Nee. Die BrainTrack-span hanteer tegniese ondersteuning, gebruikersondersteuning, aanboord, kommunikasie-ondersteuning en platformbestuur sentraal.",
-              {
-                label: "Skoolbetrokkenheid kan so beperk wees soos",
-                bullets: [
-                  "Goedkeuring van kommunikasie aan ouers",
-                  "Deel van inligting met ouers",
-                  "Opsionele samewerking oor akademiese ondersteuning",
-                ],
-              },
-            ],
-          },
-          {
-            q: "Hoe werk die fondsinsamelingsmodel?",
-            paragraphs: [
-              "'n Deursigtige vennootskapsmodel: skole ontvang 'n maandelikse bydrae vir aktiewe, betalende leerders wat via die skool aangesluit het.",
-              {
-                label: "Wat dit vir die skool beteken",
-                bullets: [
-                  "Geen finansiële risiko vir die skool nie",
-                  "Geen aankoopvereiste nie",
-                  "Geen infrastruktuurkoste nie",
-                  "Volle deursigtigheid oor deelname en verslagdoening",
-                ],
-              },
-              {
-                label: "Wat skole ontvang",
-                bullets: [
-                  "Maandelikse opsommings",
-                  "Geanonimiseerde betrokkenheidsdata",
-                  "Finansiële verslagdoening oor verwysings en deelname",
-                ],
-              },
-            ],
-          },
-          {
-            q: "Waarom sou 'n skool betrokke wees?",
-            paragraphs: [
-              "Dit is nie aggressiewe bemarking op leerders gemik nie — die fokus is akademiese ondersteuning, leerdergereedheid en toegang tot gestruktureerde hulpmiddels.",
-              "Baie skole staar toenemende druk in die gesig rondom matriekuitslae, leerderwelstand, eksamenvoorbereiding en ouerverwagtinge. BrainTrack is gebou om bestaande akademiese ondersteuning aan te vul, nie te vervang nie.",
-            ],
-          },
-        ],
-      },
-      {
-        tag: "Vertroue & Nakoming",
-        title: "POPIA, koste en verpligtinge",
-        emoji: "🔒",
-        color: "#C5B3FF",
-        chipBg: "rgba(197,179,255,.14)",
-        glow: "rgba(197,179,255,.18)",
-        items: [
-          {
-            q: "Hoe word POPIA en databeskerming hanteer?",
-            paragraphs: [
-              "'n Veilig-per-ontwerp benadering: verantwoordelike databestuur, POPIA-bewustheid ingebou in elke funksie, geanonimiseerde skoolvlak-verslagdoening, beperkte toegang tot sensitiewe data, en veilige platformargitektuur.",
-              "Skole ontvang nooit sensitiewe individuele leerderdata sonder toepaslike toestemming nie.",
-            ],
-          },
-          {
-            q: "Is daar enige koste of kontraktuele verpligtinge vir skole?",
-            paragraphs: [
-              {
-                label: "Kortom",
-                bullets: ["Geen koste om deel te neem nie", "Geen eksklusiwiteit nie", "Geen langtermynverpligtinge nie"],
-              },
-              "Deelname bly vrywillig en buigsaam, so lank as wat dit vir jou skool sin maak.",
-            ],
-          },
-        ],
-      },
-    ],
-    closingEyebrow: "een kernfokus",
-    closingHead: "Gereed om saam met BrainTrack te vennoot?",
-    closingBody:
-      "BrainTrack is gebou op een kernfokus: om Suid-Afrikaanse matriekleerders te help om op 'n meer gestruktureerde, doelgerigte en akademies gereed manier vir die NSS-eksamen voor te berei — deur vroeë ingryping, gepersonaliseerde ondersteuning, leerderbetrokkenheid en datagedrewe voorbereiding. Dit is nie 'n vervanging vir skole of onderwysers nie, maar 'n aanvullende akademiese-ondersteuningsekosisteem wat saam met skole, leerders en ouers werk.",
-    closingCtaPrimary: "Doen aansoek vir vennootskap →",
-    closingCtaSecondary: "E-pos ons span",
+    appHead: "Wat in jou leerders se hande beland",
+    appSub: "Dis nie admin-sagteware vir jou kantoor nie — dis die app wat jou matrieks om 9nm die aand voor 'n toets oopmaak.",
+    appCards: [
+      { icon: "📅", color: "#9FF5E8", title: "Dinamiese studieplanne", body: "Daagliks herbou rondom presies wat elke leerder verkeerd gekry het." },
+      { icon: "📊", color: "#9FD8FF", title: "'n Dekade se DBE-data", body: "Tien jaar se NSS-neigings wat wys waar matrieks punte verloor." },
+      { icon: "📝", color: "#FFB7E5", title: "Vraestelle + memo's", body: "Eksamenstyl-vrae met uitgewerkte memo's, onderwerp vir onderwerp gedril." },
+      { icon: "🤖", color: "#C5B3FF", title: "Rizz, die 24/7 KI-tutor", body: "EN + AF, enige uur. Verduidelik totdat dit uiteindelik klik." },
+      { icon: "🏆", color: "#FFE29A", title: "XP, reekse & belonings", body: "Motiveringsmeganika wat leerders laat terugkom." },
+      { icon: "👀", color: "#94F7C5", title: "Verslae wat ouers lees", body: "Weeklikse vorderingsopdaterings wat gesinne werklik oopmaak." },
+    ] as readonly Card[],
+    stepHead: "Jou deel is eenvoudig",
+    stepSub: "Geen nuwe stelsels, geen onderwyseropleiding, geen nasien nie. Drie stappe en jou Graad 12's is in.",
+    steps: [
+      { color: "#9FD8FF", title: "Sê ja", body: "Vul een vennootskapsvorm in. Ons stel jou skool op met 'n unieke aansluitkode en QR-plakkaat." },
+      { color: "#FFB7E5", title: "Deel dit", body: "Leerders skandeer die QR of voer die kode in — en hulle is binne minute op die app aan boord." },
+      { color: "#94F7C5", title: "Sien die kohort", body: "Opsionele, geanonimiseerde klasinsigte wys betrokkenheid en eksamengereedheid per vak." },
+    ] as readonly Step[],
+    trustHead: "Geen risiko. Geen administrasie.",
+    trustSub: "Die doel is om jou matrieks te help wen — nie om jou kantoor nog 'n dashboard te verkoop om te bestuur nie.",
+    trust: [
+      { color: "#9FF5E8", title: "Geen koste, geen kontrak", body: "Geen lisensiefooi, geen eksklusiwiteit, geen vasknel nie. Neem deel so lank as wat dit sin maak." },
+      { color: "#C5B3FF", title: "POPIA-belyn per ontwerp", body: "Veilig per ontwerp. Skole sien slegs geanonimiseerde verslagdoening op skoolvlak." },
+      { color: "#FFE29A", title: "Ons dra die las", body: "Aanboord, tegniek, leerderondersteuning en kommunikasie word sentraal deur die BrainTrack-span hanteer." },
+    ] as readonly Step[],
+    closeEyebrow: "sit die app in hul hande",
+    closeHead: "Gereed om jou matrieks gereed te kry?",
+    closeBody: "Sluit aan by die 63 loodsskole wat met BrainTrack begin. Kry die matriek-app in jou Graad 12's se hande — ons hanteer die res.",
+    closeCtaPrimary: "Vennoot met BrainTrack →",
+    closeCtaSecondary: "E-pos ons span",
   },
 } as const;
 
-const CONTACT_EMAIL = "learn@kth-tech.com";
-
-function flattenParagraphs(paragraphs: readonly FaqParagraph[]): string {
-  return paragraphs
-    .map((p) => (typeof p === "string" ? p : `${p.label}: ${p.bullets.join("; ")}.`))
-    .join(" ");
-}
-
 export default function ForSchoolsPage() {
-  const { language, toggleLanguage } = useLanguage();
+  const { language } = useLanguage();
   const t = COPY[language];
   const en = language === "en";
 
-  const faqJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: t.groups.flatMap((g) =>
-      g.items.map((item) => ({
-        "@type": "Question",
-        name: item.q,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: flattenParagraphs(item.paragraphs),
-        },
-      })),
-    ),
-  };
-
   useSEO({
-    title: "For Schools | BrainTrack — Partnership FAQ for Principals & HODs",
+    title: "For Schools | BrainTrack — Put the Matric App in Your Learners' Hands",
     description:
-      "Everything South African schools need to know about partnering with BrainTrack: how it works, the research behind it, POPIA compliance, subjects covered, cost and the fundraising model.",
+      "BrainTrack is the CAPS-aligned matric app for SA Grade 12 learners. Partner with your school to get it into your matrics' hands — no cost, no admin, POPIA-aligned. Launching with 63 pilot schools.",
     canonical: "https://braintrack.tech/for-schools",
-    ogTitle: "For Schools — Partner With BrainTrack™",
+    ogTitle: "For Schools — Get the Matric App to Your Grade 12s | BrainTrack™",
     ogDescription:
-      "Answers for principals, HODs and governing bodies considering a BrainTrack partnership — how it works, POPIA compliance, cost and the fundraising model.",
+      "The matric app your Grade 12s study on — diagnostics, past papers, memos and a 24/7 AI tutor. Your school's only job is getting it into their hands. No cost, no admin.",
     ogUrl: "https://braintrack.tech/for-schools",
     locale: en ? "en_ZA" : "af_ZA",
     jsonLd: [
@@ -454,308 +135,249 @@ export default function ForSchoolsPage() {
           { "@type": "ListItem", position: 2, name: "For Schools", item: "https://braintrack.tech/for-schools" },
         ],
       },
-      faqJsonLd,
     ],
   });
 
+  const palette = ["#9FD8FF", "#94F7C5", "#9FF5E8", "#FFE29A", "#FFB7E5", "#C5B3FF"];
+
   return (
-    <div style={{ minHeight: "100vh", background: "#050508", overflowX: "hidden", color: "#fff" }}>
+    <div
+      className="min-h-screen"
+      style={{ background: "#000", color: "#fff", overflowX: "hidden" }}
+      data-testid="page-for-schools"
+    >
       <style>{`
-        .btfs-nav-link { color:#fff; cursor:pointer; transition:color .2s; }
-        .btfs-nav-link:hover { color:#9FF5E8; }
-        .btfs-nav-cta { transition: transform .2s; }
-        .btfs-nav-cta:hover { transform: translateY(-2px); }
-        .btfs-logo-img { transition: transform .25s; }
-        .btfs-logo-img:hover { transform: scale(1.15) rotate(-4deg); }
-        /* ── Entrance kit (owner: "animate more") ──────────────────────
-           Hero elements rise in sequence via --d delays; fact chips pop in
-           with an overshoot bounce, staggered by --i. All bt- prefixed and
-           killed under prefers-reduced-motion. */
-        /* fill-mode backwards + from-only keyframes: the element is hidden
-           through its delay, animates in, then the animation RELEASES it —
-           so inline tilts and hover transforms keep working afterwards
-           (fill:both would lock transform forever and kill the hovers). */
-        .btfs-in { animation: bt-fs-up .55s cubic-bezier(.22,.75,.3,1) backwards; animation-delay: var(--d, 0s); }
-        @keyframes bt-fs-up { from { opacity: 0; transform: translateY(26px); } }
-        @keyframes bt-fs-pop { 0% { opacity: 0; transform: scale(.4) rotate(-8deg); } 70% { opacity: 1; transform: scale(1.12) rotate(2deg); } }
-        .btfs-chip { animation: bt-fs-pop .5s cubic-bezier(.34,1.56,.64,1) backwards; animation-delay: calc(.5s + var(--i, 0) * .07s); transition: transform .18s, box-shadow .18s; }
-        .btfs-chip:hover { transform: translate(-2px,-2px) rotate(-1deg); box-shadow: 3px 3px 0 0 currentColor; }
-        /* Sticker-slap CTAs — hard offset, no blur (house rule: no glow). */
-        .btfs-btn-primary { transition: transform .18s, box-shadow .18s; box-shadow: 4px 4px 0 0 rgba(148,247,197,.55); }
-        .btfs-btn-primary:hover { transform: translate(-2px,-2px) rotate(-.6deg); box-shadow: 7px 7px 0 0 rgba(148,247,197,.75); }
-        .btfs-btn-outline { transition: border-color .2s, transform .18s, box-shadow .18s; }
-        .btfs-btn-outline:hover { border-color: #fff; transform: translate(-2px,-2px) rotate(.6deg); box-shadow: 4px 4px 0 0 rgba(255,255,255,.5); }
+        .btfs-sticker { transition: transform .18s ease, box-shadow .18s ease; }
+        .btfs-sticker:hover { transform: translate(-3px,-3px); box-shadow: 9px 9px 0 0 var(--sh); }
+        .btfs-btn { transition: transform .18s ease, box-shadow .18s ease; }
+        .btfs-btn:hover { transform: translate(-3px,-3px); box-shadow: 9px 9px 0 0 var(--sh); }
+        .btfs-chip { animation: bt-fs-pop .5s cubic-bezier(.34,1.56,.64,1) backwards; animation-delay: calc(var(--i,0) * .06s); transition: transform .18s ease; }
+        .btfs-chip:hover { transform: translate(-2px,-2px); }
+        .btfs-in { animation: bt-fs-up .55s cubic-bezier(.22,.75,.3,1) backwards; animation-delay: var(--d,0s); }
+        @keyframes bt-fs-up { from { opacity: 0; transform: translateY(24px); } }
+        @keyframes bt-fs-pop { 0% { opacity: 0; transform: scale(.5) rotate(-6deg); } 70% { opacity: 1; transform: scale(1.1) rotate(2deg); } }
         @media (prefers-reduced-motion: reduce) {
           .btfs-in, .btfs-chip { opacity: 1; animation: none !important; }
-        }
-        .btfs-faq { border-top: 1px solid rgba(255,255,255,.1); }
-        .btfs-faq:first-of-type { border-top: none; }
-        .btfs-faq summary { list-style: none; cursor: pointer; }
-        .btfs-faq summary::-webkit-details-marker { display: none; }
-        .btfs-faq summary::marker { content: ""; }
-        .btfs-chevron { transition: transform .25s; }
-        .btfs-faq[open] .btfs-chevron { transform: rotate(180deg); }
-        .btfs-faq-body { animation: bt-fadeup .35s ease-out both; }
-        @media (max-width: 860px) {
-          .btfs-nav-links { display: none !important; }
-          .btfs-head { font-size: 38px !important; letter-spacing: -1.5px !important; }
-          .btfs-hero-ctas { flex-direction: column !important; align-items: stretch !important; }
-        }
-        @media (max-width: 480px) {
-          .btfs-nav { padding: 12px 10px !important; gap: 6px !important; }
-          .btfs-nav-left { gap: 6px !important; }
-          .btfs-nav-left img { width: 34px !important; height: 34px !important; }
-          .btfs-nav-left .bt-wordmark { font-size: 17px !important; }
-          .btfs-nav-right { gap: 6px !important; }
-          .btfs-nav-right [data-testid="lang-toggle"] span { padding: 5px 7px !important; }
-          .btfs-nav-cta { padding: 8px 12px !important; font-size: 12px !important; }
+          .btfs-sticker, .btfs-btn { transition: none !important; }
         }
       `}</style>
 
-      {/* ── Nav ─────────────────────────────────────────────── */}
-      <div
-        className="btfs-nav"
-        style={{
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          gap: 32, padding: "16px 48px", position: "sticky", top: 0, zIndex: 50,
-          background: "rgba(5,5,8,.82)", backdropFilter: "blur(14px)",
-          borderBottom: "1px solid rgba(255,255,255,.06)",
-        }}
-      >
-        <Link href="/">
-          <div className="btfs-nav-left" style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer", minWidth: 0, flex: "none" }}>
-            <img src={iconTransparent} alt="BrainTrack" className="btfs-logo-img" style={{ width: 56, height: 56, objectFit: "contain", flex: "none" }} />
-            <span className="bt-wordmark" style={{ fontSize: 22, letterSpacing: "-.5px" }}>BrainTrack</span>
-          </div>
-        </Link>
-        <div className="btfs-nav-right" style={{ display: "flex", alignItems: "center", gap: 26, fontSize: 14, fontWeight: 600, flex: "none" }}>
-          <span className="btfs-nav-links" style={{ display: "flex", alignItems: "center", gap: 26 }}>
-            <Link href="/features"><span className="btfs-nav-link">{t.tFeatures}</span></Link>
-            <Link href="/partner-schools"><span className="btfs-nav-link">{t.tPartner}</span></Link>
-          </span>
-          <span
-            onClick={toggleLanguage}
-            data-testid="lang-toggle"
-            style={{
-              display: "flex", alignItems: "center", gap: 2, fontSize: 12, fontWeight: 800,
-              border: "1.5px solid rgba(255,255,255,.2)", borderRadius: 8,
-              overflow: "hidden", cursor: "pointer", userSelect: "none", flex: "none",
-            }}
-          >
-            <span style={{ padding: "6px 10px", background: en ? "#9FF5E8" : "transparent", color: en ? "#050508" : "#fff" }}>EN</span>
-            <span style={{ padding: "6px 10px", background: en ? "transparent" : "#9FF5E8", color: en ? "#fff" : "#050508" }}>AF</span>
-          </span>
-          <a href="/signin" style={{ flex: "none" }}>
-            <button
-              className="btfs-nav-cta"
-              data-testid="button-nav-enter"
-              style={{
-                fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 14,
-                color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
-                animation: "bt-rainbow 6s linear infinite", border: "none",
-                borderRadius: 10, padding: "11px 24px", whiteSpace: "nowrap",
-                cursor: "pointer",
-              }}
-            >
-              {t.tEnter}
-            </button>
-          </a>
-        </div>
-      </div>
+      <PublicNav />
 
-      {/* ── Content ─────────────────────────────────────────── */}
-      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "64px 32px 100px", position: "relative" }}>
-        <GraffitiSplats variant="hero" opacity={0.45} />
+      <main style={{ paddingTop: 64 }}>
+        <div style={{ maxWidth: 1040, margin: "0 auto", padding: "clamp(40px,7vw,72px) 20px 96px" }}>
 
-        {/* Floating orbs */}
-        {/* Blur-glow blobs removed — house rule: no bloom. The entrance
-            choreography (btfs-in / chip pops) carries the energy instead. */}
-
-        {/* Hero */}
-        <div style={{ textAlign: "center", marginBottom: 40, position: "relative", zIndex: 2 }}>
-          <div className="btfs-in" style={{ ["--d" as string]: ".05s", display: "inline-flex", alignItems: "center", gap: 8, fontSize: 12, fontWeight: 800, letterSpacing: "1.5px", textTransform: "uppercase", color: "#9FF5E8", border: "1.5px solid rgba(159,245,232,.4)", borderRadius: 999, padding: "8px 18px", marginBottom: 18 }}>
-            {t.badge}
-          </div>
-          <div className="btfs-in" style={{ ["--d" as string]: ".14s", fontFamily: "'Permanent Marker',cursive", color: "#9FD8FF", fontSize: 18, transform: "rotate(-2deg)" }}>{t.eyebrow}</div>
-          <div
-            role="heading"
-            aria-level={1}
-            className="btfs-head btfs-in"
-            data-testid="text-forschools-title"
-            style={{ ["--d" as string]: ".22s", fontSize: 54, fontWeight: 900, letterSpacing: "-2.5px", lineHeight: 1.06, margin: "8px 0 16px", fontFamily: "'Poppins',sans-serif", color: "#fff" }}
-          >
-            {t.head1}
-            <span
-              style={{
-                background: RAINBOW_ANIM, backgroundSize: "200% 100%",
-                animation: "bt-rainbow 5s linear infinite",
-                WebkitBackgroundClip: "text", backgroundClip: "text",
-                color: "transparent", WebkitTextFillColor: "transparent",
-              }}
-            >
-              {t.headAccent}
-            </span>
-          </div>
-          <div className="btfs-in" data-testid="text-forschools-subtitle" style={{ ["--d" as string]: ".32s", fontSize: 18, color: "#fff", opacity: 0.94, maxWidth: 660, margin: "0 auto", lineHeight: 1.6 }}>
-            {t.sub}
-          </div>
-
-          <div className="btfs-hero-ctas btfs-in" style={{ ["--d" as string]: ".42s", display: "flex", justifyContent: "center", gap: 14, marginTop: 30, flexWrap: "wrap" }}>
-            <Link href="/partner-schools">
-              <button
-                className="btfs-btn-primary"
-                data-testid="button-hero-apply"
-                style={{
-                  fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 15,
-                  color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
-                  animation: "bt-rainbow 6s linear infinite", border: "none",
-                  borderRadius: 12, padding: "15px 28px", whiteSpace: "nowrap", cursor: "pointer",
-                }}
-              >
-                {t.heroCtaPrimary}
-              </button>
-            </Link>
-            <a href={`mailto:${CONTACT_EMAIL}`} style={{ textDecoration: "none" }}>
-              <button
-                className="btfs-btn-outline"
-                data-testid="button-hero-email"
-                style={{
-                  fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 15,
-                  color: "#fff", background: "transparent", border: "1.5px solid rgba(255,255,255,.35)",
-                  borderRadius: 12, padding: "15px 28px", whiteSpace: "nowrap", cursor: "pointer",
-                }}
-              >
-                {t.heroCtaSecondary}
-              </button>
-            </a>
-          </div>
-        </div>
-
-        {/* Quick facts strip */}
-        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 10, marginBottom: 56, position: "relative", zIndex: 2 }}>
-          {t.facts.map((fact, i) => {
-            const palette = ["#9FF5E8", "#9FD8FF", "#FFB7E5", "#C5B3FF", "#FFE29A"];
-            const color = palette[i % palette.length];
-            return (
-              <span
-                key={fact}
-                className="btfs-chip"
-                data-testid={`chip-quickfact-${i}`}
-                style={{ ["--i" as string]: i, fontSize: 13, fontWeight: 800, color, border: `1.5px solid ${color}`, borderRadius: 999, padding: "9px 16px" }}
-              >
-                {fact}
-              </span>
-            );
-          })}
-        </div>
-
-        {/* FAQ header */}
-        <div style={{ textAlign: "center", marginBottom: 40, position: "relative", zIndex: 2 }}>
-          <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#FFB7E5", fontSize: 18, transform: "rotate(-2deg)" }}>{t.faqEyebrow}</div>
-          <div style={{ fontSize: 34, fontWeight: 900, letterSpacing: "-1.2px", color: "#fff", margin: "6px 0 12px" }}>
-            {t.faqHead1}
-            <span style={{ background: HEADLINE_GRADIENT, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>
-              {t.faqHeadAccent}
-            </span>
-          </div>
-          <div style={{ fontSize: 15, color: "#fff", opacity: 0.94, maxWidth: 560, margin: "0 auto", lineHeight: 1.6 }}>{t.faqSub}</div>
-        </div>
-
-        {/* FAQ groups */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 22, position: "relative", zIndex: 2 }}>
-          {t.groups.map((group, gi) => (
+          {/* ── Hero ─────────────────────────────────────────── */}
+          <section style={{ textAlign: "center" }}>
             <div
-              key={group.tag}
-              data-testid={`card-faq-group-${gi}`}
-              style={{
-                background: "linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015))",
-                border: `1px solid ${group.color}`, borderRadius: 22, padding: "28px 30px",
-                boxShadow: `0 10px 34px ${group.glow}`, position: "relative", overflow: "hidden",
-              }}
+              className="btfs-in"
+              style={{ ["--d" as string]: ".04s", display: "inline-flex", alignItems: "center", gap: 8, fontSize: 12, fontWeight: 900, letterSpacing: "1px", textTransform: "uppercase", color: "#000", background: "#94F7C5", border: "2.5px solid #000", boxShadow: "5px 5px 0 0 #94F7C5", borderRadius: 999, padding: "9px 18px", marginBottom: 22 }}
             >
-              <div aria-hidden style={{ position: "absolute", top: -30, right: -10, fontSize: 120, fontWeight: 900, color: group.color, opacity: 0.08, lineHeight: 1, pointerEvents: "none" }}>
-                {group.emoji}
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 18, position: "relative" }}>
-                <div style={{ width: 52, height: 52, flex: "none", borderRadius: 16, background: group.chipBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26 }}>
-                  {group.emoji}
-                </div>
-                <div>
-                  <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: "1.5px", textTransform: "uppercase", color: group.color }}>{group.tag}</div>
-                  <div style={{ fontWeight: 900, fontSize: 19, letterSpacing: "-.4px", color: "#fff" }}>{group.title}</div>
-                </div>
-              </div>
-
-              <div style={{ position: "relative" }}>
-                {group.items.map((item, ii) => (
-                  <details key={item.q} className="btfs-faq" data-testid={`faq-${gi}-${ii}`}>
-                    <summary style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, padding: "16px 0", fontWeight: 700, fontSize: 15.5, color: "#fff" }}>
-                      <span>{item.q}</span>
-                      <span className="btfs-chevron" aria-hidden style={{ flex: "none", color: group.color, fontSize: 14, fontWeight: 900 }}>▾</span>
-                    </summary>
-                    <div className="btfs-faq-body" style={{ paddingBottom: 20 }}>
-                      {item.paragraphs.map((p, pi) =>
-                        typeof p === "string" ? (
-                          <p key={pi} style={{ fontSize: 15, lineHeight: 1.7, color: "#fff", opacity: 0.92, margin: pi === 0 ? "0 0 12px" : "12px 0" }}>
-                            {p}
-                          </p>
-                        ) : (
-                          <div key={pi} style={{ margin: "12px 0" }}>
-                            <div style={{ fontSize: 13, fontWeight: 800, color: group.color, marginBottom: 8 }}>{p.label}</div>
-                            <ul style={{ margin: 0, paddingLeft: 20, display: "flex", flexDirection: "column", gap: 6 }}>
-                              {p.bullets.map((b) => (
-                                <li key={b} style={{ fontSize: 14.5, lineHeight: 1.6, color: "#fff", opacity: 0.92 }}>{b}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        ),
-                      )}
-                    </div>
-                  </details>
-                ))}
-              </div>
+              {t.badge}
             </div>
-          ))}
-        </div>
+            <div
+              className="btfs-in"
+              style={{ ["--d" as string]: ".12s", fontFamily: "'Permanent Marker',cursive", color: "#FFB7E5", fontSize: "clamp(16px,4vw,20px)", transform: "rotate(-2deg)", marginBottom: 6 }}
+            >
+              {t.eyebrow}
+            </div>
+            <h1
+              className="btfs-in"
+              data-testid="text-forschools-title"
+              style={{ ["--d" as string]: ".2s", fontSize: "clamp(34px,7vw,62px)", fontWeight: 900, letterSpacing: "-2px", lineHeight: 1.04, margin: "0 auto 18px", maxWidth: 900, fontFamily: "'Poppins',sans-serif", color: "#fff" }}
+            >
+              {t.h1}
+            </h1>
+            <p
+              className="btfs-in"
+              data-testid="text-forschools-subtitle"
+              style={{ ["--d" as string]: ".3s", fontSize: "clamp(15px,2.4vw,19px)", color: "#fff", maxWidth: 680, margin: "0 auto", lineHeight: 1.6 }}
+            >
+              {t.sub}
+            </p>
 
-        {/* Closing CTA */}
-        <div style={{ marginTop: 64, background: "linear-gradient(160deg,rgba(255,255,255,.06),rgba(5,5,8,.5))", border: "1.5px solid rgba(255,255,255,.14)", borderRadius: 24, padding: "44px 36px", textAlign: "center", position: "relative", zIndex: 2 }}>
-          <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#94F7C5", fontSize: 18, transform: "rotate(-2deg)", marginBottom: 6 }}>{t.closingEyebrow}</div>
-          <div style={{ fontSize: 30, fontWeight: 900, letterSpacing: "-1px", color: "#fff", marginBottom: 16 }}>{t.closingHead}</div>
-          <div style={{ fontSize: 15.5, color: "#fff", opacity: 0.94, maxWidth: 680, margin: "0 auto 28px", lineHeight: 1.75 }}>
-            {t.closingBody}
+            <div
+              className="btfs-in"
+              style={{ ["--d" as string]: ".4s", display: "flex", justifyContent: "center", gap: 14, marginTop: 30, flexWrap: "wrap" }}
+            >
+              <Link href="/partner-schools">
+                <button
+                  className="btfs-btn"
+                  data-testid="button-hero-apply"
+                  style={{ ["--sh" as string]: "#94F7C5", fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 15, color: "#000", background: WORDMARK_GRADIENT, border: "2.5px solid #000", boxShadow: "6px 6px 0 0 #94F7C5", borderRadius: 14, padding: "15px 26px", cursor: "pointer" }}
+                >
+                  {t.ctaPrimary}
+                </button>
+              </Link>
+              <a href={`mailto:${CONTACT_EMAIL}`} style={{ textDecoration: "none" }}>
+                <button
+                  className="btfs-btn"
+                  data-testid="button-hero-email"
+                  style={{ ["--sh" as string]: "#C5B3FF", fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 15, color: "#fff", background: "#000", border: "2.5px solid #fff", boxShadow: "6px 6px 0 0 #C5B3FF", borderRadius: 14, padding: "15px 26px", cursor: "pointer" }}
+                >
+                  {t.ctaSecondary}
+                </button>
+              </a>
+            </div>
+          </section>
+
+          {/* ── Social proof: 63 pilot schools ───────────────── */}
+          <div
+            style={{ marginTop: 40, background: "#050508", border: "2.5px solid #FFE29A", boxShadow: "6px 6px 0 0 #FFE29A", borderRadius: 18, padding: "18px 22px", textAlign: "center", transform: "rotate(-.4deg)" }}
+          >
+            <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: "clamp(17px,3.4vw,24px)", color: "#FFE29A" }}>
+              {t.proof}
+            </span>
           </div>
-          <div style={{ display: "flex", justifyContent: "center", gap: 14, flexWrap: "wrap" }}>
-            <Link href="/partner-schools">
-              <button
-                className="btfs-btn-primary"
-                data-testid="button-cta-apply"
-                style={{
-                  fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 15,
-                  color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
-                  animation: "bt-rainbow 6s linear infinite", border: "none",
-                  borderRadius: 12, padding: "15px 28px", whiteSpace: "nowrap", cursor: "pointer",
-                }}
-              >
-                {t.closingCtaPrimary}
-              </button>
-            </Link>
-            <a href={`mailto:${CONTACT_EMAIL}`} style={{ textDecoration: "none" }}>
-              <button
-                className="btfs-btn-outline"
-                data-testid="button-cta-email"
-                style={{
-                  fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 15,
-                  color: "#fff", background: "transparent", border: "1.5px solid rgba(255,255,255,.35)",
-                  borderRadius: 12, padding: "15px 28px", whiteSpace: "nowrap", cursor: "pointer",
-                }}
-              >
-                {t.closingCtaSecondary}
-              </button>
-            </a>
+
+          {/* Quick-fact chips */}
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 10, marginTop: 24 }}>
+            {t.facts.map((fact, i) => {
+              const color = palette[i % palette.length];
+              return (
+                <span
+                  key={fact}
+                  className="btfs-chip"
+                  data-testid={`chip-quickfact-${i}`}
+                  style={{ ["--i" as string]: i, fontSize: 13, fontWeight: 800, color, background: "#000", border: `2px solid ${color}`, borderRadius: 999, padding: "9px 16px" }}
+                >
+                  {fact}
+                </span>
+              );
+            })}
           </div>
+
+          {/* ── What learners get ────────────────────────────── */}
+          <section style={{ marginTop: 84 }}>
+            <div style={{ textAlign: "center", marginBottom: 34 }}>
+              <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#9FF5E8", fontSize: "clamp(15px,3vw,19px)", transform: "rotate(-1.5deg)", marginBottom: 8 }}>
+                the learner's app
+              </div>
+              <h2 style={{ fontSize: "clamp(26px,5vw,40px)", fontWeight: 900, letterSpacing: "-1.2px", color: "#fff", margin: "0 0 12px", lineHeight: 1.08 }}>
+                {t.appHead}
+              </h2>
+              <p style={{ fontSize: "clamp(14px,2.2vw,17px)", color: "#fff", maxWidth: 620, margin: "0 auto", lineHeight: 1.55 }}>
+                {t.appSub}
+              </p>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,280px),1fr))", gap: 18 }}>
+              {t.appCards.map((c, i) => (
+                <div
+                  key={c.title}
+                  className="btfs-sticker"
+                  data-testid={`card-app-${i}`}
+                  style={{ ["--sh" as string]: c.color, background: "#050508", border: `2.5px solid ${c.color}`, boxShadow: `6px 6px 0 0 ${c.color}`, borderRadius: 18, padding: "24px 22px" }}
+                >
+                  <div style={{ width: 52, height: 52, borderRadius: 14, background: "#000", border: `2px solid ${c.color}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, marginBottom: 14 }}>
+                    {c.icon}
+                  </div>
+                  <div style={{ fontWeight: 900, fontSize: 18, letterSpacing: "-.4px", color: c.color, marginBottom: 6 }}>{c.title}</div>
+                  <p style={{ fontSize: 14.5, lineHeight: 1.6, color: "#fff", margin: 0 }}>{c.body}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* ── The school's simple role ─────────────────────── */}
+          <section style={{ marginTop: 84 }}>
+            <div style={{ textAlign: "center", marginBottom: 34 }}>
+              <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#FFB7E5", fontSize: "clamp(15px,3vw,19px)", transform: "rotate(-1.5deg)", marginBottom: 8 }}>
+                your three steps
+              </div>
+              <h2 style={{ fontSize: "clamp(26px,5vw,40px)", fontWeight: 900, letterSpacing: "-1.2px", color: "#fff", margin: "0 0 12px", lineHeight: 1.08 }}>
+                {t.stepHead}
+              </h2>
+              <p style={{ fontSize: "clamp(14px,2.2vw,17px)", color: "#fff", maxWidth: 620, margin: "0 auto", lineHeight: 1.55 }}>
+                {t.stepSub}
+              </p>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,260px),1fr))", gap: 18 }}>
+              {t.steps.map((s, i) => (
+                <div
+                  key={s.title}
+                  className="btfs-sticker"
+                  data-testid={`card-step-${i}`}
+                  style={{ ["--sh" as string]: s.color, background: "#050508", border: `2.5px solid ${s.color}`, boxShadow: `6px 6px 0 0 ${s.color}`, borderRadius: 18, padding: "26px 22px" }}
+                >
+                  <div style={{ width: 46, height: 46, borderRadius: 12, background: s.color, color: "#000", border: "2.5px solid #000", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Permanent Marker',cursive", fontSize: 22, marginBottom: 16 }}>
+                    {i + 1}
+                  </div>
+                  <div style={{ fontWeight: 900, fontSize: 19, letterSpacing: "-.4px", color: "#fff", marginBottom: 6 }}>{s.title}</div>
+                  <p style={{ fontSize: 14.5, lineHeight: 1.6, color: "#fff", margin: 0 }}>{s.body}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* ── Zero risk / trust ────────────────────────────── */}
+          <section style={{ marginTop: 84 }}>
+            <div style={{ textAlign: "center", marginBottom: 34 }}>
+              <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#C5B3FF", fontSize: "clamp(15px,3vw,19px)", transform: "rotate(-1.5deg)", marginBottom: 8 }}>
+                the fine print, unfined
+              </div>
+              <h2 style={{ fontSize: "clamp(26px,5vw,40px)", fontWeight: 900, letterSpacing: "-1.2px", color: "#fff", margin: "0 0 12px", lineHeight: 1.08 }}>
+                {t.trustHead}
+              </h2>
+              <p style={{ fontSize: "clamp(14px,2.2vw,17px)", color: "#fff", maxWidth: 620, margin: "0 auto", lineHeight: 1.55 }}>
+                {t.trustSub}
+              </p>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,260px),1fr))", gap: 18 }}>
+              {t.trust.map((c, i) => (
+                <div
+                  key={c.title}
+                  className="btfs-sticker"
+                  data-testid={`card-trust-${i}`}
+                  style={{ ["--sh" as string]: c.color, background: "#050508", border: `2.5px solid ${c.color}`, boxShadow: `6px 6px 0 0 ${c.color}`, borderRadius: 18, padding: "24px 22px" }}
+                >
+                  <div style={{ fontWeight: 900, fontSize: 18, letterSpacing: "-.4px", color: c.color, marginBottom: 6 }}>{c.title}</div>
+                  <p style={{ fontSize: 14.5, lineHeight: 1.6, color: "#fff", margin: 0 }}>{c.body}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* ── Closing sticker CTA ──────────────────────────── */}
+          <section
+            style={{ marginTop: 88, background: "#050508", border: "2.5px solid #fff", boxShadow: "8px 8px 0 0 #FFB7E5", borderRadius: 24, padding: "clamp(32px,6vw,52px) clamp(22px,5vw,44px)", textAlign: "center" }}
+          >
+            <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#FFB7E5", fontSize: "clamp(15px,3vw,19px)", transform: "rotate(-2deg)", marginBottom: 10 }}>
+              {t.closeEyebrow}
+            </div>
+            <h2 style={{ fontSize: "clamp(26px,5.5vw,44px)", fontWeight: 900, letterSpacing: "-1.4px", color: "#fff", margin: "0 0 16px", lineHeight: 1.06 }}>
+              {t.closeHead}
+            </h2>
+            <p style={{ fontSize: "clamp(15px,2.4vw,18px)", color: "#fff", maxWidth: 640, margin: "0 auto 30px", lineHeight: 1.6 }}>
+              {t.closeBody}
+            </p>
+            <div style={{ display: "flex", justifyContent: "center", gap: 14, flexWrap: "wrap" }}>
+              <Link href="/partner-schools">
+                <button
+                  className="btfs-btn"
+                  data-testid="button-cta-apply"
+                  style={{ ["--sh" as string]: "#94F7C5", fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 15, color: "#000", background: WORDMARK_GRADIENT, border: "2.5px solid #000", boxShadow: "6px 6px 0 0 #94F7C5", borderRadius: 14, padding: "15px 26px", cursor: "pointer" }}
+                >
+                  {t.closeCtaPrimary}
+                </button>
+              </Link>
+              <a href={`mailto:${CONTACT_EMAIL}`} style={{ textDecoration: "none" }}>
+                <button
+                  className="btfs-btn"
+                  data-testid="button-cta-email"
+                  style={{ ["--sh" as string]: "#9FD8FF", fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 15, color: "#fff", background: "#000", border: "2.5px solid #fff", boxShadow: "6px 6px 0 0 #9FD8FF", borderRadius: 14, padding: "15px 26px", cursor: "pointer" }}
+                >
+                  {t.closeCtaSecondary}
+                </button>
+              </a>
+            </div>
+          </section>
         </div>
-      </div>
+      </main>
+
+      <PublicFooter />
     </div>
   );
 }

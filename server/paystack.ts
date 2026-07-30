@@ -94,11 +94,13 @@ export async function recordEventOnce(eventId: string, eventType: string, payloa
   }
 }
 
-/** Exam Boost: once-off R550, access through the end of the NSC finals
- *  (30 Nov 2026, SAST). No recurring billing, no trial — one payment,
- *  season-long access, hard end date. */
+/** Exam Blast: once-off R550, season access through 15 Dec 2026 (SAST).
+ *  The learner starts on the SAME R1 card-capture → 14-day free trial →
+ *  day-14 autocharge machine as premium, but on day 14 the once-off R550 is
+ *  charged instead of the R169 recurring — no recurring billing, hard end
+ *  date. Cancelling inside the 14 days leaves only the non-refundable R1. */
 export const EXAM_BOOST_PRICE_MINOR = 55000; // R550.00 in cents
-export const EXAM_BOOST_END = new Date("2026-11-30T23:59:59+02:00");
+export const EXAM_BOOST_END = new Date("2026-12-15T23:59:59+02:00");
 
 async function activateSubscription(opts: {
   userId: string;
@@ -162,8 +164,14 @@ export async function applyCardCaptureSuccess(opts: {
   parentEmail?: string | null;
   authorizationCode?: string | null;
   customerCode?: string | null;
+  /** Which offer this trial converts INTO on day 14. "premium" (default) →
+   *  R169/month recurring; "exam_boost" → R550 once-off season pass. The only
+   *  effect here is which plan the trial row carries, so the day-14 cron
+   *  charges the right amount. The 14-day trial window is identical either way. */
+  product?: "premium" | "exam_boost";
 }): Promise<{ trialStarted: boolean; trialEndsAt: Date | null }> {
-  const { userId, parentEmail, authorizationCode, customerCode } = opts;
+  const { userId, parentEmail, authorizationCode, customerCode, product } = opts;
+  const isExamBoost = product === "exam_boost";
 
   const [existing] = await db.select()
     .from(subscriptions)
@@ -192,8 +200,10 @@ export async function applyCardCaptureSuccess(opts: {
   if (!alreadyActive && !keepExistingTrial) {
     // Consent + card are both in hand → the 14-day trial starts NOW.
     values.status = "trial"; // "trial" is the app-wide trialing status (see storage.hasActiveSubscription)
-    values.plan = existing?.plan ?? "brain_boost";
-    values.priceRands = 169;
+    // Exam Blast tags the trial row plan="exam_boost" so the day-14 cron
+    // charges R550 once-off; premium keeps its existing plan and R169.
+    values.plan = isExamBoost ? "exam_boost" : (existing?.plan ?? "brain_boost");
+    values.priceRands = isExamBoost ? 550 : 169;
     values.billingMethod = "paystack";
     values.paymentProvider = "paystack";
     values.startDate = existing?.startDate ?? now;
@@ -254,12 +264,21 @@ export function registerPaystackRoutes(app: Express, isAuthenticated: any) {
       const body = isExamBoost
         ? {
             email: user.email,
-            // Once-off transaction: NO plan attached, so Paystack never
-            // creates a recurring subscription from this charge.
-            amount: EXAM_BOOST_PRICE_MINOR,
+            // Exam Blast now reuses the SAME machine as premium: an R1.00
+            // card-capture that starts the 14-day free trial. metadata.product
+            // = "exam_boost" round-trips to the webhook (purpose:"card_capture")
+            // so the trial row is tagged exam_boost and the day-14 cron charges
+            // the R550 once-off (NOT R169 recurring). No R550 is charged upfront.
+            amount: 100, // R1.00 in minor units — verification charge, non-refundable
             currency: "ZAR",
+            channels: ["card"],
             callback_url: `${appUrl}/subscribe?paystack=return`,
-            metadata: { userId, product: "exam_boost", purpose: "exam_boost" },
+            metadata: {
+              userId,
+              parentEmail: user.email,
+              purpose: "card_capture",
+              product: "exam_boost",
+            },
           }
         : {
             email: user.email,
@@ -295,10 +314,18 @@ export function registerPaystackRoutes(app: Express, isAuthenticated: any) {
       const data = await paystackFetch(`/transaction/verify/${encodeURIComponent(reference)}`);
       const paid = data?.status === "success";
 
+      // A card_capture reference (R1 verification — premium OR exam_boost) must
+      // NEVER be activated here: it is not a paid activation. The 14-day trial
+      // is started by applyCardCaptureSuccess off the webhook. Guarding this
+      // stops an R1 charge from ever being mistaken for a paid subscription.
+      if (data?.metadata?.purpose === "card_capture") {
+        return res.json({ paid, status: data?.status ?? "unknown", cardCapture: true });
+      }
+
       if (paid) {
         // Trust the userId we set at initialize time, not anything client-sent.
         const userId = data?.metadata?.userId || req.user.claims.sub;
-        // Exam Boost only counts when the verified amount actually covers the
+        // Exam Blast only counts when the verified amount actually covers the
         // R550 — the product label alone can't unlock season access.
         const isExamBoost =
           data?.metadata?.product === "exam_boost" &&
@@ -354,12 +381,16 @@ export function registerPaystackRoutes(app: Express, isAuthenticated: any) {
           if (purpose === "card_capture") {
             // R1.00 parent card verification — store the authorization and
             // start the 14-day trial. NEVER treat this as a paid activation.
+            // metadata.product (set at initialize) decides what day 14 charges:
+            // "exam_boost" → R550 once-off; anything else → R169/month premium.
+            const captureProduct = d?.metadata?.product === "exam_boost" ? "exam_boost" : "premium";
             if (userId) {
               await applyCardCaptureSuccess({
                 userId,
                 parentEmail: d?.metadata?.parentEmail ?? d?.customer?.email ?? null,
                 authorizationCode: d?.authorization?.authorization_code ?? null,
                 customerCode: d?.customer?.customer_code ?? null,
+                product: captureProduct,
               });
             }
             break;
@@ -368,6 +399,12 @@ export function registerPaystackRoutes(app: Express, isAuthenticated: any) {
             // Day-14 autocharge — applied synchronously by /api/cron/charge-trials
             // (guarded by recordEventOnce there). The webhook is a no-op so the
             // same charge is never double-applied.
+            break;
+          }
+          if (purpose === "exam_boost_conversion") {
+            // Day-14 Exam Blast R550 once-off autocharge — also applied
+            // synchronously by /api/cron/charge-trials (guarded by its own
+            // recordEventOnce). No-op here so it's never double-applied.
             break;
           }
           if (purpose === "admin_test") {
@@ -379,7 +416,7 @@ export function registerPaystackRoutes(app: Express, isAuthenticated: any) {
             break;
           }
           if (purpose === "exam_boost") {
-            // Once-off R550 Exam Boost — season access to 30 Nov, no
+            // Once-off R550 Exam Blast — season access to 30 Nov, no
             // recurring subscription. Amount is verified server-side so a
             // relabelled cheaper charge can never unlock it.
             if (userId && (d?.amount ?? 0) >= EXAM_BOOST_PRICE_MINOR) {

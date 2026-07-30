@@ -256,12 +256,12 @@ export function PaymentThankYou({
               ) : isAf ? (
                 <>
                   Jou betaling was suksesvol — jou{" "}
-                  <strong style={{ color: "#9B6BFF" }}>BRAIN BOOST</strong> is nou aktief.
+                  <strong style={{ color: "#9B6BFF" }}>Student Life</strong> is nou aktief.
                 </>
               ) : (
                 <>
                   Your payment was successful — your{" "}
-                  <strong style={{ color: "#9B6BFF" }}>BRAIN BOOST</strong> is now active.
+                  <strong style={{ color: "#9B6BFF" }}>Student Life</strong> is now active.
                 </>
               )}
             </p>
