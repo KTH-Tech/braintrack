@@ -5395,19 +5395,23 @@ export async function registerRoutes(
     }
   });
 
-  // Questions for an exam paper — reads from dbe_verbatim_questions (released only)
+  // Questions for Exam Mode. CONTENT INTEGRITY: this is a LEARNER surface, so it
+  // serves ORIGINAL verified MCQs from generated_questions — NEVER the
+  // copyrighted verbatim DBE paper. Same strict anti-hallucination gate as the
+  // daily quiz: released + quality pass + solver-confirmed key + on-syllabus.
+  // (Previously read dbe_verbatim_questions and served real DBE question text +
+  // memos to any authenticated learner — a copyright leak.)
   app.get("/api/exam-papers/:id/questions", isAuthenticated, async (req: any, res: any) => {
     try {
       const paperId = parseInt(req.params.id);
       if (isNaN(paperId)) return res.status(400).json({ error: "Invalid paper id" });
 
-      // Resolve the exam_papers row → subject name
+      // Resolve the exam_papers row → subject name + language only. The specific
+      // year/paper number is NOT used to fetch content (we never serve that real
+      // paper); it only tells us the subject + language to draw simulated MCQs.
       const [paper] = await db
         .select({
-          year: examPapers.year,
-          paperNumber: examPapers.paperNumber,
           language: examPapers.language,
-          month: examPapers.month,
           subjectName: subjects.name,
         })
         .from(examPapers)
@@ -5417,30 +5421,38 @@ export async function registerRoutes(
 
       if (!paper) return res.json([]);
 
-      // Pull released verbatim questions for this paper
-      const questions = await db
-        .select({
-          id: dbeVerbatimQuestions.id,
-          questionNumber: dbeVerbatimQuestions.questionNumber,
-          questionText: dbeVerbatimQuestions.questionText,
-          memoText: dbeVerbatimQuestions.memoText,
-          marks: dbeVerbatimQuestions.marks,
-          cognitiveLevel: dbeVerbatimQuestions.cognitiveLevel,
-          topic: dbeVerbatimQuestions.topic,
-          mcqOptions: dbeVerbatimQuestions.mcqOptions,
-          correctOption: dbeVerbatimQuestions.correctOption,
-        })
-        .from(dbeVerbatimQuestions)
-        .where(
-          and(
-            eq(dbeVerbatimQuestions.subject, paper.subjectName),
-            eq(dbeVerbatimQuestions.year, paper.year),
-            eq(dbeVerbatimQuestions.paperNumber, paper.paperNumber),
-            eq(dbeVerbatimQuestions.language, paper.language),
-            isNotNull(dbeVerbatimQuestions.releasedAt),
-          )
-        )
-        .orderBy(dbeVerbatimQuestions.questionNumber);
+      const rows = await db.execute<{
+        id: number; question_number: string | null; question_text: string;
+        memo_text: string | null; marks: number | null; cognitive_level: string | null;
+        topic: string | null; mcq_options: Array<{ letter: string; text: string }> | null;
+        correct_option: string | null;
+      }>(sql`
+        SELECT id, question_number, question_text, answer_text AS memo_text,
+               marks, cognitive_level, topic, mcq_options, correct_option
+          FROM generated_questions
+         WHERE subject = ${paper.subjectName}
+           AND language = ${paper.language}
+           AND released_at IS NOT NULL
+           AND quality_flag = 'pass'
+           AND mcq_options IS NOT NULL
+           AND correct_option IS NOT NULL
+           AND solver_verdict = 'agree'
+           AND caps_verdict = 'on_syllabus'
+         ORDER BY quality_score DESC, id DESC
+         LIMIT 40
+      `);
+
+      const questions = (rows.rows ?? []).map((q) => ({
+        id: q.id,
+        questionNumber: q.question_number,
+        questionText: q.question_text,
+        memoText: q.memo_text,
+        marks: q.marks,
+        cognitiveLevel: q.cognitive_level,
+        topic: q.topic,
+        mcqOptions: q.mcq_options,
+        correctOption: q.correct_option,
+      }));
 
       res.json(questions);
     } catch (error) {
@@ -9123,7 +9135,9 @@ Create comprehensive study notes for the topic provided.`;
 
       const baseUrl = process.env.APP_URL ?? process.env.PUBLIC_BASE_URL ?? 'https://app.braintrack.tech';
       
-      const referralUrl = `${baseUrl}/purchase?ref=${finalCode}`;
+      // /subscribe is the real public pricing route; /purchase does not exist
+      // (was 404-ing every partner-school QR scan).
+      const referralUrl = `${baseUrl}/subscribe?ref=${finalCode}`;
       
       const school = await storage.createPartnerSchool({
         schoolName,
@@ -9412,7 +9426,8 @@ Create comprehensive study notes for the topic provided.`;
 
       const baseUrl = process.env.APP_URL ?? process.env.PUBLIC_BASE_URL ?? 'https://app.braintrack.tech';
       
-      const referralUrl = `${baseUrl}/purchase?ref=${school.schoolCode}`;
+      // /subscribe is the real public pricing route; /purchase does not exist.
+      const referralUrl = `${baseUrl}/subscribe?ref=${school.schoolCode}`;
       
       res.json({
         schoolCode: school.schoolCode,
