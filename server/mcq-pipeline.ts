@@ -184,6 +184,7 @@ export async function generateVerifyReleaseMcqs(opts: {
            quality_score, quality_flag
       FROM generated_questions
      WHERE batch_id = ${batchId}
+       AND subject = ${subject}
        AND released_at IS NULL
        AND mcq_options IS NOT NULL
        AND correct_option IS NOT NULL
@@ -202,7 +203,9 @@ export async function generateVerifyReleaseMcqs(opts: {
       cognitiveLevel: row.cognitive_level,
       prompt: row.question_text,
       memo: row.answer_text,
-      mcqOptions: row.mcq_options,
+      // Guard the jsonb shape: content-verifier's classifier/solver call
+      // .length/.map on this, so a non-array must degrade to null, not throw.
+      mcqOptions: Array.isArray(row.mcq_options) ? row.mcq_options : null,
       correctOption: row.correct_option,
       priorQualityScore: row.quality_score,
       released: false,
@@ -216,9 +219,15 @@ export async function generateVerifyReleaseMcqs(opts: {
       continue;
     }
     result.verified++;
+    // Release and verdict-write must be atomic in intent: never release a row
+    // whose verdicts failed to persist (it would go live with NULL verdicts and,
+    // worse, inflate the "released" count for something the serve gate — which
+    // requires solver_verdict='agree' — would refuse to show anyway).
+    let persisted = true;
     try {
       await persistVerification(v);
     } catch (e: any) {
+      persisted = false;
       result.errors.push(`persist-verify #${row.id}: ${e?.message ?? e}`);
     }
 
@@ -231,7 +240,7 @@ export async function generateVerifyReleaseMcqs(opts: {
     if (v.caps?.verdict === "off_syllabus") result.capsOff++;
     if (v.caps?.verdict === "uncertain") result.capsUncertain++;
 
-    if (qualityPass && solverAgree && capsOnSyllabus) {
+    if (persisted && qualityPass && solverAgree && capsOnSyllabus) {
       // The single release point. Sets released_at ONLY on a strict pass.
       await db.execute(sql`
         UPDATE generated_questions SET released_at = now()

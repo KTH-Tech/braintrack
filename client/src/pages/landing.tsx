@@ -423,8 +423,12 @@ function Reveal({
       className={className}
       style={
         inView
-          ? { ...style, animation: `bt-fadeup .85s cubic-bezier(.22,.75,.3,1) ${delay}ms both` }
-          : { ...style, opacity: 0 }
+          // bt-rise is a real, defined keyframe (bt-fadeup never existed, so the
+          // old animation was a no-op and the ONLY effect was opacity:0-until-JS).
+          ? { ...style, animation: `bt-rise .85s cubic-bezier(.22,.75,.3,1) ${delay}ms both` }
+          // Visible by default — a failed / never-firing scroll observer costs the
+          // entrance motion, never the content. No opacity:0 void can occur.
+          : { ...style }
       }
     >
       {children}

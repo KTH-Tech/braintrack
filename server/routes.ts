@@ -13699,8 +13699,11 @@ Return one entry per question, same order as input. JSON: { "scores": [{ "idx": 
     try {
       const subject = String(req.body?.subject ?? "").trim();
       if (!subject) return res.status(400).json({ error: "subject is required" });
-      const count = req.body?.count != null ? Number(req.body.count) : undefined;
-      const topicCount = req.body?.topicCount != null ? Number(req.body.topicCount) : undefined;
+      // Number("abc") is NaN, which is not null — guard so garbage input falls
+      // back to the pipeline defaults instead of poisoning Math.min/max.
+      const nOrUndef = (v: any) => (Number.isFinite(Number(v)) ? Number(v) : undefined);
+      const count = nOrUndef(req.body?.count);
+      const topicCount = nOrUndef(req.body?.topicCount);
 
       const { generateVerifyReleaseMcqs } = await import("./mcq-pipeline");
       const r = await generateVerifyReleaseMcqs({ subject, count, topicCount });
