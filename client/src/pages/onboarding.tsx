@@ -366,6 +366,7 @@ const T = {
     varkSecondaryHeading: "Also strong in",
     varkNoSecondary: "Your primary style is really clear — no strong secondary this time.",
     varkRetakeBtn: "Retake questionnaire",
+    varkSkipBtn: "Skip for now — you can set this later",
     consentSent: "Consent link sent!",
     consentSentDesc: "We emailed your parent. Ask them to approve your account.",
     consentNotConfigured: "Email not configured",
@@ -549,6 +550,7 @@ const T = {
     varkSecondaryHeading: "Ook sterk in",
     varkNoSecondary: "Jou primêre styl is baie duidelik — geen sterk sekondêre keer nie.",
     varkRetakeBtn: "Doen weer",
+    varkSkipBtn: "Slaan nou oor — jy kan dit later instel",
     consentSent: "Toestemmingsskakel gestuur!",
     consentSentDesc: "Ons het jou ouer ge-epos. Vra hulle om jou rekening goed te keur.",
     consentNotConfigured: "E-pos nie opgestel nie",
@@ -1470,6 +1472,19 @@ export default function OnboardingPage() {
     setVarkStep(0);
   };
 
+  // Slim onboarding: the 12-scenario VARK quiz is the biggest friction before a
+  // learner reaches the app, so it is skippable. Skipping advances straight to
+  // the subjects phase WITHOUT committing a VARK style — varkPrimary /
+  // varkSecondary stay null (the columns are nullable and the submit falls back
+  // to a neutral "kinesthetic" default, so completion still succeeds). Any
+  // scenario answers already picked are left untouched, so the learner can Back
+  // into the quiz and finish it later. Consent gating downstream is unchanged.
+  const handleSkipVark = () => {
+    if (advanceTimer.current) clearTimeout(advanceTimer.current);
+    celebrate(PHASE_CHEERS[language].subjects);
+    setPhase("subjects");
+  };
+
   // ── Preview phase jumping ────────────────────────────────────────────────
   // The main reason the preview exists: inspect any step directly without
   // answering everything before it. Jumping ahead seeds obviously-fake sample
@@ -2287,6 +2302,21 @@ export default function OnboardingPage() {
                     <ArrowRight className="w-5 h-5 ml-1.5" />
                   </Button>
                 </div>
+
+                {/* Skip the quiz — the 12 scenarios are optional. Only offered
+                    while still answering; on the result view the learner has a
+                    committed style so Next is the natural action. Advances
+                    straight to Subjects, leaving the VARK style unset. */}
+                {varkStep < VARK_QUESTIONS.length && (
+                  <button
+                    type="button"
+                    onClick={handleSkipVark}
+                    data-testid="onboarding-skip-vark"
+                    className="w-full min-h-[48px] px-5 text-[14px] font-bold rounded-2xl text-white bg-transparent border border-white/25 hover:border-white/60 hover:bg-white/[0.06] transition-colors"
+                  >
+                    {t.varkSkipBtn}
+                  </button>
+                )}
               </div>
             </section>
           )}
