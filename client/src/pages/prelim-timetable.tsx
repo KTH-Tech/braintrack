@@ -362,7 +362,7 @@ export default function PrelimTimetablePage() {
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <Link href="/study-calendar">
-              <Button size="sm" variant="ghost" className="gap-1.5 text-white hover:text-white hover:bg-white/10">
+              <Button size="sm" variant="ghost" className="gap-1.5 min-h-[44px] text-white hover:text-white hover:bg-white/10">
                 <ArrowLeft className="w-4 h-4" />
                 {isAf ? "Terug" : "Back"}
               </Button>
@@ -371,7 +371,7 @@ export default function PrelimTimetablePage() {
           </div>
           <Button
             size="sm" variant="ghost"
-            className="text-[11px] font-black uppercase tracking-widest hover:bg-white/10"
+            className="min-h-[44px] min-w-[44px] text-[11px] font-black uppercase tracking-widest hover:bg-white/10"
             style={{ color: "#6EE7F9" }}
             onClick={toggleLanguage}
           >

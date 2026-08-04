@@ -725,6 +725,7 @@ export default function DashboardPage() {
                   alignItems: "center",
                   gap: 12,
                   padding: "11px 14px",
+                  minHeight: 44,
                   borderRadius: 14,
                   cursor: "pointer",
                   fontWeight: 600,
@@ -778,6 +779,7 @@ export default function DashboardPage() {
             border: "1px solid rgba(255,255,255,.14)",
             borderRadius: 14,
             padding: "11px 14px",
+            minHeight: 44,
             cursor: "pointer",
             transition: "all .2s",
           }}

@@ -1213,7 +1213,16 @@ export default function OnboardingPage() {
         return;
       }
       try { window.localStorage.removeItem(ONBOARDING_STORAGE_KEY); } catch { /* ignore */ }
+      // Invalidate the exact gate the app routes on. ProtectedRoute /
+      // OnboardingRoute / SubscribeRoute (client/src/App.tsx) read
+      // ["/api/user/onboarding-status"] to decide the redirect — NOT
+      // ["/api/user/onboarding"] (the raw result). Invalidating the wrong key
+      // left the completion gate reading a stale `false`, so the just-onboarded
+      // learner could be bounced back to /onboarding. Also refresh the user +
+      // subscription caches the downstream gates consult.
+      queryClient.invalidateQueries({ queryKey: ["/api/user/onboarding-status"] });
       queryClient.invalidateQueries({ queryKey: ["/api/user/onboarding"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       queryClient.invalidateQueries({ queryKey: ["/api/user/subscription-status"] });
       const tStr = T[language];
       toast({
@@ -1227,7 +1236,13 @@ export default function OnboardingPage() {
       // refresh doesn't re-celebrate the same moment.
       const isoDob = buildIsoDob(dobDay, dobMonth, dobYear);
       const minor = isoDob ? ageFromIsoDob(isoDob) < 18 : false;
-      setLocation((minor ? "/waiting-for-parent" : "/subscribe") + "?welcome=1");
+      // Hard-navigate (full reload) rather than SPA setLocation so the
+      // destination guard re-reads onboarding/subscription state fresh from the
+      // server. This mirrors the rest of the redirect design (ProtectedRoute,
+      // RoleSelectRoute) and guarantees the completion gate can't read a stale
+      // cached `false` after a client-side transition — the loop that stranded
+      // learners on the onboarding↔subscribe boundary.
+      window.location.href = (minor ? "/waiting-for-parent" : "/subscribe") + "?welcome=1";
     },
     onError: () => {
       const tStr = T[language];
