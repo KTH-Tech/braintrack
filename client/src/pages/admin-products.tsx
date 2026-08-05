@@ -45,7 +45,7 @@ interface Product {
 
 const tierLabel: Record<number, { en: string; af: string; color: NeonHex }> = {
   0: { en: "Free", af: "Gratis", color: "#9FD8FF" },
-  1: { en: "Brain Boost", af: "Brein-aansporing", color: "#9FD8FF" },
+  1: { en: "Student Life", af: "Student Life", color: "#9FD8FF" },
   2: { en: "Pro", af: "Pro", color: "#C5B3FF" },
   3: { en: "Elite", af: "Elite", color: "#FFE29A" },
 };
@@ -435,7 +435,7 @@ export default function AdminProductsPage() {
                   <Input
                     value={form.nameEn}
                     onChange={e => setField("nameEn", e.target.value)}
-                    placeholder="e.g. Brain Boost Pack"
+                    placeholder="e.g. Student Life Pack"
                     className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#9FF5E8]/50 h-9 text-sm"
                   />
                 </div>
@@ -444,7 +444,7 @@ export default function AdminProductsPage() {
                   <Input
                     value={form.nameAf}
                     onChange={e => setField("nameAf", e.target.value)}
-                    placeholder="e.g. Brein-aansporing-pak"
+                    placeholder="e.g. Student Life-pak"
                     className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#9FF5E8]/50 h-9 text-sm"
                   />
                 </div>

@@ -137,31 +137,72 @@ function memoCovColorFor(pct: number | null | undefined): NeonHex {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function StatCard({ label, value, sub, icon: Icon, onClick, valueColor }: {
+// KPI tile. STRICT anti-overlap layout: every element is in normal document
+// flow, stacked vertically inside a flex column — label row, then the big
+// number, then the sub caption, then (optionally) a thin progress bar pinned to
+// the card's bottom edge by a flex spacer. Nothing is absolutely positioned
+// over anything else (the only absolute element is NeonShell's 2px top accent
+// hairline, which sits above the padding, not over content). A fixed minHeight
+// keeps every card the same size so a row of them can't jump or collide.
+function StatCard({ label, value, sub, icon: Icon, onClick, valueColor, barPct }: {
   label: string; value: string | number; sub?: string; icon?: any; onClick?: () => void; valueColor?: NeonHex;
+  barPct?: number | null;
 }) {
   const { language } = useLanguage();
   const resolvedColor: NeonHex = valueColor ?? "#9FD8FF";
+  const showBar = typeof barPct === "number" && Number.isFinite(barPct);
+  const clampedPct = showBar ? Math.max(0, Math.min(100, Math.round(barPct as number))) : 0;
   return (
     <NeonShell
       color={resolvedColor}
       className={onClick ? "cursor-pointer" : ""}
-      style={{ padding: "16px 18px", borderRadius: 14 }}
+      style={{ padding: "16px 18px", borderRadius: 14, minHeight: 138, display: "flex", flexDirection: "column" }}
       testId={`stat-${label.toLowerCase().replace(/\s/g, "-")}`}
     >
-      <div onClick={onClick} className="flex items-start justify-between gap-2">
-        <div className="min-w-0">
+      <div onClick={onClick} className="flex flex-col" style={{ flex: 1 }}>
+        {/* Line 1 — label + icon */}
+        <div className="flex items-start justify-between gap-2">
           <div className="uppercase text-white" style={{ fontSize: 11, fontWeight: 700, letterSpacing: "1px" }}>{label}</div>
-          <div style={{ fontSize: 26, fontWeight: 900, color: resolvedColor, marginTop: 4 }}>
-            {typeof value === "number" ? formatNumber(value, language) : value}
-          </div>
-          {sub && <div className="text-[10px] text-white mt-1 truncate">{sub}</div>}
+          {Icon && <Icon className="w-5 h-5 shrink-0" style={{ color: resolvedColor }} />}
         </div>
-        {Icon && (
-          <Icon className="w-5 h-5 shrink-0" style={{ color: resolvedColor }} />
+        {/* Line 2 — big value */}
+        <div style={{ fontSize: 28, fontWeight: 900, color: resolvedColor, marginTop: 6, lineHeight: 1.1 }}>
+          {typeof value === "number" ? formatNumber(value, language) : value}
+        </div>
+        {/* Line 3 — sub caption */}
+        {sub && <div className="text-[10px] text-white mt-1 truncate">{sub}</div>}
+        {/* Flex spacer pushes the bar to a shared baseline across all cards */}
+        <div style={{ flex: 1, minHeight: 10 }} />
+        {/* Line 4 — thin progress bar, its own block under everything else */}
+        {showBar && (
+          <div className="w-full overflow-hidden" style={{ height: 6, borderRadius: 999, background: "rgba(255,255,255,0.1)" }} aria-hidden>
+            <div style={{ width: `${clampedPct}%`, height: "100%", background: resolvedColor, borderRadius: 999, transition: "width .8s ease" }} />
+          </div>
         )}
       </div>
     </NeonShell>
+  );
+}
+
+// Reusable coverage/progress metric. Same anti-overlap contract as the KPI
+// tile: a label+value row on ITS OWN line, then the bar on the NEXT line. The
+// label and value share a justify-between flex row (so a long value can never
+// sit on top of the label), and the bar track is a separate block below — the
+// value number is never rendered over the bar.
+function CoverageBar({ label, valueText, pct, color, testId }: {
+  label: string; valueText: string; pct: number; color: NeonHex; testId?: string;
+}) {
+  const clamped = Math.max(0, Math.min(100, Math.round(Number.isFinite(pct) ? pct : 0)));
+  return (
+    <div style={{ marginTop: 8 }} data-testid={testId}>
+      <div className="flex items-center justify-between gap-2" style={{ marginBottom: 4 }}>
+        <span className="text-white uppercase font-bold truncate" style={{ fontSize: 10, letterSpacing: "0.08em" }}>{label}</span>
+        <span className="font-black tabular-nums shrink-0" style={{ fontSize: 10, color }}>{valueText}</span>
+      </div>
+      <div className="w-full overflow-hidden" style={{ height: 6, borderRadius: 999, background: "rgba(255,255,255,0.1)" }} aria-hidden>
+        <div style={{ width: `${clamped}%`, height: "100%", background: color, borderRadius: 999, transition: "width .8s ease" }} />
+      </div>
+    </div>
   );
 }
 
@@ -660,6 +701,10 @@ function OverviewSubjectGrid({ subjects, status, statusLoading, seedSubject, gen
         const hasMemoCov = memoCovPct !== undefined;
         const memoCovColor = memoCovColorFor(memoCovPct);
 
+        // Papers-ingested progress for this subject (capped at catalogue size).
+        const cappedPapers = Math.min(s.papersDone, s.catalogPapers);
+        const paperPct = s.catalogPapers > 0 ? Math.round((cappedPapers / s.catalogPapers) * 100) : 0;
+
         return (
           <div key={s.subject} className="p-4 space-y-2" style={cardStyle} data-testid={`subject-${s.subject}`}>
             <div className="flex items-start justify-between gap-2">
@@ -694,24 +739,37 @@ function OverviewSubjectGrid({ subjects, status, statusLoading, seedSubject, gen
                 </span>
               ) : null}
             </div>
-            {hasMemoCov && (
-              <div className="space-y-0.5" data-testid={`memo-cov-${s.subject}`}>
-                <div className="flex items-center justify-between text-[10px]">
-                  <span className="text-white uppercase tracking-[0.08em] font-bold">Memo Coverage</span>
-                  <span className="font-black" style={{ color: memoCovColor }}>{memoCovPct}%</span>
-                </div>
-                <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.1)" }}>
-                  <div
-                    className="h-full rounded-full transition-all duration-700"
-                    style={{ width: `${memoCovPct}%`, background: memoCovColor, borderRadius: 999, transition: "width .8s ease" }}
+            {/* Coverage metrics — each metric is a self-contained block: a
+                label+value row on its own line, then the bar on the next line.
+                Stacked in normal flow with margin between them, so no number,
+                label or bar can ever sit over another. */}
+            {(s.catalogPapers > 0 || hasMemoCov || (ready && s.memoCoverage !== undefined)) && (
+              <div data-testid={`subject-metrics-${s.subject}`}>
+                {s.catalogPapers > 0 && (
+                  <CoverageBar
+                    label={language === "af" ? "Vraestelle ingeneem" : "Papers ingested"}
+                    valueText={`${cappedPapers}/${s.catalogPapers}`}
+                    pct={paperPct}
+                    color={accent}
                   />
-                </div>
-              </div>
-            )}
-            {ready && s.memoCoverage !== undefined && !hasMemoCov && (
-              <div className="flex items-center gap-1.5 text-[11px]">
-                {s.memoCoverage === 100 ? <CheckCircle2 className="w-3 h-3" style={{ color: "#9FF5E8" }} /> : <AlertTriangle className="w-3 h-3" style={{ color: "#FFE29A" }} />}
-                <span className="text-white">Memo: <span className="font-black" style={{ color: s.memoCoverage === 100 ? "#9FF5E8" : "#FFE29A" }}>{s.memoCoverage}%</span></span>
+                )}
+                {hasMemoCov ? (
+                  <CoverageBar
+                    label={language === "af" ? "Memo-dekking" : "Memo coverage"}
+                    valueText={`${memoCovPct}%`}
+                    pct={memoCovPct}
+                    color={memoCovColor}
+                    testId={`memo-cov-${s.subject}`}
+                  />
+                ) : ready && s.memoCoverage !== undefined ? (
+                  <CoverageBar
+                    label={language === "af" ? "Memo-dekking" : "Memo coverage"}
+                    valueText={`${s.memoCoverage}%`}
+                    pct={s.memoCoverage}
+                    color={s.memoCoverage === 100 ? "#9FF5E8" : "#FFE29A"}
+                    testId={`memo-cov-${s.subject}`}
+                  />
+                ) : null}
               </div>
             )}
             <div className="flex flex-wrap gap-1.5 pt-1">
@@ -1294,6 +1352,11 @@ export default function DBEPortal() {
     ? Math.round(allSubjects.filter((s) => s.avgQualityScore > 0).reduce((a, s) => a + s.avgQualityScore, 0) / allSubjects.filter((s) => s.avgQualityScore > 0).length)
     : 0;
   const paperPct = totalPapers > 0 ? Math.round((totalDone / totalPapers) * 100) : 0;
+  const subjectsReadyPct = allSubjects.length > 0 ? Math.round((subjectsReady / allSubjects.length) * 100) : 0;
+  const masteryPct = allSubjects.length > 0 ? Math.round((subjectsWithMastery / allSubjects.length) * 100) : 0;
+  const topicsTotal = Number(statusData?.totalTopics ?? 0);
+  const topicsCovered = Number(statusData?.topicsCovered ?? 0);
+  const topicsCoveredPct = topicsTotal > 0 ? Math.round((topicsCovered / topicsTotal) * 100) : 0;
 
   const overallMemoCovPct = totalDBE > 0 && missingMemosData
     ? Math.round(((totalDBE - missingMemosData.totalMemoLessQuestions) / totalDBE) * 100)
@@ -1644,16 +1707,20 @@ export default function DBEPortal() {
             answer; the raw counts below are the supporting detail. */}
         <TriagePanel isAf={language === "af"} />
 
-        {/* Stat cards */}
-        <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))", gap: 16 }}>
-          <StatCard label="Papers Ingested" value={`${paperPct}%`} sub={`${totalDone}/${totalPapers}`} icon={FileText} valueColor="#9FF5E8" />
-          <StatCard label="Subjects Ready" value={subjectsReady} sub={`of ${allSubjects.length} total`} icon={CheckCircle2} valueColor="#FFB7E5" />
+        {/* KPI cards — responsive auto-fit grid at the top of the content area.
+            Each tile is a fixed-height flow-only StatCard (see component note);
+            percentage tiles carry a thin bar pinned to the bottom edge, count
+            tiles omit it. The grid gap + minmax guarantee tiles reflow onto new
+            rows rather than overlapping at any width (tested 1280px and 375px). */}
+        <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 16 }}>
+          <StatCard label="Papers Ingested" value={`${paperPct}%`} sub={`${totalDone}/${totalPapers} papers`} icon={FileText} valueColor="#9FF5E8" barPct={paperPct} />
+          <StatCard label="Subjects Ready" value={subjectsReady} sub={`of ${allSubjects.length} · ${subjectsReadyPct}%`} icon={CheckCircle2} valueColor="#FFB7E5" barPct={subjectsReadyPct} />
           <StatCard label="Verbatim Qs" value={totalDBE} sub="exact NSC questions" icon={BookOpen} valueColor="#C5B3FF" />
           <StatCard label="Simulated Qs" value={totalSim} sub={`${subjectsWithSim} subjects`} icon={Zap} valueColor="#FFE29A" />
-          <StatCard label="Memo Coverage" value={overallMemoCovPct !== null ? `${overallMemoCovPct}%` : "—"} sub={missingMemosData ? `${missingMemosData.totalMemoLessQuestions} missing` : "loading…"} icon={FileCheck} valueColor={memoCovColorFor(overallMemoCovPct)} />
-          <StatCard label="Avg Quality" value={avgQuality > 0 ? `${avgQuality}%` : "—"} sub="across scored subjects" icon={ShieldCheck} valueColor="#94F7C5" />
-          <StatCard label="Mastery Built" value={subjectsWithMastery} sub={`of ${allSubjects.length}`} icon={GraduationCap} valueColor="#9FF5E8" />
-          <StatCard label="Topics Covered" value={statusData?.topicsCovered ?? 0} sub={`of ${statusData?.totalTopics ?? 0} CAPS`} icon={BarChart3} valueColor="#FFB7E5" />
+          <StatCard label="Memo Coverage" value={overallMemoCovPct !== null ? `${overallMemoCovPct}%` : "—"} sub={missingMemosData ? `${missingMemosData.totalMemoLessQuestions} missing` : "loading…"} icon={FileCheck} valueColor={memoCovColorFor(overallMemoCovPct)} barPct={overallMemoCovPct} />
+          <StatCard label="Avg Quality" value={avgQuality > 0 ? `${avgQuality}%` : "—"} sub="across scored subjects" icon={ShieldCheck} valueColor="#94F7C5" barPct={avgQuality > 0 ? avgQuality : null} />
+          <StatCard label="Mastery Built" value={subjectsWithMastery} sub={`of ${allSubjects.length} · ${masteryPct}%`} icon={GraduationCap} valueColor="#9FF5E8" barPct={masteryPct} />
+          <StatCard label="Topics Covered" value={topicsCovered} sub={`of ${topicsTotal} CAPS · ${topicsCoveredPct}%`} icon={BarChart3} valueColor="#FFB7E5" barPct={topicsCoveredPct} />
           <StatCard label="High Yield" value={statusData?.highYieldTopics ?? 0} sub="3+ exam appearances" icon={Sparkles} valueColor="#C5B3FF" />
         </div>
 

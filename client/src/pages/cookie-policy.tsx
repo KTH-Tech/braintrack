@@ -1,13 +1,98 @@
-// BrainTrack cookie policy — chrome restyled to the Claude Design handoff
-// "Luxury Street Graffiti EdTech" comp (LEGAL PAGES section) via LegalShell.
+// BrainTrack cookie policy — logged-out legal page with branded pure-black
+// street-graffiti chrome mounting the shared PublicNav + PublicFooter.
 // All legal copy is preserved verbatim; only presentation changed.
+import type { ReactNode, CSSProperties } from "react";
 import { Link } from "wouter";
-import { LegalShell, LegalSection } from "@/components/legal-shell";
+import { PublicNav } from "@/components/public-nav";
+import { PublicFooter } from "@/components/public-footer";
 import { useLanguage } from "@/lib/language-context";
 import { useSEO } from "@/hooks/use-seo";
 
+// ── Shared branded chrome for the four logged-out legal pages ───────────────
+// Pure-black street-graffiti: Permanent Marker title, hard-offset accent cards,
+// pure #fff body copy (no grey / no faded white), no glow/blur shadows.
+const H1_STYLE: CSSProperties = {
+  fontFamily: "'Permanent Marker',cursive",
+  fontSize: 40,
+  lineHeight: 1.15,
+  letterSpacing: "-0.5px",
+  margin: "8px 0 14px",
+  color: "#fff",
+};
+const CHIP_STYLE: CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 8,
+  fontSize: 12.5,
+  fontWeight: 700,
+  color: "#fff",
+  border: "2px solid #9FD8FF",
+  borderRadius: 999,
+  padding: "6px 14px",
+  marginBottom: 22,
+};
+const LEGAL_BODY_CSS = `
+  .bt-legal-body { font-size: 15px; line-height: 1.7; color: #fff; }
+  .bt-legal-body p, .bt-legal-body li, .bt-legal-body td, .bt-legal-body th, .bt-legal-body h4, .bt-legal-body strong, .bt-legal-body code { color: #fff; }
+  .bt-legal-body table { font-size: 13px; }
+  .bt-legal-body td, .bt-legal-body th { font-size: 13px; line-height: 1.6; }
+  .bt-legal-body a { color: #9FD8FF; font-weight: 600; }
+  .bt-legal-cross-pill { transition: transform .15s; }
+  .bt-legal-cross-pill:hover { transform: translateY(-1px); }
+`;
+const LEGAL_LINKS = [
+  { href: "/privacy-policy", en: "Privacy", af: "Privaatheid", accent: "#9FD8FF" },
+  { href: "/terms-of-service", en: "Terms", af: "Bepalings", accent: "#FFB7E5" },
+  { href: "/cookie-policy", en: "Cookies", af: "Koekies", accent: "#FFE29A" },
+  { href: "/refund-policy", en: "Refunds", af: "Terugbetalings", accent: "#94F7C5" },
+];
+
+function LegalCrossNav({ isAf, activeHref }: { isAf: boolean; activeHref: string }) {
+  return (
+    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 28 }}>
+      {LEGAL_LINKS.map((l) => {
+        const active = l.href === activeHref;
+        return (
+          <Link key={l.href} href={l.href}>
+            <span
+              className="bt-legal-cross-pill"
+              style={{
+                display: "inline-block", fontSize: 12.5, fontWeight: 700,
+                padding: "8px 14px", borderRadius: 999, cursor: "pointer",
+                color: active ? "#000" : l.accent,
+                background: active ? l.accent : "transparent",
+                border: `2px solid ${l.accent}`,
+              }}
+            >
+              {isAf ? l.af : l.en}
+            </span>
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
+
+function Section({ accent, title, testId, children }: { accent: string; title: ReactNode; testId?: string; children: ReactNode }) {
+  return (
+    <section
+      data-testid={testId}
+      style={{
+        background: "#050508",
+        border: `2.5px solid ${accent}`,
+        borderRadius: 16,
+        padding: "22px 26px",
+        boxShadow: `6px 6px 0 0 ${accent}`,
+      }}
+    >
+      <h2 style={{ fontWeight: 800, fontSize: 20, marginBottom: 12, color: accent }}>{title}</h2>
+      <div className="bt-legal-body">{children}</div>
+    </section>
+  );
+}
+
 export default function CookiePolicyPage() {
-  const { language, toggleLanguage } = useLanguage();
+  const { language } = useLanguage();
   const isAf = language === "af";
 
   useSEO({
@@ -17,15 +102,20 @@ export default function CookiePolicyPage() {
   });
 
   return (
-    <LegalShell
-      title={isAf ? "Koekiebeleid" : "Cookie Policy"}
-      updated={isAf ? "Laas opgedateer: 16 Julie 2026" : "Last updated: 16 July 2026"}
-      language={language}
-      onToggleLanguage={toggleLanguage}
-      activeHref="/cookie-policy"
-      backTestId="cookie-nav-back"
-      lead={
-        <div className="space-y-3">
+    <div className="min-h-screen" style={{ background: "#000", color: "#fff" }} data-testid="page-cookie-policy">
+      <PublicNav />
+      <main style={{ maxWidth: 820, margin: "0 auto", padding: "80px 20px 0" }}>
+        <style>{LEGAL_BODY_CSS}</style>
+
+        <h1 data-testid="text-cookie-title" style={H1_STYLE}>
+          {isAf ? "Koekiebeleid" : "Cookie Policy"}
+        </h1>
+        <div style={CHIP_STYLE}>
+          KTH Tech (Pty) Ltd · {isAf ? "Laas opgedateer: 16 Julie 2026" : "Last updated: 16 July 2026"}
+        </div>
+        <LegalCrossNav isAf={isAf} activeHref="/cookie-policy" />
+
+        <div className="bt-legal-body space-y-3" style={{ marginBottom: 28 }}>
           <p>
             {isAf
               ? "BrainTrack gebruik noodsaaklike koekies en opsionele koekies per kategorie — Analise en Bemarking. Jy kan elke kategorie afsonderlik bestuur via ons koekievoorkeure-paneel."
@@ -43,9 +133,9 @@ export default function CookiePolicyPage() {
             )}
           </p>
         </div>
-      }
-    >
-      <LegalSection accent="#9FF5E8" title={isAf ? "1. Wat is Koekies?" : "1. What Are Cookies?"}>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+      <Section accent="#9FF5E8" title={isAf ? "1. Wat is Koekies?" : "1. What Are Cookies?"}>
         <div className="space-y-3">
           <p>
             {isAf
@@ -58,9 +148,9 @@ export default function CookiePolicyPage() {
               : "BrainTrack also uses local storage (localStorage) — a similar technology that stores data in your browser without an expiry date."}
           </p>
         </div>
-      </LegalSection>
+      </Section>
 
-      <LegalSection accent="#9FD8FF" title={isAf ? "2. Koekiekategorieë" : "2. Cookie Categories"}>
+      <Section accent="#9FD8FF" title={isAf ? "2. Koekiekategorieë" : "2. Cookie Categories"}>
         <div className="space-y-5">
           <p>
             {isAf
@@ -74,7 +164,7 @@ export default function CookiePolicyPage() {
                 <span className="text-xs font-bold" style={{ color: "#9FF5E8" }}>
                   {isAf ? "Noodsaaklik (altyd aan)" : "Essential (always on)"}
                 </span>
-                <span className="text-xs" style={{ color: "#fff", opacity: 0.94 }}>
+                <span className="text-xs" style={{ color: "#fff" }}>
                   {isAf ? "— Kan nie gedeaktiveer word nie" : "— Cannot be disabled"}
                 </span>
               </div>
@@ -139,7 +229,7 @@ export default function CookiePolicyPage() {
                 <span className="text-xs font-bold" style={{ color: "#9FD8FF" }}>
                   {isAf ? "Analise (opsioneel)" : "Analytics (optional)"}
                 </span>
-                <span className="text-xs" style={{ color: "#fff", opacity: 0.94 }}>
+                <span className="text-xs" style={{ color: "#fff" }}>
                   {isAf ? "— Vereis jou toestemming" : "— Requires your consent"}
                 </span>
               </div>
@@ -174,7 +264,7 @@ export default function CookiePolicyPage() {
                 <span className="text-xs font-bold" style={{ color: "#FFE29A" }}>
                   {isAf ? "Bemarking (opsioneel)" : "Marketing (optional)"}
                 </span>
-                <span className="text-xs" style={{ color: "#fff", opacity: 0.94 }}>
+                <span className="text-xs" style={{ color: "#fff" }}>
                   {isAf ? "— Vereis jou toestemming" : "— Requires your consent"}
                 </span>
               </div>
@@ -197,9 +287,9 @@ export default function CookiePolicyPage() {
               : "BrainTrack does not use Google Analytics, Facebook Pixel, advertising networks, or any other third-party tracking tools."}
           </div>
         </div>
-      </LegalSection>
+      </Section>
 
-      <LegalSection accent="#FFB7E5" title={isAf ? "3. Bestuur Jou Koekievoorkeure" : "3. Manage Your Cookie Preferences"}>
+      <Section accent="#FFB7E5" title={isAf ? "3. Bestuur Jou Koekievoorkeure" : "3. Manage Your Cookie Preferences"}>
         <div className="space-y-3">
           <p>
             {isAf
@@ -241,9 +331,9 @@ export default function CookiePolicyPage() {
               : " from your browser's local storage — the banner will then reappear."}
           </p>
         </div>
-      </LegalSection>
+      </Section>
 
-      <LegalSection accent="#C5B3FF" title={isAf ? "4. Jou Regte Onder POPIA" : "4. Your Rights Under POPIA"}>
+      <Section accent="#C5B3FF" title={isAf ? "4. Jou Regte Onder POPIA" : "4. Your Rights Under POPIA"}>
         <div className="space-y-3">
           <p>
             {isAf
@@ -282,9 +372,9 @@ export default function CookiePolicyPage() {
               : ", or clear local storage in your browser's privacy settings."}
           </p>
         </div>
-      </LegalSection>
+      </Section>
 
-      <LegalSection accent="#FFE29A" title={isAf ? "5. Hoe Om Koekies te Beheer" : "5. How to Control Cookies"}>
+      <Section accent="#FFE29A" title={isAf ? "5. Hoe Om Koekies te Beheer" : "5. How to Control Cookies"}>
         <div className="space-y-3">
           <p>
             {isAf
@@ -311,9 +401,9 @@ export default function CookiePolicyPage() {
               : "To clear local storage specifically, use your browser's Developer Tools (F12) → Application → Local Storage."}
           </p>
         </div>
-      </LegalSection>
+      </Section>
 
-      <LegalSection accent="#94F7C5" title={isAf ? "6. Kontak" : "6. Contact"}>
+      <Section accent="#94F7C5" title={isAf ? "6. Kontak" : "6. Contact"}>
         <div className="space-y-3">
           <p>
             {isAf
@@ -335,7 +425,7 @@ export default function CookiePolicyPage() {
             </p>
           </div>
         </div>
-      </LegalSection>
+      </Section>
 
       <div style={{ textAlign: "center", padding: "10px 0 0" }}>
         <Link href="/">
@@ -347,6 +437,9 @@ export default function CookiePolicyPage() {
           </span>
         </Link>
       </div>
-    </LegalShell>
+        </div>
+      </main>
+      <PublicFooter />
+    </div>
   );
 }

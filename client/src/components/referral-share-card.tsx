@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Gift, Copy, Check, Share2 } from "lucide-react";
+import { Gift, Copy, Check, Share2, Linkedin } from "lucide-react";
 
 /** GET /api/referral/my-link — server/routes.ts:6700. */
 type ReferralLinkResp = {
@@ -150,6 +150,29 @@ export function ReferralShareCard({ isAf = false }: { isAf?: boolean }) {
         >
           <Share2 style={{ width: 15, height: 15 }} />
           WhatsApp
+        </a>
+        <a
+          href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(link)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-testid="button-dashboard-share-linkedin"
+          style={{
+            flex: "0 0 auto",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            background: "#0A66C2",
+            color: "#fff",
+            borderRadius: 10,
+            padding: "11px 16px",
+            fontWeight: 800,
+            fontSize: 13.5,
+            textDecoration: "none",
+            minHeight: 44,
+          }}
+        >
+          <Linkedin style={{ width: 15, height: 15 }} />
+          LinkedIn
         </a>
       </div>
 

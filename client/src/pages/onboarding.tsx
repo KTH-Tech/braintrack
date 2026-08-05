@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { ONBOARDING_QUESTIONS, GRADE_12_SUBJECTS } from "@/lib/constants";
-import { ArrowLeft, ArrowRight, Loader2, Globe, Check, Sparkles, Search, Eye, RotateCcw, ShieldCheck, MailCheck, AlertTriangle, Copy, Link2, Clock } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2, Globe, Check, Sparkles, Search, Eye, RotateCcw, ShieldCheck, MailCheck, AlertTriangle, Copy, Link2, Clock, MessageCircle } from "lucide-react";
 import iconTransparent from "@/assets/handoff/icon-transparent.png";
 import { GraffitiSplats } from "@/components/graffiti-splats";
 import { type VarkStyle, VARK_STYLES, VARK_QUESTIONS, scoreVarkAnswers } from "@/lib/vark";
@@ -26,6 +26,7 @@ import {
   consentShareMode,
   canLeaveConsentPhase,
 } from "@/lib/parent-consent";
+import { buildParentConsentWhatsAppLink } from "@/lib/parent-share";
 
 interface SubjectMark {
   subjectCode: string;
@@ -366,6 +367,7 @@ const T = {
     varkSecondaryHeading: "Also strong in",
     varkNoSecondary: "Your primary style is really clear — no strong secondary this time.",
     varkRetakeBtn: "Retake questionnaire",
+    varkSkipBtn: "Skip for now — you can set this later",
     consentSent: "Consent link sent!",
     consentSentDesc: "We emailed your parent. Ask them to approve your account.",
     consentNotConfigured: "Email not configured",
@@ -412,7 +414,7 @@ const T = {
     parentConsentHeading: "Parent / Guardian Consent",
     parentConsentHint: "Add your parent or guardian's email so they can confirm you're allowed to use Smart Tutor and full exam mode. The first 3 tutor questions a day are free; after that we'll need their consent.",
     resendBtn: "Resend",
-    sendConsentEmailBtn: "Send consent email",
+    sendConsentEmailBtn: "Create approval link",
     emailSentLabel: "Email sent",
     manualShareLabel: "Manual share — email not configured",
     copyLinkBtn: "Copy link",
@@ -437,6 +439,10 @@ const T = {
     consentFailedTitle: "The email didn't go through",
     consentFailedBody: "We couldn't deliver it to {email}. Send the link below to your parent or guardian yourself, or fix the address and try again.",
     consentLinkLabel: "Your parent's approval link",
+    shareWhatsAppBtn: "Share on WhatsApp",
+    consentShareTitle: "Send the approval link to your parent 📲",
+    consentShareBody: "Tap the WhatsApp button to send your parent or guardian their one-tap approval link. The moment they tap Approve, you're through — no email needed.",
+    consentEmailBackupNote: "We also emailed {email} as a backup, but WhatsApp is the fastest.",
     copiedBtn: "Copied!",
     copyFailedHint: "Couldn't copy automatically — tap the link above to select it.",
     changeEmailBtn: "Use a different address",
@@ -549,6 +555,7 @@ const T = {
     varkSecondaryHeading: "Ook sterk in",
     varkNoSecondary: "Jou primêre styl is baie duidelik — geen sterk sekondêre keer nie.",
     varkRetakeBtn: "Doen weer",
+    varkSkipBtn: "Slaan nou oor — jy kan dit later instel",
     consentSent: "Toestemmingsskakel gestuur!",
     consentSentDesc: "Ons het jou ouer ge-epos. Vra hulle om jou rekening goed te keur.",
     consentNotConfigured: "E-pos nie opgestel nie",
@@ -595,7 +602,7 @@ const T = {
     parentConsentHeading: "Toestemming van Ouer / Voog",
     parentConsentHint: "Voeg jou ouer of voog se e-pos by sodat hulle kan bevestig dat jy Smart Tutor en die volle eksamen-modus mag gebruik. Die eerste 3 vrae per dag is gratis; daarna het ons hul toestemming nodig.",
     resendBtn: "Stuur weer",
-    sendConsentEmailBtn: "Stuur toestemming-e-pos",
+    sendConsentEmailBtn: "Skep goedkeuringskakel",
     emailSentLabel: "E-pos gestuur",
     manualShareLabel: "Handmatige deel — e-pos nie gekonfigureer nie",
     copyLinkBtn: "Kopieer skakel",
@@ -620,6 +627,10 @@ const T = {
     consentFailedTitle: "Die e-pos het nie deurgekom nie",
     consentFailedBody: "Ons kon dit nie aan {email} aflewer nie. Stuur self die skakel hieronder aan jou ouer of voog, of maak die adres reg en probeer weer.",
     consentLinkLabel: "Jou ouer se goedkeuringskakel",
+    shareWhatsAppBtn: "Deel op WhatsApp",
+    consentShareTitle: "Stuur die goedkeuringskakel aan jou ouer 📲",
+    consentShareBody: "Tik die WhatsApp-knoppie om jou ouer of voog se een-tik goedkeuringskakel te stuur. Sodra hulle Keur Goed tik, is jy binne — geen e-pos nodig nie.",
+    consentEmailBackupNote: "Ons het ook {email} ge-e-pos as rugsteun, maar WhatsApp is die vinnigste.",
     copiedBtn: "Gekopieer!",
     copyFailedHint: "Kon nie outomaties kopieer nie — tik die skakel hierbo om dit te merk.",
     changeEmailBtn: "Gebruik 'n ander adres",
@@ -1213,7 +1224,16 @@ export default function OnboardingPage() {
         return;
       }
       try { window.localStorage.removeItem(ONBOARDING_STORAGE_KEY); } catch { /* ignore */ }
+      // Invalidate the exact gate the app routes on. ProtectedRoute /
+      // OnboardingRoute / SubscribeRoute (client/src/App.tsx) read
+      // ["/api/user/onboarding-status"] to decide the redirect — NOT
+      // ["/api/user/onboarding"] (the raw result). Invalidating the wrong key
+      // left the completion gate reading a stale `false`, so the just-onboarded
+      // learner could be bounced back to /onboarding. Also refresh the user +
+      // subscription caches the downstream gates consult.
+      queryClient.invalidateQueries({ queryKey: ["/api/user/onboarding-status"] });
       queryClient.invalidateQueries({ queryKey: ["/api/user/onboarding"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       queryClient.invalidateQueries({ queryKey: ["/api/user/subscription-status"] });
       const tStr = T[language];
       toast({
@@ -1227,7 +1247,13 @@ export default function OnboardingPage() {
       // refresh doesn't re-celebrate the same moment.
       const isoDob = buildIsoDob(dobDay, dobMonth, dobYear);
       const minor = isoDob ? ageFromIsoDob(isoDob) < 18 : false;
-      setLocation((minor ? "/waiting-for-parent" : "/subscribe") + "?welcome=1");
+      // Hard-navigate (full reload) rather than SPA setLocation so the
+      // destination guard re-reads onboarding/subscription state fresh from the
+      // server. This mirrors the rest of the redirect design (ProtectedRoute,
+      // RoleSelectRoute) and guarantees the completion gate can't read a stale
+      // cached `false` after a client-side transition — the loop that stranded
+      // learners on the onboarding↔subscribe boundary.
+      window.location.href = (minor ? "/waiting-for-parent" : "/subscribe") + "?welcome=1";
     },
     onError: () => {
       const tStr = T[language];
@@ -1453,6 +1479,19 @@ export default function OnboardingPage() {
     setVarkPrimary(null);
     setVarkSecondary(null);
     setVarkStep(0);
+  };
+
+  // Slim onboarding: the 12-scenario VARK quiz is the biggest friction before a
+  // learner reaches the app, so it is skippable. Skipping advances straight to
+  // the subjects phase WITHOUT committing a VARK style — varkPrimary /
+  // varkSecondary stay null (the columns are nullable and the submit falls back
+  // to a neutral "kinesthetic" default, so completion still succeeds). Any
+  // scenario answers already picked are left untouched, so the learner can Back
+  // into the quiz and finish it later. Consent gating downstream is unchanged.
+  const handleSkipVark = () => {
+    if (advanceTimer.current) clearTimeout(advanceTimer.current);
+    celebrate(PHASE_CHEERS[language].subjects);
+    setPhase("subjects");
   };
 
   // ── Preview phase jumping ────────────────────────────────────────────────
@@ -2272,6 +2311,21 @@ export default function OnboardingPage() {
                     <ArrowRight className="w-5 h-5 ml-1.5" />
                   </Button>
                 </div>
+
+                {/* Skip the quiz — the 12 scenarios are optional. Only offered
+                    while still answering; on the result view the learner has a
+                    committed style so Next is the natural action. Advances
+                    straight to Subjects, leaving the VARK style unset. */}
+                {varkStep < VARK_QUESTIONS.length && (
+                  <button
+                    type="button"
+                    onClick={handleSkipVark}
+                    data-testid="onboarding-skip-vark"
+                    className="w-full min-h-[48px] px-5 text-[14px] font-bold rounded-2xl text-white bg-transparent border border-white/25 hover:border-white/60 hover:bg-white/[0.06] transition-colors"
+                  >
+                    {t.varkSkipBtn}
+                  </button>
+                )}
               </div>
             </section>
           )}
@@ -2963,7 +3017,11 @@ export default function OnboardingPage() {
                         </div>
                       )}
 
-                      {/* ── Outcome ─────────────────────────────────────── */}
+                      {/* ── Outcome ─────────────────────────────────────────
+                          WhatsApp is the ONLY channel we rely on: the learner is
+                          the courier. The moment a link exists we show the share
+                          CTA as the primary action, unconditionally — email is
+                          demoted to a one-line backup note (sent path only). */}
                       {requested && !editingParentEmail && (
                         <div className="mt-4 space-y-3" data-testid="consent-outcome">
                           <div
@@ -2972,78 +3030,75 @@ export default function OnboardingPage() {
                             data-testid={manual ? "consent-manual-share" : "consent-sent-confirmation"}
                           >
                             <div className="flex items-start gap-2.5">
-                              {manual
-                                ? <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: accent }} aria-hidden />
-                                : <MailCheck className="w-5 h-5 shrink-0 mt-0.5" style={{ color: accent }} aria-hidden />}
+                              <MessageCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: accent }} aria-hidden />
                               <div className="min-w-0">
                                 <p className="font-extrabold text-white text-[15px] leading-tight">
-                                  {consentDelivery === "sent" ? t.consentSentTitle
-                                    : consentDelivery === "failed" ? t.consentFailedTitle
-                                    : t.consentNotConfiguredTitle}
+                                  {t.consentShareTitle}
                                 </p>
                                 <p className="text-white text-[13px] leading-relaxed mt-1">
-                                  {(consentDelivery === "sent" ? t.consentSentBody
-                                    : consentDelivery === "failed" ? t.consentFailedBody
-                                    : t.consentNotConfiguredBody
-                                  ).replace("{email}", sentTo)}
+                                  {t.consentShareBody}
                                 </p>
                               </div>
                             </div>
 
-                            {/* On the happy path the link is a fallback, so it
-                                hides behind a disclosure. On the manual paths
-                                it is the whole point and is already open. */}
-                            {!manual && !showConsentLink && (
+                            {/* Link + share buttons — ALWAYS shown once minted. */}
+                            <div
+                              className="mt-3 rounded-xl p-3.5"
+                              style={{ background: "rgba(0,0,0,.45)", border: `1px solid ${accent}55` }}
+                              data-testid="consent-link-block"
+                            >
+                              <p className="text-[11px] font-bold uppercase tracking-[0.14em]" style={{ color: accent }}>
+                                {t.consentLinkLabel}
+                              </p>
+                              <p
+                                className="text-[12px] break-all text-white select-all mt-1.5 leading-relaxed"
+                                data-testid="consent-link-url"
+                              >
+                                {consentLink}
+                              </p>
+                              {/* PRIMARY: WhatsApp, big + green + full-width, on top. */}
+                              <a
+                                href={buildParentConsentWhatsAppLink(consentLink ?? "", isAf ? "af" : "en")}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="mt-3 w-full min-h-[54px] px-5 text-[16px] font-extrabold rounded-xl inline-flex items-center justify-center"
+                                style={{ color: "#062012", background: "#25D366", textDecoration: "none" }}
+                                data-testid="consent-share-whatsapp"
+                              >
+                                <MessageCircle className="w-5 h-5 mr-2" aria-hidden />
+                                {t.shareWhatsAppBtn}
+                              </a>
+                              {/* SECONDARY: copy the raw link. */}
                               <Button
-                                variant="ghost"
-                                className="mt-2 min-h-[44px] px-3 text-[13px] font-bold rounded-xl text-white hover:bg-white/[0.06]"
-                                onClick={() => setShowConsentLink(true)}
-                                data-testid="button-reveal-consent-link"
+                                type="button"
+                                variant="outline"
+                                className="mt-2 w-full min-h-[46px] px-5 text-[14px] font-bold rounded-xl bg-transparent border"
+                                style={{ color: linkCopied ? BRAND.mint : "#ffffff", borderColor: linkCopied ? BRAND.mint : "rgba(255,255,255,.25)" }}
+                                onClick={handleCopyConsentLink}
+                                data-testid="button-copy-consent-link"
                               >
-                                <Link2 className="w-4 h-4 mr-2" aria-hidden />
-                                {t.consentDidntArriveBtn}
+                                {linkCopied
+                                  ? <Check className="w-4 h-4 mr-2" aria-hidden />
+                                  : <Copy className="w-4 h-4 mr-2" aria-hidden />}
+                                {linkCopied ? t.copiedBtn : t.copyLinkBtn}
                               </Button>
-                            )}
-
-                            {(manual || showConsentLink) && (
-                              <div
-                                className="mt-3 rounded-xl p-3.5"
-                                style={{ background: "rgba(0,0,0,.45)", border: `1px solid ${accent}55` }}
-                                data-testid="consent-link-block"
-                              >
-                                <p className="text-[11px] font-bold uppercase tracking-[0.14em]" style={{ color: accent }}>
-                                  {t.consentLinkLabel}
-                                </p>
+                              {copyFailed && (
                                 <p
-                                  className="text-[12px] break-all text-white select-all mt-1.5 leading-relaxed"
-                                  data-testid="consent-link-url"
+                                  role="status"
+                                  className="text-[12px] font-semibold mt-2"
+                                  style={{ color: BRAND.yellow }}
+                                  data-testid="consent-copy-failed"
                                 >
-                                  {consentLink}
+                                  {t.copyFailedHint}
                                 </p>
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  className="mt-2.5 w-full sm:w-auto min-h-[48px] px-5 text-[14px] font-bold rounded-xl bg-transparent border"
-                                  style={{ color: linkCopied ? BRAND.mint : "#ffffff", borderColor: linkCopied ? BRAND.mint : "rgba(255,255,255,.25)" }}
-                                  onClick={handleCopyConsentLink}
-                                  data-testid="button-copy-consent-link"
-                                >
-                                  {linkCopied
-                                    ? <Check className="w-4 h-4 mr-2" aria-hidden />
-                                    : <Copy className="w-4 h-4 mr-2" aria-hidden />}
-                                  {linkCopied ? t.copiedBtn : t.copyLinkBtn}
-                                </Button>
-                                {copyFailed && (
-                                  <p
-                                    role="status"
-                                    className="text-[12px] font-semibold mt-2"
-                                    style={{ color: BRAND.yellow }}
-                                    data-testid="consent-copy-failed"
-                                  >
-                                    {t.copyFailedHint}
-                                  </p>
-                                )}
-                              </div>
+                              )}
+                            </div>
+
+                            {/* Email demoted to a quiet backup note (sent path). */}
+                            {consentDelivery === "sent" && (
+                              <p className="text-[12px] text-white/90 mt-2" data-testid="consent-email-backup-note">
+                                {t.consentEmailBackupNote.replace("{email}", sentTo)}
+                              </p>
                             )}
 
                             {/* The simulated gate result is delivery:"sent", so
@@ -3197,22 +3252,33 @@ export default function OnboardingPage() {
               >
                 {cheer}
               </div>
-              {!reduced && CONFETTI_COLORS.map((c, i) => (
-                <span
-                  key={i}
-                  aria-hidden
-                  style={{
-                    position: "absolute",
-                    top: -6,
-                    left: `${30 + i * 9}%`,
-                    width: 9,
-                    height: 9,
-                    borderRadius: i % 2 ? 999 : 2,
-                    background: c,
-                    animation: `bt-confetti ${0.9 + i * 0.14}s ease-in ${i * 0.06}s both`,
-                  }}
-                />
-              ))}
+              {!reduced && Array.from({ length: 28 }).map((_, i) => {
+                const c = CONFETTI_COLORS[i % CONFETTI_COLORS.length];
+                const round = i % 3 === 0;
+                const sz = 7 + (i % 4) * 3;                       // 7–16px
+                const left = 6 + ((i * 3.3) % 88);               // spread full width
+                const dir = i % 2 ? 1 : -1;
+                return (
+                  <span
+                    key={i}
+                    aria-hidden
+                    style={{
+                      position: "absolute",
+                      top: -10,
+                      left: `${left}%`,
+                      width: sz,
+                      height: round ? sz : Math.round(sz * 1.7),
+                      borderRadius: round ? 999 : 2,
+                      background: c,
+                      // Pop UP then arc down with sideways spread + spin — reads
+                      // as a real burst, not 6 squares dropping in a line.
+                      ["--cx" as string]: `${dir * (6 + (i % 5) * 4)}vw`,
+                      ["--rot" as string]: `${dir * (220 + i * 16)}deg`,
+                      animation: `bt-confetti ${(1.0 + (i % 5) * 0.18).toFixed(2)}s cubic-bezier(.2,.7,.3,1) ${((i % 7) * 0.05).toFixed(2)}s both`,
+                    }}
+                  />
+                );
+              })}
             </div>
           )}
 
@@ -3240,8 +3306,9 @@ export default function OnboardingPage() {
           100% { opacity: 1; transform: rotate(-2deg) scale(1); }
         }
         @keyframes bt-confetti {
-          0% { opacity: 1; transform: translateY(0) rotate(0deg); }
-          100% { opacity: 0; transform: translateY(130px) rotate(260deg); }
+          0%   { opacity: 0; transform: translateY(0) translateX(0) rotate(0deg) scale(.4); }
+          14%  { opacity: 1; transform: translateY(-20px) translateX(calc(var(--cx, 0vw) * .3)) rotate(60deg) scale(1.12); }
+          100% { opacity: 0; transform: translateY(155px) translateX(var(--cx, 0vw)) rotate(var(--rot, 260deg)) scale(.9); }
         }
         @keyframes bt-fadeup {
           from { opacity: 0; transform: translateY(14px); }

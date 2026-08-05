@@ -21,7 +21,6 @@ import { LearnerHeader } from "@/components/learner-header";
 import { GraffitiSplats } from "@/components/graffiti-splats";
 import {
   ArrowRight,
-  CheckCircle2,
   Clock,
   FileText,
   Loader2,
@@ -151,81 +150,41 @@ function StreetShell({ isAf, eyebrow, children }: {
   );
 }
 
-interface PaperMeta {
+/**
+ * One SIMULATED exam per subject. The Full Exam serves ORIGINAL,
+ * examiner-equivalent simulated content — never the verbatim DBE papers — so
+ * there is no year / session / paper-number here.
+ */
+interface SubjectExam {
+  id: string;
   subject: string;
-  year: number;
-  session: string;
-  paperNumber: number;
   questionCount: number;
   totalMarks: number;
-}
-
-interface PaperGroup {
-  subject: string;
-  papers: PaperMeta[];
+  language: string;
 }
 
 interface FullPaper {
   subject: string;
-  year: number;
-  session: string | null;
-  paperNumber: number;
+  language: string;
   totalMarks: number;
   timeMinutes: number;
+  /** Set when no released simulated content exists for this subject+language. */
+  comingSoon?: boolean;
   questions: {
     id: number;
     questionNumber: string;
     questionText: string;
+    /** Original supporting material (passage / poem / case study), or null. */
+    stimulusText: string | null;
     marks: number;
     topic: string | null;
     cognitiveLevel: string | null;
-    mcqOptions: Array<{ letter: string; text: string }> | null;
   }[];
-}
-
-/**
- * For a wrong MCQ answer, shows the full correct option ("B — text"), not
- * just a bare letter — mirrors the callout used on the Mini Mock results
- * screen so the "what was the right answer" explanation reads the same
- * across both exam modes.
- */
-function McqCorrectAnswerCallout({
-  paper,
-  questionId,
-  result,
-  isAf,
-}: {
-  paper: FullPaper | null;
-  questionId: number;
-  result: MarkingResult;
-  isAf: boolean;
-}) {
-  const question = paper?.questions.find((pq) => pq.id === questionId);
-  if (!question?.mcqOptions || question.mcqOptions.length === 0) return null;
-  if (result.marksAwarded >= result.marksAvailable) return null;
-  const correctLetter = result.perCriterion[0]?.missed?.[0];
-  if (!correctLetter) return null;
-  const opt = question.mcqOptions.find((o) => o.letter === correctLetter);
-  return (
-    <div
-      className="flex items-start gap-2 rounded-xl px-3 py-2"
-      style={{ background: "rgba(148,247,197,.08)", border: "1px solid rgba(148,247,197,.4)" }}
-    >
-      <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "#94F7C5" }} />
-      <p className="text-sm font-semibold" style={{ color: "#94F7C5" }}>
-        {isAf ? "Korrekte antwoord:" : "Correct answer:"}{" "}
-        <span className="font-bold">{correctLetter}</span>
-        {opt && <span className="font-normal text-white"> — {opt.text}</span>}
-      </p>
-    </div>
-  );
 }
 
 interface FullResult {
   subject: string;
-  year: number;
-  paperNumber: number;
-  session: string | null;
+  language: string;
   marksAwarded: number;
   marksAvailable: number;
   percentage: number;
@@ -262,34 +221,28 @@ export default function ExamFullPage() {
 
   const [phase, setPhase] = useState<Phase>("select");
   const [subject, setSubject] = useState<string>("");
-  const [paperKey, setPaperKey] = useState<string>("");
   const [paper, setPaper] = useState<FullPaper | null>(null);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [result, setResult] = useState<FullResult | null>(null);
   const [examError, setExamError] = useState<string>("");
   const [examLoading, setExamLoading] = useState(false);
+  const [comingSoon, setComingSoon] = useState<string | null>(null);
   const [showExitDialog, setShowExitDialog] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const { data: groups, isLoading: groupsLoading, isError: groupsError, refetch: refetchGroups, isRefetching: groupsRefetching } = useQuery<PaperGroup[]>({
-    queryKey: ["/api/exam/full/papers"],
+  // Papers list is language-scoped: toggling language refetches it so a learner
+  // only ever sees subjects with released simulated content in THEIR language.
+  const { data: groups, isLoading: groupsLoading, isError: groupsError, refetch: refetchGroups, isRefetching: groupsRefetching } = useQuery<SubjectExam[]>({
+    queryKey: [`/api/exam/full/papers?language=${language}`],
   });
-
-  const subjectGroup = useMemo(
-    () => groups?.find((g) => g.subject === subject) ?? null,
-    [groups, subject],
-  );
 
   useEffect(() => {
     if (!subject && preselectedSubject && groups && groups.length > 0) {
       const match = groups.find(
         (g) => g.subject.toLowerCase() === preselectedSubject.toLowerCase(),
       );
-      if (match) {
-        setSubject(match.subject);
-        setPaperKey("");
-      }
+      if (match) setSubject(match.subject);
     }
   }, [preselectedSubject, groups, subject]);
 
@@ -298,9 +251,7 @@ export default function ExamFullPage() {
       if (!paper) throw new Error("No paper loaded");
       const r = await apiRequest("POST", "/api/exam/full/submit", {
         subject: paper.subject,
-        year: paper.year,
-        paperNumber: paper.paperNumber,
-        session: paper.session,
+        language: paper.language,
         answers,
       });
       return (await r.json()) as FullResult;
@@ -325,31 +276,35 @@ export default function ExamFullPage() {
     ? "Kon nie jou eksamen indien nie. Jou antwoorde is veilig — probeer asseblief weer."
     : "Could not submit your exam. Your answers are safe — please retry.";
 
+  // Fetch a subject's simulated paper in a given language. Returns the paper,
+  // or null on error/coming-soon (state is set accordingly). Reused by the
+  // Start button and the mid-exam language-toggle refetch.
+  const loadPaper = async (subj: string, lang: string): Promise<FullPaper | null> => {
+    const qs = new URLSearchParams({ subject: subj, language: lang });
+    const r = await fetch(`/api/exam/full/paper?${qs}`, { credentials: "include" });
+    if (!r.ok) {
+      const msg = r.status === 401 || r.status === 403
+        ? (isAf ? "Jy is nie gemagtig nie. Meld asseblief aan." : "You are not authorised. Please log in.")
+        : (isAf ? `Serverfout (${r.status}). Probeer asseblief weer.` : `Server error (${r.status}). Please try again.`);
+      setExamError(msg);
+      return null;
+    }
+    const data: FullPaper = await r.json();
+    if (data.comingSoon || !data.questions || data.questions.length === 0) {
+      setComingSoon(subj);
+      return null;
+    }
+    return data;
+  };
+
   const startExam = async () => {
-    if (!paperKey) return;
+    if (!subject) return;
     setExamError("");
+    setComingSoon(null);
     setExamLoading(true);
     try {
-      const [year, paperNumber, session] = paperKey.split("|");
-      // Always send `session` explicitly — the server treats "null"/empty
-      // as IS NULL, so this guarantees we fetch exactly the sitting the
-      // learner picked.
-      const qs = new URLSearchParams({ subject, year, paperNumber, session: session ?? "null" });
-      const r = await fetch(`/api/exam/full/paper?${qs}`, { credentials: "include" });
-      if (!r.ok) {
-        const msg = r.status === 401 || r.status === 403
-          ? (isAf ? "Jy is nie gemagtig nie. Meld asseblief aan." : "You are not authorised. Please log in.")
-          : r.status === 404
-            ? (isAf ? "Vraestel nie gevind nie." : "Paper not found.")
-            : (isAf ? `Serverfout (${r.status}). Probeer asseblief weer.` : `Server error (${r.status}). Please try again.`);
-        setExamError(msg);
-        return;
-      }
-      const data: FullPaper = await r.json();
-      if (!data.questions || data.questions.length === 0) {
-        setExamError(isAf ? "Geen vrae beskikbaar vir hierdie vraestel nie." : "No questions available for this paper.");
-        return;
-      }
+      const data = await loadPaper(subject, language);
+      if (!data) return;
       setPaper(data);
       setAnswers({});
       setSecondsLeft(data.timeMinutes * 60);
@@ -360,6 +315,24 @@ export default function ExamFullPage() {
       setExamLoading(false);
     }
   };
+
+  // Language toggle DURING an active exam: refetch the paper so question text
+  // AND supporting material re-render in the selected language. The simulated
+  // rows differ per language (different ids), so answers cannot carry over —
+  // reset them and restart the clock.
+  useEffect(() => {
+    if (phase !== "exam" || !paper || paper.language === language) return;
+    let cancelled = false;
+    (async () => {
+      const data = await loadPaper(subject, language);
+      if (cancelled || !data) return;
+      setPaper(data);
+      setAnswers({});
+      setSecondsLeft(data.timeMinutes * 60);
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [language, phase]);
 
   // Countdown — keep mutation call outside the setState callback to avoid
   // React warnings about calling side-effects during state derivation.
@@ -483,12 +456,36 @@ export default function ExamFullPage() {
                   {groupsRefetching ? (isAf ? "Probeer…" : "Retrying…") : (isAf ? "Probeer Weer" : "Try Again")}
                 </PrimaryBtn>
               </div>
+            ) : !groupsLoading && (groups ?? []).length === 0 ? (
+              // No subject has released simulated content in this language yet.
+              <div
+                className="flex flex-col items-center text-center gap-3 py-4"
+                data-testid="full-exam-coming-soon-empty"
+              >
+                <div
+                  className="w-12 h-12 rounded-2xl flex items-center justify-center"
+                  style={{ background: "rgba(159,245,232,.08)", border: "1.5px solid #9FF5E8" }}
+                >
+                  <GraduationCap className="w-6 h-6" style={{ color: "#9FF5E8" }} />
+                </div>
+                <div className="space-y-1">
+                  <p className="font-bold text-white">
+                    {isAf ? "Eksamens kom binnekort" : "Exams coming soon"}
+                  </p>
+                  <p className="text-sm text-white" style={{ opacity: 0.85 }}>
+                    {isAf
+                      ? "Ons berei tans oorspronklike, memo-gemerkte eksamens voor. Kyk binnekort weer."
+                      : "We're preparing original, memo-marked exams. Check back soon."}
+                  </p>
+                </div>
+              </div>
             ) : (
               <div className="space-y-2">
                 <label className="text-[11px] font-black uppercase tracking-[0.2em] text-white">{isAf ? "Vak" : "Subject"}</label>
-                <Select value={subject} onValueChange={(v) => { setSubject(v); setPaperKey(""); setExamError(""); }} disabled={groupsLoading || examLoading}>
+                <Select value={subject} onValueChange={(v) => { setSubject(v); setExamError(""); setComingSoon(null); }} disabled={groupsLoading || examLoading}>
                   <SelectTrigger
                     className="h-12 rounded-xl text-white"
+                    data-testid="full-exam-subject-select"
                     style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid rgba(255,255,255,.18)" }}
                   >
                     <SelectValue placeholder={
@@ -500,7 +497,7 @@ export default function ExamFullPage() {
                   <SelectContent>
                     {(groups ?? []).map((g) => (
                       <SelectItem key={g.subject} value={g.subject}>
-                        {g.subject} ({g.papers.length})
+                        {g.subject} · {g.questionCount}Q · {g.totalMarks} {isAf ? "merke" : "marks"}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -508,31 +505,22 @@ export default function ExamFullPage() {
               </div>
             )}
 
-            {!groupsError && subjectGroup && (
-              <div className="space-y-2">
-                <label className="text-[11px] font-black uppercase tracking-[0.2em] text-white">{isAf ? "Vraestel" : "Paper"}</label>
-                <Select value={paperKey} onValueChange={(v) => { setPaperKey(v); setExamError(""); }} disabled={examLoading}>
-                  <SelectTrigger
-                    className="h-12 rounded-xl text-white"
-                    style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid rgba(255,255,255,.18)" }}
-                  >
-                    <SelectValue placeholder={isAf ? "Kies vraestel…" : "Choose paper…"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {subjectGroup.papers.map((p) => (
-                      <SelectItem
-                        key={`${p.year}|${p.paperNumber}|${p.session}`}
-                        value={`${p.year}|${p.paperNumber}|${p.session}`}
-                      >
-                        {p.year} {p.session} · {isAf ? "Vraestel" : "Paper"} {p.paperNumber} · {p.questionCount}Q · {p.totalMarks} {isAf ? "merke" : "marks"}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            {comingSoon && (
+              <div
+                className="flex items-start gap-2 rounded-xl px-4 py-3 text-sm"
+                style={{ background: "rgba(159,245,232,.08)", border: "1px solid rgba(159,245,232,.45)", color: "#9FF5E8" }}
+                data-testid="full-exam-coming-soon"
+              >
+                <GraduationCap className="w-4 h-4 mt-0.5 shrink-0" />
+                <span>
+                  {isAf
+                    ? `Eksamen vir ${comingSoon} kom binnekort — ons berei tans oorspronklike vrae voor.`
+                    : `Exam coming soon for ${comingSoon} — we're preparing original questions.`}
+                </span>
               </div>
             )}
 
-            <PrimaryBtn onClick={startExam} disabled={!paperKey || examLoading} full size="lg">
+            <PrimaryBtn onClick={startExam} disabled={!subject || examLoading} full size="lg">
               {examLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
@@ -630,7 +618,7 @@ export default function ExamFullPage() {
                 className="text-xs font-bold px-2.5 py-1 rounded-full"
                 style={{ color: "#C5B3FF", background: "rgba(197,179,255,.06)", border: "1px solid rgba(197,179,255,.4)" }}
               >
-                {paper.subject} {paper.year} P{paper.paperNumber}
+                {paper.subject} · {isAf ? "Gesimuleer" : "Simulated"}
               </span>
               <PrimaryBtn
                 size="sm"
@@ -670,48 +658,36 @@ export default function ExamFullPage() {
                       {q.marks} {isAf ? "merke" : "marks"}
                     </span>
                   </div>
+                  {/* Original supporting material (comprehension paragraph /
+                      poem / case study) rendered WITH the question so
+                      passage-based items are fully answerable. */}
+                  {q.stimulusText && q.stimulusText.trim().length > 0 && (
+                    <div
+                      className="rounded-xl p-3 sm:p-4 space-y-1.5"
+                      data-testid={`full-exam-stimulus-${q.id}`}
+                      style={{ background: "rgba(159,216,255,.06)", border: "1px solid rgba(159,216,255,.35)" }}
+                    >
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: "#9FD8FF" }}>
+                        {isAf ? "Lees die teks" : "Read the text"}
+                      </p>
+                      <p className="text-sm text-white whitespace-pre-wrap leading-relaxed" style={{ opacity: 0.95 }}>
+                        {q.stimulusText}
+                      </p>
+                    </div>
+                  )}
+
                   <ExamQuestionText text={q.questionText} className="text-sm text-white" />
 
-                  {q.mcqOptions && q.mcqOptions.length > 0 ? (
-                    <div className="space-y-2">
-                      {q.mcqOptions.map((o) => {
-                        const active = answers[q.id] === o.letter;
-                        return (
-                          <button
-                            key={o.letter}
-                            type="button"
-                            onClick={() => setAnswers((a) => ({ ...a, [q.id]: o.letter }))}
-                            className="w-full text-left p-3 rounded-xl transition-all flex items-center gap-3"
-                            style={{
-                              background: active ? "rgba(159,245,232,.08)" : "rgba(255,255,255,.02)",
-                              border: active ? "1.5px solid #9FF5E8" : "1.5px solid rgba(255,255,255,.12)",
-                            }}
-                          >
-                            <span
-                              className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black shrink-0"
-                              style={{
-                                background: active ? "linear-gradient(100deg,#9FF5E8,#C5B3FF)" : "rgba(5,5,8,.6)",
-                                color: active ? "#050508" : "#ffffff",
-                                border: active ? "none" : "1px solid rgba(255,255,255,.18)",
-                              }}
-                            >
-                              {o.letter}
-                            </span>
-                            <span className="flex-1 text-sm text-white leading-snug">{o.text}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <Textarea
-                      value={answers[q.id] ?? ""}
-                      onChange={(e) => setAnswers((a) => ({ ...a, [q.id]: e.target.value }))}
-                      placeholder={isAf ? "Jou antwoord…" : "Your answer…"}
-                      rows={3}
-                      className="resize-none text-white placeholder:text-white rounded-xl focus-visible:ring-[#9FF5E8]/40 focus-visible:border-[#9FF5E8]"
-                      style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid rgba(255,255,255,.18)" }}
-                    />
-                  )}
+                  {/* Simulated items are written-response only — no MCQ bank. */}
+                  <Textarea
+                    value={answers[q.id] ?? ""}
+                    onChange={(e) => setAnswers((a) => ({ ...a, [q.id]: e.target.value }))}
+                    placeholder={isAf ? "Jou antwoord…" : "Your answer…"}
+                    rows={3}
+                    data-testid={`full-exam-answer-${q.id}`}
+                    className="resize-none text-white placeholder:text-white rounded-xl focus-visible:ring-[#9FF5E8]/40 focus-visible:border-[#9FF5E8]"
+                    style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid rgba(255,255,255,.18)" }}
+                  />
                 </div>
               </GlassCard>
             ))}
@@ -760,7 +736,7 @@ export default function ExamFullPage() {
       : result.percentage >= 40 ? "#FFE29A"
       : "#FFB7E5";
     return (
-      <StreetShell isAf={isAf} eyebrow={`${result.subject} · ${result.year} · ${isAf ? "Vraestel" : "Paper"} ${result.paperNumber}`}>
+      <StreetShell isAf={isAf} eyebrow={`${result.subject} · ${isAf ? "Gesimuleerde eksamen" : "Simulated exam"}`}>
         <GlassCard accent={gradeHex} className="p-6 sm:p-8 text-center" style={{ animation: "bt-fadeup .5s cubic-bezier(.22,1,.36,1) both" }}>
           <ConfettiBurst />
           <div className="relative space-y-3">
@@ -821,13 +797,12 @@ export default function ExamFullPage() {
                 questionNumber={q.questionNumber}
                 questionText={q.questionText}
               />
-              <McqCorrectAnswerCallout paper={paper} questionId={q.questionId} result={q} isAf={isAf} />
             </div>
           ))}
         </div>
 
         <div className="flex gap-3 justify-center">
-          <GhostBtn onClick={() => { setPhase("select"); setResult(null); setPaper(null); setPaperKey(""); }} color="#C5B3FF">
+          <GhostBtn onClick={() => { setPhase("select"); setResult(null); setPaper(null); setSubject(""); setComingSoon(null); }} color="#C5B3FF">
             {isAf ? "Nuwe vraestel" : "New paper"}
           </GhostBtn>
           <Link href="/exam/mini-mock">

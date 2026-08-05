@@ -1,16 +1,101 @@
-// Chrome restyled to the Claude Design handoff "Luxury Street Graffiti
-// EdTech" comp (LEGAL PAGES section) via LegalShell. Legal copy verbatim.
+// Logged-out legal page — branded pure-black street-graffiti chrome mounting
+// the shared PublicNav + PublicFooter. Legal copy preserved verbatim.
+import type { ReactNode, CSSProperties } from "react";
 import { Undo2, CreditCard, AlertCircle, Clock, Scale } from "lucide-react";
-import { LegalShell, LegalSection } from "@/components/legal-shell";
 import { Link } from "wouter";
+import { PublicNav } from "@/components/public-nav";
+import { PublicFooter } from "@/components/public-footer";
 import { useLanguage } from "@/lib/language-context";
 import { useSEO } from "@/hooks/use-seo";
 
 // Handoff pastel accents, cycled per section.
 const PASTELS = ["#9FF5E8", "#9FD8FF", "#FFB7E5", "#C5B3FF", "#FFE29A", "#94F7C5"];
 
+// ── Shared branded chrome for the four logged-out legal pages ───────────────
+// Pure-black street-graffiti: Permanent Marker title, hard-offset accent cards,
+// pure #fff body copy (no grey / no faded white), no glow/blur shadows.
+const H1_STYLE: CSSProperties = {
+  fontFamily: "'Permanent Marker',cursive",
+  fontSize: 40,
+  lineHeight: 1.15,
+  letterSpacing: "-0.5px",
+  margin: "8px 0 14px",
+  color: "#fff",
+};
+const CHIP_STYLE: CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 8,
+  fontSize: 12.5,
+  fontWeight: 700,
+  color: "#fff",
+  border: "2px solid #9FD8FF",
+  borderRadius: 999,
+  padding: "6px 14px",
+  marginBottom: 22,
+};
+const LEGAL_BODY_CSS = `
+  .bt-legal-body { font-size: 15px; line-height: 1.7; color: #fff; }
+  .bt-legal-body p, .bt-legal-body li, .bt-legal-body td, .bt-legal-body th, .bt-legal-body h4, .bt-legal-body strong, .bt-legal-body code { color: #fff; }
+  .bt-legal-body table { font-size: 13px; }
+  .bt-legal-body td, .bt-legal-body th { font-size: 13px; line-height: 1.6; }
+  .bt-legal-body a { color: #9FD8FF; font-weight: 600; }
+  .bt-legal-cross-pill { transition: transform .15s; }
+  .bt-legal-cross-pill:hover { transform: translateY(-1px); }
+`;
+const LEGAL_LINKS = [
+  { href: "/privacy-policy", en: "Privacy", af: "Privaatheid", accent: "#9FD8FF" },
+  { href: "/terms-of-service", en: "Terms", af: "Bepalings", accent: "#FFB7E5" },
+  { href: "/cookie-policy", en: "Cookies", af: "Koekies", accent: "#FFE29A" },
+  { href: "/refund-policy", en: "Refunds", af: "Terugbetalings", accent: "#94F7C5" },
+];
+
+function LegalCrossNav({ isAf, activeHref }: { isAf: boolean; activeHref: string }) {
+  return (
+    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 28 }}>
+      {LEGAL_LINKS.map((l) => {
+        const active = l.href === activeHref;
+        return (
+          <Link key={l.href} href={l.href}>
+            <span
+              className="bt-legal-cross-pill"
+              style={{
+                display: "inline-block", fontSize: 12.5, fontWeight: 700,
+                padding: "8px 14px", borderRadius: 999, cursor: "pointer",
+                color: active ? "#000" : l.accent,
+                background: active ? l.accent : "transparent",
+                border: `2px solid ${l.accent}`,
+              }}
+            >
+              {isAf ? l.af : l.en}
+            </span>
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
+
+function Section({ accent, title, testId, children }: { accent: string; title: ReactNode; testId?: string; children: ReactNode }) {
+  return (
+    <section
+      data-testid={testId}
+      style={{
+        background: "#050508",
+        border: `2.5px solid ${accent}`,
+        borderRadius: 16,
+        padding: "22px 26px",
+        boxShadow: `6px 6px 0 0 ${accent}`,
+      }}
+    >
+      <h2 style={{ fontWeight: 800, fontSize: 20, marginBottom: 12, color: accent }}>{title}</h2>
+      <div className="bt-legal-body">{children}</div>
+    </section>
+  );
+}
+
 export default function RefundPolicyPage() {
-  const { language, toggleLanguage } = useLanguage();
+  const { language } = useLanguage();
   const isAf = language === "af";
   useSEO({
     title: "Refund Policy | BrainTrack",
@@ -50,12 +135,12 @@ export default function RefundPolicyPage() {
           "BrainTrack™ does not issue refunds for partial months or unused days within a billing period.",
           "Once a billing period begins, the subscription fee for that period is non-refundable, except where a refund is required by these terms or by applicable South African consumer law.",
           "If you believe a charge was made in error, raise it within 7 days through your subscription settings in the app (Settings → Subscription) and it will be reviewed in line with these terms.",
-          "The Exam Boost once-off purchase (R550, access until 30 November 2026) is a single, non-recurring payment. It is final and non-refundable to the extent permitted by applicable South African law, and access continues until the end date regardless of how much of the service is used. Nothing in this policy limits any right you may have under consumer protection legislation that cannot lawfully be excluded."
+          "The Exam Blast season pass (R550, access until 15 December 2026) starts with a R1 non-refundable card-verification charge and 14 days free; the R550 is charged once on day 14 and is a single, non-recurring payment. It is final and non-refundable to the extent permitted by applicable South African law, and access continues until the end date regardless of how much of the service is used. If you cancel within the first 14 days you are charged only the R1. Nothing in this policy limits any right you may have under consumer protection legislation that cannot lawfully be excluded."
         ],
         bullets: [
           "No refunds for partial months",
           "No refunds for unused access within a paid period",
-          "Exam Boost once-off purchases are final and non-refundable (to the extent permitted by law)",
+          "Exam Blast once-off purchases are final and non-refundable (to the extent permitted by law)",
           "Disputed charges must be raised in the app within 7 days",
         ],
       },
@@ -127,12 +212,12 @@ export default function RefundPolicyPage() {
           "BrainTrack™ reik nie terugbetalings uit vir gedeeltelike maande of ongebruikte dae binne 'n faktureringssiklus nie.",
           "Sodra 'n faktureringssiklus begin, is die intekeningsfooi vir daardie tydperk nie-terugbetaalbaar nie, behalwe waar 'n terugbetaling deur hierdie bepalings of deur toepaslike Suid-Afrikaanse verbruikersreg vereis word.",
           "As jy glo dat 'n heffing per abuis gemaak is, meld dit binne 7 dae aan via jou intekeninginstellings in die app (Instellings → Intekening), en dit sal in lyn met hierdie bepalings hersien word.",
-          "Die Exam Boost eenmalige aankoop (R550, toegang tot 30 November 2026) is 'n enkele, nie-herhalende betaling. Dit is finaal en nie-terugbetaalbaar in die mate wat toepaslike Suid-Afrikaanse reg toelaat, en toegang duur voort tot die einddatum ongeag hoeveel van die diens gebruik word. Niks in hierdie beleid beperk enige reg wat jy ingevolge verbruikersbeskermingswetgewing het wat nie wettiglik uitgesluit kan word nie."
+          "Die Exam Blast seisoenkaart (R550, toegang tot 15 Desember 2026) begin met 'n R1 nie-terugbetaalbare kaartverifikasie-heffing en 14 dae gratis; die R550 word een keer op dag 14 gehef en is 'n enkele, nie-herhalende betaling. Dit is finaal en nie-terugbetaalbaar in die mate wat toepaslike Suid-Afrikaanse reg toelaat, en toegang duur voort tot die einddatum ongeag hoeveel van die diens gebruik word. As jy binne die eerste 14 dae kanselleer, word slegs die R1 gehef. Niks in hierdie beleid beperk enige reg wat jy ingevolge verbruikersbeskermingswetgewing het wat nie wettiglik uitgesluit kan word nie."
         ],
         bullets: [
           "Geen terugbetalings vir gedeeltelike maande nie",
           "Geen terugbetalings vir ongebruikte toegang binne 'n betaalde tydperk nie",
-          "Exam Boost eenmalige aankope is finaal en nie-terugbetaalbaar (in die mate wat die wet toelaat)",
+          "Exam Blast eenmalige aankope is finaal en nie-terugbetaalbaar (in die mate wat die wet toelaat)",
           "Betwiste heffings moet binne 7 dae in die app aangemeld word",
         ],
       },
@@ -178,16 +263,20 @@ export default function RefundPolicyPage() {
   const currentSections = sections[isAf ? "af" : "en"];
 
   return (
-    <LegalShell
-      title={isAf ? "Terugbetalingsbeleid" : "Refund Policy"}
-      titleTestId="text-refund-title"
-      updated={isAf ? "Laas opgedateer: 16 Julie 2026" : "Last updated: 16 July 2026"}
-      language={language}
-      onToggleLanguage={toggleLanguage}
-      activeHref="/refund-policy"
-      backTestId="refund-nav-back"
-      lead={
-        <div className="space-y-3">
+    <div className="min-h-screen" style={{ background: "#000", color: "#fff" }} data-testid="page-refund-policy">
+      <PublicNav />
+      <main style={{ maxWidth: 820, margin: "0 auto", padding: "80px 20px 0" }}>
+        <style>{LEGAL_BODY_CSS}</style>
+
+        <h1 data-testid="text-refund-title" style={H1_STYLE}>
+          {isAf ? "Terugbetalingsbeleid" : "Refund Policy"}
+        </h1>
+        <div style={CHIP_STYLE}>
+          KTH Tech (Pty) Ltd · {isAf ? "Laas opgedateer: 16 Julie 2026" : "Last updated: 16 July 2026"}
+        </div>
+        <LegalCrossNav isAf={isAf} activeHref="/refund-policy" />
+
+        <div className="bt-legal-body space-y-3" style={{ marginBottom: 28 }}>
           <p>
             {isAf
               ? "Ons is deursigtig oor hoe fakturering, kansellasies en terugbetalings werk."
@@ -205,43 +294,46 @@ export default function RefundPolicyPage() {
             )}
           </p>
         </div>
-      }
-    >
-      {currentSections.map((section, index) => {
-        const hex = PASTELS[index % PASTELS.length];
-        return (
-          <LegalSection key={index} accent={hex} title={section.title} testId={`refund-section-${index}`}>
-            <div className="space-y-3">
-              {section.content.map((para, i) => (
-                <p key={i}>{para}</p>
-              ))}
-              {(section as any).bullets && (
-                <ul className="space-y-2 mt-2">
-                  {(section as any).bullets.map((b: string, i: number) => (
-                    <li key={i} className="flex items-start gap-2.5">
-                      <span className="mt-2.5 w-1.5 h-1.5 rounded-full shrink-0" style={{ background: hex }} />
-                      <span>{b}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {(section as any).footer && (
-                <p className="mt-2">
-                  {(section as any).footer}
-                </p>
-              )}
-            </div>
-          </LegalSection>
-        );
-      })}
 
-      <div style={{ textAlign: "center", padding: "10px 0 0" }}>
-        <Link href="/terms-of-service">
-          <span style={{ fontSize: 13, fontWeight: 600, color: "#9FD8FF", cursor: "pointer" }}>
-            {isAf ? "Volledige Diensbepalings bekyk →" : "View full Terms of Service →"}
-          </span>
-        </Link>
-      </div>
-    </LegalShell>
+        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+          {currentSections.map((section, index) => {
+            const hex = PASTELS[index % PASTELS.length];
+            return (
+              <Section key={index} accent={hex} title={section.title} testId={`refund-section-${index}`}>
+                <div className="space-y-3">
+                  {section.content.map((para, i) => (
+                    <p key={i}>{para}</p>
+                  ))}
+                  {(section as any).bullets && (
+                    <ul className="space-y-2 mt-2">
+                      {(section as any).bullets.map((b: string, i: number) => (
+                        <li key={i} className="flex items-start gap-2.5">
+                          <span className="mt-2.5 w-1.5 h-1.5 rounded-full shrink-0" style={{ background: hex }} />
+                          <span>{b}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {(section as any).footer && (
+                    <p className="mt-2">
+                      {(section as any).footer}
+                    </p>
+                  )}
+                </div>
+              </Section>
+            );
+          })}
+
+          <div style={{ textAlign: "center", padding: "10px 0 0" }}>
+            <Link href="/terms-of-service">
+              <span style={{ fontSize: 13, fontWeight: 600, color: "#9FD8FF", cursor: "pointer" }}>
+                {isAf ? "Volledige Diensbepalings bekyk →" : "View full Terms of Service →"}
+              </span>
+            </Link>
+          </div>
+        </div>
+      </main>
+      <PublicFooter />
+    </div>
   );
 }

@@ -42,6 +42,7 @@ const PENDING_IDEMPOTENT = [
   "migrations/0035_messaging_infra.sql",
   "migrations/0036_simulated_stimulus_language.sql",
   "migrations/0037_simulated_release_versioning.sql",
+  "migrations/0038_sms_resend_events.sql",
 ];
 
 async function main() {

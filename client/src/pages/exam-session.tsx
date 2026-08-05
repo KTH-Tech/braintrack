@@ -534,7 +534,7 @@ export default function ExamSessionPage() {
 
     return (
       <div
-        className="min-h-screen flex flex-col text-white"
+        className="min-h-screen flex flex-col text-white overflow-x-hidden"
         style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}
         onContextMenu={e => e.preventDefault()}
       >

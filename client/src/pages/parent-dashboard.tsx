@@ -516,14 +516,14 @@ function ChildReadinessCard({
   subjects: { id: number; name: string; nameAfrikaans?: string | null }[] | undefined;
   isAf: boolean;
 }) {
-  const { data: progress } = useQuery<ChildProgress>({
+  const { data: progress } = useQuery<ChildProgress | null>({
     queryKey: ["/api/parent/child-progress", learnerId],
-    queryFn: () => fetch(`/api/parent/child-progress?learnerId=${encodeURIComponent(learnerId)}`, { credentials: "include" }).then(r => r.json()),
+    queryFn: () => fetch(`/api/parent/child-progress?learnerId=${encodeURIComponent(learnerId)}`, { credentials: "include" }).then(r => (r.ok ? r.json() : null)),
     refetchInterval: 60000,
   });
   const { data: subjectReadinessData } = useQuery<{ readiness: Record<number, number> }>({
     queryKey: ["/api/parent/learner-subject-readiness", learnerId],
-    queryFn: () => fetch(`/api/parent/learner-subject-readiness?learnerId=${encodeURIComponent(learnerId)}`, { credentials: "include" }).then(r => r.json()),
+    queryFn: () => fetch(`/api/parent/learner-subject-readiness?learnerId=${encodeURIComponent(learnerId)}`, { credentials: "include" }).then(r => (r.ok ? r.json() : { readiness: {} })),
     refetchInterval: 60000,
   });
   // Task #770 — persistent "learner opened the sign-in link" badge. We read the
@@ -873,7 +873,7 @@ function MonthlySummaryPanel({ summary, isAf }: { summary: MonthlySummary; isAf:
           </div>
         ))}
       </div>
-      {summary.topSubjects.length > 0 && (
+      {(summary.topSubjects?.length ?? 0) > 0 && (
         <div>
           <p className="text-[10px] text-white uppercase tracking-widest mb-2">{isAf ? "Beste Vakke Hierdie Maand" : "Top Subjects This Month"}</p>
           <div className="space-y-2">
@@ -908,7 +908,7 @@ function SubscriptionPanel({ isAf }: { isAf: boolean }) {
   if (isLoading) return null;
 
   const status = (sub?.status || "none").toLowerCase();
-  const planName = sub?.plan || "Brain Boost";
+  const planName = sub?.plan || "Student Life";
 
   const statusMap: Record<string, { en: string; af: string; hex: string }> = {
     active:       { en: "Active",          af: "Aktief",         hex: "#94F7C5" },
@@ -1026,8 +1026,8 @@ function ParentReferralShareCard({ isAf }: { isAf: boolean }) {
 
   const heading = isAf ? "Verwys 'n vriend — verdien 'n gratis maand" : "Refer a friend — earn a free month";
   const sub = isAf
-    ? "Deel jou kind se skakel. Wanneer 2 vriende vir Brain Boost intekening betaal, kry jou kind 1 gratis maand op hul intekening."
-    : "Share your child's link. When 2 friends pay for Brain Boost, your child gets 1 free month added to their subscription.";
+    ? "Deel jou kind se skakel. Wanneer 2 vriende vir Student Life intekening betaal, kry jou kind 1 gratis maand op hul intekening."
+    : "Share your child's link. When 2 friends pay for Student Life, your child gets 1 free month added to their subscription.";
   const shareLabel = isAf ? "Deel op WhatsApp" : "Share on WhatsApp";
   const copyLabel = isAf ? "Kopieer skakel" : "Copy link";
 
@@ -1327,7 +1327,7 @@ function ReportEmailOptOutToggle({ learnerUserId, isAf }: { learnerUserId: strin
   const queryClient = useQueryClient();
   const { data, isLoading } = useQuery<{ preferences: Array<{ learnerUserId: string; optedOut: boolean }> }>({
     queryKey: ["/api/parent/report-email-preference"],
-    queryFn: () => fetch("/api/parent/report-email-preference", { credentials: "include" }).then(r => r.json()),
+    queryFn: () => fetch("/api/parent/report-email-preference", { credentials: "include" }).then(r => (r.ok ? r.json() : { preferences: [] })),
   });
 
   const current = data?.preferences?.find((p) => p.learnerUserId === learnerUserId);
@@ -1560,7 +1560,7 @@ export default function ParentDashboardPage() {
     queryFn: () =>
       fetch(previewMode ? "/api/parent/children?preview=1" : "/api/parent/children", {
         credentials: "include",
-      }).then(r => r.json()),
+      }).then(r => (r.ok ? r.json() : { children: [] })),
   });
 
   // Active child selection — drives every per-child widget below. Defaults to the first linked
@@ -1590,7 +1590,14 @@ export default function ParentDashboardPage() {
     isRefetching: isRefetchingChildProgress,
   } = useQuery<ChildProgress>({
     queryKey: ["/api/parent/child-progress", selectedLearnerId],
-    queryFn: () => fetch(withLearner("/api/parent/child-progress"), { credentials: "include" }).then(r => r.json()),
+    // Core payload for the page. On a non-2xx we THROW so React Query populates
+    // `childProgressError` and the dedicated "Couldn't load / Try again" card
+    // renders — never let a 500 body ({ error }) flow through as if it were a
+    // ChildProgress and get read field-by-field downstream.
+    queryFn: () => fetch(withLearner("/api/parent/child-progress"), { credentials: "include" }).then(r => {
+      if (!r.ok) throw new Error(`child-progress ${r.status}`);
+      return r.json();
+    }),
   });
 
   const { data: learnerExamData } = useQuery<{
@@ -1609,33 +1616,33 @@ export default function ParentDashboardPage() {
     learnerId: string;
   }>({
     queryKey: ["/api/parent/learner-exam-schedule", selectedLearnerId],
-    queryFn: () => fetch(withLearner("/api/parent/learner-exam-schedule"), { credentials: "include" }).then(r => r.json()),
+    queryFn: () => fetch(withLearner("/api/parent/learner-exam-schedule"), { credentials: "include" }).then(r => (r.ok ? r.json() : { schedule: [], nonExamDays: [], learnerId: "" })),
   });
 
   const { data: learnerDirective } = useQuery<DailyDirective>({
     queryKey: ["/api/parent/learner-today-directive", selectedLearnerId],
-    queryFn: () => fetch(withLearner("/api/parent/learner-today-directive"), { credentials: "include" }).then(r => r.json()),
+    queryFn: () => fetch(withLearner("/api/parent/learner-today-directive"), { credentials: "include" }).then(r => (r.ok ? r.json() : null)),
     retry: false,
     staleTime: 60_000,
   });
 
   const { data: readinessData } = useQuery<{ readiness: ReadinessItem[] }>({
     queryKey: ["/api/parent/readiness", selectedLearnerId],
-    queryFn: () => fetch(withLearner("/api/parent/readiness"), { credentials: "include" }).then(r => r.json()),
+    queryFn: () => fetch(withLearner("/api/parent/readiness"), { credentials: "include" }).then(r => (r.ok ? r.json() : { readiness: [] })),
     enabled: !!childProgress,
     refetchInterval: 60000,
   });
 
   const { data: activityData } = useQuery<{ feed: ActivityEvent[] }>({
     queryKey: ["/api/parent/activity-feed", selectedLearnerId],
-    queryFn: () => fetch(withLearner("/api/parent/activity-feed"), { credentials: "include" }).then(r => r.json()),
+    queryFn: () => fetch(withLearner("/api/parent/activity-feed"), { credentials: "include" }).then(r => (r.ok ? r.json() : { feed: [] })),
     enabled: !!childProgress,
     refetchInterval: 30000,
   });
 
   const { data: monthlySummaryData } = useQuery<MonthlySummary>({
     queryKey: ["/api/parent/monthly-summary", selectedLearnerId],
-    queryFn: () => fetch(withLearner("/api/parent/monthly-summary"), { credentials: "include" }).then(r => r.json()),
+    queryFn: () => fetch(withLearner("/api/parent/monthly-summary"), { credentials: "include" }).then(r => (r.ok ? r.json() : null)),
     enabled: !!childProgress,
     refetchInterval: 120000,
   });
@@ -2594,7 +2601,7 @@ export default function ParentDashboardPage() {
             )}
 
             {/* ===== NSC EXAM TIMETABLE VIEW (T114) ===== */}
-            {learnerExamData && learnerExamData.schedule.length > 0 && (() => {
+            {learnerExamData && (learnerExamData.schedule?.length ?? 0) > 0 && (() => {
               const today = new Date();
               today.setHours(0, 0, 0, 0);
               const upcomingAll = learnerExamData.schedule
@@ -2828,7 +2835,7 @@ export default function ParentDashboardPage() {
                 style={primaryFill(PASTEL.purple)}
                 data-testid="link-parent-get-started"
               >
-                {isAf ? "Begin nou — Brain Boost" : "Get Started — Brain Boost"}
+                {isAf ? "Begin nou — Student Life" : "Get Started — Student Life"}
               </a>
             </div>
           </section>

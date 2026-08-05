@@ -79,3 +79,41 @@ export function buildWhatsAppDeepLink(
   const number = normaliseWaNumber(childCell);
   return number ? `https://wa.me/${number}?text=${text}` : `https://wa.me/?text=${text}`;
 }
+
+/**
+ * The prefilled WhatsApp / share message for the PARENT-CONSENT link (a minor
+ * learner sending their parent/guardian a one-tap Approve link). Distinct from
+ * the activation copy above: this is learner→parent ("please approve me"),
+ * not parent→child ("here's your sign-in link"). Same data-minimisation rule —
+ * only the signed consent link travels, never a name, school, or password.
+ */
+export function buildParentConsentShareText(consentUrl: string, lang: ShareLang): string {
+  const url = (consentUrl ?? "").trim();
+  if (lang === "af") {
+    return `Haai! 👋 Keur asseblief my BrainTrack-rekening goed sodat ek my gratis proeftydperk kan begin — tik net hierdie skakel: ${url} (een tik, geen registrasie).`;
+  }
+  return `Hi! 👋 Please approve my BrainTrack account so I can start my free trial — just tap this link: ${url} (one tap, no signup needed).`;
+}
+
+/**
+ * Build the `wa.me` deep link a LEARNER taps to send their parent/guardian the
+ * consent-approval link. Uses the generic contact picker (`wa.me/?text=`) so
+ * the learner chooses the parent from their own WhatsApp contacts — we don't
+ * hold a verified parent cell at this point in onboarding.
+ */
+export function buildParentConsentWhatsAppLink(consentUrl: string, lang: ShareLang): string {
+  const text = encodeURIComponent(buildParentConsentShareText(consentUrl, lang));
+  return `https://wa.me/?text=${text}`;
+}
+
+/**
+ * Build the LinkedIn share link the parent taps. Opens LinkedIn's share
+ * composer for the activation URL. LinkedIn's `share-offsite` endpoint accepts
+ * ONLY a `url` param — it carries no prefilled message text — so, like the rest
+ * of this module, it leaks no personal data beyond the (signed-token)
+ * activation link itself.
+ */
+export function buildLinkedInShareLink(activationUrl: string): string {
+  const url = encodeURIComponent((activationUrl ?? "").trim());
+  return `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
+}
