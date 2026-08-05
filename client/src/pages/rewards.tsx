@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/language-context";
 import { formatDate } from "@/lib/formatters";
 import { useLocation } from "wouter";
-import { Flame, Star, Zap, Target, Trophy, GraduationCap, Award, BookOpen, Coins, Lock, Loader2, ShoppingBag, ArrowRight, Users, Copy, Check, Share2, Sparkles, Medal } from "lucide-react";
+import { Flame, Star, Zap, Target, Trophy, GraduationCap, Award, BookOpen, Coins, Lock, Loader2, ShoppingBag, ArrowRight, Users, Copy, Check, Share2, Linkedin, Sparkles, Medal } from "lucide-react";
 import { GraffitiSplats } from "@/components/graffiti-splats";
 import { LearnerHeader } from "@/components/learner-header";
 import { useState } from "react";
@@ -51,11 +51,13 @@ const T = {
     noBadges: "No badges yet — start studying!",
     stillToUnlock: "Still to Unlock",
     referHeading: "Refer a Friend — Earn a Free Month",
-    referDesc: "Share your link. When 2 friends pay for Brain Boost, you get 1 free month added to your subscription.",
+    referDesc: "Share your link. When 2 friends pay for Student Life, you get 1 free month added to your subscription.",
     copyLinkTitle: "Copy link",
     copied: "Copied",
     copy: "Copy",
     whatsappTitle: "Share on WhatsApp",
+    linkedinTitle: "Share on LinkedIn",
+    linkedin: "LinkedIn",
     progressToReward: "Progress to next reward",
     paidReferrals: "paid referrals",
     earnedLabel: "Earned",
@@ -71,7 +73,7 @@ const T = {
     shareLink: "Share link",
     webShare: "Share",
     upgradeToRefer: "Subscribe to unlock referrals",
-    upgradeToReferDesc: "Start your Brain Boost subscription to get a personal referral code and earn free months.",
+    upgradeToReferDesc: "Start your Student Life subscription to get a personal referral code and earn free months.",
     upgradeCta: "Start Free Trial",
     leaderboardHeading: "Referral Leaderboard",
     leaderboardSubtitle: "Top learners by paid referrals.",
@@ -99,11 +101,13 @@ const T = {
     noBadges: "Nog geen kentekens verdien nie — begin studeer!",
     stillToUnlock: "Nog te ontsluit",
     referHeading: "Verwys 'n Vriend — Verdien 'n Gratis Maand",
-    referDesc: "Deel jou skakel. Wanneer 2 vriende vir Brain Boost intekening betaal, kry jy 1 gratis maand by jou intekening gevoeg.",
+    referDesc: "Deel jou skakel. Wanneer 2 vriende vir Student Life intekening betaal, kry jy 1 gratis maand by jou intekening gevoeg.",
     copyLinkTitle: "Kopieer skakel",
     copied: "Gekopieer",
     copy: "Kopieer",
     whatsappTitle: "Deel op WhatsApp",
+    linkedinTitle: "Deel op LinkedIn",
+    linkedin: "LinkedIn",
     progressToReward: "Voortgang na volgende beloning",
     paidReferrals: "betaalde verwysings",
     earnedLabel: "Verdien",
@@ -119,7 +123,7 @@ const T = {
     shareLink: "Deel skakel",
     webShare: "Deel",
     upgradeToRefer: "Teken in om verwysings te ontsluit",
-    upgradeToReferDesc: "Begin jou Brain Boost-intekening om 'n persoonlike verwysings kode te kry en gratis maande te verdien.",
+    upgradeToReferDesc: "Begin jou Student Life-intekening om 'n persoonlike verwysings kode te kry en gratis maande te verdien.",
     upgradeCta: "Begin Gratis Proef",
     leaderboardHeading: "Verwysings Ranglys",
     leaderboardSubtitle: "Top leerders volgens betaalde verwysings.",
@@ -246,6 +250,13 @@ export default function RewardsPage() {
       ? `Hi! Sluit by my aan op BrainTrack om vir die NSC eksamens voor te berei: ${link}`
       : `Hey! Join me on BrainTrack to prep for the NSC exams: ${link}`;
     const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
+  const handleLinkedIn = () => {
+    const link = referralCode?.link ?? referral?.link;
+    if (!link) return;
+    const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(link)}`;
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
@@ -590,6 +601,17 @@ export default function RewardsPage() {
                         >
                           <Share2 className="w-3.5 h-3.5" />
                           {t.webShare}
+                        </button>
+                        <button
+                          onClick={handleLinkedIn}
+                          disabled={!(referralCode?.link ?? referral?.link)}
+                          title={t.linkedinTitle}
+                          className="inline-flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-bold hover:opacity-90 transition-opacity disabled:opacity-50 shrink-0"
+                          style={{ background: "#0A66C2", color: "#fff" }}
+                          data-testid="button-linkedin-referral"
+                        >
+                          <Linkedin className="w-3.5 h-3.5" />
+                          {t.linkedin}
                         </button>
                       </div>
                     </div>

@@ -22,7 +22,6 @@ import {
   Crown,
   Zap,
   Sparkles,
-  Share2,
   ArrowRight,
   Rocket,
   Layers,
@@ -31,10 +30,8 @@ import { useSEO } from "@/hooks/use-seo";
 import { useLanguage } from "@/lib/language-context";
 import { useRolePromptNav } from "@/components/role-prompt-modal";
 import iconTransparent from "@/assets/handoff/icon-transparent.png";
-import muralTransparent from "@/assets/handoff/mural-transparent.png";
 import { KthMark } from "@/components/kth-mark";
-import { KthTechChip } from "@/components/brand/KthTechLogo";
-import { ReviewsRibbon } from "@/components/landing/reviews-ribbon";
+import { PublicFooter } from "@/components/public-footer";
 import { RizzDemo } from "@/components/landing/rizz-demo";
 
 const RAINBOW =
@@ -52,11 +49,11 @@ const COPY = {
     tPricing: "Pricing",
     tForSchools: "For Schools",
     tEnter: "Log on",
-    heroHead1: "The learning platform that ",
-    heroAccent: "doesn't feel like school",
+    heroHead1: "Grade 12 matric prep with real NSC past papers, memos and ",
+    heroAccent: "a 24/7 AI tutor",
     heroTail: ".",
     heroSub:
-      "A CAPS-aligned matric ecosystem — diagnostics, study plans and parent visibility, all in one.",
+      "The matric app built for Grade 12 learners — CAPS-aligned study plans, instant marking and a tutor that never sleeps.",
     ctaStart: "Start free — 14 days",
     // Compact trust strip under the primary CTA — R169 anchor, cancel-anytime
     // risk reducer and POPIA-alignment. Keeps the hero copy tight while adding
@@ -181,11 +178,11 @@ const COPY = {
     tPricing: "Pryse",
     tForSchools: "Vir Skole",
     tEnter: "Meld aan",
-    heroHead1: "Die leerplatform wat ",
-    heroAccent: "nie soos skool voel nie",
+    heroHead1: "Graad 12-matriekvoorbereiding met regte NSS-vraestelle, memo's en ",
+    heroAccent: "'n 24/7 KI-tutor",
     heroTail: ".",
     heroSub:
-      "'n KABV-belynde matriek-ekosisteem — diagnostiek, studieplanne en ouersigbaarheid, alles in een.",
+      "Die matriek-app vir Graad 12-leerders — KABV-belynde studieplanne, kitsnasien en 'n tutor wat nooit slaap nie.",
     ctaStart: "Begin gratis — 14 dae",
     trustPrice: "R169/maand ná proeftydperk",
     trustCancel: "Kanselleer enige tyd",
@@ -373,11 +370,15 @@ function useInView<T extends HTMLElement>(): [React.RefObject<T>, boolean] {
   const ref = useRef<T>(null);
   const [inView, setInView] = useState(false);
   useEffect(() => {
+    // Fail-safe FIRST — set unconditionally, before any early return. Nothing
+    // may ever stay invisible: not if the ref never attaches, not if the
+    // observer never fires (throttled tab, odd embed, exotic browser). A blank
+    // section is a launch bug; a slightly-early reveal is not.
+    const failSafe = window.setTimeout(() => setInView(true), 1500);
     const el = ref.current;
-    if (!el) return;
-    if (prefersReducedMotion() || typeof IntersectionObserver === "undefined") {
+    if (!el || prefersReducedMotion() || typeof IntersectionObserver === "undefined") {
       setInView(true);
-      return;
+      return () => window.clearTimeout(failSafe);
     }
     const io = new IntersectionObserver(
       (entries) => {
@@ -393,10 +394,6 @@ function useInView<T extends HTMLElement>(): [React.RefObject<T>, boolean] {
       { threshold: 0.01, rootMargin: "0px 0px 25% 0px" },
     );
     io.observe(el);
-    // Fail-safe: nothing may ever stay invisible. If the observer hasn't
-    // fired within 4s of mount (odd embed, throttled tab, exotic browser),
-    // reveal regardless.
-    const failSafe = window.setTimeout(() => setInView(true), 4000);
     return () => { io.disconnect(); window.clearTimeout(failSafe); };
   }, []);
   return [ref, inView];
@@ -425,8 +422,12 @@ function Reveal({
       className={className}
       style={
         inView
-          ? { ...style, animation: `bt-fadeup .85s cubic-bezier(.22,.75,.3,1) ${delay}ms both` }
-          : { ...style, opacity: 0 }
+          // bt-rise is a real, defined keyframe (bt-fadeup never existed, so the
+          // old animation was a no-op and the ONLY effect was opacity:0-until-JS).
+          ? { ...style, animation: `bt-rise .85s cubic-bezier(.22,.75,.3,1) ${delay}ms both` }
+          // Visible by default — a failed / never-firing scroll observer costs the
+          // entrance motion, never the content. No opacity:0 void can occur.
+          : { ...style }
       }
     >
       {children}
@@ -450,17 +451,20 @@ function CompareWall({ t, language }: { t: any; language: string }) {
       data-testid="section-compare"
     >
       <style>{`
-        .bt-cmp-row, .bt-cmp-vs, .bt-cmp-head-l, .bt-cmp-head-r { opacity: 0; }
+        /* Entrance is TRANSFORM-ONLY — content is NEVER hidden by default, so a
+           failed/never-firing scroll observer can only cost the animation, never
+           the content. (A prior opacity:0-by-default version left the whole
+           table invisible when the reveal didn't fire — an ~800px black void.) */
         .bt-cmp-in .bt-cmp-head-l { animation: bt-cmp-left .5s cubic-bezier(.22,.75,.3,1) both; }
         .bt-cmp-in .bt-cmp-head-r { animation: bt-cmp-right .5s cubic-bezier(.22,.75,.3,1) both; }
         .bt-cmp-in .bt-cmp-vs { animation: bt-cmp-pop .55s cubic-bezier(.34,1.56,.64,1) .22s both; }
         .bt-cmp-in .bt-cmp-row { animation: bt-cmp-up .5s cubic-bezier(.22,.75,.3,1) both; animation-delay: calc(.18s + var(--i) * .11s); }
-        @keyframes bt-cmp-left  { from { opacity: 0; transform: translateX(-48px); } to { opacity: 1; transform: none; } }
-        @keyframes bt-cmp-right { from { opacity: 0; transform: translateX(48px); }  to { opacity: 1; transform: none; } }
-        @keyframes bt-cmp-pop   { 0% { opacity: 0; transform: scale(.3) rotate(-16deg); } 70% { opacity: 1; transform: scale(1.18) rotate(4deg); } 100% { opacity: 1; transform: scale(1) rotate(-2deg); } }
-        @keyframes bt-cmp-up    { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+        @keyframes bt-cmp-left  { from { transform: translateX(-48px); } to { transform: none; } }
+        @keyframes bt-cmp-right { from { transform: translateX(48px); }  to { transform: none; } }
+        @keyframes bt-cmp-pop   { 0% { transform: scale(.3) rotate(-16deg); } 70% { transform: scale(1.18) rotate(4deg); } 100% { transform: scale(1) rotate(-2deg); } }
+        @keyframes bt-cmp-up    { from { transform: translateY(24px); } to { transform: none; } }
         @media (prefers-reduced-motion: reduce) {
-          .bt-cmp-row, .bt-cmp-vs, .bt-cmp-head-l, .bt-cmp-head-r { opacity: 1; animation: none !important; }
+          .bt-cmp-row, .bt-cmp-vs, .bt-cmp-head-l, .bt-cmp-head-r { animation: none !important; }
         }
         .bt-cmp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 14px; }
         .bt-cmp-crit { grid-column: 1 / -1; }
@@ -682,15 +686,6 @@ export default function LandingPage() {
     jsonLd: landingJsonLd,
   });
 
-  // Social share intents — plain links, no SDKs. https://braintrack.tech is
-  // the public share URL.
-  const SHARE_URL = "https://braintrack.tech";
-  const shareLinks = [
-    { label: "WhatsApp", color: "#94F7C5", testid: "link-share-whatsapp", href: `https://wa.me/?text=${encodeURIComponent(`${t.shareMsg} ${SHARE_URL}`)}` },
-    { label: "Facebook", color: "#9FD8FF", testid: "link-share-facebook", href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(SHARE_URL)}` },
-    { label: "X", color: "#C5B3FF", testid: "link-share-x", href: `https://twitter.com/intent/tweet?url=${encodeURIComponent(SHARE_URL)}&text=${encodeURIComponent(t.shareMsg)}` },
-  ];
-
   return (
     <div style={{ minHeight: "100vh", background: "#050508", overflowX: "hidden" }}>
       <style>{`
@@ -823,7 +818,7 @@ export default function LandingPage() {
       </div>
 
       {/* ── Hero ────────────────────────────────────────────── */}
-      <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", padding: "72px 24px 40px", textAlign: "center" }}>
+      <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", padding: "40px 24px 36px", textAlign: "center" }}>
         <div
           aria-hidden
           style={{
@@ -847,22 +842,11 @@ export default function LandingPage() {
             {s.glyph}
           </span>
         ))}
-        <img
-          src={muralTransparent}
-          alt="BrainTrack graffiti mural"
-          style={{
-            width: "min(920px,94vw)", position: "relative", zIndex: 2,
-            animation: "bt-float 7s ease-in-out infinite",
-            filter: "drop-shadow(0 24px 44px rgba(255,110,199,.12))",
-          }}
-        />
-        <div style={{ maxWidth: 760, marginTop: 28, position: "relative", zIndex: 2 }}>
-          <div
-            role="heading"
-            aria-level={1}
+        <div style={{ maxWidth: 760, marginTop: 8, position: "relative", zIndex: 2 }}>
+          <h1
             className="btl-hero-head"
             data-testid="hero-title"
-            style={{ fontSize: 58, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-2px", margin: 0, fontFamily: "'Poppins',sans-serif", color: "#fff" }}
+            style={{ fontSize: "clamp(30px,7.5vw,58px)", fontWeight: 900, lineHeight: 1.1, letterSpacing: "-1.5px", margin: 0, fontFamily: "'Poppins',sans-serif", color: "#fff" }}
           >
             {t.heroHead1}
             <span
@@ -875,7 +859,7 @@ export default function LandingPage() {
               {t.heroAccent}
             </span>
             {t.heroTail}
-          </div>
+          </h1>
           <div style={{ marginTop: 18, fontSize: 17, lineHeight: 1.65, color: "#fff", maxWidth: 620, marginLeft: "auto", marginRight: "auto" }}>
             {t.heroSub}
           </div>
@@ -923,54 +907,6 @@ export default function LandingPage() {
             </span>
           </div>
         </div>
-      </div>
-
-      {/* ── Exam Boost — once-off season offer ─────────────────
-          R550 once, access to 30 Nov 2026, NO trial and NO recurring billing.
-          Links to /subscribe?offer=exam-boost, where the checkout drops all
-          trial copy and runs a once-off Paystack charge. */}
-      <div className="btl-sec" style={{ maxWidth: 760, margin: "56px auto 0", padding: "0 32px" }}>
-        <a
-          href="/subscribe?offer=exam-boost"
-          data-testid="offer-exam-boost"
-          style={{
-            display: "block", textDecoration: "none",
-            background: "#050508", border: "2.5px solid #FFE29A",
-            borderRadius: 22, boxShadow: "7px 7px 0 0 #FFE29A",
-            padding: "clamp(20px,4vw,30px)", transform: "rotate(-.4deg)",
-          }}
-        >
-          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
-            <div style={{ flex: "1 1 300px", minWidth: 0 }}>
-              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
-                {language === "af" ? "Eksamenseisoen-spesiaal" : "Exam season special"}
-              </span>
-              <div style={{ fontSize: "clamp(24px,5vw,32px)", fontWeight: 900, letterSpacing: -0.8, color: "#fff", margin: "6px 0 8px" }}>
-                {language === "af" ? "Exam Boost — R550 een keer" : "Exam Boost — R550 once-off"}
-              </div>
-              <p style={{ fontSize: 14.5, lineHeight: 1.65, color: "#fff", margin: 0 }}>
-                {language === "af"
-                  ? "Volle toegang van vandag tot 30 November 2026 — regdeur die rekord- en NSS-eindeksamens. Een betaling. Geen proeftydperk, geen maandelikse heffings, geen outomatiese hernuwing nie."
-                  : "Full access from today to 30 November 2026 — right through prelims and the NSC finals. One payment. No trial, no monthly charges, no auto-renewal."}
-              </p>
-            </div>
-            <div
-              style={{
-                flex: "0 0 auto", background: "#FFE29A", color: "#050508",
-                fontWeight: 900, fontSize: 16, borderRadius: 12,
-                padding: "14px 26px", boxShadow: "4px 4px 0 0 rgba(0,0,0,.85)",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {language === "af" ? "Kry Exam Boost →" : "Get Exam Boost →"}
-            </div>
-          </div>
-          <p style={{ fontSize: 12, color: "#fff", opacity: 0.85, margin: "12px 0 0" }}>
-            {language === "af"
-              ? "Of kies eerder Brain Boost teen R169/maand met 14 dae gratis — albei sluit alles in. Verskyn op jou staat as KTH-TECH."
-              : "Prefer monthly? Brain Boost is R169/month with 14 days free — both include everything. Appears on your statement as KTH-TECH."}
-          </p>
-        </a>
       </div>
 
       {/* ── Marquee ─────────────────────────────────────────── */}
@@ -1140,74 +1076,6 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* ── Positioning: the ecosystem ──────────────────────── */}
-      <div className="btl-sec" style={{ maxWidth: 1100, margin: "116px auto 0", padding: "0 32px" }}>
-        <Reveal style={{ textAlign: "center", marginBottom: 58 }}>
-          <div
-            style={{
-              display: "inline-flex", alignItems: "center", gap: 10,
-              fontFamily: "'Permanent Marker',cursive", color: "#9FF5E8",
-              fontSize: 17, letterSpacing: ".5px", transform: "rotate(-2deg)",
-            }}
-          >
-            <Globe2 size={20} strokeWidth={2.4} color="#9FF5E8" aria-hidden />
-            <span>{t.tPosEye}</span>
-          </div>
-          <div className="btl-sec-head" style={{ fontSize: 42, fontWeight: 900, letterSpacing: "-1.4px", lineHeight: 1.12, marginTop: 10 }}>
-            {t.tPosHead1}
-            <span style={{ background: HEADLINE_GRADIENT, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>{t.tPosHead2}</span>
-          </div>
-        </Reveal>
-        <div className="btl-grid2" style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: 26, alignItems: "stretch" }}>
-          <Reveal style={{ display: "flex" }}>
-          <div style={{ width: "100%", boxSizing: "border-box", background: "rgba(255,255,255,.025)", border: "1px solid rgba(255,255,255,.08)", borderRadius: 22, padding: 30 }}>
-            <div style={{ fontWeight: 800, fontSize: 17, marginBottom: 18, color: "#9FD8FF" }}>{t.tOtherTools}</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12, fontSize: 15 }}>
-              {t.tOtherRows.map((r) => (
-                <div key={r.a} style={{ display: "flex", justifyContent: "space-between", gap: 12, borderBottom: "1px solid rgba(255,255,255,.06)", paddingBottom: 10 }}>
-                  <span style={{ fontWeight: 700, color: "#fff" }}>{r.a}</span>
-                  <span style={{ color: "#C5B3FF" }}>{r.b}</span>
-                </div>
-              ))}
-            </div>
-            <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5", marginTop: 22, transform: "rotate(-1.5deg)" }}>{t.tFragmented}</div>
-          </div>
-          </Reveal>
-          <Reveal delay={140} style={{ display: "flex" }}>
-          <div style={{ width: "100%", boxSizing: "border-box", background: "linear-gradient(150deg,rgba(159,216,255,.1),rgba(255,183,229,.08))", border: "1.5px solid rgba(159,216,255,.3)", borderRadius: 22, padding: 30 }}>
-            <div style={{ fontWeight: 800, fontSize: 18, letterSpacing: "-.2px", marginBottom: 18 }}>{t.tConnects}</div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-              {[
-                { l: "CAPS", c: "#9FF5E8" },
-                { l: "NSC data", c: "#9FD8FF" },
-                { l: "10 years of DBE trends", c: "#FFB7E5" },
-                { l: en ? "Dynamic study plans" : "Dinamiese studieplanne", c: "#C5B3FF" },
-                { l: en ? "Exam readiness" : "Eksamengereedheid", c: "#FFE29A" },
-                { l: en ? "Parent visibility" : "Ouersigbaarheid", c: "#9FF5E8" },
-                { l: en ? "School reporting" : "Skoolverslae", c: "#FFB7E5" },
-                { l: en ? "Cohort analytics" : "Kohort-analise", c: "#9FD8FF" },
-                { l: en ? "Fundraising" : "Fondsinsameling", c: "#FFE29A" },
-                { l: en ? "Gamification" : "Spelifisering", c: "#C5B3FF" },
-                { l: en ? "Referral growth" : "Verwysingsgroei", c: "#9FF5E8" },
-                { l: "Afrikaans + English", c: "#FFB7E5" },
-                { l: en ? "POPIA-aware reporting" : "POPIA-bewuste verslae", c: "#9FD8FF" },
-              ].map((chip) => (
-                <span key={chip.l} className="btl-eco-chip" style={{ fontSize: 13.5, fontWeight: 700, color: chip.c, border: `1.5px solid ${chip.c}`, borderRadius: 8, padding: "8px 14px" }}>
-                  {chip.l}
-                </span>
-              ))}
-            </div>
-            <div style={{ marginTop: 24, fontSize: 15.5, lineHeight: 1.72, color: "#fff", opacity: 0.94 }}>{t.tAskLine}</div>
-          </div>
-          </Reveal>
-        </div>
-        <Reveal delay={120}>
-          <div className="btl-quote" style={{ marginTop: 28, background: "linear-gradient(100deg,rgba(159,216,255,.06),rgba(255,255,255,.015))", borderLeft: "3px solid #9FD8FF", borderRadius: "0 18px 18px 0", padding: "28px 34px", fontSize: 17, lineHeight: 1.78, fontStyle: "italic", color: "#fff" }}>
-            {t.tQuote}
-          </div>
-        </Reveal>
-      </div>
-
       {/* ── XP strip ────────────────────────────────────────── */}
       <div className="btl-sec" style={{ maxWidth: 1100, margin: "116px auto 0", padding: "0 32px" }}>
         <Reveal>
@@ -1249,205 +1117,66 @@ export default function LandingPage() {
         </Reveal>
       </div>
 
-      {/* ── Share + referral ────────────────────────────────── */}
-      <div className="btl-sec" style={{ maxWidth: 1100, margin: "116px auto 0", padding: "0 32px" }}>
-        <Reveal>
-          <div data-testid="share-braintrack" style={{ textAlign: "center" }}>
-            <div
-              style={{
-                display: "inline-flex", alignItems: "center", gap: 10,
-                fontFamily: "'Permanent Marker',cursive", color: "#FFE29A",
-                fontSize: 16, letterSpacing: ".5px", transform: "rotate(-2deg)",
-              }}
-            >
-              <Share2 size={18} strokeWidth={2.4} color="#FFE29A" aria-hidden />
-              <span>{t.shareEye}</span>
-            </div>
-            <div style={{ fontSize: 27, fontWeight: 900, letterSpacing: "-.9px", marginTop: 8, color: "#fff" }}>{t.shareHead}</div>
-            <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap", marginTop: 18 }}>
-              {shareLinks.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  data-testid={s.testid}
-                  className="btl-eco-chip"
-                  style={{ fontSize: 13.5, fontWeight: 700, color: s.color, border: `1.5px solid ${s.color}`, borderRadius: 999, padding: "9px 18px", textDecoration: "none" }}
-                >
-                  {s.label}
-                </a>
-              ))}
-            </div>
-            <div data-testid="text-referral-line" style={{ marginTop: 18, fontSize: 14.5, lineHeight: 1.6, color: "#fff" }}>
-              {t.referralLine}{" "}
-              <Link href="/signin">
-                <span data-testid="link-referral-signin" style={{ color: "#9FF5E8", fontWeight: 800, cursor: "pointer" }}>{t.referralCta}</span>
-              </Link>
-            </div>
-          </div>
-        </Reveal>
-      </div>
-
       {/* ── BrainTrack vs. other matric sites — animated head-to-head ── */}
       <CompareWall t={t} language={language} />
 
-      {/* ── Reviews ribbon ───────────────────────────────────
-          Pilot-cohort testimonials. Moved down here (owner call) so it reads
-          as a thin closing endorsement band directly above the footer rather
-          than interrupting the mid-page pitch. */}
-      <ReviewsRibbon language={language} />
-
-      {/* ── Footer (minimal "gravity wall", owner redirect) ─────
-          Brand-first, not a link farm. Single row on desktop, stacks
-          cleanly on mobile. Pure #000 wall with two low-opacity paint
-          smears (top-right + bottom-left) for a graffiti-wall vibe.
-          Centre cluster is 4 links MAX (Terms · Privacy · Refunds ·
-          Contact) — anything else lives on interior pages. Right cluster
-          uses the new KthTechChip so the ringed emblem sits next to the
-          KTH-TECH wordmark. Thin bottom line carries entity, reg number,
-          statement descriptor and canonical domain in a graffiti-tag
-          typeface (Bebas Neue / Impact / Arial Black). Rainbow top-edge
-          accent kept from the previous footer for continuity. */}
-      <footer
-        className="btl-foot-v2"
-        data-testid="landing-footer"
-        aria-label="Site footer"
-        style={{
-          position: "relative",
-          marginTop: 120,
-          background: "#000",
-          borderTop: "1px solid rgba(255,255,255,.08)",
-          overflow: "hidden",
-          fontFamily: "'Poppins',sans-serif",
-        }}
-      >
-        {/* Rainbow top-edge accent — retained from previous footer. */}
-        <div
-          aria-hidden
+      {/* ── Exam Blast — R550 season pass ──────────────────────
+          R1 to start → 14 days free → R550 charged ONCE on day 14 → season
+          access to 15 Dec 2026, no recurring billing. Cancelling inside the
+          14 days leaves only the non-refundable R1. Links to
+          /subscribe?offer=exam-boost, which starts the R1 card-capture trial. */}
+      <div className="btl-sec" style={{ maxWidth: 760, margin: "112px auto 0", padding: "0 32px" }}>
+        <a
+          href="/subscribe?offer=exam-boost"
+          data-testid="offer-exam-boost"
           style={{
-            position: "absolute", top: -1, left: 0, right: 0, height: 1.5,
-            background: RAINBOW, backgroundSize: "200% 100%",
-            animation: "bt-rainbow 9s linear infinite", opacity: 0.55,
-            zIndex: 1,
+            display: "block", textDecoration: "none",
+            background: "#050508", border: "2.5px solid #FFE29A",
+            borderRadius: 22, boxShadow: "7px 7px 0 0 #FFE29A",
+            padding: "clamp(20px,4vw,30px)", transform: "rotate(-.4deg)",
           }}
-        />
-        {/* Paint-smear decorations removed — at 0.11-0.14 opacity on pure
-            black they rendered as dirty dark smudges, not pastel spray
-            (owner screenshot, 2026-07-27). Clean wall, nothing else. */}
-
-        <div style={{ position: "relative", zIndex: 2, maxWidth: 1200, margin: "0 auto", padding: "40px 32px 24px" }}>
-          {/* Owner call: clean footer — the 3-column SEO link grid was removed
-              (too heavy). The crawlable internal links live in sitemap.xml and
-              interior pages instead; the footer stays a single calm row. */}
-          <div
-            className="btl-foot-row-min"
-            style={{
-              display: "flex", alignItems: "center", justifyContent: "space-between",
-              gap: 32, flexWrap: "wrap",
-            }}
-          >
-            {/* Left cluster — BrainTrack wordmark + one-line tagline. */}
-            <div
-              className="btl-foot-left-cluster"
-              data-testid="footer-brand"
-              style={{ display: "flex", alignItems: "center", gap: 14 }}
-            >
-              <img
-                src={iconTransparent}
-                alt=""
-                className="btl-logo-img"
-                style={{ width: 46, height: 46, objectFit: "contain", flex: "none" }}
-              />
-              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <RainbowWordmark size={22} />
-                <span
-                  data-testid="footer-tagline"
-                  style={{
-                    fontSize: 12.5, color: "#fff", letterSpacing: 2,
-                    fontFamily: "'Bebas Neue','Impact','Arial Black',sans-serif",
-                    fontWeight: 700, textTransform: "uppercase",
-                  }}
-                >
-                  {t.footTagline}
-                </span>
+        >
+          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
+            <div style={{ flex: "1 1 300px", minWidth: 0 }}>
+              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
+                {language === "af" ? "Eksamenseisoen-spesiaal" : "Exam season special"}
+              </span>
+              <div style={{ fontSize: "clamp(24px,5vw,32px)", fontWeight: 900, letterSpacing: -0.8, color: "#fff", margin: "6px 0 8px" }}>
+                {language === "af" ? "Exam Blast — R550 seisoenkaart" : "Exam Blast — R550 season pass"}
               </div>
+              <p style={{ fontSize: 14.5, lineHeight: 1.65, color: "#fff", margin: 0 }}>
+                {language === "af"
+                  ? "R1 om te begin, dan 14 dae gratis. R550 word een keer op dag 14 gehef — volle toegang regdeur die rekord- en NSS-eindeksamens, tot 15 Desember 2026. Geen maandelikse heffings, geen outomatiese hernuwing nie. Kanselleer enige tyd binne die 14 dae."
+                  : "R1 to start, then 14 days free. R550 is charged once on day 14 — full access right through prelims and the NSC finals, to 15 December 2026. No monthly charges, no auto-renewal. Cancel anytime in the 14 days."}
+              </p>
             </div>
-
-            {/* Centre cluster — 4 links MAX. */}
-            <nav
-              aria-label="Footer links"
-              className="btl-foot-links-min"
-              data-testid="footer-links"
+            <div
               style={{
-                display: "flex", flexWrap: "wrap", alignItems: "center",
-                gap: "10px 24px",
+                flex: "0 0 auto", background: "#FFE29A", color: "#050508",
+                fontWeight: 900, fontSize: 16, borderRadius: 12,
+                padding: "14px 26px", boxShadow: "4px 4px 0 0 rgba(0,0,0,.85)",
+                whiteSpace: "nowrap",
               }}
             >
-              {t.footMinLinks.map((l, i) => {
-                const accents = ["#9FD8FF", "#FFB7E5", "#FFE29A", "#9FF5E8"];
-                const c = accents[i % accents.length];
-                const testId = `footer-link-${l.label.toLowerCase()}`;
-                const linkStyle = {
-                  fontFamily: "'Bebas Neue','Impact','Arial Black',sans-serif",
-                  fontSize: 15, fontWeight: 800, letterSpacing: 2,
-                  textTransform: "uppercase" as const,
-                  color: "#fff", textDecoration: "none",
-                  minHeight: 44, display: "inline-flex", alignItems: "center",
-                  cursor: "pointer",
-                  "--h": c,
-                } as React.CSSProperties;
-                if (l.href.startsWith("mailto:")) {
-                  return (
-                    <a key={l.label} href={l.href} className="btl-foot-link" data-testid={testId} style={linkStyle}>
-                      {l.label}
-                    </a>
-                  );
-                }
-                return (
-                  <Link key={l.label} href={l.href}>
-                    <span className="btl-foot-link" data-testid={testId} style={linkStyle}>
-                      {l.label}
-                    </span>
-                  </Link>
-                );
-              })}
-            </nav>
-
-            {/* Right cluster — KthTechChip (ringed emblem + wordmark). */}
-            <a
-              href="https://kth-tech.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              data-testid="link-footer-kth"
-              aria-label="KTH Tech"
-              style={{
-                color: "#fff", textDecoration: "none",
-                display: "inline-flex", alignItems: "center",
-                minHeight: 44,
-              }}
-            >
-              <KthTechChip label="KTH-Tech" size={26} />
-            </a>
+              {language === "af" ? "Kry Exam Blast →" : "Get Exam Blast →"}
+            </div>
           </div>
+          <p style={{ fontSize: 12, color: "#fff", opacity: 0.85, margin: "12px 0 0" }}>
+            {language === "af"
+              ? "Of kies eerder Student Life teen R169/maand met 14 dae gratis — albei sluit alles in. Verskyn op jou staat as KTH-TECH."
+              : "Prefer monthly? Student Life is R169/month with 14 days free — both include everything. Appears on your statement as KTH-TECH."}
+          </p>
+        </a>
+      </div>
 
-          {/* Thin bottom line — entity · reg · statement descriptor · domain. */}
-          <div
-            data-testid="footer-legal-line"
-            style={{
-              marginTop: 24, paddingTop: 14,
-              borderTop: "1px solid rgba(255,255,255,.08)",
-              fontSize: 12.5,
-              fontFamily: "'Bebas Neue','Impact','Arial Black',sans-serif",
-              letterSpacing: 2, textTransform: "uppercase",
-              color: "#fff", opacity: 0.92,
-              textAlign: "center", lineHeight: 1.55,
-            }}
-          >
-            {t.footLegalLine}
-          </div>
-        </div>
-      </footer>
+      {/* Reviews ribbon removed (owner call) — no unverified pilot-cohort
+          testimonials pre-launch. */}
+
+      {/* ── Footer ──────────────────────────────────────────────
+          Shared <PublicFooter/> — consistent with every other public
+          page (owner request). The previous bespoke "gravity wall"
+          footer was removed in favour of the shared component. */}
+      <PublicFooter />
 
       {modal}
     </div>

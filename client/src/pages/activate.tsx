@@ -11,6 +11,7 @@ import { useLanguage } from "@/lib/language-context";
 import { useSEO } from "@/hooks/use-seo";
 import { apiRequest } from "@/lib/queryClient";
 import { Loader2, CheckCircle2, XCircle, Sparkles, BookOpen, Brain, Trophy, Globe } from "lucide-react";
+import { PublicFooter } from "@/components/public-footer";
 
 export default function ActivatePage() {
   const [, navigate] = useLocation();
@@ -346,12 +347,7 @@ export default function ActivatePage() {
         </div>
       </main>
 
-      <footer className="border-t border-border/40 py-6 mt-12">
-        <div className="container mx-auto px-4 text-center text-sm text-white">
-          <p>{isAf ? "BrainTrack™ is 'n leerdervoorbereidingsinstrument. Inhoud gebaseer op 10 jaar se NSC-eksamenpatrone." : "BrainTrack™ is a learner preparation tool. Content informed by 10 years of NSC exam patterns."}</p>
-          <p className="mt-2">© {new Date().getFullYear()} BrainTrack™. All rights reserved.</p>
-        </div>
-      </footer>
+      <PublicFooter />
     </div>
   );
 }

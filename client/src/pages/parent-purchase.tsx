@@ -13,11 +13,11 @@ export default function ParentPurchasePage() {
 
   useSEO({
     title: isAf
-      ? "Brain Boost — 14-dae gratis proef | BrainTrack"
-      : "Brain Boost — 14-Day Free Trial | BrainTrack",
+      ? "Student Life — 14-dae gratis proef | BrainTrack"
+      : "Student Life — 14-Day Free Trial | BrainTrack",
     description: isAf
-      ? "Brain Boost: R169/maand met 14 dae gratis. Kanselleer enige tyd."
-      : "Brain Boost: R169/month with 14 days free. Cancel anytime.",
+      ? "Student Life: R169/maand met 14 dae gratis. Kanselleer enige tyd."
+      : "Student Life: R169/month with 14 days free. Cancel anytime.",
     canonical: "https://app.braintrack.tech/parent-purchase",
   });
 
@@ -40,7 +40,7 @@ export default function ParentPurchasePage() {
         </div>
 
         <p className="text-[10px] font-black uppercase tracking-[0.22em] text-primary mb-2">
-          {isAf ? "Brain Boost" : "Brain Boost"}
+          {isAf ? "Student Life" : "Student Life"}
         </p>
 
         <h1 className="text-2xl sm:text-3xl font-black text-foreground mb-3">
@@ -56,8 +56,8 @@ export default function ParentPurchasePage() {
 
         <p className="text-sm text-foreground mb-2">
           {isAf
-            ? "Brain Boost gee jou kind volle toegang — studieplanne, regte NSC-vraestelle en memo's, onmiddellike nasien, en Rizz (KI-tutor). Geen heffing tydens die proeftydperk nie, en jy kanselleer enige tyd direk in die app."
-            : "Brain Boost gives your child full access — study plans, real NSC papers and memos, instant marking, and Rizz (AI tutor). No charge during the trial, and you cancel anytime directly in the app."}
+            ? "Student Life gee jou kind volle toegang — studieplanne, regte NSC-vraestelle en memo's, onmiddellike nasien, en Rizz (KI-tutor). Geen heffing tydens die proeftydperk nie, en jy kanselleer enige tyd direk in die app."
+            : "Student Life gives your child full access — study plans, real NSC papers and memos, instant marking, and Rizz (AI tutor). No charge during the trial, and you cancel anytime directly in the app."}
         </p>
 
         <p className="text-sm text-foreground mb-8">

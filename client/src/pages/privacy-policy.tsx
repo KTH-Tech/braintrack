@@ -1,12 +1,98 @@
-// BrainTrack privacy policy — chrome restyled to the Claude Design handoff
-// "Luxury Street Graffiti EdTech" comp (LEGAL PAGES section) via LegalShell.
+// BrainTrack privacy policy — logged-out legal page with branded pure-black
+// street-graffiti chrome mounting the shared PublicNav + PublicFooter.
 // All legal copy is preserved verbatim; only presentation changed.
-import { LegalShell, LegalSection } from "@/components/legal-shell";
+import type { ReactNode, CSSProperties } from "react";
+import { Link } from "wouter";
+import { PublicNav } from "@/components/public-nav";
+import { PublicFooter } from "@/components/public-footer";
 import { useLanguage } from "@/lib/language-context";
 import { useSEO } from "@/hooks/use-seo";
 
+// ── Shared branded chrome for the four logged-out legal pages ───────────────
+// Pure-black street-graffiti: Permanent Marker title, hard-offset accent cards,
+// pure #fff body copy (no grey / no faded white), no glow/blur shadows.
+const H1_STYLE: CSSProperties = {
+  fontFamily: "'Permanent Marker',cursive",
+  fontSize: 40,
+  lineHeight: 1.15,
+  letterSpacing: "-0.5px",
+  margin: "8px 0 14px",
+  color: "#fff",
+};
+const CHIP_STYLE: CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 8,
+  fontSize: 12.5,
+  fontWeight: 700,
+  color: "#fff",
+  border: "2px solid #9FD8FF",
+  borderRadius: 999,
+  padding: "6px 14px",
+  marginBottom: 22,
+};
+const LEGAL_BODY_CSS = `
+  .bt-legal-body { font-size: 15px; line-height: 1.7; color: #fff; }
+  .bt-legal-body p, .bt-legal-body li, .bt-legal-body td, .bt-legal-body th, .bt-legal-body h4, .bt-legal-body strong, .bt-legal-body code { color: #fff; }
+  .bt-legal-body table { font-size: 13px; }
+  .bt-legal-body td, .bt-legal-body th { font-size: 13px; line-height: 1.6; }
+  .bt-legal-body a { color: #9FD8FF; font-weight: 600; }
+  .bt-legal-cross-pill { transition: transform .15s; }
+  .bt-legal-cross-pill:hover { transform: translateY(-1px); }
+`;
+const LEGAL_LINKS = [
+  { href: "/privacy-policy", en: "Privacy", af: "Privaatheid", accent: "#9FD8FF" },
+  { href: "/terms-of-service", en: "Terms", af: "Bepalings", accent: "#FFB7E5" },
+  { href: "/cookie-policy", en: "Cookies", af: "Koekies", accent: "#FFE29A" },
+  { href: "/refund-policy", en: "Refunds", af: "Terugbetalings", accent: "#94F7C5" },
+];
+
+function LegalCrossNav({ isAf, activeHref }: { isAf: boolean; activeHref: string }) {
+  return (
+    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 28 }}>
+      {LEGAL_LINKS.map((l) => {
+        const active = l.href === activeHref;
+        return (
+          <Link key={l.href} href={l.href}>
+            <span
+              className="bt-legal-cross-pill"
+              style={{
+                display: "inline-block", fontSize: 12.5, fontWeight: 700,
+                padding: "8px 14px", borderRadius: 999, cursor: "pointer",
+                color: active ? "#000" : l.accent,
+                background: active ? l.accent : "transparent",
+                border: `2px solid ${l.accent}`,
+              }}
+            >
+              {isAf ? l.af : l.en}
+            </span>
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
+
+function Section({ accent, title, testId, children }: { accent: string; title: ReactNode; testId?: string; children: ReactNode }) {
+  return (
+    <section
+      data-testid={testId}
+      style={{
+        background: "#050508",
+        border: `2.5px solid ${accent}`,
+        borderRadius: 16,
+        padding: "22px 26px",
+        boxShadow: `6px 6px 0 0 ${accent}`,
+      }}
+    >
+      <h2 style={{ fontWeight: 800, fontSize: 20, marginBottom: 12, color: accent }}>{title}</h2>
+      <div className="bt-legal-body">{children}</div>
+    </section>
+  );
+}
+
 export default function PrivacyPolicyPage() {
-  const { language, toggleLanguage } = useLanguage();
+  const { language } = useLanguage();
   const isAf = language === "af";
   useSEO({
     title: "Privacy Policy & POPIA Compliance | BrainTrack",
@@ -15,22 +101,29 @@ export default function PrivacyPolicyPage() {
   });
 
   return (
-    <LegalShell
-      title={isAf ? "Privaatheidsbeleid & POPIA-Nakoming" : "Privacy Policy & POPIA Compliance"}
-      updated={isAf ? "Laas opgedateer: 16 Julie 2026" : "Last updated: 16 July 2026"}
-      language={language}
-      onToggleLanguage={toggleLanguage}
-      activeHref="/privacy-policy"
-      backTestId="privacy-nav-back"
-      lead={
-        <p>
-          {isAf
-            ? "BrainTrack is daartoe verbind om jou privaatheid te beskerm in ooreenstemming met die Wet op die Beskerming van Persoonlike Inligting (POPIA) van Suid-Afrika."
-            : "BrainTrack is committed to protecting your privacy in accordance with the Protection of Personal Information Act (POPIA) of South Africa."}
-        </p>
-      }
-    >
-      <LegalSection accent="#9FD8FF" title={isAf ? "1. Inleiding" : "1. Introduction"}>
+    <div className="min-h-screen" style={{ background: "#000", color: "#fff" }} data-testid="page-privacy-policy">
+      <PublicNav />
+      <main style={{ maxWidth: 820, margin: "0 auto", padding: "80px 20px 0" }}>
+        <style>{LEGAL_BODY_CSS}</style>
+
+        <h1 data-testid="text-privacy-title" style={H1_STYLE}>
+          {isAf ? "Privaatheidsbeleid & POPIA-Nakoming" : "Privacy Policy & POPIA Compliance"}
+        </h1>
+        <div style={CHIP_STYLE}>
+          KTH Tech (Pty) Ltd · {isAf ? "Laas opgedateer: 16 Julie 2026" : "Last updated: 16 July 2026"}
+        </div>
+        <LegalCrossNav isAf={isAf} activeHref="/privacy-policy" />
+
+        <div className="bt-legal-body" style={{ marginBottom: 28 }}>
+          <p>
+            {isAf
+              ? "BrainTrack is daartoe verbind om jou privaatheid te beskerm in ooreenstemming met die Wet op die Beskerming van Persoonlike Inligting (POPIA) van Suid-Afrika."
+              : "BrainTrack is committed to protecting your privacy in accordance with the Protection of Personal Information Act (POPIA) of South Africa."}
+          </p>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+      <Section accent="#9FD8FF" title={isAf ? "1. Inleiding" : "1. Introduction"}>
         <div className="space-y-3">
           <p>
             {isAf
@@ -43,9 +136,9 @@ export default function PrivacyPolicyPage() {
               : "We comply with the Protection of Personal Information Act 4 of 2013 (POPIA) and are committed to ensuring that your privacy is protected. This policy applies to all users of our platform, including learners (children under 18) and their parents or guardians."}
           </p>
         </div>
-      </LegalSection>
+      </Section>
 
-      <LegalSection accent="#9FF5E8" title={isAf ? "2. Inligting Wat Ons Versamel" : "2. Information We Collect"}>
+      <Section accent="#9FF5E8" title={isAf ? "2. Inligting Wat Ons Versamel" : "2. Information We Collect"}>
         <div className="space-y-3">
           <div>
             <h4 className="font-semibold mb-1">{isAf ? "Persoonlike Inligting van Ouers/Voogde:" : "Personal Information from Parents/Guardians:"}</h4>
@@ -86,9 +179,9 @@ export default function PrivacyPolicyPage() {
             </ul>
           </div>
         </div>
-      </LegalSection>
+      </Section>
 
-      <LegalSection accent="#94F7C5" title={isAf ? "3. Hoe Ons Jou Inligting Gebruik" : "3. How We Use Your Information"}>
+      <Section accent="#94F7C5" title={isAf ? "3. Hoe Ons Jou Inligting Gebruik" : "3. How We Use Your Information"}>
         <div className="space-y-3">
           <p>{isAf ? "Ons gebruik persoonlike inligting vir die volgende doeleindes:" : "We use personal information for the following purposes:"}</p>
           <ul className="list-disc list-inside space-y-2">
@@ -101,9 +194,9 @@ export default function PrivacyPolicyPage() {
             <li><strong>{isAf ? "Wetlike Nakoming:" : "Legal Compliance:"}</strong> {isAf ? "Om aan toepaslike wette en regulasies te voldoen." : "To comply with applicable laws and regulations."}</li>
           </ul>
         </div>
-      </LegalSection>
+      </Section>
 
-      <LegalSection accent="#FFE29A" title={isAf ? "4. Kinders se Privaatheid (Onder 18)" : "4. Children's Privacy (Under 18)"}>
+      <Section accent="#FFE29A" title={isAf ? "4. Kinders se Privaatheid (Onder 18)" : "4. Children's Privacy (Under 18)"}>
         <div className="space-y-3">
           <p>
             {isAf
@@ -118,9 +211,9 @@ export default function PrivacyPolicyPage() {
             <li><strong>{isAf ? "Veilige Omgewing:" : "Safe Environment:"}</strong> {isAf ? "Ons platform bevat slegs opvoedkundige inhoud van amptelike Departement van Basiese Onderwys bronne." : "Our platform contains only educational content from official Department of Basic Education sources."}</li>
           </ul>
         </div>
-      </LegalSection>
+      </Section>
 
-      <LegalSection accent="#FFB7E5" title={isAf ? "5. Databeskerming" : "5. Data Security"}>
+      <Section accent="#FFB7E5" title={isAf ? "5. Databeskerming" : "5. Data Security"}>
         <div className="space-y-3">
           <p>
             {isAf
@@ -136,9 +229,9 @@ export default function PrivacyPolicyPage() {
             <li>{isAf ? "Data word gestoor op veilige wolkbedieners in die EU (Frankfurt) en VSA via Supabase en Render — beide volledig GDPR-nakoming en aanvaarbare derdeland vir POPIA-oordragte" : "Data is stored on secure cloud servers in the EU (Frankfurt) and USA via Supabase and Render — both fully GDPR-compliant and acceptable third countries for POPIA transfers"}</li>
           </ul>
         </div>
-      </LegalSection>
+      </Section>
 
-      <LegalSection accent="#C5B3FF" title={isAf ? "6. Dataretensie" : "6. Data Retention"}>
+      <Section accent="#C5B3FF" title={isAf ? "6. Dataretensie" : "6. Data Retention"}>
         <div className="space-y-3">
           <p>
             {isAf
@@ -152,9 +245,9 @@ export default function PrivacyPolicyPage() {
             <li><strong>{isAf ? "Geanonimiseerde Data:" : "Anonymized Data:"}</strong> {isAf ? "Ons mag geanonimiseerde, saamgestelde data vir navorsings- en verbeteringsdoeleindes behou." : "We may retain anonymized, aggregated data for research and improvement purposes."}</li>
           </ul>
         </div>
-      </LegalSection>
+      </Section>
 
-      <LegalSection accent="#9FD8FF" title={isAf ? "7. Jou POPIA-Regte" : "7. Your POPIA Rights"}>
+      <Section accent="#9FD8FF" title={isAf ? "7. Jou POPIA-Regte" : "7. Your POPIA Rights"}>
         <div className="space-y-3">
           <p>
             {isAf
@@ -175,9 +268,9 @@ export default function PrivacyPolicyPage() {
             <strong>learn@kth-tech.com</strong>
           </p>
         </div>
-      </LegalSection>
+      </Section>
 
-      <LegalSection accent="#94F7C5" title={isAf ? "8. Betalingsverwerking & Bankinligting" : "8. Payment Processing & Banking Information"}>
+      <Section accent="#94F7C5" title={isAf ? "8. Betalingsverwerking & Bankinligting" : "8. Payment Processing & Banking Information"}>
         <div className="space-y-3">
           <div className="pl-3 py-1" style={{ borderLeft: "3px solid #94F7C5" }}>
             <p className="font-semibold">
@@ -203,9 +296,9 @@ export default function PrivacyPolicyPage() {
             <li>{isAf ? "Vir terugbetalings of betalingsgeskille, kontak ons by learn@kth-tech.com" : "For refunds or payment disputes, contact us at learn@kth-tech.com"}</li>
           </ul>
         </div>
-      </LegalSection>
+      </Section>
 
-      <LegalSection accent="#9FD8FF" title={isAf ? "9. Derdeparty-deling" : "9. Third-Party Sharing"}>
+      <Section accent="#9FD8FF" title={isAf ? "9. Derdeparty-deling" : "9. Third-Party Sharing"}>
         <div className="space-y-3">
           <p>
             {isAf
@@ -226,9 +319,9 @@ export default function PrivacyPolicyPage() {
               : "We do not sell, rent, or trade your personal information to third parties for marketing purposes."}
           </p>
         </div>
-      </LegalSection>
+      </Section>
 
-      <LegalSection accent="#FFB7E5" title={isAf ? "10. Kontakbesonderhede" : "10. Contact Information"}>
+      <Section accent="#FFB7E5" title={isAf ? "10. Kontakbesonderhede" : "10. Contact Information"}>
         <div className="space-y-3">
           <p>
             {isAf
@@ -243,7 +336,10 @@ export default function PrivacyPolicyPage() {
             <p><strong>{isAf ? "Adres:" : "Address:"}</strong> {isAf ? "Suid-Afrika" : "South Africa"}</p>
           </div>
         </div>
-      </LegalSection>
-    </LegalShell>
+      </Section>
+        </div>
+      </main>
+      <PublicFooter />
+    </div>
   );
 }

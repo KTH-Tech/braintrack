@@ -122,13 +122,23 @@ async function enforceAdminAllowlist(
   return currentRole ?? "learner";
 }
 
-function publicUser(row: { id: string; email: string | null; firstName: string | null; lastName: string | null; role: string | null }) {
+function publicUser(row: { id: string; email: string | null; firstName: string | null; lastName: string | null; role: string | null; roleConfirmed?: boolean | null }) {
+  const role = row.role ?? "learner";
   return {
     id: row.id,
     email: row.email,
     firstName: row.firstName,
     lastName: row.lastName,
-    role: row.role ?? "learner",
+    role,
+    // MUST be included: the client (client/src/pages/signin.tsx onSuccess)
+    // seeds the ["/api/auth/user"] react-query cache with this exact object,
+    // and ProtectedRoute (client/src/App.tsx) gates on `roleConfirmed`. If it
+    // is absent the seed reads `undefined` → ProtectedRoute hard-redirects the
+    // just-authenticated user to /role-select, which then bounces back through
+    // /dashboard, producing several full-page reloads ("redirect loop") before
+    // the background /api/auth/user refetch finally lands the real value.
+    // Admins bypass the roleConfirmed gate, so treat them as confirmed.
+    roleConfirmed: role === "admin" ? true : (row.roleConfirmed ?? false),
   };
 }
 
@@ -188,7 +198,7 @@ export function registerLocalAuthRoutes(app: Express) {
 
       const [row] = await db.select({
         id: users.id, email: users.email, firstName: users.firstName,
-        lastName: users.lastName, role: users.role,
+        lastName: users.lastName, role: users.role, roleConfirmed: users.roleConfirmed,
       }).from(users).where(eq(users.id, userId));
 
       const effectiveRole = await enforceAdminAllowlist(userId, row.email, row.role);
@@ -214,8 +224,9 @@ export function registerLocalAuthRoutes(app: Express) {
     try {
       const [user] = await db.select({
         id: users.id, email: users.email, firstName: users.firstName, lastName: users.lastName,
-        role: users.role, passwordHash: users.passwordHash, isLocked: users.isLocked,
-        lockedUntil: users.lockedUntil, failedLoginAttempts: users.failedLoginAttempts,
+        role: users.role, roleConfirmed: users.roleConfirmed, passwordHash: users.passwordHash,
+        isLocked: users.isLocked, lockedUntil: users.lockedUntil,
+        failedLoginAttempts: users.failedLoginAttempts,
       }).from(users).where(eq(users.email, email));
 
       if (!user?.passwordHash) {
@@ -224,8 +235,9 @@ export function registerLocalAuthRoutes(app: Express) {
         return invalid();
       }
 
+      const now = new Date();
       const lockedUntil = user.lockedUntil ? new Date(user.lockedUntil) : null;
-      if (lockedUntil && lockedUntil > new Date()) {
+      if (lockedUntil && lockedUntil > now) {
         const mins = Math.ceil((lockedUntil.getTime() - Date.now()) / 60000);
         return res.status(423).json({
           error: "account_locked",
@@ -239,9 +251,15 @@ export function registerLocalAuthRoutes(app: Express) {
         });
       }
 
+      // The lockout window has elapsed → start the failure count fresh. Without
+      // this, `failedLoginAttempts` stays ≥ MAX after a cooldown, so ONE more
+      // wrong password immediately re-locks the account for another 15 minutes
+      // (a support-ticket generator at launch). Only resets after the window.
+      const lockExpired = !!(lockedUntil && lockedUntil <= now);
+
       const ok = await bcrypt.compare(password, user.passwordHash);
       if (!ok) {
-        const attempts = (user.failedLoginAttempts ?? 0) + 1;
+        const attempts = (lockExpired ? 0 : (user.failedLoginAttempts ?? 0)) + 1;
         const shouldLock = attempts >= MAX_FAILED_ATTEMPTS;
         await db.update(users).set({
           failedLoginAttempts: attempts,

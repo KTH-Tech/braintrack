@@ -473,7 +473,7 @@ export default function BoostSessionPage() {
     const noSubjects = profile !== undefined && plan.length === 0;
     const perBlockMin = plan.length > 0 ? Math.round(plan[0].seconds / 60) : 0;
     return (
-      <div className="min-h-screen text-white" style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}>
+      <div className="min-h-screen text-white overflow-x-hidden" style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}>
         <GraffitiSplats variant="corner" opacity={0.4} />
         <LearnerHeader backLabel={t.back} title={t.title} titleColor="#94F7C5" maxWidthClassName="max-w-2xl" />
         <main className="relative max-w-2xl mx-auto px-4 pb-16 pt-6 space-y-5" style={{ zIndex: 1 }}>
@@ -576,7 +576,7 @@ export default function BoostSessionPage() {
       : 0;
     const anyWrong = totalAnswered - totalCorrect > 0;
     return (
-      <div className="min-h-screen text-white" style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}>
+      <div className="min-h-screen text-white overflow-x-hidden" style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}>
         {totalAnswered > 0 && <ConfettiBurst />}
         <GraffitiSplats variant="corner" opacity={0.4} />
         <LearnerHeader backLabel={t.back} title={t.title} titleColor="#94F7C5" maxWidthClassName="max-w-2xl" />
@@ -688,7 +688,7 @@ export default function BoostSessionPage() {
   const timerHot = secondsLeft <= 20;
 
   return (
-    <div className="min-h-screen text-white" style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}>
+    <div className="min-h-screen text-white overflow-x-hidden" style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}>
       <main className="relative max-w-2xl mx-auto px-4 pb-24 pt-5 space-y-4" style={{ zIndex: 1 }}>
         {/* ── Session header: subject, block progress, clocks ── */}
         <div style={cardStyle(hex, 18)} className="p-4" data-testid="boost-session-header">

@@ -2,9 +2,25 @@ import type { Express, Request, Response } from "express";
 import OpenAI from "openai";
 import { chatStorage } from "./storage";
 
-const openai = new OpenAI({
-  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+// Lazy — a top-level `new OpenAI()` throws "Missing credentials" when the key
+// env is unset, crashing the server at boot (health check fails, deploy rolls
+// back). Defer to first use so a missing key only breaks chat, not startup.
+let _openaiClient: OpenAI | null = null;
+function getOpenAI(): OpenAI {
+  if (!_openaiClient) {
+    _openaiClient = new OpenAI({
+      apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY,
+      baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+    });
+  }
+  return _openaiClient;
+}
+const openai = new Proxy({} as OpenAI, {
+  get(_t, prop) {
+    const c = getOpenAI();
+    const v = (c as any)[prop];
+    return typeof v === "function" ? v.bind(c) : v;
+  },
 });
 
 export function registerChatRoutes(app: Express): void {
