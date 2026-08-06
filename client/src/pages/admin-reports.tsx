@@ -2724,8 +2724,8 @@ const REMINDER_TEMPLATES: ReminderTemplate[] = [
     id: "trial-ending",
     labelEn: "Trial ending soon", labelAf: "Proeflopie eindig binnekort",
     titleEn: "⏳ Your free trial ends soon", titleAf: "⏳ Jou gratis proeflopie eindig binnekort",
-    bodyEn: "Keep all of Brain Boost — past papers, AI tutor, gamified streaks — for just R169/month.",
-    bodyAf: "Behou alles van Brain Boost — vorige vraestelle, KI-tutor, spelreekse — vir net R169/maand.",
+    bodyEn: "Keep all of Student Life — past papers, AI tutor, gamified streaks — for just R169/month.",
+    bodyAf: "Behou alles van Student Life — vorige vraestelle, KI-tutor, spelreekse — vir net R169/maand.",
     tone: "border-[#C5B3FF]/40 bg-[#C5B3FF]/10 text-[#C5B3FF]",
   },
   {

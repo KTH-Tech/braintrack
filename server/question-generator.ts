@@ -692,7 +692,16 @@ export async function generateForTopic(args: {
     topic: String(q.topic ?? args.topic.topic),
     cognitiveLevel: String(q.cognitiveLevel ?? "knowledge"),
     examinerTip: String(q.examinerTip ?? "").trim(),
-    mcqOptions: Array.isArray(q.mcqOptions) && q.mcqOptions.length ? q.mcqOptions : null,
+    // Normalise option letters to UPPERCASE at the source: correctOption is
+    // uppercased below and the serve gate only keeps A–E uppercase letters, so a
+    // model that emits lowercase letters would otherwise pass scoring, get
+    // released, then be silently dropped at serve time (released-but-invisible).
+    mcqOptions: Array.isArray(q.mcqOptions) && q.mcqOptions.length
+      ? q.mcqOptions.map((o: any) => ({
+          letter: String(o?.letter ?? "").trim().toUpperCase().slice(0, 1),
+          text: String(o?.text ?? "").trim(),
+        }))
+      : null,
     correctOption: q.correctOption ? String(q.correctOption).trim().toUpperCase().slice(0, 1) : null,
   }));
 }

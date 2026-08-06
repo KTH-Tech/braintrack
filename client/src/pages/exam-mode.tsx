@@ -369,6 +369,7 @@ function SubjectExamCard({ subject, isAf, t, colorIndex }: { subject: Subject; i
 
   return (
     <div
+      className="btx-subject-card"
       style={{
         position: "relative",
         background: "#0b0b12",
@@ -739,8 +740,16 @@ export default function ExamModePage() {
         .btx-mode:hover { transform: translateY(-6px); border-color: var(--c) !important; }
         @media (max-width: 860px) {
           .btx-grid2 { grid-template-columns: 1fr !important; }
-          .btx-hero-head { font-size: 38px !important; letter-spacing: -1px !important; }
+          .btx-hero-head { font-size: clamp(30px, 9vw, 40px) !important; letter-spacing: -1px !important; }
           .btx-stat4 { grid-template-columns: repeat(2,1fr) !important; }
+        }
+        /* Small-phone polish — reclaim the wasted side padding at 320–480px so
+           cards get more usable width, and soften the generous hero padding. */
+        @media (max-width: 560px) {
+          .btx-page { padding: 24px 16px 64px !important; gap: 22px !important; }
+          .btx-hero { padding: 26px 18px !important; }
+          .btx-mode-card { padding: 20px !important; }
+          .btx-subject-card { padding: 18px !important; }
         }
       `}</style>
 
@@ -755,9 +764,10 @@ export default function ExamModePage() {
         actions={<ThemeToggle />}
       />
 
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "36px 24px 80px", display: "flex", flexDirection: "column", gap: 32 }}>
+      <div className="btx-page" style={{ maxWidth: 1100, margin: "0 auto", padding: "36px 24px 80px", display: "flex", flexDirection: "column", gap: 32 }}>
         {/* ── Hero — exam rules card per comp ─────────────────── */}
         <div
+          className="btx-hero"
           style={{
             position: "relative",
             background: "#0b0b12",
@@ -878,7 +888,7 @@ export default function ExamModePage() {
           ].map(({ href, testid, hex, glow, chipBg, icon, title, tag, sub, cta }) => (
             <Link key={href} href={href} style={{ display: "block", height: "100%" }} data-testid={testid}>
               <div
-                className="btx-mode"
+                className="btx-mode btx-mode-card"
                 style={{
                   "--c": hex, "--glow": glow,
                   height: "100%",

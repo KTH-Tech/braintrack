@@ -1,4 +1,4 @@
-﻿import { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { Link, useLocation } from "wouter";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLanguage } from "@/lib/language-context";
@@ -44,8 +44,8 @@ const EMAIL_TYPES: {
   category: Category;
 }[] = [
   { value: "welcome", label: "Welcome Email", labelAf: "Welkom E-pos",
-    desc: "Sent to learners when their 14-day Brain Boost trial starts",
-    descAf: "Gestuur aan leerders wanneer hul 14-dae Brain Boost-proeftydperk begin",
+    desc: "Sent to learners when their 14-day Student Life trial starts",
+    descAf: "Gestuur aan leerders wanneer hul 14-dae Student Life-proeftydperk begin",
     icon: PartyPopper, category: "lifecycle" },
   { value: "consent-request", label: "Parent Consent Request", labelAf: "Ouertoestemming Versoek",
     desc: "Sent to parents asking them to confirm consent for their child",

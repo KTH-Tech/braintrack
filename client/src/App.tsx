@@ -137,6 +137,7 @@ const FeaturesPage = lazy(() => import("@/pages/features"));
 const ForSchoolsPage = lazy(() => import("@/pages/for-schools"));
 const DailyChallengePage = lazy(() => import("@/pages/daily-challenge"));
 const BoostSessionPage = lazy(() => import("@/pages/boost-session"));
+const PredictorPage = lazy(() => import("@/pages/predictor"));
 const StudyCalendarPage = lazy(() => import("@/pages/study-calendar"));
 const PrelimTimetablePage = lazy(() => import("@/pages/prelim-timetable"));
 const DBEPortalPage = lazy(() => import("@/pages/dbe-portal"));
@@ -870,6 +871,12 @@ function Router() {
         <Route path="/boost-session">
           <ProtectedRoute>
             <BoostSessionPage />
+          </ProtectedRoute>
+        </Route>
+
+        <Route path="/predictor">
+          <ProtectedRoute>
+            <PredictorPage />
           </ProtectedRoute>
         </Route>
 

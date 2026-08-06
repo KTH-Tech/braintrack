@@ -131,7 +131,7 @@ function StreetShell({ isAf, eyebrow, onExit, children }: {
             {onExit ? (
               <button
                 onClick={onExit}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
+                className="inline-flex items-center justify-center gap-1.5 min-h-[44px] min-w-[44px] px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
                 style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}
               >
                 <ArrowLeft className="w-4 h-4" />
@@ -140,7 +140,7 @@ function StreetShell({ isAf, eyebrow, onExit, children }: {
             ) : (
               <Link href="/dashboard">
                 <button
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
+                  className="inline-flex items-center justify-center gap-1.5 min-h-[44px] min-w-[44px] px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
                   style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
                 >
                   <ArrowLeft className="w-4 h-4" />

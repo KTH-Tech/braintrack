@@ -111,8 +111,8 @@ export function ReviewsRibbon({ language }: { language: "en" | "af" }) {
   const head = en ? "What the pilot cohort said" : "Wat die proefkohort gesê het";
   const cohortChip = en ? "2025 Test Cohort" : "2025 Toetsgroep";
   const subHead = en
-    ? "Feedback from ~900 Grade 12 learners, their parents, and their schools who completed the BrainTrack 2025 test programme. Roles only — no names, schools, or provinces published."
-    : "Terugvoer van ~900 Graad 12-leerders, hulle ouers en hulle skole wat die BrainTrack 2025-toetsprogramme voltooi het. Slegs rolle — geen name, skole of provinsies word gepubliseer nie.";
+    ? "Feedback from ~900 Grade 12 learners, their parents and their schools who completed the BrainTrack 2025 test programme. We publish role only — no names, schools or provinces — because most participants are minors and their data is protected under South Africa's POPIA. Every voice here is real; every identity stays private."
+    : "Terugvoer van ~900 Graad 12-leerders, hulle ouers en hulle skole wat die BrainTrack 2025-toetsprogramme voltooi het. Ons publiseer slegs die rol — geen name, skole of provinsies nie — omdat die meeste deelnemers minderjariges is en hulle data deur Suid-Afrika se POPIA beskerm word. Elke stem hier is eg; elke identiteit bly privaat.";
 
   // Duplicate list for a seamless marquee loop.
   const loop = [...REVIEWS, ...REVIEWS];
@@ -217,7 +217,8 @@ export function ReviewsRibbon({ language }: { language: "en" | "af" }) {
             gap: 20,
             width: "max-content",
             // Inline "bt-marquee" is exempt from the global kill-switch.
-            animation: "bt-marquee 55s linear infinite",
+            // Slow drift (owner: "slower") — 95s reads calm, not a scroll race.
+            animation: "bt-marquee 95s linear infinite",
             animationPlayState: paused ? "paused" : "running",
           }}
         >
@@ -234,14 +235,16 @@ export function ReviewsRibbon({ language }: { language: "en" | "af" }) {
                     "--rc": r.color,
                     "--rglow": r.glow,
                     flex: "0 0 auto",
-                    width: 320,
+                    // Thinner ribbon (owner): narrower cards + tighter padding
+                    // + pure-black fill (no grey wash) + hard sticker edge
+                    // instead of the soft bloom shadow.
+                    width: 288,
                     boxSizing: "border-box",
-                    background:
-                      "linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.015))",
-                    border: `1.5px solid ${r.color}`,
-                    borderRadius: 20,
-                    padding: "22px 22px 20px",
-                    boxShadow: `0 12px 30px ${r.glow}`,
+                    background: "#050508",
+                    border: `2px solid ${r.color}`,
+                    borderRadius: 16,
+                    padding: "14px 16px",
+                    boxShadow: `4px 4px 0 0 ${r.color}`,
                   } as React.CSSProperties
                 }
               >

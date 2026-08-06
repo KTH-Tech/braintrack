@@ -20,8 +20,10 @@ import { alias } from "drizzle-orm/pg-core";
 import { setupAuth, registerAuthRoutes, isAuthenticated, rotateSigningKey, generateAccessToken, generateRefreshToken } from "./replit_integrations/auth";
 import { registerLocalAuthRoutes } from "./local-auth";
 import { activateChildSchema, activateChild, type ActivationDeps } from "./parent-activation";
-import { registerPaystackRoutes, isPaystackConfigured, paystackFetch, recordEventOnce, applyCardCaptureSuccess } from "./paystack";
+import { registerPaystackRoutes, isPaystackConfigured, paystackFetch, recordEventOnce, applyCardCaptureSuccess, EXAM_BOOST_PRICE_MINOR, EXAM_BOOST_END } from "./paystack";
 import { registerRizzRoutes } from "./rizz";
+import { registerWhatsAppWebhook } from "./whatsapp/webhook";
+import { createBrainTrackWhatsAppHandler } from "./whatsapp/handler";
 import { authStorage } from "./replit_integrations/auth/storage";
 import { parentPreviewMiddleware } from "./parent-preview";
 import OpenAI from "openai";
@@ -1077,9 +1079,30 @@ const OFF_TOPIC_RESPONSE_AF = "Ek is hier om jou slegs met jou Graad 12 CAPS stu
 const PROFANITY_RESPONSE_EN = "Hey, let's keep it clean and focused on your studies! I'm here to help you ace your matric exams. What subject can I help you with?";
 const PROFANITY_RESPONSE_AF = "Hey, kom ons hou dit skoon en gefokus op jou studies! Ek is hier om jou te help om jou matriekeksamen te slaag. Met watter vak kan ek jou help?";
 
-const openai = new OpenAI({
-  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+// Lazy: constructing the OpenAI client at module load throws "Missing
+// credentials" if neither AI_INTEGRATIONS_OPENAI_API_KEY nor OPENAI_API_KEY is
+// set — and because this module is imported at boot, that crash takes the WHOLE
+// server down before it can listen, so Render's /api/health check fails and the
+// deploy is rolled back (the old build keeps serving). Deferring construction to
+// first use means a missing/rotated key only degrades AI features (Rizz etc.),
+// never downs the site or blocks a deploy. The Proxy keeps every `openai.x` call
+// site unchanged.
+let _openaiClient: OpenAI | null = null;
+function getOpenAI(): OpenAI {
+  if (!_openaiClient) {
+    _openaiClient = new OpenAI({
+      apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY,
+      baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+    });
+  }
+  return _openaiClient;
+}
+const openai = new Proxy({} as OpenAI, {
+  get(_t, prop) {
+    const c = getOpenAI();
+    const v = (c as any)[prop];
+    return typeof v === "function" ? v.bind(c) : v;
+  },
 });
 
 // ============================================
@@ -1100,6 +1123,23 @@ function safeError(err: any): string {
     return "Internal server error";
   }
   return err?.message || "Internal server error";
+}
+
+// Builds the public base URL for shareable referral links. Behind Render's
+// proxy, req.protocol can report "http" even though the site is served over
+// HTTPS, which would mint insecure share links. Prefer APP_URL; otherwise use
+// https for a real domain or an x-forwarded-proto:https request, falling back
+// to req.protocol only for localhost dev. Result e.g. https://braintrack.tech
+function referralBaseUrl(req: any): string {
+  if (process.env.APP_URL) return process.env.APP_URL.replace(/\/+$/, "");
+  const host = req.get("host") || "";
+  const xfProto = String(req.headers["x-forwarded-proto"] || "")
+    .split(",")[0]
+    .trim()
+    .toLowerCase();
+  const isLocal = /^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/i.test(host);
+  const proto = xfProto === "https" || (!!host && !isLocal) ? "https" : req.protocol || "http";
+  return `${proto}://${host}`;
 }
 
 // Validate a South African ID number: exactly 13 digits, a valid YYMMDD date
@@ -1522,6 +1562,20 @@ export async function registerRoutes(
   // are resolved from the authenticated session inside the handler (visitors
   // allowed), so this is intentionally NOT wrapped in isAuthenticated here.
   registerRizzRoutes(app, { openai, limiter: tutorLimiter });
+
+  // WhatsApp Cloud API webhook — BrainTrack's OWN Meta Graph API engine (no
+  // Twilio/BSP). Registers GET+POST /api/whatsapp/webhook. Boot-safe: if the
+  // WHATSAPP_* env vars are absent the endpoint acks Meta with 200 and no-ops,
+  // so this never blocks a deploy. HIDDEN UNTIL LAUNCH: even with creds set,
+  // inbound messages are only routed to Rizz when WHATSAPP_TUTOR_ENABLED==="true"
+  // — otherwise the POST still acks 200 but does NOT reply or call the model.
+  // The signature verification (X-Hub-Signature-256) reuses the raw body that
+  // index.ts captures globally on req.rawBody; the route also mounts a local
+  // express.raw as a fallback, so global JSON parsing is untouched.
+  registerWhatsAppWebhook(app, {
+    handler: createBrainTrackWhatsAppHandler(openai),
+    isEnabled: () => process.env.WHATSAPP_TUTOR_ENABLED === "true",
+  });
 
   // Feedback endpoint
   app.post("/api/tutor/feedback", isAuthenticated, async (req: any, res) => {
@@ -2082,8 +2136,6 @@ export async function registerRoutes(
       if (!subjectRow) return res.status(404).json({ error: "Subject not found" });
       const subjectName = isAf ? (subjectRow.nameAfrikaans || subjectRow.name) : subjectRow.name;
 
-      const { dbeVerbatimQuestions } = await import("@shared/schema");
-
       // Difficulty → cognitive level filter (loose mapping)
       const cognitiveByDifficulty: Record<string, string[]> = {
         easy: ["knowledge", "comprehension"],
@@ -2094,31 +2146,10 @@ export async function registerRoutes(
 
       const preferredLanguage = isAf ? "Afrikaans" : "English";
 
-      const buildConditions = (language: string, withTopic: boolean) => {
-        const conds = [
-          eq(dbeVerbatimQuestions.subject, subjectRow.name),
-          eq(dbeVerbatimQuestions.language, language),
-          sql`${dbeVerbatimQuestions.releasedAt} IS NOT NULL`,
-          sql`${dbeVerbatimQuestions.mcqOptions} IS NOT NULL`,
-          sql`${dbeVerbatimQuestions.correctOption} IS NOT NULL`,
-        ];
-        if (withTopic && topicFocus) {
-          conds.push(ilike(dbeVerbatimQuestions.topic, `%${topicFocus}%`));
-        }
-        return and(...conds);
-      };
-
       type Row = {
         id: number;
         questionText: string;
-        memoText: string | null;
-        markScheme: {
-          totalMarks: number;
-          criteria: Array<{ id: string; keywords: string[]; acceptable: string[]; marks: number; memoExcerpt: string }>;
-          partialRules: string[];
-          denyPhrases?: string[];
-          parsedAt: string;
-        } | null;
+        answerText: string | null;
         topic: string | null;
         cognitiveLevel: string | null;
         mcqOptions: Array<{ letter: string; text: string }> | null;
@@ -2127,46 +2158,64 @@ export async function registerRoutes(
       };
 
       /**
-       * Builds a learner-facing explanation from a row's markScheme and/or memoText.
-       * Prefers clean criteria excerpts when markScheme is present; falls back to
-       * truncated memoText; falls back to a static default string.
+       * CONTENT INTEGRITY: learners are only ever served ORIGINAL simulated MCQs
+       * from generated_questions — never the copyrighted verbatim DBE bank.
+       *
+       * STRICT anti-hallucination gate — an MCQ is servable only if ALL hold:
+       *   released_at IS NOT NULL     — an admin released it
+       *   quality_flag = 'pass'       — passed structure/voice/completeness scoring
+       *   solver_verdict = 'agree'    — the correct-answer KEY was independently
+       *                                 re-solved and the two answers agreed
+       *   caps_verdict  = 'on_syllabus' — the concept sits inside SA CAPS Grade 12
+       * A row whose key was never solver-confirmed physically cannot reach a
+       * learner here, even if it was released by mistake. A wrong MCQ key is the
+       * worst learner-facing error, so this gate is deliberately unforgiving.
        */
-      function buildExplanation(row: Row, fallbackAf: boolean): string {
-        if (row.markScheme?.criteria && row.markScheme.criteria.length > 0) {
-          const bullets = row.markScheme.criteria
-            .map(c => cleanCriterionText(c.memoExcerpt))
-            .filter(t => t.length > 0)
-            .slice(0, 5);
-          if (bullets.length > 0) {
-            const intro = fallbackAf ? "Amptelike memo:" : "Official memo:";
-            return `${intro}\n${bullets.map(b => `• ${b}`).join("\n")}`;
-          }
-        }
-        if (row.memoText) {
-          const trimmed = row.memoText.length > 600 ? row.memoText.slice(0, 600) + "…" : row.memoText;
-          return fallbackAf ? `Memo: ${trimmed}` : `Memo: ${trimmed}`;
+      const buildExplanation = (row: Row, fallbackAf: boolean): string => {
+        if (row.answerText && row.answerText.trim().length > 0) {
+          const t = row.answerText.length > 600 ? row.answerText.slice(0, 600) + "…" : row.answerText;
+          return fallbackAf ? `Modelantwoord: ${t}` : `Model answer: ${t}`;
         }
         return fallbackAf
-          ? "Antwoord uit die amptelike DBE-memo."
-          : "Answer drawn from the official DBE memo.";
-      }
+          ? "Antwoord uit gesimuleerde eksameninhoud."
+          : "Answer from simulated exam content.";
+      };
 
       const fetchRows = async (language: string, withTopic: boolean): Promise<Row[]> => {
-        return await db
-          .select({
-            id: dbeVerbatimQuestions.id,
-            questionText: dbeVerbatimQuestions.questionText,
-            memoText: dbeVerbatimQuestions.memoText,
-            markScheme: dbeVerbatimQuestions.markScheme,
-            topic: dbeVerbatimQuestions.topic,
-            cognitiveLevel: dbeVerbatimQuestions.cognitiveLevel,
-            mcqOptions: dbeVerbatimQuestions.mcqOptions,
-            correctOption: dbeVerbatimQuestions.correctOption,
-            marks: dbeVerbatimQuestions.marks,
-          })
-          .from(dbeVerbatimQuestions)
-          .where(buildConditions(language, withTopic))
-          .limit(120);
+        const topicClause = withTopic && topicFocus
+          ? sql`AND topic ILIKE ${"%" + topicFocus + "%"}`
+          : sql``;
+        const r = await db.execute<{
+          id: number; question_text: string; answer_text: string | null;
+          topic: string | null; cognitive_level: string | null;
+          mcq_options: Array<{ letter: string; text: string }> | null;
+          correct_option: string | null; marks: number | null;
+        }>(sql`
+          SELECT id, question_text, answer_text, topic, cognitive_level,
+                 mcq_options, correct_option, marks
+            FROM generated_questions
+           WHERE subject = ${subjectRow.name}
+             AND language = ${language}
+             AND released_at IS NOT NULL
+             AND quality_flag = 'pass'
+             AND mcq_options IS NOT NULL
+             AND correct_option IS NOT NULL
+             AND solver_verdict = 'agree'
+             AND caps_verdict = 'on_syllabus'
+             ${topicClause}
+           ORDER BY quality_score DESC, id DESC
+           LIMIT 120
+        `);
+        return (r.rows ?? []).map((x) => ({
+          id: x.id,
+          questionText: x.question_text,
+          answerText: x.answer_text,
+          topic: x.topic,
+          cognitiveLevel: x.cognitive_level,
+          mcqOptions: x.mcq_options,
+          correctOption: x.correct_option,
+          marks: x.marks,
+        }));
       };
 
       // Language fallbacks (preferred → English) — but topic scoping is
@@ -2256,9 +2305,11 @@ export async function registerRoutes(
       if (!subjectRow) return res.status(404).json({ error: "Subject not found" });
 
       // Authoritative grading: never trust client-supplied questions/answers.
-      // Look up each question by ID directly from dbe_verbatim_questions and
-      // verify the question belongs to this subject + has been released.
-      const { dbeVerbatimQuestions } = await import("@shared/schema");
+      // Look up each question by ID directly from generated_questions (ORIGINAL
+      // simulated content — never the copyrighted verbatim bank) and verify it
+      // belongs to this subject, was released, and cleared the strict
+      // anti-hallucination gate (solver-confirmed key + on-syllabus).
+      const { generatedQuestions } = await import("@shared/schema");
 
       // Collapse duplicate questionIds to the FIRST submitted answer per ID
       // so a malicious client cannot inflate score/coins by replaying the
@@ -2282,22 +2333,25 @@ export async function registerRoutes(
 
       const dbRows = await db
         .select({
-          id: dbeVerbatimQuestions.id,
-          subject: dbeVerbatimQuestions.subject,
-          questionText: dbeVerbatimQuestions.questionText,
-          memoText: dbeVerbatimQuestions.memoText,
-          topic: dbeVerbatimQuestions.topic,
-          mcqOptions: dbeVerbatimQuestions.mcqOptions,
-          correctOption: dbeVerbatimQuestions.correctOption,
-          marks: dbeVerbatimQuestions.marks,
+          id: generatedQuestions.id,
+          subject: generatedQuestions.subject,
+          questionText: generatedQuestions.questionText,
+          memoText: generatedQuestions.answerText,
+          topic: generatedQuestions.topic,
+          mcqOptions: generatedQuestions.mcqOptions,
+          correctOption: generatedQuestions.correctOption,
+          marks: generatedQuestions.marks,
         })
-        .from(dbeVerbatimQuestions)
+        .from(generatedQuestions)
         .where(
           and(
-            inArray(dbeVerbatimQuestions.id, questionIds),
-            eq(dbeVerbatimQuestions.subject, subjectRow.name),
-            sql`${dbeVerbatimQuestions.releasedAt} IS NOT NULL`,
-            sql`${dbeVerbatimQuestions.correctOption} IS NOT NULL`,
+            inArray(generatedQuestions.id, questionIds),
+            eq(generatedQuestions.subject, subjectRow.name),
+            sql`${generatedQuestions.releasedAt} IS NOT NULL`,
+            sql`${generatedQuestions.qualityFlag} = 'pass'`,
+            sql`${generatedQuestions.correctOption} IS NOT NULL`,
+            sql`${generatedQuestions.solverVerdict} = 'agree'`,
+            sql`${generatedQuestions.capsVerdict} = 'on_syllabus'`,
           ),
         );
 
@@ -3651,18 +3705,30 @@ export async function registerRoutes(
   }
 
   app.get("/api/subscribe/netcash/status", isAuthenticated, (_req: any, res) => {
+    if (process.env.PAYMENTS_LEGACY_ENABLED !== "true") {
+      return res.status(410).json({ error: "gone", message: "Legacy payment provider disabled." });
+    }
     res.json({ configured: isNetcashConfigured() });
   });
 
-  app.post("/api/subscribe/netcash/debicheck/init", isAuthenticated, paymentLimiter, (req: any, res) =>
-    startNetcashCheckout(req, res, "debicheck"),
-  );
-  app.post("/api/subscribe/netcash/card/init", isAuthenticated, paymentLimiter, (req: any, res) =>
-    startNetcashCheckout(req, res, "card"),
-  );
+  app.post("/api/subscribe/netcash/debicheck/init", isAuthenticated, paymentLimiter, (req: any, res) => {
+    if (process.env.PAYMENTS_LEGACY_ENABLED !== "true") {
+      return res.status(410).json({ error: "gone", message: "Legacy payment provider disabled." });
+    }
+    return startNetcashCheckout(req, res, "debicheck");
+  });
+  app.post("/api/subscribe/netcash/card/init", isAuthenticated, paymentLimiter, (req: any, res) => {
+    if (process.env.PAYMENTS_LEGACY_ENABLED !== "true") {
+      return res.status(410).json({ error: "gone", message: "Legacy payment provider disabled." });
+    }
+    return startNetcashCheckout(req, res, "card");
+  });
 
   // ─── Netcash: webhook (HMAC-verified) ──────────────────────────────
   app.post("/api/netcash/webhook", async (req: any, res) => {
+    if (process.env.PAYMENTS_LEGACY_ENABLED !== "true") {
+      return res.status(410).json({ error: "gone", message: "Legacy payment provider disabled." });
+    }
     try {
       if (!isNetcashConfigured()) {
         console.warn("Netcash webhook hit but credentials not configured — accepting in dev only");
@@ -3816,6 +3882,9 @@ export async function registerRoutes(
   // calls return 503 so the UI can show a graceful "not yet active" message.
 
   app.post("/api/subscribe/payfast/init", isAuthenticated, paymentLimiter, async (req: any, res) => {
+    if (process.env.PAYMENTS_LEGACY_ENABLED !== "true") {
+      return res.status(410).json({ error: "gone", message: "Legacy payment provider disabled." });
+    }
     try {
       if (!isPayfastConfigured()) {
         return res.status(503).json({
@@ -3876,6 +3945,9 @@ export async function registerRoutes(
   // done synchronously; the optional PayFast server-side validate call
   // is best-effort and done in the background.
   app.post("/api/payfast/itn", async (req: any, res) => {
+    if (process.env.PAYMENTS_LEGACY_ENABLED !== "true") {
+      return res.status(410).json({ error: "gone", message: "Legacy payment provider disabled." });
+    }
     // Always respond 200 immediately to satisfy PayFast's timeout window
     res.json({ received: true });
 
@@ -4029,6 +4101,9 @@ export async function registerRoutes(
 
   // ─── PayFast: post-redirect verification probe ─────────────────────
   app.get("/api/subscribe/payfast/verify", isAuthenticated, async (req: any, res) => {
+    if (process.env.PAYMENTS_LEGACY_ENABLED !== "true") {
+      return res.status(410).json({ error: "gone", message: "Legacy payment provider disabled." });
+    }
     try {
       const userId = req.user.claims.sub;
       const sub = await storage.getSubscription(userId);
@@ -4044,6 +4119,9 @@ export async function registerRoutes(
 
   // ─── Netcash: post-redirect verification probe ─────────────────────
   app.get("/api/subscribe/netcash/verify", isAuthenticated, async (req: any, res) => {
+    if (process.env.PAYMENTS_LEGACY_ENABLED !== "true") {
+      return res.status(410).json({ error: "gone", message: "Legacy payment provider disabled." });
+    }
     try {
       const userId = req.user.claims.sub;
       const sub = await storage.getSubscription(userId);
@@ -4539,7 +4617,14 @@ export async function registerRoutes(
   // Consent + card together are what start the learner's 14-day trial.
   app.post("/api/parent-consent/card-capture/initialize", paymentLimiter, async (req, res) => {
     try {
-      const body = z.object({ token: z.string().min(10).max(2000) }).parse(req.body);
+      // product picks WHICH offer the day-14 conversion charges (server owns
+      // the amounts): "premium" (default) → R169/month; "exam_boost" → R550
+      // once-off season pass. Whitelisted here so the client can never inject
+      // an arbitrary value; it round-trips to the webhook via metadata.product.
+      const body = z.object({
+        token: z.string().min(10).max(2000),
+        product: z.enum(["premium", "exam_boost"]).optional().default("premium"),
+      }).parse(req.body);
       const { verifyParentConsentToken } = await import("./parent-consent");
       const result = verifyParentConsentToken(body.token);
       if (!result.ok) return res.status(400).json({ error: result.reason });
@@ -4571,7 +4656,9 @@ export async function registerRoutes(
             userId: learnerUserId,
             parentEmail: result.parentEmail,
             purpose: "card_capture",
-            product: "BrainTrack Premium — card verification",
+            // "premium" | "exam_boost" — round-trips to the charge.success
+            // webhook so day-14 conversion charges the right amount.
+            product: body.product,
           },
         }),
       });
@@ -4602,11 +4689,16 @@ export async function registerRoutes(
         return res.json({ ok: false, captured: false, status: data?.status ?? "unknown" });
       }
 
+      // Tag the trial with the product chosen at initialize (round-tripped via
+      // Paystack metadata) so day-14 conversion charges the right amount —
+      // whether this return path or the webhook applies the capture first.
+      const captureProduct = data?.metadata?.product === "exam_boost" ? "exam_boost" : "premium";
       const capture = await applyCardCaptureSuccess({
         userId: result.learnerUserId,
         parentEmail: result.parentEmail,
         authorizationCode: data?.authorization?.authorization_code ?? null,
         customerCode: data?.customer?.customer_code ?? null,
+        product: captureProduct,
       });
 
       // POPIA audit: parental consent granted together with billing consent
@@ -5319,19 +5411,23 @@ export async function registerRoutes(
     }
   });
 
-  // Questions for an exam paper — reads from dbe_verbatim_questions (released only)
+  // Questions for Exam Mode. CONTENT INTEGRITY: this is a LEARNER surface, so it
+  // serves ORIGINAL verified MCQs from generated_questions — NEVER the
+  // copyrighted verbatim DBE paper. Same strict anti-hallucination gate as the
+  // daily quiz: released + quality pass + solver-confirmed key + on-syllabus.
+  // (Previously read dbe_verbatim_questions and served real DBE question text +
+  // memos to any authenticated learner — a copyright leak.)
   app.get("/api/exam-papers/:id/questions", isAuthenticated, async (req: any, res: any) => {
     try {
       const paperId = parseInt(req.params.id);
       if (isNaN(paperId)) return res.status(400).json({ error: "Invalid paper id" });
 
-      // Resolve the exam_papers row → subject name
+      // Resolve the exam_papers row → subject name + language only. The specific
+      // year/paper number is NOT used to fetch content (we never serve that real
+      // paper); it only tells us the subject + language to draw simulated MCQs.
       const [paper] = await db
         .select({
-          year: examPapers.year,
-          paperNumber: examPapers.paperNumber,
           language: examPapers.language,
-          month: examPapers.month,
           subjectName: subjects.name,
         })
         .from(examPapers)
@@ -5341,30 +5437,38 @@ export async function registerRoutes(
 
       if (!paper) return res.json([]);
 
-      // Pull released verbatim questions for this paper
-      const questions = await db
-        .select({
-          id: dbeVerbatimQuestions.id,
-          questionNumber: dbeVerbatimQuestions.questionNumber,
-          questionText: dbeVerbatimQuestions.questionText,
-          memoText: dbeVerbatimQuestions.memoText,
-          marks: dbeVerbatimQuestions.marks,
-          cognitiveLevel: dbeVerbatimQuestions.cognitiveLevel,
-          topic: dbeVerbatimQuestions.topic,
-          mcqOptions: dbeVerbatimQuestions.mcqOptions,
-          correctOption: dbeVerbatimQuestions.correctOption,
-        })
-        .from(dbeVerbatimQuestions)
-        .where(
-          and(
-            eq(dbeVerbatimQuestions.subject, paper.subjectName),
-            eq(dbeVerbatimQuestions.year, paper.year),
-            eq(dbeVerbatimQuestions.paperNumber, paper.paperNumber),
-            eq(dbeVerbatimQuestions.language, paper.language),
-            isNotNull(dbeVerbatimQuestions.releasedAt),
-          )
-        )
-        .orderBy(dbeVerbatimQuestions.questionNumber);
+      const rows = await db.execute<{
+        id: number; question_number: string | null; question_text: string;
+        memo_text: string | null; marks: number | null; cognitive_level: string | null;
+        topic: string | null; mcq_options: Array<{ letter: string; text: string }> | null;
+        correct_option: string | null;
+      }>(sql`
+        SELECT id, question_number, question_text, answer_text AS memo_text,
+               marks, cognitive_level, topic, mcq_options, correct_option
+          FROM generated_questions
+         WHERE subject = ${paper.subjectName}
+           AND language = ${paper.language}
+           AND released_at IS NOT NULL
+           AND quality_flag = 'pass'
+           AND mcq_options IS NOT NULL
+           AND correct_option IS NOT NULL
+           AND solver_verdict = 'agree'
+           AND caps_verdict = 'on_syllabus'
+         ORDER BY quality_score DESC, id DESC
+         LIMIT 40
+      `);
+
+      const questions = (rows.rows ?? []).map((q) => ({
+        id: q.id,
+        questionNumber: q.question_number,
+        questionText: q.question_text,
+        memoText: q.memo_text,
+        marks: q.marks,
+        cognitiveLevel: q.cognitive_level,
+        topic: q.topic,
+        mcqOptions: q.mcq_options,
+        correctOption: q.correct_option,
+      }));
 
       res.json(questions);
     } catch (error) {
@@ -6677,15 +6781,27 @@ Create comprehensive study notes for the topic provided.`;
   app.get("/api/user/referral", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const { userReferrals } = await import("@shared/schema");
       const code = await getOrCreateLearnerReferralCode(userId);
-      const baseUrl = process.env.APP_URL || `${req.protocol}://${req.get("host")}`;
+      const baseUrl = referralBaseUrl(req);
       const link = code ? `${baseUrl}/?ref=${code}` : null;
-      const monthStart = new Date();
-      monthStart.setDate(1); monthStart.setHours(0, 0, 0, 0);
-      const rows = await db.select().from(userReferrals)
-        .where(and(eq(userReferrals.referrerId, userId), sql`created_at >= ${monthStart}`));
-      return res.json({ code, link, thisMonthCount: rows.length, maxPerMonth: 2, referrals: rows });
+      // Stats are best-effort: a schema-drift error on user_referrals must not
+      // blank out the code/link. Select only drift-safe columns and fall back.
+      let thisMonthCount = 0;
+      if (code) {
+        try {
+          const { userReferrals } = await import("@shared/schema");
+          const monthStart = new Date();
+          monthStart.setDate(1); monthStart.setHours(0, 0, 0, 0);
+          const rows = await db
+            .select({ id: userReferrals.id })
+            .from(userReferrals)
+            .where(and(eq(userReferrals.referrerId, userId), sql`created_at >= ${monthStart}`));
+          thisMonthCount = rows.length;
+        } catch (statsErr) {
+          console.error("Error computing stats in /api/user/referral (returning code+link):", statsErr);
+        }
+      }
+      return res.json({ code, link, thisMonthCount, maxPerMonth: 2, referrals: [] });
     } catch (err: any) {
       return res.status(500).json({ error: safeError(err) });
     }
@@ -6700,29 +6816,53 @@ Create comprehensive study notes for the topic provided.`;
   app.get("/api/referral/my-link", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const { userReferrals } = await import("@shared/schema");
       const code = await getOrCreateLearnerReferralCode(userId);
-      const baseUrl = process.env.APP_URL || `${req.protocol}://${req.get("host")}`;
+      const baseUrl = referralBaseUrl(req);
       const link = code ? `${baseUrl}/?ref=${code}` : null;
 
-      const rows = code ? await db
-        .select()
-        .from(userReferrals)
-        .where(eq(userReferrals.referrerId, userId)) : [];
+      // Progress stats are best-effort. A schema-drift error on user_referrals
+      // (e.g. a column in shared/schema.ts not yet applied to prod) must NOT
+      // blank out the share code/link — that is the "referral not working"
+      // symptom. Select only drift-safe columns and fall back to zeroed stats
+      // so the endpoint always returns 200 with {code, link} when a code exists.
+      let pendingReferrals = 0;
+      let paidReferrals = 0;
+      let towardNextReward = 0;
+      let monthsEarned = 0;
+      if (code) {
+        try {
+          const { userReferrals } = await import("@shared/schema");
+          const rows = await db
+            .select({
+              id: userReferrals.id,
+              referrerId: userReferrals.referrerId,
+              status: userReferrals.status,
+            })
+            .from(userReferrals)
+            .where(eq(userReferrals.referrerId, userId));
 
-      const signedUp = rows.filter((r) => r.status === "signed_up").length;
-      const converted = rows.filter((r) => r.status === "converted").length;
-      const rewarded = rows.filter((r) => r.status === "rewarded").length;
-      const totalPaid = converted + rewarded;
-      const monthsEarned = Math.floor(totalPaid / LEARNER_REFERRAL_THRESHOLD);
-      const towardNextReward = totalPaid % LEARNER_REFERRAL_THRESHOLD;
+          const signedUp = rows.filter((r) => r.status === "signed_up").length;
+          const converted = rows.filter((r) => r.status === "converted").length;
+          const rewarded = rows.filter((r) => r.status === "rewarded").length;
+          const totalPaid = converted + rewarded;
+          pendingReferrals = signedUp;
+          paidReferrals = totalPaid;
+          monthsEarned = Math.floor(totalPaid / LEARNER_REFERRAL_THRESHOLD);
+          towardNextReward = totalPaid % LEARNER_REFERRAL_THRESHOLD;
+        } catch (statsErr) {
+          console.error(
+            "Error computing referral stats in /api/referral/my-link (returning code+link with zeroed stats):",
+            statsErr,
+          );
+        }
+      }
 
       return res.json({
         code,
         link,
         threshold: LEARNER_REFERRAL_THRESHOLD,
-        pendingReferrals: signedUp,
-        paidReferrals: totalPaid,
+        pendingReferrals,
+        paidReferrals,
         towardNextReward,
         monthsEarned,
       });
@@ -6738,12 +6878,14 @@ Create comprehensive study notes for the topic provided.`;
     try {
       const userId = req.user.claims.sub;
       const code = await getOrCreateLearnerReferralCode(userId);
-      const baseUrl = process.env.APP_URL || `${req.protocol}://${req.get("host")}`;
+      const baseUrl = referralBaseUrl(req);
       const link = code ? `${baseUrl}/?ref=${code}` : null;
       return res.json({ code, link });
     } catch (err: any) {
-      console.error("Error in /api/referral/my-code:", err);
-      return res.status(500).json({ error: safeError(err) });
+      // Never 500 the share card on a transient/drift error — degrade to a
+      // null code (client renders "—") instead of an error state.
+      console.error("Error in /api/referral/my-code (degrading to null code):", err);
+      return res.json({ code: null, link: null });
     }
   });
 
@@ -6758,10 +6900,20 @@ Create comprehensive study notes for the topic provided.`;
     try {
       const parentId = req.user.claims.sub;
       const linked = await storage.getLearnersForParent(parentId);
-      const baseUrl = process.env.APP_URL || `${req.protocol}://${req.get("host")}`;
+      const baseUrl = referralBaseUrl(req);
       const children = await Promise.all(
         linked.map(async (child) => {
-          const code = await getOrCreateLearnerReferralCode(child.learnerUserId);
+          // Resolve each child's code independently — one child failing on a
+          // drift/transient error must not blank out the whole parent card.
+          let code: string | null = null;
+          try {
+            code = await getOrCreateLearnerReferralCode(child.learnerUserId);
+          } catch (childErr) {
+            console.error(
+              `Error resolving referral code for child ${child.learnerUserId} (returning null):`,
+              childErr,
+            );
+          }
           const link = code ? `${baseUrl}/?ref=${code}` : null;
           return {
             learnerUserId: child.learnerUserId,
@@ -6773,8 +6925,10 @@ Create comprehensive study notes for the topic provided.`;
       );
       return res.json({ children });
     } catch (err: any) {
-      console.error("Error in /api/parent/referral/child-links:", err);
-      return res.status(500).json({ error: safeError(err) });
+      // Never 500 the parent share card — degrade to an empty list, matching
+      // the client's own !r.ok fallback.
+      console.error("Error in /api/parent/referral/child-links (degrading to empty list):", err);
+      return res.json({ children: [] });
     }
   });
 
@@ -7649,11 +7803,26 @@ Create comprehensive study notes for the topic provided.`;
 
       const { getLearnerSchedule, getNscTimetableForAdmin } = await import("./nsc-timetable");
 
-      // Get the learner's personal schedule (subject-filtered)
-      const [schedule, allEntries] = await Promise.all([
-        getLearnerSchedule(learnerTargetId),
-        getNscTimetableForAdmin(),
-      ]);
+      // Get the learner's personal schedule (subject-filtered).
+      // These run full typed SELECTs over nsc_timetable / learner_exam_schedule /
+      // prelim_exams. If prod is behind on a schema-column migration (the
+      // "0034-class" regression this repo has hit before), those SELECTs throw
+      // at the DB. Degrade to an empty schedule so the parent dashboard's exam
+      // section simply hides instead of the whole endpoint 500ing — which the
+      // client previously consumed as `learnerExamData.schedule.length` and
+      // blanked the entire page.
+      let schedule: Awaited<ReturnType<typeof getLearnerSchedule>> = [];
+      let allEntries: Awaited<ReturnType<typeof getNscTimetableForAdmin>> = [];
+      try {
+        [schedule, allEntries] = await Promise.all([
+          getLearnerSchedule(learnerTargetId),
+          getNscTimetableForAdmin(),
+        ]);
+      } catch (scheduleErr) {
+        console.error("[Timetable] parent learner-exam-schedule fetch failed, returning empty schedule:", scheduleErr);
+        schedule = [];
+        allEntries = [];
+      }
 
       // Compute readiness from userProgress
       const learnerProgressRows = await storage.getUserProgress(learnerTargetId);
@@ -8982,7 +9151,9 @@ Create comprehensive study notes for the topic provided.`;
 
       const baseUrl = process.env.APP_URL ?? process.env.PUBLIC_BASE_URL ?? 'https://app.braintrack.tech';
       
-      const referralUrl = `${baseUrl}/purchase?ref=${finalCode}`;
+      // /subscribe is the real public pricing route; /purchase does not exist
+      // (was 404-ing every partner-school QR scan).
+      const referralUrl = `${baseUrl}/subscribe?ref=${finalCode}`;
       
       const school = await storage.createPartnerSchool({
         schoolName,
@@ -9271,7 +9442,8 @@ Create comprehensive study notes for the topic provided.`;
 
       const baseUrl = process.env.APP_URL ?? process.env.PUBLIC_BASE_URL ?? 'https://app.braintrack.tech';
       
-      const referralUrl = `${baseUrl}/purchase?ref=${school.schoolCode}`;
+      // /subscribe is the real public pricing route; /purchase does not exist.
+      const referralUrl = `${baseUrl}/subscribe?ref=${school.schoolCode}`;
       
       res.json({
         schoolCode: school.schoolCode,
@@ -10638,61 +10810,16 @@ Create comprehensive study notes for the topic provided.`;
   // GET /api/past-papers/list — learner-accessible list of ingested past papers
   // that have passed the release gate. Un-released or admin-only uploads are
   // hidden — the response shape stays the same as before.
-  app.get("/api/past-papers/list", isAuthenticated, async (req: any, res) => {
-    try {
-      const userId: string = req.user.claims.sub;
-      const isActiveSub = await storage.hasActiveSubscription(userId);
-      if (!isActiveSub) return res.status(402).json({ error: "subscription_required", feature: "past_papers" });
-
-      const result: Array<{
-        subject: string;
-        years: Array<{ year: number; papers: number[]; memos: number[] }>;
-      }> = [];
-      if (!existsSync(DBE_UPLOADS_ROOT)) return res.json({ subjects: result });
-
-      const released = await getReleasedPaperKeys();
-      if (released.size === 0) return res.json({ subjects: result });
-
-      const subjects = await fsReaddir(DBE_UPLOADS_ROOT);
-      for (const subj of subjects.sort()) {
-        const subjPath = join(DBE_UPLOADS_ROOT, subj);
-        const subjStat = await fsStat(subjPath).catch(() => null);
-        if (!subjStat?.isDirectory()) continue;
-        const yearsRaw = await fsReaddir(subjPath);
-        const yearEntries: Array<{ year: number; papers: number[]; memos: number[] }> = [];
-        for (const yr of yearsRaw) {
-          const yrPath = join(subjPath, yr);
-          const yrStat = await fsStat(yrPath).catch(() => null);
-          if (!yrStat?.isDirectory()) continue;
-          const yearNum = Number(yr);
-          if (!Number.isFinite(yearNum)) continue;
-          const files = await fsReaddir(yrPath);
-          const papers = files
-            .filter(f => /^paper-p(\d+)\.pdf$/.test(f))
-            .map(f => Number((f.match(/^paper-p(\d+)\.pdf$/) as RegExpMatchArray)[1]))
-            .filter(n => released.has(`${subj}|${yearNum}|${n}`))
-            .sort((a, b) => a - b);
-          // Memos ride on the same gate as their paper — a memo is exposed
-          // iff the matching paper number for (subject, year) has released
-          // questions. This keeps un-validated memo PDFs out of learner view.
-          const memos = files
-            .filter(f => /^memo-p(\d+)\.pdf$/.test(f))
-            .map(f => Number((f.match(/^memo-p(\d+)\.pdf$/) as RegExpMatchArray)[1]))
-            .filter(n => released.has(`${subj}|${yearNum}|${n}`))
-            .sort((a, b) => a - b);
-          if (papers.length > 0 || memos.length > 0) {
-            yearEntries.push({ year: yearNum, papers, memos });
-          }
-        }
-        if (yearEntries.length > 0) {
-          yearEntries.sort((a, b) => b.year - a.year);
-          result.push({ subject: subj, years: yearEntries });
-        }
-      }
-      return res.json({ subjects: result });
-    } catch (err: any) {
-      return res.status(500).json({ error: err?.message ?? String(err) });
-    }
+  app.get("/api/past-papers/list", isAuthenticated, async (_req: any, res) => {
+    // COPYRIGHT SAFETY: verbatim DBE past-paper PDFs are copyrighted and must
+    // never be listed or served to learners. This endpoint intentionally no
+    // longer enumerates any real papers on disk. It returns a stable
+    // coming-soon shape the client detects to render its "simulated papers are
+    // on the way" state and point learners at the original simulated Full Exam
+    // (/exam/full). The handler stays registered (behind isAuthenticated) so
+    // the route contract is unchanged; it simply refuses to expose verbatim
+    // content. Keep `subjects: []` for backward-compatible clients.
+    return res.json({ comingSoon: true, papers: [], subjects: [] });
   });
 
   // GET /api/past-papers/file — learner-accessible PDF stream for an ingested
@@ -10700,6 +10827,17 @@ Create comprehensive study notes for the topic provided.`;
   // that has not been release-gate stamped in dbe_verbatim_questions, even if
   // the underlying file exists on disk (Task #826).
   app.get("/api/past-papers/file", isAuthenticated, async (req: any, res) => {
+    // COPYRIGHT SAFETY: never serve a verbatim DBE past-paper (or memo) PDF.
+    // These files are copyrighted and are being replaced with original,
+    // simulated papers. Refuse before any file read/stream so nothing
+    // copyrighted can leave the server. Handler stays registered behind
+    // isAuthenticated; it just always refuses.
+    return res.status(410).json({
+      error: "gone",
+      message: "Past-paper PDFs are being replaced with original simulated papers.",
+    });
+
+    // eslint-disable-next-line no-unreachable
     const userId: string = req.user.claims.sub;
     const isActiveSub = await storage.hasActiveSubscription(userId);
     if (!isActiveSub) return res.status(402).json({ error: "subscription_required", feature: "past_papers" });
@@ -11500,6 +11638,413 @@ Create comprehensive study notes for the topic provided.`;
       return res.json({ released: updated.length, version: nextVersion });
     } catch (err: any) {
       console.error("Error in /api/admin/simulator/release:", err);
+      return res.status(500).json({ error: safeError(err) });
+    }
+  });
+
+  // GET /api/admin/simulator/qa?subject=… — read-only QA report for one
+  // subject's simulated pool. Computes PURELY from the STORED scores
+  // (quality/caps/structure) already persisted at generation time — no LLM
+  // re-run, no expensive re-verify — so the owner can eyeball whether a
+  // subject meets the release criteria before/after releasing. Additive:
+  // reads nothing but existing rows, mutates nothing.
+  app.get("/api/admin/simulator/qa", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    try {
+      const subject = typeof req.query?.subject === "string" ? req.query.subject.trim() : "";
+      if (!subject) return res.status(400).json({ error: "subject required" });
+
+      const QUALITY_BAR = 92; // mirrors /overview releaseBar
+      const CAPS_BAR = 85;
+      const STRUCTURE_BAR = 85;
+      const { dbeSimulatedQuestions: sqT } = await import("@shared/schema");
+
+      // Shared builder so the full path and the degraded fallback produce the
+      // same shape. `extras` carries the post-0036/0037 fields (language +
+      // supporting material) that may be absent before those migrations.
+      type Agg = { total: number; released: number; unreleased: number; ge92: number; avgQuality: number; avgCaps: number; capsFail: number; avgStructure: number; structFail: number; memoPresent: number };
+      const buildReport = (
+        a: Agg,
+        worst: Array<{ id: number; qualityScore: number; capsAlignment: number; structureScore: number; hasMemo: boolean; language: string | null; questionText: string }>,
+        extras: { language: { en: number; af: number } | null; supportingMaterial: { withStimulus: number; total: number } | null },
+        migrationPending: boolean,
+        note?: string,
+      ) => {
+        const pct = (n: number, d: number) => (d > 0 ? Math.round((n / d) * 100) : 0);
+        const quality = { label: `Quality ≥ ${QUALITY_BAR}`, pass: a.total > 0 && a.avgQuality >= QUALITY_BAR, value: a.avgQuality, threshold: QUALITY_BAR, failingCount: a.total - a.ge92 };
+        const caps = { label: `CAPS alignment ≥ ${CAPS_BAR}`, pass: a.total > 0 && a.avgCaps >= CAPS_BAR, value: a.avgCaps, threshold: CAPS_BAR, failingCount: a.capsFail };
+        const structure = { label: `Structure ≥ ${STRUCTURE_BAR}`, pass: a.total > 0 && a.avgStructure >= STRUCTURE_BAR, value: a.avgStructure, threshold: STRUCTURE_BAR, failingCount: a.structFail };
+        const memo = { label: "Memo present (100%)", pass: a.total > 0 && a.memoPresent === a.total, value: pct(a.memoPresent, a.total), threshold: 100, failingCount: a.total - a.memoPresent };
+        const bilingual = extras.language
+          ? { label: "Bilingual (EN + AF)", pass: extras.language.en > 0 && extras.language.af > 0, value: `en ${extras.language.en} · af ${extras.language.af}`, threshold: "both", failingCount: (extras.language.en > 0 ? 0 : 1) + (extras.language.af > 0 ? 0 : 1) }
+          : null;
+        // Core gate — quality/caps/structure/memo. Bilingual + supporting
+        // coverage are informational and do NOT block meetsCriteria.
+        const meetsCriteria = quality.pass && caps.pass && structure.pass && memo.pass;
+        return {
+          subject,
+          bars: { quality: QUALITY_BAR, caps: CAPS_BAR, structure: STRUCTURE_BAR },
+          totals: { total: a.total, released: a.released, unreleased: a.unreleased },
+          checks: [quality, caps, structure, memo, ...(bilingual ? [bilingual] : [])],
+          language: extras.language,
+          supportingMaterial: extras.supportingMaterial,
+          worst,
+          meetsCriteria,
+          migrationPending,
+          ...(note ? { note } : {}),
+        };
+      };
+
+      try {
+        const [a] = await db
+          .select({
+            total: sql<number>`count(*)::int`,
+            released: sql<number>`count(*) filter (where ${sqT.releasedAt} is not null)::int`,
+            unreleased: sql<number>`count(*) filter (where ${sqT.releasedAt} is null)::int`,
+            ge92: sql<number>`count(*) filter (where coalesce(${sqT.qualityScore},0) >= ${QUALITY_BAR})::int`,
+            avgQuality: sql<number>`coalesce(round(avg(coalesce(${sqT.qualityScore},0))),0)::int`,
+            avgCaps: sql<number>`coalesce(round(avg(coalesce(${sqT.capsAlignment},0))),0)::int`,
+            capsFail: sql<number>`count(*) filter (where coalesce(${sqT.capsAlignment},0) < ${CAPS_BAR})::int`,
+            avgStructure: sql<number>`coalesce(round(avg(coalesce(${sqT.structureScore},0))),0)::int`,
+            structFail: sql<number>`count(*) filter (where coalesce(${sqT.structureScore},0) < ${STRUCTURE_BAR})::int`,
+            memoPresent: sql<number>`count(*) filter (where ${sqT.memoText} is not null and length(btrim(${sqT.memoText})) > 0)::int`,
+            enCount: sql<number>`count(*) filter (where ${sqT.language} = 'en')::int`,
+            afCount: sql<number>`count(*) filter (where ${sqT.language} = 'af')::int`,
+            withStimulus: sql<number>`count(*) filter (where ${sqT.stimulusText} is not null)::int`,
+          })
+          .from(sqT)
+          .where(eq(sqT.subject, subject));
+
+        const worst = await db
+          .select({
+            id: sqT.id,
+            qualityScore: sql<number>`coalesce(${sqT.qualityScore},0)::int`,
+            capsAlignment: sql<number>`coalesce(${sqT.capsAlignment},0)::int`,
+            structureScore: sql<number>`coalesce(${sqT.structureScore},0)::int`,
+            hasMemo: sql<boolean>`(${sqT.memoText} is not null and length(btrim(${sqT.memoText})) > 0)`,
+            language: sqT.language,
+            questionText: sql<string>`left(coalesce(${sqT.questionText},''), 120)`,
+          })
+          .from(sqT)
+          .where(eq(sqT.subject, subject))
+          .orderBy(sql`coalesce(${sqT.qualityScore},0) asc`, sqT.id)
+          .limit(5);
+
+        return res.json(
+          buildReport(
+            a,
+            worst,
+            { language: { en: a.enCount, af: a.afCount }, supportingMaterial: { withStimulus: a.withStimulus, total: a.total } },
+            false,
+          ),
+        );
+      } catch {
+        // Pre-0036/0037: language / stimulus_text / released_at absent. Degrade
+        // to the guaranteed columns (quality/caps/structure/memo) — same as how
+        // /overview falls back — and flag the missing coverage in a note.
+        console.warn("[simulator/qa] falling back to pre-0036/0037 columns — run the pending migrations");
+        const r = await db.execute<{ total: number; released: number; unreleased: number; ge92: number; avgquality: number; avgcaps: number; capsfail: number; avgstructure: number; structfail: number; memopresent: number }>(sql`
+          SELECT count(*)::int AS total,
+                 0::int AS released,
+                 count(*)::int AS unreleased,
+                 count(*) FILTER (WHERE COALESCE(quality_score,0) >= ${QUALITY_BAR})::int AS ge92,
+                 COALESCE(ROUND(AVG(COALESCE(quality_score,0))),0)::int AS avgquality,
+                 COALESCE(ROUND(AVG(COALESCE(caps_alignment,0))),0)::int AS avgcaps,
+                 count(*) FILTER (WHERE COALESCE(caps_alignment,0) < ${CAPS_BAR})::int AS capsfail,
+                 COALESCE(ROUND(AVG(COALESCE(structure_score,0))),0)::int AS avgstructure,
+                 count(*) FILTER (WHERE COALESCE(structure_score,0) < ${STRUCTURE_BAR})::int AS structfail,
+                 count(*) FILTER (WHERE memo_text IS NOT NULL AND length(btrim(memo_text)) > 0)::int AS memopresent
+            FROM dbe_simulated_questions WHERE subject = ${subject}`);
+        const x = (r.rows ?? [])[0] ?? { total: 0, released: 0, unreleased: 0, ge92: 0, avgquality: 0, avgcaps: 0, capsfail: 0, avgstructure: 0, structfail: 0, memopresent: 0 };
+        const w = await db.execute<{ id: number; qs: number; caps: number; struct: number; hasmemo: boolean; qt: string }>(sql`
+          SELECT id, COALESCE(quality_score,0)::int AS qs, COALESCE(caps_alignment,0)::int AS caps,
+                 COALESCE(structure_score,0)::int AS struct,
+                 (memo_text IS NOT NULL AND length(btrim(memo_text)) > 0) AS hasmemo,
+                 left(COALESCE(question_text,''),120) AS qt
+            FROM dbe_simulated_questions WHERE subject = ${subject}
+            ORDER BY COALESCE(quality_score,0) ASC, id ASC LIMIT 5`);
+        const worst = (w.rows ?? []).map((row) => ({
+          id: row.id, qualityScore: row.qs, capsAlignment: row.caps, structureScore: row.struct,
+          hasMemo: !!row.hasmemo, language: null, questionText: row.qt,
+        }));
+        return res.json(
+          buildReport(
+            { total: x.total, released: x.released, unreleased: x.unreleased, ge92: x.ge92, avgQuality: x.avgquality, avgCaps: x.avgcaps, capsFail: x.capsfail, avgStructure: x.avgstructure, structFail: x.structfail, memoPresent: x.memopresent },
+            worst,
+            { language: null, supportingMaterial: null },
+            true,
+            "Language + supporting-material coverage unavailable until migrations 0036/0037 run.",
+          ),
+        );
+      }
+    } catch (err: any) {
+      console.error("Error in /api/admin/simulator/qa:", err);
+      return res.status(500).json({ error: safeError(err) });
+    }
+  });
+
+  // GET /api/admin/simulator/coverage?subject=… — CAPS TOPIC-COVERAGE map.
+  // The owner's problem: simulated content covers too FEW of a subject's CAPS
+  // topics, and the high-yield ones are under-covered. This endpoint puts the
+  // FULL official CAPS topic universe (server/caps-syllabus.ts) next to what the
+  // simulated bank actually covers, flags the high-yield topics, and sorts the
+  // MISSING high-yield topics to the top so they can be generated first.
+  // Read-only, additive: reads existing rows, mutates nothing; degrades
+  // gracefully (try/catch) if the frequency table/columns are absent.
+  app.get("/api/admin/simulator/coverage", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    try {
+      const subject = typeof req.query?.subject === "string" ? req.query.subject.trim() : "";
+      if (!subject) return res.status(400).json({ error: "subject required" });
+
+      const { enumerateCapsTopics } = await import("./caps-syllabus");
+      const { dbeSimulatedQuestions: sqT, dbeTopicFrequency: tfT, topics: topicsT } = await import("@shared/schema");
+
+      // Pragmatic fuzzy match between a CAPS topic name and a bank/frequency
+      // topic label: case-insensitive, whitespace-trimmed, and substring either
+      // direction — the SAME loose rule the generator already uses to bucket
+      // verbatim questions into high-yield topics (see /simulate STEP 2). Bank
+      // labels are free-text, so exact equality would under-count coverage.
+      const norm = (s: string) => s.trim().toLowerCase().replace(/\s+/g, " ");
+      const matches = (capsName: string, other: string) => {
+        const a = norm(capsName);
+        const b = norm(other);
+        if (!a || !b) return false;
+        return a === b || a.includes(b) || b.includes(a);
+      };
+
+      // (1) FULL CAPS topic universe. Empty for subjects with thin CAPS data
+      // (e.g. some language variants) — handled by the fallback below.
+      const capsTopics = enumerateCapsTopics(subject); // [{ name, nameAfrikaans, capsCode }]
+
+      // (2) Covered = distinct `topic` values with ≥1 row in the simulated bank
+      // for this subject (ANY row, released or not — the owner needs to see
+      // topics that HAVE been generated even before release). Counts per label.
+      const simRows = await db
+        .select({
+          topic: sqT.topic,
+          n: sql<number>`count(*)::int`,
+        })
+        .from(sqT)
+        .where(eq(sqT.subject, subject))
+        .groupBy(sqT.topic);
+      const simLabels = simRows
+        .map((r) => ({ topic: (r.topic ?? "").trim(), n: r.n }))
+        .filter((r) => r.topic.length > 0);
+
+      // (3) High-yield ranking from dbe_topic_frequency (best-effort — the
+      // table/columns may be missing on an un-migrated DB). RULE: a topic is
+      // "high-yield" if its frequencyRank sits in the TOP 30% of the subject's
+      // ranked topics (rank 1 = most exam-frequent). If no usable ranks exist,
+      // fall back to avgMarksPerAppearance ABOVE the median. Either way we end
+      // up with a set of high-yield topic NAMES + each topic's rank.
+      let freqRows: Array<{ name: string; frequencyRank: number; avgMarks: number }> = [];
+      try {
+        const rows = await db
+          .select({
+            name: topicsT.name,
+            frequencyRank: tfT.frequencyRank,
+            avgMarks: tfT.avgMarksPerAppearance,
+          })
+          .from(tfT)
+          .leftJoin(topicsT, eq(tfT.topicId, topicsT.id))
+          .where(eq(tfT.subject, subject));
+        freqRows = rows
+          .filter((r) => !!r.name)
+          .map((r) => ({ name: r.name as string, frequencyRank: Number(r.frequencyRank ?? 0), avgMarks: Number(r.avgMarks ?? 0) }));
+      } catch {
+        console.warn("[simulator/coverage] dbe_topic_frequency unavailable — high-yield flags degraded to false");
+        freqRows = [];
+      }
+
+      const highYieldNames = new Set<string>();
+      const validRanks = freqRows.filter((r) => r.frequencyRank > 0);
+      if (validRanks.length > 0) {
+        const cutoffRank = Math.max(1, Math.ceil(validRanks.length * 0.3));
+        // frequencyRank is 1-based (1 = most frequent); top 30% by rank.
+        for (const r of validRanks) if (r.frequencyRank <= cutoffRank) highYieldNames.add(norm(r.name));
+      } else if (freqRows.length > 0) {
+        const marks = freqRows.map((r) => r.avgMarks).sort((a, b) => a - b);
+        const median = marks[Math.floor(marks.length / 2)] ?? 0;
+        for (const r of freqRows) if (r.avgMarks > median) highYieldNames.add(norm(r.name));
+      }
+      const rankOf = (capsName: string): number | null => {
+        const hit = freqRows.find((r) => matches(capsName, r.name) && r.frequencyRank > 0);
+        return hit ? hit.frequencyRank : null;
+      };
+      const isHighYield = (capsName: string): boolean =>
+        [...highYieldNames].some((hy) => matches(capsName, hy));
+
+      // (4) Build the universe of topic names. Prefer the official CAPS list;
+      // when it's thin/empty for a subject, degrade to the union of frequency
+      // + simulated labels so the panel still shows SOMETHING actionable.
+      let note: string | undefined;
+      let universe: string[];
+      if (capsTopics.length > 0) {
+        universe = capsTopics.map((t) => t.name);
+      } else {
+        const set = new Set<string>();
+        for (const r of freqRows) set.add(r.name);
+        for (const l of simLabels) set.add(l.topic);
+        universe = [...set];
+        note = "No official CAPS topic list for this subject — showing frequency + simulated labels instead.";
+      }
+
+      const topicsOut = universe.map((name) => {
+        const simulatedCount = simLabels
+          .filter((l) => matches(name, l.topic))
+          .reduce((a, l) => a + l.n, 0);
+        return {
+          topic: name,
+          covered: simulatedCount > 0,
+          simulatedCount,
+          highYield: isHighYield(name),
+          frequencyRank: rankOf(name),
+        };
+      });
+
+      // Sort: MISSING-and-HIGH-YIELD first, then other missing, then high-yield
+      // covered, then the rest — high-yield within each group by best rank.
+      topicsOut.sort((a, b) => {
+        if (a.covered !== b.covered) return a.covered ? 1 : -1; // uncovered first
+        if (a.highYield !== b.highYield) return a.highYield ? -1 : 1; // high-yield first
+        const ra = a.frequencyRank ?? Number.MAX_SAFE_INTEGER;
+        const rb = b.frequencyRank ?? Number.MAX_SAFE_INTEGER;
+        if (ra !== rb) return ra - rb;
+        return a.topic.localeCompare(b.topic);
+      });
+
+      const totalTopics = topicsOut.length;
+      const coveredCount = topicsOut.filter((t) => t.covered).length;
+      const coveragePct = totalTopics > 0 ? Math.round((coveredCount / totalTopics) * 100) : 0;
+      const highYieldTotal = topicsOut.filter((t) => t.highYield).length;
+      const highYieldCovered = topicsOut.filter((t) => t.highYield && t.covered).length;
+
+      return res.json({
+        subject,
+        totalTopics,
+        coveredCount,
+        coveragePct,
+        highYieldTotal,
+        highYieldCovered,
+        topics: topicsOut,
+        ...(note ? { note } : {}),
+      });
+    } catch (err: any) {
+      console.error("Error in /api/admin/simulator/coverage:", err);
+      return res.status(500).json({ error: safeError(err) });
+    }
+  });
+
+  // GET /api/predictor/:subject — EXAM PREDICTOR (learner-facing).
+  // The hero differentiator: "We've read 10 years of your matric paper. Here's
+  // what's most likely on yours — drill these first." Reads the SAME
+  // dbe_topic_frequency corpus the admin coverage/simulate endpoints use, but
+  // reshapes it into an HONEST, learner-readable recurrence ranking.
+  //
+  // Framing rule (non-negotiable): NO fabricated precise percentages. The only
+  // number we surface is the literal recurrence — appearances out of the
+  // distinct exam years sampled (yearsSpan) — plus a COARSE likelihood band
+  // derived from that ratio. Credible recurrence, not fake stats.
+  //
+  // Gate: a subject with zero dbe_topic_frequency rows returns
+  // { comingSoon:true, topics:[] } so the client can show an honest empty state
+  // rather than pretending we have data we don't.
+  app.get("/api/predictor/:subject", isAuthenticated, async (req: any, res) => {
+    try {
+      const subject = typeof req.params?.subject === "string" ? req.params.subject.trim() : "";
+      if (!subject) return res.status(400).json({ error: "subject required" });
+
+      const { dbeTopicFrequency: tfT, topics: topicsT } = await import("@shared/schema");
+
+      // Pull every ranked topic for this subject, joined to the topic label.
+      // Order by appearances DESC — the most exam-frequent topic first — exactly
+      // the ranking the /simulate high-yield loader uses (desc(appearancesCount)).
+      let rows: Array<{
+        name: string | null;
+        nameAfrikaans: string | null;
+        appearances: number;
+        totalYearsSampled: number;
+        avgMarks: number;
+        frequencyRank: number;
+      }> = [];
+      try {
+        rows = await db
+          .select({
+            name: topicsT.name,
+            nameAfrikaans: topicsT.nameAfrikaans,
+            appearances: tfT.appearancesCount,
+            totalYearsSampled: tfT.totalYearsSampled,
+            avgMarks: tfT.avgMarksPerAppearance,
+            frequencyRank: tfT.frequencyRank,
+          })
+          .from(tfT)
+          .leftJoin(topicsT, eq(tfT.topicId, topicsT.id))
+          .where(eq(tfT.subject, subject))
+          .orderBy(desc(tfT.appearancesCount));
+      } catch {
+        // Un-migrated DB / missing table — degrade to the honest empty state.
+        console.warn("[predictor] dbe_topic_frequency unavailable — returning comingSoon");
+        return res.json({ subject, comingSoon: true, yearsSpan: 0, topics: [] });
+      }
+
+      const usable = rows.filter((r) => !!r.name && Number(r.appearances) > 0);
+      if (usable.length === 0) {
+        return res.json({ subject, comingSoon: true, yearsSpan: 0, topics: [] });
+      }
+
+      // yearsSpan = distinct exam years in the corpus for this subject. The
+      // ingestion writes the SAME totalYearsSampled onto every row for a subject,
+      // so the max is the corpus span. When it's absent (0) we simply don't claim
+      // an "X of Y years" denominator — the band falls back to appearances alone.
+      const yearsSpan = usable.reduce((m, r) => Math.max(m, Number(r.totalYearsSampled) || 0), 0);
+
+      // High-yield cutoff: top ~30% by frequencyRank (rank 1 = most frequent),
+      // mirroring the coverage endpoint's rule. OR appearances >= 3 as an
+      // appearance-based floor per the spec.
+      const validRanks = usable.filter((r) => Number(r.frequencyRank) > 0);
+      const cutoffRank = validRanks.length > 0 ? Math.max(1, Math.ceil(validRanks.length * 0.3)) : 0;
+
+      // HONEST likelihood band. With a known yearsSpan, band off the true
+      // recurrence ratio (appearances / years). Without it, fall back to a
+      // coarse appearance count so we never invent a denominator we don't have.
+      const bandFor = (appearances: number): string => {
+        if (yearsSpan > 0) {
+          const ratio = appearances / yearsSpan;
+          if (ratio >= 0.8) return "Almost certain";
+          if (ratio >= 0.6) return "Very likely";
+          if (ratio >= 0.4) return "Likely";
+          return "Possible";
+        }
+        if (appearances >= 6) return "Almost certain";
+        if (appearances >= 4) return "Very likely";
+        if (appearances >= 3) return "Likely";
+        return "Possible";
+      };
+
+      const topicsOut = usable.slice(0, 15).map((r) => {
+        const appearances = Number(r.appearances) || 0;
+        const frequencyRank = Number(r.frequencyRank) || 0;
+        const highYield =
+          (cutoffRank > 0 && frequencyRank > 0 && frequencyRank <= cutoffRank) || appearances >= 3;
+        return {
+          topic: r.name as string,
+          topicAfrikaans: r.nameAfrikaans || (r.name as string),
+          appearances,
+          yearsSpan,
+          avgMarks: Number(r.avgMarks) || 0,
+          frequencyRank,
+          highYield,
+          likelihood: bandFor(appearances),
+        };
+      });
+
+      return res.json({
+        subject,
+        comingSoon: false,
+        yearsSpan,
+        topics: topicsOut,
+      });
+    } catch (err: any) {
+      console.error("Error in /api/predictor/:subject:", err);
       return res.status(500).json({ error: safeError(err) });
     }
   });
@@ -12552,6 +13097,15 @@ Return ONLY valid JSON: { "accuracy": N, "capsAlignment": N, "structureScore": N
     const { subject } = req.body;
     if (!subject) return res.status(400).json({ error: "subject is required" });
 
+    // OPTIONAL topic-targeting (additive). When present, the whole batch is
+    // aimed at ONE CAPS topic and every stored row's `topic` is forced to this
+    // exact string so the coverage endpoint counts it against that CAPS topic.
+    // When absent, behaviour is byte-for-byte identical to before (untargeted).
+    const targetTopic =
+      typeof req.body?.topic === "string" && req.body.topic.trim()
+        ? req.body.topic.trim().slice(0, 200)
+        : null;
+
     try {
       const { dbeVerbatimQuestions: vqTable, dbeTopicFrequency: tfTable, topics: topicsTable } = await import("@shared/schema");
       const { eq, desc, inArray } = await import("drizzle-orm");
@@ -12709,6 +13263,14 @@ The sum of "marks" across markingScheme MUST equal the question's "marks" field.
           }\n\nPRIORITY: Generate questions that cover these high-yield topics. Mix cognitive levels (knowledge, application, higher_order) proportionally to real NSC papers.`
         : "\n\nNo mastery data yet — generate questions matching the style and topics of the samples provided.";
 
+      // Topic-targeting override (additive): when a CAPS topic was requested,
+      // force EVERY question onto it and pin the returned "topic" label so the
+      // coverage endpoint credits this exact CAPS topic. Empty string when
+      // untargeted, so the prompt is unchanged on the normal path.
+      const topicFocusPrompt = targetTopic
+        ? `\n\nTOPIC LOCK: EVERY question in this batch MUST be strictly about the CAPS topic "${targetTopic}" — do NOT drift to other topics. Set each question's "topic" field to exactly "${targetTopic}".`
+        : "";
+
       // === STEP 3b: Generate 50 questions in 5 batches of 10 ===
       const BATCHES = 5;
       const PER_BATCH = 10;
@@ -12742,7 +13304,7 @@ Requirements:
   — invent original passages in authentic NSC register. Questions that need
   no source text must omit stimulusText entirely. The memo must be gradable
   from the stimulusText + question alone.
-${masteryContext}${markingLogicPrompt}
+${masteryContext}${markingLogicPrompt}${topicFocusPrompt}
 Return JSON: { "questions": [{ "questionText": "...", "stimulusText": "... (only when required)", "memoText": "...", "marks": N, "cognitiveLevel": "knowledge|application|higher_order", "topic": "...", "markingScheme": [{ "criterion": "...", "marks": N }] }] }`,
               },
               { role: "user", content: JSON.stringify(batchSample) },
@@ -12845,6 +13407,9 @@ Return one entry per question, same order as input. JSON: { "scores": [{ "idx": 
       // Persist to DB so learners can see them
       const { dbeSimulatedQuestions, examPapers, questions: questionsTable, subjects: subjectsTable, topics: topicsTbl } = await import("@shared/schema");
       for (const q of generated) {
+        // Pin the CAPS topic when targeted so coverage attributes it exactly;
+        // otherwise keep the generator's own label (unchanged behaviour).
+        if (targetTopic) q.topic = targetTopic;
         const baseRow = {
           subject,
           questionText: q.questionText,
@@ -13194,6 +13759,96 @@ Return one entry per question, same order as input. JSON: { "scores": [{ "idx": 
       });
     } catch (err: any) {
       simulateAllProgress.running = false;
+      return res.status(500).json({ error: safeError(err) });
+    }
+  });
+
+  // POST /api/admin/simulator/generate-topic { subject, topic, count? }
+  // Topic-TARGETED generation for the coverage panel's "Generate Missing
+  // Topics" flow. Calls the existing /simulate generator constrained to ONE
+  // CAPS topic and AWAITS it (synchronous, unlike the fire-and-forget
+  // simulate-subject), so the frontend can loop over missing topics with real
+  // per-topic progress. Deliberately does NOT touch simulateAllProgress, so it
+  // never collides with — or changes the behaviour of — the untargeted paths.
+  app.post("/api/admin/simulator/generate-topic", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    try {
+      const subject = String(req.body?.subject ?? "").trim();
+      const topic = String(req.body?.topic ?? "").trim();
+      if (!subject) return res.status(400).json({ error: "subject is required" });
+      if (!topic) return res.status(400).json({ error: "topic is required" });
+      const count = Math.max(1, Math.min(5, Number(req.body?.count ?? 1)));
+
+      const port = process.env.PORT || 5000;
+      const baseUrl = `http://localhost:${port}`;
+      const cookies = req.headers.cookie || "";
+
+      let generated = 0;
+      let dropped = 0;
+      const errors: string[] = [];
+      for (let i = 0; i < count; i++) {
+        try {
+          const r = await fetch(`${baseUrl}/api/admin/dbe-ingestion/simulate`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Cookie: cookies },
+            body: JSON.stringify({ subject, topic }),
+          });
+          const body = await r.json().catch(() => ({}));
+          if (r.ok) {
+            generated += Number(body?.generated ?? 0);
+            dropped += Number(body?.droppedForQuality ?? 0);
+          } else {
+            errors.push(String(body?.message ?? body?.error ?? `HTTP ${r.status}`));
+          }
+        } catch (e: any) {
+          errors.push(String(e?.message ?? e));
+        }
+      }
+
+      return res.json({
+        subject,
+        topic,
+        requested: count,
+        generated,
+        droppedForQuality: dropped,
+        errors,
+        message: `${generated} question(s) banked for "${topic}"${errors.length ? ` · ${errors.length} run(s) failed` : ""}`,
+      });
+    } catch (err: any) {
+      return res.status(500).json({ error: safeError(err) });
+    }
+  });
+
+  // POST /api/admin/simulator/generate-mcq { subject, count?, topicCount? }
+  // Produces DAILY-QUIZ MCQs for a subject with the STRICT anti-hallucination
+  // gate: each generated MCQ is scored, then its correct-answer key is
+  // independently re-solved (solver check) and CAPS-checked, and it is released
+  // ONLY when quality passes AND the solver agrees AND the concept is
+  // on-syllabus. Anything else is held for review. The learner quiz enforces the
+  // same gate at read time, so a held/unverified MCQ can never reach a learner.
+  // Synchronous (awaits the whole verify pass) so the UI shows a real result.
+  app.post("/api/admin/simulator/generate-mcq", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    try {
+      const subject = String(req.body?.subject ?? "").trim();
+      if (!subject) return res.status(400).json({ error: "subject is required" });
+      // Number("abc") is NaN, which is not null — guard so garbage input falls
+      // back to the pipeline defaults instead of poisoning Math.min/max.
+      const nOrUndef = (v: any) => (Number.isFinite(Number(v)) ? Number(v) : undefined);
+      const count = nOrUndef(req.body?.count);
+      const topicCount = nOrUndef(req.body?.topicCount);
+
+      const { generateVerifyReleaseMcqs } = await import("./mcq-pipeline");
+      const r = await generateVerifyReleaseMcqs({ subject, count, topicCount });
+
+      const heldNote = r.heldForReview > 0
+        ? ` · ${r.heldForReview} held (solver disagree ${r.solverDisagree}, uncertain ${r.solverUncertain}; CAPS off ${r.capsOff}, uncertain ${r.capsUncertain})`
+        : "";
+      return res.json({
+        ...r,
+        message: `${subject}: generated ${r.generated} MCQ(s), banked ${r.banked}, verified ${r.verified}, ` +
+          `RELEASED ${r.released} (solver-agree + on-syllabus)${heldNote}` +
+          `${r.errors.length ? ` · ${r.errors.length} error(s)` : ""}`,
+      });
+    } catch (err: any) {
       return res.status(500).json({ error: safeError(err) });
     }
   });
@@ -16382,102 +17037,147 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
     }
   });
 
-  // GET /api/exam/full/papers — list available full papers grouped by subject
-  app.get("/api/exam/full/papers", isAuthenticated, async (_req: any, res) => {
+  // GET /api/exam/full/papers — list one SIMULATED exam per subject that has
+  // released simulated content in the requested language.
+  //
+  // CONTENT-INTEGRITY INVARIANT (do not weaken): the Full Exam serves ORIGINAL
+  // examiner-equivalent simulated content ONLY — `dbeSimulatedQuestions`. It
+  // MUST NEVER read `dbeVerbatimQuestions` here, and there is NO verbatim
+  // fallback anywhere on this path. A subject with no released simulated rows
+  // in the requested language is simply omitted; the client shows "coming
+  // soon" when a subject with no usable content is picked.
+  app.get("/api/exam/full/papers", isAuthenticated, async (req: any, res) => {
     try {
-      const { dbeVerbatimQuestions: vqT } = await import("@shared/schema");
-      const rows = await db
-        .select({
-          subject: vqT.subject,
-          year: vqT.year,
-          session: vqT.session,
-          paperNumber: vqT.paperNumber,
-          questionCount: sql<number>`COUNT(*)::int`,
-          totalMarks: sql<number>`COALESCE(SUM(${vqT.marks}), 0)::int`,
-        })
-        .from(vqT)
-        // Task #394 — release-gate: only papers passing ≥98% memo + mark
-        // coverage appear here. Learners never see un-released papers.
-        .where(sql`${vqT.releasedAt} IS NOT NULL`)
-        .groupBy(vqT.subject, vqT.year, vqT.session, vqT.paperNumber)
-        .having(sql`COUNT(*) >= 4`)
-        .orderBy(vqT.subject, sql`year DESC`, vqT.paperNumber);
+      const userId = req.user.claims.sub;
+      const [userRow] = await db
+        .select({ preferredLanguage: users.preferredLanguage })
+        .from(users)
+        .where(eq(users.id, userId));
+      // Simulated content stores language in SHORT form ("en"/"af"), unlike
+      // verbatim's long form — so we filter on the short code directly.
+      const language = resolveRequestLang(req.query.language, userRow?.preferredLanguage);
 
-      const bySubject = new Map<string, { subject: string; papers: typeof rows }>();
-      for (const r of rows) {
-        const e = bySubject.get(r.subject) ?? { subject: r.subject, papers: [] };
-        e.papers.push(r);
-        bySubject.set(r.subject, e);
+      const { dbeSimulatedQuestions: sqT } = await import("@shared/schema");
+
+      let rows: { subject: string; questionCount: number; totalMarks: number }[] = [];
+      try {
+        rows = await db
+          .select({
+            subject: sqT.subject,
+            questionCount: sql<number>`COUNT(*)::int`,
+            totalMarks: sql<number>`COALESCE(SUM(COALESCE(${sqT.marks}, 1)), 0)::int`,
+          })
+          .from(sqT)
+          .where(and(
+            sql`${sqT.releasedAt} IS NOT NULL`,
+            eq(sqT.language, language),
+            sql`${sqT.memoText} IS NOT NULL`,
+            sql`length(trim(${sqT.memoText})) >= 20`,
+          ))
+          .groupBy(sqT.subject)
+          .orderBy(sqT.subject);
+      } catch {
+        // Migrations 0036/0037 (language / released_at) not yet applied — no
+        // released simulated content can exist, so return an empty list. We
+        // NEVER fall back to verbatim to fill the gap.
+        console.warn("[full/papers] simulated columns missing — run pending migrations");
+        rows = [];
       }
-      res.json(Array.from(bySubject.values()));
+
+      // Per-subject synthetic exams. `id` is stable per subject+language so the
+      // client can key on it without a real paper year/number existing.
+      res.json(rows.map((r) => ({
+        id: `${r.subject}::${language}`,
+        subject: r.subject,
+        questionCount: r.questionCount,
+        totalMarks: r.totalMarks,
+        language,
+      })));
     } catch (err: any) {
       res.status(500).json({ error: safeError(err) });
     }
   });
 
-  // GET /api/exam/full/paper?subject=…&year=…&paperNumber=…&session=…
+  // GET /api/exam/full/paper?subject=…&language=en|af
+  //
+  // CONTENT-INTEGRITY INVARIANT: assembles a paper from the SIMULATED pool
+  // ONLY (`dbeSimulatedQuestions`). No verbatim import, no verbatim fallback.
+  // If no usable simulated rows exist → `{ comingSoon:true }` (200). We NEVER
+  // serve verbatim to fill an empty subject.
   app.get("/api/exam/full/paper", isAuthenticated, async (req: any, res) => {
     try {
       const subject = String(req.query.subject || "").trim();
-      const year = parseInt(String(req.query.year || ""), 10);
-      const paperNumber = parseInt(String(req.query.paperNumber || ""), 10);
-      // Session must be matched exactly — including NULL — so we never
-      // accidentally aggregate questions from a different sitting.
-      const sessionRaw = req.query.session;
-      const sessionIsNull = sessionRaw === undefined || sessionRaw === "" || sessionRaw === "null";
-      const session = sessionIsNull ? null : String(sessionRaw);
-      if (!subject || !year || !paperNumber) {
-        return res.status(400).json({ error: "subject, year, paperNumber required" });
-      }
-      const { dbeVerbatimQuestions: vqT } = await import("@shared/schema");
-      const conds = [
-        eq(vqT.subject, subject),
-        eq(vqT.year, year),
-        eq(vqT.paperNumber, paperNumber),
-        // Task #394 — release-gate: only released rows enter the exam, so
-        // learners are never auto-penalised on un-markable items and never
-        // see a paper that hasn't passed the ≥98% memo + mark coverage check.
-        sql`${vqT.releasedAt} IS NOT NULL`,
-      ];
-      conds.push(session === null ? sql`${vqT.session} IS NULL` : eq(vqT.session, session));
-      const rowsRaw = await db
-        .select()
-        .from(vqT)
-        .where(and(...conds))
-        .orderBy(vqT.questionNumber);
+      if (!subject) return res.status(400).json({ error: "subject required" });
+      const userId = req.user.claims.sub;
+      const [userRow] = await db
+        .select({ preferredLanguage: users.preferredLanguage })
+        .from(users)
+        .where(eq(users.id, userId));
+      const language = resolveRequestLang(req.query.language, userRow?.preferredLanguage);
 
-      // Same hygiene filter as /api/dbe/questions and mini-mock: drop
-      // truncated stubs and unanswerable stimulus-referring questions so a
-      // full paper never opens with a "Refer to Information B" that isn't
-      // in the ingested corpus.
+      const { dbeSimulatedQuestions: sqT } = await import("@shared/schema");
+      let rowsRaw: any[] = [];
+      try {
+        rowsRaw = await db
+          .select()
+          .from(sqT)
+          .where(and(
+            eq(sqT.subject, subject),
+            eq(sqT.language, language),
+            sql`${sqT.releasedAt} IS NOT NULL`,
+          ))
+          // Deterministic order (best quality first, then id) so the paper the
+          // learner sees is reproducible and /submit rebuilds the same set.
+          .orderBy(sql`COALESCE(${sqT.qualityScore}, 0) DESC, ${sqT.id} ASC`);
+      } catch {
+        console.warn("[full/paper] simulated columns missing — run pending migrations");
+        rowsRaw = [];
+      }
+
+      // Same hygiene as mini-mock: strip mark notation and drop truncated stubs
+      // / questions that point at a stimulus we don't have. NOTE: we intentionally
+      // do NOT pass `stimulusText` into the gate here — for simulated exams the
+      // supporting material is ORIGINAL and is rendered WITH the question, so a
+      // row carrying a passage is answerable and must not be auto-rejected as
+      // "stimulus-dependent" (which `gateSource` does when stimulusText is set).
       const { gateSource } = await import("./exam-source-hygiene");
-      const rows = rowsRaw.filter((r: any) =>
+      const usable = rowsRaw.filter((r: any) =>
         gateSource({
           questionText: r.questionText,
           memoText: r.memoText,
-          stimulusText: r.stimulusText,
-          needsStimulus: r.needsStimulus,
+          needsStimulus: false,
         }).usable,
       );
 
-      const totalMarks = rows.reduce((s, r) => s + (r.marks ?? 0), 0);
-      // Default exam time per DBE convention: 1 minute per mark, 90–180 mins
+      if (usable.length === 0) {
+        // Coming-soon state — NEVER a verbatim fallback.
+        return res.json({ comingSoon: true, subject, language });
+      }
+
+      // Generated exams have no fixed paper length; cap at a sittable size.
+      const MAX_QUESTIONS = 40;
+      const rows = usable.slice(0, MAX_QUESTIONS);
+
+      const totalMarks = rows.reduce((s, r) => s + (r.marks ?? 1), 0);
+      // Default exam time per DBE convention: 1 minute per mark, 60–180 mins.
       const timeMinutes = Math.max(60, Math.min(180, totalMarks));
       res.json({
         subject,
-        year,
-        session,
-        paperNumber,
+        language,
         totalMarks,
         timeMinutes,
-        questions: rows.map((r) => ({
+        questions: rows.map((r, i) => ({
           id: r.id,
-          questionNumber: r.questionNumber,
+          // Simulated rows carry no paper question-number — number in order.
+          questionNumber: String(i + 1),
           questionText: r.questionText,
+          // Original supporting material (comprehension paragraph / poem / case
+          // study) rendered above the question so passage-based items are fully
+          // answerable. Null when the question is self-contained.
+          stimulusText: r.stimulusText ?? null,
           marks: r.marks ?? 1,
           topic: r.topic,
           cognitiveLevel: r.cognitiveLevel,
-          mcqOptions: r.mcqOptions,
         })),
       });
     } catch (err: any) {
@@ -16485,27 +17185,52 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
     }
   });
 
-  // POST /api/exam/full/submit { subject, year, paperNumber, session, answers: {questionId: text} }
+  // POST /api/exam/full/submit { subject, language, answers: {questionId: text} }
+  //
+  // CONTENT-INTEGRITY INVARIANT: marks against the SIMULATED memos ONLY
+  // (`dbeSimulatedQuestions.memoText`). No verbatim import, no verbatim
+  // fallback. The paper set is rebuilt with the SAME query + hygiene + cap as
+  // /api/exam/full/paper so the marked denominator matches what the learner saw.
   app.post("/api/exam/full/submit", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const { subject, year, paperNumber, session, answers } = req.body || {};
+      const { subject, answers } = req.body || {};
       const isAf = (req.headers["accept-language"] || "").toString().toLowerCase().includes("af");
-      if (!subject || !year || !paperNumber || !answers || typeof answers !== "object") {
-        return res.status(400).json({ error: "subject, year, paperNumber and answers required" });
+      if (!subject || !answers || typeof answers !== "object") {
+        return res.status(400).json({ error: "subject and answers required" });
       }
-      const { dbeVerbatimQuestions: vqT } = await import("@shared/schema");
-      const sessionIsNull = session === undefined || session === null || session === "" || session === "null";
-      const conds = [
-        eq(vqT.subject, subject),
-        eq(vqT.year, Number(year)),
-        eq(vqT.paperNumber, Number(paperNumber)),
-        // Task #394 — same release-gate filter as /api/exam/full/paper so
-        // the submit set is identical to the question set the learner saw.
-        sql`${vqT.releasedAt} IS NOT NULL`,
-        sessionIsNull ? sql`${vqT.session} IS NULL` : eq(vqT.session, String(session)),
-      ];
-      const rows = await db.select().from(vqT).where(and(...conds));
+      const [userRow] = await db
+        .select({ preferredLanguage: users.preferredLanguage })
+        .from(users)
+        .where(eq(users.id, userId));
+      const language = resolveRequestLang(req.body?.language ?? req.query.language, userRow?.preferredLanguage);
+
+      const { dbeSimulatedQuestions: sqT } = await import("@shared/schema");
+      let rowsRaw: any[] = [];
+      try {
+        rowsRaw = await db
+          .select()
+          .from(sqT)
+          .where(and(
+            eq(sqT.subject, subject),
+            eq(sqT.language, language),
+            sql`${sqT.releasedAt} IS NOT NULL`,
+          ))
+          .orderBy(sql`COALESCE(${sqT.qualityScore}, 0) DESC, ${sqT.id} ASC`);
+      } catch {
+        console.warn("[full/submit] simulated columns missing — run pending migrations");
+        rowsRaw = [];
+      }
+      // Identical hygiene + cap to /api/exam/full/paper (stimulusText NOT gated —
+      // see the paper endpoint) so `rows` is the exact set the learner sat.
+      const { gateSource } = await import("./exam-source-hygiene");
+      const rows = rowsRaw
+        .filter((r: any) => gateSource({
+          questionText: r.questionText,
+          memoText: r.memoText,
+          needsStimulus: false,
+        }).usable)
+        .slice(0, 40);
 
       const perQuestion: any[] = [];
       let marksAwarded = 0;
@@ -16519,81 +17244,52 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       let notMarkedCount = 0;
       let notMarkedMarks = 0;
 
-      for (const row of rows) {
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        // Simulated rows have no paper question-number; number them in order —
+        // identical to the sequence assigned by /api/exam/full/paper.
+        const questionNumber = String(i + 1);
         const total = row.marks ?? 1;
         marksAvailable += total;
         const learnerAnswer = String(answers[row.id] ?? "");
-        let breakdown: any;
 
-        if (row.correctOption) {
-          // Letter-SET comparison — see the mini-mock path above for why a
-          // first-character check is wrong on multi-letter selection items.
-          const expectedSet = parseCorrectOptions(row.correctOption);
-          const expected = expectedSet.join(", ");
-          const gotSet = parseCorrectOptions(learnerAnswer);
-          const correct =
-            expectedSet.length > 0 &&
-            gotSet.length === expectedSet.length &&
-            expectedSet.every((l) => gotSet.includes(l));
-          const hits = expectedSet.filter((l) => gotSet.includes(l)).length;
-          const awarded = correct
-            ? total
-            : gotSet.length > expectedSet.length
-              ? 0
-              : Math.floor((hits / Math.max(1, expectedSet.length)) * total);
-          breakdown = {
-            marksAwarded: awarded,
-            marksAvailable: total,
-            isCorrect: correct,
-            perCriterion: [{
-              id: "mcq",
-              marks: total,
-              awarded,
-              matched: expectedSet.filter((l) => gotSet.includes(l)),
-              missed: expectedSet.filter((l) => !gotSet.includes(l)),
-              memoExcerpt: `Correct option: ${expected}`,
-              feedback: correct
-                ? (isAf ? "Korrekte opsie." : "Correct.")
-                : (isAf ? `Verwag: ${expected}.` : `Expected: ${expected}.`),
-            }],
-            examinerNotes: [],
-          };
-        } else {
-          const scheme = ensureMarkScheme(row);
-          const marked = scheme ? markAgainstScheme(learnerAnswer, scheme, isAf) : null;
-          // `unmarkable` means every criterion was examiner furniture; treat it
-          // exactly like an unparsable memo rather than scoring against junk.
-          const rawBreakdown = marked && !marked.unmarkable ? marked : null;
-          breakdown = rawBreakdown
-            ? {
-                ...rawBreakdown,
-                perCriterion: rawBreakdown.perCriterion.map(c => ({
-                  ...c,
-                  memoExcerpt: cleanCriterionText(c.memoExcerpt),
-                })),
-              }
-            : {
-                marksAwarded: 0,
-                marksAvailable: total,
-                isCorrect: false,
-                notMarked: true,
-                perCriterion: [],
-                examinerNotes: [
-                  isAf
-                    ? "Memo nie outomaties merkbaar nie — vergelyk handmatig."
-                    : "Memo not auto-markable — please review against the memo.",
-                ],
-              };
-          if (breakdown.notMarked) {
-            notMarkedCount++;
-            notMarkedMarks += total;
-          }
+        // Simulated items are written-response ONLY — no MCQ letter bank, no
+        // markScheme column. Mark against the SIMULATED memo by parsing it into
+        // a scheme on the fly (mirrors the mini-mock gradability guard).
+        const scheme = parseMemoToScheme(row.memoText ?? "", total);
+        const marked = scheme ? markAgainstScheme(learnerAnswer, scheme, isAf) : null;
+        // `unmarkable` means every criterion was examiner furniture; treat it
+        // exactly like an unparsable memo rather than scoring against junk.
+        const rawBreakdown = marked && !marked.unmarkable ? marked : null;
+        const breakdown: any = rawBreakdown
+          ? {
+              ...rawBreakdown,
+              perCriterion: rawBreakdown.perCriterion.map(c => ({
+                ...c,
+                memoExcerpt: cleanCriterionText(c.memoExcerpt),
+              })),
+            }
+          : {
+              marksAwarded: 0,
+              marksAvailable: total,
+              isCorrect: false,
+              notMarked: true,
+              perCriterion: [],
+              examinerNotes: [
+                isAf
+                  ? "Memo nie outomaties merkbaar nie — vergelyk handmatig."
+                  : "Memo not auto-markable — please review against the memo.",
+              ],
+            };
+        if (breakdown.notMarked) {
+          notMarkedCount++;
+          notMarkedMarks += total;
         }
 
         marksAwarded += breakdown.marksAwarded;
 
-        // Section by question number prefix (e.g. "1.1" → "1")
-        const sectionKey = (row.questionNumber || "").split(/[.\-]/)[0] || "1";
+        // Generated exams are a single flat section.
+        const sectionKey = "1";
         const sec = sectionTotals.get(sectionKey) ?? { awarded: 0, available: 0, questions: 0 };
         sec.awarded += breakdown.marksAwarded;
         sec.available += total;
@@ -16602,7 +17298,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
 
         perQuestion.push({
           questionId: row.id,
-          questionNumber: row.questionNumber,
+          questionNumber,
           questionText: row.questionText,
           marks: total,
           memoExcerpt: row.memoText ? cleanCriterionText(row.memoText.slice(0, 400)) : null,
@@ -16626,9 +17322,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
 
       res.json({
         subject,
-        year,
-        paperNumber,
-        session,
+        language,
         marksAwarded,
         marksAvailable,
         // Denominator actually used for `percentage`, and how much was excluded.
@@ -16662,7 +17356,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
             feedbackJson: {
               perCriterion: breakdown.perCriterion,
               examinerNotes: breakdown.examinerNotes,
-              paper: { year, paperNumber, session, section: (row.questionNumber || "").split(/[.\-]/)[0] || "1" },
+              paper: { language, simulated: true, section: "1" },
             },
             mode: "full_exam",
           });
@@ -18841,6 +19535,79 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
           continue;
         }
 
+        // ── Exam Blast (once-off R550) conversion ──────────────────────
+        // NEW branch, keyed STRICTLY on plan === "exam_boost". Charges the
+        // season pass ONCE via charge_authorization, sets a hard end date
+        // (15 Dec) and creates NO recurring Paystack plan. Every other trial
+        // falls straight through to the unchanged R169 monthly path below.
+        //
+        // Idempotency mirrors the R169 branch exactly: (1) a date-scoped
+        // recordEventOnce id claims the charge BEFORE any Paystack call, and
+        // (2) a deterministic per-subscription reference (examblastconv-{id})
+        // that Paystack itself rejects on replay — so at-most-once holds even
+        // if our ledger write fails after the provider charged.
+        if (sub.plan === "exam_boost") {
+          const examEventId = `exam_boost_conversion:${sub.id}:${today}`;
+          const examFresh = await recordEventOnce(examEventId, "exam_boost_conversion", {
+            subscriptionId: sub.id,
+            userId: sub.userId,
+            amount: EXAM_BOOST_PRICE_MINOR,
+            date: today,
+          });
+          if (!examFresh) { skipped++; continue; }
+
+          try {
+            const examCharge = await paystackFetch("/transaction/charge_authorization", {
+              method: "POST",
+              body: JSON.stringify({
+                authorization_code: authCode,
+                email: chargeEmail,
+                amount: EXAM_BOOST_PRICE_MINOR, // R550.00 once-off, server-owned
+                currency: "ZAR",
+                reference: `examblastconv-${sub.id}`,
+                metadata: { userId: sub.userId, purpose: "exam_boost_conversion" },
+              }),
+            });
+
+            if (examCharge?.status === "success") {
+              await db.update(subscriptions).set({
+                status: "active",
+                plan: "exam_boost",
+                billingMethod: "paystack",
+                paymentProvider: "paystack",
+                priceRands: 550,
+                lastPaymentStatus: "paid",
+                lastPaymentAt: now,
+                endDate: EXAM_BOOST_END,
+                nextRenewalAt: null,   // once-off — never renews
+                trialEndsAt: null,
+                gracePeriodEndsAt: null,
+                updatedAt: now,
+              } as any).where(eq(subscriptions.id, sub.id));
+              charged++;
+              // Deliberately NO recurring Paystack plan subscription created.
+            } else {
+              await db.update(subscriptions).set({
+                status: "past_due",
+                lastPaymentStatus: "failed",
+                gracePeriodEndsAt: new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000),
+                updatedAt: now,
+              } as any).where(eq(subscriptions.id, sub.id));
+              failed++;
+            }
+          } catch (examErr: any) {
+            console.error(`[ChargeTrials] exam_boost charge failed for subscription ${sub.id}:`, examErr?.message ?? examErr);
+            await db.update(subscriptions).set({
+              status: "past_due",
+              lastPaymentStatus: "failed",
+              gracePeriodEndsAt: new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000),
+              updatedAt: now,
+            } as any).where(eq(subscriptions.id, sub.id));
+            failed++;
+          }
+          continue;
+        }
+
         // Deterministic idempotency claim BEFORE calling Paystack.
         const eventId = `trial_conversion:${sub.id}:${today}`;
         const fresh = await recordEventOnce(eventId, "trial_conversion", {
@@ -19135,7 +19902,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       if (stuckRows.length > 0) {
         console.warn(`[task-555] ${stuckRows.length} onboarding link(s) stuck >24h — alerting admins`);
         const { sendRawHtmlEmail } = await import("./email");
-        const adminEmails = (process.env.ADMIN_EMAILS ?? "karlit@kthtech.co.za,kreativethinginghub@gmail.com")
+        const adminEmails = (process.env.ADMIN_EMAILS ?? "karlit@kthtech.co.za,kreativethinkinghub@gmail.com")
           .split(",")
           .map(e => e.trim())
           .filter(Boolean);
@@ -19822,16 +20589,23 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       // from dbe_verbatim_questions) and `db-<topic_flashcard_id>` (per-
       // subject topic decks). We resolve each to a real subject row so the
       // perSubject roll-up is meaningful instead of bucketed by id prefix.
+      // `dbe-<id>` = LEGACY cross-subject deck cards (this path used to read
+      // dbe_verbatim_questions; kept so pre-existing progress rows still map).
+      // `sim-<id>` = current cross-subject deck cards, sourced from the released
+      // simulated pool (dbe_simulated_questions). `db-<id>` = topic decks.
       const dbeIds: number[] = [];
+      const simIds: number[] = [];
       const tfIds: number[] = [];
       for (const r of rows) {
         const dbeMatch = /^dbe-(\d+)$/.exec(r.cardId);
         if (dbeMatch) { dbeIds.push(Number(dbeMatch[1])); continue; }
+        const simMatch = /^sim-(\d+)$/.exec(r.cardId);
+        if (simMatch) { simIds.push(Number(simMatch[1])); continue; }
         const tfMatch = /^db-(\d+)$/.exec(r.cardId);
         if (tfMatch) tfIds.push(Number(tfMatch[1]));
       }
 
-      const { dbeVerbatimQuestions, topicFlashcards, topics, subjects } = await import("@shared/schema");
+      const { dbeVerbatimQuestions, dbeSimulatedQuestions, topicFlashcards, topics, subjects } = await import("@shared/schema");
       const cardToSubject = new Map<string, string>();
 
       if (dbeIds.length > 0) {
@@ -19845,6 +20619,26 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         for (const dr of dbeRows) {
           const code = subjectByName.get(dr.subject);
           if (code) cardToSubject.set(`dbe-${dr.id}`, code);
+        }
+      }
+
+      if (simIds.length > 0) {
+        try {
+          const subjectByName = new Map<string, string>();
+          const allSubjects = await db.select({ code: subjects.code, name: subjects.name }).from(subjects);
+          for (const s of allSubjects) subjectByName.set(s.name, s.code);
+          const simRows = await db
+            .select({ id: dbeSimulatedQuestions.id, subject: dbeSimulatedQuestions.subject })
+            .from(dbeSimulatedQuestions)
+            .where(inArray(dbeSimulatedQuestions.id, simIds));
+          for (const sr of simRows) {
+            const code = subjectByName.get(sr.subject);
+            if (code) cardToSubject.set(`sim-${sr.id}`, code);
+          }
+        } catch (simErr) {
+          // Simulated table/columns missing — leave sim cards unmapped for the
+          // per-subject roll-up; they still count toward the global totals.
+          console.warn("[flashcards/stats] simulated subject lookup failed:", simErr);
         }
       }
 
@@ -20046,7 +20840,8 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       const subjectByName = new Map(subjectRows.map(s => [s.name, s]));
       const subjectNames = subjectRows.map(s => s.name);
 
-      const { dbeVerbatimQuestions, flashcards } = await import("@shared/schema");
+      const { dbeSimulatedQuestions, flashcards } = await import("@shared/schema");
+      const { gateSource } = await import("./exam-source-hygiene");
 
       // ── Prefer humanised cards (server/content-generators.ts) ────────────────
       // The humanised `flashcards` table holds atomic, second-person, mark-
@@ -20113,38 +20908,71 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         console.warn("[flashcards/deck] humanised lookup failed, using verbatim only:", humErr);
       }
 
-      // Raw verbatim fallback — only for subjects that have no humanised cards.
-      const verbatimSubjects = subjectNames.filter(s => !subjectsWithHumanised.has(s));
-      const rows = verbatimSubjects.length === 0 ? [] : await db
-        .select({
-          id: dbeVerbatimQuestions.id,
-          subject: dbeVerbatimQuestions.subject,
-          topic: dbeVerbatimQuestions.topic,
-          questionText: dbeVerbatimQuestions.questionText,
-          memoText: dbeVerbatimQuestions.memoText,
-          language: dbeVerbatimQuestions.language,
-        })
-        .from(dbeVerbatimQuestions)
-        .where(
-          and(
-            inArray(dbeVerbatimQuestions.subject, verbatimSubjects),
-            sql`${dbeVerbatimQuestions.releasedAt} IS NOT NULL`,
-            sql`${dbeVerbatimQuestions.memoText} IS NOT NULL`,
-            sql`length(trim(${dbeVerbatimQuestions.memoText})) > 0`,
-            sql`length(trim(${dbeVerbatimQuestions.questionText})) > 0`,
-          ),
-        )
-        .limit(8000);
+      // ── Released SIMULATED fallback — only for subjects with no humanised cards ──
+      // CONTENT-INTEGRITY INVARIANT (mirrors /api/exam/full/paper): learner
+      // flashcards for a subject that has no humanised cards are distilled from
+      // the RELEASED simulated pool (`dbe_simulated_questions`, released_at NOT
+      // NULL) in the learner's language (EN fallback) — NEVER from
+      // dbe_verbatim_questions. A subject with no released simulated rows simply
+      // contributes no cards (the "coming soon" state for a multi-subject deck);
+      // we never fall back to verbatim to fill the gap.
+      const simSubjects = subjectNames.filter(s => !subjectsWithHumanised.has(s));
+      let simRows: Array<{
+        id: number; subject: string; topic: string | null;
+        questionText: string; memoText: string | null; language: string;
+      }> = [];
+      if (simSubjects.length > 0) {
+        try {
+          simRows = await db
+            .select({
+              id: dbeSimulatedQuestions.id,
+              subject: dbeSimulatedQuestions.subject,
+              topic: dbeSimulatedQuestions.topic,
+              questionText: dbeSimulatedQuestions.questionText,
+              memoText: dbeSimulatedQuestions.memoText,
+              language: dbeSimulatedQuestions.language,
+            })
+            .from(dbeSimulatedQuestions)
+            .where(
+              and(
+                inArray(dbeSimulatedQuestions.subject, simSubjects),
+                sql`${dbeSimulatedQuestions.releasedAt} IS NOT NULL`,
+                // Simulated stores language SHORT ("en"/"af"); accept requested
+                // language + EN fallback.
+                inArray(dbeSimulatedQuestions.language, [lang, "en"]),
+                sql`${dbeSimulatedQuestions.memoText} IS NOT NULL`,
+                sql`length(trim(${dbeSimulatedQuestions.memoText})) > 0`,
+                sql`length(trim(${dbeSimulatedQuestions.questionText})) > 0`,
+              ),
+            )
+            .limit(8000);
+        } catch (simErr) {
+          // Migrations 0036/0037 (language / released_at) not yet applied — no
+          // released simulated content can exist. Serve no fallback cards; we
+          // NEVER read verbatim to fill the gap.
+          console.warn("[flashcards/deck] simulated columns missing — run pending migrations", simErr);
+          simRows = [];
+        }
+      }
+
+      // Same hygiene as /api/exam/full/paper: strip DBE mark notation and drop
+      // truncated stubs. stimulusText is intentionally NOT gated — simulated
+      // supporting material is ORIGINAL and rendered WITH the item, so a
+      // passage-based row must not be auto-rejected as "stimulus-dependent".
+      const gatedSim = simRows
+        .map(r => ({ row: r, gate: gateSource({ questionText: r.questionText, memoText: r.memoText, needsStimulus: false }) }))
+        .filter(x => x.gate.usable);
 
       // Prefer rows in the requested language; fall back to English when missing.
-      const byKey = new Map<string, typeof rows[number]>();
-      for (const r of rows) {
+      const byKey = new Map<string, { row: typeof simRows[number]; gate: ReturnType<typeof gateSource> }>();
+      for (const x of gatedSim) {
+        const r = x.row;
         const key = `${r.subject}::${r.topic ?? ""}::${r.questionText.slice(0, 200)}`;
         const existing = byKey.get(key);
         if (!existing) {
-          byKey.set(key, r);
-        } else if (r.language === language && existing.language !== language) {
-          byKey.set(key, r);
+          byKey.set(key, x);
+        } else if (r.language === lang && existing.row.language !== lang) {
+          byKey.set(key, x);
         }
       }
 
@@ -20160,7 +20988,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         front: string;
         back: string;
       }> = [];
-      for (const r of byKey.values()) {
+      for (const { row: r, gate } of byKey.values()) {
         const subj = subjectByName.get(r.subject);
         const subjectCode = subj ? String(subj.id) : `name:${r.subject}`;
         const n = perSubject.get(subjectCode) ?? 0;
@@ -20168,14 +20996,18 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         perSubject.set(subjectCode, n + 1);
         const topicName = r.topic && r.topic.trim().length > 0 ? r.topic.trim() : "General";
         cards.push({
-          id: `dbe-${r.id}`,
+          // `sim-<id>` provenance (was `dbe-<id>` when this path read verbatim).
+          // /api/flashcards/stats maps this prefix via dbe_simulated_questions.
+          id: `sim-${r.id}`,
           subject: subj?.name ?? r.subject,
           subjectCode,
           topic: topicName,
           topicCode: `${subjectCode}::${topicName.toLowerCase()}`,
           type: "basic",
-          front: r.questionText.trim(),
-          back: r.memoText!.trim(),
+          // Mark-notation-stripped question / memo from gateSource — same
+          // cleaning /api/exam/full/paper's hygiene applies.
+          front: gate.cleanQuestion.trim(),
+          back: gate.cleanMemo.trim(),
         });
       }
 

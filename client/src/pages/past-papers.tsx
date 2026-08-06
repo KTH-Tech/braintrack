@@ -26,6 +26,7 @@ import {
   Check
 } from "lucide-react";
 import { Link } from "wouter";
+import { PublicFooter } from "@/components/public-footer";
 
 const DBE_BASE_URL = "https://www.education.gov.za/Curriculum/NationalSeniorCertificate(NSC)Examinations/NSCPastExaminationpapers.aspx";
 
@@ -222,6 +223,9 @@ export default function PastPapersPage() {
       legalNote: "We provide simulated questions based on historical trends. Official content is linked externally.",
       years: "years of trends",
       heroHype: "Know the paper before you write it 🔥",
+      comingSoonTitle: "Simulated exam papers are on the way",
+      comingSoonBody: "We're replacing downloadable papers with original, CAPS-aligned questions in NSC style. You can practise a full exam right now.",
+      comingSoonCta: "Practise a Full Exam",
     },
     af: {
       title: "NSC Oefensentrum",
@@ -240,6 +244,9 @@ export default function PastPapersPage() {
       legalNote: "Ons verskaf gesimuleerde vrae gebaseer op historiese tendense. Amptelike inhoud word slegs ekstern geskakel.",
       years: "jaar van tendense",
       heroHype: "Ken die vraestel voor jy dit skryf 🔥",
+      comingSoonTitle: "Gesimuleerde eksamenvraestelle is oppad",
+      comingSoonBody: "Ons vervang aflaaibare vraestelle met oorspronklike, KABV-belynde vrae in NSC-styl. Jy kan nou 'n volledige eksamen oefen.",
+      comingSoonCta: "Oefen 'n Volledige Eksamen",
     },
   };
 
@@ -250,9 +257,13 @@ export default function PastPapersPage() {
 
   type IngestedYear = { year: number; papers: number[]; memos: number[] };
   type IngestedSubject = { subject: string; years: IngestedYear[] };
-  const { data: ingestedData } = useQuery<{ subjects: IngestedSubject[] }>({
+  const { data: ingestedData } = useQuery<{ comingSoon?: boolean; subjects?: IngestedSubject[] }>({
     queryKey: ["/api/past-papers/list"],
   });
+  // COPYRIGHT SAFETY: the server no longer serves verbatim DBE past papers.
+  // When it responds with `comingSoon`, we replace the paper browser with a
+  // friendly state that sends learners to the original simulated Full Exam.
+  const comingSoon = ingestedData?.comingSoon === true;
   const ingestedSubjects = ingestedData?.subjects ?? [];
 
   // Filter SUBJECTS to only those the learner is enrolled in.
@@ -314,7 +325,7 @@ export default function PastPapersPage() {
               <Link href="/dashboard">
                 <button
                   data-testid="button-back-dashboard"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0"
+                  className="inline-flex items-center justify-center gap-2 min-h-[44px] min-w-[44px] px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0"
                   style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
                 >
                   <ArrowLeft className="w-4 h-4" />
@@ -325,11 +336,11 @@ export default function PastPapersPage() {
                 {text.title}
               </span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => setLanguage("en")}
                 data-testid="button-lang-en"
-                className="px-3 py-2 rounded-xl text-sm font-bold transition-colors hover:bg-white/10"
+                className="inline-flex items-center justify-center min-h-[44px] px-3 py-2 rounded-xl text-sm font-bold transition-colors hover:bg-white/10"
                 style={{
                   color: "#C5B3FF",
                   border: "1.5px solid #C5B3FF",
@@ -341,7 +352,7 @@ export default function PastPapersPage() {
               <button
                 onClick={() => setLanguage("af")}
                 data-testid="button-lang-af"
-                className="px-3 py-2 rounded-xl text-sm font-bold transition-colors hover:bg-white/10"
+                className="inline-flex items-center justify-center min-h-[44px] px-3 py-2 rounded-xl text-sm font-bold transition-colors hover:bg-white/10"
                 style={{
                   color: "#C5B3FF",
                   border: "1.5px solid #C5B3FF",
@@ -412,6 +423,36 @@ export default function PastPapersPage() {
 
           {/* ── Official / Exam Patterns tab ────────────────────────── */}
           <TabsContent value="official" className="space-y-6">
+            {comingSoon ? (
+              /* COPYRIGHT SAFETY: verbatim DBE papers are no longer served.
+                 Replace the whole paper browser with a friendly coming-soon
+                 state that routes learners to the original simulated Full
+                 Exam. No path here touches /api/past-papers/file. */
+              <div
+                className="p-8 sm:p-10 text-center flex flex-col items-center gap-4"
+                style={accentCard("#C5B3FF")}
+                data-testid="past-papers-coming-soon"
+              >
+                <GraduationCap className="w-12 h-12" style={{ color: "#C5B3FF" }} />
+                <div role="heading" aria-level={2} className="text-xl sm:text-2xl font-black" style={RAINBOW_TEXT}>
+                  {text.comingSoonTitle}
+                </div>
+                <p className="text-white max-w-xl" style={{ opacity: 0.94 }}>
+                  {text.comingSoonBody}
+                </p>
+                <Link href="/exam/full">
+                  <button
+                    data-testid="link-to-full-exam"
+                    className="inline-flex items-center justify-center px-6 py-3 text-sm transition-all hover:-translate-y-0.5"
+                    style={PRIMARY_BTN}
+                  >
+                    <FileText className="w-4 h-4 mr-2" />
+                    {text.comingSoonCta}
+                  </button>
+                </Link>
+              </div>
+            ) : (
+            <>
             <div className="p-4 flex items-start gap-3" style={accentCard("#9FD8FF")}>
               <Sparkles className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: "#9FD8FF" }} />
               <div>
@@ -596,6 +637,8 @@ export default function PastPapersPage() {
                 )}
               </div>
             </div>
+            </>
+            )}
           </TabsContent>
 
           {/* ── 10-Year Trends tab ──────────────────────────────────── */}
@@ -938,6 +981,8 @@ export default function PastPapersPage() {
           </TabsContent>
         </Tabs>
       </div>
+
+      <PublicFooter />
     </div>
   );
 }

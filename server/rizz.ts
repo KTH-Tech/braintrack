@@ -431,7 +431,69 @@ export function buildRizzSystemPrompt(opts: {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 4. ROUTE
+// 4. ANSWER — the reusable "give me Rizz's reply to this message" entrypoint
+// ─────────────────────────────────────────────────────────────────────────────
+
+const RIZZ_MODEL = "gpt-4o-mini";
+const RIZZ_MAX_COMPLETION_TOKENS = 900;
+
+export interface RizzChatTurn {
+  role: "user" | "assistant";
+  content: string;
+}
+
+/**
+ * Produce Rizz's reply to a single message for an ALREADY-RESOLVED identity.
+ *
+ * This is the one place the persona + role prompt + guardrails + role-scoped
+ * context are assembled and sent to the model. Both transports reuse it:
+ *   • the web route (POST /api/rizz/ask) below, and
+ *   • the WhatsApp webhook (server/whatsapp/handler.ts).
+ *
+ * The caller owns identity resolution and language detection — this function
+ * does no auth. It re-reads role-scoped data for the given userId via
+ * buildRizzContext, so a caller that hands in a learner identity gets exactly
+ * the learner's own data and nothing else. Throws on OpenAI failure so the
+ * caller can map it to a channel-appropriate error/fallback.
+ */
+export async function answerRizzMessage(opts: {
+  openai: OpenAI;
+  identity: RizzIdentity;
+  question: string;
+  isAfrikaans: boolean;
+  history?: RizzChatTurn[];
+}): Promise<string> {
+  const { openai, identity, question, isAfrikaans, history = [] } = opts;
+
+  const context = await buildRizzContext(identity);
+  const systemPrompt = buildRizzSystemPrompt({
+    role: identity.role,
+    isAfrikaans,
+    firstName: identity.firstName,
+    grade: identity.grade,
+    context,
+  });
+
+  const response = await openai.chat.completions.create({
+    model: RIZZ_MODEL,
+    messages: [
+      { role: "system", content: systemPrompt },
+      ...history,
+      { role: "user", content: question },
+    ],
+    max_completion_tokens: RIZZ_MAX_COMPLETION_TOKENS,
+  });
+
+  return (
+    response.choices[0]?.message?.content ||
+    (isAfrikaans
+      ? "Eish, ek kon nie daardie een verwerk nie. Probeer weer?"
+      : "Eish, I couldn't process that one. Try again?")
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 5. ROUTE
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface RizzTurn {
@@ -472,22 +534,13 @@ export function registerRizzRoutes(
 
       // ── Role: session only. req.body is NEVER consulted for identity. ─────
       const identity = await resolveRizzIdentity(req);
-      const context = await buildRizzContext(identity);
-
-      const systemPrompt = buildRizzSystemPrompt({
-        role: identity.role,
-        isAfrikaans,
-        firstName: identity.firstName,
-        grade: identity.grade,
-        context,
-      });
 
       // Prior turns are treated as untrusted conversation content, never as
-      // instructions — the system prompt above always wins.
+      // instructions — the system prompt always wins.
       const rawHistory: RizzTurn[] = Array.isArray(req.body?.history)
         ? req.body.history
         : [];
-      const history = rawHistory
+      const history: RizzChatTurn[] = rawHistory
         .filter(
           (m): m is RizzTurn =>
             !!m &&
@@ -501,21 +554,13 @@ export function registerRizzRoutes(
           content: m.text.slice(0, 2000),
         }));
 
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: systemPrompt },
-          ...history,
-          { role: "user", content: question },
-        ],
-        max_completion_tokens: 900,
+      const answer = await answerRizzMessage({
+        openai,
+        identity,
+        question,
+        isAfrikaans,
+        history,
       });
-
-      const answer =
-        response.choices[0]?.message?.content ||
-        (isAfrikaans
-          ? "Eish, ek kon nie daardie een verwerk nie. Probeer weer?"
-          : "Eish, I couldn't process that one. Try again?");
 
       res.json({ answer, role: identity.role });
     } catch (error: any) {

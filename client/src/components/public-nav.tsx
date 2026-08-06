@@ -5,8 +5,35 @@ import { useLanguage } from "@/lib/language-context";
 import { useAuth } from "@/hooks/use-auth";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { BadgeDollarSign } from "lucide-react";
+import brandIcon from "@/assets/handoff/icon-transparent.png";
 
 const BRAND = ["#9FD8FF","#6EE7F9","#94F7C5","#FFE29A","#FFE29A","#FFB7E5","#C5B3FF"];
+const WORDMARK_GRADIENT =
+  "linear-gradient(95deg,#9FD8FF,#94F7C5,#FFE29A,#FFB7E5,#C5B3FF)";
+
+// Shared brand lockup (icon + rainbow wordmark) — links home. Used in both the
+// desktop bar and the mobile bar so every public page carries the same mark.
+function BrandLockup({ onClick }: { onClick?: () => void }) {
+  return (
+    <Link href="/" onClick={onClick} data-testid="link-brand-home" className="shrink-0 inline-flex items-center gap-2">
+      <img src={brandIcon} alt="" aria-hidden width={30} height={30} style={{ display: "block" }} />
+      <span
+        style={{
+          fontWeight: 900,
+          fontSize: 19,
+          letterSpacing: "-0.5px",
+          backgroundImage: WORDMARK_GRADIENT,
+          WebkitBackgroundClip: "text",
+          backgroundClip: "text",
+          color: "transparent",
+          WebkitTextFillColor: "transparent",
+        }}
+      >
+        BrainTrack
+      </span>
+    </Link>
+  );
+}
 
 const navLinks = [
   { href: "/research",  en: "Research", af: "Navorsing", icon: FlaskConical,    color: "#9FD8FF", dark: true },
@@ -33,6 +60,11 @@ export function PublicNav() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-2">
+
+          {/* ── Desktop: brand lockup (left) ───────────────── */}
+          <div className="hidden md:flex items-center">
+            <BrandLockup />
+          </div>
 
           {/* ── Desktop layout ─────────────────────────────── */}
           <div className="hidden md:flex items-center gap-3">
@@ -97,7 +129,7 @@ export function PublicNav() {
                   </button>
                 </a>
               </div>
-            ) : location === "/" ? (
+            ) : (
               <a href="/signin">
                 <button
                   data-testid="button-sign-in"
@@ -107,14 +139,12 @@ export function PublicNav() {
                   {language === "en" ? "Sign In" : "Kom In"}
                 </button>
               </a>
-            ) : null}
+            )}
           </div>
 
           {/* ── Mobile layout ──────────────────────────────── */}
           <div className="md:hidden flex items-center justify-between w-full h-16">
-            <Link href="/" className="shrink-0 flex items-center text-[11px] font-bold uppercase tracking-widest text-white" data-testid="link-mobile-brand">
-              {language === "en" ? "Home" : "Tuis"}
-            </Link>
+            <BrandLockup />
             <div className="flex items-center gap-2">
               <button
                 onClick={toggleLanguage}
@@ -201,7 +231,7 @@ export function PublicNav() {
                   {language === "en" ? "Sign Out" : "Uitteken"}
                 </a>
               </>
-            ) : location === "/" ? (
+            ) : (
               <a
                 href="/signin"
                 className="nav-mobile-item block"
@@ -214,7 +244,7 @@ export function PublicNav() {
                   {language === "en" ? "Sign In" : "Kom In"}
                 </button>
               </a>
-            ) : null}
+            )}
           </div>
         </div>
       )}

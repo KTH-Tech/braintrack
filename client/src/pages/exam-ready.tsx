@@ -581,7 +581,7 @@ export default function ExamReadyPage() {
 
   if (examState === "violated") {
     return (
-      <div ref={containerRef} className="min-h-screen text-white" style={pageRootStyle}>
+      <div ref={containerRef} className="min-h-screen text-white overflow-x-hidden" style={pageRootStyle}>
         {renderHeader()}
         <div className="flex items-center justify-center p-4 min-h-[calc(100vh-64px)]">
           <div
@@ -1010,7 +1010,7 @@ export default function ExamReadyPage() {
   }
 
   return (
-    <div ref={containerRef} className="min-h-screen flex flex-col text-white" style={pageRootStyle}>
+    <div ref={containerRef} className="min-h-screen flex flex-col text-white overflow-x-hidden" style={pageRootStyle}>
       {showViolationWarning && (
         <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: "rgba(5,5,8,.96)" }}>
           <div

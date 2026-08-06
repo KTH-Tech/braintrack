@@ -831,6 +831,16 @@ export default function SubjectDetailPage() {
     return Number.isFinite(n) && n > 0 ? n : null;
   })();
   const deepLinkAppliedRef = useRef(false);
+  // Exam Predictor deep link: /subject/:id?drillTopic=<name> arrives from the
+  // Predictor page's "Drill this" button. Once the page has mounted we focus the
+  // boost pack on that exact topic (autoStart) and scroll it into view — reusing
+  // the same recommendedTopicFocus machinery the in-page "Start Quiz" button uses.
+  const drillTopic = (() => {
+    const sp = new URLSearchParams(searchParamsRaw);
+    const raw = sp.get("drillTopic");
+    return raw && raw.trim() ? raw.trim() : null;
+  })();
+  const drillAppliedRef = useRef(false);
   // Task #740 — bump on drawer close (and storage events) to re-read saved
   // flashcard positions from localStorage for the "Ready to Study" chips.
   const [flashcardPosBump, setFlashcardPosBump] = useState(0);
@@ -906,6 +916,17 @@ export default function SubjectDetailPage() {
     deepLinkAppliedRef.current = true;
     setTopicDrawer({ id: match.id, name: match.name, capsCode: match.capsCode });
   }, [deepLinkTopicId, mastery]);
+
+  // Exam Predictor "Drill this" → focus + auto-start the boost quiz on the
+  // named topic once the subject has loaded, then scroll to the boost section.
+  useEffect(() => {
+    if (drillAppliedRef.current) return;
+    if (!drillTopic || !subject) return;
+    drillAppliedRef.current = true;
+    setRecommendedTopicFocus(drillTopic);
+    const el = document.getElementById("boost-quiz-section");
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+  }, [drillTopic, subject]);
 
   const saveLitMutation = useMutation({
     mutationFn: (selections: Record<string, string>) =>

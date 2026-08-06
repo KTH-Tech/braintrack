@@ -251,6 +251,15 @@ h3 { font-size: 1.25rem; line-height: 1.25; }
 }
 @keyframes bt-rainbow { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
 @keyframes bt-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+/* Floating graffiti scatter marks around the hero — bob + subtle sway while
+   preserving each mark's own rotation (passed in via the --mr custom prop), so
+   the marks drift like tags on a moving wall. Purely decorative: the marks are
+   position:absolute + pointer-events:none, so this adds ZERO layout height (no
+   void). */
+@keyframes bt-heromark {
+  0%,100% { transform: translateY(0)     rotate(var(--mr,0deg)); }
+  50%     { transform: translateY(-11px) rotate(calc(var(--mr,0deg) + 3deg)); }
+}
 @keyframes bt-wiggle { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
 
 /* Main headings — pastel wordmark rainbow */
@@ -3068,6 +3077,7 @@ html.light .rainbow-wash-full {
   [style*="bt-rainbow"], [style*="bt-marquee"], [style*="bt-float"],
   [style*="bt-glowpulse"], [style*="bt-wiggle"], [style*="bt-bob"],
   [style*="bt-fadeup"], [style*="bt-flow"], [style*="bt-confetti"],
+  [style*="bt-heromark"],
   .bt-wordmark, .bt-btn, .btr-launcher {
     animation: none !important;
   }

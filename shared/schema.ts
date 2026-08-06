@@ -1552,6 +1552,27 @@ export const securityEvents = pgTable(
   ],
 );
 
+// SMS resend rate-limiter events — one row per reserved resend slot.
+// Backs server/middleware/sms-resend-limiter.ts so cooldown/hourly/daily caps
+// hold across all Render instances and survive restarts (previously an
+// in-memory Map per instance, so the real cap was ~Nx and reset every deploy).
+export const smsResendEvents = pgTable(
+  "sms_resend_events",
+  {
+    id: serial("id").primaryKey(),
+    userId: text("user_id").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("sms_resend_events_user_created_idx").on(
+      table.userId,
+      table.createdAt,
+    ),
+  ],
+);
+
 // Partners
 export const partners = pgTable("partners", {
   id: serial("id").primaryKey(),

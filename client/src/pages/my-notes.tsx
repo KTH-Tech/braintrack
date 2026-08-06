@@ -25,7 +25,7 @@ export default function MyNotesPage() {
             <div className="flex items-center gap-3 min-w-0">
               <Link href="/subjects">
                 <button
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0"
+                  className="inline-flex items-center justify-center gap-2 min-h-[44px] min-w-[44px] px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0"
                   style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
                   data-testid="button-back-subjects"
                 >
@@ -36,7 +36,7 @@ export default function MyNotesPage() {
             </div>
             <button
               onClick={toggleLanguage}
-              className="px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
+              className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0"
               style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
               data-testid="button-language-toggle"
             >

@@ -34,11 +34,12 @@ import { useAuth } from "@/hooks/use-auth";
 import { useSEO } from "@/hooks/use-seo";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import iconTransparent from "@/assets/handoff/icon-transparent.png";
 import { ConfettiBurst } from "@/components/confetti-burst";
 import { KthTechChip } from "@/components/brand/KthTechLogo";
 import { PaymentIconsRow, PaystackBadge } from "@/components/brand/PaymentIcons";
 import { PaymentThankYou } from "@/components/payment-thank-you";
+import { PublicNav } from "@/components/public-nav";
+import { PublicFooter } from "@/components/public-footer";
 
 type PageState =
   | "plan"
@@ -104,22 +105,22 @@ const HEADLINE_GRADIENT =
 
 // Scoped styles shared by every screen of this page.
 const SCOPED_CSS = `
-  .bts-input { background: rgba(5,5,8,.6) !important; border: 1.5px solid rgba(255,255,255,.18) !important; border-radius: 12px !important; color: #fff !important; }
+  .bts-input { background: #050508 !important; border: 2px solid #fff !important; border-radius: 12px !important; color: #fff !important; }
+  .bts-input::placeholder { color: #9FD8FF !important; opacity: 1 !important; }
   .bts-input:focus, .bts-input:focus-visible { border-color: #9FF5E8 !important; outline: none !important; box-shadow: none !important; }
   .bts-nav-link { color:#fff; cursor:pointer; transition:color .2s; }
   .bts-nav-link:hover { color:#9FF5E8; }
   .bts-nav-cta { transition: transform .2s; }
   .bts-nav-cta:hover { transform: translateY(-2px); }
-  .bts-outline-btn { transition: border-color .2s, color .2s; }
-  .bts-outline-btn:hover { border-color:#9FF5E8 !important; color:#9FF5E8 !important; }
-  .bts-rainbow-btn { transition: transform .2s; }
-  .bts-rainbow-btn:hover { transform: translateY(-2px); }
-  .bts-method-btn { transition: border-color .2s, transform .2s; }
-  .bts-method-btn:hover { border-color: var(--c) !important; transform: translateY(-2px); }
-  .bts-logo-img { transition: transform .25s; }
-  .bts-logo-img:hover { transform: scale(1.15) rotate(-4deg); }
+  .bts-outline-btn { transition: transform .15s, border-color .2s, color .2s; }
+  .bts-outline-btn:hover { border-color:#9FF5E8 !important; color:#9FF5E8 !important; transform: translate(-3px,-3px); }
+  .bts-rainbow-btn { transition: transform .15s; }
+  .bts-rainbow-btn:hover { transform: translate(-3px,-3px); }
+  .bts-method-btn { transition: border-color .2s, transform .15s; }
+  .bts-method-btn:hover { border-color: var(--c) !important; transform: translate(-3px,-3px); }
+  .bts-plan-card { transition: transform .18s; }
+  .bts-plan-card:hover { transform: translateY(-4px); }
   @media (max-width: 860px) {
-    .bts-nav-links { display:none !important; }
     .bts-head { font-size: 36px !important; letter-spacing: -1px !important; }
     .bts-grid2 { grid-template-columns: 1fr !important; }
     .bts-guarantee-grid { grid-template-columns: 1fr !important; }
@@ -127,27 +128,32 @@ const SCOPED_CSS = `
 `;
 
 const RAINBOW_BTN_STYLE: React.CSSProperties = {
-  fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 15,
-  color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
-  animation: "bt-rainbow 5s linear infinite", border: "none",
+  fontFamily: "'Poppins',sans-serif", fontWeight: 900, fontSize: 15,
+  color: "#000", background: CTA_GRADIENT, backgroundSize: "200% 100%",
+  animation: "bt-rainbow 5s linear infinite", border: "2.5px solid #000",
   borderRadius: 12, padding: "15px 24px", cursor: "pointer",
+  boxShadow: "5px 5px 0 0 #fff",
 };
 
 const OUTLINE_BTN_STYLE: React.CSSProperties = {
   fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 15,
-  color: "#fff", background: "transparent",
-  border: "2px solid rgba(255,255,255,.25)", borderRadius: 12,
+  color: "#fff", background: "#050508",
+  border: "2px solid #fff", borderRadius: 12,
   padding: "14px 24px", cursor: "pointer",
 };
 
 /** Centered dark screen for the flow states (success / payment / errors). */
 function WallScreen({ children, testId }: { children: ReactNode; testId?: string }) {
   return (
-    <div style={{ minHeight: "100vh", background: "#050508", color: "#fff", overflowX: "hidden" }}>
+    <div className="min-h-screen" style={{ background: "#000", color: "#fff", overflowX: "hidden" }}>
       <style>{SCOPED_CSS}</style>
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "64px 16px" }}>
-        <div style={{ maxWidth: 520, width: "100%" }} data-testid={testId}>{children}</div>
-      </div>
+      <PublicNav />
+      <main style={{ paddingTop: 64 }}>
+        <div style={{ minHeight: "calc(100vh - 65px)", display: "flex", alignItems: "center", justifyContent: "center", padding: "56px 16px" }}>
+          <div style={{ maxWidth: 520, width: "100%" }} data-testid={testId}>{children}</div>
+        </div>
+      </main>
+      <PublicFooter />
     </div>
   );
 }
@@ -210,8 +216,8 @@ export default function SubscribePage() {
 
   useSEO({
     title: isAf
-      ? "Brain Boost — 14-dae gratis proeftydperk | BrainTrack"
-      : "Brain Boost — 14-day free trial | BrainTrack",
+      ? "Student Life — 14-dae gratis proeftydperk | BrainTrack"
+      : "Student Life — 14-day free trial | BrainTrack",
     description: isAf
       ? "Begin jou 14-dae gratis proeftydperk. R169/maand daarna. Volle toegang tot NSC-vraestelle, KI-tutor, vordering-nasporing en meer."
       : "Start your 14-day free trial. R169/month thereafter. Full access to NSC past papers, AI tutor, progress tracking and more.",
@@ -300,8 +306,8 @@ export default function SubscribePage() {
         toast({
           title: isAf ? "Jy is al ingeteken!" : "You're already subscribed!",
           description: isAf
-            ? "Brain Boost is al aktief op jou rekening."
-            : "Brain Boost is already active on your account.",
+            ? "Student Life is al aktief op jou rekening."
+            : "Student Life is already active on your account.",
         });
         navigate("/dashboard");
       } else if (data && (data.status === "lapsed" || data.status === "expired")) {
@@ -503,49 +509,13 @@ export default function SubscribePage() {
       ];
 
   return (
-    <div style={{ minHeight: "100vh", background: "#050508", overflowX: "hidden", color: "#fff" }}>
+    <div className="min-h-screen" style={{ background: "#000", overflowX: "hidden", color: "#fff" }}>
       <style>{SCOPED_CSS}</style>
+      <PublicNav />
 
       {showWelcome && <ConfettiBurst />}
 
-      {/* ── Nav ─────────────────────────────────────────────── */}
-      <div
-        style={{
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          gap: 32, padding: "16px 48px", position: "sticky", top: 0, zIndex: 50,
-          background: "rgba(5,5,8,.82)", backdropFilter: "blur(14px)",
-          borderBottom: "1px solid rgba(255,255,255,.06)",
-        }}
-      >
-        <Link href="/">
-          <div style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }}>
-            <img src={iconTransparent} alt="BrainTrack" className="bts-logo-img" style={{ width: 56, height: 56, objectFit: "contain" }} />
-            <span className="bt-wordmark" style={{ fontSize: 22, letterSpacing: "-.5px" }}>BrainTrack</span>
-          </div>
-        </Link>
-        <div style={{ display: "flex", alignItems: "center", gap: 26, fontSize: 14, fontWeight: 600, flex: "none" }}>
-          <span className="bts-nav-links" style={{ display: "flex", alignItems: "center", gap: 26 }}>
-            <Link href="/features"><span className="bts-nav-link">{isAf ? "Funksies" : "Features"}</span></Link>
-            <Link href="/research"><span className="bts-nav-link">{isAf ? "Navorsing" : "Research"}</span></Link>
-          </span>
-          <a href="/signin">
-            <button
-              className="bts-nav-cta"
-              data-testid="button-nav-enter"
-              style={{
-                fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 14,
-                color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
-                animation: "bt-rainbow 6s linear infinite", border: "none",
-                borderRadius: 10, padding: "11px 24px", whiteSpace: "nowrap",
-                cursor: "pointer",
-              }}
-            >
-              {isAf ? "Betree die app →" : "Enter the app →"}
-            </button>
-          </a>
-        </div>
-      </div>
-
+      <main style={{ paddingTop: 64 }}>
       {/* ── Pricing ─────────────────────────────────────────── */}
       <div data-testid="subscribe-plan-panel" style={{ maxWidth: 1000, margin: "0 auto", padding: "56px 32px 100px" }}>
         <div style={{ textAlign: "center" }}>
@@ -702,10 +672,11 @@ export default function SubscribePage() {
               maxWidth: 620,
               margin: "0 auto 30px",
               textAlign: "left",
-              background: "rgba(255,255,255,.03)",
-              border: "1px solid rgba(255,255,255,.1)",
+              background: "#050508",
+              border: "2px solid #9FF5E8",
               borderRadius: 18,
-              padding: "18px 22px",
+              boxShadow: "5px 5px 0 0 #C5B3FF",
+              padding: "20px 24px",
               display: "flex",
               flexDirection: "column",
               gap: 12,
@@ -784,7 +755,7 @@ export default function SubscribePage() {
 
         <div className="bts-grid2" style={{ display: "grid", gridTemplateColumns: "1fr 1.15fr", gap: 24, textAlign: "left", maxWidth: 820, margin: "0 auto" }}>
           {/* ── Free trial card ── */}
-          <div style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.1)", borderRadius: 24, padding: 32, display: "flex", flexDirection: "column" }}>
+          <div className="bts-plan-card" style={{ background: "#050508", border: "2.5px solid #9FD8FF", borderRadius: 24, boxShadow: "6px 6px 0 0 #9FF5E8", padding: 32, display: "flex", flexDirection: "column" }}>
             <div style={{ fontWeight: 800, fontSize: 18, color: "#fff" }}>{isAf ? "Gratis proeftydperk" : "Free trial"}</div>
             <div style={{ fontSize: 46, fontWeight: 900, letterSpacing: "-1px", margin: "8px 0 2px", color: "#fff" }}>{isAf ? "14 dae" : "14 days"}</div>
             <div style={{ fontSize: 14, color: "#fff", marginBottom: 20 }}>
@@ -850,9 +821,11 @@ export default function SubscribePage() {
 
           {/* ── Premium card ── */}
           <div
+            className="bts-plan-card"
             style={{
-              background: "linear-gradient(150deg,rgba(255,183,229,.14),rgba(159,216,255,.12))",
-              border: "1.5px solid #FFB7E5", borderRadius: 24, padding: 32,
+              background: "#050508",
+              border: "2.5px solid #FFB7E5", borderRadius: 24, padding: 32,
+              boxShadow: "6px 6px 0 0 #FFE29A",
               position: "relative",
               display: "flex", flexDirection: "column",
             }}
@@ -867,7 +840,7 @@ export default function SubscribePage() {
             >
               {isAf ? "gewildste 👑" : "most popular 👑"}
             </span>
-            <div style={{ fontWeight: 800, fontSize: 18, color: "#fff" }}>BrainTrack Premium</div>
+            <div style={{ fontWeight: 800, fontSize: 18, color: "#fff" }}>{isAf ? "Student Life" : "Student Life"}</div>
             <div data-testid="text-subscribe-price" style={{ display: "flex", alignItems: "baseline", gap: 6, margin: "8px 0 2px" }}>
               <span style={{ fontSize: 46, fontWeight: 900, letterSpacing: "-1px", color: "#fff" }}>R169</span>
               <span style={{ fontSize: 16, fontWeight: 700, color: "#fff" }}>{isAf ? "/maand" : "/month"}</span>
@@ -911,10 +884,11 @@ export default function SubscribePage() {
               gridTemplateColumns: "auto 1fr",
               gap: 14,
               alignItems: "flex-start",
-              background: "rgba(255,255,255,.03)",
-              border: "1px solid rgba(255,255,255,.1)",
+              background: "#050508",
+              border: "2px solid #94F7C5",
               borderRadius: 18,
-              padding: "18px 22px",
+              boxShadow: "5px 5px 0 0 #9FD8FF",
+              padding: "20px 24px",
             }}
           >
             <div
@@ -939,57 +913,8 @@ export default function SubscribePage() {
           </div>
         </div>
 
-        {/* ── Real 2025 cohort testimonials (parent-first). Sourced from
-             client/src/components/landing/reviews-ribbon.tsx — same corpus,
-             three short cards, no fabrication. ── */}
-        <div style={{ maxWidth: 820, margin: "36px auto 0" }}>
-          <div style={{ textAlign: "center", marginBottom: 18 }}>
-            <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#FFB7E5", fontSize: 15, transform: "rotate(-1.5deg)" }}>
-              {isAf ? "van die 2025 toetsgroep" : "from the 2025 test cohort"}
-            </div>
-            <div style={{ fontSize: 20, fontWeight: 800, color: "#fff", marginTop: 6 }}>
-              {isAf ? "~900 leerders. Regte terugvoer." : "~900 learners. Real feedback."}
-            </div>
-          </div>
-          <div className="bts-grid2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
-            {SUBSCRIBE_TESTIMONIALS.map((r) => (
-              <div
-                key={r.quoteEn}
-                data-testid={`testimonial-${r.role}`}
-                style={{
-                  background: "linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.015))",
-                  border: `1.5px solid ${r.color}`,
-                  borderRadius: 18,
-                  padding: "18px 18px 16px",
-                  display: "flex", flexDirection: "column", gap: 10,
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <div
-                    style={{
-                      width: 30, height: 30, borderRadius: 9,
-                      display: "grid", placeItems: "center",
-                      background: `${r.color}22`, border: `1px solid ${r.color}66`,
-                    }}
-                  >
-                    <r.Icon size={14} strokeWidth={2.4} color={r.color} aria-hidden />
-                  </div>
-                  <span style={{ fontSize: 13, fontWeight: 800, color: "#fff" }}>
-                    {isAf ? r.roleAf : r.roleEn}
-                  </span>
-                </div>
-                <div style={{ display: "inline-flex", gap: 2 }}>
-                  {Array.from({ length: 5 }).map((_, s) => (
-                    <Star key={s} size={12} strokeWidth={2.2} aria-hidden style={{ color: "#FFE29A", fill: "#FFE29A" }} />
-                  ))}
-                </div>
-                <div style={{ fontSize: 13.5, lineHeight: 1.55, color: "#fff", fontStyle: "italic" }}>
-                  {`"${isAf ? r.quoteEn : r.quoteEn}"`}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* Cohort testimonials removed (owner call) — no unverified
+             "2025 test cohort" social proof pre-launch. */}
 
         {/* ── Cancel / refund / trust footer — softer honest language;
              matches refund-policy.tsx (no money-back guarantee promised). ── */}
@@ -1067,6 +992,8 @@ export default function SubscribePage() {
           </button>
         </div>
       </div>
+      </main>
+      <PublicFooter />
     </div>
   );
 }
@@ -1118,10 +1045,10 @@ const trustPillStyle: React.CSSProperties = {
 };
 
 const cancelBlockStyle: React.CSSProperties = {
-  background: "rgba(255,255,255,.03)",
-  border: "1px solid rgba(255,255,255,.1)",
+  background: "#050508",
+  border: "2px solid rgba(255,255,255,.9)",
   borderRadius: 16,
-  padding: "16px 18px",
+  padding: "18px 20px",
 };
 
 function PaymentPickerScreen({
@@ -1141,8 +1068,8 @@ function PaymentPickerScreen({
   const t = {
     headline: isAf ? "Kies jou betaalmetode" : "Choose your payment method",
     subheadline: isAf
-      ? "Jou gratis proeftydperk het verval. Aktiveer Brain Boost om volle toegang te behou."
-      : "Your free trial has ended. Activate Brain Boost to keep full access.",
+      ? "Jou gratis proeftydperk het verval. Aktiveer Student Life om volle toegang te behou."
+      : "Your free trial has ended. Activate Student Life to keep full access.",
     charge: isAf ? "Wat word gehef" : "What you'll be charged",
     chargeDetail: isAf
       ? "R169/maand · Kanselleer enige tyd · Geen verborgde fooie nie"
@@ -1171,7 +1098,7 @@ function PaymentPickerScreen({
     setErrorMsg(null);
     try {
       // product picks WHICH offer (server owns the amounts): omitted =
-      // R169/month Brain Boost; "exam_boost" = once-off R550 season pass.
+      // R169/month Student Life; "exam_boost" = once-off R550 season pass.
       const res = await apiRequest("POST", "/api/paystack/initialize", product ? { product } : {});
       const data = await res.json() as {
         authorizationUrl?: string;
@@ -1210,22 +1137,23 @@ function PaymentPickerScreen({
 
   const anyLoading = loadingMethod !== null;
 
-  // ?offer=exam-boost — the once-off R550 Exam Boost (July–Nov season pass).
-  // When selected there is NO free trial and NO recurring billing: one
-  // payment, access to 30 Nov 2026, done. The landing-page offer card links
-  // here with this flag.
+  // ?offer=exam-boost — the R550 Exam Blast season pass. It now runs on the
+  // SAME machine as premium: R1 card-capture to start → 14 days free → R550
+  // charged ONCE on day 14 → season access to 15 Dec 2026 (no recurring
+  // billing). Cancelling inside the 14 days leaves only the non-refundable R1.
+  // The landing-page offer card links here with this flag.
   const wantsExamBoost =
     typeof window !== "undefined" &&
     new URLSearchParams(window.location.search).get("offer") === "exam-boost";
   const boost = {
-    charge: isAf ? "Eenmalige betaling" : "Once-off payment",
+    charge: isAf ? "R1 om te begin" : "R1 to start",
     chargeDetail: isAf
-      ? "Exam Boost: R550 een keer · volle toegang tot 30 November 2026 · geen proeftydperk, geen maandelikse heffings, geen outomatiese hernuwing nie. Nie-terugbetaalbaar (in die mate wat die wet toelaat). Verskyn op jou staat as KTH-TECH."
-      : "Exam Boost: R550 once · full access until 30 November 2026 · no trial, no monthly charges, no auto-renewal. Non-refundable (to the extent permitted by law). Appears on your statement as KTH-TECH.",
-    button: isAf ? "Betaal R550 een keer" : "Pay R550 once-off",
+      ? "R1 om te begin (nie-terugbetaalbaar) · 14 dae gratis · R550 op dag 14 gehef · volle seisoentoegang tot 15 Des · kanselleer enige tyd binne die 14 dae. Verskyn op jou staat as KTH-TECH."
+      : "R1 to start (non-refundable) · 14 days free · R550 charged on day 14 · full season access till 15 Dec · cancel anytime in the 14 days. Appears on your statement as KTH-TECH.",
+    button: isAf ? "Begin met R1" : "Start with R1",
     buttonSub: isAf
-      ? "Eksamenseisoen-toegang tot 30 Nov. Geen verdere heffings nie."
-      : "Exam-season access to 30 Nov. No further charges, ever.",
+      ? "14 dae gratis, dan R550 op dag 14. Kanselleer enige tyd binne die 14 dae."
+      : "14 days free, then R550 on day 14. Cancel anytime in the 14 days.",
   };
 
   return (
@@ -1271,21 +1199,51 @@ function PaymentPickerScreen({
         </div>
       )}
 
-      {/* Charge summary — Exam Boost swaps in the once-off copy and drops
-          every mention of the free trial. */}
-      <div style={{ marginBottom: 28 }}>
-        <WallCallout color={wantsExamBoost ? "#94F7C5" : "#FFE29A"}>
-          <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: wantsExamBoost ? "#94F7C5" : "#FFE29A", margin: "0 0 4px" }}>
-            {wantsExamBoost ? boost.charge : t.charge}
-          </p>
-          <p style={{ fontWeight: 800, fontSize: 17, color: wantsExamBoost ? "#94F7C5" : "#FFE29A", margin: 0, lineHeight: 1.5 }}>
-            {wantsExamBoost ? boost.chargeDetail : t.chargeDetail}
-          </p>
-        </WallCallout>
-      </div>
+      {/* ── Selected plan card — which product shows is driven by the
+          existing ?offer=exam-boost flag (wantsExamBoost). Student Life is
+          the default; Exam Blast swaps in the season-pass copy. ── */}
+      <div
+        data-testid="subscribe-plan-choice"
+        style={{
+          background: "#050508",
+          border: `2.5px solid ${wantsExamBoost ? "#94F7C5" : "#FFB7E5"}`,
+          borderRadius: 22,
+          boxShadow: `6px 6px 0 0 ${wantsExamBoost ? "#9FD8FF" : "#FFE29A"}`,
+          padding: 26,
+          marginBottom: 28,
+        }}
+      >
+        {/* Plan name + price headline */}
+        <div style={{ display: "flex", alignItems: "baseline", flexWrap: "wrap", gap: 8, marginBottom: 4 }}>
+          <span style={{ fontWeight: 800, fontSize: 18, color: "#fff" }}>
+            {wantsExamBoost ? "Exam Blast" : "Student Life"}
+          </span>
+        </div>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginBottom: 4 }}>
+          <span style={{ fontSize: 40, fontWeight: 900, letterSpacing: "-1px", color: "#fff" }}>
+            {wantsExamBoost ? "R550" : "R169"}
+          </span>
+          <span style={{ fontSize: 15, fontWeight: 700, color: "#fff" }}>
+            {wantsExamBoost
+              ? (isAf ? "seisoenkaart" : "season pass")
+              : (isAf ? "/maand" : "/month")}
+          </span>
+        </div>
 
-      {/* Paystack checkout — sole payment provider */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 28 }}>
+        {/* Charge summary — Exam Blast swaps in the once-off copy and drops
+            every mention of the free trial. */}
+        <div style={{ marginTop: 16, marginBottom: 20 }}>
+          <WallCallout color={wantsExamBoost ? "#94F7C5" : "#FFE29A"}>
+            <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: wantsExamBoost ? "#94F7C5" : "#FFE29A", margin: "0 0 4px" }}>
+              {wantsExamBoost ? boost.charge : t.charge}
+            </p>
+            <p style={{ fontWeight: 800, fontSize: 17, color: wantsExamBoost ? "#94F7C5" : "#FFE29A", margin: 0, lineHeight: 1.5 }}>
+              {wantsExamBoost ? boost.chargeDetail : t.chargeDetail}
+            </p>
+          </WallCallout>
+        </div>
+
+        {/* Paystack checkout — sole payment provider */}
         <button
           onClick={() => handlePaystackCheckout(wantsExamBoost ? "exam_boost" : undefined)}
           disabled={anyLoading}
@@ -1293,8 +1251,8 @@ function PaymentPickerScreen({
           data-testid="button-paystack-checkout"
           style={{
             "--c": "#94F7C5",
-            width: "100%", textAlign: "left", background: "rgba(255,255,255,.03)",
-            border: "1.5px solid rgba(255,255,255,.12)", borderRadius: 18, padding: "18px 20px",
+            width: "100%", textAlign: "left", background: "#000",
+            border: "2px solid #fff", borderRadius: 18, padding: "18px 20px",
             cursor: anyLoading ? "not-allowed" : "pointer", opacity: anyLoading ? 0.6 : 1,
             fontFamily: "'Poppins',sans-serif", color: "#fff",
           } as React.CSSProperties}
@@ -1325,7 +1283,7 @@ function PaymentPickerScreen({
 
       <p style={{ textAlign: "center", color: "#fff", opacity: 0.94, fontSize: 12, padding: "0 16px", lineHeight: 1.7, marginBottom: 28 }}>
         {t.secure}
-      </p>
+      </p>{/* plan-choice card closed above */}
 
       <button
         onClick={() => (window.location.href = homeHref)} // nosemgrep: no-raw-window-location-href-variable
@@ -1501,7 +1459,7 @@ function SuccessScreen({
           style={{ fontSize: 36, fontWeight: 900, letterSpacing: "-1px", lineHeight: 1.1, marginBottom: 18, fontFamily: "'Poppins',sans-serif", color: "#fff" }}
         >
           <span style={{ background: HEADLINE_GRADIENT, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>
-            {isAf ? "Welkom by Brain Boost!" : "Welcome to Brain Boost!"}
+            {isAf ? "Welkom by Student Life!" : "Welcome to Student Life!"}
           </span>
         </div>
         <p style={{ color: "#fff", fontSize: 17, marginBottom: 24 }}>
@@ -1710,8 +1668,8 @@ function PaymentSuccessScreen({
         </div>
         <p style={{ color: "#fff", fontSize: 17, marginBottom: 32 }}>
           {isAf
-            ? "Brain Boost is nou aktief op jou rekening."
-            : "Brain Boost is now active on your account."}
+            ? "Student Life is nou aktief op jou rekening."
+            : "Student Life is now active on your account."}
         </p>
 
         {/* Payment method */}
@@ -1951,8 +1909,8 @@ function ParentSubscribeScreen({
           </div>
           <p style={{ color: "#fff", fontSize: 15, lineHeight: 1.6, marginBottom: 32 }}>
             {isAf
-              ? "Sodra jou kind se rekening aan joune gekoppel is, aktiveer jy hul Brain Boost-proeftydperk hier in een stap."
-              : "Once your child's account is linked to yours, you activate their Brain Boost trial right here in one step."}
+              ? "Sodra jou kind se rekening aan joune gekoppel is, aktiveer jy hul Student Life-proeftydperk hier in een stap."
+              : "Once your child's account is linked to yours, you activate their Student Life trial right here in one step."}
           </p>
           <button
             onClick={() => navigate("/parent")}
@@ -1985,7 +1943,7 @@ function ParentSubscribeScreen({
             style={{ fontSize: 30, fontWeight: 900, letterSpacing: "-1px", lineHeight: 1.15, marginBottom: 12, fontFamily: "'Poppins',sans-serif", color: "#fff" }}
           >
             <span style={{ background: HEADLINE_GRADIENT, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>
-              {isAf ? `Brain Boost is aktief vir ${learnerName}` : `Brain Boost is live for ${learnerName}`}
+              {isAf ? `Student Life is aktief vir ${learnerName}` : `Student Life is live for ${learnerName}`}
             </span>
           </div>
           <p style={{ color: "#fff", fontSize: 15, marginBottom: 28 }}>
@@ -2053,7 +2011,7 @@ function ParentSubscribeScreen({
           style={{ fontSize: 32, fontWeight: 900, letterSpacing: "-1px", lineHeight: 1.15, marginBottom: 12, fontFamily: "'Poppins',sans-serif", color: "#fff" }}
         >
           <span style={{ background: HEADLINE_GRADIENT, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>
-            {isAf ? `Ontsluit ${learnerName} se Brain Boost` : `Unlock ${learnerName}'s Brain Boost`}
+            {isAf ? `Ontsluit ${learnerName} se Student Life` : `Unlock ${learnerName}'s Student Life`}
           </span>
         </div>
         <p style={{ color: "#fff", fontSize: 15, lineHeight: 1.6, margin: 0 }}>

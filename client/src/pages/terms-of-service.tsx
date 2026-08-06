@@ -1,15 +1,101 @@
-// Chrome restyled to the Claude Design handoff "Luxury Street Graffiti
-// EdTech" comp (LEGAL PAGES section) via LegalShell. Legal copy verbatim.
+// Logged-out legal page — branded pure-black street-graffiti chrome mounting
+// the shared PublicNav + PublicFooter. Legal copy preserved verbatim.
+import type { ReactNode, CSSProperties } from "react";
+import { Link } from "wouter";
 import { FileText, Shield, Users, Scale, BookOpen, Lock, RefreshCw, Globe, CreditCard, Undo2, Sparkles } from "lucide-react";
-import { LegalShell, LegalSection } from "@/components/legal-shell";
+import { PublicNav } from "@/components/public-nav";
+import { PublicFooter } from "@/components/public-footer";
 import { useLanguage } from "@/lib/language-context";
 import { useSEO } from "@/hooks/use-seo";
 
 // Handoff pastel accents, cycled per section.
 const PASTELS = ["#9FF5E8", "#9FD8FF", "#FFB7E5", "#C5B3FF", "#FFE29A", "#94F7C5"];
 
+// ── Shared branded chrome for the four logged-out legal pages ───────────────
+// Pure-black street-graffiti: Permanent Marker title, hard-offset accent cards,
+// pure #fff body copy (no grey / no faded white), no glow/blur shadows.
+const H1_STYLE: CSSProperties = {
+  fontFamily: "'Permanent Marker',cursive",
+  fontSize: 40,
+  lineHeight: 1.15,
+  letterSpacing: "-0.5px",
+  margin: "8px 0 14px",
+  color: "#fff",
+};
+const CHIP_STYLE: CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 8,
+  fontSize: 12.5,
+  fontWeight: 700,
+  color: "#fff",
+  border: "2px solid #9FD8FF",
+  borderRadius: 999,
+  padding: "6px 14px",
+  marginBottom: 22,
+};
+const LEGAL_BODY_CSS = `
+  .bt-legal-body { font-size: 15px; line-height: 1.7; color: #fff; }
+  .bt-legal-body p, .bt-legal-body li, .bt-legal-body td, .bt-legal-body th, .bt-legal-body h4, .bt-legal-body strong, .bt-legal-body code { color: #fff; }
+  .bt-legal-body table { font-size: 13px; }
+  .bt-legal-body td, .bt-legal-body th { font-size: 13px; line-height: 1.6; }
+  .bt-legal-body a { color: #9FD8FF; font-weight: 600; }
+  .bt-legal-cross-pill { transition: transform .15s; }
+  .bt-legal-cross-pill:hover { transform: translateY(-1px); }
+`;
+const LEGAL_LINKS = [
+  { href: "/privacy-policy", en: "Privacy", af: "Privaatheid", accent: "#9FD8FF" },
+  { href: "/terms-of-service", en: "Terms", af: "Bepalings", accent: "#FFB7E5" },
+  { href: "/cookie-policy", en: "Cookies", af: "Koekies", accent: "#FFE29A" },
+  { href: "/refund-policy", en: "Refunds", af: "Terugbetalings", accent: "#94F7C5" },
+];
+
+function LegalCrossNav({ isAf, activeHref }: { isAf: boolean; activeHref: string }) {
+  return (
+    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 28 }}>
+      {LEGAL_LINKS.map((l) => {
+        const active = l.href === activeHref;
+        return (
+          <Link key={l.href} href={l.href}>
+            <span
+              className="bt-legal-cross-pill"
+              style={{
+                display: "inline-block", fontSize: 12.5, fontWeight: 700,
+                padding: "8px 14px", borderRadius: 999, cursor: "pointer",
+                color: active ? "#000" : l.accent,
+                background: active ? l.accent : "transparent",
+                border: `2px solid ${l.accent}`,
+              }}
+            >
+              {isAf ? l.af : l.en}
+            </span>
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
+
+function Section({ accent, title, testId, children }: { accent: string; title: ReactNode; testId?: string; children: ReactNode }) {
+  return (
+    <section
+      data-testid={testId}
+      style={{
+        background: "#050508",
+        border: `2.5px solid ${accent}`,
+        borderRadius: 16,
+        padding: "22px 26px",
+        boxShadow: `6px 6px 0 0 ${accent}`,
+      }}
+    >
+      <h2 style={{ fontWeight: 800, fontSize: 20, marginBottom: 12, color: accent }}>{title}</h2>
+      <div className="bt-legal-body">{children}</div>
+    </section>
+  );
+}
+
 export default function TermsOfServicePage() {
-  const { language, toggleLanguage } = useLanguage();
+  const { language } = useLanguage();
   const isAf = language === "af";
   useSEO({
     title: "Terms & Conditions | BrainTrack",
@@ -335,16 +421,20 @@ export default function TermsOfServicePage() {
   const currentSections = sections[isAf ? "af" : "en"];
 
   return (
-    <LegalShell
-      title={isAf ? "Diensvoorwaardes" : "Terms & Conditions"}
-      titleTestId="text-terms-title"
-      updated={isAf ? "Laas opgedateer: 16 Julie 2026" : "Last updated: 16 July 2026"}
-      language={language}
-      onToggleLanguage={toggleLanguage}
-      activeHref="/terms-of-service"
-      backTestId="terms-nav-back"
-      lead={
-        <div className="space-y-3">
+    <div className="min-h-screen" style={{ background: "#000", color: "#fff" }} data-testid="page-terms-of-service">
+      <PublicNav />
+      <main style={{ maxWidth: 820, margin: "0 auto", padding: "80px 20px 0" }}>
+        <style>{LEGAL_BODY_CSS}</style>
+
+        <h1 data-testid="text-terms-title" style={H1_STYLE}>
+          {isAf ? "Diensvoorwaardes" : "Terms & Conditions"}
+        </h1>
+        <div style={CHIP_STYLE}>
+          KTH Tech (Pty) Ltd · {isAf ? "Laas opgedateer: 16 Julie 2026" : "Last updated: 16 July 2026"}
+        </div>
+        <LegalCrossNav isAf={isAf} activeHref="/terms-of-service" />
+
+        <div className="bt-legal-body space-y-3" style={{ marginBottom: 28 }}>
           <p>
             {isAf
               ? "Alles wat jy moet weet voor jy BrainTrack™ gebruik — reguit en sonder raaisels."
@@ -362,48 +452,51 @@ export default function TermsOfServicePage() {
             )}
           </p>
         </div>
-      }
-    >
-      {currentSections.map((section, index) => {
-        const hex = PASTELS[index % PASTELS.length];
-        return (
-          <LegalSection key={index} accent={hex} title={section.title} testId={`terms-section-${index}`}>
-            <div className="space-y-3">
-              {section.content.map((para, i) => (
-                <p key={i}>{para}</p>
-              ))}
-              {(section as any).bullets && (
-                <ul className="space-y-2 mt-2">
-                  {(section as any).bullets.map((b: string, i: number) => (
-                    <li key={i} className="flex items-start gap-2.5">
-                      <span
-                        className="mt-2.5 w-1.5 h-1.5 rounded-full shrink-0"
-                        style={{ background: hex }}
-                      />
-                      <span>{b}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {(section as any).footer && (
-                <p
-                  className="mt-3 pt-3 font-semibold"
-                  style={{ borderTop: "1px dashed rgba(255,255,255,.18)", color: hex }}
-                >
-                  {(section as any).footer}
-                </p>
-              )}
-            </div>
-          </LegalSection>
-        );
-      })}
 
-      <div style={{ textAlign: "center", padding: "10px 0 0" }}>
-        <div style={{ fontWeight: 800, fontSize: 16, color: "#fff" }}>BrainTrack™</div>
-        <div style={{ fontSize: 14, color: "#fff", opacity: 0.94, marginTop: 4 }}>
-          {isAf ? "Alle regte voorbehou. Suid-Afrika." : "All rights reserved. South Africa."}
+        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+          {currentSections.map((section, index) => {
+            const hex = PASTELS[index % PASTELS.length];
+            return (
+              <Section key={index} accent={hex} title={section.title} testId={`terms-section-${index}`}>
+                <div className="space-y-3">
+                  {section.content.map((para, i) => (
+                    <p key={i}>{para}</p>
+                  ))}
+                  {(section as any).bullets && (
+                    <ul className="space-y-2 mt-2">
+                      {(section as any).bullets.map((b: string, i: number) => (
+                        <li key={i} className="flex items-start gap-2.5">
+                          <span
+                            className="mt-2.5 w-1.5 h-1.5 rounded-full shrink-0"
+                            style={{ background: hex }}
+                          />
+                          <span>{b}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {(section as any).footer && (
+                    <p
+                      className="mt-3 pt-3 font-semibold"
+                      style={{ borderTop: `1px dashed ${hex}`, color: hex }}
+                    >
+                      {(section as any).footer}
+                    </p>
+                  )}
+                </div>
+              </Section>
+            );
+          })}
+
+          <div style={{ textAlign: "center", padding: "10px 0 0" }}>
+            <div style={{ fontWeight: 800, fontSize: 16, color: "#fff" }}>BrainTrack™</div>
+            <div style={{ fontSize: 14, color: "#fff", marginTop: 4 }}>
+              {isAf ? "Alle regte voorbehou. Suid-Afrika." : "All rights reserved. South Africa."}
+            </div>
+          </div>
         </div>
-      </div>
-    </LegalShell>
+      </main>
+      <PublicFooter />
+    </div>
   );
 }

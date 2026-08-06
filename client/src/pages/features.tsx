@@ -1,74 +1,88 @@
-// BrainTrack features — rebuilt to pixel-match the Claude Design handoff
-// "Luxury Street Graffiti EdTech" comp (BrainTrack.dc.html, FEATURES section),
-// then elevated per docs/design-guidelines.md (owner "wow" pass): scroll
-// reveals (landing's Reveal pattern), floating pastel orbs (research.tsx
-// signature), richer card hover blooms, bolder animated headline, marker
-// underline swash, chip pops. Structure, copy and testids unchanged.
-// Bilingual EN/AF.
+// BrainTrack features — pure-black street-graffiti sticker redesign.
+// Learner-first: leads with what the app does FOR a Grade 12 matric (past
+// papers + memos, Rizz AI support, daily plans, weak-spot radar, XP/streaks,
+// parent visibility as backup) then a sticker CTA to start free / sign in.
+// Shared shell: PublicNav (fixed 64px) + PublicFooter. Pure #000, no grey text,
+// hard-offset shadows only (zero blur). Bilingual EN/AF. bt-* keyframes only.
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { useSEO } from "@/hooks/use-seo";
 import { useLanguage } from "@/lib/language-context";
 import { useAuth } from "@/hooks/use-auth";
-import iconTransparent from "@/assets/handoff/icon-transparent.png";
+import { PublicNav } from "@/components/public-nav";
+import { PublicFooter } from "@/components/public-footer";
 
-const CTA_GRADIENT =
-  "linear-gradient(100deg,#FFB7E5,#FFE29A,#9FF5E8,#C5B3FF,#FFB7E5)";
-const HEADLINE_GRADIENT =
-  "linear-gradient(95deg,#9FD8FF,#9FF5E8,#C5B3FF,#FFB7E5,#9FD8FF)";
 const RAINBOW =
-  "linear-gradient(95deg,#FFB7E5,#FFE29A,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)";
+  "linear-gradient(95deg,#9FD8FF,#94F7C5,#FFE29A,#FFB7E5,#C5B3FF)";
 
 // Pastel accent cycle for the subject chips.
 const CHIP_COLORS = ["#9FF5E8", "#9FD8FF", "#FFB7E5", "#C5B3FF", "#FFE29A", "#94F7C5"];
 
+// Solid Permanent-Marker glyphs scattered behind the hero — no blur, no glow.
+const SCATTER: Array<{ glyph: string; color: string; size: number; rotate: number; style: React.CSSProperties }> = [
+  { glyph: "★", color: "#FFE29A", size: 34, rotate: -14, style: { top: 8, left: "6%" } },
+  { glyph: "⚡", color: "#9FF5E8", size: 30, rotate: 10, style: { top: 40, right: "7%" } },
+  { glyph: "✦", color: "#C5B3FF", size: 26, rotate: 8, style: { bottom: 20, left: "10%" } },
+  { glyph: "☻", color: "#FFB7E5", size: 26, rotate: -8, style: { bottom: 4, right: "9%" } },
+  { glyph: "✏", color: "#94F7C5", size: 22, rotate: -10, style: { top: 90, left: "24%" } },
+  { glyph: "↗", color: "#9FD8FF", size: 24, rotate: -12, style: { top: 74, right: "22%" } },
+];
+
 const COPY = {
   en: {
-    tResearch: "Research",
-    tEnter: "Enter the app →",
     eyebrow: "the full toolkit",
-    head1: "One ecosystem. ",
-    headAccent: "Every subject.",
+    head1: "Everything a matric needs, ",
+    headAccent: "in one app",
     sub:
-      "A CAPS-aligned study plan built from 10 years of real NSC papers, weak-spot tracking, an AI tutor, and parent reports — plus optional power-ups and rescue packs for exam crunch-time.",
+      "Real NSC past papers and memos, an AI study buddy that never sleeps, a plan built around your weak spots, and XP for every win — all CAPS-aligned, all in English and Afrikaans.",
+    subjectsHead: "Every CAPS subject — sorted",
     subjects: [
       "Mathematics", "Mathematical Literacy", "Physical Sciences", "Life Sciences",
       "Accounting", "Business Studies", "Economics", "Geography", "History",
       "English HL/FAL", "Afrikaans HL/EAT", "Life Orientation", "CAT", "IT",
     ],
+    featsHead: "What you actually get",
     features: [
-      { icon: "📘", color: "#9FF5E8", chipBg: "rgba(159,245,232,.14)", glow: "rgba(159,245,232,.25)", tilt: -1, title: "CAPS-Aligned Content", body: "100% curriculum-aligned questions and lessons. No fluff, no filler — only what matters for your exams." },
-      { icon: "📝", color: "#9FD8FF", chipBg: "rgba(159,216,255,.14)", glow: "rgba(159,216,255,.25)", tilt: 1, title: "Real Exam-Style Questions", body: "Practice with questions built from 10 years of historical exam patterns. Know exactly what to expect." },
-      { icon: "📅", color: "#FFB7E5", chipBg: "rgba(255,183,229,.14)", glow: "rgba(255,183,229,.25)", tilt: -1, title: "Personalised Daily Study Plans", body: "A smart study plan generated just for you, every day. Focus on what you need most." },
-      { icon: "🎯", color: "#C5B3FF", chipBg: "rgba(197,179,255,.14)", glow: "rgba(197,179,255,.25)", tilt: 1, title: "Weak-Area Detection", body: "Pinpoints your gaps and builds a targeted improvement roadmap so you get stronger where it counts." },
-      { icon: "🤖", color: "#FFE29A", chipBg: "rgba(255,226,154,.14)", glow: "rgba(255,226,154,.25)", tilt: -1, title: "Rizz — Smart Support Agent", body: "Rizz helps you navigate the platform, explains your next steps, and keeps you on track. Rizz is your support guide — not an academic tutor." },
-      { icon: "🏆", color: "#94F7C5", chipBg: "rgba(148,247,197,.14)", glow: "rgba(148,247,197,.25)", tilt: 1, title: "Gamified Progress", body: "Earn XP, level up, and collect achievement badges. Stay motivated with every session." },
+      { icon: "📝", color: "#9FD8FF", title: "Past papers + memos", body: "Practice real NSC-style questions built from 10 years of exam patterns — every one with a worked memo. Know exactly what November throws at you." },
+      { icon: "🤖", color: "#C5B3FF", title: "Rizz, your AI sidekick", body: "Stuck at 11pm? Rizz walks you through the platform, breaks down your next move and keeps you on track — in English or Afrikaans. Your study guide, not a shortcut." },
+      { icon: "📅", color: "#FFB7E5", title: "A plan made for your day", body: "A fresh study plan every morning, rebuilt around what you got wrong yesterday. No guessing what to revise — just open it and go." },
+      { icon: "🎯", color: "#94F7C5", title: "Weak-spot radar", body: "BrainTrack spots exactly where you're dropping marks and aims your practice there, so you get stronger where it actually counts." },
+      { icon: "🏆", color: "#FFE29A", title: "XP, streaks & rewards", body: "Earn XP, keep your streak alive and unlock badges. Studying that actually feels like leveling up, session after session." },
+      { icon: "📘", color: "#9FF5E8", title: "CAPS-aligned, EN + AF", body: "100% curriculum-aligned — no fluff, no filler. The whole app switches between English and Afrikaans with one tap." },
+      { icon: "👀", color: "#FFB7E5", title: "Your people, in the loop", body: "Parents get a clean weekly report — so the nagging turns into high-fives, and you get backup instead of pressure." },
     ],
-    cta: "Start your 14-day trial",
+    ctaEyebrow: "ready when you are",
+    ctaHead: "Start free. Watch your marks move.",
+    ctaBtn: "Start your 14-day trial",
+    ctaSignin: "I already have an account",
     ctaLoggedIn: "Go to My Dashboard",
   },
   af: {
-    tResearch: "Navorsing",
-    tEnter: "Betree die app →",
     eyebrow: "die volle gereedskapstel",
-    head1: "Een ekosisteem. ",
-    headAccent: "Elke vak.",
+    head1: "Alles wat 'n matriek nodig het, ",
+    headAccent: "in een app",
     sub:
-      "'n KABV-belynde studieplan gebou uit 10 jaar se regte NSS-vraestelle, swakpuntspoor, 'n KI-tutor, en ouerverslae — plus opsionele krag-opgraderings en reddingspakke vir eksamen-crunchtyd.",
+      "Regte NSS-vraestelle en memo's, 'n KI-studiemaat wat nooit slaap nie, 'n plan gebou rondom jou swakplekke, en XP vir elke oorwinning — alles KABV-belyn, alles in Engels en Afrikaans.",
+    subjectsHead: "Elke KABV-vak — gesorteer",
     subjects: [
       "Wiskunde", "Wiskundige Geletterdheid", "Fisiese Wetenskappe", "Lewenswetenskappe",
       "Rekeningkunde", "Besigheidstudies", "Ekonomie", "Geografie", "Geskiedenis",
       "Engels HT/EAT", "Afrikaans HT/EAT", "Lewensoriëntering", "RTT", "IT",
     ],
+    featsHead: "Wat jy regtig kry",
     features: [
-      { icon: "📘", color: "#9FF5E8", chipBg: "rgba(159,245,232,.14)", glow: "rgba(159,245,232,.25)", tilt: -1, title: "KABV-Belynde Inhoud", body: "100% kurrikulum-belynde vrae en lesse. Geen nonsens nie — net wat saak maak vir jou eksamens." },
-      { icon: "📝", color: "#9FD8FF", chipBg: "rgba(159,216,255,.14)", glow: "rgba(159,216,255,.25)", tilt: 1, title: "Regte Eksamen-Styl Vrae", body: "Oefen met vrae gebou uit 10 jaar se vorige eksamenpatrone. Weet presies wat om te verwag." },
-      { icon: "📅", color: "#FFB7E5", chipBg: "rgba(255,183,229,.14)", glow: "rgba(255,183,229,.25)", tilt: -1, title: "Persoonlike Daaglikse Studieplanne", body: "'n Slim studieplan wat elke dag net vir jou gemaak word. Fokus op wat jy die meeste nodig het." },
-      { icon: "🎯", color: "#C5B3FF", chipBg: "rgba(197,179,255,.14)", glow: "rgba(197,179,255,.25)", tilt: 1, title: "Swak-Area Opsporing", body: "Spot jou gapings en bou 'n gerigte verbeteringsplan sodat jy sterker word waar dit tel." },
-      { icon: "🤖", color: "#FFE29A", chipBg: "rgba(255,226,154,.14)", glow: "rgba(255,226,154,.25)", tilt: -1, title: "Rizz — Slim Ondersteuningsagent", body: "Rizz help jou om die platform te navigeer, verduidelik jou volgende stappe, en hou jou op koers. Rizz is jou ondersteuningsgids — nie 'n akademiese tutor nie." },
-      { icon: "🏆", color: "#94F7C5", chipBg: "rgba(148,247,197,.14)", glow: "rgba(148,247,197,.25)", tilt: 1, title: "Spel-agtige Vordering", body: "Verdien XP, bereik nuwe vlakke, en ontsluit prestasiekentekens. Bly gemotiveerd met elke sessie." },
+      { icon: "📝", color: "#9FD8FF", title: "Vraestelle + memo's", body: "Oefen regte NSS-styl vrae gebou uit 10 jaar se eksamenpatrone — elkeen met 'n uitgewerkte memo. Weet presies wat November gooi." },
+      { icon: "🤖", color: "#C5B3FF", title: "Rizz, jou KI-hulpie", body: "Vasgevang om 11nm? Rizz lei jou deur die platform, breek jou volgende stap af en hou jou op koers — in Engels of Afrikaans. Jou studiegids, nie 'n kortpad nie." },
+      { icon: "📅", color: "#FFB7E5", title: "'n Plan vir jóú dag", body: "'n Vars studieplan elke oggend, herbou rondom wat jy gister verkeerd gekry het. Geen raaiwerk oor wat om te hersien nie — maak dit oop en gaan." },
+      { icon: "🎯", color: "#94F7C5", title: "Swakplek-radar", body: "BrainTrack spot presies waar jy punte verloor en mik jou oefening daarheen, sodat jy sterker word waar dit regtig tel." },
+      { icon: "🏆", color: "#FFE29A", title: "XP, reekse & belonings", body: "Verdien XP, hou jou reeks aan die lewe en ontsluit kentekens. Studie wat regtig soos vlak-op voel, sessie na sessie." },
+      { icon: "📘", color: "#9FF5E8", title: "KABV-belyn, EN + AF", body: "100% kurrikulum-belyn — geen nonsens, geen vulsel nie. Die hele app wissel tussen Engels en Afrikaans met een tik." },
+      { icon: "👀", color: "#FFB7E5", title: "Jou mense, in die prentjie", body: "Ouers kry 'n skoon weeklikse verslag — so raak die geneul hoë-vywe, en jy kry rugsteun in plaas van druk." },
     ],
-    cta: "Begin jou 14-dae proeftydperk",
+    ctaEyebrow: "gereed wanneer jy is",
+    ctaHead: "Begin gratis. Sien jou punte skuif.",
+    ctaBtn: "Begin jou 14-dae proeftydperk",
+    ctaSignin: "Ek het reeds 'n rekening",
     ctaLoggedIn: "My Paneelbord",
   },
 } as const;
@@ -111,7 +125,6 @@ function useInView<T extends HTMLElement>(): [React.RefObject<T>, boolean] {
       { threshold: 0.01, rootMargin: "0px 0px 25% 0px" },
     );
     io.observe(el);
-    // Fail-safe: nothing may ever stay invisible.
     const failSafe = window.setTimeout(() => setInView(true), 4000);
     return () => { io.disconnect(); window.clearTimeout(failSafe); };
   }, []);
@@ -141,7 +154,7 @@ function Reveal({
       className={className}
       style={
         inView
-          ? { ...style, animation: `bt-fadeup .85s cubic-bezier(.22,.75,.3,1) ${delay}ms both` }
+          ? { ...style, animation: `bt-fadeup .8s cubic-bezier(.22,.75,.3,1) ${delay}ms both` }
           : { ...style, opacity: 0 }
       }
     >
@@ -151,239 +164,227 @@ function Reveal({
 }
 
 export default function FeaturesPage() {
-  const { language, toggleLanguage } = useLanguage();
+  const { language } = useLanguage();
   const { isAuthenticated } = useAuth();
   const t = COPY[language];
-  const en = language === "en";
 
   useSEO({
     title: "Features | BrainTrack™ CAPS Study Plan & NSC Past Papers",
     description:
-      "Explore BrainTrack™ features: CAPS weekly study plan, NSC past papers with memos, gap detection, Rizz AI tutor, gamified progress & parent dashboard. R169/month.",
+      "Explore BrainTrack™ features: CAPS weekly study plan, NSC past papers with memos, gap detection, Rizz AI support, gamified progress & parent dashboard. R169/month.",
     canonical: "https://braintrack.tech/features",
-    ogTitle: "BrainTrack™ Features — CAPS Plan, NSC Past Papers & AI Tutor",
+    ogTitle: "BrainTrack™ Features — CAPS Plan, NSC Past Papers & AI Support",
     ogDescription:
-      "CAPS-aligned study plan, 10 years of NSC past papers with memos, gap detection, Rizz AI tutor, and progress tracking for Grade 12 Matric. Try free for 14 days.",
+      "CAPS-aligned study plan, 10 years of NSC past papers with memos, gap detection, Rizz AI support, and progress tracking for Grade 12 Matric. Try free for 14 days.",
     ogUrl: "https://braintrack.tech/features",
     jsonLd: featuresBreadcrumb,
   });
 
   return (
-    <div style={{ minHeight: "100vh", background: "#050508", overflowX: "hidden", color: "#fff" }}>
+    <div className="min-h-screen" style={{ background: "#000", color: "#fff", overflowX: "hidden" }} data-testid="page-features">
+      <PublicNav />
+
       <style>{`
-        .btf-nav-link { color:#fff; cursor:pointer; transition:color .2s; }
-        .btf-nav-link:hover { color:#9FD8FF; }
-        .btf-nav-cta { transition: transform .2s; }
-        .btf-nav-cta:hover { transform: translateY(-2px); }
-        .btf-cta { transition: transform .2s, box-shadow .2s; }
-        .btf-cta:hover { transform: translateY(-3px) rotate(-1deg); }
-        .btf-feature {
-          position: relative; overflow: hidden; height: 100%; box-sizing: border-box;
-          transition: transform .38s cubic-bezier(.22,.75,.3,1), box-shadow .38s ease,
-                      border-color .38s ease, background .38s ease;
+        .btf-card {
+          transition: transform .16s ease, box-shadow .16s ease;
+          will-change: transform;
         }
-        /* accent top-edge highlight */
-        .btf-feature::before {
-          content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1.5px;
-          background: linear-gradient(90deg, transparent, var(--c), transparent);
-          opacity: .4; transition: opacity .38s ease;
+        .btf-card:hover {
+          transform: translate(-3px,-3px);
+          box-shadow: 9px 9px 0 0 var(--c);
         }
-        /* accent bloom that swells from the top-left on hover */
-        .btf-feature::after {
-          content: ""; position: absolute; top: -55%; left: -20%; width: 90%; height: 90%;
-          background: radial-gradient(closest-side, var(--glow), transparent 72%);
-          opacity: 0; transition: opacity .45s ease; pointer-events: none; z-index: 0;
+        .btf-chip { transition: transform .16s ease, box-shadow .16s ease; }
+        .btf-chip:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 0 var(--c); }
+        .btf-btn { transition: transform .16s ease, box-shadow .16s ease; }
+        .btf-btn:hover { transform: translate(-3px,-3px); box-shadow: 9px 9px 0 0 var(--s); }
+        .btf-grid {
+          display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px;
         }
-        .btf-feature > * { position: relative; z-index: 1; }
-        .btf-feature:hover {
-          transform: translateY(-10px) rotate(var(--tilt, 0deg)) scale(1.012);
-          box-shadow: 0 26px 64px var(--glow);
-          border-color: var(--c) !important;
-          background: linear-gradient(160deg,rgba(255,255,255,.085),rgba(255,255,255,.02)) !important;
-        }
-        .btf-feature:hover::before { opacity: 1; }
-        .btf-feature:hover::after { opacity: 1; }
-        .btf-fchip { transition: transform .38s cubic-bezier(.22,.75,.3,1), box-shadow .38s ease; }
-        .btf-feature:hover .btf-fchip { transform: translateY(-3px) scale(1.07); }
-        .btf-chip { transition: transform .25s, box-shadow .25s; }
-        .btf-chip:hover { transform: translateY(-3px) rotate(-1deg); }
-        .btf-logo-img { transition: transform .25s; }
-        .btf-logo-img:hover { transform: scale(1.15) rotate(-4deg); }
-        @media (max-width: 860px) {
-          .btf-nav-links { display: none !important; }
-          .btf-head { font-size: 38px !important; letter-spacing: -1px !important; }
-          .btf-grid3 { grid-template-columns: 1fr !important; }
-        }
+        @media (max-width: 1000px) { .btf-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 680px)  { .btf-grid { grid-template-columns: 1fr; } }
+        .btf-h1 { font-size: clamp(34px, 8vw, 60px); }
+        .btf-h2 { font-size: clamp(24px, 5vw, 36px); }
+        /* Narrow phones: stack the CTA buttons full-width and let long
+           (esp. Afrikaans) labels wrap instead of clipping past the edge. */
         @media (max-width: 480px) {
-          .btf-nav { padding: 12px 10px !important; gap: 6px !important; }
-          .btf-nav-left { gap: 6px !important; }
-          .btf-nav-left img { width: 34px !important; height: 34px !important; }
-          .btf-nav-left .bt-wordmark { font-size: 17px !important; }
-          .btf-nav-right { gap: 6px !important; }
-          .btf-nav-right [data-testid="lang-toggle"] span { padding: 5px 7px !important; }
-          .btf-nav-cta { padding: 8px 12px !important; font-size: 12px !important; }
+          .btf-cta-row { flex-direction: column; }
+          .btf-cta-row > a { width: 100%; }
+          .btf-cta-row .btf-btn { width: 100%; white-space: normal !important; }
         }
       `}</style>
 
-      {/* ── Nav ─────────────────────────────────────────────── */}
-      <div
-        className="btf-nav"
-        style={{
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          gap: 32, padding: "16px 48px", position: "sticky", top: 0, zIndex: 50,
-          background: "rgba(5,5,8,.82)", backdropFilter: "blur(14px)",
-          borderBottom: "1px solid rgba(255,255,255,.06)",
-        }}
-      >
-        <Link href="/">
-          <div className="btf-nav-left" style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer", minWidth: 0, flex: "none" }}>
-            <img src={iconTransparent} alt="BrainTrack" className="btf-logo-img" style={{ width: 56, height: 56, objectFit: "contain", flex: "none" }} />
-            <span className="bt-wordmark" style={{ fontSize: 22, letterSpacing: "-.5px" }}>BrainTrack</span>
-          </div>
-        </Link>
-        <div className="btf-nav-right" style={{ display: "flex", alignItems: "center", gap: 26, fontSize: 14, fontWeight: 600, flex: "none" }}>
-          <span className="btf-nav-links" style={{ display: "flex", alignItems: "center", gap: 26 }}>
-            <Link href="/research"><span className="btf-nav-link">{t.tResearch}</span></Link>
-          </span>
-          <span
-            onClick={toggleLanguage}
-            data-testid="lang-toggle"
-            style={{
-              display: "flex", alignItems: "center", gap: 2, fontSize: 12, fontWeight: 800,
-              border: "1.5px solid rgba(255,255,255,.2)", borderRadius: 8,
-              overflow: "hidden", cursor: "pointer", userSelect: "none", flex: "none",
-            }}
-          >
-            <span style={{ padding: "6px 10px", background: en ? "#9FF5E8" : "transparent", color: en ? "#050508" : "#fff" }}>EN</span>
-            <span style={{ padding: "6px 10px", background: en ? "transparent" : "#9FF5E8", color: en ? "#fff" : "#050508" }}>AF</span>
-          </span>
-          <a href="/signin" style={{ flex: "none" }}>
-            <button
-              className="btf-nav-cta"
-              data-testid="button-nav-enter"
-              style={{
-                fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 14,
-                color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
-                animation: "bt-rainbow 6s linear infinite", border: "none",
-                borderRadius: 10, padding: "11px 24px", whiteSpace: "nowrap",
-                cursor: "pointer",
-              }}
-            >
-              {t.tEnter}
-            </button>
-          </a>
-        </div>
-      </div>
-
-      {/* ── Content ─────────────────────────────────────────── */}
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "64px 32px 100px", textAlign: "center", position: "relative" }}>
-        {/* Floating pastel orbs — signature moment (research.tsx pattern). */}
-        <div aria-hidden style={{ position: "absolute", top: -40, left: "8%", width: 340, height: 340, borderRadius: "50%", background: "radial-gradient(circle,rgba(159,216,255,.35),transparent 70%)", filter: "blur(50px)", pointerEvents: "none", animation: "bt-float 9s ease-in-out infinite" }} />
-        <div aria-hidden style={{ position: "absolute", top: 120, right: "4%", width: 300, height: 300, borderRadius: "50%", background: "radial-gradient(circle,rgba(255,183,229,.3),transparent 70%)", filter: "blur(55px)", pointerEvents: "none", animation: "bt-float 11s ease-in-out infinite reverse" }} />
-        <div aria-hidden style={{ position: "absolute", top: 60, left: "44%", width: 260, height: 260, borderRadius: "50%", background: "radial-gradient(circle,rgba(197,179,255,.28),transparent 70%)", filter: "blur(50px)", pointerEvents: "none", animation: "bt-glowpulse 6s ease-in-out infinite" }} />
-
-        <Reveal style={{ position: "relative", zIndex: 2 }}>
-          <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#9FF5E8", fontSize: 18, transform: "rotate(-2deg)" }}>
-            {t.eyebrow}
-          </div>
-          <div
-            role="heading"
-            aria-level={1}
-            className="btf-head"
-            data-testid="text-features-title"
-            style={{ fontSize: 56, fontWeight: 900, letterSpacing: "-2.2px", lineHeight: 1.08, margin: "10px 0 0", fontFamily: "'Poppins',sans-serif", color: "#fff" }}
-          >
-            {t.head1}
+      <main style={{ paddingTop: 64 }}>
+        {/* ── Hero ─────────────────────────────────────────────── */}
+        <section style={{ position: "relative", maxWidth: 1080, margin: "0 auto", padding: "56px 20px 40px", textAlign: "center" }}>
+          {SCATTER.map((s, i) => (
             <span
+              key={i}
+              aria-hidden
               style={{
-                background: HEADLINE_GRADIENT, backgroundSize: "200% 100%",
-                animation: "bt-rainbow 7s linear infinite",
-                WebkitBackgroundClip: "text", backgroundClip: "text",
-                color: "transparent", WebkitTextFillColor: "transparent",
+                position: "absolute", fontFamily: "'Permanent Marker',cursive",
+                fontSize: s.size, color: s.color, transform: `rotate(${s.rotate}deg)`,
+                pointerEvents: "none", zIndex: 0,
+                animation: `bt-float ${7 + i}s ease-in-out infinite`,
+                ...s.style,
               }}
             >
-              {t.headAccent}
+              {s.glyph}
             </span>
-          </div>
-          {/* Marker underline swash beneath the headline. */}
-          <div
-            aria-hidden
-            style={{
-              width: 190, height: 5, margin: "16px auto 0", borderRadius: 999,
-              background: RAINBOW, backgroundSize: "200% 100%",
-              animation: "bt-rainbow 7s linear infinite", opacity: 0.85,
-              transform: "rotate(-1.2deg)",
-            }}
-          />
-          <div
-            data-testid="text-features-subtitle"
-            style={{ fontSize: 17, color: "#fff", opacity: 0.942, maxWidth: 640, margin: "18px auto 20px", lineHeight: 1.6 }}
-          >
-            {t.sub}
-          </div>
-        </Reveal>
-
-        {/* Subject chips */}
-        <Reveal delay={120} style={{ position: "relative", zIndex: 2 }}>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center", marginBottom: 52 }}>
-            {t.subjects.map((name, i) => {
-              const c = CHIP_COLORS[i % CHIP_COLORS.length];
-              return (
-                <span
-                  key={name}
-                  className="btf-chip"
-                  style={{ fontSize: 13.5, fontWeight: 700, color: c, border: `1.5px solid ${c}`, borderRadius: 999, padding: "8px 16px" }}
-                >
-                  {name}
-                </span>
-              );
-            })}
-          </div>
-        </Reveal>
-
-        {/* Feature cards */}
-        <div className="btf-grid3" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24, textAlign: "left", position: "relative", zIndex: 2 }}>
-          {t.features.map((f, i) => (
-            <Reveal key={f.title} delay={i * 90} style={{ display: "flex" }}>
-              <div
-                className="btf-feature"
-                data-testid={`card-feature-${i}`}
-                style={{
-                  "--tilt": `${f.tilt}deg`, "--glow": f.glow, "--c": f.color,
-                  background: "linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015))",
-                  border: "1px solid rgba(255,255,255,.09)", borderRadius: 22,
-                  padding: 28, cursor: "default", width: "100%",
-                } as React.CSSProperties}
-              >
-                <div className="btf-fchip" style={{ width: 54, height: 54, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", background: f.chipBg, marginBottom: 18, fontSize: 24 }}>
-                  {f.icon}
-                </div>
-                <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 8, color: "#fff" }}>{f.title}</div>
-                <div style={{ fontSize: 13.5, lineHeight: 1.6, color: "#fff", opacity: 0.942 }}>{f.body}</div>
-              </div>
-            </Reveal>
           ))}
-        </div>
 
-        {/* Final CTA */}
-        <Reveal delay={140} style={{ position: "relative", zIndex: 2 }}>
-          <Link href={isAuthenticated ? "/dashboard" : "/subscribe"}>
-            <button
-              className="btf-cta"
-              data-testid="button-features-cta"
+          <Reveal style={{ position: "relative", zIndex: 1 }}>
+            <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#9FF5E8", fontSize: 18, transform: "rotate(-2deg)", display: "inline-block" }}>
+              {t.eyebrow}
+            </div>
+            <h1
+              className="btf-h1"
+              data-testid="text-features-title"
+              style={{ fontWeight: 900, letterSpacing: "-1.6px", lineHeight: 1.08, margin: "12px 0 0", fontFamily: "'Poppins',sans-serif", color: "#fff" }}
+            >
+              {t.head1}
+              <span
+                style={{
+                  background: RAINBOW,
+                  WebkitBackgroundClip: "text", backgroundClip: "text",
+                  color: "transparent", WebkitTextFillColor: "transparent",
+                }}
+              >
+                {t.headAccent}
+              </span>
+            </h1>
+            <div
+              aria-hidden
+              style={{ width: 180, height: 5, margin: "18px auto 0", borderRadius: 999, background: RAINBOW, transform: "rotate(-1.2deg)" }}
+            />
+            <p
+              data-testid="text-features-subtitle"
+              style={{ fontSize: 17, color: "#fff", maxWidth: 640, margin: "20px auto 0", lineHeight: 1.6 }}
+            >
+              {t.sub}
+            </p>
+          </Reveal>
+        </section>
+
+        {/* ── Subjects ─────────────────────────────────────────── */}
+        <section style={{ maxWidth: 1000, margin: "0 auto", padding: "8px 20px 8px", textAlign: "center" }}>
+          <Reveal>
+            <h2 className="btf-h2" style={{ fontFamily: "'Permanent Marker',cursive", color: "#fff", margin: "0 0 22px", transform: "rotate(-1deg)" }}>
+              {t.subjectsHead}
+            </h2>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center" }}>
+              {t.subjects.map((name, i) => {
+                const c = CHIP_COLORS[i % CHIP_COLORS.length];
+                return (
+                  <span
+                    key={name}
+                    className="btf-chip"
+                    style={{ ["--c" as string]: c, fontSize: 13.5, fontWeight: 800, color: c, background: "#050508", border: `2px solid ${c}`, borderRadius: 999, padding: "8px 16px" } as React.CSSProperties}
+                  >
+                    {name}
+                  </span>
+                );
+              })}
+            </div>
+          </Reveal>
+        </section>
+
+        {/* ── Feature sticker cards ────────────────────────────── */}
+        <section style={{ maxWidth: 1080, margin: "0 auto", padding: "48px 20px 0", textAlign: "center" }}>
+          <Reveal>
+            <h2 className="btf-h2" style={{ fontFamily: "'Permanent Marker',cursive", color: "#fff", margin: "0 0 34px", transform: "rotate(-1deg)" }}>
+              {t.featsHead}
+            </h2>
+          </Reveal>
+          <div className="btf-grid">
+            {t.features.map((f, i) => (
+              <Reveal key={f.title} delay={i * 70} style={{ display: "flex" }}>
+                <div
+                  className="btf-card"
+                  data-testid={`card-feature-${i}`}
+                  style={{
+                    ["--c" as string]: f.color,
+                    width: "100%", boxSizing: "border-box", textAlign: "left",
+                    background: "#050508", border: `2.5px solid ${f.color}`,
+                    borderRadius: 18, boxShadow: `6px 6px 0 0 ${f.color}`,
+                    padding: 24,
+                  } as React.CSSProperties}
+                >
+                  <div
+                    style={{
+                      width: 52, height: 52, borderRadius: 14, display: "flex",
+                      alignItems: "center", justifyContent: "center", fontSize: 25,
+                      background: "#000", border: `2.5px solid ${f.color}`,
+                      boxShadow: `3px 3px 0 0 ${f.color}`, marginBottom: 18,
+                    }}
+                  >
+                    {f.icon}
+                  </div>
+                  <div style={{ fontWeight: 800, fontSize: 19, marginBottom: 9, color: "#fff", fontFamily: "'Poppins',sans-serif" }}>{f.title}</div>
+                  <div style={{ fontSize: 14, lineHeight: 1.6, color: "#fff" }}>{f.body}</div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </section>
+
+        {/* ── Final CTA sticker ────────────────────────────────── */}
+        <section style={{ maxWidth: 720, margin: "0 auto", padding: "72px 20px 100px" }}>
+          <Reveal>
+            <div
               style={{
-                marginTop: 52, fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 16,
-                color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
-                animation: "bt-rainbow 5s linear infinite", border: "none",
-                borderRadius: 10, padding: "16px 40px", whiteSpace: "nowrap",
-                cursor: "pointer",
+                background: "#050508", border: "2.5px solid #C5B3FF",
+                borderRadius: 24, boxShadow: "8px 8px 0 0 #C5B3FF",
+                padding: "clamp(28px,6vw,44px)", textAlign: "center",
+                transform: "rotate(-.4deg)",
               }}
             >
-              {isAuthenticated ? t.ctaLoggedIn : t.cta}
-            </button>
-          </Link>
-        </Reveal>
-      </div>
+              <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#FFB7E5", fontSize: 16, transform: "rotate(-2deg)", display: "inline-block" }}>
+                {t.ctaEyebrow}
+              </div>
+              <div className="btf-h2" style={{ fontWeight: 900, letterSpacing: "-1px", lineHeight: 1.12, color: "#fff", margin: "10px 0 26px", fontFamily: "'Poppins',sans-serif" }}>
+                {t.ctaHead}
+              </div>
+              <div className="btf-cta-row" style={{ display: "flex", flexWrap: "wrap", gap: 16, justifyContent: "center" }}>
+                <Link href={isAuthenticated ? "/dashboard" : "/subscribe"}>
+                  <button
+                    className="btf-btn bt-btn"
+                    data-testid="button-features-cta"
+                    style={{
+                      ["--s" as string]: "#FFE29A",
+                      fontFamily: "'Poppins',sans-serif", fontWeight: 900, fontSize: 16,
+                      color: "#000", background: "linear-gradient(100deg,#FFB7E5,#FFE29A,#9FF5E8,#C5B3FF,#FFB7E5)",
+                      backgroundSize: "200% 100%", animation: "bt-rainbow 5s linear infinite",
+                      border: "2.5px solid #000", borderRadius: 12, padding: "15px 34px",
+                      boxShadow: "6px 6px 0 0 #FFE29A", whiteSpace: "nowrap", cursor: "pointer",
+                    } as React.CSSProperties}
+                  >
+                    {isAuthenticated ? t.ctaLoggedIn : t.ctaBtn}
+                  </button>
+                </Link>
+                {!isAuthenticated && (
+                  <a href="/signin">
+                    <button
+                      className="btf-btn"
+                      data-testid="button-features-signin"
+                      style={{
+                        ["--s" as string]: "#9FD8FF",
+                        fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 16,
+                        color: "#fff", background: "#000", border: "2.5px solid #9FD8FF",
+                        borderRadius: 12, padding: "15px 30px", boxShadow: "6px 6px 0 0 #9FD8FF",
+                        whiteSpace: "nowrap", cursor: "pointer",
+                      } as React.CSSProperties}
+                    >
+                      {t.ctaSignin}
+                    </button>
+                  </a>
+                )}
+              </div>
+            </div>
+          </Reveal>
+        </section>
+      </main>
+
+      <PublicFooter />
     </div>
   );
 }
