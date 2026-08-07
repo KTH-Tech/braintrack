@@ -23,6 +23,7 @@ import { incrementQuizSessionCount } from "@/lib/quiz-session-tracker";
 import { LearnerHeader } from "@/components/learner-header";
 import { GraffitiSplats } from "@/components/graffiti-splats";
 import { ConfettiBurst } from "@/components/confetti-burst";
+import { Button } from "@/components/ui/button";
 import {
   splitBoostSession,
   BOOST_SESSION_TOTAL_SECONDS,
@@ -483,12 +484,9 @@ export default function BoostSessionPage() {
               <div className="text-xl font-black">{t.noSubjectsHeadline}</div>
               <p className="text-sm leading-relaxed">{t.noSubjectsCopy}</p>
               <Link href="/settings">
-                <button
-                  className="mt-2 px-6 py-3 rounded-xl font-extrabold text-sm"
-                  style={{ background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", color: "#050508", border: "none", cursor: "pointer" }}
-                >
+                <Button variant="primary" className="mt-2">
                   {t.goToSettings}
-                </button>
+                </Button>
               </Link>
             </div>
           ) : (
@@ -541,17 +539,16 @@ export default function BoostSessionPage() {
                     );
                   })}
                 </div>
-                <button
+                <Button
                   onClick={startSession}
                   data-testid="button-start-boost-session-run"
-                  className="mt-5 w-full py-3.5 rounded-xl font-black text-base flex items-center justify-center gap-2 transition-transform"
-                  style={{ background: "linear-gradient(100deg,#94F7C5,#9FF5E8)", color: "#050508", border: "none", cursor: "pointer" }}
-                  onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
+                  variant="primary"
+                  size="lg"
+                  className="mt-5 w-full"
                 >
                   <Zap className="w-5 h-5" />
                   {t.startCta}
-                </button>
+                </Button>
               </div>
             </>
           )}
@@ -655,21 +652,22 @@ export default function BoostSessionPage() {
               <Sparkles className="w-5 h-5 shrink-0" style={{ color: "#C5B3FF" }} />
               <p className="flex-1 min-w-[180px] text-sm font-semibold m-0">{t.revisionNudge}</p>
               <Link href="/revision">
-                <button className="px-4 py-2.5 rounded-xl text-sm font-extrabold" style={{ background: "transparent", border: "1.5px solid #C5B3FF", color: "#C5B3FF", cursor: "pointer" }}>
+                <Button variant="outline">
                   {t.revisionCta}
-                </button>
+                </Button>
               </Link>
             </div>
           )}
 
           <Link href="/dashboard">
-            <button
+            <Button
               data-testid="button-boost-back-dashboard"
-              className="w-full py-3.5 rounded-xl font-black text-base"
-              style={{ background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", color: "#050508", border: "none", cursor: "pointer" }}
+              variant="primary"
+              size="lg"
+              className="w-full"
             >
               {t.backToDash}
-            </button>
+            </Button>
           </Link>
         </main>
       </div>
@@ -834,15 +832,16 @@ export default function BoostSessionPage() {
             )}
 
             {answerLocked ? (
-              <button
+              <Button
                 onClick={handleNextQuestion}
                 data-testid="boost-session-next"
-                className="w-full py-3.5 rounded-xl font-black text-base flex items-center justify-center gap-1.5"
-                style={{ background: `linear-gradient(100deg,${hex},#9FF5E8)`, color: "#050508", border: "none", cursor: "pointer" }}
+                variant="primary"
+                size="lg"
+                className="w-full"
               >
                 {qIdx + 1 >= questions.length ? (isLastBlock ? t.finishSession : t.nextSubject) : t.nextQuestion}
                 <ChevronRight className="w-5 h-5" />
-              </button>
+              </Button>
             ) : (
               <p className="text-[12px] font-semibold text-center m-0">{t.selectAnswer}</p>
             )}
@@ -852,25 +851,25 @@ export default function BoostSessionPage() {
         {/* ── Session controls ── */}
         {blockPhase === "quiz" && (
           <div className="flex gap-2.5">
-            <button
+            <Button
               onClick={() => void endBlock()}
               data-testid="boost-session-skip-subject"
-              className="flex-1 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-1.5"
-              style={{ background: "transparent", border: "1.5px solid rgba(255,255,255,.2)", color: "#fff", cursor: "pointer" }}
+              variant="outline"
+              className="flex-1"
             >
               <SkipForward className="w-4 h-4" />
               {isLastBlock ? t.finishSession : t.skipSubject}
-            </button>
+            </Button>
             {!isLastBlock && (
-              <button
+              <Button
                 onClick={() => void endBlock({ skipRest: true })}
                 data-testid="boost-session-end-early"
-                className="flex-1 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-1.5"
-                style={{ background: "transparent", border: "1.5px solid #FFB7E5", color: "#FFB7E5", cursor: "pointer" }}
+                variant="outline"
+                className="flex-1"
               >
                 <Square className="w-3.5 h-3.5" />
                 {t.endEarly}
-              </button>
+              </Button>
             )}
           </div>
         )}

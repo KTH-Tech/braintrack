@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { ArrowLeft, BookOpen } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
+import { Button } from "@/components/ui/button";
 
 // The voice-notes / audio feature has been removed from the app entirely
 // (per owner decision). This page is kept as a lightweight, valid route so
@@ -61,19 +62,15 @@ export default function MyNotesPage() {
             {isAf ? "Hierdie funksie is nie meer beskikbaar nie." : "This feature is no longer available."}
           </p>
           <Link href="/subjects">
-            <button
-              className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 text-xs font-extrabold uppercase tracking-[0.14em] transition-all"
-              style={{
-                background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
-                color: "#050508",
-                border: "none",
-                borderRadius: 12,
-              }}
+            <Button
+              variant="primary"
+              size="sm"
+              className="mt-4"
               data-testid="button-go-subjects"
             >
               <BookOpen className="w-3.5 h-3.5" />
               {isAf ? "Kies 'n vak" : "Choose a subject"}
-            </button>
+            </Button>
           </Link>
         </div>
       </main>

@@ -34,6 +34,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/language-context";
 import { formatDate } from "@/lib/formatters";
 import {
@@ -84,7 +85,7 @@ import {
 
 /* Opaque card base — the graffiti scatter sits behind the page and bled
    through when these were translucent, so every card paints #050508 first. */
-const CARD_BG = "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508";
+const CARD_BG = "linear-gradient(#1b1922, #1b1922), #050508";
 
 /* Palette (pastels only — no grey text ever). */
 const HEX = {
@@ -172,7 +173,7 @@ function RecipeTile({
       <span aria-hidden className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2" style={{ borderColor: hex }} />
       <span aria-hidden className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2" style={{ borderColor: hex }} />
       <div className="flex items-start gap-3">
-        <div className="w-9 h-9 rounded-lg bg-white/[.03] flex items-center justify-center shrink-0" style={{ border: `1.5px solid ${hex}` }}>
+        <div className="w-9 h-9 rounded-lg bg-[#1b1922] flex items-center justify-center shrink-0" style={{ border: `1.5px solid ${hex}` }}>
           <Icon className="w-4 h-4" style={{ color: hex }} />
         </div>
         <div className="min-w-0 flex-1">
@@ -189,7 +190,7 @@ function RecipeTile({
           </div>
         </div>
       </div>
-      <div className="mt-3 h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+      <div className="mt-3 h-1.5 rounded-full overflow-hidden" style={{ background: "#1b1922" }}>
         <div
           className="h-full rounded-full transition-[width] duration-700"
           style={{ width: `${pct}%`, background: hex }}
@@ -374,20 +375,20 @@ export default function ProgressPage() {
             <div className="relative flex flex-col lg:flex-row lg:items-center gap-8">
               <div className="flex-1 space-y-4 min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-white/[.03]" style={{ border: `1px solid ${HEX.sky}8C` }}>
+                  <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-[#1b1922]" style={{ border: `1px solid ${HEX.sky}8C` }}>
                     <span className="w-1.5 h-1.5 rounded-full progress-hero-pulse" style={{ background: HEX.sky }} />
                     <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: HEX.sky }}>
                       {isAf ? "Prestasieverslag" : "Performance Report"}
                     </span>
                   </div>
                   {started && (
-                    <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-white/[.03]" style={{ border: `1px solid ${rankHex}` }}>
+                    <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-[#1b1922]" style={{ border: `1px solid ${rankHex}` }}>
                       <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: rankHex }}>
                         {isAf ? "Rang" : "Rank"}: {rank}
                       </span>
                     </div>
                   )}
-                  <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-white/[.03]" style={{ border: `1px solid ${HEX.yellow}8C` }}>
+                  <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-[#1b1922]" style={{ border: `1px solid ${HEX.yellow}8C` }}>
                     <Flame className="w-3 h-3" style={{ color: HEX.yellow }} />
                     <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: HEX.yellow }}>
                       {streak} {isAf ? (streak === 1 ? "dag" : "dae") : (streak === 1 ? "day" : "days")}
@@ -430,7 +431,7 @@ export default function ProgressPage() {
                       {missionReadiness}% · {readinessBandLabel(missionReadiness, isAf)}
                     </span>
                   </div>
-                  <div className="relative h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                  <div className="relative h-2 rounded-full overflow-hidden" style={{ background: "#1b1922", border: "1px solid #1b1922" }}>
                     <div
                       className="absolute top-0 left-0 bottom-0 rounded-full transition-[width] duration-700"
                       style={{
@@ -452,7 +453,7 @@ export default function ProgressPage() {
                     { k: isAf ? "Vrae"       : "Questions", v: questions, hex: HEX.yellow },
                     { k: isAf ? "Streep"     : "Streak",    v: streak,    hex: HEX.yellow },
                   ].map(({ k, v, hex }) => (
-                    <div key={k} className="rounded-xl bg-white/[.03] px-3 py-2" style={{ border: `1px solid ${hex}55` }}>
+                    <div key={k} className="rounded-xl bg-[#1b1922] px-3 py-2" style={{ border: `1px solid ${hex}55` }}>
                       <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-white">{k}</div>
                       <div className="text-lg font-black" style={{ color: hex }}>{v}</div>
                     </div>
@@ -462,7 +463,7 @@ export default function ProgressPage() {
                 <div className="pt-1">
                   <Link href="/dashboard">
                     <button
-                      className="px-4 py-2 rounded-xl bg-white/[.03] font-bold text-sm hover:bg-white/10"
+                      className="px-4 py-2 rounded-xl bg-[#1b1922] font-bold text-sm hover:bg-[#1b1922]"
                       style={{ color: HEX.sky, border: `1.5px solid ${HEX.sky}` }}
                       data-testid="button-back"
                     >
@@ -487,7 +488,7 @@ export default function ProgressPage() {
                       <stop offset="100%" stopColor={HEX.pink} />
                     </linearGradient>
                   </defs>
-                  <circle cx="70" cy="70" r={R} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="8" />
+                  <circle cx="70" cy="70" r={R} fill="none" stroke="#1b1922" strokeWidth="8" />
                   <circle
                     cx="70"
                     cy="70"
@@ -546,8 +547,8 @@ export default function ProgressPage() {
               {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-32 rounded-2xl" />)}
             </div>
           ) : !stats ? (
-            <div className="rounded-2xl p-12 text-center" style={{ background: CARD_BG, border: "1px solid rgba(255,255,255,.12)" }}>
-              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-white/[.03] flex items-center justify-center border border-white/10">
+            <div className="rounded-2xl p-12 text-center" style={{ background: CARD_BG, border: "1px solid #1b1922" }}>
+              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#1b1922] flex items-center justify-center border border-[#1b1922]">
                 <Target className="w-8 h-8 text-white" />
               </div>
               <p className="text-lg font-bold text-white">{isAf ? "Kon nie jou vordering laai nie" : "Couldn't load your progress"}</p>
@@ -646,11 +647,11 @@ export default function ProgressPage() {
                 <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2" style={{ borderColor: HEX.mint }} />
                 <span aria-hidden className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2" style={{ borderColor: HEX.mint }} />
                 <div className="flex flex-col sm:flex-row sm:items-center gap-5">
-                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 bg-white/[.03]" style={{ border: `1.5px solid ${HEX.mint}` }}>
+                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 bg-[#1b1922]" style={{ border: `1.5px solid ${HEX.mint}` }}>
                     <Compass className="w-7 h-7" style={{ color: HEX.mint }} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: HEX.mint, transform: "rotate(-1.5deg)", display: "inline-block" }}>
+                    <p style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: HEX.mint, transform: "rotate(-1.5deg)", display: "inline-block" }}>
                       {isAf ? "jou volgende skuif" : "your next move"}
                     </p>
                     <h2 className="text-white font-black text-xl sm:text-2xl leading-tight mt-0.5" data-testid="next-move-title">
@@ -659,14 +660,15 @@ export default function ProgressPage() {
                     <p className="text-white text-sm mt-1.5 leading-relaxed">{nextMoveCopy.body}</p>
                   </div>
                   <Link href={nextMoveCopy.href}>
-                    <button
-                      className="w-full sm:w-auto px-5 py-3 rounded-xl font-bold text-sm shrink-0 bg-white/[.03] hover:bg-white/10 whitespace-nowrap"
-                      style={{ color: HEX.mint, border: `1.5px solid ${HEX.mint}` }}
+                    <Button
+                      variant="primary"
+                      size="lg"
+                      className="w-full sm:w-auto shrink-0 whitespace-nowrap"
                       data-testid="next-move-cta"
                     >
                       {nextMoveCopy.cta}
-                      <ArrowRight className="w-3.5 h-3.5 inline ml-1.5" />
-                    </button>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Button>
                   </Link>
                 </div>
               </div>
@@ -691,7 +693,7 @@ export default function ProgressPage() {
                           return (
                             <Link key={subject.subjectId} href={`/subject/${subject.subjectId}`}>
                               <div
-                                className="p-4 rounded-2xl bg-white/[.03] cursor-pointer transition-all hover:-translate-y-1.5 flex items-center gap-3"
+                                className="p-4 rounded-2xl bg-[#1b1922] cursor-pointer transition-all hover:-translate-y-1.5 flex items-center gap-3"
                                 style={{ border: `1px solid ${hex}55` }}
                                 data-testid={`ready-subject-${subject.subjectId}`}
                               >
@@ -709,7 +711,7 @@ export default function ProgressPage() {
                         })}
                       </div>
                     ) : (
-                      <div className="text-center py-10 rounded-2xl bg-white/[.03] border border-white/10 p-6">
+                      <div className="text-center py-10 rounded-2xl bg-[#1b1922] border border-[#1b1922] p-6">
                         <BookOpen className="w-7 h-7 mx-auto mb-3 text-white" />
                         <p className="font-bold text-white">{isAf ? "Nog geen vakke gekies nie" : "No subjects picked yet"}</p>
                         <p className="text-sm text-white mt-1">
@@ -737,7 +739,7 @@ export default function ProgressPage() {
                         <span aria-hidden className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2" style={{ borderColor: hex }} />
                         <span aria-hidden className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2" style={{ borderColor: hex }} />
                         <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-xl bg-white/[.03] flex items-center justify-center shrink-0" style={{ border: `1.5px solid ${hex}` }}>
+                          <div className="w-12 h-12 rounded-xl bg-[#1b1922] flex items-center justify-center shrink-0" style={{ border: `1.5px solid ${hex}` }}>
                             <Icon className="w-6 h-6" style={{ color: hex }} />
                           </div>
                           <div>
@@ -784,7 +786,7 @@ export default function ProgressPage() {
                                     className="w-full rounded-t-md transition-all"
                                     style={{
                                       height: `${pct}%`,
-                                      background: day.questionsAnswered > 0 ? hex : "rgba(255,255,255,0.10)",
+                                      background: day.questionsAnswered > 0 ? hex : "#1b1922",
                                       minHeight: 4,
                                     }}
                                     title={`${day.date} · ${day.questionsAnswered} ${isAf ? "vrae" : "questions"}${dAcc !== null ? ` · ${dAcc}%` : ""}`}
@@ -804,7 +806,7 @@ export default function ProgressPage() {
                               { k: isAf ? "Akkuraat"    : "Accurate",    v: `${activity.accuracy}%`,                        hex: HEX.sky },
                               { k: isAf ? "Studietyd 14d" : "Study time 14d", v: `${studyMinutes14d}m`,                    hex: HEX.pink },
                             ].map(({ k, v, hex }) => (
-                              <div key={k} className="rounded-xl bg-white/[.03] px-3 py-2" style={{ border: `1px solid ${hex}55` }}>
+                              <div key={k} className="rounded-xl bg-[#1b1922] px-3 py-2" style={{ border: `1px solid ${hex}55` }}>
                                 <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-white">{k}</div>
                                 <div className="text-lg font-black" style={{ color: hex }}>{v}</div>
                               </div>
@@ -812,7 +814,7 @@ export default function ProgressPage() {
                           </div>
                         </>
                       ) : (
-                        <div className="text-center py-8 rounded-2xl bg-white/[.03] border border-white/10 p-6">
+                        <div className="text-center py-8 rounded-2xl bg-[#1b1922] border border-[#1b1922] p-6">
                           <Calendar className="w-7 h-7 mx-auto mb-3 text-white" />
                           <p className="font-bold text-white">{isAf ? "Nog geen daaglikse geskiedenis nie" : "No daily history yet"}</p>
                           <p className="text-sm text-white mt-1">
@@ -832,7 +834,7 @@ export default function ProgressPage() {
                       data-testid="panel-time-on-task"
                     >
                       <div className="flex items-center gap-2.5">
-                        <div className="w-9 h-9 rounded-xl bg-white/[.03] flex items-center justify-center shrink-0" style={{ border: `1.5px solid ${HEX.pink}` }}>
+                        <div className="w-9 h-9 rounded-xl bg-[#1b1922] flex items-center justify-center shrink-0" style={{ border: `1.5px solid ${HEX.pink}` }}>
                           <Clock className="w-4 h-4" style={{ color: HEX.pink }} />
                         </div>
                         <div className="min-w-0">
@@ -845,7 +847,7 @@ export default function ProgressPage() {
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-3">
-                        <div className="rounded-xl bg-white/[.03] px-3 py-3" style={{ border: `1px solid ${HEX.pink}55` }}>
+                        <div className="rounded-xl bg-[#1b1922] px-3 py-3" style={{ border: `1px solid ${HEX.pink}55` }}>
                           <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-white">
                             {isAf ? "Hierdie week" : "This week"}
                           </div>
@@ -856,7 +858,7 @@ export default function ProgressPage() {
                             {isAf ? "van study_sessions" : "from study_sessions"}
                           </div>
                         </div>
-                        <div className="rounded-xl bg-white/[.03] px-3 py-3" style={{ border: `1px solid ${HEX.purple}55` }}>
+                        <div className="rounded-xl bg-[#1b1922] px-3 py-3" style={{ border: `1px solid ${HEX.purple}55` }}>
                           <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-white">
                             {isAf ? "Laaste 14 dae" : "Last 14 days"}
                           </div>
@@ -901,7 +903,7 @@ export default function ProgressPage() {
                             return (
                               <Link key={subject.subjectId} href={`/subject/${subject.subjectId}`}>
                                 <div
-                                  className="p-4 rounded-2xl bg-white/[.03] cursor-pointer transition-all hover:-translate-y-1.5"
+                                  className="p-4 rounded-2xl bg-[#1b1922] cursor-pointer transition-all hover:-translate-y-1.5"
                                   style={{ border: `1px solid ${hex}55` }}
                                   data-testid={`progress-subject-${subject.subjectId}`}
                                 >
@@ -914,7 +916,7 @@ export default function ProgressPage() {
                                       {subject.accuracy}%
                                     </span>
                                   </div>
-                                  <div className="h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
+                                  <div className="h-1.5 w-full rounded-full bg-[#1b1922] overflow-hidden">
                                     <div className="h-full rounded-full transition-all" style={{ width: `${subject.accuracy}%`, background: barColor }} />
                                   </div>
                                   <div className="flex items-center justify-between mt-2.5 text-[11px] font-semibold text-white uppercase tracking-widest gap-2">
@@ -936,7 +938,7 @@ export default function ProgressPage() {
                             );
                           })
                         ) : (
-                          <div className="text-center py-10 rounded-2xl bg-white/[.03] border border-white/10 p-6">
+                          <div className="text-center py-10 rounded-2xl bg-[#1b1922] border border-[#1b1922] p-6">
                             <BookOpen className="w-7 h-7 mx-auto mb-3 text-white" />
                             <p className="font-bold text-white">{isAf ? "Nog geen vak begin nie" : "No subject started yet"}</p>
                             <p className="text-sm text-white mt-1">
@@ -954,8 +956,8 @@ export default function ProgressPage() {
                               {idleSubjects.map((subject: SubjectProgress) => (
                                 <Link key={subject.subjectId} href={`/subject/${subject.subjectId}`}>
                                   <span
-                                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/[.03] text-[12px] font-bold text-white cursor-pointer hover:bg-white/10"
-                                    style={{ border: "1px solid rgba(255,255,255,0.18)" }}
+                                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#1b1922] text-[12px] font-bold text-white cursor-pointer hover:bg-[#1b1922]"
+                                    style={{ border: "1px solid #1b1922" }}
                                     data-testid={`idle-subject-${subject.subjectId}`}
                                   >
                                     <span>{getSubjectIcon(subject.subjectName)}</span>
@@ -999,7 +1001,7 @@ export default function ProgressPage() {
                                 { k: isAf ? "Amber" : "Amber", v: topicSummary.amber, hex: HEX.yellow },
                                 { k: isAf ? "Rooi"  : "Red",   v: topicSummary.red,   hex: HEX.alert },
                               ].map(({ k, v, hex }) => (
-                                <div key={k} className="rounded-xl bg-white/[.03] px-3 py-2" style={{ border: `1px solid ${hex}55` }}>
+                                <div key={k} className="rounded-xl bg-[#1b1922] px-3 py-2" style={{ border: `1px solid ${hex}55` }}>
                                   <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-white">{k}</div>
                                   <div className="text-lg font-black" style={{ color: hex }}>{v}</div>
                                 </div>
@@ -1016,7 +1018,7 @@ export default function ProgressPage() {
                                   {topicStrengths.map((t: TopicMasteryEntry) => (
                                     <div
                                       key={t.topicId}
-                                      className="flex items-center justify-between gap-2 p-3 rounded-xl bg-white/[.03]"
+                                      className="flex items-center justify-between gap-2 p-3 rounded-xl bg-[#1b1922]"
                                       style={{ border: `1px solid ${HEX.mint}55` }}
                                       data-testid={`topic-strength-${t.topicId}`}
                                     >
@@ -1045,7 +1047,7 @@ export default function ProgressPage() {
                                     return (
                                       <Link key={t.topicId} href={`/subject/${t.subjectId}`}>
                                         <div
-                                          className="flex items-center justify-between gap-2 p-3 rounded-xl bg-white/[.03] cursor-pointer transition-all hover:-translate-y-0.5"
+                                          className="flex items-center justify-between gap-2 p-3 rounded-xl bg-[#1b1922] cursor-pointer transition-all hover:-translate-y-0.5"
                                           style={{ border: `1px solid ${hex}55` }}
                                           data-testid={`topic-focus-${t.topicId}`}
                                         >
@@ -1066,7 +1068,7 @@ export default function ProgressPage() {
                                 </div>
                               </div>
                             ) : (
-                              <div className="text-center py-6 rounded-2xl bg-white/[.03] border border-white/10 p-4">
+                              <div className="text-center py-6 rounded-2xl bg-[#1b1922] border border-[#1b1922] p-4">
                                 <p className="font-bold text-white text-sm">
                                   {isAf ? "Elke onderwerp is amber of beter" : "Every topic is amber or better"}
                                 </p>
@@ -1077,7 +1079,7 @@ export default function ProgressPage() {
                             )}
                           </>
                         ) : (
-                          <div className="text-center py-8 rounded-2xl bg-white/[.03] border border-white/10 p-6">
+                          <div className="text-center py-8 rounded-2xl bg-[#1b1922] border border-[#1b1922] p-6">
                             <Layers className="w-7 h-7 mx-auto mb-3 text-white" />
                             <p className="font-bold text-white">
                               {isAf ? "Onderwerp-uiteensetting kom binnekort" : "Topic breakdown coming soon"}
@@ -1110,7 +1112,7 @@ export default function ProgressPage() {
                             return (
                               <Link key={topic.topicId} href={`/subject/${topic.topicId}`}>
                                 <div
-                                  className="flex items-center justify-between p-4 rounded-2xl bg-white/[.03] cursor-pointer transition-all hover:-translate-y-1"
+                                  className="flex items-center justify-between p-4 rounded-2xl bg-[#1b1922] cursor-pointer transition-all hover:-translate-y-1"
                                   style={{ border: `1px solid ${hex}55` }}
                                   data-testid={`weak-topic-${topic.topicId}`}
                                 >
@@ -1126,7 +1128,7 @@ export default function ProgressPage() {
                           })}
                         </div>
                       ) : (
-                        <div className="text-center py-10 rounded-2xl bg-white/[.03] border border-white/10 p-6">
+                        <div className="text-center py-10 rounded-2xl bg-[#1b1922] border border-[#1b1922] p-6">
                           <Target className="w-7 h-7 mx-auto mb-3 text-white" />
                           <p className="font-bold text-white">
                             {activeSubjects.length > 0

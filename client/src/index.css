@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Permanent+Marker&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@400;500;600;700;800;900&family=Permanent+Marker&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -206,6 +206,24 @@ h3 { font-size: 1.25rem; line-height: 1.25; }
 
   /* Legacy alias — existing classes reference this */
   --pastel-rainbow: var(--bt-rainbow);
+
+  /* ══ PUBLIC MARKETING SURFACE — SINGLE SOURCE OF TRUTH ══════════════
+     Landing / Subscribe / Features / Research / PublicNav / PublicFooter
+     share these tokens + the .pub-* utilities below, so card fills,
+     borders, radii, buttons and rhythm can't drift per-page again.
+     Rules: ground stays near-black; every fill is SOLID; every border and
+     every text colour is a solid pastel-neon accent or pure #fff — never a
+     translucent/greyish value. Hierarchy comes from size/weight, not opacity. */
+  --bt-display:   'Bebas Neue', system-ui, sans-serif; /* condensed display + kickers */
+  --pub-ground:   #050508;   /* page ground */
+  --pub-card:     #0e0d12;   /* ONE solid card fill */
+  --pub-radius:   18px;      /* ONE card radius */
+  --pub-radius-sm:12px;      /* buttons / chips */
+  --pub-border:   2.5px;     /* ONE card border width */
+  --pub-shadow:   6px;       /* ONE hard-offset sticker shadow distance */
+  --pub-maxw:     1100px;    /* ONE content max-width */
+  --pub-gutter:   20px;      /* ONE horizontal gutter */
+  --pub-section:  96px;      /* ONE vertical section rhythm */
 }
 
 /* Token reusable classes (braintrack-tokens.css) */
@@ -248,6 +266,60 @@ h3 { font-size: 1.25rem; line-height: 1.25; }
   font-size: 13.5px; font-weight: 700; color: var(--a, var(--bt-aqua));
   border: 1.5px solid var(--a, var(--bt-aqua)); border-radius: 999px;
   padding: 8px 16px;
+}
+/* ── PUBLIC .pub-* utilities: ONE card, ONE button pair, ONE eyebrow, ONE chip.
+   Accent colour is passed per-instance via inline `--a` (a solid pastel-neon).
+   Solid fills + solid borders + hard-offset shadows only — zero grey. ── */
+.pub-card {
+  background: var(--pub-card);
+  border: var(--pub-border) solid var(--a, var(--bt-sky));
+  border-radius: var(--pub-radius);
+  box-shadow: var(--pub-shadow) var(--pub-shadow) 0 0 var(--a, var(--bt-sky));
+  padding: 24px;
+  transition: transform .16s ease, box-shadow .16s ease;
+}
+.pub-card:hover { transform: translate(-3px, -3px); box-shadow: 9px 9px 0 0 var(--a, var(--bt-sky)); }
+/* Primary CTA — rainbow fill, near-black ink (same on every public page). */
+.pub-btn {
+  font-family: 'Poppins', system-ui, sans-serif; font-weight: 900; font-size: 16px;
+  color: var(--pub-ground);
+  background: var(--bt-rainbow); background-size: 200% 100%;
+  animation: bt-rainbow 5s linear infinite;
+  border: 2.5px solid var(--pub-ground); border-radius: var(--pub-radius-sm);
+  padding: 15px 34px; cursor: pointer; white-space: nowrap;
+  box-shadow: var(--pub-shadow) var(--pub-shadow) 0 0 var(--bt-yellow);
+  transition: transform .16s ease, box-shadow .16s ease;
+}
+.pub-btn:hover { transform: translate(-3px, -3px); box-shadow: 9px 9px 0 0 var(--bt-yellow); }
+/* Secondary CTA — solid neon outline on ground. */
+.pub-btn-outline {
+  font-family: 'Poppins', system-ui, sans-serif; font-weight: 800; font-size: 16px;
+  color: #fff; background: var(--pub-ground);
+  border: 2.5px solid var(--a, var(--bt-sky)); border-radius: var(--pub-radius-sm);
+  padding: 15px 30px; cursor: pointer; white-space: nowrap;
+  box-shadow: var(--pub-shadow) var(--pub-shadow) 0 0 var(--a, var(--bt-sky));
+  transition: transform .16s ease, box-shadow .16s ease;
+}
+.pub-btn-outline:hover { transform: translate(-3px, -3px); box-shadow: 9px 9px 0 0 var(--a, var(--bt-sky)); }
+/* Nav-scale size modifier — combine with .pub-btn / .pub-btn-outline so header
+   CTAs share the ONE button system without oversizing the 64px nav bar.
+   e.g. class="pub-btn pub-btn-sm". Shrinks pad/size only; fill, border, shadow
+   and hover all inherit from the base class. */
+.pub-btn-sm { font-size: 12.5px; padding: 9px 18px; }
+/* Full-width helper for stacked mobile CTAs. */
+.pub-btn-block { display: block; width: 100%; text-align: center; }
+/* Eyebrow / kicker — condensed display caps in a solid accent (replaces the
+   old Permanent Marker eyebrows). */
+.pub-eyebrow {
+  font-family: var(--bt-display); font-size: 18px; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--a, var(--bt-pink));
+  display: inline-block; transform: rotate(-2deg);
+}
+/* Chip — solid neon outline pill. */
+.pub-chip {
+  font-family: 'Poppins', system-ui, sans-serif; font-size: 13px; font-weight: 800;
+  color: var(--a, var(--bt-sky)); background: var(--pub-ground);
+  border: 2px solid var(--a, var(--bt-sky)); border-radius: 999px; padding: 8px 16px;
 }
 @keyframes bt-rainbow { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
 @keyframes bt-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }

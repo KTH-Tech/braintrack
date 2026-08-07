@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/language-context";
@@ -34,7 +35,7 @@ import type { Subject, OnboardingResult } from "@shared/schema";
 
 /* ── Street-pastel section card ──────────────────────────────────────────
    Executive card on the #050508 wall: soft glass body, pastel accent bar,
-   icon chip and a Permanent Marker eyebrow. Poppins everywhere else. */
+   icon chip and a Bebas Neue eyebrow. Poppins everywhere else. */
 type PastelHex = "#9FF5E8" | "#9FD8FF" | "#FFB7E5" | "#C5B3FF" | "#FFE29A" | "#94F7C5";
 
 function SectionCard({ color, icon: Icon, eyebrow, title, subtitle, children, testId, delay = 0 }: {
@@ -51,8 +52,8 @@ function SectionCard({ color, icon: Icon, eyebrow, title, subtitle, children, te
     <section
       className="relative overflow-hidden"
       style={{
-        background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
-        border: "1px solid rgba(255,255,255,.08)",
+        background: "linear-gradient(#1b1922, #1b1922), #050508",
+        border: "1px solid #1b1922",
         borderRadius: 22,
         animation: `bt-fadeup .5s cubic-bezier(.22,1,.36,1) ${delay}s both`,
       }}
@@ -72,13 +73,13 @@ function SectionCard({ color, icon: Icon, eyebrow, title, subtitle, children, te
             <Icon className="w-5 h-5" style={{ color }} />
           </div>
           <div className="min-w-0">
-            <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color, transform: "rotate(-1.5deg)", display: "inline-block" }}>
+            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 16, color, transform: "rotate(-1.5deg)", display: "inline-block" }}>
               {eyebrow}
             </div>
             <div role="heading" aria-level={2} className="text-lg font-black text-white leading-tight">
               {title}
             </div>
-            {subtitle && <p className="text-xs text-white mt-0.5 leading-snug" style={{ opacity: 0.85 }}>{subtitle}</p>}
+            {subtitle && <p className="text-xs text-white mt-0.5 leading-snug">{subtitle}</p>}
           </div>
         </div>
         <div className="space-y-4">{children}</div>
@@ -92,7 +93,7 @@ const fieldClass =
   "text-white placeholder:text-white rounded-xl focus-visible:ring-[#9FF5E8]/40 focus-visible:border-[#9FF5E8]";
 const fieldStyle: React.CSSProperties = {
   background: "rgba(5,5,8,.6)",
-  border: "1.5px solid rgba(255,255,255,.18)",
+  border: "1.5px solid #1b1922",
 };
 
 function PrimaryButton({ children, testId, onClick, disabled, full }: {
@@ -103,22 +104,16 @@ function PrimaryButton({ children, testId, onClick, disabled, full }: {
   full?: boolean;
 }) {
   return (
-    <button
+    <Button
       type="button"
+      variant="primary"
       onClick={onClick}
       disabled={disabled}
       data-testid={testId}
-      className={`${full ? "w-full " : ""}inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all disabled:opacity-40`}
-      style={{
-        background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
-        color: "#050508",
-        border: "none",
-      }}
-      onMouseEnter={(e) => { if (!disabled) e.currentTarget.style.transform = "translateY(-2px)"; }}
-      onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}
+      className={full ? "w-full" : ""}
     >
       {children}
-    </button>
+    </Button>
   );
 }
 
@@ -140,7 +135,7 @@ function GhostButton({ children, testId, onClick, disabled, color = "#ffffff", f
       style={{
         background: "transparent",
         color,
-        border: color === "#ffffff" ? "1.5px solid rgba(255,255,255,.2)" : `1.5px solid ${color}`,
+        border: color === "#ffffff" ? "1.5px solid #1b1922" : `1.5px solid ${color}`,
       }}
       onMouseEnter={(e) => { if (!disabled) e.currentTarget.style.transform = "translateY(-2px)"; }}
       onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}
@@ -262,9 +257,9 @@ const T = {
     subjectsSelectedLabel: "subjects selected",
     nudgesEyebrow: "Stay in the loop",
     nudgesTitle: "Study nudges",
-    nudgesSubtitle: "Short WhatsApp updates on your learner's trial progress",
+    nudgesSubtitle: "Short WhatsApp updates on your learner's study progress",
     nudgesToggleLabel: "Get study nudges via WhatsApp / SMS",
-    nudgesToggleHint: "Day-3, day-7 and day-12 progress updates during your trial. We'll try WhatsApp first; if it fails we fall back to SMS. Turn this off any time.",
+    nudgesToggleHint: "Day-3, day-7 and day-12 progress updates on your learner's studying. We'll try WhatsApp first; if it fails we fall back to SMS. Turn this off any time.",
     nudgesSaved: "Preference saved",
     nudgesSaveFailed: "Could not save preference",
   },
@@ -379,9 +374,9 @@ const T = {
     subjectsSelectedLabel: "vakke gekies",
     nudgesEyebrow: "Bly op hoogte",
     nudgesTitle: "Studie-nudges",
-    nudgesSubtitle: "Kort WhatsApp-opdaterings oor jou leerder se proef",
+    nudgesSubtitle: "Kort WhatsApp-opdaterings oor jou leerder se studievordering",
     nudgesToggleLabel: "Ontvang studie-nudges via WhatsApp / SMS",
-    nudgesToggleHint: "Dag-3, dag-7 en dag-12 vorderingsopdaterings tydens jou proef. Ons probeer WhatsApp eerste; misluk dit, val ons terug op SMS. Skakel enige tyd af.",
+    nudgesToggleHint: "Dag-3, dag-7 en dag-12 vorderingsopdaterings oor jou leerder se studie. Ons probeer WhatsApp eerste; misluk dit, val ons terug op SMS. Skakel enige tyd af.",
     nudgesSaved: "Voorkeur gestoor",
     nudgesSaveFailed: "Kon nie voorkeur stoor nie",
   },
@@ -766,7 +761,7 @@ export default function SettingsPage() {
           <section className="relative mb-2" style={{ animation: "bt-fadeup .5s cubic-bezier(.22,1,.36,1) both" }}>
             <div className="inline-flex items-center gap-2 mb-3">
               <SlidersHorizontal className="w-4 h-4" style={{ color: "#9FF5E8" }} />
-              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}>
+              <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}>
                 {t.heroEyebrow}
               </span>
             </div>
@@ -785,7 +780,7 @@ export default function SettingsPage() {
             >
               {t.heroHeading}
             </div>
-            <p className="text-white text-sm sm:text-base mt-3 max-w-xl" style={{ opacity: 0.9 }}>
+            <p className="text-white text-sm sm:text-base mt-3 max-w-xl">
               {t.heroSubtitle}
             </p>
           </section>
@@ -801,19 +796,19 @@ export default function SettingsPage() {
             delay={0.05}
           >
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="p-3 rounded-xl" style={{ background: "rgba(5,5,8,.6)", border: "1px solid rgba(255,255,255,.1)" }}>
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white" style={{ opacity: 0.82 }}>{t.nameLabel}</p>
+              <div className="p-3 rounded-xl" style={{ background: "rgba(5,5,8,.6)", border: "1px solid #1b1922" }}>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white">{t.nameLabel}</p>
                 <p className="font-bold text-white mt-0.5 truncate" data-testid="text-profile-name">{displayName}</p>
               </div>
-              <div className="p-3 rounded-xl" style={{ background: "rgba(5,5,8,.6)", border: "1px solid rgba(255,255,255,.1)" }}>
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white" style={{ opacity: 0.82 }}>{t.gradeLabel}</p>
+              <div className="p-3 rounded-xl" style={{ background: "rgba(5,5,8,.6)", border: "1px solid #1b1922" }}>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white">{t.gradeLabel}</p>
                 <p className="font-bold text-white mt-0.5 flex items-center gap-1.5">
                   <GraduationCap className="w-4 h-4" style={{ color: "#9FF5E8" }} />
                   {user?.grade ? `${isAf ? "Graad" : "Grade"} ${user.grade}` : "Matric"}
                 </p>
               </div>
-              <div className="p-3 rounded-xl" style={{ background: "rgba(5,5,8,.6)", border: "1px solid rgba(255,255,255,.1)" }}>
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white" style={{ opacity: 0.82 }}>{t.schoolLabel}</p>
+              <div className="p-3 rounded-xl" style={{ background: "rgba(5,5,8,.6)", border: "1px solid #1b1922" }}>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white">{t.schoolLabel}</p>
                 <p className="font-bold text-white mt-0.5 truncate">{user?.schoolName || "—"}</p>
               </div>
             </div>
@@ -823,13 +818,13 @@ export default function SettingsPage() {
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4" style={{ color: "#9FF5E8" }} />
                 <p className="text-sm font-black text-white">{t.phoneNumber}</p>
-                <p className="text-[11px] text-white" style={{ opacity: 0.82 }}>
+                <p className="text-[11px] text-white">
                   · {user?.role === "learner" ? t.phoneLearnerSub : t.phoneParentSub}
                 </p>
               </div>
 
               <div className="p-3 rounded-xl" style={{ background: "rgba(5,5,8,.6)", border: "1px solid rgba(159,245,232,.35)" }}>
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white" style={{ opacity: 0.82 }}>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white">
                   {t.currentNumber}
                 </p>
                 <p className="font-bold text-white mt-0.5" data-testid="text-current-phone">
@@ -848,7 +843,7 @@ export default function SettingsPage() {
                     <p className="font-black uppercase tracking-[0.16em] text-[11px]" style={{ color: "#C5B3FF" }}>
                       {t.managedByParent}
                     </p>
-                    <p className="text-white mt-0.5 leading-snug" style={{ opacity: 0.9 }}>
+                    <p className="text-white mt-0.5 leading-snug">
                       {t.managedByParentDesc}
                     </p>
                   </div>
@@ -873,7 +868,7 @@ export default function SettingsPage() {
                       style={fieldStyle}
                       data-testid="input-new-phone"
                     />
-                    <p className="text-[11px] text-white" style={{ opacity: 0.82 }}>
+                    <p className="text-[11px] text-white">
                       {t.newPhoneHint}
                     </p>
                   </div>
@@ -887,7 +882,7 @@ export default function SettingsPage() {
                       <p className="font-black uppercase tracking-[0.16em] text-[11px]" style={{ color: "#FFE29A" }}>
                         {t.verificationRequired}
                       </p>
-                      <p className="text-white mt-0.5 leading-snug" style={{ opacity: 0.9 }}>
+                      <p className="text-white mt-0.5 leading-snug">
                         {t.verificationRequiredDesc}
                       </p>
                     </div>
@@ -940,7 +935,7 @@ export default function SettingsPage() {
                       }}
                       maxLength={6}
                       className={`text-center text-2xl tracking-[0.4em] font-black ${fieldClass}`}
-                      style={{ ...fieldStyle, borderColor: verifyError ? "rgba(255,141,161,.7)" : "rgba(255,255,255,.18)" }}
+                      style={{ ...fieldStyle, borderColor: verifyError ? "rgba(255,141,161,.7)" : "#1b1922" }}
                       data-testid="input-otp-code"
                     />
                     {verifyError && (
@@ -1012,7 +1007,7 @@ export default function SettingsPage() {
                   {(subjects || []).length === 0 ? (
                     <div className="text-center py-6">
                       <BookOpen className="w-8 h-8 mx-auto mb-2" style={{ color: "#9FD8FF" }} />
-                      <p className="text-sm text-white" style={{ opacity: 0.85 }}>
+                      <p className="text-sm text-white">
                         {t.loadingSubjects}
                       </p>
                     </div>
@@ -1027,8 +1022,8 @@ export default function SettingsPage() {
                             onClick={() => toggleSubject(subject.id)}
                             className="flex items-center gap-3 p-3 rounded-xl text-left transition-all"
                             style={{
-                              background: active ? "rgba(159,216,255,.08)" : "rgba(255,255,255,.03)",
-                              border: active ? "1.5px solid #9FD8FF" : "1px solid rgba(255,255,255,.1)",
+                              background: active ? "rgba(159,216,255,.08)" : "#1b1922",
+                              border: active ? "1.5px solid #9FD8FF" : "1px solid #1b1922",
                             }}
                             data-testid={`subject-chip-${subject.id}`}
                           >
@@ -1036,7 +1031,7 @@ export default function SettingsPage() {
                               className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
                               style={{
                                 background: "rgba(5,5,8,.6)",
-                                border: active ? "1.5px solid #9FD8FF" : "1px solid rgba(255,255,255,.18)",
+                                border: active ? "1.5px solid #9FD8FF" : "1px solid #1b1922",
                               }}
                             >
                               {active ? (
@@ -1051,7 +1046,7 @@ export default function SettingsPage() {
                               <p className="font-semibold text-sm text-white truncate">
                                 {isAf ? subject.nameAfrikaans : subject.name}
                               </p>
-                              <p className="text-[10px] text-white" style={{ opacity: 0.82 }}>{subject.category}</p>
+                              <p className="text-[10px] text-white">{subject.category}</p>
                             </div>
                           </button>
                         );
@@ -1060,7 +1055,7 @@ export default function SettingsPage() {
                   )}
 
                   <div className="flex items-center justify-between pt-1">
-                    <p className="text-[11px] text-white" style={{ opacity: 0.85 }}>
+                    <p className="text-[11px] text-white">
                       {selectedSubjects.length < 4
                         ? `${t.selectAtLeast4} (${selectedSubjects.length}/4)`
                         : `${selectedSubjects.length} ${t.subjectsSelectedLabel}`}
@@ -1104,7 +1099,7 @@ export default function SettingsPage() {
                 return (
                   <div className="text-center py-6">
                     <CalendarDays className="w-8 h-8 mx-auto mb-2" style={{ color: "#C5B3FF" }} />
-                    <p className="text-sm text-white" style={{ opacity: 0.85 }}>
+                    <p className="text-sm text-white">
                       {t.selectSubjectsFirst}
                     </p>
                   </div>
@@ -1133,7 +1128,7 @@ export default function SettingsPage() {
                         <div
                           key={subject.id}
                           className="rounded-xl p-3"
-                          style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(197,179,255,.22)" }}
+                          style={{ background: "#1b1922", border: "1px solid rgba(197,179,255,.22)" }}
                           data-testid={`prelim-row-${subject.id}`}
                         >
                           <p className="text-sm font-bold text-white mb-2">
@@ -1141,7 +1136,7 @@ export default function SettingsPage() {
                           </p>
                           <div className="grid grid-cols-2 gap-2">
                             <label className="block">
-                              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-white" style={{ opacity: 0.85 }}>
+                              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-white">
                                 {t.paper1}
                               </span>
                               <Input
@@ -1156,7 +1151,7 @@ export default function SettingsPage() {
                               />
                             </label>
                             <label className="block">
-                              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-white" style={{ opacity: 0.85 }}>
+                              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-white">
                                 {t.paper2}
                               </span>
                               <Input
@@ -1176,7 +1171,7 @@ export default function SettingsPage() {
                     })}
                   </div>
                   <div className="flex items-center justify-between pt-1">
-                    <p className="text-[11px] text-white" style={{ opacity: 0.85 }}>
+                    <p className="text-[11px] text-white">
                       {Object.values(prelimDates).filter(Boolean).length} {t.datesSet}
                     </p>
                     <PrimaryButton
@@ -1222,8 +1217,8 @@ export default function SettingsPage() {
                     onClick={() => { if (!active) toggleLanguage(); }}
                     className="relative p-4 rounded-xl text-left transition-all"
                     style={{
-                      background: active ? "rgba(255,226,154,.08)" : "rgba(255,255,255,.03)",
-                      border: active ? "1.5px solid #FFE29A" : "1px solid rgba(255,255,255,.1)",
+                      background: active ? "rgba(255,226,154,.08)" : "#1b1922",
+                      border: active ? "1.5px solid #FFE29A" : "1px solid #1b1922",
                     }}
                     data-testid={`language-option-${opt.code}`}
                   >
@@ -1232,7 +1227,7 @@ export default function SettingsPage() {
                         className="w-9 h-9 rounded-lg flex items-center justify-center text-xs font-black"
                         style={{
                           background: "rgba(5,5,8,.6)",
-                          border: active ? "1.5px solid #FFE29A" : "1px solid rgba(255,255,255,.18)",
+                          border: active ? "1.5px solid #FFE29A" : "1px solid #1b1922",
                           color: active ? "#FFE29A" : "#ffffff",
                         }}
                       >
@@ -1267,8 +1262,8 @@ export default function SettingsPage() {
             <label
               className="flex items-start gap-3 p-4 rounded-xl cursor-pointer transition-all"
               style={{
-                background: nudgesPref?.optIn ? "rgba(159,245,232,.08)" : "rgba(255,255,255,.03)",
-                border: nudgesPref?.optIn ? "1.5px solid #9FF5E8" : "1px solid rgba(255,255,255,.1)",
+                background: nudgesPref?.optIn ? "rgba(159,245,232,.08)" : "#1b1922",
+                border: nudgesPref?.optIn ? "1.5px solid #9FF5E8" : "1px solid #1b1922",
               }}
               data-testid="toggle-nudges-optin"
             >
@@ -1282,7 +1277,7 @@ export default function SettingsPage() {
               />
               <div className="min-w-0">
                 <p className="font-bold text-white leading-snug">{t.nudgesToggleLabel}</p>
-                <p className="text-xs text-white mt-1 leading-snug" style={{ opacity: 0.85 }}>
+                <p className="text-xs text-white mt-1 leading-snug">
                   {t.nudgesToggleHint}
                 </p>
               </div>
@@ -1308,7 +1303,7 @@ export default function SettingsPage() {
                   border: "1.5px solid #FFB7E5",
                 }}
               >
-                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white" style={{ opacity: 0.85 }}>
+                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white">
                   {t.yourReferralCode}
                 </p>
                 <p
@@ -1323,9 +1318,9 @@ export default function SettingsPage() {
               {/* Full link row */}
               <div
                 className="rounded-xl px-3 py-2.5"
-                style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,183,229,.3)" }}
+                style={{ background: "#1b1922", border: "1px solid rgba(255,183,229,.3)" }}
               >
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white mb-1" style={{ opacity: 0.85 }}>
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white mb-1">
                   {t.yourReferralLink}
                 </p>
                 <p
@@ -1350,7 +1345,7 @@ export default function SettingsPage() {
               </GhostButton>
 
               <div className="flex items-center gap-3">
-                <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,183,229,.3)" }}>
+                <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: "#1b1922", border: "1px solid rgba(255,183,229,.3)" }}>
                   <div
                     className="h-full rounded-full"
                     style={{
@@ -1365,21 +1360,21 @@ export default function SettingsPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 rounded-xl text-center" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,183,229,.3)" }}>
+                <div className="p-3 rounded-xl text-center" style={{ background: "#1b1922", border: "1px solid rgba(255,183,229,.3)" }}>
                   <Users className="w-5 h-5 mx-auto mb-1" style={{ color: "#FFB7E5" }} />
                   <p className="text-lg font-bold text-white">{referral?.thisMonthCount ?? 0}</p>
-                  <p className="text-[10px] text-white" style={{ opacity: 0.82 }}>{t.thisMonth}</p>
+                  <p className="text-[10px] text-white">{t.thisMonth}</p>
                 </div>
-                <div className="p-3 rounded-xl text-center" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,226,154,.3)" }}>
+                <div className="p-3 rounded-xl text-center" style={{ background: "#1b1922", border: "1px solid rgba(255,226,154,.3)" }}>
                   <Gift className="w-5 h-5 mx-auto mb-1" style={{ color: "#FFE29A" }} />
                   <p className="text-lg font-bold text-white">{(referral?.maxPerMonth ?? 2) - (referral?.thisMonthCount ?? 0)}</p>
-                  <p className="text-[10px] text-white" style={{ opacity: 0.82 }}>{t.slotsLeft}</p>
+                  <p className="text-[10px] text-white">{t.slotsLeft}</p>
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl flex items-start gap-2" style={{ background: "rgba(255,255,255,.02)", border: "1px solid rgba(255,255,255,.08)" }}>
+              <div className="p-3 rounded-xl flex items-start gap-2" style={{ background: "#1b1922", border: "1px solid #1b1922" }}>
                 <AlertCircle className="w-4 h-4 text-white shrink-0 mt-0.5" />
-                <p className="text-xs text-white leading-snug" style={{ opacity: 0.85 }}>
+                <p className="text-xs text-white leading-snug">
                   {t.referralDisclaimer}
                 </p>
               </div>
@@ -1397,12 +1392,12 @@ export default function SettingsPage() {
             delay={0.3}
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="p-3 rounded-xl" style={{ background: "rgba(5,5,8,.6)", border: "1px solid rgba(255,255,255,.1)" }}>
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white" style={{ opacity: 0.82 }}>{t.emailLabel}</p>
+              <div className="p-3 rounded-xl" style={{ background: "rgba(5,5,8,.6)", border: "1px solid #1b1922" }}>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white">{t.emailLabel}</p>
                 <p className="font-bold text-white mt-0.5 truncate" data-testid="text-account-email">{user?.email || "—"}</p>
               </div>
-              <div className="p-3 rounded-xl" style={{ background: "rgba(5,5,8,.6)", border: "1px solid rgba(255,255,255,.1)" }}>
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white" style={{ opacity: 0.82 }}>{t.roleLabel}</p>
+              <div className="p-3 rounded-xl" style={{ background: "rgba(5,5,8,.6)", border: "1px solid #1b1922" }}>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white">{t.roleLabel}</p>
                 <p className="font-bold mt-0.5" style={{ color: "#94F7C5" }}>
                   {user?.role === "learner" ? t.learnerRole : (user?.role ?? "—")}
                 </p>
@@ -1448,7 +1443,7 @@ export default function SettingsPage() {
                     style={fieldStyle}
                     data-testid="input-new-password"
                   />
-                  <p className="text-[11px] text-white" style={{ opacity: 0.8 }}>{t.newPasswordHint}</p>
+                  <p className="text-[11px] text-white">{t.newPasswordHint}</p>
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-white text-xs">{t.confirmPasswordLabel}</Label>

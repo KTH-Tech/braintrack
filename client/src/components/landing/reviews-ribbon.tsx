@@ -160,7 +160,7 @@ export function ReviewsRibbon({ language }: { language: "en" | "af" }) {
             display: "inline-flex",
             alignItems: "center",
             gap: 10,
-            fontFamily: "'Permanent Marker',cursive",
+            fontFamily: "'Bebas Neue', system-ui, sans-serif",
             color: "#FFB7E5",
             fontSize: 17,
             letterSpacing: ".5px",
@@ -293,8 +293,8 @@ export function ReviewsRibbon({ language }: { language: "en" | "af" }) {
                       fontWeight: 800,
                       letterSpacing: ".7px",
                       color: "#fff",
-                      background: "rgba(255,255,255,.08)",
-                      border: "1px solid rgba(255,255,255,.16)",
+                      background: "#0e0d12",
+                      border: "1px solid #9FD8FF",
                       borderRadius: 6,
                       padding: "3px 7px",
                       textTransform: "uppercase",
@@ -319,7 +319,7 @@ export function ReviewsRibbon({ language }: { language: "en" | "af" }) {
                       strokeWidth={2.2}
                       aria-hidden
                       style={{
-                        color: s < r.stars ? "#FFE29A" : "rgba(255,255,255,.22)",
+                        color: s < r.stars ? "#FFE29A" : "#050508",
                         fill: s < r.stars ? "#FFE29A" : "transparent",
                       }}
                     />

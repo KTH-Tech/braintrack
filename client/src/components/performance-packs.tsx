@@ -378,11 +378,13 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
 
           {/* CTA */}
           <Button
-            className="w-full h-12 rounded-xl text-base font-bold bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-400 hover:from-violet-600 hover:via-fuchsia-600 hover:to-cyan-500 text-white shadow-lg shadow-violet-500/30 border-0"
+            variant="primary"
+            size="lg"
+            className="w-full"
             onClick={handleStartQuiz}
             data-testid="button-start-boost-quiz"
           >
-            <Play className="w-5 h-5 mr-2 fill-white" />
+            <Play className="w-5 h-5 mr-2 fill-current" />
             {isAf ? "Begin Vandag se Vasvra" : "Start Today's Quiz"}
           </Button>
         </div>
@@ -438,7 +440,6 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
             size="sm"
             variant="outline"
             onClick={handleReset}
-            className="rounded-xl border-white/15 bg-white/[0.03] hover:bg-white/[0.07]"
             data-testid="button-coming-soon-back"
           >
             {isAf ? "Terug" : "Back"}
@@ -468,8 +469,9 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
           </div>
           <div className="flex gap-2 w-full max-w-xs">
             <Button
+              variant="primary"
               size="sm"
-              className="flex-1 rounded-xl bg-gradient-to-r from-violet-500 to-cyan-400 hover:from-violet-600 hover:to-cyan-500 text-white border-0"
+              className="flex-1"
               onClick={handleRetryGeneration}
               data-testid="button-retry-boost-quiz"
             >
@@ -479,7 +481,7 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
             <Button
               size="sm"
               variant="outline"
-              className="flex-1 rounded-xl border-white/15 bg-white/[0.03] hover:bg-white/[0.07]"
+              className="flex-1"
               onClick={handleReset}
               data-testid="button-cancel-boost-quiz"
             >
@@ -681,8 +683,9 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
             <div className="flex gap-2 pt-1">
               {!isLast && (
                 <Button
+                  variant="primary"
                   onClick={handleNext}
-                  className="flex-1 h-11 rounded-xl bg-gradient-to-r from-violet-500 to-cyan-400 hover:from-violet-600 hover:to-cyan-500 text-white font-semibold border-0"
+                  className="flex-1"
                   data-testid="boost-button-next"
                 >
                   {isAf ? "Volgende Vraag" : "Next Question"}
@@ -691,9 +694,10 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
               )}
               {isLast && (
                 <Button
+                  variant="primary"
                   onClick={handleSubmit}
                   disabled={!allAnswered || submitMutation.isPending}
-                  className="flex-1 h-11 rounded-xl bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-400 hover:from-violet-600 hover:via-fuchsia-600 hover:to-cyan-500 text-white font-bold border-0 disabled:opacity-50"
+                  className="flex-1"
                   data-testid="boost-button-submit"
                 >
                   {submitMutation.isPending ? (
@@ -812,8 +816,9 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
           </div>
 
           <Button
+            variant="outline"
             onClick={handleReset}
-            className="w-full h-11 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-foreground font-semibold border border-white/10"
+            className="w-full"
             data-testid="boost-button-try-again"
           >
             <RotateCcw className="w-4 h-4 mr-2" />
@@ -831,7 +836,7 @@ export function SubjectBoostPack({ subjectId, subjectName, isAf, topicFocus, aut
         <p className="text-sm text-white text-center">
           {isAf ? "Iets het skeefgeloop. Probeer weer." : "Something went wrong. Please try again."}
         </p>
-        <Button size="sm" variant="outline" onClick={handleReset} className="rounded-xl border-white/15 bg-white/[0.03] hover:bg-white/[0.07]">
+        <Button size="sm" variant="outline" onClick={handleReset}>
           <RotateCcw className="w-4 h-4 mr-2" />
           {isAf ? "Herlaai" : "Reset"}
         </Button>
@@ -932,20 +937,15 @@ export function RescuePackAlert({ isAf }: { isAf: boolean }) {
                 </div>
               </div>
               <Link href={href}>
-                <button
+                <Button
                   type="button"
-                  className="shrink-0 inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl font-bold text-sm transition-all"
-                  style={{
-                    background: "linear-gradient(100deg,#FF8DA1,#FFB7E5)",
-                    color: "#050508",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
+                  variant="primary"
+                  className="shrink-0"
                   data-testid={`rescue-pack-start-${idx}`}
                 >
                   {isAf ? "Kom ons gaan!" : "Start Now"}
                   <ChevronRight className="w-4 h-4" />
-                </button>
+                </Button>
               </Link>
             </div>
           </div>

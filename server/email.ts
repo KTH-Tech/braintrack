@@ -293,23 +293,22 @@ type TemplatePayload = {
 
 function buildWelcomePayload(opts: {
   firstName: string;
-  trialEndsAt: Date;
+  /** Optional. Pay-now signups have no trial; when omitted the copy simply
+   *  confirms access is live rather than promising a trial end date. */
+  trialEndsAt?: Date;
   language: "en" | "af";
   dashboardUrl: string;
 }): TemplatePayload {
   const { firstName, trialEndsAt, language, dashboardUrl } = opts;
   const name = he(firstName || (language === "af" ? "Leerder" : "Learner"));
-  const trialDateStr = trialEndsAt.toLocaleDateString(language === "af" ? "af-ZA" : "en-ZA", {
-    day: "numeric", month: "long", year: "numeric",
-  });
   if (language === "af") {
     return {
       language,
-      subject: `Welkom by BrainTrack, ${name}! Jou 14-dae proeftydperk het begin.`,
+      subject: `Welkom by BrainTrack, ${name}! Jou toegang is aktief.`,
       heading: `Welkom aan boord, ${name}! 🎉`,
       bodyHtml: `
-        <p>Jou BrainTrack <strong style="color:#9FF5E8;">Brain Boost</strong>-proeftydperk is nou aktief.</p>
-        <p>Jy het <strong style="color:#9FD8FF;">14 dae gratis toegang</strong> tot al jou vakke, slimme tuteur, vorige vraestelle en meer — heeltemal sonder koste totdat jou proeftydperk op <strong>${trialDateStr}</strong> verloop.</p>
+        <p>Jou BrainTrack-toegang is nou <strong style="color:#94F7C5;">aktief</strong>.</p>
+        <p>Jy het <strong style="color:#9FD8FF;">volle toegang</strong> tot al jou vakke, slimme tuteur, vorige vraestelle en meer.</p>
         <p>Begin studeer en kry 'n voorsprong op jou NSC-eksamen:</p>
       `,
       ctaLabel: "Gaan na my dashboard",
@@ -318,11 +317,11 @@ function buildWelcomePayload(opts: {
   }
   return {
     language,
-    subject: `Welcome to BrainTrack, ${name}! Your 14-day trial has started.`,
+    subject: `Welcome to BrainTrack, ${name}! Your access is live.`,
     heading: `Welcome aboard, ${name}! 🎉`,
     bodyHtml: `
-      <p>Your BrainTrack <strong style="color:#9FF5E8;">Brain Boost</strong> trial is now active.</p>
-      <p>You have <strong style="color:#9FD8FF;">14 days of free access</strong> to all your subjects, Smart Tutor, past papers and more — completely free until your trial ends on <strong>${trialDateStr}</strong>.</p>
+      <p>Your BrainTrack access is now <strong style="color:#94F7C5;">live</strong>.</p>
+      <p>You have <strong style="color:#9FD8FF;">full access</strong> to all your subjects, Smart Tutor, past papers and more.</p>
       <p>Start studying and get ahead on your NSC exams:</p>
     `,
     ctaLabel: "Go to my Dashboard",
@@ -347,7 +346,7 @@ function buildConsentRequestPayload(opts: {
       bodyHtml: `
         <p>Hallo,</p>
         <p><strong style="color:#9FF5E8;">${learnerName}</strong> het by BrainTrack aangemeld — 'n leerstudieplatform vir Graad 12 NSC-eksamen — en het jou toestemming as ouer/voog nodig om volle toegang te aktiveer.</p>
-        <p>Klik die knoppie hieronder om toestemming te bevestig. As deel van die goedkeuring voeg jy 'n kaart by (ons hef 'n eenmalige <strong>R1.00</strong> verifikasie). Die <strong>14-dae gratis proeftydperk</strong> begin dadelik daarna, en eers ná die 14 dae word <strong>R169/maand</strong> gehef — kanselleer enige tyd in die app.</p>
+        <p>Klik die knoppie hieronder om toestemming te bevestig. As deel van die goedkeuring voltooi jy die betaling — <strong>R169/maand</strong> (nou gehef, kanselleer enige tyd in die app), of 'n eenmalige kaart. Jou kind se <strong>volle toegang begin dadelik</strong>.</p>
         <p style="font-size:13px;color:#ffffff;word-break:break-all;">
           Of plak hierdie skakel in jou blaaier:<br/>
           <a href="${consentUrl}" style="color:#9FD8FF;">${consentUrl}</a>
@@ -363,7 +362,7 @@ function buildConsentRequestPayload(opts: {
     bodyHtml: `
       <p>Hi there,</p>
       <p><strong style="color:#9FF5E8;">${learnerName}</strong> has signed up for BrainTrack — a Grade 12 NSC exam preparation platform — and needs your consent as their parent/guardian to activate full access.</p>
-      <p>Click the button below to confirm your consent. As part of approving, you'll add a card (we run a once-off <strong>R1.00</strong> verification). The <strong>14-day free trial</strong> starts immediately afterwards, and only after those 14 days is <strong>R169/month</strong> billed — cancel anytime in the app.</p>
+      <p>Click the button below to confirm your consent. As part of approving, you'll complete payment — <strong>R169/month</strong> (charged now, cancel anytime in the app), or a once-off pass. Your child's <strong>full access starts immediately</strong>.</p>
       <p style="font-size:13px;color:#ffffff;word-break:break-all;">
         Or paste this link into your browser:<br/>
         <a href="${consentUrl}" style="color:#9FD8FF;">${consentUrl}</a>
@@ -1069,7 +1068,8 @@ export async function sendBrandedEmail(opts: BrandedEmailOpts): Promise<BrandedE
 export async function sendWelcomeEmail(opts: {
   to: string;
   firstName: string;
-  trialEndsAt: Date;
+  /** Optional under the pay-now model — no trial to reference. */
+  trialEndsAt?: Date;
   language: "en" | "af";
   dashboardUrl: string;
 }): Promise<BrandedEmailResult> {

@@ -45,7 +45,7 @@ const COPY = {
     subtitle: "Your AI study buddy & support",
     placeholder: "Ask Rizz anything…",
     launcher: "Ask Rizz",
-    trialCta: "Start free trial →",
+    trialCta: "See plans →",
     errorOffline:
       "Can't reach my brain right now 📡 check your connection and try again — meanwhile, the Classroom tab has flashcards & the daily quiz ready to go.",
     presets: [
@@ -55,7 +55,7 @@ const COPY = {
       { label: "My subjects are wrong 📚", q: "My subjects are wrong / missing. How do I fix them?" },
     ],
     fallbackFreeform:
-      "I go full power once you're signed in 🧠 — live tutoring, past papers, the lot. For now: BrainTrack is R169/month with a 14-day free trial, CAPS-aligned, with 10 years of NSC past papers + memos and parent reports. Tap below to start! 🔥",
+      "I go full power once you're signed in 🧠 — live tutoring, past papers, the lot. For now: BrainTrack is R169/month (cancel anytime), CAPS-aligned, with 10 years of NSC past papers + memos and parent reports. Tap below to start! 🔥",
   },
   af: {
     greeting:
@@ -64,7 +64,7 @@ const COPY = {
     subtitle: "Jou KI-studiemaat & ondersteuning",
     placeholder: "Vra Rizz enigiets…",
     launcher: "Vra Rizz",
-    trialCta: "Begin gratis proeftydperk →",
+    trialCta: "Sien planne →",
     errorOffline:
       "Kan nie nou my brein bereik nie 📡 kyk na jou verbinding en probeer weer — intussen wag die Klaskamer-oortjie met flitskaarte & die daaglikse vasvra.",
     presets: [
@@ -74,7 +74,7 @@ const COPY = {
       { label: "My vakke is verkeerd 📚", q: "My vakke is verkeerd / ontbreek. Hoe maak ek dit reg?" },
     ],
     fallbackFreeform:
-      "Ek gaan op volle krag sodra jy ingeteken is 🧠 — lewendige tutorhulp, vraestelle, alles. Vir nou: BrainTrack is R169/maand met 'n gratis 14-dae proeftydperk, KABV-belyn, met 10 jaar se NSS-vraestelle + memo's en ouerverslae. Tik hieronder om te begin! 🔥",
+      "Ek gaan op volle krag sodra jy ingeteken is 🧠 — lewendige tutorhulp, vraestelle, alles. Vir nou: BrainTrack is R169/maand (kanselleer enige tyd), KABV-belyn, met 10 jaar se NSS-vraestelle + memo's en ouerverslae. Tik hieronder om te begin! 🔥",
   },
 } as const;
 
@@ -223,7 +223,7 @@ export function RizzSupportBot() {
       <style>{`
         .btr-send { transition: transform .2s; }
         .btr-send:hover { transform: translateY(-2px); }
-        .btr-input { border: 1.5px solid rgba(255,255,255,.15); }
+        .btr-input { border: 1.5px solid #1b1922; }
         .btr-input:focus { border-color: ${RIZZ.cyan} !important; box-shadow: 0 0 0 2px rgba(110,231,249,.25); }
         .btr-preset { transition: background .2s; }
         .btr-preset:hover { background: rgba(110,231,249,.12); }
@@ -259,7 +259,7 @@ export function RizzSupportBot() {
               gap: 12,
               padding: "14px 16px",
               background: "linear-gradient(100deg,rgba(179,136,255,.28),rgba(255,126,198,.2))",
-              borderBottom: "1px solid rgba(255,255,255,.08)",
+              borderBottom: "1px solid #1b1922",
             }}
           >
             <div style={{ animation: celebrate ? "bt-rizz-celebrate 1s ease-out" : "none" }}>
@@ -315,8 +315,8 @@ export function RizzSupportBot() {
                 padding: 0,
                 fontWeight: 700,
                 fontFamily: "'Poppins',sans-serif",
-                background: "rgba(255,255,255,.12)",
-                border: "1.5px solid rgba(255,255,255,.55)",
+                background: "#1b1922",
+                border: "1.5px solid #1b1922",
                 transition: "all .15s",
               }}
             >
@@ -361,7 +361,7 @@ export function RizzSupportBot() {
                   fontSize: 15,
                   color: RIZZ.purple,
                   fontWeight: 700,
-                  fontFamily: "'Permanent Marker',cursive",
+                  fontFamily: "'Bebas Neue', sans-serif",
                 }}
               >
                 <span style={{ display: "inline-flex", gap: 3 }} aria-hidden>
@@ -378,7 +378,7 @@ export function RizzSupportBot() {
           <div
             style={{
               padding: "10px 12px",
-              borderTop: "1px solid rgba(255,255,255,.08)",
+              borderTop: "1px solid #1b1922",
               display: "flex",
               gap: 8,
               flexWrap: "wrap",
@@ -432,7 +432,7 @@ export function RizzSupportBot() {
           <div
             style={{
               padding: 12,
-              borderTop: "1px solid rgba(255,255,255,.08)",
+              borderTop: "1px solid #1b1922",
               display: "flex",
               gap: 8,
               alignItems: "center",
@@ -455,7 +455,7 @@ export function RizzSupportBot() {
               style={{
                 flex: 1,
                 minWidth: 0,
-                background: "rgba(255,255,255,.05)",
+                background: "#1b1922",
                 borderRadius: 12,
                 padding: "12px 14px",
                 color: RIZZ.white,

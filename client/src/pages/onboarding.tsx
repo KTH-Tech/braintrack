@@ -10,6 +10,7 @@ import { ONBOARDING_QUESTIONS, GRADE_12_SUBJECTS } from "@/lib/constants";
 import { ArrowLeft, ArrowRight, Loader2, Globe, Check, Sparkles, Search, Eye, RotateCcw, ShieldCheck, MailCheck, AlertTriangle, Copy, Link2, Clock, MessageCircle } from "lucide-react";
 import iconTransparent from "@/assets/handoff/icon-transparent.png";
 import { GraffitiSplats } from "@/components/graffiti-splats";
+import { ConfettiBurst } from "@/components/confetti-burst";
 import { type VarkStyle, VARK_STYLES, VARK_QUESTIONS, scoreVarkAnswers } from "@/lib/vark";
 import { useLanguage } from "@/lib/language-context";
 import { useAuth } from "@/hooks/use-auth";
@@ -26,7 +27,8 @@ import {
   consentShareMode,
   canLeaveConsentPhase,
 } from "@/lib/parent-consent";
-import { buildParentConsentWhatsAppLink } from "@/lib/parent-share";
+import { buildParentConsentWhatsAppLink, normaliseWaNumber } from "@/lib/parent-share";
+import { formatSAPhone } from "@/lib/utils";
 
 interface SubjectMark {
   subjectCode: string;
@@ -228,6 +230,8 @@ type PersistedState = {
   firstName?: string;
   lastName?: string;
   idNumber?: string;
+  learnerCell?: string;
+  parentCell?: string;
 };
 
 function loadPersistedState(): PersistedState | null {
@@ -307,6 +311,8 @@ function loadPersistedState(): PersistedState | null {
     const firstName = typeof obj.firstName === "string" ? obj.firstName : undefined;
     const lastName = typeof obj.lastName === "string" ? obj.lastName : undefined;
     const idNumber = typeof obj.idNumber === "string" ? obj.idNumber : undefined;
+    const learnerCell = typeof obj.learnerCell === "string" ? obj.learnerCell : undefined;
+    const parentCell = typeof obj.parentCell === "string" ? obj.parentCell : undefined;
 
     return {
       currentStep,
@@ -326,6 +332,8 @@ function loadPersistedState(): PersistedState | null {
       firstName,
       lastName,
       idNumber,
+      learnerCell,
+      parentCell,
     };
   } catch {
     return null;
@@ -407,6 +415,15 @@ const T = {
     firstNameRequired: "Please enter your first name.",
     lastNameRequired: "Please enter your surname.",
     idNumberInvalid: "Enter a valid 13-digit South African ID number.",
+    cellQ: "Your cell number",
+    cellLabel: "Your cell number",
+    cellPlaceholder: "071 234 5678",
+    cellHint: "We use this to send study reminders and your sign-in link. South African mobile numbers only.",
+    cellInvalid: "Enter a valid South African mobile number (e.g. 071 234 5678).",
+    parentCellLabel: "Parent / Guardian cell number",
+    parentCellPlaceholder: "082 345 6789",
+    parentCellHint: "Required — we'll send them your progress and the approval link on WhatsApp.",
+    parentCellInvalid: "Enter a valid South African mobile number (e.g. 082 345 6789).",
     schoolSearchingLabel: "Searching…",
     schoolLinkedLabel: "✓ Linked to a partner school",
     schoolPendingLabel: "We'll save this as a pending school until we verify it.",
@@ -595,6 +612,15 @@ const T = {
     firstNameRequired: "Voer asseblief jou naam in.",
     lastNameRequired: "Voer asseblief jou van in.",
     idNumberInvalid: "Voer 'n geldige 13-syfer Suid-Afrikaanse ID-nommer in.",
+    cellQ: "Jou selnommer",
+    cellLabel: "Jou selnommer",
+    cellPlaceholder: "071 234 5678",
+    cellHint: "Ons gebruik dit vir studie-herinneringe en jou aanmeldskakel. Slegs Suid-Afrikaanse selnommers.",
+    cellInvalid: "Voer 'n geldige Suid-Afrikaanse selnommer in (bv. 071 234 5678).",
+    parentCellLabel: "Ouer / Voog se selnommer",
+    parentCellPlaceholder: "082 345 6789",
+    parentCellHint: "Verpligtend — ons stuur jou vordering en die goedkeuringskakel per WhatsApp.",
+    parentCellInvalid: "Voer 'n geldige Suid-Afrikaanse selnommer in (bv. 082 345 6789).",
     schoolSearchingLabel: "Soek…",
     schoolLinkedLabel: "✓ Aan 'n vennootskool gekoppel",
     schoolPendingLabel: "Ons sal dit as hangend stoor totdat ons dit verifieer.",
@@ -732,7 +758,7 @@ const BRAND = {
 } as const;
 
 const CONFETTI_COLORS = [BRAND.pink, BRAND.purple, BRAND.cyan, BRAND.yellow, BRAND.mint];
-const MARKER = "'Permanent Marker',cursive";
+const MARKER = "'Bebas Neue', sans-serif";
 
 // Amber used by every admin preview surface (matches PASTEL.amber on the
 // parent-dashboard preview banner) — the hazard colour of "this is not real".
@@ -863,7 +889,7 @@ function StepBlock({
       className="rounded-2xl p-4 sm:p-5"
       style={{
         background: done ? "rgba(148,247,197,.05)" : BRAND.card,
-        border: `1px solid ${done ? `${BRAND.mint}55` : "rgba(255,255,255,.12)"}`,
+        border: `1px solid ${done ? `${BRAND.mint}55` : "#1b1922"}`,
         transition: "background .3s ease, border-color .3s ease",
       }}
     >
@@ -916,6 +942,12 @@ export default function OnboardingPage() {
   const [firstName, setFirstName] = useState<string>(persisted?.firstName ?? "");
   const [lastName, setLastName] = useState<string>(persisted?.lastName ?? "");
   const [idNumber, setIdNumber] = useState<string>(persisted?.idNumber ?? "");
+  // Learner + parent/guardian cell numbers. Both are COMPULSORY: the learner
+  // cell gates leaving the identity (school) step, the parent cell gates the
+  // final submit. Validated with the shared SA-mobile validator
+  // (normaliseWaNumber) — same rule as the WhatsApp share links.
+  const [learnerCell, setLearnerCell] = useState<string>(persisted?.learnerCell ?? "");
+  const [parentCell, setParentCell] = useState<string>(persisted?.parentCell ?? "");
   // Date of birth — deliberately NOT persisted to localStorage (privacy): the
   // raw date only ever lives in memory and in the single submit request. The
   // server stores a salted hash + isMinor flag, never the plaintext date.
@@ -932,9 +964,15 @@ export default function OnboardingPage() {
   // Step-completion micro-celebration (marker-font cheer + confetti burst).
   const [cheer, setCheer] = useState<string | null>(null);
   const cheerTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Fullscreen ConfettiBurst is decoupled from the 1.6s cheer-text timer via a
+  // monotonic nonce: bumping it remounts <ConfettiBurst key={burstNonce}/> so
+  // the burst re-fires and plays its OWN full lifetime (self-removing) instead
+  // of being cut short when the cheer text clears. 0 = not fired yet.
+  const [burstNonce, setBurstNonce] = useState(0);
   const celebrate = (text: string) => {
     if (cheerTimer.current) clearTimeout(cheerTimer.current);
     setCheer(text);
+    setBurstNonce((n) => n + 1);
     cheerTimer.current = setTimeout(() => setCheer(null), 1600);
   };
   useEffect(() => () => { if (cheerTimer.current) clearTimeout(cheerTimer.current); }, []);
@@ -1060,6 +1098,8 @@ export default function OnboardingPage() {
     setFirstName("");
     setLastName("");
     setIdNumber("");
+    setLearnerCell("");
+    setParentCell("");
     setDobDay("");
     setDobMonth("");
     setDobYear("");
@@ -1106,12 +1146,14 @@ export default function OnboardingPage() {
         firstName,
         lastName,
         idNumber,
+        learnerCell,
+        parentCell,
       };
       window.localStorage.setItem(ONBOARDING_STORAGE_KEY, JSON.stringify(state));
     } catch {
       // ignore storage errors (quota, private mode)
     }
-  }, [hydrated, inPreview, currentStep, phase, language, answers, varkPrimary, varkSecondary, varkAnswers, varkStep, subjectMarks, selectedSubjects, schoolName, schoolId, grade, parentEmail, firstName, lastName, idNumber]);
+  }, [hydrated, inPreview, currentStep, phase, language, answers, varkPrimary, varkSecondary, varkAnswers, varkStep, subjectMarks, selectedSubjects, schoolName, schoolId, grade, parentEmail, firstName, lastName, idNumber, learnerCell, parentCell]);
 
   // Task #43 — Debounced school name search against partnerSchools.
   useEffect(() => {
@@ -1193,7 +1235,7 @@ export default function OnboardingPage() {
         // 'en'|'af'; sending the long form here is what led server code to
         // compare against 'afrikaans' and silently always resolve to English.
         preferredLanguage: language,
-        rawAnswersJson: { ...answers, subjectMarks, varkPrimary, varkSecondary, schoolName, schoolId, grade, firstName, lastName },
+        rawAnswersJson: { ...answers, subjectMarks, varkPrimary, varkSecondary, schoolName, schoolId, grade, firstName, lastName, learnerCell: normaliseWaNumber(learnerCell), parentCell: normaliseWaNumber(parentCell) },
         traitsJson: traits,
         recommendationsJson: recommendations,
         varkPrimary: varkPrimary || "kinesthetic",
@@ -1342,6 +1384,8 @@ export default function OnboardingPage() {
         firstName.trim().length >= 1 &&
         lastName.trim().length >= 1 &&
         isValidSaIdNumber(idNumber) &&
+        // Learner cell is compulsory — must be a valid SA mobile number.
+        normaliseWaNumber(learnerCell) !== null &&
         isoDob !== null &&
         dobMatchesIdNumber(isoDob, idNumber)
       );
@@ -1354,7 +1398,12 @@ export default function OnboardingPage() {
       // Adults are never gated. This previously returned `consentLink !== null`
       // unconditionally, which trapped every 18+ learner on the last screen of
       // onboarding unless they emailed a "parent" they don't need.
-      return canLeaveConsentPhase({ isMinor, consentRequested: consentLink !== null });
+      // Parent/guardian cell is compulsory for everyone (minor or adult) before
+      // finishing, on top of the existing consent-request gate for minors.
+      return (
+        normaliseWaNumber(parentCell) !== null &&
+        canLeaveConsentPhase({ isMinor, consentRequested: consentLink !== null })
+      );
     }
     if (!currentQuestion) return false;
     const answer = answers[currentQuestion.id];
@@ -1698,13 +1747,17 @@ export default function OnboardingPage() {
   const primaryBtn =
     "h-14 px-6 text-base font-bold rounded-2xl text-black flex-1 sm:flex-none disabled:opacity-40";
   const primaryBtnStyle = {
-    background: `linear-gradient(95deg, ${BRAND.cyan}, ${BRAND.mint}, ${BRAND.yellow})`,
+    // Hero rainbow sticker — matches the app-wide primary button (.pub-btn /
+    // Button variant="primary"). backgroundImage (not the `background`
+    // shorthand) so it composes with the shared variant's rainbow.
+    backgroundImage: "var(--bt-rainbow)",
+    backgroundSize: "200% 100%",
     // Sticker-slap: hard black offset instead of the old soft `shadow-md`
     // blur, so the CTA reads as a printed sticker pressed on the wall.
     boxShadow: "4px 4px 0 0 rgba(0,0,0,.85)",
   } as const;
   const ghostBtn =
-    "h-14 px-5 text-base font-bold rounded-2xl bg-transparent text-white border border-white/25 hover:border-white/60 hover:bg-white/[0.06] flex-1 sm:flex-none";
+    "h-14 px-5 text-base font-bold rounded-2xl bg-transparent text-white border border-[#1b1922] hover:border-[#1b1922] hover:bg-[#1b1922] flex-1 sm:flex-none";
 
   return (
     <div
@@ -1751,7 +1804,7 @@ export default function OnboardingPage() {
               </div>
               <button
                 onClick={() => { window.location.href = "/learn/admin"; }}
-                className="sm:ml-auto shrink-0 px-3 py-2 rounded-xl text-xs font-bold hover:bg-white/10"
+                className="sm:ml-auto shrink-0 px-3 py-2 rounded-xl text-xs font-bold hover:bg-[#1b1922]"
                 style={{ color: PREVIEW_AMBER, border: `1.5px solid ${PREVIEW_AMBER}` }}
                 data-testid="onboarding-preview-exit"
               >
@@ -1792,7 +1845,7 @@ export default function OnboardingPage() {
 
       <header
         className="relative z-40 sticky top-0"
-        style={{ background: "rgba(5,5,8,.92)", borderBottom: "1px solid rgba(255,255,255,.10)", backdropFilter: "blur(10px)" }}
+        style={{ background: "rgba(5,5,8,.92)", borderBottom: "1px solid #1b1922", backdropFilter: "blur(10px)" }}
       >
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2 min-w-0">
@@ -1811,7 +1864,7 @@ export default function OnboardingPage() {
           </div>
           <div
             className="flex items-center gap-1 rounded-full p-1 shrink-0"
-            style={{ background: BRAND.card, border: "1px solid rgba(255,255,255,.14)" }}
+            style={{ background: BRAND.card, border: "1px solid #1b1922" }}
           >
             <Button
               variant="ghost"
@@ -1859,7 +1912,7 @@ export default function OnboardingPage() {
             aria-valuemax={100}
             aria-valuenow={Math.round(progress)}
             aria-label={t.progressBarLabel}
-            style={{ background: "rgba(255,255,255,.10)" }}
+            style={{ background: "#1b1922" }}
           >
             <div
               className="h-full rounded-full"
@@ -1887,7 +1940,7 @@ export default function OnboardingPage() {
                       ? CONFETTI_COLORS[i]
                       : dotActive
                       ? `linear-gradient(90deg, ${BRAND.cyan}, ${BRAND.pink})`
-                      : "rgba(255,255,255,.16)",
+                      : "#1b1922",
                     
                   }}
                 />
@@ -1949,8 +2002,8 @@ export default function OnboardingPage() {
                           data-testid={`option-${option.value}`}
                           className="w-full text-left flex items-center gap-3 rounded-2xl px-4 py-4 min-h-[64px]"
                           style={{
-                            background: isSel ? `${accent}1F` : "rgba(255,255,255,.03)",
-                            border: `1.5px solid ${isSel ? accent : "rgba(255,255,255,.14)"}`,
+                            background: isSel ? `${accent}1F` : "#1b1922",
+                            border: `1.5px solid ${isSel ? accent : "#1b1922"}`,
                             
                             transition: "background .2s ease, border-color .2s ease, box-shadow .2s ease",
                             animation: anim(`bt-fadeup .4s cubic-bezier(.22,1,.36,1) ${0.04 * i}s both`),
@@ -1962,7 +2015,7 @@ export default function OnboardingPage() {
                               width: 26,
                               height: 26,
                               background: isSel ? accent : "transparent",
-                              border: `1.5px solid ${isSel ? accent : "rgba(255,255,255,.32)"}`,
+                              border: `1.5px solid ${isSel ? accent : "#1b1922"}`,
                             }}
                           >
                             {isSel && <Check className="w-4 h-4" style={{ color: BRAND.ground }} />}
@@ -1992,8 +2045,8 @@ export default function OnboardingPage() {
                           data-testid={`option-${option.value}`}
                           className="w-full text-left flex items-center gap-3 rounded-2xl px-4 py-4 min-h-[64px]"
                           style={{
-                            background: isChecked ? `${accent}1F` : "rgba(255,255,255,.03)",
-                            border: `1.5px solid ${isChecked ? accent : "rgba(255,255,255,.14)"}`,
+                            background: isChecked ? `${accent}1F` : "#1b1922",
+                            border: `1.5px solid ${isChecked ? accent : "#1b1922"}`,
                             
                             transition: "background .2s ease, border-color .2s ease, box-shadow .2s ease",
                             animation: anim(`bt-fadeup .4s cubic-bezier(.22,1,.36,1) ${0.04 * i}s both`),
@@ -2005,7 +2058,7 @@ export default function OnboardingPage() {
                               width: 26,
                               height: 26,
                               background: isChecked ? accent : "transparent",
-                              border: `1.5px solid ${isChecked ? accent : "rgba(255,255,255,.32)"}`,
+                              border: `1.5px solid ${isChecked ? accent : "#1b1922"}`,
                             }}
                           >
                             {isChecked && <Check className="w-4 h-4" style={{ color: BRAND.ground }} />}
@@ -2157,7 +2210,7 @@ export default function OnboardingPage() {
                               ? `linear-gradient(90deg, ${BRAND.cyan}, ${BRAND.purple})`
                               : isAnswered
                                 ? BRAND.mint
-                                : "rgba(255,255,255,.18)",
+                                : "#1b1922",
                             transition: "all .35s cubic-bezier(.22,1,.36,1)",
                           }}
                         />
@@ -2186,8 +2239,8 @@ export default function OnboardingPage() {
                             data-testid={`vark-q-${varkStep}-option-${option.style}`}
                             className="w-full text-left flex items-center gap-3 rounded-2xl px-4 py-4 min-h-[64px]"
                             style={{
-                              background: isSel ? `${BRAND.purple}1F` : "rgba(255,255,255,.03)",
-                              border: `1.5px solid ${isSel ? BRAND.purple : "rgba(255,255,255,.14)"}`,
+                              background: isSel ? `${BRAND.purple}1F` : "#1b1922",
+                              border: `1.5px solid ${isSel ? BRAND.purple : "#1b1922"}`,
                               transition: "background .2s ease, border-color .2s ease",
                               animation: anim(`bt-fadeup .4s cubic-bezier(.22,1,.36,1) ${0.04 * i}s both`),
                             }}
@@ -2198,7 +2251,7 @@ export default function OnboardingPage() {
                                 width: 26,
                                 height: 26,
                                 background: isSel ? BRAND.purple : "transparent",
-                                border: `1.5px solid ${isSel ? BRAND.purple : "rgba(255,255,255,.32)"}`,
+                                border: `1.5px solid ${isSel ? BRAND.purple : "#1b1922"}`,
                               }}
                             >
                               {isSel && <Check className="w-4 h-4" style={{ color: BRAND.ground }} />}
@@ -2273,7 +2326,7 @@ export default function OnboardingPage() {
                         <div
                           className="rounded-2xl px-4 py-3"
                           data-testid="vark-result-no-secondary"
-                          style={{ background: "rgba(255,255,255,.04)", border: "1px solid rgba(255,255,255,.14)" }}
+                          style={{ background: "#1b1922", border: "1px solid #1b1922" }}
                         >
                           <p className="text-white text-[13px] leading-relaxed">
                             {t.varkNoSecondary}
@@ -2286,7 +2339,7 @@ export default function OnboardingPage() {
                         variant="ghost"
                         onClick={handleVarkRetake}
                         data-testid="button-vark-retake"
-                        className="w-full sm:w-auto min-h-[48px] px-5 text-[14px] font-bold rounded-2xl text-white hover:bg-white/[0.06]"
+                        className="w-full sm:w-auto min-h-[48px] px-5 text-[14px] font-bold rounded-2xl text-white hover:bg-[#1b1922]"
                       >
                         <RotateCcw className="w-4 h-4 mr-2" aria-hidden />
                         {t.varkRetakeBtn}
@@ -2321,7 +2374,7 @@ export default function OnboardingPage() {
                     type="button"
                     onClick={handleSkipVark}
                     data-testid="onboarding-skip-vark"
-                    className="w-full min-h-[48px] px-5 text-[14px] font-bold rounded-2xl text-white bg-transparent border border-white/25 hover:border-white/60 hover:bg-white/[0.06] transition-colors"
+                    className="w-full min-h-[48px] px-5 text-[14px] font-bold rounded-2xl text-white bg-transparent border border-[#1b1922] hover:border-[#1b1922] hover:bg-[#1b1922] transition-colors"
                   >
                     {t.varkSkipBtn}
                   </button>
@@ -2353,8 +2406,8 @@ export default function OnboardingPage() {
                   className="flex items-center gap-3 rounded-2xl px-4 py-3"
                   data-testid="subject-counter"
                   style={{
-                    background: subjectsDone ? `${BRAND.mint}1A` : "rgba(255,255,255,.04)",
-                    border: `1.5px solid ${subjectsDone ? BRAND.mint : "rgba(255,255,255,.14)"}`,
+                    background: subjectsDone ? `${BRAND.mint}1A` : "#1b1922",
+                    border: `1.5px solid ${subjectsDone ? BRAND.mint : "#1b1922"}`,
                     transition: "background .3s ease, border-color .3s ease",
                   }}
                 >
@@ -2364,7 +2417,7 @@ export default function OnboardingPage() {
                       minWidth: 62,
                       height: 44,
                       fontSize: 18,
-                      background: subjectsDone ? BRAND.mint : "rgba(255,255,255,.08)",
+                      background: subjectsDone ? BRAND.mint : "#1b1922",
                       color: subjectsDone ? BRAND.ground : "#FFFFFF",
                       animation: subjectsDone ? anim("bt-checkpop .45s cubic-bezier(.22,1,.36,1) both") : undefined,
                     }}
@@ -2398,7 +2451,7 @@ export default function OnboardingPage() {
                       onChange={(e) => setSubjectFilter(e.target.value)}
                       placeholder={t.subjectFilterPh}
                       className="h-12 pl-11 rounded-2xl text-white"
-                      style={{ background: "rgba(255,255,255,.04)", border: "1px solid rgba(255,255,255,.14)" }}
+                      style={{ background: "#1b1922", border: "1px solid #1b1922" }}
                       data-testid="input-subject-filter"
                     />
                   </div>
@@ -2415,9 +2468,9 @@ export default function OnboardingPage() {
                           data-testid={`subject-cat-${cat}`}
                           className="shrink-0 rounded-full px-3.5 h-10 text-[13px] font-bold whitespace-nowrap"
                           style={{
-                            background: active ? cm.color : "rgba(255,255,255,.05)",
+                            background: active ? cm.color : "#1b1922",
                             color: active ? BRAND.ground : "#FFFFFF",
-                            border: `1px solid ${active ? cm.color : "rgba(255,255,255,.14)"}`,
+                            border: `1px solid ${active ? cm.color : "#1b1922"}`,
                           }}
                         >
                           {cm.icon} {label}
@@ -2441,8 +2494,8 @@ export default function OnboardingPage() {
                         key={subject.code}
                         className="rounded-2xl overflow-hidden"
                         style={{
-                          background: isSelected ? `${cm.color}16` : "rgba(255,255,255,.03)",
-                          border: `1.5px solid ${isSelected ? cm.color : "rgba(255,255,255,.12)"}`,
+                          background: isSelected ? `${cm.color}16` : "#1b1922",
+                          border: `1.5px solid ${isSelected ? cm.color : "#1b1922"}`,
                           
                           transition: "background .2s ease, border-color .2s ease, box-shadow .2s ease",
                         }}
@@ -2459,8 +2512,8 @@ export default function OnboardingPage() {
                             style={{
                               width: 42,
                               height: 42,
-                              background: isSelected ? cm.color : "rgba(255,255,255,.06)",
-                              border: `1px solid ${isSelected ? cm.color : "rgba(255,255,255,.12)"}`,
+                              background: isSelected ? cm.color : "#1b1922",
+                              border: `1px solid ${isSelected ? cm.color : "#1b1922"}`,
                             }}
                           >
                             {cm.icon}
@@ -2474,7 +2527,7 @@ export default function OnboardingPage() {
                               width: 26,
                               height: 26,
                               background: isSelected ? cm.color : "transparent",
-                              border: `1.5px solid ${isSelected ? cm.color : "rgba(255,255,255,.30)"}`,
+                              border: `1.5px solid ${isSelected ? cm.color : "#1b1922"}`,
                             }}
                           >
                             {isSelected && <Check className="w-4 h-4" style={{ color: BRAND.ground }} />}
@@ -2516,9 +2569,9 @@ export default function OnboardingPage() {
                                   data-testid={`mark-chip-${subject.code}-${v}`}
                                   className="rounded-full h-10 px-3 text-[13px] font-bold"
                                   style={{
-                                    background: mark === v ? cm.color : "rgba(255,255,255,.06)",
+                                    background: mark === v ? cm.color : "#1b1922",
                                     color: mark === v ? BRAND.ground : "#FFFFFF",
-                                    border: `1px solid ${mark === v ? cm.color : "rgba(255,255,255,.14)"}`,
+                                    border: `1px solid ${mark === v ? cm.color : "#1b1922"}`,
                                   }}
                                 >
                                   {v}
@@ -2566,7 +2619,7 @@ export default function OnboardingPage() {
               className="rounded-3xl overflow-hidden"
               style={{
                 background: "rgba(28,28,38,.6)",
-                border: "1px solid rgba(255,255,255,.12)",
+                border: "1px solid #1b1922",
                 animation: anim("bt-fadeup .45s cubic-bezier(.22,1,.36,1) both"),
               }}
             >
@@ -2591,7 +2644,7 @@ export default function OnboardingPage() {
                       autoComplete="given-name"
                       aria-label={t.firstNameLabel}
                       className="h-14 rounded-2xl text-white text-base px-4"
-                      style={{ background: "rgba(0,0,0,.35)", border: "1px solid rgba(255,255,255,.16)" }}
+                      style={{ background: "rgba(0,0,0,.35)", border: "1px solid #1b1922" }}
                       data-testid="input-first-name"
                     />
                     <Input
@@ -2604,7 +2657,7 @@ export default function OnboardingPage() {
                       autoComplete="family-name"
                       aria-label={t.lastNameLabel}
                       className="h-14 rounded-2xl text-white text-base px-4"
-                      style={{ background: "rgba(0,0,0,.35)", border: "1px solid rgba(255,255,255,.16)" }}
+                      style={{ background: "rgba(0,0,0,.35)", border: "1px solid #1b1922" }}
                       data-testid="input-last-name"
                     />
                   </div>
@@ -2630,7 +2683,7 @@ export default function OnboardingPage() {
                     placeholder={t.schoolPlaceholder}
                     aria-label={t.schoolNameLabel}
                     className="h-14 rounded-2xl text-white text-base px-4"
-                    style={{ background: "rgba(0,0,0,.35)", border: "1px solid rgba(255,255,255,.16)" }}
+                    style={{ background: "rgba(0,0,0,.35)", border: "1px solid #1b1922" }}
                     data-testid="input-school-name"
                   />
                   {schoolSearching && (
@@ -2639,7 +2692,7 @@ export default function OnboardingPage() {
                   {schoolResults.length > 0 && (
                     <div
                       className="mt-2 rounded-2xl overflow-hidden max-h-56 overflow-y-auto"
-                      style={{ border: "1px solid rgba(255,255,255,.14)", background: "rgba(0,0,0,.45)" }}
+                      style={{ border: "1px solid #1b1922", background: "rgba(0,0,0,.45)" }}
                     >
                       {schoolResults.map((s) => (
                         <button
@@ -2652,8 +2705,8 @@ export default function OnboardingPage() {
                             setSchoolResults([]);
                             idNumberRef.current?.focus();
                           }}
-                          className="w-full text-left px-4 py-3.5 min-h-[56px] hover:bg-white/[0.06]"
-                          style={{ background: schoolId === s.id ? `${BRAND.cyan}1A` : undefined, borderTop: "1px solid rgba(255,255,255,.08)" }}
+                          className="w-full text-left px-4 py-3.5 min-h-[56px] hover:bg-[#1b1922]"
+                          style={{ background: schoolId === s.id ? `${BRAND.cyan}1A` : undefined, borderTop: "1px solid #1b1922" }}
                           data-testid={`school-result-${s.id}`}
                         >
                           <div className="font-bold text-white text-[15px] leading-snug">{s.name}</div>
@@ -2694,7 +2747,7 @@ export default function OnboardingPage() {
                     maxLength={13}
                     aria-label={t.idNumberLabel}
                     className="h-14 rounded-2xl text-white text-lg px-4 tracking-[0.16em] font-bold"
-                    style={{ background: "rgba(0,0,0,.35)", border: "1px solid rgba(255,255,255,.16)" }}
+                    style={{ background: "rgba(0,0,0,.35)", border: "1px solid #1b1922" }}
                     data-testid="input-id-number"
                   />
                   {/* 13 pips so progress is visible without counting. */}
@@ -2705,7 +2758,7 @@ export default function OnboardingPage() {
                         className="flex-1 rounded-full"
                         style={{
                           height: 4,
-                          background: i < idNumber.length ? BRAND.yellow : "rgba(255,255,255,.14)",
+                          background: i < idNumber.length ? BRAND.yellow : "#1b1922",
                           transition: "background .2s ease",
                         }}
                       />
@@ -2750,7 +2803,7 @@ export default function OnboardingPage() {
                       autoComplete="bday-day"
                       aria-label={t.dobDayPh}
                       className="h-14 w-[58px] text-center text-lg font-extrabold rounded-2xl text-white px-1"
-                      style={{ background: "rgba(0,0,0,.35)", border: "1px solid rgba(255,255,255,.16)" }}
+                      style={{ background: "rgba(0,0,0,.35)", border: "1px solid #1b1922" }}
                       data-testid="input-dob-day"
                     />
                     <span className="text-xl font-black shrink-0" style={{ color: BRAND.purple }}>/</span>
@@ -2769,7 +2822,7 @@ export default function OnboardingPage() {
                       autoComplete="bday-month"
                       aria-label={t.dobMonthPh}
                       className="h-14 w-[58px] text-center text-lg font-extrabold rounded-2xl text-white px-1"
-                      style={{ background: "rgba(0,0,0,.35)", border: "1px solid rgba(255,255,255,.16)" }}
+                      style={{ background: "rgba(0,0,0,.35)", border: "1px solid #1b1922" }}
                       data-testid="input-dob-month"
                     />
                     <span className="text-xl font-black shrink-0" style={{ color: BRAND.purple }}>/</span>
@@ -2784,7 +2837,7 @@ export default function OnboardingPage() {
                       autoComplete="bday-year"
                       aria-label={t.dobYearPh}
                       className="h-14 w-[86px] text-center text-lg font-extrabold rounded-2xl text-white px-1"
-                      style={{ background: "rgba(0,0,0,.35)", border: "1px solid rgba(255,255,255,.16)" }}
+                      style={{ background: "rgba(0,0,0,.35)", border: "1px solid #1b1922" }}
                       data-testid="input-dob-year"
                     />
                     <span className="text-2xl shrink-0" aria-hidden>🎂</span>
@@ -2801,6 +2854,40 @@ export default function OnboardingPage() {
                     }
                     return <p className="text-[12px] mt-2" style={{ color: BRAND.mint }} data-testid="text-dob-ok">✓ {t.dobLabel}</p>;
                   })()}
+                </StepBlock>
+
+                {/* 5 — Cell number (compulsory) */}
+                <StepBlock
+                  n={5}
+                  title={t.cellQ}
+                  hint={t.cellHint}
+                  done={normaliseWaNumber(learnerCell) !== null}
+                  accent={BRAND.mint}
+                  testId="school-block-cell"
+                >
+                  <Input
+                    id="onboarding-cell"
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
+                    value={learnerCell}
+                    onChange={(e) => setLearnerCell(formatSAPhone(e.target.value))}
+                    placeholder={t.cellPlaceholder}
+                    aria-label={t.cellLabel}
+                    aria-invalid={(learnerCell.trim().length > 0 && normaliseWaNumber(learnerCell) === null) || undefined}
+                    aria-describedby={learnerCell.trim().length > 0 && normaliseWaNumber(learnerCell) === null ? "learner-cell-error" : undefined}
+                    className="h-14 rounded-2xl text-white text-base px-4"
+                    style={{
+                      background: "rgba(0,0,0,.35)",
+                      border: `1px solid ${learnerCell.trim().length > 0 && normaliseWaNumber(learnerCell) === null ? "#FF8DA1" : "#1b1922"}`,
+                    }}
+                    data-testid="input-learner-cell"
+                  />
+                  {learnerCell.trim().length > 0 && normaliseWaNumber(learnerCell) === null && (
+                    <p id="learner-cell-error" role="alert" className="text-[12px] mt-2" style={{ color: BRAND.pink }} data-testid="text-learner-cell-error">
+                      {t.cellInvalid}
+                    </p>
+                  )}
                 </StepBlock>
 
                 <div className="flex gap-3 pt-1">
@@ -2830,7 +2917,7 @@ export default function OnboardingPage() {
               className="rounded-3xl overflow-hidden"
               style={{
                 background: BRAND.card,
-                border: "1px solid rgba(255,255,255,.12)",
+                border: "1px solid #1b1922",
                 animation: anim("bt-fadeup .45s cubic-bezier(.22,1,.36,1) both"),
               }}
             >
@@ -2929,7 +3016,7 @@ export default function OnboardingPage() {
                           address is not used for anything else. */}
                       <div
                         className="mt-4 rounded-2xl p-4"
-                        style={{ background: "rgba(0,0,0,.28)", border: "1px solid rgba(255,255,255,.12)" }}
+                        style={{ background: "rgba(0,0,0,.28)", border: "1px solid #1b1922" }}
                         data-testid="consent-trust-panel"
                       >
                         <p className="text-[11px] font-bold uppercase tracking-[0.14em]" style={{ color: accent }}>
@@ -2943,6 +3030,48 @@ export default function OnboardingPage() {
                             </li>
                           ))}
                         </ul>
+                      </div>
+
+                      {/* ── Parent / guardian cell (compulsory, always shown) ── */}
+                      <div className="mt-4">
+                        <label
+                          htmlFor="parent-cell-input"
+                          className="block text-[12px] font-bold text-white mb-1.5"
+                        >
+                          {t.parentCellLabel}
+                        </label>
+                        <Input
+                          id="parent-cell-input"
+                          type="tel"
+                          inputMode="tel"
+                          autoComplete="tel"
+                          value={parentCell}
+                          onChange={(e) => setParentCell(formatSAPhone(e.target.value))}
+                          placeholder={t.parentCellPlaceholder}
+                          aria-label={t.parentCellLabel}
+                          aria-invalid={(parentCell.trim().length > 0 && normaliseWaNumber(parentCell) === null) || undefined}
+                          aria-describedby={parentCell.trim().length > 0 && normaliseWaNumber(parentCell) === null ? "parent-cell-error" : undefined}
+                          className="h-14 rounded-2xl text-white text-base px-4"
+                          style={{
+                            background: "rgba(0,0,0,.35)",
+                            border: `1px solid ${parentCell.trim().length > 0 && normaliseWaNumber(parentCell) === null ? "#FF8DA1" : "#1b1922"}`,
+                          }}
+                          data-testid="input-parent-cell"
+                        />
+                        {parentCell.trim().length > 0 && normaliseWaNumber(parentCell) === null ? (
+                          <p
+                            id="parent-cell-error"
+                            role="alert"
+                            className="text-[12px] font-semibold mt-1.5 flex items-start gap-1.5"
+                            style={{ color: "#FF8DA1" }}
+                            data-testid="parent-cell-error"
+                          >
+                            <AlertTriangle className="w-3.5 h-3.5 mt-[2px] shrink-0" aria-hidden />
+                            <span>{t.parentCellInvalid}</span>
+                          </p>
+                        ) : (
+                          <p className="text-[12px] text-white mt-1.5">{t.parentCellHint}</p>
+                        )}
                       </div>
 
                       {/* ── Ask for the address ─────────────────────────── */}
@@ -2973,7 +3102,7 @@ export default function OnboardingPage() {
                             className="h-14 rounded-2xl text-white text-base px-4"
                             style={{
                               background: "rgba(0,0,0,.35)",
-                              border: `1px solid ${showEmailError ? "#FF8DA1" : "rgba(255,255,255,.16)"}`,
+                              border: `1px solid ${showEmailError ? "#FF8DA1" : "#1b1922"}`,
                             }}
                             data-testid="input-parent-email"
                           />
@@ -2993,7 +3122,7 @@ export default function OnboardingPage() {
                           <div className="flex flex-wrap gap-2 mt-3">
                             <Button
                               variant="outline"
-                              className="w-full sm:w-auto min-h-[52px] px-5 text-[15px] font-bold rounded-2xl bg-transparent text-white border border-white/25 hover:bg-white/[0.06]"
+                              className="w-full sm:w-auto min-h-[52px] px-5 text-[15px] font-bold rounded-2xl bg-transparent text-white border border-[#1b1922] hover:bg-[#1b1922]"
                               onClick={() => consentMutation.mutate()}
                               disabled={!parentEmailReady || consentMutation.isPending}
                               data-testid="button-send-consent"
@@ -3006,7 +3135,7 @@ export default function OnboardingPage() {
                             {requested && (
                               <Button
                                 variant="ghost"
-                                className="w-full sm:w-auto min-h-[52px] px-4 text-[14px] font-bold rounded-2xl text-white hover:bg-white/[0.06]"
+                                className="w-full sm:w-auto min-h-[52px] px-4 text-[14px] font-bold rounded-2xl text-white hover:bg-[#1b1922]"
                                 onClick={() => setEditingParentEmail(false)}
                                 data-testid="button-cancel-change-email"
                               >
@@ -3073,7 +3202,7 @@ export default function OnboardingPage() {
                                 type="button"
                                 variant="outline"
                                 className="mt-2 w-full min-h-[46px] px-5 text-[14px] font-bold rounded-xl bg-transparent border"
-                                style={{ color: linkCopied ? BRAND.mint : "#ffffff", borderColor: linkCopied ? BRAND.mint : "rgba(255,255,255,.25)" }}
+                                style={{ color: linkCopied ? BRAND.mint : "#ffffff", borderColor: linkCopied ? BRAND.mint : "#1b1922" }}
                                 onClick={handleCopyConsentLink}
                                 data-testid="button-copy-consent-link"
                               >
@@ -3096,7 +3225,7 @@ export default function OnboardingPage() {
 
                             {/* Email demoted to a quiet backup note (sent path). */}
                             {consentDelivery === "sent" && (
-                              <p className="text-[12px] text-white/90 mt-2" data-testid="consent-email-backup-note">
+                              <p className="text-[12px] text-white mt-2" data-testid="consent-email-backup-note">
                                 {t.consentEmailBackupNote.replace("{email}", sentTo)}
                               </p>
                             )}
@@ -3119,7 +3248,7 @@ export default function OnboardingPage() {
 
                             <Button
                               variant="ghost"
-                              className="mt-2 min-h-[44px] px-3 text-[13px] font-bold rounded-xl text-white hover:bg-white/[0.06]"
+                              className="mt-2 min-h-[44px] px-3 text-[13px] font-bold rounded-xl text-white hover:bg-[#1b1922]"
                               onClick={() => { setEditingParentEmail(true); setLinkCopied(false); setCopyFailed(false); }}
                               data-testid="button-change-parent-email"
                             >
@@ -3166,12 +3295,13 @@ export default function OnboardingPage() {
                     {T[language].backBtn}
                   </Button>
                   <Button
-                    className="h-16 px-6 text-lg font-extrabold rounded-2xl text-[#0D0D14] flex-1 disabled:opacity-40"
+                    className="h-16 px-6 text-lg font-extrabold rounded-2xl text-[#0D0D14] flex-1 disabled:opacity-40 border-2 border-[#050508]"
                     style={{
-                      background: `linear-gradient(95deg, ${BRAND.pink}, ${BRAND.yellow}, ${BRAND.mint}, ${BRAND.cyan})`,
+                      backgroundImage: "var(--bt-rainbow)",
+                      backgroundSize: "200% 100%",
                     }}
                     onClick={handleNext}
-                    disabled={submitMutation.isPending}
+                    disabled={submitMutation.isPending || normaliseWaNumber(learnerCell) === null || normaliseWaNumber(parentCell) === null}
                     data-testid="button-complete"
                   >
                     {submitMutation.isPending ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <Sparkles className="w-5 h-5 mr-2" />}
@@ -3252,35 +3382,17 @@ export default function OnboardingPage() {
               >
                 {cheer}
               </div>
-              {!reduced && Array.from({ length: 28 }).map((_, i) => {
-                const c = CONFETTI_COLORS[i % CONFETTI_COLORS.length];
-                const round = i % 3 === 0;
-                const sz = 7 + (i % 4) * 3;                       // 7–16px
-                const left = 6 + ((i * 3.3) % 88);               // spread full width
-                const dir = i % 2 ? 1 : -1;
-                return (
-                  <span
-                    key={i}
-                    aria-hidden
-                    style={{
-                      position: "absolute",
-                      top: -10,
-                      left: `${left}%`,
-                      width: sz,
-                      height: round ? sz : Math.round(sz * 1.7),
-                      borderRadius: round ? 999 : 2,
-                      background: c,
-                      // Pop UP then arc down with sideways spread + spin — reads
-                      // as a real burst, not 6 squares dropping in a line.
-                      ["--cx" as string]: `${dir * (6 + (i % 5) * 4)}vw`,
-                      ["--rot" as string]: `${dir * (220 + i * 16)}deg`,
-                      animation: `bt-confetti ${(1.0 + (i % 5) * 0.18).toFixed(2)}s cubic-bezier(.2,.7,.3,1) ${((i % 7) * 0.05).toFixed(2)}s both`,
-                    }}
-                  />
-                );
-              })}
             </div>
           )}
+
+          {/* Canonical fullscreen celebration burst -- reused from the app's
+              shared component (exams, payment, welcome). Portal-mounted to
+              document.body: position:fixed inset-0, zIndex 9999, pointer-events
+              none, self-removing, and fully suppressed for prefers-reduced-motion.
+              Keyed by burstNonce so each milestone remounts and re-fires it, and
+              it plays its full lifetime independent of the 1.6s cheer text.
+              Replaces the old top-anchored micro-pop with a real fullscreen burst. */}
+          {burstNonce > 0 && <ConfettiBurst key={burstNonce} />}
 
           {submitMutation.isPending && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(13,13,20,.86)" }} data-testid="onboarding-loading-overlay">

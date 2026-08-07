@@ -34,7 +34,6 @@ import { LEARNING_STYLE_INFO, type LearningStyle } from "@/lib/constants";
 import rizzAvatar from "@/assets/handoff/rizz-avatar.png";
 import { RizzHeaderButton } from "@/components/rizz-support-bot";
 import btIcon from "@/assets/handoff/icon-transparent.png";
-import { TrialEndingBanner } from "@/components/TrialEndingBanner";
 import { RescuePackAlert } from "@/components/performance-packs";
 import { LearnerStudyPlan } from "@/components/learner-study-plan";
 import { useLanguage } from "@/lib/language-context";
@@ -50,6 +49,7 @@ import { PersonalBestsWidget } from "@/components/personal-bests-widget";
 import { useEarliestPrelimDate, FINALS_DATE } from "@/components/exam-countdown";
 import { ReferralShareCard } from "@/components/referral-share-card";
 import { GraffitiSplats } from "@/components/graffiti-splats";
+import { Button } from "@/components/ui/button";
 
 const BADGE_INFO: Record<string, { name: string; nameAfrikaans: string; icon: any; color: string }> = {
   streak_3:      { name: "3-Day Streak",    nameAfrikaans: "3-Dag Reeks",    icon: Flame,        color: "text-orange-500" },
@@ -309,11 +309,7 @@ const T = {
     openPlanBtn: "Open your plan",
     nextMilestoneTitle: "Next Milestone",
     personalBestsTitle: "Personal Bests",
-    trialBannerDay: "day",
-    trialBannerDays: "days",
-    trialBannerLeft: "left in your free trial",
-    trialBannerUpgrade: "Upgrade now",
-    lapsedBannerMsg: "Your Student Life trial has ended.",
+    lapsedBannerMsg: "Your Student Life access has ended.",
     lapsedBannerCta: "Reactivate",
     tierPlatinum: "Platinum",
     tierGold: "Gold",
@@ -455,11 +451,7 @@ const T = {
     openPlanBtn: "Open jou plan",
     nextMilestoneTitle: "Volgende Mylpaal",
     personalBestsTitle: "Persoonlike Rekords",
-    trialBannerDay: "dag",
-    trialBannerDays: "dae",
-    trialBannerLeft: "oor in jou gratis proeftydperk",
-    trialBannerUpgrade: "Opgradeer nou",
-    lapsedBannerMsg: "Jou Student Life proeftydperk het geëindig.",
+    lapsedBannerMsg: "Jou Student Life toegang het geëindig.",
     lapsedBannerCta: "Hernu",
     tierPlatinum: "Platinum",
     tierGold: "Goud",
@@ -695,7 +687,7 @@ export default function DashboardPage() {
         style={{
           width: 240,
           flex: "none",
-          borderRight: "1px solid rgba(255,255,255,.07)",
+          borderRight: "1px solid #1b1922",
           padding: "26px 18px",
           display: "flex",
           flexDirection: "column",
@@ -735,7 +727,7 @@ export default function DashboardPage() {
                   border: active ? "1px solid #9FF5E8" : "1px solid transparent",
                   transition: "all .2s",
                 }}
-                onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = "rgba(255,255,255,.05)"; }}
+                onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = "#1b1922"; }}
                 onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = "transparent"; }}
               >
                 <Icon style={{ width: 16, height: 16, flex: "none" }} />
@@ -755,7 +747,7 @@ export default function DashboardPage() {
             padding: 16,
           }}
         >
-          <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#FFB7E5" }}>{t.studyStreak} 🔥🔥🔥</div>
+          <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 16, color: "#FFB7E5" }}>{t.studyStreak} 🔥🔥🔥</div>
           <div className="tabular-nums" style={{ fontSize: 24, fontWeight: 900, color: "#fff", marginTop: 2 }}>
             {streakVal} <span style={{ fontSize: 14 }}>{streakVal === 1 ? t.dayLabel : t.streakDays}</span>
           </div>
@@ -776,7 +768,7 @@ export default function DashboardPage() {
             fontSize: 14,
             color: "#fff",
             background: "transparent",
-            border: "1px solid rgba(255,255,255,.14)",
+            border: "1px solid #1b1922",
             borderRadius: 14,
             padding: "11px 14px",
             minHeight: 44,
@@ -784,7 +776,7 @@ export default function DashboardPage() {
             transition: "all .2s",
           }}
           onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#FF8DA1"; e.currentTarget.style.color = "#FF8DA1"; }}
-          onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,.14)"; e.currentTarget.style.color = "#fff"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#1b1922"; e.currentTarget.style.color = "#fff"; }}
         >
           <LogOut style={{ width: 16, height: 16, flex: "none" }} />
           <span className="bt-dash-navlabel">{t.signOutLabel}</span>
@@ -801,7 +793,7 @@ export default function DashboardPage() {
         {/* ── Header row ── */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap", marginBottom: 30, position: "relative", zIndex: 1 }}>
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}>
+            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}>
               {getGreeting()} ⚡
             </div>
             <div role="heading" aria-level={1} style={{ fontSize: 32, fontWeight: 900, letterSpacing: -1, color: "#fff" }}>
@@ -819,25 +811,9 @@ export default function DashboardPage() {
               {language === "en" ? "EN" : "AF"}
             </button>
             <Link href="/daily-challenge">
-              <button
-                data-testid="button-claim-daily-xp"
-                style={{
-                  fontFamily: "'Poppins',sans-serif",
-                  fontWeight: 700,
-                  fontSize: 15,
-                  color: "#050508",
-                  background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
-                  border: "none",
-                  borderRadius: 10,
-                  padding: "12px 22px",
-                  cursor: "pointer",
-                  transition: "transform .2s",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
-                onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
-              >
+              <Button variant="primary" data-testid="button-claim-daily-xp">
                 {t.claimXp}
-              </button>
+              </Button>
             </Link>
             <div
               aria-hidden
@@ -862,64 +838,12 @@ export default function DashboardPage() {
       <main style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", gap: 24 }}>
         <RescuePackAlert isAf={isAf} />
 
-        {/* ─── ≤48 h urgent trial-ending banner (dismissible per session) ─── */}
-        {subscription && subscription.status === "trial" && (
-          <TrialEndingBanner trialEndsAt={subscription.trialEndsAt ?? null} />
-        )}
-
-        {/* ─── Subscription status banner (>48 h remaining) ─── */}
-        {subscription && subscription.status === "trial" && (() => {
-          const endsAt = subscription.trialEndsAt ? new Date(subscription.trialEndsAt) : null;
-          const msLeft = endsAt ? endsAt.getTime() - Date.now() : null;
-          if (msLeft !== null && msLeft <= 48 * 60 * 60 * 1000) return null;
-          const daysLeft = endsAt
-            ? Math.max(0, Math.ceil((endsAt.getTime() - Date.now()) / 86_400_000))
-            : null;
-          const dayWord = daysLeft === 1 ? t.trialBannerDay : t.trialBannerDays;
-          const urgent = daysLeft !== null && daysLeft <= 3;
-          const hex = urgent ? "#FFB7E5" : "#FFE29A";
-          return (
-            <div
-              data-testid="subscription-trial-banner"
-              className="flex flex-wrap items-center justify-between gap-3 rounded-2xl px-5 py-3.5"
-              style={{
-                background: `linear-gradient(135deg, ${hex}14 0%, rgba(255,255,255,.05) 60%), #050508`,
-                border: `1.5px solid ${hex}66`,
-              }}
-            >
-              <div className="flex items-center gap-3">
-                <Timer className="w-4 h-4 shrink-0" style={{ color: hex }} />
-                <span className="text-sm font-bold text-white">
-                  {daysLeft !== null
-                    ? `${daysLeft} ${dayWord} ${t.trialBannerLeft}`
-                    : t.trialBannerLeft}{" "}
-                  ⏳
-                </span>
-              </div>
-              <Link href="/subscribe">
-                <button
-                  className="rounded-xl px-4 py-2 text-sm transition-all"
-                  style={{
-                    background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
-                    color: "#050508",
-                    fontWeight: 800,
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
-                >
-                  {t.trialBannerUpgrade}
-                </button>
-              </Link>
-            </div>
-          );
-        })()}
-
         {subscription && subscription.status === "lapsed" && (
           <div
             data-testid="subscription-lapsed-banner"
             className="flex flex-wrap items-center justify-between gap-3 rounded-2xl px-5 py-3.5"
             style={{
-              background: "linear-gradient(135deg, rgba(255,183,229,0.12) 0%, rgba(255,255,255,.05) 60%), #050508",
+              background: "linear-gradient(135deg, rgba(255,183,229,0.12) 0%, #1b1922 60%), #050508",
               border: "1.5px solid rgba(255,183,229,0.5)",
             }}
           >
@@ -930,19 +854,10 @@ export default function DashboardPage() {
               </span>
             </div>
             <Link href="/subscribe">
-              <button
-                className="rounded-xl px-4 py-2 text-sm transition-all"
-                style={{
-                  background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
-                  color: "#050508",
-                  fontWeight: 800,
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
-                onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
-              >
-                <RefreshCcw className="w-3 h-3 inline mr-1.5 -mt-0.5" />
+              <Button variant="primary" size="sm">
+                <RefreshCcw className="w-3 h-3" />
                 {t.lapsedBannerCta}
-              </button>
+              </Button>
             </Link>
           </div>
         )}
@@ -1065,25 +980,9 @@ export default function DashboardPage() {
           </div>
           <LiveCountdownChips target={heroTarget} />
           <Link href="/exam/mini-mock">
-            <button
-              style={{
-                fontFamily: "'Poppins',sans-serif",
-                fontWeight: 800,
-                fontSize: 14,
-                color: "#050508",
-                background: "linear-gradient(100deg,#FFB7E5,#C5B3FF)",
-                border: "none",
-                borderRadius: 10,
-                padding: "13px 26px",
-                whiteSpace: "nowrap",
-                cursor: "pointer",
-                transition: "transform .2s",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
-              onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
-            >
+            <Button variant="primary" size="lg" className="whitespace-nowrap">
               {t.startRevision}
-            </button>
+            </Button>
           </Link>
         </div>
 
@@ -1119,33 +1018,16 @@ export default function DashboardPage() {
             <Timer style={{ width: 26, height: 26, color: "#94F7C5" }} />
           </div>
           <div style={{ flex: 1, minWidth: 220 }}>
-            <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#94F7C5", transform: "rotate(-2deg)", display: "inline-block" }}>
+            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: "#94F7C5", transform: "rotate(-2deg)", display: "inline-block" }}>
               {t.boostSessionTag} ⚡
             </div>
             <div style={{ fontSize: 22, fontWeight: 900, letterSpacing: -0.5, color: "#fff" }}>{t.boostSessionTitle} 🚀</div>
             <div style={{ fontSize: 13, color: "#fff" }}>{t.boostSessionDesc}</div>
           </div>
           <Link href="/boost-session">
-            <button
-              data-testid="button-start-boost-session"
-              style={{
-                fontFamily: "'Poppins',sans-serif",
-                fontWeight: 800,
-                fontSize: 14,
-                color: "#050508",
-                background: "linear-gradient(100deg,#94F7C5,#9FF5E8)",
-                border: "none",
-                borderRadius: 10,
-                padding: "13px 26px",
-                whiteSpace: "nowrap",
-                cursor: "pointer",
-                transition: "transform .2s",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
-              onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
-            >
+            <Button variant="primary" size="lg" className="whitespace-nowrap" data-testid="button-start-boost-session">
               {t.boostSessionCta}
-            </button>
+            </Button>
           </Link>
         </div>
 
@@ -1161,7 +1043,7 @@ export default function DashboardPage() {
               key={label}
               data-testid={testid}
               style={{
-                background: "linear-gradient(160deg,rgba(255,255,255,.055),rgba(255,255,255,.015))",
+                background: "linear-gradient(160deg,#1b1922,#1b1922)",
                 border: `1.5px solid ${hex}`,
                 borderRadius: 20,
                 padding: "20px 22px",
@@ -1191,15 +1073,15 @@ export default function DashboardPage() {
         {/* ── Two-column: Subject mastery + Next mission / Fresh drops ── */}
         <div className="bt-grid-2col" style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr", gap: 24 }}>
           {/* Subject mastery */}
-          <div style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: "1px solid rgba(255,255,255,.08)", borderRadius: 24, padding: 26 }}>
+          <div style={{ background: "linear-gradient(#1b1922, #1b1922), #050508", border: "1px solid #1b1922", borderRadius: 24, padding: 26 }}>
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10, flexWrap: "wrap", marginBottom: 20 }}>
               <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 18, color: "#fff" }}>{t.subjectsHeading} 📈</div>
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#9FF5E8" }}>{t.keepPushing}</span>
+                <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: "#9FF5E8" }}>{t.keepPushing}</span>
                 <Link href="/settings">
                   <button
                     data-testid="link-manage-subjects"
-                    style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 12, color: "#fff", background: "transparent", border: "1px solid rgba(255,255,255,.14)", borderRadius: 10, padding: "6px 12px", cursor: "pointer" }}
+                    style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 12, color: "#fff", background: "transparent", border: "1px solid #1b1922", borderRadius: 10, padding: "6px 12px", cursor: "pointer" }}
                   >
                     {t.manageLabel}
                   </button>
@@ -1208,7 +1090,7 @@ export default function DashboardPage() {
             </div>
             {subjectsLoading ? (
               <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-                {[1, 2, 3].map(i => <div key={i} className="animate-pulse" style={{ height: 40, borderRadius: 12, background: "rgba(255,255,255,.05)" }} />)}
+                {[1, 2, 3].map(i => <div key={i} className="animate-pulse" style={{ height: 40, borderRadius: 12, background: "#1b1922" }} />)}
               </div>
             ) : filteredSubjects && filteredSubjects.length > 0 ? (
               <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
@@ -1229,7 +1111,7 @@ export default function DashboardPage() {
                             <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{subject.name}</span>
                             <span className="tabular-nums" style={{ color: hex, flex: "none" }}>{pct}%</span>
                           </div>
-                          <div style={{ height: 9, borderRadius: 999, background: "rgba(255,255,255,.08)", overflow: "hidden" }}>
+                          <div style={{ height: 9, borderRadius: 999, background: "#1b1922", overflow: "hidden" }}>
                             <div style={{ height: "100%", width: `${pct}%`, borderRadius: 999, background: `linear-gradient(90deg,${hex},${hex2})` }} />
                           </div>
                         </div>
@@ -1243,12 +1125,9 @@ export default function DashboardPage() {
                 <div role="heading" aria-level={3} style={{ fontWeight: 800, fontSize: 18, color: "#fff", marginBottom: 4 }}>{t.selectSubjectsHeading}</div>
                 <p style={{ color: "#fff", fontSize: 14, marginBottom: 20 }}>{t.selectSubjectsDesc}</p>
                 <Link href="/settings">
-                  <button
-                    data-testid="button-select-subjects"
-                    style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 14, color: "#050508", background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", border: "none", borderRadius: 10, padding: "12px 22px", cursor: "pointer" }}
-                  >
+                  <Button variant="primary" data-testid="button-select-subjects">
                     {t.selectSubjectsBtn}
-                  </button>
+                  </Button>
                 </Link>
               </div>
             )}
@@ -1269,25 +1148,21 @@ export default function DashboardPage() {
               return (
                 <div style={{ background: "linear-gradient(150deg,rgba(159,245,232,.12),rgba(197,179,255,.1))", border: "1px solid rgba(159,245,232,.28)", borderRadius: 24, padding: 24 }}>
                   <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 16, color: "#fff", marginBottom: 4 }}>{t.nextMissionTitle}</div>
-                  <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFE29A", marginBottom: 10 }}>{missionTitle}</div>
+                  <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: "#FFE29A", marginBottom: 10 }}>{missionTitle}</div>
                   <div style={{ fontSize: 14, lineHeight: 1.6, color: "#fff" }}>
                     {missionSub} · {t.worthLabel} <b style={{ color: "#9FF5E8" }}>+250 XP</b>
                   </div>
                   <Link href={missionHref}>
-                    <button
-                      style={{ marginTop: 16, width: "100%", fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 14, color: "#050508", background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", border: "none", borderRadius: 10, padding: 13, cursor: "pointer", transition: "all .2s" }}
-                      onMouseEnter={(e) => { e.currentTarget.style.transform = "translate(-2px,-2px)"; e.currentTarget.style.boxShadow = "6px 6px 0 0 rgba(159,245,232,.9)"; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}
-                    >
+                    <Button variant="primary" size="lg" className="mt-4 w-full">
                       {t.runIt}
-                    </button>
+                    </Button>
                   </Link>
                 </div>
               );
             })()}
 
             {/* Fresh drops — recent achievements */}
-            <div style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: "1px solid rgba(255,255,255,.08)", borderRadius: 24, padding: 24, flex: 1 }}>
+            <div style={{ background: "linear-gradient(#1b1922, #1b1922), #050508", border: "1px solid #1b1922", borderRadius: 24, padding: 24, flex: 1 }}>
               <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 16, color: "#fff", marginBottom: 16 }}>{t.freshDropsTitle}</div>
               {badges && badges.length > 0 ? (
                 <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -1328,7 +1203,7 @@ export default function DashboardPage() {
           <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 8 }}>
             <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 18, color: "#fff" }}>{t.examCountdownHeading}</div>
             <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
-              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5" }}>{heroName}</span>
+              <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: "#FFB7E5" }}>{heroName}</span>
               <LiveCountdownChips target={heroTarget} tinted size={20} />
             </div>
           </div>
@@ -1423,7 +1298,7 @@ export default function DashboardPage() {
         <div
           data-testid="prep-status-indicator"
           style={{
-            background: `linear-gradient(120deg, ${ac.hex}14, rgba(255,255,255,.05)), #050508`,
+            background: `linear-gradient(120deg, ${ac.hex}14, #1b1922), #050508`,
             border: `1.5px solid ${ac.hex}`,
             borderRadius: 20,
             padding: "20px 26px",
@@ -1451,7 +1326,7 @@ export default function DashboardPage() {
               {(() => { const Icon = prepStatus.icon; return <Icon style={{ width: 26, height: 26, color: ac.hex }} />; })()}
             </div>
             <div>
-              <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: ac.hex, transform: "rotate(-2deg)", display: "inline-block" }}>
+              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: ac.hex, transform: "rotate(-2deg)", display: "inline-block" }}>
                 {t.yourStatus} ✦
               </div>
               <div data-testid="prep-status-label" style={{ fontSize: 26, fontWeight: 900, letterSpacing: -0.5, color: "#fff" }}>
@@ -1471,14 +1346,14 @@ export default function DashboardPage() {
                 fontSize: 13,
                 color: "#fff",
                 background: "transparent",
-                border: "1.5px solid rgba(255,255,255,.25)",
+                border: "1.5px solid #1b1922",
                 borderRadius: 10,
                 padding: "10px 18px",
                 cursor: "pointer",
                 transition: "all .2s",
               }}
               onMouseEnter={(e) => { e.currentTarget.style.borderColor = ac.hex; e.currentTarget.style.color = ac.hex; }}
-              onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,.25)"; e.currentTarget.style.color = "#fff"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#1b1922"; e.currentTarget.style.color = "#fff"; }}
             >
               {t.viewDetails}
             </button>
@@ -1509,7 +1384,7 @@ export default function DashboardPage() {
             <div
               data-testid="urgency-banner"
               style={{
-                background: `linear-gradient(120deg, ${u.hex}14, rgba(255,255,255,.05)), #050508`,
+                background: `linear-gradient(120deg, ${u.hex}14, #1b1922), #050508`,
                 border: `1.5px solid ${u.hex}`,
                 borderRadius: 18,
                 padding: "14px 20px",
@@ -1528,7 +1403,7 @@ export default function DashboardPage() {
                 <Icon style={{ width: 20, height: 20, color: u.hex }} />
               </div>
               <div style={{ flex: 1, minWidth: 180 }}>
-                <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: u.hex, transform: "rotate(-1.5deg)", display: "inline-block" }}>
+                <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: u.hex, transform: "rotate(-1.5deg)", display: "inline-block" }}>
                   {isAf ? examWidgets.urgencyBanner.labelAf : examWidgets.urgencyBanner.label}
                 </div>
                 <p style={{ fontSize: 13, color: "#fff", margin: "2px 0 0" }}>
@@ -1540,11 +1415,11 @@ export default function DashboardPage() {
                   style={{
                     fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 13,
                     color: "#fff", background: "transparent",
-                    border: "1.5px solid rgba(255,255,255,.25)", borderRadius: 10,
+                    border: "1.5px solid #1b1922", borderRadius: 10,
                     padding: "9px 16px", cursor: "pointer", transition: "all .2s",
                   }}
                   onMouseEnter={(e) => { e.currentTarget.style.borderColor = u.hex; e.currentTarget.style.color = u.hex; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,.25)"; e.currentTarget.style.color = "#fff"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#1b1922"; e.currentTarget.style.color = "#fff"; }}
                 >
                   {t.calendarLabel} <ChevronRight className="w-3 h-3 ml-1 inline" />
                 </button>
@@ -1558,7 +1433,7 @@ export default function DashboardPage() {
         <div>
           <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 16 }}>
             <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 18, color: "#fff" }}>{t.quickActions} 🚀</div>
-            <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFE29A", transform: "rotate(-2deg)", display: "inline-block" }}>
+            <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: "#FFE29A", transform: "rotate(-2deg)", display: "inline-block" }}>
               {isAf ? "kies jou missie" : "pick your mission"}
             </span>
           </div>
@@ -1616,7 +1491,7 @@ export default function DashboardPage() {
                   <div
                     style={{
                       height: "100%",
-                      background: "linear-gradient(160deg,rgba(255,255,255,.055),rgba(255,255,255,.015))",
+                      background: "linear-gradient(160deg,#1b1922,#1b1922)",
                       border: `1.5px solid ${hex}`,
                       borderRadius: 20,
                       padding: "18px 20px",
@@ -1656,14 +1531,14 @@ export default function DashboardPage() {
         {focusAreasData && (
           <div
             data-testid="panel-focus-areas"
-            style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: "1px solid rgba(255,255,255,.08)", borderRadius: 24, padding: 26 }}
+            style={{ background: "linear-gradient(#1b1922, #1b1922), #050508", border: "1px solid #1b1922", borderRadius: 24, padding: 26 }}
           >
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10, flexWrap: "wrap", marginBottom: 6 }}>
               <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 18, color: "#fff", display: "flex", alignItems: "center", gap: 8 }}>
                 <Target style={{ width: 18, height: 18, color: "#94F7C5" }} />
                 {t.focusAreasHeading} 🎯
               </div>
-              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#94F7C5", transform: "rotate(-2deg)", display: "inline-block" }}>
+              <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: "#94F7C5", transform: "rotate(-2deg)", display: "inline-block" }}>
                 {isAf ? "vang hulle vas!" : "lock them down!"}
               </span>
             </div>
@@ -1687,7 +1562,7 @@ export default function DashboardPage() {
                         data-testid={`focus-area-${fa.topicId}`}
                         style={{
                           height: "100%",
-                          background: `linear-gradient(160deg, ${hex}12, rgba(255,255,255,.02))`,
+                          background: `linear-gradient(160deg, ${hex}12, #1b1922)`,
                           border: `1.5px solid ${hex}66`,
                           borderRadius: 18,
                           padding: 16,
@@ -1698,7 +1573,7 @@ export default function DashboardPage() {
                         onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; e.currentTarget.style.borderColor = `${hex}66`; e.currentTarget.style.boxShadow = "none"; }}
                       >
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 10 }}>
-                          <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: hex, transform: "rotate(-2deg)", display: "inline-block" }}>
+                          <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: hex, transform: "rotate(-2deg)", display: "inline-block" }}>
                             {bandLabel}
                           </span>
                           <span className="tabular-nums" style={{ fontSize: 13, fontWeight: 800, color: hex }}>{fa.masteryScore}%</span>
@@ -1724,7 +1599,7 @@ export default function DashboardPage() {
         {profile && (
           <div
             data-testid="vark-style-badge"
-            style={{ background: "linear-gradient(150deg,rgba(197,179,255,.12),rgba(255,255,255,.05)), #050508", border: "1.5px solid rgba(197,179,255,.5)", borderRadius: 24, padding: 26 }}
+            style={{ background: "linear-gradient(150deg,rgba(197,179,255,.12),#1b1922), #050508", border: "1.5px solid rgba(197,179,255,.5)", borderRadius: 24, padding: 26 }}
           >
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
               <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 18, color: "#fff", display: "flex", alignItems: "center", gap: 8 }}>
@@ -1732,7 +1607,7 @@ export default function DashboardPage() {
                 {t.yourVibeHeading} {varkStyle ? varkStyle.icon : "🧠"}
               </div>
               {varkStyle && (
-                <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#C5B3FF", transform: "rotate(-2deg)", display: "inline-block" }}>
+                <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: "#C5B3FF", transform: "rotate(-2deg)", display: "inline-block" }}>
                   {isAf ? varkStyle.taglineAf : varkStyle.tagline}
                 </span>
               )}
@@ -1761,21 +1636,16 @@ export default function DashboardPage() {
               >
                 <Lightbulb style={{ width: 20, height: 20, flex: "none", color: "#FFE29A" }} />
                 <p style={{ flex: 1, minWidth: 200, fontSize: 14, color: "#fff", lineHeight: 1.55, margin: 0 }}>
-                  <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFE29A", marginRight: 8 }}>{t.proTipHeading}:</span>
+                  <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: "#FFE29A", marginRight: 8 }}>{t.proTipHeading}:</span>
                   {(isAf
                     ? LEARNING_STYLE_INFO[profile.learningStyle as LearningStyle]?.tipsAfrikaans
                     : LEARNING_STYLE_INFO[profile.learningStyle as LearningStyle]?.tips
                   )?.[0] || t.consistencyTip}
                 </p>
                 <Link href="/study-calendar">
-                  <button
-                    data-testid="button-pro-tip-learn-more"
-                    style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 13, color: "#050508", background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", border: "none", borderRadius: 10, padding: "10px 18px", cursor: "pointer", transition: "transform .2s" }}
-                    onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
-                    onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
-                  >
+                  <Button variant="primary" size="sm" data-testid="button-pro-tip-learn-more">
                     {t.openPlanBtn}
-                  </button>
+                  </Button>
                 </Link>
               </div>
             )}
@@ -1789,7 +1659,7 @@ export default function DashboardPage() {
                   {varkInsights.dominantStyle === "visual" ? "👁" : varkInsights.dominantStyle === "auditory" ? "🔊" : varkInsights.dominantStyle === "read" ? "📖" : "✏"}
                 </span>
                 <div style={{ flex: 1, minWidth: 200 }}>
-                  <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#9FF5E8", marginRight: 8 }}>{t.styleEvolving}</span>
+                  <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: "#9FF5E8", marginRight: 8 }}>{t.styleEvolving}</span>
                   <span style={{ fontSize: 13, color: "#fff" }}>
                     {varkInsights.recommendation
                       ? varkInsights.recommendation
@@ -1803,9 +1673,9 @@ export default function DashboardPage() {
                 </div>
                 <Link href="/settings">
                   <button
-                    style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 13, color: "#fff", background: "transparent", border: "1.5px solid rgba(255,255,255,.25)", borderRadius: 10, padding: "8px 14px", cursor: "pointer", transition: "all .2s" }}
+                    style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 13, color: "#fff", background: "transparent", border: "1.5px solid #1b1922", borderRadius: 10, padding: "8px 14px", cursor: "pointer", transition: "all .2s" }}
                     onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#9FF5E8"; e.currentTarget.style.color = "#9FF5E8"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,.25)"; e.currentTarget.style.color = "#fff"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#1b1922"; e.currentTarget.style.color = "#fff"; }}
                   >
                     {t.viewLabel}
                   </button>
@@ -1825,7 +1695,7 @@ export default function DashboardPage() {
             ];
             return sections.map(({ title, hex, Widget }) => (
               <div key={title} style={{ display: "flex", flexDirection: "column", gap: 12, height: "100%" }}>
-                <div role="heading" aria-level={2} style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: hex, transform: "rotate(-2deg)", display: "inline-block" }}>
+                <div role="heading" aria-level={2} style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: hex, transform: "rotate(-2deg)", display: "inline-block" }}>
                   {title}
                 </div>
                 <div style={{ flex: 1 }}>

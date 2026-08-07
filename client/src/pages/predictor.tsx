@@ -4,6 +4,7 @@ import { Link } from "wouter";
 import { useLanguage } from "@/lib/language-context";
 import { LearnerHeader } from "@/components/learner-header";
 import { GraffitiSplats } from "@/components/graffiti-splats";
+import { Button } from "@/components/ui/button";
 import { Target, TrendingUp, Zap, Sparkles } from "lucide-react";
 
 /* ── EXAM PREDICTOR — BrainTrack's hero differentiator. ────────────────────
@@ -194,13 +195,13 @@ function SubjectPredictor({
                     {bandLabel}
                   </span>
                   <Link href={`/subject/${subjectId}?drillTopic=${encodeURIComponent(topic.topic)}`}>
-                    <button
-                      className="inline-flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-black transition-transform hover:scale-[1.03]"
-                      style={{ background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", color: BG }}
+                    <Button
+                      variant="primary"
+                      size="sm"
                       data-testid={`predictor-drill-${i}`}
                     >
                       {t.drill} →
-                    </button>
+                    </Button>
                   </Link>
                 </div>
               </div>
@@ -254,13 +255,13 @@ export default function PredictorPage() {
           <div style={cardStyle("#C5B3FF")} className="p-6 text-center" data-testid="predictor-no-subjects">
             <p className="text-base font-black text-white">{t.noSubjects}</p>
             <Link href="/subjects">
-              <button
-                className="mt-4 inline-flex items-center gap-1 px-5 py-2.5 rounded-xl text-sm font-black transition-transform hover:scale-[1.03]"
-                style={{ background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", color: BG }}
+              <Button
+                variant="primary"
+                className="mt-4"
                 data-testid="predictor-go-subjects"
               >
                 {t.goSubjects} →
-              </button>
+              </Button>
             </Link>
           </div>
         ) : (

@@ -251,7 +251,7 @@ function IngestJobPanel({ isAf }: { isAf: boolean }) {
             {job.doneSubjects} / {job.totalSubjects} · {subjectPct}%
           </span>
         </div>
-        <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full" style={{ background: "rgba(255,255,255,0.12)" }}>
+        <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full" style={{ background: "#1b1922" }}>
           <div
             className="h-full rounded-full transition-all duration-700"
             style={{ width: `${subjectPct}%`, background: accent }}
@@ -270,7 +270,7 @@ function IngestJobPanel({ isAf }: { isAf: boolean }) {
           <div
             key={s.id}
             className="rounded-xl p-3"
-            style={{ background: "rgba(255,255,255,0.035)", border: `1px solid ${halo(s.c, 0.3)}` }}
+            style={{ background: "#0e0d12", border: `1px solid ${halo(s.c, 0.3)}` }}
           >
             <div className="text-[10px] uppercase tracking-wider" style={{ color: s.c }}>{s.label}</div>
             <div className="mt-0.5 text-xl font-bold tabular-nums text-white" data-testid={`job-count-${s.id}`}>
@@ -314,7 +314,7 @@ function IngestJobPanel({ isAf }: { isAf: boolean }) {
                 <div
                   key={`${r.subject}-${r.year}-${r.paperNumber}-${i}`}
                   className="flex items-center justify-between gap-3 rounded-lg px-2.5 py-1.5 text-xs"
-                  style={{ background: "rgba(255,255,255,0.035)" }}
+                  style={{ background: "#0e0d12" }}
                   data-testid={`job-recent-${i}`}
                 >
                   <span className="min-w-0 truncate text-white">
@@ -365,7 +365,7 @@ function CrunchProgress({ isAf }: { isAf: boolean }) {
           {d.failed > 0 && <span style={{ color: HEX.pink }}> · {d.failed} {isAf ? "misluk" : "failed"}</span>}
         </span>
       </div>
-      <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full" style={{ background: "rgba(255,255,255,0.12)" }}>
+      <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full" style={{ background: "#1b1922" }}>
         <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pct}%`, background: accent }} />
       </div>
     </div>
@@ -439,7 +439,7 @@ function ActionCard({
       <div className="flex items-start gap-4">
         <div
           className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
-          style={{ background: "rgba(255,255,255,0.035)", border: `1px solid ${halo(accent, 0.45)}`, color: accent }}
+          style={{ background: "#0e0d12", border: `1px solid ${halo(accent, 0.45)}`, color: accent }}
         >
           {icon}
         </div>
@@ -519,7 +519,7 @@ interface GeneratorCardProps {
 /** Renders one generated sample item, shaped by generator kind. */
 function SampleItem({ kind, s, accent, isAf }: { kind: GenKind; s: any; accent: NeonHex; isAf: boolean }) {
   const box: React.CSSProperties = {
-    background: "rgba(255,255,255,0.035)",
+    background: "#0e0d12",
     border: `1px solid ${halo(accent, 0.3)}`,
   };
   if (kind === "flashcards") {
@@ -531,7 +531,7 @@ function SampleItem({ kind, s, accent, isAf }: { kind: GenKind; s: any; accent: 
         <div className="mt-1 font-semibold text-white">Q: {s.front}</div>
         <div className="mt-0.5 text-white">A: {s.back}</div>
         <div className="mt-1 text-white">AF · {s.frontAf} → {s.backAf}</div>
-        <div className="mt-1 text-[10px] text-white opacity-80">{s.provenance}</div>
+        <div className="mt-1 text-[10px] text-white">{s.provenance}</div>
       </div>
     );
   }
@@ -550,7 +550,7 @@ function SampleItem({ kind, s, accent, isAf }: { kind: GenKind; s: any; accent: 
           ))}
         </ol>
         {s.explanation && <div className="mt-1 text-white">{isAf ? "Verduideliking" : "Why"}: {s.explanation}</div>}
-        <div className="mt-1 text-[10px] text-white opacity-80">{s.provenance}</div>
+        <div className="mt-1 text-[10px] text-white">{s.provenance}</div>
       </div>
     );
   }
@@ -563,7 +563,7 @@ function SampleItem({ kind, s, accent, isAf }: { kind: GenKind; s: any; accent: 
       <div className="mt-1 font-semibold text-white">{s.tip}</div>
       <div className="mt-0.5 text-white">AF · {s.tipAf}</div>
       {Array.isArray(s.evidence) && s.evidence.length > 0 && (
-        <div className="mt-1 text-[10px] text-white opacity-80">
+        <div className="mt-1 text-[10px] text-white">
           {s.evidence.map((e: any, i: number) => (
             <span key={i}>{[e.year, e.paper ? `P${e.paper}` : null].filter(Boolean).join(" ")}{e.note ? `: ${e.note}` : ""}{i < s.evidence.length - 1 ? " · " : ""}</span>
           ))}
@@ -631,7 +631,7 @@ function GeneratorCard({
       <div className="flex items-start gap-4">
         <div
           className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
-          style={{ background: "rgba(255,255,255,0.035)", border: `1px solid ${halo(accent, 0.45)}`, color: accent }}
+          style={{ background: "#0e0d12", border: `1px solid ${halo(accent, 0.45)}`, color: accent }}
         >
           {icon}
         </div>
@@ -656,7 +656,7 @@ function GeneratorCard({
                 onChange={(e) => setSubject(e.target.value)}
                 disabled={busy || subjectsLoading}
                 className="w-full appearance-none rounded-lg px-3 py-2 pr-9 text-sm text-white outline-none"
-                style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${halo(accent, 0.35)}` }}
+                style={{ background: "#0e0d12", border: `1px solid ${halo(accent, 0.35)}` }}
               >
                 <option value="" style={{ color: "#050508" }}>
                   {isAf ? "Alle bruikbare vakke" : "All usable subjects"}
@@ -685,7 +685,7 @@ function GeneratorCard({
                   onChange={(e) => setMode(e.target.value)}
                   disabled={busy}
                   className="w-full appearance-none rounded-lg px-3 py-2 pr-9 text-sm text-white outline-none"
-                  style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${halo(accent, 0.35)}` }}
+                  style={{ background: "#0e0d12", border: `1px solid ${halo(accent, 0.35)}` }}
                 >
                   {modes.map((m) => (
                     <option key={m.value} value={m.value} style={{ color: "#050508" }}>

@@ -141,7 +141,7 @@ function DonutChart({ learners, parents, admins }: { learners: number; parents: 
 function EmptyState({ icon: Icon, title, description }: { icon: any; title: string; description: string }) {
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4">
-      <div className="w-16 h-16 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center mb-4">
+      <div className="w-16 h-16 rounded-2xl bg-[#0e0d12] border border-[#1b1922] flex items-center justify-center mb-4">
         <Icon className="w-8 h-8 text-white" />
       </div>
       <h3 className="text-sm font-semibold text-white mb-1">{title}</h3>
@@ -157,7 +157,7 @@ function GlowStatCard({ label, value, sub, icon: Icon, color }: { label: string;
     <NeonShell color={color} className="p-4">
       <div className="flex items-center gap-2 mb-3">
         {Icon && (
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.035)", border: `1px solid ${h}` }}>
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "#0e0d12", border: `1px solid ${h}` }}>
             <Icon className="w-4 h-4" style={{ color }} />
           </div>
         )}
@@ -183,7 +183,7 @@ function EndorsementBadge({ status }: { status: string }) {
   const c = cfg[status] ?? cfg.none;
   if (!c.color) {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider text-white border border-white/25 bg-white/5">
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider text-white border border-[#1b1922] bg-[#0e0d12]">
         {c.label}
       </span>
     );
@@ -241,7 +241,7 @@ function TrialCountdown({ expiryDate }: { expiryDate?: string | null }) {
         className="text-[10px] font-bold leading-none"
         style={{ color: hex }}
       >
-        {expired ? "–" : ""}{pad(days, 2)}<span className="opacity-60">d</span> {pad(hrs)}:{pad(mins)}:{pad(secs)}
+        {expired ? "–" : ""}{pad(days, 2)}<span>d</span> {pad(hrs)}:{pad(mins)}:{pad(secs)}
       </span>
     </div>
   );
@@ -312,7 +312,7 @@ function SchoolOnboardingForm({ onClose, onSuccess }: { onClose: () => void; onS
   };
 
   const A = "#9FF5E8";
-  const iSty = { border: "1px solid rgba(255,255,255,0.12)" } as const;
+  const iSty = { border: "1px solid #1b1922" } as const;
   const iCls = "h-9 text-sm bg-black text-white placeholder:text-white";
   const lCls = "text-[10px] font-bold uppercase tracking-[0.18em] mb-1.5 block text-white";
 
@@ -331,20 +331,20 @@ function SchoolOnboardingForm({ onClose, onSuccess }: { onClose: () => void; onS
                   style={
                     done ? { color: "#000", background: A, border: `1.5px solid ${A}` }
                     : active ? { color: A, border: `1.5px solid ${A}` }
-                    : { color: "rgba(255,255,255,0.85)", border: "1px solid rgba(255,255,255,0.15)" }
+                    : { color: "#fff", border: "1px solid #1b1922" }
                   }
                 >
                   {done ? "✓" : i + 1}
                 </div>
                 <span
                   className="text-[10px] font-bold uppercase tracking-[0.14em] whitespace-nowrap"
-                  style={{ color: active ? "#fff" : done ? "rgba(255,255,255,0.65)" : "rgba(255,255,255,0.35)" }}
+                  style={{ color: active ? "#fff" : done ? "#fff" : "#fff" }}
                 >
                   {s}
                 </span>
               </div>
               {i < ONBOARD_STEPS.length - 1 && (
-                <div className="flex-1 h-px mx-2.5" style={{ background: done ? A : "rgba(255,255,255,0.1)" }} />
+                <div className="flex-1 h-px mx-2.5" style={{ background: done ? A : "#1b1922" }} />
               )}
             </div>
           );
@@ -485,7 +485,7 @@ function SchoolOnboardingForm({ onClose, onSuccess }: { onClose: () => void; onS
             </div>
           )}
           {/* Summary */}
-          <div className="p-3 rounded-xl bg-black text-[11px] text-white space-y-1" style={{ border: "1px solid rgba(255,255,255,0.1)" }}>
+          <div className="p-3 rounded-xl bg-black text-[11px] text-white space-y-1" style={{ border: "1px solid #1b1922" }}>
             <div className="text-[10px] font-black uppercase tracking-[0.14em] text-white mb-2">{isAf ? "Opsomming" : "Summary"}</div>
             <div className="font-semibold text-white">{form.schoolName || "—"}{form.province ? ` · ${form.province}` : ""}</div>
             <div>{form.schoolType} · {isAf ? "Grade" : "Grades"} {form.gradeRange}{form.contactEmail ? ` · ${form.contactEmail}` : ""}</div>
@@ -507,7 +507,7 @@ function SchoolOnboardingForm({ onClose, onSuccess }: { onClose: () => void; onS
             <button
               onClick={() => setStep(s => s - 1)}
               className="inline-flex items-center rounded-xl bg-black px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-white hover:text-white"
-              style={{ border: "1px solid rgba(255,255,255,0.15)" }}
+              style={{ border: "1px solid #1b1922" }}
             >
               {isAf ? "Terug" : "Back"}
             </button>
@@ -685,7 +685,7 @@ function SchoolDetailPanel({ schoolId, onClose }: { schoolId: number; onClose: (
       )}
 
       {/* Trial status */}
-      <div className="p-3 rounded-xl bg-white/[0.04] space-y-2" style={{ border: "1px solid rgba(255,255,255,0.1)" }}>
+      <div className="p-3 rounded-xl bg-[#0e0d12] space-y-2" style={{ border: "1px solid #1b1922" }}>
         <div className="flex items-center justify-between">
           <div className="text-xs font-semibold flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-white" /> {language === "af" ? "Proeflopie-status" : "Trial Status"}</div>
           <TrialCountdown expiryDate={school.trialExpiryDate} />
@@ -732,7 +732,7 @@ function SchoolDetailPanel({ schoolId, onClose }: { schoolId: number; onClose: (
           </div>
           <div className="space-y-1.5">
             {gradeSummaries.map((g: any) => (
-              <div key={g.grade} className="flex items-center gap-3 p-2.5 rounded-lg bg-white/[0.04] border border-white/10">
+              <div key={g.grade} className="flex items-center gap-3 p-2.5 rounded-lg bg-[#0e0d12] border border-[#1b1922]">
                 <div className="text-xs font-semibold w-14 text-white">{language === "af" ? "Gr" : "Gr"} {g.grade}</div>
                 <div className="flex-1">
                   <MiniBar value={g.avgAccuracy} max={100} color={g.avgAccuracy >= 70 ? "bg-[#94F7C5]" : "bg-[#FFE29A]"} />
@@ -769,7 +769,7 @@ function SchoolDetailPanel({ schoolId, onClose }: { schoolId: number; onClose: (
             <div className="text-[11px] text-white text-center py-4">{language === "af" ? "Nog geen kontaklog-inskrywings nie" : "No contact log entries yet"}</div>
           ) : (
             (contactLogData?.entries ?? []).map((e: any) => (
-              <div key={e.id} className="flex gap-2.5 p-2.5 rounded-lg bg-white/[0.04] border border-white/10">
+              <div key={e.id} className="flex gap-2.5 p-2.5 rounded-lg bg-[#0e0d12] border border-[#1b1922]">
                 <div className="text-[11px] flex-shrink-0 mt-0.5 text-white">{logTypeLabels[e.type] ?? e.type}</div>
                 <div className="flex-1 min-w-0">
                   <div className="text-xs text-white leading-relaxed">{e.notes}</div>
@@ -1167,7 +1167,7 @@ export default function AdminReportsPage() {
 
       <div className="p-4 md:p-6 space-y-6 text-white">
         <div className="max-w-7xl mx-auto">
-          <section className="relative overflow-hidden rounded-[20px] p-6 sm:p-8 md:p-10 mb-6" style={{ background: "rgba(255,255,255,0.035)", border: "1px solid rgba(255,255,255,0.1)" }}>
+          <section className="relative overflow-hidden rounded-[20px] p-6 sm:p-8 md:p-10 mb-6" style={{ background: "#0e0d12", border: "1px solid #1b1922" }}>
             <div className="flex items-center gap-3 mb-3">
               <Activity className="w-5 h-5 text-white" />
               <span className="text-[10px] font-bold uppercase tracking-[0.24em] text-white">{language === "af" ? "Admin-konsole" : "Admin Console"}</span>
@@ -1188,7 +1188,7 @@ export default function AdminReportsPage() {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="mb-5 p-1.5 rounded-full h-auto flex-wrap bg-white/[0.035] border border-white/10">
+            <TabsList className="mb-5 p-1.5 rounded-full h-auto flex-wrap bg-[#0e0d12] border border-[#1b1922]">
               <TabsTrigger value="overview" className="rounded-full text-xs gap-1.5 px-4 py-2 border border-transparent data-[state=active]:bg-[#9FF5E8] data-[state=active]:text-[#050508] data-[state=active]:font-black text-white hover:text-white transition-colors">
                 <BarChart3 className="w-3.5 h-3.5" /> {language === "af" ? "Oorsig" : "Overview"}
               </TabsTrigger>
@@ -1261,21 +1261,21 @@ export default function AdminReportsPage() {
                   <NeonShell color="#FFE29A" className="p-6">
                     <div className="text-sm font-bold flex items-center gap-2 mb-3 text-white"><Zap className="w-4 h-4" style={{ color: "#FFE29A" }} /> {language === "af" ? "Sleutel-insigte" : "Key Insights"}</div>
                     <div className="space-y-3">
-                      <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04]" style={{ border: `1px solid ${halo("#9FD8FF", 0.25)}` }}>
+                      <div className="flex items-center gap-3 p-3 rounded-xl bg-[#0e0d12]" style={{ border: `1px solid ${halo("#9FD8FF", 0.25)}` }}>
                         <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: halo("#9FD8FF", 0.18) }}><Award className="w-4 h-4" style={{ color: "#9FD8FF" }} /></div>
                         <div>
                           <div className="text-xs font-semibold text-white">{language === "af" ? "Mees Aktief" : "Most Active"}</div>
                           <div className="text-[10px] text-white">{stats?.activeToday ?? 0} {language === "af" ? "leerders aktief vandag" : "learners active today"}</div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04]" style={{ border: `1px solid ${halo("#94F7C5", 0.25)}` }}>
+                      <div className="flex items-center gap-3 p-3 rounded-xl bg-[#0e0d12]" style={{ border: `1px solid ${halo("#94F7C5", 0.25)}` }}>
                         <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: halo("#94F7C5", 0.18) }}><TrendingUp className="w-4 h-4" style={{ color: "#94F7C5" }} /></div>
                         <div>
                           <div className="text-xs font-semibold text-white">{language === "af" ? "Omskakelingstregter" : "Conversion Funnel"}</div>
                           <div className="text-[10px] text-white">{stats?.trialUsers ?? 0} {language === "af" ? "proeflopie" : "trial"} → {stats?.subscribedUsers ?? 0} {language === "af" ? "ingeteken" : "subscribed"} ({conversionRate}%)</div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04]" style={{ border: `1px solid ${halo("#FFE29A", 0.25)}` }}>
+                      <div className="flex items-center gap-3 p-3 rounded-xl bg-[#0e0d12]" style={{ border: `1px solid ${halo("#FFE29A", 0.25)}` }}>
                         <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: halo("#FFE29A", 0.18) }}><DollarSign className="w-4 h-4" style={{ color: "#FFE29A" }} /></div>
                         <div>
                           <div className="text-xs font-semibold text-white">{language === "af" ? "Inkomste-tendens" : "Revenue Trend"}</div>
@@ -1319,7 +1319,7 @@ export default function AdminReportsPage() {
 
                   {/* Bulk actions */}
                   {selectedLearners.size > 0 && (
-                    <div className="flex items-center gap-2 mb-3 p-2.5 rounded-xl bg-white/[0.04] border border-white/20">
+                    <div className="flex items-center gap-2 mb-3 p-2.5 rounded-xl bg-[#0e0d12] border border-[#1b1922]">
                       <span className="text-xs font-medium text-white">{selectedLearners.size} {language === "af" ? "gekies" : "selected"}</span>
                       <AdminButton color="#9FD8FF" solid className="ml-2" onClick={() => bulkTrialMutation.mutate([...selectedLearners])} disabled={bulkTrialMutation.isPending}>
                         <Clock className="w-3 h-3" /> {language === "af" ? "Ken 30-dae Proeflopie Toe" : "Assign 30-day Trial"}
@@ -1338,7 +1338,7 @@ export default function AdminReportsPage() {
                   <div className={adminTableWrapClass} style={adminTableWrapStyle("#9FD8FF")}>
                     <Table>
                       <TableHeader>
-                        <TableRow className="bg-black/60 hover:bg-black/60 border-white/10">
+                        <TableRow className="bg-[#0e0d12] hover:bg-[#1b1922] border-[#1b1922]">
                           <TableHead className="w-10">
                             <button onClick={toggleSelectAll} className="text-white hover:text-white">
                               {allSelected ? <CheckSquare className="w-3.5 h-3.5" style={{ color: "#9FD8FF" }} /> : <Square className="w-3.5 h-3.5" />}
@@ -1365,7 +1365,7 @@ export default function AdminReportsPage() {
                             const sid = String(l.id);
                             const isSelected = selectedLearners.has(sid);
                             return (
-                              <TableRow key={l.id || i} className={`hover:bg-white/[0.04] even:bg-white/[0.02] ${isSelected ? "bg-white/[0.04]" : ""}`}>
+                              <TableRow key={l.id || i} className={`hover:bg-[#1b1922] even:bg-[#1b1922] ${isSelected ? "bg-[#0e0d12]" : ""}`}>
                                 <TableCell>
                                   <button onClick={() => toggleLearner(sid)} className="text-white hover:text-white">
                                     {isSelected ? <CheckSquare className="w-3.5 h-3.5" style={{ color: "#9FD8FF" }} /> : <Square className="w-3.5 h-3.5" />}
@@ -1427,7 +1427,7 @@ export default function AdminReportsPage() {
 
             {/* ===== PARENTS ===== */}
             <TabsContent value="parents">
-              <Card className="bg-black border-white/15 rounded-2xl">
+              <Card className="bg-black border-[#1b1922] rounded-2xl">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm flex items-center gap-2"><Users className="w-4 h-4" style={{ color: "#C5B3FF" }} /> {language === "af" ? "Ouerrekeninge" : "Parent Accounts"}</CardTitle>
                 </CardHeader>
@@ -1436,10 +1436,10 @@ export default function AdminReportsPage() {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white" />
                     <Input placeholder={language === "af" ? "Soek ouers…" : "Search parents…"} className="pl-9 h-9 text-sm rounded-xl" value={search} onChange={e => setSearch(e.target.value)} />
                   </div>
-                  <div className="overflow-x-auto rounded-xl border border-white/15">
+                  <div className="overflow-x-auto rounded-xl border border-[#1b1922]">
                     <Table>
                       <TableHeader>
-                        <TableRow className="bg-white/[0.03] hover:bg-white/[0.03]">
+                        <TableRow className="bg-[#0e0d12] hover:bg-[#1b1922]">
                           <TableHead className="text-[11px] font-semibold text-white">{language === "af" ? "Ouer" : "Parent"}</TableHead>
                           <TableHead className="text-[11px] font-semibold text-white">{language === "af" ? "Kinders" : "Children"}</TableHead>
                           <TableHead className="text-center text-[11px] font-semibold text-white">{language === "af" ? "Vakke" : "Subjects"}</TableHead>
@@ -1454,16 +1454,16 @@ export default function AdminReportsPage() {
                           <TableRow><TableCell colSpan={7} className="p-0"><EmptyState icon={Users} title={language === "af" ? "Nog geen ouerrekeninge nie" : "No parent accounts yet"} description={language === "af" ? "Ouerdata sal opdateer namate ouers registreer en hul kinders se rekeninge skakel." : "Parent data will populate as parents register and link their children's accounts."} /></TableCell></TableRow>
                         ) : (
                           (parentReportsData?.reports ?? []).filter(r => r.parentName?.toLowerCase().includes(search.toLowerCase())).map((r: any, i: number) => (
-                            <TableRow key={i} className="hover:bg-white/[0.04] even:bg-white/[0.02]">
+                            <TableRow key={i} className="hover:bg-[#1b1922] even:bg-[#1b1922]">
                               <TableCell className="font-medium text-sm">{r.parentName}</TableCell>
                               <TableCell className="text-sm">{r.childCount}</TableCell>
                               <TableCell className="text-center text-sm">{r.subjectCount}</TableCell>
                               <TableCell className="text-center">
-                                <Badge variant="outline" className={`text-[10px] ${r.accuracy >= 70 ? "bg-white/10 border-white/30 text-white" : "bg-white/10 border-white/30 text-white"}`}>{r.accuracy}%</Badge>
+                                <Badge variant="outline" className={`text-[10px] ${r.accuracy >= 70 ? "bg-[#0e0d12] border-[#1b1922] text-white" : "bg-[#0e0d12] border-[#1b1922] text-white"}`}>{r.accuracy}%</Badge>
                               </TableCell>
                               <TableCell className="text-center text-sm">{r.questionsAnswered}</TableCell>
                               <TableCell className="text-center">
-                                <Badge variant="outline" className={`text-[10px] ${r.isSubscribed ? "bg-white/10 border-white/30 text-white" : "bg-white/10 border-white/30 text-white"}`}>
+                                <Badge variant="outline" className={`text-[10px] ${r.isSubscribed ? "bg-[#0e0d12] border-[#1b1922] text-white" : "bg-[#0e0d12] border-[#1b1922] text-white"}`}>
                                   {r.isSubscribed ? (language === "af" ? "Aktief" : "Active") : (language === "af" ? "Proeflopie" : "Trial")}
                                 </Badge>
                               </TableCell>
@@ -1496,7 +1496,7 @@ export default function AdminReportsPage() {
               <div className="flex gap-5">
                 {/* Main schools list */}
                 <div className="flex-1 min-w-0 space-y-4">
-                  <div className="bg-black rounded-2xl p-4 border border-white/20 flex items-center justify-between gap-3">
+                  <div className="bg-black rounded-2xl p-4 border border-[#1b1922] flex items-center justify-between gap-3">
                     <p className="text-xs flex items-center gap-2">
                       <School className="w-4 h-4 text-white shrink-0" />
                       <span>{language === "af" ? <><strong>Skole verdien R35/maand per aktiewe ingetekende leerder.</strong> Klik op 'n skool om sy volle profiel te sien.</> : <><strong>Schools earn R35/month per active subscribed learner.</strong> Click a school to view its full profile.</>}</span>
@@ -1505,27 +1505,27 @@ export default function AdminReportsPage() {
                       <Button
                         size="sm"
                         variant="outline"
-                        className="text-xs gap-1.5 border-white/30 text-white hover:bg-white/10"
+                        className="text-xs gap-1.5 border-[#1b1922] text-white hover:bg-[#1b1922]"
                         onClick={() => { setBulkResult(null); setBulkText(""); setShowBulkImport(true); }}
                         data-testid="button-bulk-import-schools"
                       >
                         <FileText className="w-3.5 h-3.5" /> {language === "af" ? "Massa-invoer" : "Bulk Import"}
                       </Button>
-                      <Button size="sm" variant="outline" className="text-xs gap-1.5 border-white/30 text-white hover:bg-white/10" onClick={() => setShowOnboarding(true)}>
+                      <Button size="sm" variant="outline" className="text-xs gap-1.5 border-[#1b1922] text-white hover:bg-[#1b1922]" onClick={() => setShowOnboarding(true)}>
                         <Plus className="w-3.5 h-3.5" /> {language === "af" ? "Voeg Skool By" : "Onboard School"}
                       </Button>
                     </div>
                   </div>
 
-                  <Card className="bg-black border-white/15 rounded-2xl">
+                  <Card className="bg-black border-[#1b1922] rounded-2xl">
                     <CardHeader className="pb-3">
                       <CardTitle className="text-sm flex items-center gap-2"><School className="w-4 h-4" style={{ color: "#9FF5E8" }} /> {language === "af" ? "Skoolbedrywighede" : "School Operations"}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="overflow-x-auto rounded-xl border border-white/15">
+                      <div className="overflow-x-auto rounded-xl border border-[#1b1922]">
                         <Table>
                           <TableHeader>
-                            <TableRow className="bg-white/[0.03] hover:bg-white/[0.03]">
+                            <TableRow className="bg-[#0e0d12] hover:bg-[#1b1922]">
                               <TableHead className="text-[11px] font-semibold text-white">{language === "af" ? "Skool" : "School"}</TableHead>
                               <TableHead className="text-[11px] font-semibold text-white">{language === "af" ? "Provinsie" : "Province"}</TableHead>
                               <TableHead className="text-center text-[11px] font-semibold text-white">{language === "af" ? "Onderskrywing" : "Endorsement"}</TableHead>
@@ -1542,7 +1542,7 @@ export default function AdminReportsPage() {
                               (schoolsData?.schools ?? []).map((s, i) => (
                                 <TableRow
                                   key={s.id ?? i}
-                                  className={`hover:bg-white/[0.04] even:bg-white/[0.02] cursor-pointer transition-colors ${selectedSchoolId === s.id ? "bg-white/[0.04] border-l-2 border-l-primary" : ""}`}
+                                  className={`hover:bg-[#1b1922] even:bg-[#1b1922] cursor-pointer transition-colors ${selectedSchoolId === s.id ? "bg-[#0e0d12] border-l-2 border-l-primary" : ""}`}
                                   onClick={() => setSelectedSchoolId(selectedSchoolId === s.id ? null : (s.id ?? null))}
                                 >
                                   <TableCell>
@@ -1555,7 +1555,7 @@ export default function AdminReportsPage() {
                                   <TableCell className="text-center text-sm font-medium">{s.learnerCount}</TableCell>
                                   <TableCell className="text-center font-semibold text-white text-sm">R{formatNumber(s.learnerCount * 35, language)}</TableCell>
                                   <TableCell className="text-center">
-                                    <Badge variant="outline" className={`text-[10px] ${s.avgAccuracy >= 70 ? "bg-white/10 border-white/30 text-white" : "bg-white/10 border-white/30 text-white"}`}>
+                                    <Badge variant="outline" className={`text-[10px] ${s.avgAccuracy >= 70 ? "bg-[#0e0d12] border-[#1b1922] text-white" : "bg-[#0e0d12] border-[#1b1922] text-white"}`}>
                                       {s.avgAccuracy}%
                                     </Badge>
                                   </TableCell>
@@ -1572,7 +1572,7 @@ export default function AdminReportsPage() {
                 {/* School detail side panel */}
                 {selectedSchoolId && (
                   <div className="w-96 flex-shrink-0">
-                    <Card className="bg-black border-white/15 rounded-2xl sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto">
+                    <Card className="bg-black border-[#1b1922] rounded-2xl sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto">
                       <CardContent className="p-4">
                         <SchoolDetailPanel schoolId={selectedSchoolId} onClose={() => setSelectedSchoolId(null)} />
                       </CardContent>
@@ -1610,13 +1610,13 @@ export default function AdminReportsPage() {
                   </Button>
                 </div>
               </div>
-              <Card className="bg-black border-white/15 rounded-2xl">
+              <Card className="bg-black border-[#1b1922] rounded-2xl">
                 <CardHeader className="pb-3"><CardTitle className="text-sm flex items-center gap-2"><Handshake className="w-4 h-4" style={{ color: "#FFE29A" }} /> {language === "af" ? "Vennoot-verwysings & Kommissie" : "Partner Referrals & Commission"}</CardTitle></CardHeader>
                 <CardContent>
-                  <div className="overflow-x-auto rounded-xl border border-white/15">
+                  <div className="overflow-x-auto rounded-xl border border-[#1b1922]">
                     <Table>
                       <TableHeader>
-                        <TableRow className="bg-white/[0.03] hover:bg-white/[0.03]">
+                        <TableRow className="bg-[#0e0d12] hover:bg-[#1b1922]">
                           <TableHead className="text-[11px] font-semibold text-white">{language === "af" ? "Vennoot" : "Partner"}</TableHead>
                           <TableHead className="text-[11px] font-semibold text-white">{language === "af" ? "Verwysingskode" : "Referral Code"}</TableHead>
                           <TableHead className="text-center text-[11px] font-semibold text-white">{language === "af" ? "Verwysings" : "Referrals"}</TableHead>
@@ -1630,7 +1630,7 @@ export default function AdminReportsPage() {
                           <TableRow><TableCell colSpan={6} className="p-0"><EmptyState icon={Handshake} title={language === "af" ? "Nog geen vennoot-verwysings nie" : "No partner referrals yet"} description={language === "af" ? "Vennote sal hier verskyn wanneer verwysingskodes deur leerders gebruik word." : "Partners will appear here when referral codes are used by learners."} /></TableCell></TableRow>
                         ) : (
                           (partnersData?.partners ?? []).map((p, i) => (
-                            <TableRow key={i} className="hover:bg-white/[0.04] even:bg-white/[0.02]">
+                            <TableRow key={i} className="hover:bg-[#1b1922] even:bg-[#1b1922]">
                               <TableCell className="font-medium text-sm">{p.partnerName}</TableCell>
                               <TableCell><code className="text-[10px] bg-muted/70 px-2 py-1 rounded-md font-mono">{p.partnerCode}</code></TableCell>
                               <TableCell className="text-center text-sm">{p.referrals}</TableCell>
@@ -1651,7 +1651,7 @@ export default function AdminReportsPage() {
             <TabsContent value="clicks">
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
                 <GlowStatCard label={language === "af" ? "Totale Klikke" : "Total Clicks"} value={partnerStatsData?.totalClicks ?? 0} icon={MousePointerClick} color="#9FD8FF" />
-                <GlowStatCard label={language === "af" ? "Proefbeginne" : "Trial Starts"} value={partnerStatsData?.totalTrials ?? 0} icon={UserCheck} color="#94F7C5" />
+                <GlowStatCard label={language === "af" ? "Legacy-proeflopies" : "Legacy trials"} value={partnerStatsData?.totalTrials ?? 0} icon={UserCheck} color="#94F7C5" />
                 <GlowStatCard
                   label={language === "af" ? "Klik → Proeflopie %" : "Click → Trial %"}
                   value={partnerStatsData && partnerStatsData.totalClicks > 0
@@ -1661,16 +1661,16 @@ export default function AdminReportsPage() {
                   color="#FFE29A"
                 />
               </div>
-              <Card className="bg-black border-white/15 rounded-2xl">
+              <Card className="bg-black border-[#1b1922] rounded-2xl">
                 <CardHeader className="pb-3"><CardTitle className="text-sm flex items-center gap-2"><MousePointerClick className="w-4 h-4" style={{ color: "#FFB7E5" }} /> {language === "af" ? "Vennootskakel-klikke & Proeflopie-toeskrywing" : "Partner Link Clicks & Trial Attribution"}</CardTitle></CardHeader>
                 <CardContent>
-                  <div className="overflow-x-auto rounded-xl border border-white/15">
+                  <div className="overflow-x-auto rounded-xl border border-[#1b1922]">
                     <Table>
                       <TableHeader>
-                        <TableRow className="bg-white/[0.03] hover:bg-white/[0.03]">
+                        <TableRow className="bg-[#0e0d12] hover:bg-[#1b1922]">
                           <TableHead className="text-[11px] font-semibold text-white">{language === "af" ? "Bron" : "Source"}</TableHead>
                           <TableHead className="text-center text-[11px] font-semibold text-white">{language === "af" ? "Klikke" : "Clicks"}</TableHead>
-                          <TableHead className="text-center text-[11px] font-semibold text-white">{language === "af" ? "Proefbeginne" : "Trial Starts"}</TableHead>
+                          <TableHead className="text-center text-[11px] font-semibold text-white">{language === "af" ? "Legacy-proeflopies" : "Legacy trials"}</TableHead>
                           <TableHead className="text-center text-[11px] font-semibold text-white">{language === "af" ? "Omskakeling %" : "Conversion %"}</TableHead>
                           <TableHead className="text-[11px] font-semibold text-white">{language === "af" ? "Eerste Klik" : "First Click"}</TableHead>
                           <TableHead className="text-[11px] font-semibold text-white">{language === "af" ? "Laaste Klik" : "Last Click"}</TableHead>
@@ -1683,12 +1683,12 @@ export default function AdminReportsPage() {
                           (partnerStatsData?.stats ?? []).map((s: any, i: number) => {
                             const convPct = s.clicks > 0 ? Math.round((s.trialStarts / s.clicks) * 100) : 0;
                             return (
-                              <TableRow key={i} className="hover:bg-white/[0.04] even:bg-white/[0.02]">
+                              <TableRow key={i} className="hover:bg-[#1b1922] even:bg-[#1b1922]">
                                 <TableCell><code className="text-[10px] bg-muted/70 px-2 py-1 rounded-md font-mono">{s.source}</code></TableCell>
                                 <TableCell className="text-center text-sm font-medium">{s.clicks}</TableCell>
                                 <TableCell className="text-center text-sm font-medium">{s.trialStarts}</TableCell>
                                 <TableCell className="text-center">
-                                  <Badge variant="outline" className={`text-[10px] ${convPct >= 20 ? "bg-white/10 border-white/30 text-white" : convPct >= 5 ? "bg-white/10 border-white/30 text-white" : "bg-red-500/10 border-red-500/30 text-white"}`}>{convPct}%</Badge>
+                                  <Badge variant="outline" className={`text-[10px] ${convPct >= 20 ? "bg-[#0e0d12] border-[#1b1922] text-white" : convPct >= 5 ? "bg-[#0e0d12] border-[#1b1922] text-white" : "bg-red-500/10 border-red-500/30 text-white"}`}>{convPct}%</Badge>
                                 </TableCell>
                                 <TableCell className="text-xs text-white">{s.firstClick ? formatDate(s.firstClick, language, {}) : '—'}</TableCell>
                                 <TableCell className="text-xs text-white">{s.lastClick ? formatDate(s.lastClick, language, {}) : '—'}</TableCell>
@@ -1703,7 +1703,7 @@ export default function AdminReportsPage() {
               </Card>
 
               {/* Role-based attribution breakdown */}
-              <Card className="bg-black border-white/15 rounded-2xl mt-4">
+              <Card className="bg-black border-[#1b1922] rounded-2xl mt-4">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm flex items-center gap-2">
                     <Link2 className="w-4 h-4 text-white" /> {language === "af" ? "Rol-toeskrywingsuitsplitsing" : "Role Attribution Breakdown"}
@@ -1728,9 +1728,9 @@ export default function AdminReportsPage() {
                         <div key={source} className={`rounded-2xl border p-4 ${accent}`}>
                           <p className="text-xs font-bold uppercase tracking-wider mb-1">{label}</p>
                           <p className="text-2xl font-bold">{stat?.clicks ?? 0}</p>
-                          <p className="text-[10px] mt-0.5 opacity-80">{language === "af" ? "klikke" : "clicks"} · {stat?.trialStarts ?? 0} {language === "af" ? "proeflopies" : "trials"}</p>
+                          <p className="text-[10px] mt-0.5">{language === "af" ? "klikke" : "clicks"} · {stat?.trialStarts ?? 0} {language === "af" ? "proeflopies" : "trials"}</p>
                           <div className="mt-2">
-                            <code className="text-[10px] bg-black/10 px-1.5 py-0.5 rounded font-mono">{source}</code>
+                            <code className="text-[10px] bg-[#0e0d12] px-1.5 py-0.5 rounded font-mono">{source}</code>
                           </div>
                         </div>
                       );
@@ -1763,7 +1763,7 @@ export default function AdminReportsPage() {
           className="w-[95vw] sm:w-auto sm:max-w-xl max-h-[90vh] overflow-y-auto bg-black text-white p-5 sm:p-6"
           style={{ border: "1px solid rgba(159,245,232,0.6)", boxShadow: "0 18px 50px -22px rgba(159,245,232,0.5)" }}
         >
-          <DialogHeader className="pb-3 mb-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+          <DialogHeader className="pb-3 mb-3" style={{ borderBottom: "1px solid #1b1922" }}>
             <DialogTitle className="flex items-center gap-2.5 text-base font-black tracking-tight">
               <span
                 className="inline-flex items-center justify-center w-7 h-7 rounded-md bg-black"
@@ -1978,7 +1978,7 @@ export default function AdminReportsPage() {
                       maxLength={12}
                       data-testid="input-partner-code"
                     />
-                    <p className="text-[10px] mt-1" style={{ color: codeOk ? "rgba(255,255,255,0.85)" : "#ef4444" }}>
+                    <p className="text-[10px] mt-1" style={{ color: codeOk ? "#fff" : "#ef4444" }}>
                       {codeOk ? (language === "af" ? "Laat leeg om outomaties te genereer · 3–12 letters/syfers" : "Leave blank to auto-generate · 3–12 letters/numbers") : (language === "af" ? "Slegs 3–12 letters/syfers" : "3–12 letters/numbers only")}
                     </p>
                   </div>
@@ -1999,7 +1999,7 @@ export default function AdminReportsPage() {
                       />
                       <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm font-black" style={{ color: "#FFE29A" }}>%</span>
                     </div>
-                    <p className="text-[10px] mt-1" style={{ color: commOk ? "rgba(255,255,255,0.85)" : "#ef4444" }}>
+                    <p className="text-[10px] mt-1" style={{ color: commOk ? "#fff" : "#ef4444" }}>
                       {language === "af" ? "Per leerder · verstek 10%" : "Per learner · default 10%"}
                     </p>
                   </div>
@@ -2095,19 +2095,19 @@ export default function AdminReportsPage() {
                   <button
                     onClick={() => setShowAddPartner(false)}
                     className="inline-flex items-center rounded-lg bg-black px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-white transition-none hover:text-white"
-                    style={{ border: "1px solid rgba(255,255,255,0.2)" }}
+                    style={{ border: "1px solid #1b1922" }}
                   >
                     {language === "af" ? "Kanselleer" : "Cancel"}
                   </button>
-                  <button
+                  <Button
+                    size="sm"
+                    variant="primary"
                     disabled={!canSubmit}
                     onClick={() => addPartnerMutation.mutate()}
                     data-testid="button-create-partner"
-                    className="inline-flex items-center gap-2 rounded-lg bg-black px-4 py-2 text-xs font-black uppercase tracking-[0.18em] transition-none disabled:opacity-40"
-                    style={{ color: "#FFE29A", border: "1.5px solid #FFE29A" }}
                   >
                     {addPartnerMutation.isPending ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> {language === "af" ? "Skep…" : "Creating…"}</> : <><Handshake className="w-3.5 h-3.5" /> {language === "af" ? "Skep vennoot" : "Create partner"}</>}
-                  </button>
+                  </Button>
                 </div>
               </div>
             );
@@ -2169,7 +2169,7 @@ export default function AdminReportsPage() {
                       partnerBulkMutation.mutate(rows);
                     }}
                     data-testid="button-bulk-partners-submit"
-                    className="bg-amber-600 hover:bg-amber-700 text-white"
+                    variant="primary"
                   >
                     {partnerBulkMutation.isPending ? (language === "af" ? "Voer in…" : "Importing…") : (language === "af" ? "Voer in" : "Import")}
                   </Button>
@@ -2226,7 +2226,7 @@ export default function AdminReportsPage() {
       </Dialog>
 
       <AlertDialog open={!!pendingDelete} onOpenChange={(open) => { if (!open) setPendingDelete(null); }}>
-        <AlertDialogContent className="bg-black/95 border-white/10 text-white">
+        <AlertDialogContent className="bg-[#0e0d12] border-[#1b1922] text-white">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-red-400">
               {language === "af" ? "Verwyder gebruiker?" : "Delete user?"}
@@ -2238,7 +2238,7 @@ export default function AdminReportsPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-white/5 border-white/20 text-white hover:bg-white/10" data-testid="button-cancel-delete-user">
+            <AlertDialogCancel className="bg-[#0e0d12] border-[#1b1922] text-white hover:bg-[#1b1922]" data-testid="button-cancel-delete-user">
               {language === "af" ? "Kanselleer" : "Cancel"}
             </AlertDialogCancel>
             <AlertDialogAction
@@ -2302,28 +2302,28 @@ function GamificationTab() {
     <TabsContent value="gamification">
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="rounded-2xl bg-black border-white/20">
+          <Card className="rounded-2xl bg-black border-[#1b1922]">
             <CardContent className="p-5 space-y-1">
               <p className="text-[10px] font-bold text-white uppercase tracking-widest">{language === "af" ? "Gem. Daaglikse Aktiewe Gebruikers" : "Avg Daily Active Users"}</p>
               <p className="text-3xl font-bold text-white">{avgDau}</p>
               <p className="text-[10px] text-white">{language === "af" ? "Hoogtepunt" : "Peak"}: {peakDau} {language === "af" ? "/ dag (laaste 30 dae)" : "/ day (last 30 days)"}</p>
             </CardContent>
           </Card>
-          <Card className="rounded-2xl bg-black border-white/20">
+          <Card className="rounded-2xl bg-black border-[#1b1922]">
             <CardContent className="p-5 space-y-1">
               <p className="text-[10px] font-bold text-white uppercase tracking-widest">{language === "af" ? "Vasvra-voltooiingskoers" : "Quiz Completion Rate"}</p>
               <p className="text-3xl font-bold text-white">{quizData?.rate ?? "—"}%</p>
               <p className="text-[10px] text-white">{quizData?.completed ?? 0} {language === "af" ? "van" : "of"} {quizData?.total ?? 0} {language === "af" ? "voltooi" : "completed"}</p>
             </CardContent>
           </Card>
-          <Card className="rounded-2xl bg-black border-white/20">
+          <Card className="rounded-2xl bg-black border-[#1b1922]">
             <CardContent className="p-5 space-y-1">
               <p className="text-[10px] font-bold text-white uppercase tracking-widest">{language === "af" ? "Kenteken-toekenningskoers" : "Badge Award Rate"}</p>
               <p className="text-3xl font-bold text-white">{badgeData?.avgPerUser?.toFixed(1) ?? "—"} <span className="text-sm font-normal">{language === "af" ? "gem." : "avg"}</span></p>
               <p className="text-[10px] text-white">{badgeData?.uniqueUsers ?? 0} {language === "af" ? "leerders met kentekens" : "learners with badges"}</p>
             </CardContent>
           </Card>
-          <Card className="rounded-2xl bg-black border-white/20">
+          <Card className="rounded-2xl bg-black border-[#1b1922]">
             <CardContent className="p-5 space-y-1">
               <p className="text-[10px] font-bold text-white uppercase tracking-widest">{language === "af" ? "Totale Kentekens Toegeken" : "Total Badges Awarded"}</p>
               <p className="text-3xl font-bold text-white">{badgeData?.totalBadgesAwarded ?? "—"}</p>
@@ -2513,7 +2513,7 @@ function ReminderCampaignView() {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-black border-white/15 rounded-2xl">
+      <Card className="bg-black border-[#1b1922] rounded-2xl">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
             <Bell className="w-4 h-4 text-primary" />
@@ -2612,7 +2612,7 @@ function ReminderCampaignView() {
 
       <ParentRatePromptCard />
 
-      <Card className="bg-black border-white/15 rounded-2xl">
+      <Card className="bg-black border-[#1b1922] rounded-2xl">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
             <FileText className="w-4 h-4 text-primary" />
@@ -2631,10 +2631,10 @@ function ReminderCampaignView() {
               <p className="text-sm text-white">{language === "af" ? "Nog geen herinneringe gestuur nie." : "No reminders sent yet."}</p>
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-xl border border-white/15">
+            <div className="overflow-x-auto rounded-xl border border-[#1b1922]">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-white/[0.03] hover:bg-white/[0.03]">
+                  <TableRow className="bg-[#0e0d12] hover:bg-[#1b1922]">
                     <TableHead className="text-[11px] font-semibold text-white">{language === "af" ? "Gebruiker-ID" : "User ID"}</TableHead>
                     <TableHead className="text-[11px] font-semibold text-white">{language === "af" ? "Vak" : "Subject"}</TableHead>
                     <TableHead className="text-center text-[11px] font-semibold text-white">{language === "af" ? "Vraestel" : "Paper"}</TableHead>
@@ -2645,7 +2645,7 @@ function ReminderCampaignView() {
                 </TableHeader>
                 <TableBody>
                   {log.slice(0, 50).map(entry => (
-                    <TableRow key={entry.id} className="hover:bg-white/[0.04] even:bg-white/[0.02]">
+                    <TableRow key={entry.id} className="hover:bg-[#1b1922] even:bg-[#1b1922]">
                       <TableCell className="text-[11px] font-mono max-w-[100px] truncate">{entry.userId}</TableCell>
                       <TableCell className="text-xs font-medium">{entry.subjectName}</TableCell>
                       <TableCell className="text-center text-xs">P{entry.paperNumber}</TableCell>
@@ -2797,7 +2797,7 @@ function CustomReminderCard() {
     && (target === "all" || (target === "school" && schoolId) || (target === "user" && userId.trim()));
 
   return (
-    <Card className="bg-black border-white/15 rounded-2xl">
+    <Card className="bg-black border-[#1b1922] rounded-2xl">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm flex items-center gap-2">
           <Bell className="w-4 h-4 text-[#C5B3FF]" />
@@ -2915,7 +2915,7 @@ function CustomReminderCard() {
             disabled={!valid || sendCustom.isPending}
             onClick={() => sendCustom.mutate()}
             data-testid="button-send-custom"
-            className="bg-[#C5B3FF] hover:bg-[#C5B3FF]/90 text-white border-0"
+            variant="primary"
           >
             {sendCustom.isPending ? (language === "af" ? "Stuur…" : "Sending…") : (language === "af" ? "Stuur nou" : "Send now")}
           </Button>
@@ -3072,8 +3072,8 @@ function ParentRatePromptCard() {
         </div>
 
         {result && (
-          <div className="grid grid-cols-4 gap-2 text-center text-xs border-t border-white/10 pt-3">
-            <div className="rounded-lg border border-white/15 p-2">
+          <div className="grid grid-cols-4 gap-2 text-center text-xs border-t border-[#1b1922] pt-3">
+            <div className="rounded-lg border border-[#1b1922] p-2">
               <p className="text-lg font-bold tabular-nums text-white">{result.parents}</p>
               <p className="text-[10px] text-white uppercase">{language === "af" ? "Ouers" : "Parents"}</p>
             </div>
@@ -3117,7 +3117,7 @@ function ExamPressureView() {
 
   return (
     <div className="space-y-6" data-testid="exam-pressure-view">
-      <Card className="bg-black border-white/15 rounded-2xl">
+      <Card className="bg-black border-[#1b1922] rounded-2xl">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
             <Calendar className="w-4 h-4 text-primary" />
@@ -3141,10 +3141,10 @@ function ExamPressureView() {
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-xl border border-white/15">
+            <div className="overflow-x-auto rounded-xl border border-[#1b1922]">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-white/[0.03] hover:bg-white/[0.03]">
+                  <TableRow className="bg-[#0e0d12] hover:bg-[#1b1922]">
                     <TableHead className="text-[11px] font-semibold text-white">{language === "af" ? "Vak" : "Subject"}</TableHead>
                     <TableHead className="text-center text-[11px] font-semibold text-white">{language === "af" ? "Vraestel" : "Paper"}</TableHead>
                     <TableHead className="text-[11px] font-semibold text-white">{language === "af" ? "Eksamendatum" : "Exam Date"}</TableHead>
@@ -3156,7 +3156,7 @@ function ExamPressureView() {
                 </TableHeader>
                 <TableBody>
                   {cohort.map((row, i) => (
-                    <TableRow key={i} className={`hover:bg-white/[0.04] even:bg-white/[0.02] ${row.lowReadinessCount > 0 ? "border-l-2 border-red-300" : ""}`}>
+                    <TableRow key={i} className={`hover:bg-[#1b1922] even:bg-[#1b1922] ${row.lowReadinessCount > 0 ? "border-l-2 border-red-300" : ""}`}>
                       <TableCell className="font-medium text-sm">{row.subjectName}</TableCell>
                       <TableCell className="text-center text-sm">P{row.paperNumber}</TableCell>
                       <TableCell className="text-xs text-white">
@@ -3325,7 +3325,7 @@ function DailyFocusPushView() {
   return (
     <div className="space-y-6">
       {/* 7-day trend chart */}
-      <Card className="bg-black border-white/15 rounded-2xl">
+      <Card className="bg-black border-[#1b1922] rounded-2xl">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
             <TrendingUp className="w-4 h-4" style={{ color: "#9FF5E8" }} />
@@ -3343,25 +3343,25 @@ function DailyFocusPushView() {
           ) : (
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={trendPoints} margin={{ top: 4, right: 8, left: -20, bottom: 0 }} barCategoryGap="30%">
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#fff" vertical={false} />
                 <XAxis
                   dataKey="date"
-                  tick={{ fill: "rgba(255,255,255,0.85)", fontSize: 11 }}
+                  tick={{ fill: "#fff", fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis
                   allowDecimals={false}
-                  tick={{ fill: "rgba(255,255,255,0.85)", fontSize: 11 }}
+                  tick={{ fill: "#fff", fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <RechartsTooltip
-                  contentStyle={{ background: "#0a0a0a", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, fontSize: 12 }}
-                  labelStyle={{ color: "rgba(255,255,255,0.85)" }}
-                  cursor={{ fill: "rgba(255,255,255,0.04)" }}
+                  contentStyle={{ background: "#0e0d12", border: "1px solid #1b1922", borderRadius: 8, fontSize: 12 }}
+                  labelStyle={{ color: "#fff" }}
+                  cursor={{ fill: "#fff" }}
                 />
-                <Legend wrapperStyle={{ fontSize: 11, color: "rgba(255,255,255,0.85)", paddingTop: 8 }} />
+                <Legend wrapperStyle={{ fontSize: 11, color: "#fff", paddingTop: 8 }} />
                 <Bar dataKey="learnersReached" name={trendLabels.learnersReached} fill="#9FF5E8" radius={[3, 3, 0, 0]} />
                 <Bar dataKey="failed" name={trendLabels.failed} fill="#f87171" radius={[3, 3, 0, 0]} />
               </BarChart>
@@ -3371,7 +3371,7 @@ function DailyFocusPushView() {
       </Card>
 
       {/* Header + date picker */}
-      <Card className="bg-black border-white/15 rounded-2xl">
+      <Card className="bg-black border-[#1b1922] rounded-2xl">
         <CardHeader className="pb-3">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
@@ -3387,7 +3387,7 @@ function DailyFocusPushView() {
                 type="date"
                 value={selectedDate}
                 onChange={handleDateChange}
-                className="h-8 text-xs bg-black border-white/20 text-white"
+                className="h-8 text-xs bg-black border-[#1b1922] text-white"
               />
             </div>
           </div>
@@ -3420,7 +3420,7 @@ function DailyFocusPushView() {
                 <div className="text-2xl font-black text-yellow-400">{skipped}</div>
                 <div className="text-[10px] text-white mt-1 uppercase tracking-wide">{t.skipped}</div>
               </div>
-              <div className="rounded-xl bg-white/5 border border-white/10 p-4 text-center">
+              <div className="rounded-xl bg-[#0e0d12] border border-[#1b1922] p-4 text-center">
                 <div className="text-2xl font-black text-white">{Number(summary?.total_attempts ?? 0)}</div>
                 <div className="text-[10px] text-white mt-1 uppercase tracking-wide">{t.totalAttempts}</div>
               </div>
@@ -3430,7 +3430,7 @@ function DailyFocusPushView() {
       </Card>
 
       {/* Per-user table */}
-      <Card className="bg-black border-white/15 rounded-2xl">
+      <Card className="bg-black border-[#1b1922] rounded-2xl">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm flex items-center gap-2">
             <Users className="w-4 h-4 text-white" />
@@ -3455,7 +3455,7 @@ function DailyFocusPushView() {
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
-                    <TableRow className="border-white/10 hover:bg-transparent">
+                    <TableRow className="border-[#1b1922] hover:bg-transparent">
                       <TableHead className="text-[11px] text-white font-medium">{t.user}</TableHead>
                       <TableHead className="text-[11px] text-white font-medium">{t.channel}</TableHead>
                       <TableHead className="text-[11px] text-white font-medium">{t.tag}</TableHead>
@@ -3466,7 +3466,7 @@ function DailyFocusPushView() {
                   </TableHeader>
                   <TableBody>
                     {visibleRows.map((row, i) => (
-                      <TableRow key={`${row.user_id}-${i}`} className="border-white/5 hover:bg-white/[0.03]">
+                      <TableRow key={`${row.user_id}-${i}`} className="border-[#1b1922] hover:bg-[#1b1922]">
                         <TableCell className="py-2">
                           <div className="flex flex-col gap-0.5">
                             <span className="text-xs font-medium text-foreground">
@@ -3529,7 +3529,7 @@ function DailyFocusPushView() {
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="flex items-center justify-between px-4 py-3 border-t border-white/5">
+                <div className="flex items-center justify-between px-4 py-3 border-t border-[#1b1922]">
                   <span className="text-[11px] text-white">
                     {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, allRows.length)}{" "}
                     {language === "af" ? "van" : "of"} {allRows.length}
@@ -3538,7 +3538,7 @@ function DailyFocusPushView() {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="h-7 text-xs border-white/15"
+                      className="h-7 text-xs border-[#1b1922]"
                       disabled={page === 0}
                       onClick={() => setPage(p => p - 1)}
                     >
@@ -3547,7 +3547,7 @@ function DailyFocusPushView() {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="h-7 text-xs border-white/15"
+                      className="h-7 text-xs border-[#1b1922]"
                       disabled={page >= totalPages - 1}
                       onClick={() => setPage(p => p + 1)}
                     >

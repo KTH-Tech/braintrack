@@ -3273,3 +3273,54 @@ export type PhoneOtpCode = typeof phoneOtpCodes.$inferSelect;
 // PATCH /api/user/whatsapp-opt-in handler. When the column / table are not
 // yet present, those code paths swallow the error and behave like the
 // feature is off — never a 500 for an unrelated endpoint.
+
+// ── Learning-games arcade (Rapid Fire, Memory Match) ───────────────────────
+// One row per COMPLETED play session, used to power school / class / global
+// leaderboards. Additive-only; the table is created by migration
+// 0039_game_scores.sql, which the predeploy migrator applies BEFORE this code
+// serves traffic. No existing endpoint reads this table, so declaring it here
+// cannot 500 an unrelated route (the 0034-class regression this project has
+// been bitten by).
+//
+//   user_id   — the player. Plain varchar to match every other user_id column
+//               in this schema; the FK to users(id) is enforced in the SQL
+//               migration, not the ORM (users lives in a different module).
+//   game      — 'rapid_fire' | 'memory_match'. A CHECK constraint in the
+//               migration pins the allowed values at the DB layer too.
+//   subject_id— nullable FK to subjects (Memory Match "Command Words" is
+//               subject-agnostic, so it is stored with a NULL subject).
+//   school_id — DENORMALISED snapshot of the player's users.school_id AT WRITE
+//               TIME (not a live FK). Leaderboards aggregate by it without a
+//               join and stay correct even if the learner later moves school.
+export const gameScores = pgTable(
+  "game_scores",
+  {
+    id: serial("id").primaryKey(),
+    userId: varchar("user_id").notNull(),
+    game: text("game").notNull().$type<"rapid_fire" | "memory_match">(),
+    subjectId: integer("subject_id").references(() => subjects.id),
+    score: integer("score").notNull().default(0),
+    correct: integer("correct").notNull().default(0),
+    total: integer("total").notNull().default(0),
+    durationMs: integer("duration_ms").notNull().default(0),
+    schoolId: integer("school_id"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => [
+    index("game_scores_game_subject_created_idx").on(
+      table.game,
+      table.subjectId,
+      table.createdAt,
+    ),
+    index("game_scores_school_idx").on(table.schoolId),
+    // Fast "how many games has this user played today" for the free-tier cap.
+    index("game_scores_user_created_idx").on(table.userId, table.createdAt),
+  ],
+);
+
+export const insertGameScoreSchema = createInsertSchema(gameScores).omit({
+  id: true,
+  createdAt: true,
+});
+export type GameScore = typeof gameScores.$inferSelect;
+export type InsertGameScore = typeof gameScores.$inferInsert;

@@ -99,7 +99,7 @@ export function RizzWordmark({ size = 20 }: { size?: number }) {
     <span
       className="bt-wordmark"
       style={{
-        fontFamily: "'Permanent Marker',cursive",
+        fontFamily: "'Bebas Neue', sans-serif",
         fontSize: size,
         letterSpacing: ".5px",
         lineHeight: 1,

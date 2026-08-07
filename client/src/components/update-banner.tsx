@@ -1,4 +1,5 @@
 import { RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface UpdateBannerProps {
   updateAvailable: boolean;
@@ -73,20 +74,14 @@ export function UpdateBanner({ updateAvailable, applyUpdate }: UpdateBannerProps
           </p>
         </div>
 
-        <button
-          className="prismglass-btn"
+        <Button
+          variant="primary"
+          size="sm"
+          className="shrink-0"
           onClick={applyUpdate}
-          style={{
-            flexShrink: 0,
-            fontSize: "0.82rem",
-            padding: "8px 16px",
-            borderRadius: "10px",
-            whiteSpace: "nowrap",
-            cursor: "pointer",
-          }}
         >
           Update
-        </button>
+        </Button>
       </div>
     </div>
   );

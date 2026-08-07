@@ -83,7 +83,7 @@ export function PublicNav() {
                     } : {
                       background: "transparent",
                       color: "#fff",
-                      border: "2px solid rgba(255,255,255,0.12)",
+                      border: "2px solid #9FD8FF",
                     }}
                     className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-[12px] font-black uppercase tracking-wider transition-all duration-150 hover:scale-105 active:scale-95"
                   >
@@ -100,7 +100,7 @@ export function PublicNav() {
               onClick={toggleLanguage}
               data-testid="button-language-toggle"
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-widest text-white transition-all hover:scale-105"
-              style={{ background: "rgba(255,255,255,0.06)", border: "1.5px solid rgba(255,255,255,0.15)" }}
+              style={{ background: "#050508", border: "1.5px solid #9FD8FF" }}
             >
               <Globe className="h-3.5 w-3.5" />
               {language === "en" ? "EN" : "AF"}
@@ -112,8 +112,7 @@ export function PublicNav() {
                 <Link href={user?.role === "parent" ? "/parent" : "/classroom"} data-testid="link-my-classroom">
                   <button
                     data-testid="button-my-classroom"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-[12px] font-black uppercase tracking-wide text-black transition-all hover:scale-105 active:scale-95"
-                    style={{ background: "#94F7C5", border: "2px solid #94F7C5" }}
+                    className="pub-btn pub-btn-sm inline-flex items-center gap-1.5"
                   >
                     <BookOpen className="h-3.5 w-3.5" />
                     {language === "en" ? "My Classroom" : "My Klaskamer"}
@@ -133,8 +132,7 @@ export function PublicNav() {
               <a href="/signin">
                 <button
                   data-testid="button-sign-in"
-                  className="inline-flex items-center px-5 py-2 rounded-xl text-[12px] font-black uppercase tracking-wider text-black transition-all hover:scale-105 active:scale-95"
-                  style={{ background: "#FFE29A", border: "2px solid #FFE29A" }}
+                  className="pub-btn pub-btn-sm"
                 >
                   {language === "en" ? "Sign In" : "Kom In"}
                 </button>
@@ -149,7 +147,7 @@ export function PublicNav() {
               <button
                 onClick={toggleLanguage}
                 className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider text-white"
-                style={{ background: "rgba(255,255,255,0.06)", border: "1.5px solid rgba(255,255,255,0.15)" }}
+                style={{ background: "#050508", border: "1.5px solid #9FD8FF" }}
                 data-testid="button-mobile-language"
               >
                 <Globe className="h-3.5 w-3.5" />
@@ -194,9 +192,9 @@ export function PublicNav() {
                     border: `2px solid ${link.color}`,
                     animationDelay: `${idx * 50}ms`,
                   } : {
-                    background: "rgba(255,255,255,0.04)",
+                    background: "#0e0d12",
                     color: "#fff",
-                    border: "1.5px solid rgba(255,255,255,0.1)",
+                    border: "1.5px solid #9FD8FF",
                     animationDelay: `${idx * 50}ms`,
                   }}
                   className="nav-mobile-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-black uppercase tracking-wide transition-all"
@@ -207,7 +205,7 @@ export function PublicNav() {
               );
             })}
 
-            <div style={{ height: 1, background: "linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent)", margin: "8px 0" }} />
+            <div style={{ height: 1, background: "linear-gradient(90deg,transparent,#C5B3FF,transparent)", margin: "8px 0" }} />
 
             {isAuthenticated ? (
               <>
@@ -215,11 +213,13 @@ export function PublicNav() {
                   href={user?.role === "parent" ? "/parent" : "/dashboard"}
                   data-testid="link-mobile-my-classroom"
                   onClick={() => setMobileOpen(false)}
-                  className="nav-mobile-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-black uppercase tracking-wide text-black"
-                  style={{ background: "#94F7C5", border: "2px solid #94F7C5", animationDelay: `${navLinks.length * 50}ms` }}
+                  className="nav-mobile-item block"
+                  style={{ animationDelay: `${navLinks.length * 50}ms` }}
                 >
-                  <BookOpen className="w-4 h-4" />
-                  {language === "en" ? "My Classroom" : "My Klaskamer"}
+                  <button className="pub-btn w-full flex items-center justify-center gap-3">
+                    <BookOpen className="w-4 h-4" />
+                    {language === "en" ? "My Classroom" : "My Klaskamer"}
+                  </button>
                 </Link>
                 <a
                   href="/api/auth/logout"
@@ -238,8 +238,8 @@ export function PublicNav() {
                 style={{ animationDelay: `${navLinks.length * 50}ms` }}
               >
                 <button
-                  className="w-full py-3 rounded-xl text-sm font-black uppercase tracking-wider text-black"
-                  style={{ background: "#FFE29A", border: "2px solid #FFE29A" }}
+                  data-testid="button-mobile-sign-in"
+                  className="pub-btn pub-btn-block"
                 >
                   {language === "en" ? "Sign In" : "Kom In"}
                 </button>

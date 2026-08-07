@@ -262,23 +262,13 @@ export function GoalProgress({ isAf }: GoalProgressProps) {
             <Button
               variant="outline"
               onClick={() => setModalOpen(false)}
-              style={{ background: "transparent", border: "1.5px solid rgba(255,255,255,.2)", color: "#ffffff", fontWeight: 700 }}
             >
               {isAf ? "Kanselleer" : "Cancel"}
             </Button>
             <Button
+              variant="primary"
               onClick={() => saveGoals.mutate()}
               disabled={saveGoals.isPending}
-              style={{
-                background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
-                color: "#050508",
-                fontFamily: "'Poppins',sans-serif",
-                fontWeight: 800,
-                border: "none",
-                transition: "transform .2s",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
-              onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
             >
               {saveGoals.isPending
                 ? (isAf ? "Stoor..." : "Saving...")

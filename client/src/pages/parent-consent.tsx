@@ -27,7 +27,7 @@ export default function ParentConsentPage() {
   useSEO({
     title: "Parent consent | BrainTrack",
     description:
-      "Confirm your consent so your Grade 12 learner can start their BrainTrack free trial.",
+      "Confirm your consent so your Grade 12 learner can get started on BrainTrack.",
     canonical: "https://braintrack.tech/parent-consent",
     noIndex: true,
   });
@@ -126,7 +126,7 @@ export default function ParentConsentPage() {
             <>
               <Loader2 className="w-10 h-10 animate-spin text-primary mx-auto" />
               <p className="text-sm text-white">
-                {isAf ? "Ons neem jou na die veilige kaartblad…" : "Taking you to the secure card page…"}
+                {isAf ? "Ons neem jou na die veilige betaalblad…" : "Taking you to the secure payment page…"}
               </p>
             </>
           )}
@@ -134,17 +134,17 @@ export default function ParentConsentPage() {
             <>
               <ShieldCheck className="w-12 h-12 text-[#9FF5E8] mx-auto" />
               <h2 className="text-lg font-bold" data-testid="consent-intro-title">
-                {isAf ? "Keur goed & voeg 'n kaart by" : "Approve & add a card"}
+                {isAf ? "Keur goed & betaal" : "Approve & pay"}
               </h2>
               <p className="text-sm text-white text-left">
                 {isAf
-                  ? "Deur goed te keur, bevestig jy toestemming vir jou leerder se BrainTrack-rekening en voeg jy 'n kaart by vir ná die proeftydperk."
-                  : "By approving, you confirm consent for your learner's BrainTrack account and add a card for after the trial."}
+                  ? "Deur goed te keur, bevestig jy toestemming vir jou leerder se BrainTrack-rekening en betaal jy vir hul toegang."
+                  : "By approving, you confirm consent for your learner's BrainTrack account and pay for their access."}
               </p>
               <ul className="text-sm text-white text-left space-y-2">
-                <li>✓ {isAf ? "Eenmalige R1.00 kaartverifikasie (Paystack, veilig)" : "Once-off R1.00 card verification (Paystack, secure)"}</li>
-                <li>✓ {isAf ? "14-dae gratis proeftydperk begin dadelik" : "14-day free trial starts immediately"}</li>
-                <li>✓ {isAf ? "Eers ná 14 dae word R169/maand gehef" : "Only after 14 days is R169/month billed"}</li>
+                <li>✓ {isAf ? "R169/maand, nou veilig gehef (Paystack)" : "R169/month, charged securely now (Paystack)"}</li>
+                <li>✓ {isAf ? "Volle toegang begin dadelik" : "Full access starts immediately"}</li>
+                <li>✓ {isAf ? "Geen verrassings, geen verborge fooie" : "No surprises, no hidden fees"}</li>
                 <li>✓ {isAf ? "Kanselleer enige tyd in die app" : "Cancel anytime in the app"}</li>
               </ul>
               <Button
@@ -153,7 +153,7 @@ export default function ParentConsentPage() {
                 data-testid="button-approve-add-card"
               >
                 <CreditCard className="w-4 h-4 mr-2" />
-                {isAf ? "Keur goed & voeg kaart by" : "Approve & add card"}
+                {isAf ? "Keur goed & betaal" : "Approve & pay"}
               </Button>
               <p className="text-xs text-white">
                 {isAf
@@ -171,8 +171,8 @@ export default function ParentConsentPage() {
               <p className="text-sm text-white">
                 {learnerName
                   ? (isAf
-                      ? `Dankie! ${learnerName} se 14-dae proeftydperk is nou aktief, met volle toegang tot Smart Tutor en eksamen-modus.`
-                      : `Thank you! ${learnerName}'s 14-day trial is now active, with full access to the Smart Tutor and exam mode.`)
+                      ? `Dankie! ${learnerName} se toegang is nou aktief, met volle toegang tot Smart Tutor en eksamen-modus.`
+                      : `Thank you! ${learnerName}'s access is now active, with full access to the Smart Tutor and exam mode.`)
                   : (isAf
                       ? "Dankie! Die leerder se rekening is geaktiveer."
                       : "Thank you! The learner's account is now activated.")}
@@ -180,8 +180,8 @@ export default function ParentConsentPage() {
               {cardCaptured && (
                 <p className="text-xs text-white">
                   {isAf
-                    ? "Jou kaart is geverifieer (R1.00). Ná die 14-dae proeftydperk word R169/maand gehef — kanselleer enige tyd."
-                    : "Your card is verified (R1.00). After the 14-day trial, R169/month is billed — cancel anytime."}
+                    ? "Betaling suksesvol — R169/maand, kanselleer enige tyd. Verskyn op jou staat as KTH-TECH."
+                    : "Payment successful — R169/month, cancel anytime. Appears on your statement as KTH-TECH."}
                 </p>
               )}
               <Button asChild className="mt-2"><a href="/">{isAf ? "Klaar" : "Done"}</a></Button>
@@ -197,7 +197,7 @@ export default function ParentConsentPage() {
                 {reason === "expired"
                   ? (isAf ? "Hierdie skakel het verval. Vra die leerder om 'n nuwe een te stuur." : "This link has expired. Please ask the learner to resend.")
                   : reason === "card_not_captured"
-                  ? (isAf ? "Die kaartverifikasie is nie voltooi nie. Maak die skakel weer oop om te probeer." : "The card verification wasn't completed. Open the link again to retry.")
+                  ? (isAf ? "Die betaling is nie voltooi nie. Maak die skakel weer oop om te probeer." : "The payment wasn't completed. Open the link again to retry.")
                   : (isAf ? "Ons kon nie hierdie skakel verifieer nie." : "We couldn't verify this link.")}
               </p>
             </>

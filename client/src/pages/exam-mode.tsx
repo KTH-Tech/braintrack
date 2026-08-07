@@ -1,11 +1,12 @@
 // BrainTrack Exam Mode hub — restyled to match the Claude Design handoff
 // "Luxury Street Graffiti EdTech" comp (BrainTrack.dc.html, EXAM MODE section).
-// #050508 ground, #0b0b12 accent-bordered cards, Permanent Marker eyebrows,
+// #050508 ground, #0b0b12 accent-bordered cards, Bebas Neue eyebrows,
 // aqua→purple gradient action buttons, pure white text. Bilingual EN/AF.
 // RESTYLE ONLY — all hooks, queries, config and data-testids preserved.
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import {
   Brain,
@@ -455,7 +456,7 @@ function SubjectExamCard({ subject, isAf, t, colorIndex }: { subject: Subject; i
               key={i}
               style={{
                 textAlign: "center", borderRadius: 12, padding: "8px 4px",
-                background: "rgba(255,255,255,.03)",
+                background: "#1b1922",
                 border: `1px solid ${s.hex}44`,
               }}
             >
@@ -478,8 +479,8 @@ function SubjectExamCard({ subject, isAf, t, colorIndex }: { subject: Subject; i
               style={{
                 display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10,
                 padding: "10px 12px", borderRadius: 12,
-                background: "rgba(255,255,255,.04)",
-                border: "1px solid rgba(255,255,255,.1)",
+                background: "#1b1922",
+                border: "1px solid #1b1922",
               }}
               data-testid={`paper-${paper.id}`}
             >
@@ -487,27 +488,20 @@ function SubjectExamCard({ subject, isAf, t, colorIndex }: { subject: Subject; i
                 <div style={{ fontSize: 14, fontWeight: 700, color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                   {isAf ? paper.nameAf : paper.name}
                 </div>
-                <div style={{ fontSize: 11, fontWeight: 600, color: "#fff", opacity: 0.72 }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: "#fff" }}>
                   {paper.totalMarks} {t.marksUnit} · {paper.duration} min
                 </div>
               </div>
               {isActive ? (
                 <Link href={examConfig.route === "/bst-exam" ? examConfig.route : `${examConfig.route}?subject=${subject.code}&paper=${paper.id}`} style={{ flex: "none" }}>
-                  <button
-                    className="btx-action"
-                    style={{
-                      display: "inline-flex", alignItems: "center", gap: 5,
-                      fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 11,
-                      letterSpacing: "1.2px", textTransform: "uppercase",
-                      color: "#050508", background: ACTION_GRADIENT,
-                      border: "none", borderRadius: 10, padding: "8px 14px",
-                      cursor: "pointer", whiteSpace: "nowrap",
-                    }}
+                  <Button
+                    variant="primary"
+                    size="sm"
                     data-testid={`button-start-${paper.id}`}
                   >
                     <Zap style={{ width: 12, height: 12 }} />
                     {t.startBtn}
-                  </button>
+                  </Button>
                 </Link>
               ) : (
                 <button
@@ -517,7 +511,7 @@ function SubjectExamCard({ subject, isAf, t, colorIndex }: { subject: Subject; i
                     fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 11,
                     letterSpacing: "1.2px", textTransform: "uppercase",
                     color: "#fff", background: "transparent",
-                    border: "2px solid rgba(255,255,255,.22)", borderRadius: 10, padding: "7px 13px",
+                    border: "2px solid #1b1922", borderRadius: 10, padding: "7px 13px",
                     whiteSpace: "nowrap",
                   }}
                 >
@@ -554,7 +548,7 @@ function SubjectExamCard({ subject, isAf, t, colorIndex }: { subject: Subject; i
               fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 11,
               letterSpacing: "1.2px", textTransform: "uppercase",
               color: "#fff", background: "transparent",
-              border: "2px solid rgba(255,255,255,.22)", borderRadius: 10, padding: "9px 12px",
+              border: "2px solid #1b1922", borderRadius: 10, padding: "9px 12px",
               cursor: "pointer",
             }}
             data-testid={`button-view-${subject.code}`}
@@ -571,7 +565,7 @@ function SubjectExamCard({ subject, isAf, t, colorIndex }: { subject: Subject; i
               fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 11,
               letterSpacing: "1.2px", textTransform: "uppercase",
               color: "#fff", background: "transparent",
-              border: "2px solid rgba(255,255,255,.22)", borderRadius: 10, padding: "9px 12px",
+              border: "2px solid #1b1922", borderRadius: 10, padding: "9px 12px",
               cursor: "pointer",
             }}
             data-testid={`button-tutor-${subject.code}`}
@@ -735,7 +729,7 @@ export default function ExamModePage() {
         .btx-action { transition: transform .2s; }
         .btx-action:hover { transform: translateY(-2px); }
         .btx-ghost { transition: border-color .2s, transform .2s; }
-        .btx-ghost:hover { border-color: rgba(255,255,255,.5) !important; transform: translateY(-1px); }
+        .btx-ghost:hover { border-color: #fff !important; transform: translateY(-1px); }
         .btx-mode { transition: transform .25s, border-color .25s; }
         .btx-mode:hover { transform: translateY(-6px); border-color: var(--c) !important; }
         @media (max-width: 860px) {
@@ -788,7 +782,7 @@ export default function ExamModePage() {
             }}
           />
           <div style={{ position: "relative" }}>
-            <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", marginBottom: 10 }}>
+            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", marginBottom: 10 }}>
               {t.heroEyebrow}
             </div>
 
@@ -892,7 +886,7 @@ export default function ExamModePage() {
                 style={{
                   "--c": hex, "--glow": glow,
                   height: "100%",
-                  background: "linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015))",
+                  background: "linear-gradient(160deg,#1b1922,#1b1922)",
                   border: `1.5px solid ${hex}55`,
                   borderRadius: 22, padding: 26, cursor: "pointer",
                 } as React.CSSProperties}
@@ -925,7 +919,10 @@ export default function ExamModePage() {
                       style={{
                         display: "inline-flex", alignItems: "center", gap: 4, marginTop: 16,
                         fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 13,
-                        color: "#050508", background: ACTION_GRADIENT,
+                        color: "#050508",
+                        background: "var(--bt-rainbow)", backgroundSize: "200% 100%",
+                        animation: "bt-rainbow 5s linear infinite",
+                        border: "2px solid #050508",
                         borderRadius: 10, padding: "11px 20px", whiteSpace: "nowrap",
                       }}
                     >
@@ -942,7 +939,7 @@ export default function ExamModePage() {
         {subjectsLoading ? (
           <div className="btx-grid2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 22 }}>
             {[1, 2, 3, 4].map((i) => (
-              <Skeleton key={i} className="h-80 rounded-2xl bg-white/5" />
+              <Skeleton key={i} className="h-80 rounded-2xl bg-[#1b1922]" />
             ))}
           </div>
         ) : learnerSubjects.length > 0 ? (
@@ -970,21 +967,15 @@ export default function ExamModePage() {
               {t.noSubjectsDesc}
             </div>
             <Link href="/onboarding">
-              <button
-                className="btx-action"
-                style={{
-                  display: "inline-flex", alignItems: "center", gap: 6, marginTop: 22,
-                  fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 14,
-                  color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
-                  animation: "bt-rainbow 5s linear infinite",
-                  border: "none", borderRadius: 10, padding: "14px 28px",
-                  cursor: "pointer", whiteSpace: "nowrap",
-                }}
+              <Button
+                variant="primary"
+                size="lg"
+                style={{ marginTop: 22 }}
                 data-testid="button-setup-profile"
               >
                 {t.setupProfileBtn}
                 <ChevronRight style={{ width: 15, height: 15 }} />
-              </button>
+              </Button>
             </Link>
           </div>
         )}

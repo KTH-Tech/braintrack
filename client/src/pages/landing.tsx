@@ -1,7 +1,7 @@
 // BrainTrack landing — rebuilt to pixel-match the Claude Design handoff
 // "Luxury Street Graffiti EdTech" comp (BrainTrack.dc.html, LANDING section).
 // Near-black #050508 ground, rainbow wordmark, graffiti mural hero with
-// Permanent Marker scatter, marquee, neon feature cards, ecosystem split,
+// Bebas display scatter, marquee, neon feature cards, ecosystem split,
 // XP strip, share row, footer. Bilingual EN/AF. Rizz has no landing-page
 // presence (owner decision) — the bot lives in signed-in areas only.
 import { useEffect, useRef, useState } from "react";
@@ -30,6 +30,7 @@ import { useSEO } from "@/hooks/use-seo";
 import { useLanguage } from "@/lib/language-context";
 import { useRolePromptNav } from "@/components/role-prompt-modal";
 import iconTransparent from "@/assets/handoff/icon-transparent.png";
+import heroGraffiti from "@/assets/hero-graffiti.png";
 import { KthMark } from "@/components/kth-mark";
 import { PublicFooter } from "@/components/public-footer";
 import { RizzDemo } from "@/components/landing/rizz-demo";
@@ -55,11 +56,13 @@ const COPY = {
     heroTail: ".",
     heroSub:
       "The Grade 12 matric app: CAPS-aligned plans, instant marking, a tutor that never sleeps.",
-    ctaStart: "Start free — 14 days",
+    ctaStart: "Start now",
+    ctaPlans: "See plans",
+    heroAlt: "BrainTrack — Grade 12 matric, study smarter not harder",
     // Compact trust strip under the primary CTA — R169 anchor, cancel-anytime
     // risk reducer and POPIA-alignment. Keeps the hero copy tight while adding
     // the specificity search + conversion research says converts SA edtech.
-    trustPrice: "R169/month after trial",
+    trustPrice: "R169/month",
     trustCancel: "Cancel anytime",
     trustPopia: "POPIA-compliant",
     trustSecure: "Paystack secure billing",
@@ -131,7 +134,7 @@ const COPY = {
     shareEye: "spread the word",
     shareHead: "Share BrainTrack",
     shareMsg:
-      "BrainTrack — Grade 12 matric prep: past papers, memos, a 24/7 AI tutor. Try it free:",
+      "BrainTrack — Grade 12 matric prep: past papers, memos, a 24/7 AI tutor. Try it:",
     referralLine: "Refer a friend — you both earn rewards.",
     referralCta: "Get your referral link →",
     footMade: "© 2026 — Made in South Africa",
@@ -167,10 +170,10 @@ const COPY = {
       { criterion: "Adaptive practice",              other: "No",                         otherIcon: "✗", otherColor: "#FFB7E5", us: "Weakness-first, updated daily" },
       { criterion: "Bilingual (EN + Afrikaans)",     other: "Rare",                       otherIcon: "~", otherColor: "#FFE29A", us: "Every subject" },
       { criterion: "Parent progress view",           other: "No",                         otherIcon: "✗", otherColor: "#FFB7E5", us: "Weekly summary + WhatsApp nudge" },
-      { criterion: "Costs",                          other: "Free (with ads) or R100s",   otherIcon: "~", otherColor: "#FFE29A", us: "R169/month, first 14 days free" },
+      { criterion: "Costs",                          other: "Free (with ads) or R100s",   otherIcon: "~", otherColor: "#FFE29A", us: "R169/month · cancel anytime" },
       { criterion: "School reporting",               other: "No",                         otherIcon: "✗", otherColor: "#FFB7E5", us: "Per-school dashboard" },
     ],
-    compareCta: "Start free — R1 verify, 14 days on us",
+    compareCta: "Start now — R169/month, cancel anytime",
   },
   af: {
     tFeatures: "Funksies",
@@ -185,8 +188,10 @@ const COPY = {
     heroTail: ".",
     heroSub:
       "Die Graad 12-matriek-app: KABV-belynde planne, kitsnasien, 'n tutor wat nooit slaap nie.",
-    ctaStart: "Begin gratis — 14 dae",
-    trustPrice: "R169/maand ná proeftydperk",
+    ctaStart: "Begin nou",
+    ctaPlans: "Sien planne",
+    heroAlt: "BrainTrack — Graad 12-matriek, leer slimmer nie harder nie",
+    trustPrice: "R169/maand",
     trustCancel: "Kanselleer enige tyd",
     trustPopia: "POPIA-nakomend",
     trustSecure: "Paystack veilige betaling",
@@ -258,7 +263,7 @@ const COPY = {
     shareEye: "sprei die woord",
     shareHead: "Deel BrainTrack",
     shareMsg:
-      "BrainTrack — Graad 12-matriekvoorbereiding: vraestelle, memo's, 'n 24/7 KI-tutor. Probeer dit gratis:",
+      "BrainTrack — Graad 12-matriekvoorbereiding: vraestelle, memo's, 'n 24/7 KI-tutor. Probeer dit:",
     referralLine: "Verwys 'n vriend — julle albei verdien belonings.",
     referralCta: "Kry jou verwysingskakel →",
     footMade: "© 2026 — Gemaak in Suid-Afrika",
@@ -293,10 +298,10 @@ const COPY = {
       { criterion: "Aanpasbare oefening",              other: "Nee",                          otherIcon: "✗", otherColor: "#FFB7E5", us: "Swakplek-eerste, daagliks bygewerk" },
       { criterion: "Tweetalig (EN + Afrikaans)",       other: "Skaars",                       otherIcon: "~", otherColor: "#FFE29A", us: "Elke vak" },
       { criterion: "Ouer-vorderingsuitsig",            other: "Nee",                          otherIcon: "✗", otherColor: "#FFB7E5", us: "Weeklikse opsomming + WhatsApp-stoot" },
-      { criterion: "Koste",                            other: "Gratis (met advertensies) of R100e", otherIcon: "~", otherColor: "#FFE29A", us: "R169/maand, eerste 14 dae gratis" },
+      { criterion: "Koste",                            other: "Gratis (met advertensies) of R100e", otherIcon: "~", otherColor: "#FFE29A", us: "R169/maand · kanselleer enige tyd" },
       { criterion: "Skoolverslaggewing",               other: "Nee",                          otherIcon: "✗", otherColor: "#FFB7E5", us: "Per-skool-dashbord" },
     ],
-    compareCta: "Begin gratis — R1-verifikasie, 14 dae op ons",
+    compareCta: "Begin nou — R169/maand, kanselleer enige tyd",
   },
 } as const;
 
@@ -329,7 +334,7 @@ const XP_ICONS = [
   <Crown size={22} strokeWidth={2.4} aria-hidden />,
 ];
 
-// Permanent Marker scatter marks around the hero — positions from the comp.
+// Display-font scatter marks around the hero — positions from the comp.
 const SCATTER: Array<{
   glyph: string; color: string; size: number; rotate: number;
   style: React.CSSProperties;
@@ -474,7 +479,7 @@ function CompareWall({ t, language }: { t: any; language: string }) {
       `}</style>
 
       <div style={{ textAlign: "center", marginBottom: 34 }}>
-        <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
+        <span style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: 16, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
           {t.compareEye}
         </span>
         <div className="btl-sec-head" style={{ fontSize: 38, fontWeight: 900, letterSpacing: "-1.2px", lineHeight: 1.14, marginTop: 10, color: "#fff" }}>
@@ -483,7 +488,7 @@ function CompareWall({ t, language }: { t: any; language: string }) {
             {t.compareHead2}
           </span>
         </div>
-        <p className="btl-sec-sub" style={{ marginTop: 12, fontSize: 15.5, lineHeight: 1.6, color: "#fff", opacity: 0.92, maxWidth: 640, margin: "12px auto 0" }}>
+        <p className="btl-sec-sub" style={{ marginTop: 12, fontSize: 15.5, lineHeight: 1.6, color: "#fff", maxWidth: 640, margin: "12px auto 0" }}>
           {t.compareSub}
         </p>
       </div>
@@ -493,9 +498,9 @@ function CompareWall({ t, language }: { t: any; language: string }) {
         <div
           className="bt-cmp-head-l"
           style={{
-            background: "#050508", border: "2px solid rgba(255,255,255,.35)", borderRadius: 14,
+            background: "#050508", border: "2px solid #9FD8FF", borderRadius: 14,
             padding: "12px 16px", textAlign: "center", transform: "rotate(-.5deg)",
-            fontFamily: "'Bebas Neue','Impact','Arial Black',sans-serif",
+            fontFamily: "'Bebas Neue', system-ui, sans-serif",
             fontSize: 19, letterSpacing: 2.5, textTransform: "uppercase", color: "#fff",
           }}
         >
@@ -505,9 +510,9 @@ function CompareWall({ t, language }: { t: any; language: string }) {
           className="bt-cmp-head-r"
           style={{
             background: "#94F7C5", border: "2.5px solid #050508", borderRadius: 14,
-            boxShadow: "5px 5px 0 0 rgba(148,247,197,.45)",
+            boxShadow: "5px 5px 0 0 #94F7C5",
             padding: "12px 16px", textAlign: "center", transform: "rotate(.5deg)",
-            fontFamily: "'Bebas Neue','Impact','Arial Black',sans-serif",
+            fontFamily: "'Bebas Neue', system-ui, sans-serif",
             fontSize: 19, letterSpacing: 2.5, textTransform: "uppercase", color: "#050508", fontWeight: 800,
           }}
         >
@@ -520,7 +525,7 @@ function CompareWall({ t, language }: { t: any; language: string }) {
             position: "absolute", left: "50%", top: "50%", transform: "translate(-50%,-50%)",
             background: "#FFE29A", color: "#050508", border: "3px solid #050508",
             borderRadius: 999, width: 54, height: 54, display: "flex", alignItems: "center", justifyContent: "center",
-            fontFamily: "'Permanent Marker',cursive", fontSize: 20, zIndex: 2,
+            fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: 20, zIndex: 2,
             boxShadow: "3px 3px 0 0 rgba(0,0,0,.85)",
           }}
         >
@@ -535,7 +540,7 @@ function CompareWall({ t, language }: { t: any; language: string }) {
             <p
               className="bt-cmp-crit"
               style={{
-                fontFamily: "'Bebas Neue','Impact','Arial Black',sans-serif",
+                fontFamily: "'Bebas Neue', system-ui, sans-serif",
                 fontSize: 14, letterSpacing: 2.5, textTransform: "uppercase",
                 color: "#9FD8FF", margin: "0 0 7px",
               }}
@@ -545,13 +550,13 @@ function CompareWall({ t, language }: { t: any; language: string }) {
             <div className="bt-cmp-grid">
               <div
                 style={{
-                  background: "#050508", border: "1.5px solid rgba(255,255,255,.22)", borderRadius: 12,
+                  background: "#050508", border: "1.5px solid #9FD8FF", borderRadius: 12,
                   padding: "12px 15px", display: "flex", alignItems: "center", gap: 10,
                   color: "#fff", fontSize: 14, transform: "rotate(-.3deg)",
                 }}
               >
                 <span style={{ color: r.otherColor, fontWeight: 900, fontSize: 16, flex: "none" }}>{r.otherIcon}</span>
-                <span style={{ opacity: 0.9 }}>{r.other}</span>
+                <span>{r.other}</span>
               </div>
               <div
                 style={{
@@ -572,14 +577,9 @@ function CompareWall({ t, language }: { t: any; language: string }) {
       <div style={{ textAlign: "center", marginTop: 34 }}>
         <a
           href="/subscribe"
+          className="pub-btn"
           data-testid="compare-cta"
-          style={{
-            display: "inline-block", background: "#FFE29A", color: "#050508",
-            border: "3px solid #050508", borderRadius: 12,
-            boxShadow: "5px 5px 0 0 rgba(255,226,154,.5)",
-            padding: "15px 32px", fontWeight: 900, fontSize: 15.5,
-            textDecoration: "none", transform: "rotate(-.5deg)",
-          }}
+          style={{ display: "inline-block", textDecoration: "none" }}
         >
           {t.compareCta}
         </a>
@@ -643,7 +643,7 @@ export default function LandingPage() {
           acceptedAnswer: {
             "@type": "Answer",
             text:
-              "BrainTrack is R169 per learner per month after a 14-day free trial. Billing is handled securely by Paystack in South African Rand. You can cancel any time from the parent dashboard — no lock-in.",
+              "BrainTrack is R169 per learner per month, charged at signup. Billing is handled securely by Paystack in South African Rand. You can cancel any time from the parent dashboard — no lock-in.",
           },
         },
         {
@@ -670,7 +670,7 @@ export default function LandingPage() {
           acceptedAnswer: {
             "@type": "Answer",
             text:
-              "Yes. BrainTrack is POPIA-compliant. Learner accounts under 18 require a parent-consent step with a once-off R1 Paystack card verification, no card details are ever stored by BrainTrack, and parents receive a weekly progress report.",
+              "Yes. BrainTrack is POPIA-compliant. Learner accounts under 18 require a parent-consent step where the parent completes payment at signup, no card details are ever stored by BrainTrack, and parents receive a weekly progress report.",
           },
         },
       ],
@@ -680,11 +680,11 @@ export default function LandingPage() {
   useSEO({
     title: "BrainTrack™ | Grade 12 Matric Past Papers, Memos & AI Tutor — South Africa",
     description:
-      "Pass Matric with confidence. 10 years of NSC past papers + memos, CAPS-aligned weekly study plan, AI tutor and parent reports. Built for SA Grade 12. R169/month — 14 days free.",
+      "Pass Matric with confidence. 10 years of NSC past papers + memos, CAPS-aligned weekly study plan, AI tutor and parent reports. Built for SA Grade 12. R169/month — cancel anytime.",
     canonical: "https://braintrack.tech/",
     ogTitle: "Matric Past Papers, Memos & AI Tutor for Grade 12 SA | BrainTrack™",
     ogDescription:
-      "10 years of NSC past papers + memos, CAPS-aligned weekly revision, AI tutor and parent reports. R169/month — 14 days free.",
+      "10 years of NSC past papers + memos, CAPS-aligned weekly revision, AI tutor and parent reports. R169/month — cancel anytime.",
     jsonLd: landingJsonLd,
   });
 
@@ -718,7 +718,7 @@ export default function LandingPage() {
           transform: translateY(-10px) rotate(var(--tilt, 0deg)) scale(1.012);
           box-shadow: 0 26px 64px var(--glow);
           border-color: var(--c) !important;
-          background: linear-gradient(160deg,rgba(255,255,255,.085),rgba(255,255,255,.02)) !important;
+          background: #0e0d12 !important;
         }
         .btl-feature:hover::before { opacity: 1; }
         .btl-feature:hover::after { opacity: 1; }
@@ -773,7 +773,7 @@ export default function LandingPage() {
           display: "flex", alignItems: "center", justifyContent: "space-between",
           gap: 32, padding: "16px 48px", position: "sticky", top: 0, zIndex: 50,
           background: "rgba(5,5,8,.82)", backdropFilter: "blur(14px)",
-          borderBottom: "1px solid rgba(255,255,255,.06)",
+          borderBottom: "1px solid #C5B3FF",
         }}
       >
         <div className="btl-nav-left" style={{ display: "flex", alignItems: "center", gap: 10, flex: "none", minWidth: 0 }}>
@@ -793,7 +793,7 @@ export default function LandingPage() {
             data-testid="lang-toggle"
             style={{
               display: "flex", alignItems: "center", gap: 2, fontSize: 12, fontWeight: 800,
-              border: "1.5px solid rgba(255,255,255,.2)", borderRadius: 8,
+              border: "1.5px solid #9FD8FF", borderRadius: 8,
               overflow: "hidden", cursor: "pointer", userSelect: "none", flex: "none",
             }}
           >
@@ -802,16 +802,8 @@ export default function LandingPage() {
           </span>
           <a href="/signin" style={{ flex: "none" }}>
             <button
-              className="btl-nav-cta"
+              className="pub-btn pub-btn-sm btl-nav-cta"
               data-testid="button-nav-enter"
-              style={{
-                fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 14,
-                color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
-                animation: "bt-rainbow 6s linear infinite", border: "none",
-                borderRadius: 10, padding: "11px 26px", whiteSpace: "nowrap",
-                cursor: "pointer",
-                transition: "transform .2s",
-              }}
             >
               {t.tEnter}
             </button>
@@ -836,7 +828,7 @@ export default function LandingPage() {
             key={i}
             aria-hidden
             style={{
-              position: "absolute", fontFamily: "'Permanent Marker',cursive",
+              position: "absolute", fontFamily: "'Bebas Neue', system-ui, sans-serif",
               fontSize: s.size, color: s.color,
               // Floating graffiti: each mark bobs + sways on a staggered cycle so
               // the tags drift independently. --mr carries the mark's own rotation
@@ -853,7 +845,7 @@ export default function LandingPage() {
             {s.glyph}
           </span>
         ))}
-        <div style={{ maxWidth: 760, marginTop: 8, position: "relative", zIndex: 2 }}>
+        <div style={{ maxWidth: 1040, width: "100%", marginTop: 8, position: "relative", zIndex: 2 }}>
           {/* Exam Predictor teaser — the hero differentiator, one tight honest
               line. Sells the 10-year corpus without bloating the trimmed hero. */}
           <div
@@ -869,44 +861,38 @@ export default function LandingPage() {
             <Target size={16} strokeWidth={2.6} style={{ color: "#9FF5E8" }} aria-hidden />
             {t.predictorBadge}
           </div>
-          <h1
-            className="btl-hero-head"
+          {/* Hero centerpiece — the transparent graffiti wordmark art already
+              carries the headline + taglines ("STUDY SMARTER NOT HARDER",
+              "OWN IT NOW"), so the overlaid HTML below stays minimal: CTAs +
+              trust strip only. Replaces the old text headline so nothing
+              competes with the art. */}
+          <img
+            src={heroGraffiti}
+            alt={t.heroAlt}
             data-testid="hero-title"
-            style={{ fontSize: "clamp(30px,7.5vw,58px)", fontWeight: 900, lineHeight: 1.1, letterSpacing: "-1.5px", margin: 0, fontFamily: "'Poppins',sans-serif", color: "#fff" }}
-          >
-            {t.heroHead1}
-            <span
-              style={{
-                background: HEADLINE_GRADIENT,
-                WebkitBackgroundClip: "text", backgroundClip: "text",
-                color: "transparent", WebkitTextFillColor: "transparent",
-              }}
-            >
-              {t.heroAccent}
-            </span>
-            {t.heroTail}
-          </h1>
-          <div style={{ marginTop: 18, fontSize: 17, lineHeight: 1.65, color: "#fff", maxWidth: 620, marginLeft: "auto", marginRight: "auto" }}>
-            {t.heroSub}
-          </div>
-          <div style={{ display: "flex", gap: 16, justifyContent: "center", marginTop: 32 }}>
+            style={{ display: "block", width: "100%", maxWidth: 1040, height: "auto", objectFit: "contain", margin: "0 auto" }}
+          />
+          <div style={{ display: "flex", gap: 16, justifyContent: "center", marginTop: 32, flexWrap: "wrap" }}>
             <button
               onClick={handleCta}
-              className="btl-cta"
+              className="pub-btn"
               data-testid="button-hero-cta"
-              style={{
-                fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 16,
-                color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
-                animation: "bt-rainbow 5s linear infinite", border: "none",
-                borderRadius: 10, padding: "16px 32px 16px 36px", whiteSpace: "nowrap",
-                cursor: "pointer",
-                display: "inline-flex", alignItems: "center", gap: 10,
-              }}
+              style={{ display: "inline-flex", alignItems: "center", gap: 10 }}
             >
               <Rocket size={18} strokeWidth={2.6} aria-hidden />
               {t.ctaStart}
               <ArrowRight size={18} strokeWidth={2.6} aria-hidden />
             </button>
+            <a href="/subscribe" style={{ flex: "none", textDecoration: "none" }}>
+              <button
+                className="pub-btn-outline"
+                data-testid="button-hero-plans"
+                style={{ display: "inline-flex", alignItems: "center", gap: 8 }}
+              >
+                {t.ctaPlans}
+                <ArrowRight size={18} strokeWidth={2.6} aria-hidden />
+              </button>
+            </a>
           </div>
           {/* Trust strip — above-the-fold price + risk-reducer + POPIA + billing
               partner. Owner request: put the R169 anchor near the primary CTA
@@ -936,12 +922,12 @@ export default function LandingPage() {
       </div>
 
       {/* ── Marquee ─────────────────────────────────────────── */}
-      <div style={{ overflow: "hidden", borderTop: "1px solid rgba(255,255,255,.07)", borderBottom: "1px solid rgba(255,255,255,.07)", padding: "14px 0", margin: "40px 0 0" }}>
+      <div style={{ overflow: "hidden", borderTop: "1px solid #C5B3FF", borderBottom: "1px solid #C5B3FF", padding: "14px 0", margin: "40px 0 0" }}>
         <div
           style={{
             display: "flex", gap: 48, width: "max-content",
             animation: "bt-marquee 22s linear infinite",
-            fontFamily: "'Permanent Marker',cursive", fontSize: 18, whiteSpace: "nowrap",
+            fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: 18, whiteSpace: "nowrap",
           }}
         >
           {[...t.marquee, ...t.marquee].map((mq, i) => (
@@ -956,7 +942,7 @@ export default function LandingPage() {
           <div
             style={{
               display: "inline-flex", alignItems: "center", gap: 10,
-              fontFamily: "'Permanent Marker',cursive", color: "#FFB7E5",
+              fontFamily: "'Bebas Neue', system-ui, sans-serif", color: "#FFB7E5",
               fontSize: 17, letterSpacing: ".5px", transform: "rotate(-2deg)",
             }}
           >
@@ -975,8 +961,8 @@ export default function LandingPage() {
                 className="btl-feature"
                 style={{
                   "--tilt": `${f.tilt}deg`, "--glow": f.glow, "--c": f.color,
-                  background: "linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015))",
-                  border: "1px solid rgba(255,255,255,.09)", borderRadius: 22,
+                  background: "#0e0d12",
+                  border: `2px solid ${f.color}`, borderRadius: 22,
                   padding: 28, cursor: "default", width: "100%",
                 } as React.CSSProperties}
               >
@@ -996,7 +982,7 @@ export default function LandingPage() {
                   </span>
                 </div>
                 <div style={{ fontWeight: 800, fontSize: 18.5, letterSpacing: "-.2px", marginBottom: 9 }}>{f.title}</div>
-                <div style={{ fontSize: 15, lineHeight: 1.62, color: "#fff", opacity: 0.9 }}>{f.body}</div>
+                <div style={{ fontSize: 15, lineHeight: 1.62, color: "#fff" }}>{f.body}</div>
               </div>
             </Reveal>
           ))}
@@ -1012,8 +998,8 @@ export default function LandingPage() {
         <div
           style={{
             position: "relative", overflow: "hidden", borderRadius: 30,
-            border: "1px solid rgba(255,255,255,.1)",
-            background: "linear-gradient(150deg,rgba(159,245,232,.055),rgba(197,179,255,.05) 48%,rgba(255,183,229,.055))",
+            border: "1.5px solid #9FD8FF",
+            background: "#0b0b12",
             padding: "56px 40px 48px",
           }}
         >
@@ -1030,7 +1016,7 @@ export default function LandingPage() {
             <div
               style={{
                 display: "inline-flex", alignItems: "center", gap: 10,
-                fontFamily: "'Permanent Marker',cursive", color: "#9FF5E8",
+                fontFamily: "'Bebas Neue', system-ui, sans-serif", color: "#9FF5E8",
                 fontSize: 17, letterSpacing: ".5px", transform: "rotate(-2deg)",
               }}
             >
@@ -1041,7 +1027,7 @@ export default function LandingPage() {
               {t.proofHead1}
               <span style={{ background: HEADLINE_GRADIENT, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>{t.proofHead2}</span>
             </div>
-            <div className="btl-sec-sub" style={{ marginTop: 16, fontSize: 16.5, lineHeight: 1.68, color: "#fff", opacity: 0.9 }}>{t.proofSub}</div>
+            <div className="btl-sec-sub" style={{ marginTop: 16, fontSize: 16.5, lineHeight: 1.68, color: "#fff" }}>{t.proofSub}</div>
             {/* Credibility chip — evidence-toned, not salesy. */}
             <div
               data-testid="badge-proof-verified"
@@ -1071,7 +1057,7 @@ export default function LandingPage() {
                     "--c": p.color, "--glow": p.glow,
                     position: "relative", padding: "26px 18px", textAlign: "center",
                     borderRadius: 22, border: "1.5px solid " + p.color,
-                    background: "linear-gradient(160deg,rgba(255,255,255,.06),rgba(5,5,8,.5))",
+                    background: "#0e0d12",
                     boxShadow: "0 10px 34px " + p.glow, width: "100%", boxSizing: "border-box",
                   } as React.CSSProperties}
                 >
@@ -1082,7 +1068,7 @@ export default function LandingPage() {
                       display: "inline-flex", alignItems: "center", justifyContent: "center",
                       marginBottom: 12,
                       color: p.color,
-                      background: "rgba(255,255,255,.05)",
+                      background: "#050508",
                       border: `1.2px solid ${p.color}`,
                       boxShadow: `0 6px 20px ${p.glow}`,
                     }}
@@ -1094,7 +1080,7 @@ export default function LandingPage() {
                   <div style={{ fontSize: 17, fontWeight: 900, color: p.color, letterSpacing: "-.4px", lineHeight: 1.3 }}>
                     {p.title}
                   </div>
-                  <div style={{ marginTop: 8, fontSize: 12.5, lineHeight: 1.5, color: "#fff", opacity: 0.88 }}>{p.detail}</div>
+                  <div style={{ marginTop: 8, fontSize: 12.5, lineHeight: 1.5, color: "#fff" }}>{p.detail}</div>
                 </div>
               </Reveal>
             ))}
@@ -1105,12 +1091,12 @@ export default function LandingPage() {
       {/* ── XP strip ────────────────────────────────────────── */}
       <div className="btl-sec" style={{ maxWidth: 1100, margin: "116px auto 0", padding: "0 32px" }}>
         <Reveal>
-          <div className="btl-xp-card" style={{ background: "linear-gradient(120deg,rgba(255,183,229,.1),rgba(159,216,255,.09),rgba(197,179,255,.1))", border: "1px solid rgba(255,255,255,.1)", borderRadius: 28, padding: 52, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 44, flexWrap: "wrap" }}>
+          <div className="btl-xp-card" style={{ background: "#0e0d12", border: "1.5px solid #C5B3FF", borderRadius: 28, padding: 52, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 44, flexWrap: "wrap" }}>
             <div style={{ maxWidth: 490 }}>
               <div
                 style={{
                   display: "inline-flex", alignItems: "center", gap: 10,
-                  fontFamily: "'Permanent Marker',cursive", color: "#9FF5E8",
+                  fontFamily: "'Bebas Neue', system-ui, sans-serif", color: "#9FF5E8",
                   fontSize: 17, letterSpacing: ".5px", transform: "rotate(-2deg)",
                 }}
               >
@@ -1120,11 +1106,11 @@ export default function LandingPage() {
               <div className="btl-xp-head" style={{ fontSize: 35, fontWeight: 900, letterSpacing: "-1.2px", lineHeight: 1.16, marginTop: 10 }}>
                 {t.xpHead1}<span style={{ color: "#9FD8FF" }}>{t.xpHead2}</span>{t.xpHead3}
               </div>
-              <div style={{ marginTop: 14, fontSize: 16, lineHeight: 1.68, color: "#fff", opacity: 0.92 }}>{t.xpBody}</div>
+              <div style={{ marginTop: 14, fontSize: 16, lineHeight: 1.68, color: "#fff" }}>{t.xpBody}</div>
             </div>
             <div className="btl-xp-stats" style={{ display: "flex", gap: 18, flexWrap: "wrap" }}>
               {t.xpStats.map((s, i) => (
-                <div key={s.label} style={{ background: "rgba(5,5,8,.6)", border: `1.5px solid ${s.color}`, borderRadius: 20, padding: "24px 28px", textAlign: "center", minWidth: 116, animation: "bt-wiggle 6s ease-in-out infinite" }}>
+                <div key={s.label} style={{ background: "#050508", border: `1.5px solid ${s.color}`, borderRadius: 20, padding: "24px 28px", textAlign: "center", minWidth: 116, animation: "bt-wiggle 6s ease-in-out infinite" }}>
                   <div
                     aria-hidden
                     style={{
@@ -1147,10 +1133,9 @@ export default function LandingPage() {
       <CompareWall t={t} language={language} />
 
       {/* ── Exam Blast — R550 season pass ──────────────────────
-          R1 to start → 14 days free → R550 charged ONCE on day 14 → season
-          access to 15 Dec 2026, no recurring billing. Cancelling inside the
-          14 days leaves only the non-refundable R1. Links to
-          /subscribe?offer=exam-boost, which starts the R1 card-capture trial. */}
+          Once-off R550 charged in full now → full season access to
+          15 Dec 2026, no recurring billing, no auto-renewal. Links to
+          /subscribe?offer=exam-boost. */}
       <div className="btl-sec" style={{ maxWidth: 760, margin: "112px auto 0", padding: "0 32px" }}>
         <a
           href="/subscribe?offer=exam-boost"
@@ -1164,7 +1149,7 @@ export default function LandingPage() {
         >
           <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
             <div style={{ flex: "1 1 300px", minWidth: 0 }}>
-              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
+              <span style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
                 {language === "af" ? "Eksamenseisoen-spesiaal" : "Exam season special"}
               </span>
               <div style={{ fontSize: "clamp(24px,5vw,32px)", fontWeight: 900, letterSpacing: -0.8, color: "#fff", margin: "6px 0 8px" }}>
@@ -1172,8 +1157,8 @@ export default function LandingPage() {
               </div>
               <p style={{ fontSize: 14.5, lineHeight: 1.65, color: "#fff", margin: 0 }}>
                 {language === "af"
-                  ? "R1 om te begin, dan 14 dae gratis. R550 word een keer op dag 14 gehef — volle toegang regdeur die rekord- en NSS-eindeksamens, tot 15 Desember 2026. Geen maandelikse heffings, geen outomatiese hernuwing nie. Kanselleer enige tyd binne die 14 dae."
-                  : "R1 to start, then 14 days free. R550 is charged once on day 14 — full access right through prelims and the NSC finals, to 15 December 2026. No monthly charges, no auto-renewal. Cancel anytime in the 14 days."}
+                  ? "Eenmalige R550, nou ten volle gehef — volle toegang regdeur die rekord- en NSS-eindeksamens, tot 15 Desember 2026. Geen maandelikse heffings, geen outomatiese hernuwing nie."
+                  : "Once-off R550, charged in full now — full access right through prelims and the NSC finals, to 15 December 2026. No monthly charges, no auto-renewal."}
               </p>
             </div>
             <div
@@ -1187,10 +1172,10 @@ export default function LandingPage() {
               {language === "af" ? "Kry Exam Blast →" : "Get Exam Blast →"}
             </div>
           </div>
-          <p style={{ fontSize: 12, color: "#fff", opacity: 0.85, margin: "12px 0 0" }}>
+          <p style={{ fontSize: 12, color: "#fff", margin: "12px 0 0" }}>
             {language === "af"
-              ? "Of kies eerder Student Life teen R169/maand met 14 dae gratis — albei sluit alles in. Verskyn op jou staat as KTH-TECH."
-              : "Prefer monthly? Student Life is R169/month with 14 days free — both include everything. Appears on your statement as KTH-TECH."}
+              ? "Of kies eerder Student Life teen R169/maand — kanselleer enige tyd — albei sluit alles in. Verskyn op jou staat as KTH-TECH."
+              : "Prefer monthly? Student Life is R169/month, cancel anytime — both include everything. Appears on your statement as KTH-TECH."}
           </p>
         </a>
       </div>

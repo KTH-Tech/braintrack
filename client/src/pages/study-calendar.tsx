@@ -18,6 +18,15 @@ import { useEarliestPrelimDate } from "@/components/exam-countdown";
 import { ShieldCheck } from "lucide-react";
 import { LearnerHeader } from "@/components/learner-header";
 import { GraffitiSplats } from "@/components/graffiti-splats";
+import { Button } from "@/components/ui/button";
+
+/* ─── Surface tokens ───────────────────────────────────────────────────────
+   PANEL — solid card/panel fill, one step above the near-black ground.
+   INSET — deeper recessed fill for rows nested inside a panel.
+   HAIRLINE — the only divider/border colour (solid, never translucent white). */
+const PANEL = "#0e0d12";
+const INSET = "#050508";
+const HAIRLINE = "#1b1922";
 
 /* ─── Day label constants ─────────────────────────────────────────────── */
 
@@ -146,8 +155,8 @@ function GlassCard({ children, className = "", neonColor, style }: {
     <div
       className={`relative ${className}`}
       style={{
-        background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
-        border: neonColor ? `1.5px solid ${hex}` : "1px solid rgba(255,255,255,.08)",
+        background: PANEL,
+        border: neonColor ? `1.5px solid ${hex}` : `1px solid ${HAIRLINE}`,
         borderRadius: "20px",
         ...style,
       }}
@@ -163,7 +172,7 @@ function ExamChip({ name, paper, neon }: { name: string; paper?: string; neon: t
   return (
     <div style={{ background:`${neon.hex}22`, border:`1px solid ${neon.hex}88`, borderRadius:"8px", padding:"4px 8px", marginBottom:"4px" }}>
       <p style={{ color:neon.text, fontSize:"10px", fontWeight:700, lineHeight:1.2 }} className="truncate">{name}</p>
-      {paper && <p style={{ color:neon.hex, fontSize:"9px", opacity:0.8 }}>{paper}</p>}
+      {paper && <p style={{ color:neon.hex, fontSize:"9px" }}>{paper}</p>}
     </div>
   );
 }
@@ -611,8 +620,8 @@ export default function StudyCalendarPage() {
       {hasHeroExam && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3" data-testid="plan-breadcrumb">
           <div
-            className="flex items-center gap-2 flex-wrap px-3.5 py-2 rounded-lg"
-            style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: "1px solid rgba(255,255,255,.08)" }}
+            className="flex items-center gap-2 flex-wrap px-3.5 py-2.5 rounded-xl"
+            style={{ background: PANEL, border: `1px solid ${HAIRLINE}` }}
           >
             <span className="text-[10px] font-black uppercase tracking-[0.14em] shrink-0" style={{ color: heroUrgencyInfo.color }}>
               {isAf ? "Volgende eksamen" : "Next exam"}
@@ -620,7 +629,7 @@ export default function StudyCalendarPage() {
             <span className="text-xs font-bold truncate" style={{ color: "#ffffff" }}>
               {heroName}{heroPaper ? ` · ${heroPaper}` : ""}
             </span>
-            <span className="text-xs tabular-nums shrink-0" style={{ color: heroUrgencyInfo.color, opacity: 0.9 }}>
+            <span className="text-xs tabular-nums shrink-0" style={{ color: heroUrgencyInfo.color }}>
               {heroDays}{isAf ? "d oor" : "d left"}
             </span>
           </div>
@@ -644,7 +653,7 @@ export default function StudyCalendarPage() {
           <div className="relative text-center py-10 sm:py-14">
             <div className="inline-flex items-center gap-2 mb-5">
               <CalendarDays className="w-4 h-4" style={{ color: "#9FF5E8" }} />
-              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}>
+              <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}>
                 {isAf ? "Die Plan" : "The Plan"}
               </span>
             </div>
@@ -659,7 +668,7 @@ export default function StudyCalendarPage() {
                 </>
               )}
             </div>
-            <p className="text-white max-w-2xl mx-auto leading-relaxed text-sm sm:text-base" style={{ opacity: 0.9 }}>
+            <p className="text-white max-w-2xl mx-auto leading-relaxed text-sm sm:text-base">
               {isAf
                 ? "Gespasieerde herhaling, vakrotasie en aftelling tot eksamen — 20 minute per dag is al wat jy nodig het."
                 : "Spaced repetition, subject rotation and exam countdown — 20 minutes a day is all you need."}
@@ -672,10 +681,10 @@ export default function StudyCalendarPage() {
           data-testid="countdown-prelims-plan"
           className="relative overflow-hidden p-5 sm:px-[30px] sm:py-7"
           style={{
-            background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
-            border: "1px solid rgba(255,255,255,.08)",
+            background: PANEL,
+            border: `1px solid ${heroUrgencyInfo.color}55`,
             borderRadius: 22,
-            boxShadow: `0 0 0 1px ${heroUrgencyInfo.color}33, 0 10px 40px rgba(0,0,0,0.55)`,
+            boxShadow: `0 18px 46px -20px ${heroUrgencyInfo.color}44`,
             animation: "bt-fadeup .5s cubic-bezier(.22,1,.36,1) .08s both",
           }}
         >
@@ -686,8 +695,7 @@ export default function StudyCalendarPage() {
               position: "absolute",
               top: 0, left: 0, right: 0, height: 2,
               background: "linear-gradient(90deg,#FFE29A,#94F7C5,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)",
-              opacity: 0.95,
-            }}
+                          }}
           />
           {/* Soft urgency wash on the right */}
           <div
@@ -705,14 +713,14 @@ export default function StudyCalendarPage() {
                   width: 52, height: 52, borderRadius: 16, flexShrink: 0,
                   background: `linear-gradient(135deg, ${heroUrgencyInfo.color}33, ${heroUrgencyInfo.color}11)`,
                   border: `1px solid ${heroUrgencyInfo.color}66`,
-                  boxShadow: `inset 0 1px 0 rgba(255,255,255,0.18)`,
+                  boxShadow: `inset 0 1px 0 #1b1922`,
                   display: "flex", alignItems: "center", justifyContent: "center",
                 }}
               >
                 <Rocket className="w-6 h-6" style={{ color: heroUrgencyInfo.color }} />
               </div>
               <div>
-                <p style={{ fontFamily: "'Permanent Marker',cursive", color: heroUrgencyInfo.color, fontSize: 16, transform: "rotate(-1.5deg)", display: "inline-block" }}>
+                <p style={{ fontFamily: "'Bebas Neue', sans-serif", color: heroUrgencyInfo.color, fontSize: 16, transform: "rotate(-1.5deg)", display: "inline-block" }}>
                   {isAf ? "Volgende Eksamen" : "Next Exam"}
                 </p>
                 <p
@@ -726,7 +734,7 @@ export default function StudyCalendarPage() {
                 >
                   {heroName}
                 </p>
-                {heroPaper && <p style={{ color:"#ffffff", fontSize: 12, marginTop: 2, opacity: 0.85 }}>{heroPaper}</p>}
+                {heroPaper && <p style={{ color:"#ffffff", fontSize: 12, marginTop: 2 }}>{heroPaper}</p>}
               </div>
             </div>
 
@@ -750,9 +758,9 @@ export default function StudyCalendarPage() {
               <div
                 style={{
                   padding: "10px 14px", borderRadius: 12,
-                  background: `linear-gradient(135deg, ${heroUrgencyInfo.color}22, rgba(255,255,255,0.04))`,
+                  background: `linear-gradient(135deg, ${heroUrgencyInfo.color}22, #1b1922)`,
                   border: `1px solid ${heroUrgencyInfo.color}55`,
-                  boxShadow: `inset 0 1px 0 rgba(255,255,255,0.12)`,
+                  boxShadow: `inset 0 1px 0 #1b1922`,
                   minWidth: 130,
                 }}
               >
@@ -772,26 +780,31 @@ export default function StudyCalendarPage() {
         {/* ── Prelim Timetable CTA ── */}
         <Link href="/prelim-timetable">
           <div
-            className="flex items-center justify-between gap-3 px-5 py-3.5 rounded-xl cursor-pointer transition-all"
+            className="group flex items-center justify-between gap-3 px-4 py-3.5 rounded-2xl cursor-pointer transition-all"
             style={{
-              background: "rgba(159,245,232,0.06)",
-              border: "1px solid rgba(159,245,232,0.35)",
+              background: PANEL,
+              border: "1.5px solid #9FF5E8",
             }}
             onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
             onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
           >
-            <div className="flex items-center gap-3">
-              <CalendarDays className="w-5 h-5 shrink-0" style={{ color: "#9FF5E8" }} />
-              <div>
-                <p className="text-sm font-black" style={{ color: "#9FF5E8" }}>
+            <div className="flex items-center gap-3 min-w-0">
+              <div
+                className="shrink-0 flex items-center justify-center"
+                style={{ width: 42, height: 42, borderRadius: 12, background: "#9FF5E822", border: "1px solid #9FF5E855" }}
+              >
+                <CalendarDays className="w-5 h-5" style={{ color: "#9FF5E8" }} />
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-black truncate" style={{ color: "#9FF5E8" }}>
                   {isAf ? "Vooreksamen Rooster 2026" : "Prelim Timetable 2026"}
                 </p>
-                <p className="text-[11px] mt-0.5 text-white" style={{ opacity: 0.85 }}>
+                <p className="text-[11px] mt-0.5 text-white truncate">
                   {isAf ? "SACAI · Aug–Sep · 4 weke" : "SACAI · Aug–Sep · 4 weeks"}
                 </p>
               </div>
             </div>
-            <ChevronRight className="w-4 h-4 shrink-0" style={{ color: "#9FF5E8" }} />
+            <ChevronRight className="w-5 h-5 shrink-0 transition-transform group-hover:translate-x-0.5" style={{ color: "#9FF5E8" }} />
           </div>
         </Link>
 
@@ -835,7 +848,7 @@ export default function StudyCalendarPage() {
               <GlassCard neonColor="#C5B3FF" className="overflow-hidden">
                 <div
                   className="px-5 py-4 flex items-center gap-2 flex-wrap"
-                  style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(197,179,255,0.06)" }}
+                  style={{ borderBottom: "1px solid #1b1922", background: "rgba(197,179,255,0.06)" }}
                 >
                   <ShieldCheck className="w-4 h-4" style={{ color: "#C5B3FF" }} />
                   <p className="font-bold text-sm" style={{ color:"#ffffff" }}>
@@ -844,7 +857,7 @@ export default function StudyCalendarPage() {
                   <span
                     className="ml-auto inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.18em] px-2.5 py-1 rounded-full"
                     style={{
-                      background: "rgba(5,5,8,.6)",
+                      background: "#050508",
                       border: `1px solid ${overallNeon.hex}`,
                       color: overallNeon.hex,
                     }}
@@ -871,7 +884,7 @@ export default function StudyCalendarPage() {
                         key={e.subjectId}
                         className="rounded-xl p-3"
                         style={{
-                          background: "rgba(5,5,8,.6)",
+                          background: "#050508",
                           border: `1px solid ${neon.hex}40`,
                         }}
                         data-testid={`readiness-row-${e.subjectId}`}
@@ -908,7 +921,7 @@ export default function StudyCalendarPage() {
                         </div>
                         <div
                           className="relative h-1.5 rounded-full overflow-hidden"
-                          style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.06)" }}
+                          style={{ background: "#1b1922", border: "1px solid #1b1922" }}
                         >
                           <div
                             className="absolute top-0 left-0 bottom-0 rounded-full transition-[width] duration-700"
@@ -932,7 +945,7 @@ export default function StudyCalendarPage() {
           <GlassCard neonColor="#FFE29A" className="overflow-hidden">
             <div
               className="px-5 py-4 flex items-center gap-2 flex-wrap"
-              style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,226,154,0.06)" }}
+              style={{ borderBottom: "1px solid #1b1922", background: "rgba(255,226,154,0.06)" }}
             >
               <Sparkles className="w-4 h-4" style={{ color: "#FFE29A" }} />
               <p className="font-bold text-sm" style={{ color: "#ffffff" }}>
@@ -940,13 +953,13 @@ export default function StudyCalendarPage() {
               </p>
               <span
                 className="ml-auto text-[10px] font-black uppercase tracking-[0.16em] px-2.5 py-1 rounded-full"
-                style={{ background: "rgba(5,5,8,.6)", border: "1px solid rgba(255,226,154,0.55)", color: "#FFE29A" }}
+                style={{ background: "#050508", border: "1px solid rgba(255,226,154,0.55)", color: "#FFE29A" }}
               >
                 {isAf ? "Eksaminator-intel" : "Examiner Intel"}
               </span>
             </div>
             <div className="px-5 pt-3">
-              <p style={{ fontSize: "11px", color: "#ffffff", opacity: 0.85, lineHeight: 1.5 }}>
+              <p style={{ fontSize: "11px", color: "#ffffff", lineHeight: 1.5 }}>
                 {isAf
                   ? "Regte DBE-eksamendata — presies watter onderwerpe die meeste in die laaste ~10 jaar se vraestelle verskyn het."
                   : "Real DBE exam data — exactly which topics have shown up most in the last ~10 years of papers."}
@@ -959,15 +972,9 @@ export default function StudyCalendarPage() {
                   {isAf ? "Kies jou vakke om jou eksaminator-intel te sien." : "Select your subjects to unlock your examiner intel."}
                 </p>
                 <Link href="/settings">
-                  <button
-                    className="mt-3 px-4 py-2 rounded-xl text-sm font-bold transition-all"
-                    style={{ background: "linear-gradient(100deg,#FFE29A,#FFB7E5)", color: "#050508" }}
-                    onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
-                    onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
-                    data-testid="button-select-subjects-high-yield"
-                  >
+                  <Button size="sm" className="mt-3" data-testid="button-select-subjects-high-yield">
                     {isAf ? "Kies Vakke" : "Select Subjects"}
-                  </button>
+                  </Button>
                 </Link>
               </div>
             ) : (
@@ -981,10 +988,10 @@ export default function StudyCalendarPage() {
                         <button
                           key={s.subjectId}
                           onClick={() => setHyActiveSubjectId(s.subjectId)}
-                          className="flex-shrink-0 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all"
+                          className="flex-shrink-0 px-3.5 py-2 rounded-lg text-[11px] font-bold transition-all"
                           style={isActive
                             ? { background: `${s.neon.hex}22`, border: `1.5px solid ${s.neon.hex}`, color: s.neon.text }
-                            : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.10)", color: "#ffffff", opacity: 0.85 }}
+                            : { background: INSET, border: `1px solid ${HAIRLINE}`, color: "#ffffff" }}
                           data-testid={`hy-subject-tab-${s.subjectId}`}
                         >
                           {isAf ? (s.subjectNameAfrikaans || s.subjectName) : s.subjectName}
@@ -1040,7 +1047,7 @@ export default function StudyCalendarPage() {
                           key={t.topicId}
                           className="rounded-xl transition-all"
                           style={{
-                            background: isTop ? `${neon.hex}18` : "rgba(5,5,8,.6)",
+                            background: isTop ? `${neon.hex}18` : "#050508",
                             border: `${isTop ? 1.5 : 1}px solid ${neon.hex}${isTop ? "" : "60"}`,
                             padding: isTop ? "16px 18px" : "12px 14px",
                           }}
@@ -1065,7 +1072,7 @@ export default function StudyCalendarPage() {
                               <p className="font-bold truncate" style={{ color: isTop ? neon.text : "#ffffff", fontSize: isTop ? 15 : 13 }}>
                                 {name}
                               </p>
-                              <p style={{ color: "#ffffff", fontSize: 11, opacity: 0.85, marginTop: 2 }}>
+                              <p style={{ color: "#ffffff", fontSize: 11, marginTop: 2 }}>
                                 {sittingsLabel}
                               </p>
                             </div>
@@ -1076,7 +1083,7 @@ export default function StudyCalendarPage() {
                               <p className="font-black tabular-nums" style={{ color: neon.hex, fontSize: isTop ? 18 : 14, lineHeight: 1 }}>
                                 {t.avgMarksPerAppearance}
                               </p>
-                              <p style={{ fontSize: 8, fontWeight: 700, color: "#ffffff", opacity: 0.85, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                              <p style={{ fontSize: 8, fontWeight: 700, color: "#ffffff", textTransform: "uppercase", letterSpacing: "0.06em" }}>
                                 {isAf ? "punte gem." : "avg marks"}
                               </p>
                             </div>
@@ -1129,12 +1136,12 @@ export default function StudyCalendarPage() {
                     style={{
                       borderRadius: 12,
                       padding: "10px 12px",
-                      background: isDominant ? `${neon.hex}18` : "rgba(255,255,255,0.04)",
-                      border: `1px solid ${isDominant ? `${neon.hex}55` : "rgba(255,255,255,0.08)"}`,
+                      background: isDominant ? `${neon.hex}18` : INSET,
+                      border: `1px solid ${isDominant ? `${neon.hex}55` : HAIRLINE}`,
                     }}
                   >
                     <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-xs font-semibold" style={{ color: isDominant ? neon.text : "#ffffff", opacity: isDominant ? 1 : 0.85 }}>
+                      <span className="text-xs font-semibold" style={{ color: isDominant ? neon.text : "#ffffff" }}>
                         {icons[style]} {isAf ? labelsAf[style] : labels[style]}
                       </span>
                       {isDominant && (
@@ -1143,7 +1150,7 @@ export default function StudyCalendarPage() {
                         </span>
                       )}
                     </div>
-                    <div style={{ height: 4, borderRadius: 2, background: "rgba(255,255,255,0.08)", overflow: "hidden" }}>
+                    <div style={{ height: 4, borderRadius: 2, background: "#1b1922", overflow: "hidden" }}>
                       <div style={{ height: "100%", width: `${pct}%`, borderRadius: 2, background: neon.hex, transition: "width 0.6s ease" }} />
                     </div>
                     <div className="flex justify-between mt-1">
@@ -1151,7 +1158,7 @@ export default function StudyCalendarPage() {
                         {s?.count ?? 0} {isAf ? "sess." : "sess."}
                       </span>
                       {s?.avgPerformance != null && (
-                        <span style={{ fontSize: "10px", fontWeight: 700, color: isDominant ? neon.text : "#ffffff", opacity: isDominant ? 1 : 0.85 }}>
+                        <span style={{ fontSize: "10px", fontWeight: 700, color: isDominant ? neon.text : "#ffffff" }}>
                           {s.avgPerformance}%
                         </span>
                       )}
@@ -1179,32 +1186,35 @@ export default function StudyCalendarPage() {
         )}
 
         {/* ── Week navigation bar (desktop + mobile) ── */}
-        <div className="flex items-center justify-between gap-3">
+        <div
+          className="flex items-center justify-between gap-3 p-2 rounded-2xl"
+          style={{ background: PANEL, border: `1px solid ${HAIRLINE}` }}
+        >
           <button
             onClick={() => setWeekOffset(w => w - 1)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl font-semibold text-sm transition-all hover:scale-[1.02]"
-            style={{ background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.10)", color:"#ffffff" }}
+            className="flex items-center justify-center gap-1.5 h-10 px-3.5 rounded-xl font-bold text-sm transition-all hover:scale-[1.03]"
+            style={{ background: INSET, border: `1px solid ${HAIRLINE}`, color:"#ffffff", minWidth: 44 }}
             data-testid="button-prev-week"
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-4 h-4" style={{ color:"#9FF5E8" }} />
             <span className="hidden sm:inline">{isAf ? "Vorige Week" : "Prev Week"}</span>
           </button>
 
-          <div className="text-center">
-            <p className="font-bold text-sm" style={{ color:"#ffffff" }}>
+          <div className="text-center min-w-0 px-1">
+            <p style={{ fontFamily:"'Bebas Neue', sans-serif", fontSize:18, color: weekOffset === 0 ? "#9FF5E8" : "#ffffff", lineHeight:1, transform:"rotate(-1deg)", display:"inline-block" }}>
               {weekOffset === 0 ? (isAf ? "Hierdie Week" : "This Week") : weekOffset < 0 ? (isAf ? `${Math.abs(weekOffset)} week(s) gelede` : `${Math.abs(weekOffset)} week(s) ago`) : (isAf ? `Oor ${weekOffset} week(s)` : `${weekOffset} week(s) ahead`)}
             </p>
-            <p style={{ color:"#ffffff", fontSize:"12px" }}>{weekRangeLabel()}</p>
+            <p className="truncate" style={{ color:"#ffffff", fontSize:"12px", marginTop:3 }}>{weekRangeLabel()}</p>
           </div>
 
           <button
             onClick={() => setWeekOffset(w => w + 1)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl font-semibold text-sm transition-all hover:scale-[1.02]"
-            style={{ background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.10)", color:"#ffffff" }}
+            className="flex items-center justify-center gap-1.5 h-10 px-3.5 rounded-xl font-bold text-sm transition-all hover:scale-[1.03]"
+            style={{ background: INSET, border: `1px solid ${HAIRLINE}`, color:"#ffffff", minWidth: 44 }}
             data-testid="button-next-week"
           >
             <span className="hidden sm:inline">{isAf ? "Volgende Week" : "Next Week"}</span>
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-4 h-4" style={{ color:"#9FF5E8" }} />
           </button>
         </div>
 
@@ -1212,7 +1222,7 @@ export default function StudyCalendarPage() {
         <div className="md:hidden">
           {thisWeekExams.length > 0 && (
             <div>
-              <p style={{ fontFamily:"'Permanent Marker',cursive", fontSize:16, color:"#FFB7E5", transform:"rotate(-1.5deg)", display:"inline-block", marginBottom:"8px" }}>
+              <p style={{ fontFamily:"'Bebas Neue', sans-serif", fontSize:16, color:"#FFB7E5", transform:"rotate(-1.5deg)", display:"inline-block", marginBottom:"8px" }}>
                 {isAf ? "Hierdie Week" : "This Week"}
               </p>
               <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1" style={{ scrollbarWidth:"none" }}>
@@ -1223,7 +1233,7 @@ export default function StudyCalendarPage() {
                     <div
                       key={i}
                       className="flex-shrink-0"
-                      style={{ background:"rgba(5,5,8,.6)", border:`1.5px solid ${neon.hex}`, borderRadius:16, padding:"12px 14px", minWidth:"150px", maxWidth:"180px" }}
+                      style={{ background:"#050508", border:`1.5px solid ${neon.hex}`, borderRadius:16, padding:"12px 14px", minWidth:"150px", maxWidth:"180px" }}
                       data-testid={`mobile-week-exam-${i}`}
                     >
                       <div style={{ display:"inline-block", fontSize:9, fontWeight:800, letterSpacing:1.5, padding:"2px 7px", borderRadius:6, background:`${urg.color}1F`, color:urg.color, textTransform:"uppercase" }}>
@@ -1235,7 +1245,7 @@ export default function StudyCalendarPage() {
                       <p style={{ fontSize:"11px", fontWeight:700, color:"#ffffff", marginTop:4 }} className="truncate">
                         {isAf && exam.subjectNameAf ? exam.subjectNameAf : exam.subjectName}
                       </p>
-                      {exam.paper && <p style={{ fontSize:"9px", color:"#ffffff", opacity:0.85 }}>{exam.paper}</p>}
+                      {exam.paper && <p style={{ fontSize:"9px", color:"#ffffff" }}>{exam.paper}</p>}
                     </div>
                   );
                 })}
@@ -1253,7 +1263,7 @@ export default function StudyCalendarPage() {
           return (
             <div data-testid="exam-overlay-section">
               <GlassCard neonColor="#C5B3FF" className="overflow-hidden">
-                <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom:"1px solid rgba(255,255,255,0.06)", background:"rgba(197,179,255,0.06)" }}>
+                <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom:"1px solid #1b1922", background:"rgba(197,179,255,0.06)" }}>
                   <GraduationCap className="w-4 h-4" style={{ color:"#C5B3FF" }} />
                   <p className="font-bold text-sm" style={{ color:"#ffffff" }}>
                     {isAf ? "NSC Eksamenrooster Oorleg" : "NSC Exam Calendar Overlay"}
@@ -1275,7 +1285,7 @@ export default function StudyCalendarPage() {
                       return (
                         <div
                           key={i}
-                          style={{ background:"rgba(5,5,8,.6)", border:`1.5px solid ${u.color}`, borderRadius:16, padding:"14px 16px", transition:"transform .2s" }}
+                          style={{ background:"#050508", border:`1.5px solid ${u.color}`, borderRadius:16, padding:"14px 16px", transition:"transform .2s" }}
                           onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-4px)")}
                           onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
                           data-testid={`exam-overlay-item-${i}`}
@@ -1285,14 +1295,14 @@ export default function StudyCalendarPage() {
                           </div>
                           <div className="tabular-nums" style={{ fontSize:22, fontWeight:900, color:u.color, marginTop:8, lineHeight:1 }}>{exam.daysRemaining}<span style={{ fontSize:10, fontWeight:700 }}>d</span></div>
                           <p className="text-xs font-bold truncate" style={{ color:"#ffffff", marginTop:4 }}>{exam.subjectName}</p>
-                          <p className="text-[10px]" style={{ color:"#ffffff", opacity:0.85 }}>
+                          <p className="text-[10px]" style={{ color:"#ffffff" }}>
                             {formatDate(exam.examDate + "T00:00:00", language, { day: "numeric", month: "short" })}
                           </p>
                         </div>
                       );
                     })}
                   </div>
-                  <div className="pt-3" style={{ borderTop:"1px solid rgba(255,255,255,0.06)" }}>
+                  <div className="pt-3" style={{ borderTop:"1px solid #1b1922" }}>
                     <p className="text-[10px] font-bold uppercase mb-2 flex items-center gap-1.5" style={{ color:"#ffffff", letterSpacing:"0.08em" }}>
                       <Coffee className="w-3 h-3" style={{ color:"#FFE29A" }} />
                       {isAf ? "Nie-eksamen Dae (inhaal & beplanning)" : "Non-Examination Days (catch-up & planning)"}
@@ -1325,38 +1335,43 @@ export default function StudyCalendarPage() {
                     <div key={i} className="flex-shrink-0 w-14 h-10 rounded-xl animate-pulse" style={{ background:"rgba(159,245,232,0.08)", border:"1px solid rgba(159,245,232,0.15)" }} />
                   ))
                 : (
-                  <div className="flex items-center gap-2 px-1 py-2 text-[11px] font-bold rounded-xl" style={{ color:"#ffffff", background:"rgba(255,255,255,.03)", border:"1px solid rgba(255,255,255,0.1)", padding:"6px 14px" }}>
-                    <Settings className="w-3 h-3" />
+                  <div className="flex items-center gap-2 text-[11px] font-bold rounded-xl" style={{ color:"#ffffff", background:PANEL, border:`1px solid ${HAIRLINE}`, padding:"8px 14px" }}>
+                    <Settings className="w-3 h-3" style={{ color:"#9FF5E8" }} />
                     {isAf ? "Geen vakke gekies nie — stel op in Instellings" : "No subjects selected — set up in Settings"}
                   </div>
                 )
             ) : weekPlan.map((day, idx) => {
               const isToday = idx === todayIdx;
               const isActive = idx === mobileDay;
+              const accent = isActive ? "#9FF5E8" : isToday ? "#FFE29A" : "#ffffff";
               return (
                 <button
                   key={day.day}
                   onClick={() => setMobileDay(idx)}
-                  className="flex-shrink-0 flex flex-col items-center px-3.5 py-2 rounded-xl transition-all"
-                  style={isActive
-                    ? { background:"rgba(159,245,232,0.08)", border:"1.5px solid #9FF5E8" }
-                    : { background:"rgba(255,255,255,.03)", border:"1px solid rgba(255,255,255,0.10)" }}
+                  className="flex-shrink-0 flex flex-col items-center justify-center gap-1 rounded-2xl transition-all"
+                  style={{
+                    minWidth: 52, minHeight: 58, padding: "8px 10px",
+                    background: isActive ? "#9FF5E814" : PANEL,
+                    border: isActive
+                      ? "1.5px solid #9FF5E8"
+                      : isToday ? "1.5px solid #FFE29A" : `1px solid ${HAIRLINE}`,
+                  }}
                   data-testid={`mobile-day-tab-${idx}`}
                 >
                   <span
                     style={{
-                      fontFamily: "'Permanent Marker',cursive",
+                      fontFamily: "'Bebas Neue', sans-serif",
                       fontSize: "15px",
                       transform: "rotate(-2deg)",
-                      color: isActive ? "#9FF5E8" : "#ffffff",
-                      opacity: isActive ? 1 : 0.85,
+                      lineHeight: 1,
+                      color: accent,
                     }}
                   >
                     {isAf ? day.shortAf : day.short}
                   </span>
-                  {isToday && (
-                    <span style={{ width:5, height:5, borderRadius:"50%", background:"#FFE29A", marginTop:3, display:"block" }} />
-                  )}
+                  <span className="tabular-nums" style={{ fontSize: 13, fontWeight: 800, lineHeight: 1, color: isActive ? "#9FF5E8" : "#ffffff" }}>
+                    {day.date.getDate()}
+                  </span>
                 </button>
               );
             })}
@@ -1380,8 +1395,8 @@ export default function StudyCalendarPage() {
                     key={day.day}
                     className="flex flex-col transition-all"
                     style={{
-                      background: isToday ? "rgba(159,245,232,0.08)" : "rgba(255,255,255,.03)",
-                      border: isToday ? "1.5px solid rgba(159,245,232,0.55)" : "1px solid rgba(255,255,255,0.10)",
+                      background: isToday ? "rgba(159,245,232,0.08)" : "#1b1922",
+                      border: isToday ? "1.5px solid rgba(159,245,232,0.55)" : "1px solid #1b1922",
                       borderRadius:"14px",
                       padding:"10px 8px", minHeight:"180px",
                     }}
@@ -1389,7 +1404,7 @@ export default function StudyCalendarPage() {
                   >
                     {/* Day header */}
                     <div className="mb-2 text-center">
-                      <p style={{ fontFamily:"'Permanent Marker',cursive", fontSize:"15px", color:isToday?"#9FF5E8":"#ffffff", transform:"rotate(-2deg)" }}>
+                      <p style={{ fontFamily:"'Bebas Neue', sans-serif", fontSize:"15px", color:isToday?"#9FF5E8":"#ffffff", transform:"rotate(-2deg)" }}>
                         {isAf ? day.shortAf : day.short}
                       </p>
                       <p style={{ fontSize:"13px", fontWeight:700, color:"#ffffff" }}>
@@ -1424,7 +1439,7 @@ export default function StudyCalendarPage() {
                           >
                             <div className="flex items-center gap-1 mb-0.5">
                               <SlotIcon className="w-2.5 h-2.5" style={{ color:entry.neon.hex }} />
-                              <span style={{ fontSize:"8px", fontWeight:700, color:entry.neon.text, opacity:0.75 }}>{entry.slot.hours}</span>
+                              <span style={{ fontSize:"8px", fontWeight:700, color:entry.neon.text }}>{entry.slot.hours}</span>
                             </div>
                             <p style={{ fontSize:"10px", fontWeight:700, color:entry.neon.text, lineHeight:1.2 }} className="truncate">
                               {getSubjectIcon(entry.subject.name)} {isAf && entry.subject.nameAfrikaans ? entry.subject.nameAfrikaans : entry.subject.name}
@@ -1458,20 +1473,17 @@ export default function StudyCalendarPage() {
                   ))}
                 </div>
               ) : weekPlan.length === 0 ? (
-                <div className="rounded-2xl p-8 text-center" style={{ background:"linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border:"1px solid rgba(255,255,255,.08)" }} data-testid="day-view-empty">
-                  <CalendarDays className="w-10 h-10 mx-auto mb-3" style={{ color:"#9FF5E8" }} />
-                  <p className="font-bold text-sm text-white mb-1">{isAf ? "Geen studieplan beskikbaar nie" : "No study plan available"}</p>
-                  <p className="text-[11px] text-white mb-4" style={{ opacity:0.85 }}>{isAf ? "Kies jou vakke om jou plan te genereer." : "Select your subjects to generate your plan."}</p>
+                <div className="rounded-2xl p-8 text-center" style={{ background:PANEL, border:`1px solid ${HAIRLINE}` }} data-testid="day-view-empty">
+                  <div className="mx-auto mb-4 flex items-center justify-center" style={{ width:64, height:64, borderRadius:18, background:"#9FF5E815", border:"1px solid #9FF5E840" }}>
+                    <CalendarDays className="w-8 h-8" style={{ color:"#9FF5E8" }} />
+                  </div>
+                  <p className="font-black text-base text-white mb-1">{isAf ? "Geen studieplan beskikbaar nie" : "No study plan available"}</p>
+                  <p className="text-xs text-white mb-4 max-w-xs mx-auto leading-relaxed">{isAf ? "Kies jou vakke om jou plan te genereer." : "Select your subjects to generate your plan."}</p>
                   <Link href="/settings">
-                    <button
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-[0.16em] transition-all"
-                      style={{ background:"linear-gradient(100deg,#9FF5E8,#C5B3FF)", color:"#050508" }}
-                      onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
-                      onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
-                    >
+                    <Button size="sm">
                       <Settings className="w-3 h-3" />
                       {isAf ? "Kies Vakke" : "Select Subjects"}
-                    </button>
+                    </Button>
                   </Link>
                 </div>
               ) : weekPlan[mobileDay] && (() => {
@@ -1498,10 +1510,10 @@ export default function StudyCalendarPage() {
                     )}
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                        <p style={{ fontFamily:"'Permanent Marker',cursive", fontSize:"20px", color: isToday ? "#9FF5E8" : "#ffffff", transform:"rotate(-1.5deg)", display:"inline-block" }}>
+                        <p style={{ fontFamily:"'Bebas Neue', sans-serif", fontSize:"20px", color: isToday ? "#9FF5E8" : "#ffffff", transform:"rotate(-1.5deg)", display:"inline-block" }}>
                           {isAf ? day.dayAf : day.day}
                         </p>
-                        <p style={{ color:"#ffffff", fontSize:"13px", opacity:0.85 }}>
+                        <p style={{ color:"#ffffff", fontSize:"13px" }}>
                           {formatDate(day.date, language, { day:"numeric", month:"long" })}
                         </p>
                       </div>
@@ -1612,14 +1624,14 @@ export default function StudyCalendarPage() {
                                         </span>
                                       )}
                                     </p>
-                                    <p style={{ color:"#ffffff", fontSize:"11px", opacity:0.85 }}>
+                                    <p style={{ color:"#ffffff", fontSize:"11px" }}>
                                       {isAf ? entry.slot.labelAf : entry.slot.label}&nbsp;·&nbsp;{entry.slot.hours}
                                     </p>
                                     {/* Weak topic drill target */}
                                     {(entry as any).weakTopic && (
                                       <p
                                         className="truncate mt-0.5"
-                                        style={{ fontSize:"10px", color:"#FFE29A", opacity:0.85 }}
+                                        style={{ fontSize:"10px", color:"#FFE29A" }}
                                         data-testid={`slot-weak-topic-${mobileDay}-${si}`}
                                       >
                                         ⚑ {isAf ? "Fokus" : "Focus"}: {(entry as any).weakTopic.name}
@@ -1694,7 +1706,7 @@ export default function StudyCalendarPage() {
 
             {/* This Week urgency panel */}
             <GlassCard className="overflow-hidden">
-              <div className="px-5 py-4" style={{ borderBottom:"1px solid rgba(255,255,255,0.06)" }}>
+              <div className="px-5 py-4" style={{ borderBottom:"1px solid #1b1922" }}>
                 <div className="flex items-center gap-2">
                   <AlertTriangle className="w-4 h-4" style={{ color:"#FFE29A" }} />
                   <p className="font-bold text-sm" style={{ color:"#ffffff" }}>
@@ -1709,7 +1721,7 @@ export default function StudyCalendarPage() {
                     <p style={{ color:"#ffffff", fontSize:"12px" }}>
                       {isAf ? "Geen eksamens hierdie week nie." : "No exams scheduled this week."}
                     </p>
-                    <p style={{ color:"#ffffff", fontSize:"11px", marginTop:"4px", opacity:0.85 }}>
+                    <p style={{ color:"#ffffff", fontSize:"11px", marginTop:"4px" }}>
                       {isAf ? "Hou aan bou!" : "Keep building momentum!"}
                     </p>
                   </div>
@@ -1721,7 +1733,7 @@ export default function StudyCalendarPage() {
                       return (
                         <div
                           key={i}
-                          style={{ background:"rgba(5,5,8,.6)", border:`1.5px solid ${neon.hex}`, borderRadius:14, padding:"12px 14px", transition:"transform .2s" }}
+                          style={{ background:"#050508", border:`1.5px solid ${neon.hex}`, borderRadius:14, padding:"12px 14px", transition:"transform .2s" }}
                           onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
                           onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
                         >
@@ -1731,11 +1743,11 @@ export default function StudyCalendarPage() {
                                 {isAf ? urg.af : urg.en}
                               </span>
                               <p className="font-bold truncate" style={{ fontSize:"12px", color:"#ffffff", marginTop:5 }}>{isAf && exam.subjectNameAf ? exam.subjectNameAf : exam.subjectName}</p>
-                              {exam.paper && <p style={{ fontSize:"9px", color:"#ffffff", opacity:0.85 }}>{exam.paper}</p>}
+                              {exam.paper && <p style={{ fontSize:"9px", color:"#ffffff" }}>{exam.paper}</p>}
                             </div>
                             <div className="text-right flex-shrink-0">
                               <p className="font-black tabular-nums" style={{ fontSize:"20px", color:neon.hex, lineHeight:1 }}>{exam.daysLeft}</p>
-                              <p style={{ fontSize:"8px", color:"#ffffff", fontWeight:700, opacity:0.85 }}>{isAf ? "dae" : "days"}</p>
+                              <p style={{ fontSize:"8px", color:"#ffffff", fontWeight:700 }}>{isAf ? "dae" : "days"}</p>
                             </div>
                           </div>
                         </div>
@@ -1748,7 +1760,7 @@ export default function StudyCalendarPage() {
 
             {/* Subject list */}
             <GlassCard className="overflow-hidden">
-              <div className="px-5 py-4" style={{ borderBottom:"1px solid rgba(255,255,255,0.06)" }}>
+              <div className="px-5 py-4" style={{ borderBottom:"1px solid #1b1922" }}>
                 <div className="flex items-center gap-2">
                   <BookOpen className="w-4 h-4" style={{ color:"#9FD8FF" }} />
                   <p className="font-bold text-sm" style={{ color:"#ffffff" }}>
@@ -1763,15 +1775,9 @@ export default function StudyCalendarPage() {
                       {isAf ? "Kies jou vakke in Instellings." : "Select subjects in Settings."}
                     </p>
                     <Link href="/settings">
-                      <button
-                        className="mt-3 px-4 py-2 rounded-xl text-sm font-bold transition-all"
-                        style={{ background:"linear-gradient(100deg,#9FF5E8,#C5B3FF)", color:"#050508" }}
-                        onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
-                        onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
-                        data-testid="button-select-subjects-plan"
-                      >
+                      <Button size="sm" className="mt-3" data-testid="button-select-subjects-plan">
                         {isAf ? "Kies Vakke" : "Select Subjects"}
-                      </button>
+                      </Button>
                     </Link>
                   </div>
                 ) : (
@@ -1792,7 +1798,7 @@ export default function StudyCalendarPage() {
                           <span style={{ fontSize:"12px", fontWeight:600, color:neon.text, flex:1 }} className="truncate">
                             {isAf ? s.nameAfrikaans || s.name : s.name}
                           </span>
-                          <ChevronRight className="w-3 h-3 flex-shrink-0" style={{ color:neon.hex, opacity:0.6 }} />
+                          <ChevronRight className="w-3 h-3 flex-shrink-0" style={{ color:neon.hex }} />
                         </div>
                       </Link>
                     );
@@ -1803,7 +1809,7 @@ export default function StudyCalendarPage() {
 
             {/* Study times */}
             <GlassCard className="overflow-hidden">
-              <div className="px-5 py-4" style={{ borderBottom:"1px solid rgba(255,255,255,0.06)" }}>
+              <div className="px-5 py-4" style={{ borderBottom:"1px solid #1b1922" }}>
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4" style={{ color:"#9FF5E8" }} />
                   <p className="font-bold text-sm" style={{ color:"#ffffff" }}>
@@ -1815,26 +1821,28 @@ export default function StudyCalendarPage() {
                 {slots.map((slot, i) => {
                   const SlotIcon = slot.icon;
                   return (
-                    <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl" style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.07)" }}>
-                      <SlotIcon className="w-4 h-4 flex-shrink-0" style={{ color:"#ffffff" }} />
+                    <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl" style={{ background:INSET, border:`1px solid ${HAIRLINE}` }}>
+                      <div className="flex items-center justify-center shrink-0" style={{ width:32, height:32, borderRadius:9, background:"#9FF5E815", border:"1px solid #9FF5E840" }}>
+                        <SlotIcon className="w-4 h-4" style={{ color:"#9FF5E8" }} />
+                      </div>
                       <div>
                         <p style={{ fontSize:"12px", fontWeight:600, color:"#ffffff" }}>{isAf ? slot.labelAf : slot.label}</p>
-                        <p style={{ fontSize:"10px", color:"#ffffff", opacity:0.85 }}>{slot.hours}</p>
+                        <p style={{ fontSize:"10px", color:"#9FF5E8" }}>{slot.hours}</p>
                       </div>
                     </div>
                   );
                 })}
-                <p style={{ fontSize:"10px", color:"#ffffff", opacity:0.85, paddingTop:"4px" }}>
+                <p style={{ fontSize:"10px", color:"#ffffff", paddingTop:"4px" }}>
                   {isAf ? "Pas dit aan by Instellings → Profiel." : "Adjust in Settings → Profile."}
                 </p>
               </div>
             </GlassCard>
 
             {/* Weekly goals CTA */}
-            <div style={{ borderRadius:"20px", padding:"20px", background:"linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border:"1.5px solid #94F7C5" }}>
+            <div style={{ borderRadius:"20px", padding:"20px", background:PANEL, border:"1.5px solid #94F7C5" }}>
               <div className="flex items-center gap-2 mb-3">
                 <CheckCircle2 className="w-4 h-4" style={{ color:"#94F7C5" }} />
-                <p style={{ fontFamily:"'Permanent Marker',cursive", fontSize:"16px", color:"#94F7C5", transform:"rotate(-1.5deg)" }}>
+                <p style={{ fontFamily:"'Bebas Neue', sans-serif", fontSize:"16px", color:"#94F7C5", transform:"rotate(-1.5deg)" }}>
                   {isAf ? "Hierdie week se doel" : "This week's target"}
                 </p>
               </div>
@@ -1851,23 +1859,17 @@ export default function StudyCalendarPage() {
                 ))}
               </div>
               <Link href="/exam-mode">
-                <button
-                  className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-bold text-sm transition-all"
-                  style={{ background:"linear-gradient(100deg,#9FF5E8,#C5B3FF)", color:"#050508" }}
-                  onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
-                  data-testid="button-start-session-plan"
-                >
+                <Button className="w-full" data-testid="button-start-session-plan">
                   {isAf ? "Begin 'n Sessie" : "Start a Session"}
                   <ChevronRight className="w-3.5 h-3.5" />
-                </button>
+                </Button>
               </Link>
             </div>
           </div>
         </div>
 
         {/* ── Footer ── */}
-        <footer className="pt-6 space-y-3" style={{ borderTop:"1px solid rgba(255,255,255,0.06)" }} data-testid="study-plan-footer">
+        <footer className="pt-6 space-y-3" style={{ borderTop:"1px solid #1b1922" }} data-testid="study-plan-footer">
           <div className="flex items-center justify-center gap-4" style={{ fontSize:"12px", color:"#ffffff" }}>
             <Link href="/privacy-policy" className="text-white hover:text-white transition-colors">
               {isAf ? "Privaatheidsbeleid" : "Privacy Policy"}

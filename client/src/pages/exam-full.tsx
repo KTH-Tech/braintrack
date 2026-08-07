@@ -19,6 +19,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { LearnerHeader } from "@/components/learner-header";
 import { GraffitiSplats } from "@/components/graffiti-splats";
+import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
   Clock,
@@ -34,6 +35,9 @@ import {
 
 /* ── Street-pastel building blocks (design-guidelines.md) ───────────────── */
 
+// Primary/submit actions route through the shared <Button> so they render the
+// app's rainbow graffiti hero sticker. The local wrapper keeps the existing
+// call-site API (onClick / disabled / testId / full / size) unchanged.
 function PrimaryBtn({ children, onClick, disabled, testId, full, size = "md" }: {
   children: React.ReactNode;
   onClick?: () => void;
@@ -42,27 +46,25 @@ function PrimaryBtn({ children, onClick, disabled, testId, full, size = "md" }: 
   full?: boolean;
   size?: "sm" | "md" | "lg";
 }) {
-  const pad = size === "lg" ? "px-6 py-3.5 text-base" : size === "sm" ? "px-4 py-2 text-sm" : "px-5 py-2.5 text-sm";
   return (
-    <button
+    <Button
       type="button"
+      variant="primary"
+      size={size === "lg" ? "lg" : size === "sm" ? "sm" : "default"}
       onClick={onClick}
       disabled={disabled}
       data-testid={testId}
-      className={`${full ? "w-full " : ""}inline-flex items-center justify-center gap-2 rounded-xl font-bold transition-all disabled:opacity-40 ${pad}`}
-      style={{
-        background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
-        color: "#050508",
-      }}
-      onMouseEnter={(e) => { if (!disabled) e.currentTarget.style.transform = "translateY(-2px)"; }}
-      onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}
+      className={full ? "w-full" : undefined}
     >
       {children}
-    </button>
+    </Button>
   );
 }
 
-function GhostBtn({ children, onClick, disabled, testId, color = "#ffffff", full }: {
+// Secondary actions route through the shared outline variant so every quiet
+// action shares one consistent look. `color` is accepted for call-site
+// compatibility but no longer drives a bespoke tint.
+function GhostBtn({ children, onClick, disabled, testId, full }: {
   children: React.ReactNode;
   onClick?: () => void;
   disabled?: boolean;
@@ -71,22 +73,16 @@ function GhostBtn({ children, onClick, disabled, testId, color = "#ffffff", full
   full?: boolean;
 }) {
   return (
-    <button
+    <Button
       type="button"
+      variant="outline"
       onClick={onClick}
       disabled={disabled}
       data-testid={testId}
-      className={`${full ? "w-full " : ""}inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all disabled:opacity-40`}
-      style={{
-        background: "transparent",
-        color,
-        border: color === "#ffffff" ? "1.5px solid rgba(255,255,255,.2)" : `1.5px solid ${color}`,
-      }}
-      onMouseEnter={(e) => { if (!disabled) e.currentTarget.style.transform = "translateY(-2px)"; }}
-      onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}
+      className={full ? "w-full" : undefined}
     >
       {children}
-    </button>
+    </Button>
   );
 }
 
@@ -102,8 +98,8 @@ function GlassCard({ children, accent, className = "", style, testId }: {
       className={`relative overflow-hidden ${className}`}
       data-testid={testId}
       style={{
-        background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
-        border: accent ? `1.5px solid ${accent}` : "1px solid rgba(255,255,255,.08)",
+        background: "linear-gradient(#1b1922, #1b1922), #050508",
+        border: accent ? `1.5px solid ${accent}` : "1px solid #1b1922",
         borderRadius: 22,
         ...style,
       }}
@@ -138,7 +134,7 @@ function StreetShell({ isAf, eyebrow, children }: {
         titleExtra={
           <>
             <GraduationCap className="w-4 h-4 shrink-0" style={{ color: "#9FF5E8" }} />
-            <span className="hidden sm:inline text-[11px] font-bold uppercase tracking-[0.18em] text-white truncate" style={{ opacity: 0.85 }}>
+            <span className="hidden sm:inline text-[11px] font-bold uppercase tracking-[0.18em] text-white truncate">
               · {eyebrow}
             </span>
           </>
@@ -380,7 +376,7 @@ export default function ExamFullPage() {
         <section style={{ animation: "bt-fadeup .5s cubic-bezier(.22,1,.36,1) both" }}>
           <div className="inline-flex items-center gap-2 mb-3">
             <Clock className="w-4 h-4" style={{ color: "#FFE29A" }} />
-            <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFE29A", transform: "rotate(-2deg)", display: "inline-block" }}>
+            <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: "#FFE29A", transform: "rotate(-2deg)", display: "inline-block" }}>
               {isAf ? "Die groot een" : "The big one"}
             </span>
           </div>
@@ -398,7 +394,7 @@ export default function ExamFullPage() {
           >
             {isAf ? "Volle Eksamen" : "Full Exam"}
           </div>
-          <p className="text-white text-sm sm:text-base mt-3 max-w-xl" style={{ opacity: 0.94 }}>
+          <p className="text-white text-sm sm:text-base mt-3 max-w-xl">
             {isAf ? "Volledige DBE vraestel — getyd en memo-gemerk" : "Full DBE paper — timed and memo-marked"}
           </p>
         </section>
@@ -441,7 +437,7 @@ export default function ExamFullPage() {
                   <p className="font-bold text-white">
                     {isAf ? "Kon nie vraestelle laai nie" : "Couldn't load papers"}
                   </p>
-                  <p className="text-sm text-white" style={{ opacity: 0.85 }}>
+                  <p className="text-sm text-white">
                     {isAf
                       ? "Kyk jou internetverbinding en probeer weer."
                       : "Check your connection and try again."}
@@ -472,7 +468,7 @@ export default function ExamFullPage() {
                   <p className="font-bold text-white">
                     {isAf ? "Eksamens kom binnekort" : "Exams coming soon"}
                   </p>
-                  <p className="text-sm text-white" style={{ opacity: 0.85 }}>
+                  <p className="text-sm text-white">
                     {isAf
                       ? "Ons berei tans oorspronklike, memo-gemerkte eksamens voor. Kyk binnekort weer."
                       : "We're preparing original, memo-marked exams. Check back soon."}
@@ -486,7 +482,7 @@ export default function ExamFullPage() {
                   <SelectTrigger
                     className="h-12 rounded-xl text-white"
                     data-testid="full-exam-subject-select"
-                    style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid rgba(255,255,255,.18)" }}
+                    style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #1b1922" }}
                   >
                     <SelectValue placeholder={
                       groupsLoading
@@ -558,13 +554,13 @@ export default function ExamFullPage() {
           <Dialog open={showExitDialog} onOpenChange={setShowExitDialog}>
             <DialogContent
               className="text-white"
-              style={{ background: "#0A0A10", border: "1px solid rgba(255,255,255,.12)", borderRadius: 22, fontFamily: "'Poppins',sans-serif" }}
+              style={{ background: "#0A0A10", border: "1px solid #1b1922", borderRadius: 22, fontFamily: "'Poppins',sans-serif" }}
             >
               <DialogHeader>
                 <DialogTitle className="text-white">
                   {isAf ? "Eksamen verlaat?" : "Leave exam?"}
                 </DialogTitle>
-                <DialogDescription className="text-white" style={{ opacity: 0.9 }}>
+                <DialogDescription className="text-white">
                   {isAf
                     ? "Jou antwoorde en tydteller sal verlore gaan. Hierdie aksie kan nie ongedaan gemaak word nie."
                     : "Your answers and timer progress will be lost. This cannot be undone."}
@@ -590,13 +586,13 @@ export default function ExamFullPage() {
 
           <div
             className="sticky top-2 z-20 rounded-2xl p-3 sm:p-4 flex items-center justify-between gap-3 flex-wrap"
-            style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,.08)" }}
+            style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", border: "1px solid #1b1922" }}
           >
             <div className="flex items-center gap-3">
               <button
                 type="button"
                 onClick={() => setShowExitDialog(true)}
-                className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white/[.03] hover:bg-white/10 transition-colors"
+                className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-[#1b1922] hover:bg-[#1b1922] transition-colors"
                 style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}
                 title={isAf ? "Verlaat eksamen" : "Leave exam"}
               >
@@ -635,7 +631,7 @@ export default function ExamFullPage() {
             </div>
           </div>
 
-          <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.08)" }}>
+          <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "#1b1922", border: "1px solid #1b1922" }}>
             <div
               className="h-full rounded-full transition-all duration-300"
               style={{ width: `${(answered / paper.questions.length) * 100}%`, background: "linear-gradient(90deg,#9FF5E8,#C5B3FF)" }}
@@ -670,7 +666,7 @@ export default function ExamFullPage() {
                       <p className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: "#9FD8FF" }}>
                         {isAf ? "Lees die teks" : "Read the text"}
                       </p>
-                      <p className="text-sm text-white whitespace-pre-wrap leading-relaxed" style={{ opacity: 0.95 }}>
+                      <p className="text-sm text-white whitespace-pre-wrap leading-relaxed">
                         {q.stimulusText}
                       </p>
                     </div>
@@ -686,7 +682,7 @@ export default function ExamFullPage() {
                     rows={3}
                     data-testid={`full-exam-answer-${q.id}`}
                     className="resize-none text-white placeholder:text-white rounded-xl focus-visible:ring-[#9FF5E8]/40 focus-visible:border-[#9FF5E8]"
-                    style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid rgba(255,255,255,.18)" }}
+                    style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #1b1922" }}
                   />
                 </div>
               </GlassCard>
@@ -746,17 +742,17 @@ export default function ExamFullPage() {
             >
               <Trophy className="w-8 h-8" style={{ color: gradeHex }} />
             </div>
-            <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 18, color: gradeHex, transform: "rotate(-1.5deg)" }}>
+            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 18, color: gradeHex, transform: "rotate(-1.5deg)" }}>
               {isAf ? "Eksamen-resultate" : "Exam Results"}
             </div>
             <div className="text-5xl font-black tabular-nums text-white">
-              {result.marksAwarded} <span className="text-white" style={{ opacity: 0.85 }}>/ {result.marksAvailable}</span>
+              {result.marksAwarded} <span className="text-white">/ {result.marksAvailable}</span>
             </div>
             <div className="text-2xl font-black tabular-nums" style={{ color: gradeHex }}>{result.percentage}%</div>
-            <div className="h-2.5 rounded-full overflow-hidden mx-auto max-w-sm" style={{ background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.08)" }}>
+            <div className="h-2.5 rounded-full overflow-hidden mx-auto max-w-sm" style={{ background: "#1b1922", border: "1px solid #1b1922" }}>
               <div className="h-full rounded-full" style={{ width: `${result.percentage}%`, background: `linear-gradient(90deg,#9FF5E8,${gradeHex})` }} />
             </div>
-            <p className="text-[11px] uppercase tracking-[0.18em] font-bold text-white" style={{ opacity: 0.9 }}>
+            <p className="text-[11px] uppercase tracking-[0.18em] font-bold text-white">
               {isAf ? "Memo-gedryf merk" : "Memo-driven marking"}
             </p>
           </div>
@@ -777,7 +773,7 @@ export default function ExamFullPage() {
                       </span>
                       <span className="tabular-nums" style={{ color: sHex }}>{s.awarded}/{s.available} ({s.percentage}%)</span>
                     </div>
-                    <div className="h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.08)" }}>
+                    <div className="h-2 rounded-full overflow-hidden" style={{ background: "#1b1922", border: "1px solid #1b1922" }}>
                       <div className="h-full rounded-full" style={{ width: `${s.percentage}%`, background: sHex }} />
                     </div>
                   </div>

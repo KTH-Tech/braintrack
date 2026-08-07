@@ -94,7 +94,7 @@ export default function AdminSignInPage() {
                 }}
                 data-testid="button-admin-signin-switch"
                 className="w-full inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold uppercase tracking-wider text-white transition"
-                style={{ border: "1px solid rgba(255,255,255,0.2)" }}
+                style={{ border: "1px solid #1b1922" }}
               >
                 {isAf ? "Wissel rekening" : "Switch account"}
               </button>

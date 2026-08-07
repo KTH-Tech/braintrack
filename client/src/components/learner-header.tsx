@@ -9,7 +9,7 @@ interface LearnerHeaderProps {
   backHref?: string;
   /** Back-button label, already localized by the caller. */
   backLabel: string;
-  /** Page title shown in Permanent Marker next to the back button (hidden below sm). */
+  /** Page title shown in Bebas Neue next to the back button (hidden below sm). */
   title: string;
   /** Hex color for the title text. Defaults to the app's aqua accent. */
   titleColor?: string;
@@ -44,7 +44,7 @@ export function LearnerHeader({
   return (
     <header
       className="sticky top-0 z-50 border-b"
-      style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "rgba(255,255,255,.08)" }}
+      style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "#1b1922" }}
     >
       <div className={`${maxWidthClassName} mx-auto px-4 sm:px-6 lg:px-8`}>
         <div className="flex items-center justify-between h-16 gap-4">
@@ -52,7 +52,7 @@ export function LearnerHeader({
             <Link href={backHref}>
               <button
                 data-testid="link-home"
-                className="inline-flex items-center justify-center gap-2 min-w-[44px] min-h-[44px] px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0"
+                className="inline-flex items-center justify-center gap-2 min-w-[44px] min-h-[44px] px-4 py-2 rounded-xl bg-[#1b1922] text-sm font-bold hover:bg-[#1b1922] shrink-0"
                 style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
               >
                 <ArrowLeft className="w-4 h-4" />
@@ -61,7 +61,7 @@ export function LearnerHeader({
             </Link>
             <span
               className="hidden sm:inline truncate"
-              style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: titleColor, transform: "rotate(-2deg)" }}
+              style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 16, color: titleColor, transform: "rotate(-2deg)" }}
             >
               {title}
             </span>
@@ -71,7 +71,7 @@ export function LearnerHeader({
             {actions}
             <button
               onClick={toggleLanguage}
-              className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
+              className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] px-4 py-2 rounded-xl bg-[#1b1922] text-sm font-bold hover:bg-[#1b1922]"
               style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
               data-testid="button-language-toggle"
             >
@@ -81,7 +81,7 @@ export function LearnerHeader({
               onClick={() => logout()}
               data-testid="button-logout"
               aria-label={isAf ? "Uitteken" : "Sign Out"}
-              className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
+              className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] px-4 py-2 rounded-xl bg-[#1b1922] text-sm font-bold hover:bg-[#1b1922]"
               style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}
             >
               <LogOut className="w-4 h-4 sm:mr-2" />

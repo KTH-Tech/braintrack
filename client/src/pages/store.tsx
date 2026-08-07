@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { LearnerHeader } from "@/components/learner-header";
 import { GraffitiSplats } from "@/components/graffiti-splats";
+import { Button } from "@/components/ui/button";
 
 type MysteryReward = { type: "coins" | "theme"; amount?: number; themeKey?: string; label: string; labelAf: string };
 
@@ -328,21 +329,12 @@ export default function StorePage() {
                         {t.ownedLabel}
                       </span>
                     ) : (
-                      <button
+                      <Button
                         type="button"
-                        className="w-full px-4 py-2.5 rounded-xl text-sm disabled:opacity-40"
-                        style={{
-                          background: affordable ? "linear-gradient(100deg,#9FF5E8,#C5B3FF)" : "transparent",
-                          color: affordable ? "#050508" : "#fff",
-                          border: affordable ? "none" : "1.5px solid rgba(255,255,255,.25)",
-                          fontWeight: 800,
-                          cursor: affordable ? "pointer" : "not-allowed",
-                          transition: "transform .2s",
-                        }}
+                        variant={affordable ? "primary" : "outline"}
+                        className="w-full"
                         disabled={!affordable || isUnlocking}
                         onClick={() => requestUnlock(item)}
-                        onMouseEnter={(e) => { if (affordable) e.currentTarget.style.transform = "translateY(-2px)"; }}
-                        onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
                         data-testid={`btn-unlock-${item.key}`}
                       >
                         {isUnlocking ? (
@@ -355,7 +347,7 @@ export default function StorePage() {
                         ) : (
                           t.unlockLabel
                         )}
-                      </button>
+                      </Button>
                     )}
                   </div>
                   {ownedEffect && (
@@ -385,13 +377,13 @@ export default function StorePage() {
           </span>
           <p className="text-sm text-white mt-2">{t.earnCoins}</p>
           <Link href="/rewards">
-            <button
-              className="mt-4 px-5 py-2.5 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 transition-colors"
-              style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
+            <Button
+              variant="outline"
+              className="mt-4"
               data-testid="link-to-rewards"
             >
               {t.viewRewards}
-            </button>
+            </Button>
           </Link>
         </div>
       </main>

@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/language-context";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
 import { GraffitiSplats } from "@/components/graffiti-splats";
 import { ShareQr } from "@/components/share-qr";
 import { ConfettiBurst } from "@/components/confetti-burst";
@@ -177,14 +178,14 @@ function FieldRow({ label, hint, children }: { label: string; hint?: string; chi
     <div className="flex flex-col gap-1.5">
       <label className="text-[11px] font-bold text-white uppercase tracking-[0.18em]">{label}</label>
       {children}
-      {hint && <p className="text-[11px] text-white leading-snug" style={{ opacity: 0.85 }}>{hint}</p>}
+      {hint && <p className="text-[11px] text-white leading-snug">{hint}</p>}
     </div>
   );
 }
 
 const inputStyle: React.CSSProperties = {
   background: "rgba(5,5,8,.6)",
-  border: "1.5px solid rgba(255,255,255,.18)",
+  border: "1.5px solid #1b1922",
 };
 
 function PastelInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
@@ -203,8 +204,8 @@ function CredentialRow({ label, value, color, testId, copiedText, copyText }: {
 }) {
   const [copied, setCopied] = useState(false);
   return (
-    <div className="rounded-2xl p-4" style={{ background: "rgba(255,255,255,.03)", border: `1.5px solid ${color}` }}>
-      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white" style={{ opacity: 0.85 }}>{label}</p>
+    <div className="rounded-2xl p-4" style={{ background: "#1b1922", border: `1.5px solid ${color}` }}>
+      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white">{label}</p>
       <div className="flex items-center gap-3 mt-1.5">
         <p className="flex-1 font-mono font-bold text-white break-all select-all text-base" data-testid={testId}>{value}</p>
         <button
@@ -242,7 +243,7 @@ function StepDots({ active, labels }: { active: 1 | 2; labels: [string, string] 
               style={{
                 color: on || done ? "#050508" : "#fff",
                 background: on || done ? hex : "transparent",
-                border: `1.5px solid ${on || done ? hex : "rgba(255,255,255,.3)"}`,
+                border: `1.5px solid ${on || done ? hex : "#1b1922"}`,
               }}
             >
               <span className="w-4 h-4 rounded-full inline-flex items-center justify-center text-[9px]"
@@ -251,7 +252,7 @@ function StepDots({ active, labels }: { active: 1 | 2; labels: [string, string] 
               </span>
               {label}
             </span>
-            {i === 0 && <span className="w-4 h-[2px] rounded-full" style={{ background: done ? PASTEL.emerald : "rgba(255,255,255,.2)" }} />}
+            {i === 0 && <span className="w-4 h-[2px] rounded-full" style={{ background: done ? PASTEL.emerald : "#1b1922" }} />}
           </div>
         );
       })}
@@ -451,7 +452,7 @@ export default function ParentActivateChildPage() {
 
   const cardStyle: React.CSSProperties = {
     background: "#050508",
-    border: "1px solid rgba(255,255,255,.1)",
+    border: "1px solid #1b1922",
   };
 
   // ── Derived share artifacts (share step) ──────────────────────────────────
@@ -495,11 +496,11 @@ export default function ParentActivateChildPage() {
               <StepDots active={2} labels={[t.stepCreate, t.stepShare]} />
 
               <div className="text-center">
-                <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 18, color: PASTEL.emerald, transform: "rotate(-2deg)", display: "inline-block" }}>
+                <p style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 18, color: PASTEL.emerald, transform: "rotate(-2deg)", display: "inline-block" }}>
                   {t.doneEyebrow}
                 </p>
                 <h1 className="text-2xl font-black text-white mt-1">{t.doneHeading}</h1>
-                <p className="text-sm text-white mt-2" style={{ opacity: 0.9 }}>
+                <p className="text-sm text-white mt-2">
                   <span className="font-bold" style={{ color: PASTEL.cyan }}>{credentials.learnerName}</span> {t.doneSubName}
                 </p>
               </div>
@@ -512,25 +513,25 @@ export default function ParentActivateChildPage() {
                   data-testid="share-step"
                 >
                   <div className="text-center">
-                    <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: PASTEL.emerald, transform: "rotate(-1.5deg)", display: "inline-block" }}>
+                    <p style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 16, color: PASTEL.emerald, transform: "rotate(-1.5deg)", display: "inline-block" }}>
                       {t.shareEyebrow}
                     </p>
                     <h2 className="text-lg font-black text-white mt-0.5">{t.shareHeading}</h2>
-                    <p className="text-[13px] text-white mt-1.5 leading-relaxed" style={{ opacity: 0.92 }}>{t.shareSub}</p>
+                    <p className="text-[13px] text-white mt-1.5 leading-relaxed">{t.shareSub}</p>
                   </div>
 
                   {/* Primary: WhatsApp deep link the PARENT taps */}
-                  <a
-                    href={waLink ?? "#"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full py-3.5 rounded-xl font-black text-sm inline-flex items-center justify-center gap-2 transition-transform hover:-translate-y-0.5"
-                    style={{ background: "linear-gradient(100deg,#94F7C5,#9FF5E8)", color: "#050508", border: "none" }}
-                    data-testid="button-share-whatsapp"
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                    {credentials.childCell ? t.shareWhatsAppTo : t.shareWhatsApp}
-                  </a>
+                  <Button asChild variant="primary" size="lg" className="w-full">
+                    <a
+                      href={waLink ?? "#"}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      data-testid="button-share-whatsapp"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      {credentials.childCell ? t.shareWhatsAppTo : t.shareWhatsApp}
+                    </a>
+                  </Button>
 
                   {/* Secondary row: native share (if available) + copy link */}
                   <div className="flex flex-col sm:flex-row gap-3">
@@ -573,7 +574,7 @@ export default function ParentActivateChildPage() {
                     />
                   </div>
 
-                  <p className="text-[11px] text-white text-center inline-flex items-center justify-center gap-1.5" style={{ opacity: 0.85 }}>
+                  <p className="text-[11px] text-white text-center inline-flex items-center justify-center gap-1.5">
                     <Smartphone className="w-3.5 h-3.5" />
                     {t.linkExpires}
                   </p>
@@ -587,7 +588,7 @@ export default function ParentActivateChildPage() {
 
               {/* ── Credentials — secondary hand-over. Password on-screen ONLY ── */}
               <p className="text-[11px] font-black uppercase tracking-[0.2em] mt-1" style={{ color: PASTEL.blue }}>{t.credsHeading}</p>
-              <p className="text-[12px] text-white -mt-2" style={{ opacity: 0.9 }}>
+              <p className="text-[12px] text-white -mt-2">
                 {t.doneSub}{" "}
                 <span className="font-bold" style={{ color: PASTEL.cyan }}>{window.location.origin.replace(/^https?:\/\//, "")}/signin</span>
               </p>
@@ -617,11 +618,11 @@ export default function ParentActivateChildPage() {
               </button>
 
               {/* What happens next */}
-              <div className="rounded-2xl p-4" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.1)" }}>
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white mb-2" style={{ opacity: 0.85 }}>{t.nextSteps}</p>
+              <div className="rounded-2xl p-4" style={{ background: "#1b1922", border: "1px solid #1b1922" }}>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white mb-2">{t.nextSteps}</p>
                 <ol className="flex flex-col gap-2">
                   {[t.step1, t.step2, t.step3].map((step, i) => (
-                    <li key={i} className="flex items-start gap-2.5 text-sm text-white" style={{ opacity: 0.92 }}>
+                    <li key={i} className="flex items-start gap-2.5 text-sm text-white">
                       <span
                         className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 mt-0.5"
                         style={{ background: [PASTEL.cyan, PASTEL.amber, PASTEL.pink][i], color: "#050508" }}
@@ -635,8 +636,10 @@ export default function ParentActivateChildPage() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3">
-                <button
+                <Button
                   type="button"
+                  variant="outline"
+                  className="flex-1"
                   onClick={() => {
                     setCredentials(null);
                     setLinkCopied(false);
@@ -644,23 +647,21 @@ export default function ParentActivateChildPage() {
                     setForm((f) => ({ ...f, childFirstName: "", childLastName: "", childEmail: "", childCell: "", schoolName: "", schoolId: null }));
                     setSchoolQuery("");
                   }}
-                  className="flex-1 py-3 rounded-xl font-bold text-sm inline-flex items-center justify-center gap-2 transition-transform hover:-translate-y-0.5"
-                  style={{ background: "transparent", color: "#fff", border: "1.5px solid rgba(255,255,255,.25)" }}
                   data-testid="button-add-another-child"
                 >
                   <UserPlus className="w-4 h-4" />
                   {t.addAnother}
-                </button>
+                </Button>
                 <Link href="/parent" className="flex-1">
-                  <button
+                  <Button
                     type="button"
-                    className="w-full py-3 rounded-xl font-bold text-sm inline-flex items-center justify-center gap-2 transition-transform hover:-translate-y-0.5"
-                    style={{ background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", color: "#050508", border: "none" }}
+                    variant="primary"
+                    className="w-full"
                     data-testid="button-done-dashboard"
                   >
                     {t.goDashboard}
                     <ChevronRight className="w-4 h-4" />
-                  </button>
+                  </Button>
                 </Link>
               </div>
             </div>
@@ -698,11 +699,11 @@ export default function ParentActivateChildPage() {
 
         {/* Header */}
         <div className="text-center">
-          <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 18, color: PASTEL.cyan, transform: "rotate(-2deg)", display: "inline-block" }}>
+          <p style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 18, color: PASTEL.cyan, transform: "rotate(-2deg)", display: "inline-block" }}>
             {t.eyebrow}
           </p>
           <h1 className="text-2xl font-black text-white mt-1">{t.heading}</h1>
-          <p className="text-sm text-white mt-2 leading-relaxed" style={{ opacity: 0.9 }}>{t.sub}</p>
+          <p className="text-sm text-white mt-2 leading-relaxed">{t.sub}</p>
         </div>
 
         <StepDots active={1} labels={[t.stepCreate, t.stepShare]} />
@@ -716,13 +717,13 @@ export default function ParentActivateChildPage() {
             <p className="text-[11px] font-black uppercase tracking-[0.2em]" style={{ color: PASTEL.blue }}>{t.yourDetails}</p>
             <FieldRow label={t.parentPhone}>
               <div className="relative">
-                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white pointer-events-none" style={{ opacity: 0.7 }} />
+                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white pointer-events-none" />
                 <PastelInput type="tel" autoComplete="tel" value={form.parentPhone} onChange={(e) => setField("parentPhone", e.target.value)} placeholder={t.parentPhonePlaceholder} style={{ ...inputStyle, paddingLeft: "2.6rem" }} data-testid="input-parent-phone" />
               </div>
             </FieldRow>
             <FieldRow label={t.parentEmail}>
               <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white pointer-events-none" style={{ opacity: 0.7 }} />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white pointer-events-none" />
                 <PastelInput type="email" autoComplete="email" value={form.parentEmail} onChange={(e) => setField("parentEmail", e.target.value)} placeholder="you@email.com" style={{ ...inputStyle, paddingLeft: "2.6rem" }} data-testid="input-parent-email" />
               </div>
             </FieldRow>
@@ -753,14 +754,14 @@ export default function ParentActivateChildPage() {
 
             <FieldRow label={t.childCell} hint={t.childCellHint}>
               <div className="relative">
-                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white pointer-events-none" style={{ opacity: 0.7 }} />
+                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white pointer-events-none" />
                 <PastelInput type="tel" autoComplete="off" value={form.childCell} onChange={(e) => setField("childCell", e.target.value)} placeholder={t.childCellPlaceholder} style={{ ...inputStyle, paddingLeft: "2.6rem" }} data-testid="input-child-cell" />
               </div>
             </FieldRow>
 
             <FieldRow label={t.school}>
               <div className="relative">
-                <School className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white pointer-events-none" style={{ opacity: 0.7 }} />
+                <School className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white pointer-events-none" />
                 <PastelInput
                   value={schoolQuery}
                   onChange={(e) => { setSchoolQuery(e.target.value); setField("schoolName", e.target.value); setField("schoolId", null); }}
@@ -770,7 +771,7 @@ export default function ParentActivateChildPage() {
                 />
               </div>
               {schoolResults.length > 0 && (
-                <div className="rounded-xl overflow-hidden max-h-56 overflow-y-auto" style={{ border: "1px solid rgba(255,255,255,.15)", background: "#0a0a0f" }}>
+                <div className="rounded-xl overflow-hidden max-h-56 overflow-y-auto" style={{ border: "1px solid #1b1922", background: "#0a0a0f" }}>
                   {schoolResults.map((s, i) => (
                     <button
                       key={`${s.id ?? "m"}-${s.natEmis ?? i}`}
@@ -781,12 +782,12 @@ export default function ParentActivateChildPage() {
                         setSchoolQuery(s.name);
                         setSchoolResults([]);
                       }}
-                      className="w-full text-left px-4 py-2.5 hover:bg-white/5 transition-colors"
-                      style={{ borderBottom: "1px solid rgba(255,255,255,.06)" }}
+                      className="w-full text-left px-4 py-2.5 hover:bg-[#1b1922] transition-colors"
+                      style={{ borderBottom: "1px solid #1b1922" }}
                       data-testid={`school-result-${i}`}
                     >
                       <span className="block text-sm font-semibold text-white">{s.name}</span>
-                      <span className="block text-[11px] text-white" style={{ opacity: 0.8 }}>
+                      <span className="block text-[11px] text-white">
                         {[s.district, s.province].filter(Boolean).join(", ")}
                       </span>
                     </button>
@@ -800,7 +801,7 @@ export default function ParentActivateChildPage() {
                 value={form.language}
                 onChange={(e) => setField("language", e.target.value as "en" | "af")}
                 className="w-full px-4 py-3 rounded-xl text-sm text-white outline-none appearance-none cursor-pointer"
-                style={{ background: "#0a0a0f", border: "1.5px solid rgba(255,255,255,.18)" }}
+                style={{ background: "#0a0a0f", border: "1.5px solid #1b1922" }}
                 data-testid="select-child-language"
               >
                 <option value="en">{t.english}</option>
@@ -811,22 +812,23 @@ export default function ParentActivateChildPage() {
             {/* Consent statement — the legal heart of this flow */}
             <div className="rounded-2xl p-3.5 flex items-start gap-2.5" style={{ background: "rgba(148,247,197,.05)", border: "1px solid rgba(148,247,197,.35)" }}>
               <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5" style={{ color: PASTEL.emerald }} />
-              <p className="text-[11px] text-white leading-relaxed" style={{ opacity: 0.9 }} data-testid="consent-note">{t.consentNote}</p>
+              <p className="text-[11px] text-white leading-relaxed" data-testid="consent-note">{t.consentNote}</p>
             </div>
 
-            <button
+            <Button
               type="button"
+              variant="primary"
+              size="lg"
+              className="w-full"
               disabled={!canSubmit}
               onClick={() => activate.mutate()}
-              className="w-full py-3.5 rounded-xl font-bold text-sm inline-flex items-center justify-center gap-2 transition-transform hover:-translate-y-0.5 disabled:opacity-40 disabled:hover:translate-y-0"
-              style={{ background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", color: "#050508", border: "none" }}
               data-testid="button-activate-child"
             >
               {activate.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
               {activate.isPending ? t.creating : t.submit}
-            </button>
+            </Button>
 
-            <p className="text-[11px] text-white text-center inline-flex items-center justify-center gap-1.5" style={{ opacity: 0.8 }}>
+            <p className="text-[11px] text-white text-center inline-flex items-center justify-center gap-1.5">
               <KeyRound className="w-3.5 h-3.5" />
               {isAf
                 ? "Die wagwoord word net een keer op die volgende skerm gewys."

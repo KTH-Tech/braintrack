@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import QRCode from "qrcode";
 import { AdminTopNav } from "@/components/admin-top-nav";
+import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/language-context";
 import { useToast } from "@/hooks/use-toast";
 import { Download, Copy, Printer, CheckCircle2, Loader2, QrCode, Plus, X } from "lucide-react";
@@ -167,7 +168,7 @@ function AddPartnerForm({ onClose }: { onClose: () => void }) {
           placeholder="Partner name (e.g. D6 Education)"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="flex-1 px-3 py-2.5 rounded-xl bg-white/5 text-sm text-white placeholder:text-white focus:outline-none"
+          className="flex-1 px-3 py-2.5 rounded-xl bg-[#0e0d12] text-sm text-white placeholder:text-white focus:outline-none"
           style={{ border: `1px solid ${hexToRgba(NEON, 0.2)}` }}
         />
         <input
@@ -175,18 +176,17 @@ function AddPartnerForm({ onClose }: { onClose: () => void }) {
           placeholder="Code (e.g. D6)"
           value={code}
           onChange={(e) => setCode(e.target.value.replace(/[^a-z0-9]/gi, "").toUpperCase())}
-          className="w-full sm:w-36 px-3 py-2.5 rounded-xl bg-white/5 text-sm text-white font-mono uppercase placeholder:text-white focus:outline-none"
+          className="w-full sm:w-36 px-3 py-2.5 rounded-xl bg-[#0e0d12] text-sm text-white font-mono uppercase placeholder:text-white focus:outline-none"
           style={{ border: `1px solid ${hexToRgba(NEON, 0.2)}` }}
           maxLength={20}
         />
-        <button
+        <Button
           onClick={() => mutation.mutate()}
           disabled={!name.trim() || mutation.isPending}
-          className="px-5 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-40 transition-all hover:opacity-80"
-          style={{ background: NEON, color: "#000" }}
+          variant="primary"
         >
           {mutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Add"}
-        </button>
+        </Button>
       </div>
       {(code || name) && (
         <p className="text-[11px] mt-3 font-mono" style={{ color: hexToRgba(NEON, 0.5) }}>
@@ -222,7 +222,7 @@ export default function AdminSchoolQRPage() {
           body { background: white !important; }
           .no-print { display: none !important; }
           .qr-card {
-            border: 1px solid #ccc !important;
+            border: 1px solid #000 !important;
             box-shadow: none !important;
             background: white !important;
             page-break-inside: avoid;
@@ -292,14 +292,14 @@ export default function AdminSchoolQRPage() {
               <p className="text-white text-sm mb-4">
                 {isAf ? "Geen vennote gevind nie" : "No partners yet"}
               </p>
-              <button
+              <Button
                 onClick={() => setShowAdd(true)}
-                className="no-print inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold"
-                style={{ background: NEON, color: "#000" }}
+                variant="primary"
+                className="no-print"
               >
                 <Plus className="w-4 h-4" />
                 {isAf ? "Voeg eerste vennoot by" : "Add first partner"}
-              </button>
+              </Button>
             </div>
           )}
 

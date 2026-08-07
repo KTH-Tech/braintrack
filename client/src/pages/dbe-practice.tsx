@@ -1,6 +1,6 @@
 // BrainTrack DBE Practice — verbatim past-paper practice UI restyled to the
 // "Luxury Street Graffiti EdTech" comp (matches exam-mode.tsx conventions).
-// #050508 ground, #0b0b12 accent-bordered cards, Permanent Marker eyebrows,
+// #050508 ground, #0e0d12 accent-bordered cards, Bebas Neue eyebrows,
 // aqua→purple gradient action buttons, pure white text. Bilingual EN/AF.
 // RESTYLE ONLY — all hooks, queries, mutations and data-testids preserved.
 import { useState } from "react";
@@ -11,6 +11,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { ExamQuestionText } from "@/components/exam/exam-question-text";
 import { Sparkles, Download } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/language-context";
 import { useAuth } from "@/hooks/use-auth";
 import {
@@ -94,7 +95,7 @@ const ghostBtn: React.CSSProperties = {
   textTransform: "uppercase",
   color: "#fff",
   background: "transparent",
-  border: "2px solid rgba(255,255,255,.22)",
+  border: "2px solid #1b1922",
   borderRadius: 10,
   padding: "8px 14px",
   cursor: "pointer",
@@ -208,7 +209,7 @@ export default function DbePracticePage() {
       <div style={{ minHeight: "100vh", background: "#050508", color: "#fff", fontFamily: "'Poppins',sans-serif", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div
           style={{
-            background: "#0b0b12",
+            background: "#0e0d12",
             border: "1.5px solid rgba(255,141,161,.4)",
             borderRadius: 20,
             padding: "42px 36px",
@@ -234,9 +235,9 @@ export default function DbePracticePage() {
         .btx-action:hover { transform: translateY(-2px); }
         .btx-action:disabled { opacity: .6; cursor: not-allowed; transform: none; }
         .btx-nav { transition: transform .2s, background .2s; }
-        .btx-nav:hover { transform: translateY(-1px); background: rgba(255,255,255,.08) !important; }
+        .btx-nav:hover { transform: translateY(-1px); background: #1b1922 !important; }
         .btx-ghost { transition: border-color .2s, transform .2s; }
-        .btx-ghost:hover { border-color: rgba(255,255,255,.5) !important; transform: translateY(-1px); }
+        .btx-ghost:hover { border-color: #1b1922 !important; transform: translateY(-1px); }
         .btx-ghost:disabled { opacity: .4; cursor: not-allowed; transform: none; }
         .btx-jump { transition: border-color .2s, transform .2s; }
         .btx-jump:hover { border-color: #9FF5E8 !important; transform: translateY(-1px); }
@@ -251,7 +252,7 @@ export default function DbePracticePage() {
           display: "flex", alignItems: "center", justifyContent: "space-between",
           gap: 16, padding: "10px 20px", position: "sticky", top: 0, zIndex: 50,
           background: "rgba(5,5,8,.94)", backdropFilter: "blur(14px)",
-          borderBottom: "1px solid rgba(255,255,255,.08)",
+          borderBottom: "1px solid #1b1922",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
@@ -263,7 +264,7 @@ export default function DbePracticePage() {
               style={{
                 display: "inline-flex", alignItems: "center", gap: 6,
                 fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 13,
-                color: "#9FD8FF", background: "rgba(255,255,255,.03)",
+                color: "#9FD8FF", background: "#0e0d12",
                 border: "1.5px solid #9FD8FF", borderRadius: 12,
                 padding: "8px 14px", cursor: "pointer", whiteSpace: "nowrap", flex: "none",
               }}
@@ -273,10 +274,10 @@ export default function DbePracticePage() {
             </button>
           </Link>
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
               {subject}
             </div>
-            <div style={{ fontSize: 10, fontWeight: 900, letterSpacing: "2px", textTransform: "uppercase", color: "#fff", opacity: 0.85 }}>
+            <div style={{ fontSize: 10, fontWeight: 900, letterSpacing: "2px", textTransform: "uppercase", color: "#fff" }}>
               {yearParam && paperParam
                 ? `${yearParam} | ${isAf ? "Vraestel" : "Paper"} ${paperParam}`
                 : isAf ? "Alle Vraestelle" : "All Papers"}
@@ -289,7 +290,7 @@ export default function DbePracticePage() {
             className="btx-nav"
             style={{
               fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 13,
-              color: "#C5B3FF", background: "rgba(255,255,255,.03)",
+              color: "#C5B3FF", background: "#0e0d12",
               border: "1.5px solid #C5B3FF", borderRadius: 12,
               padding: "8px 14px", cursor: "pointer",
             }}
@@ -304,7 +305,7 @@ export default function DbePracticePage() {
             style={{
               display: "inline-flex", alignItems: "center", gap: 6,
               fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 13,
-              color: "#FFB7E5", background: "rgba(255,255,255,.03)",
+              color: "#FFB7E5", background: "#0e0d12",
               border: "1.5px solid #FFB7E5", borderRadius: 12,
               padding: "8px 14px", cursor: "pointer",
             }}
@@ -323,7 +324,7 @@ export default function DbePracticePage() {
             <BookOpen style={{ width: 15, height: 15, color: "#FFE29A" }} />
             <span
               style={{
-                fontFamily: "'Permanent Marker',cursive",
+                fontFamily: "'Bebas Neue', sans-serif",
                 fontSize: 15,
                 color: "#FFE29A",
                 transform: "rotate(-2deg)",
@@ -352,7 +353,7 @@ export default function DbePracticePage() {
           >
             {isAf ? "DBE-oefening" : "DBE Practice"}
           </div>
-          <p style={{ fontSize: 14, color: "#fff", opacity: 0.94, marginTop: 8, maxWidth: 560 }}>
+          <p style={{ fontSize: 14, color: "#fff", marginTop: 8, maxWidth: 560 }}>
             {isAf
               ? "Werk deur egte DBE-vrae en KI-oefenvrae — memo's op aanvraag, geen druk nie."
               : "Work through real DBE questions and AI practice sets — memos on demand, zero pressure."}
@@ -361,13 +362,13 @@ export default function DbePracticePage() {
 
         {isLoading ? (
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <Skeleton className="h-12 rounded-xl bg-white/5" />
-            <Skeleton className="h-64 rounded-2xl bg-white/5" />
+            <Skeleton className="h-12 rounded-xl bg-[#0e0d12]" />
+            <Skeleton className="h-64 rounded-2xl bg-[#0e0d12]" />
           </div>
         ) : questions.length === 0 ? (
           <div
             style={{
-              background: "#0b0b12",
+              background: "#0e0d12",
               border: "1.5px solid rgba(255,226,154,.4)",
               borderRadius: 20,
               padding: "56px 32px",
@@ -394,7 +395,7 @@ export default function DbePracticePage() {
                   {total} {isAf ? "vrae" : "questions"}
                 </span>
                 {data?.counts && (
-                  <div style={{ display: "inline-flex", borderRadius: 999, border: "1px solid rgba(255,255,255,.14)", overflow: "hidden" }}>
+                  <div style={{ display: "inline-flex", borderRadius: 999, border: "1px solid #1b1922", overflow: "hidden" }}>
                     {(["all", "verbatim", "ai"] as const).map(opt => {
                       const labels = {
                         all: { en: "All", af: "Alles" },
@@ -466,12 +467,12 @@ export default function DbePracticePage() {
                       fontSize: 11, fontWeight: 800,
                       padding: "6px 12px", borderRadius: 10, cursor: "pointer",
                       color: examKey === "" ? "#9FF5E8" : "#fff",
-                      background: examKey === "" ? "rgba(159,245,232,.12)" : "rgba(255,255,255,.03)",
-                      border: examKey === "" ? "1px solid #9FF5E8" : "1px solid rgba(255,255,255,.14)",
+                      background: examKey === "" ? "rgba(159,245,232,.12)" : "#0e0d12",
+                      border: examKey === "" ? "1px solid #9FF5E8" : "1px solid #1b1922",
                     }}
                     data-testid="exam-all"
                   >
-                    {isAf ? "Alle vraestelle" : "All papers"} <span style={{ opacity: 0.85 }}>({allQuestions.length})</span>
+                    {isAf ? "Alle vraestelle" : "All papers"} <span>({allQuestions.length})</span>
                   </button>
                   {exams.map(ex => {
                     const active = examKey === ex.key;
@@ -487,15 +488,15 @@ export default function DbePracticePage() {
                           fontSize: 11, fontWeight: 800,
                           padding: "6px 12px", borderRadius: 10, cursor: "pointer",
                           color: active ? hex : "#fff",
-                          background: active ? tint : "rgba(255,255,255,.03)",
-                          border: active ? `1px solid ${hex}` : "1px solid rgba(255,255,255,.14)",
+                          background: active ? tint : "#0e0d12",
+                          border: active ? `1px solid ${hex}` : "1px solid #1b1922",
                         }}
                         data-testid={`exam-${ex.key}`}
                       >
                         {ex.source === "ai"
                           ? (isAf ? "KI-oefening" : "AI Practice")
                           : `${ex.year} ${ex.session} · ${isAf ? "V" : "P"}${ex.paperNumber}`}
-                        <span style={{ opacity: 0.85, marginLeft: 4 }}>({ex.count})</span>
+                        <span style={{ marginLeft: 4 }}>({ex.count})</span>
                       </button>
                     );
                   })}
@@ -517,7 +518,7 @@ export default function DbePracticePage() {
                 <div
                   style={{
                     position: "relative",
-                    background: "#0b0b12",
+                    background: "#0e0d12",
                     border: "1.5px solid rgba(159,216,255,.4)",
                     borderRadius: 20,
                     padding: "18px 20px",
@@ -542,7 +543,7 @@ export default function DbePracticePage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="btx-ghost"
-                          style={{ ...ghostBtn, border: "1px solid rgba(255,255,255,.22)", padding: "7px 12px", textDecoration: "none" }}
+                          style={{ ...ghostBtn, border: "1px solid #1b1922", padding: "7px 12px", textDecoration: "none" }}
                           data-testid="link-paper-pdf"
                         >
                           <Download style={{ width: 13, height: 13 }} /> {isAf ? "Vraestel PDF" : "Paper PDF"}
@@ -554,38 +555,31 @@ export default function DbePracticePage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="btx-ghost"
-                          style={{ ...ghostBtn, border: "1px solid rgba(255,255,255,.22)", padding: "7px 12px", textDecoration: "none" }}
+                          style={{ ...ghostBtn, border: "1px solid #1b1922", padding: "7px 12px", textDecoration: "none" }}
                           data-testid="link-memo-pdf"
                         >
                           <Download style={{ width: 13, height: 13 }} /> {isAf ? "Memo PDF" : "Memo PDF"}
                         </a>
                       )}
-                      <button
-                        className="btx-action"
+                      <Button
+                        variant="primary"
+                        size="sm"
                         disabled={isGen}
                         onClick={() => generateFromPaper.mutate({
                           year: selectedExam.year!,
                           session: selectedExam.session,
                           paperNumber: selectedExam.paperNumber!,
                         })}
-                        style={{
-                          display: "inline-flex", alignItems: "center", gap: 6,
-                          fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 11,
-                          letterSpacing: "1px", textTransform: "uppercase",
-                          color: "#050508", background: ACTION_GRADIENT,
-                          border: "none", borderRadius: 10, padding: "9px 14px",
-                          cursor: "pointer", whiteSpace: "nowrap",
-                        }}
                         data-testid="button-generate-from-paper"
                       >
                         {isGen ? <Loader2 style={{ width: 13, height: 13 }} className="animate-spin" /> : <Sparkles style={{ width: 13, height: 13 }} />}
                         {isGen
                           ? (isAf ? "Genereer..." : "Generating…")
                           : (isAf ? "Genereer oefening uit hierdie vraestel" : "Generate practice from this paper")}
-                      </button>
+                      </Button>
                     </div>
                   </div>
-                  <div style={{ fontSize: 12, lineHeight: 1.6, color: "#fff", opacity: 0.85, marginTop: 10 }}>
+                  <div style={{ fontSize: 12, lineHeight: 1.6, color: "#fff", marginTop: 10 }}>
                     {isAf
                       ? "Skep 10 nuwe KI-oefenvrae in dieselfde styl, onderwerpe en moeilikheidsvlak as hierdie vraestel — perfek om verder te oefen sodra jy klaar is."
                       : "Creates 10 new AI practice questions in the same style, topics and difficulty as this paper — perfect for extra revision once you're done."}
@@ -602,7 +596,7 @@ export default function DbePracticePage() {
                 <div
                   style={{
                     position: "relative",
-                    background: "#0b0b12",
+                    background: "#0e0d12",
                     border: `1.5px solid ${srcHex}55`,
                     borderRadius: 20,
                     padding: 22,
@@ -632,7 +626,7 @@ export default function DbePracticePage() {
                           {paperLabel(current)}
                         </span>
                         {current.topic && (
-                          <span style={{ ...pillBase, color: "#fff", border: "1px solid rgba(255,255,255,.25)" }}>
+                          <span style={{ ...pillBase, color: "#fff", border: "1px solid #1b1922" }}>
                             {current.topic}
                           </span>
                         )}
@@ -688,8 +682,8 @@ export default function DbePracticePage() {
                       style={{
                         padding: 18,
                         borderRadius: 14,
-                        background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
-                        border: "1px solid rgba(255,255,255,.08)",
+                        background: "linear-gradient(#0e0d12, #0e0d12), #050508",
+                        border: "1px solid #1b1922",
                       }}
                     >
                       <div style={{ fontSize: 14, lineHeight: 1.7, fontWeight: 500, color: "#fff" }} data-testid={`text-question-${current.id}`}>
@@ -699,33 +693,25 @@ export default function DbePracticePage() {
 
                     {/* Memo toggle */}
                     {shownMemos.has(current.id) ? (
-                      <button
-                        className="btx-ghost"
+                      <Button
+                        variant="outline"
+                        className="w-full"
                         onClick={() => toggleMemo(current.id)}
-                        style={{ ...ghostBtn, width: "100%", padding: "11px 14px" }}
                         data-testid={`button-memo-${current.id}`}
                       >
                         <EyeOff style={{ width: 14, height: 14 }} />
                         {isAf ? "Verberg Memo" : "Hide Memo"}
-                      </button>
+                      </Button>
                     ) : (
-                      <button
-                        className="btx-action"
+                      <Button
+                        variant="primary"
+                        className="w-full"
                         onClick={() => toggleMemo(current.id)}
-                        style={{
-                          width: "100%",
-                          display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6,
-                          fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 12,
-                          letterSpacing: "1.2px", textTransform: "uppercase",
-                          color: "#050508", background: ACTION_GRADIENT,
-                          border: "none", borderRadius: 10, padding: "12px 14px",
-                          cursor: "pointer",
-                        }}
                         data-testid={`button-memo-${current.id}`}
                       >
                         <Eye style={{ width: 14, height: 14 }} />
                         {isAf ? "Wys Memo / Antwoord" : "Show Memo / Answer"}
-                      </button>
+                      </Button>
                     )}
 
                     {/* Memo reveal */}
@@ -801,13 +787,13 @@ export default function DbePracticePage() {
                       fontFamily: "'Poppins',sans-serif",
                       padding: "9px 6px", borderRadius: 12, fontSize: 12, fontWeight: 700, cursor: "pointer",
                       color: active ? "#9FF5E8" : done ? "#94F7C5" : "#fff",
-                      background: active ? "rgba(159,245,232,.12)" : done ? "rgba(148,247,197,.08)" : "rgba(255,255,255,.03)",
-                      border: active ? "1px solid #9FF5E8" : done ? "1px solid rgba(148,247,197,.45)" : "1px solid rgba(255,255,255,.14)",
+                      background: active ? "rgba(159,245,232,.12)" : done ? "rgba(148,247,197,.08)" : "#0e0d12",
+                      border: active ? "1px solid #9FF5E8" : done ? "1px solid rgba(148,247,197,.45)" : "1px solid #1b1922",
                     }}
                     data-testid={`button-jump-${q.id}`}
                   >
                     Q{q.questionNumber}
-                    {q.marks != null && <span style={{ fontSize: 9, marginLeft: 4, opacity: 0.85 }}>({q.marks})</span>}
+                    {q.marks != null && <span style={{ fontSize: 9, marginLeft: 4 }}>({q.marks})</span>}
                   </button>
                 );
               })}

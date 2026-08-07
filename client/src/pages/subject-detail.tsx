@@ -117,7 +117,7 @@ function CosmicCard({ children, color = "cyan", className = "" }: { children: Re
   const hex = COSMIC_HEX[color];
   return (
     <div
-      className={`relative rounded-2xl bg-[#050508] bg-[linear-gradient(rgba(255,255,255,.05),rgba(255,255,255,.05))] overflow-hidden ${className}`}
+      className={`relative rounded-2xl bg-[#050508] bg-[linear-gradient(#1b1922,#1b1922)] overflow-hidden ${className}`}
       style={{ border: `1.5px solid ${hex}` }}
     >
       <span aria-hidden className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 pointer-events-none" style={{ borderColor: hex }} />
@@ -133,7 +133,7 @@ function NeonBadge({ children, color = "cyan" }: { children: React.ReactNode; co
   const hex = COSMIC_HEX[color];
   return (
     <span
-      className="inline-flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-full bg-white/[.03] uppercase tracking-[0.18em]"
+      className="inline-flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-full bg-[#1b1922] uppercase tracking-[0.18em]"
       style={{ color: hex, border: `1px solid ${hex}` }}
     >
       {children}
@@ -144,7 +144,7 @@ function NeonBadge({ children, color = "cyan" }: { children: React.ReactNode; co
 function NeonStat({ hex, icon: Icon, value, label }: { hex: string; icon: any; value: React.ReactNode; label: string }) {
   return (
     <div
-      className="relative rounded-2xl bg-[#050508] bg-[linear-gradient(rgba(255,255,255,.05),rgba(255,255,255,.05))] p-4 text-center overflow-hidden"
+      className="relative rounded-2xl bg-[#050508] bg-[linear-gradient(#1b1922,#1b1922)] p-4 text-center overflow-hidden"
       style={{ border: `1px solid ${hex}66` }}
     >
       <Icon className="w-5 h-5 mx-auto mb-1" style={{ color: hex }} />
@@ -309,7 +309,7 @@ function TopicContentDrawer({
           </DialogDescription>
         </DialogHeader>
         <Tabs defaultValue="notes" className="mt-2">
-          <TabsList className="grid grid-cols-2 bg-white/[.03] border border-white/10">
+          <TabsList className="grid grid-cols-2 bg-[#1b1922] border border-[#1b1922]">
             <TabsTrigger value="notes" data-testid="tab-topic-notes">
               <FileText className="w-4 h-4 mr-1.5" />{isAf ? "Notas" : "Notes"}
             </TabsTrigger>
@@ -350,12 +350,12 @@ function TopicContentDrawer({
                     </p>
                     <div className="space-y-3">
                     {notes.workedExamples.map((ex, i) => (
-                      <div key={i} className="rounded-xl bg-white/5 p-3 border border-white/10 space-y-2" data-testid={`topic-example-${i}`}>
+                      <div key={i} className="rounded-xl bg-[#1b1922] p-3 border border-[#1b1922] space-y-2" data-testid={`topic-example-${i}`}>
                         <p className="text-xs font-semibold text-[#9FF5E8]">
                           <span className="text-[#9FF5E8]">{isAf ? "V" : "Q"}{i + 1}:</span> {ex.question}
                         </p>
                         {ex.steps && ex.steps.length > 0 && (
-                          <div className="space-y-1 pl-2 border-l border-white/20">
+                          <div className="space-y-1 pl-2 border-l border-[#1b1922]">
                             <p className="text-[10px] font-bold uppercase tracking-wider text-[#C5B3FF]">
                               {isAf ? "Stappe" : "Steps"}
                             </p>
@@ -396,8 +396,8 @@ function TopicContentDrawer({
                     </p>
                     <div className="space-y-3">
                       {notes.diagrams.map((diagram, di) => (
-                        <div key={di} className="rounded-xl bg-white/5 border border-[#9FF5E8]/20 overflow-hidden" data-testid={`topic-diagram-${di}`}>
-                          <div className="px-3 pt-2.5 pb-1 border-b border-white/10">
+                        <div key={di} className="rounded-xl bg-[#1b1922] border border-[#9FF5E8]/20 overflow-hidden" data-testid={`topic-diagram-${di}`}>
+                          <div className="px-3 pt-2.5 pb-1 border-b border-[#1b1922]">
                             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#9FF5E8]">
                               {diagram.label}
                             </p>
@@ -409,7 +409,7 @@ function TopicContentDrawer({
                             {diagram.ascii}
                           </pre>
                           {diagram.caption && (
-                            <div className="px-3 pb-2.5 pt-1 border-t border-white/10">
+                            <div className="px-3 pb-2.5 pt-1 border-t border-[#1b1922]">
                               <p className="text-[11px] text-white leading-relaxed">
                                 <span className="text-[#9FF5E8] mr-1">→</span>
                                 {diagram.caption}
@@ -437,7 +437,7 @@ function TopicContentDrawer({
                 <button
                   type="button"
                   onClick={() => setFlipped(f => !f)}
-                  className="w-full min-h-[180px] rounded-2xl bg-white/[.03] border border-[#9FF5E8]/40 p-5 text-left transition-all hover:border-[#9FF5E8]/80"
+                  className="w-full min-h-[180px] rounded-2xl bg-[#1b1922] border border-[#9FF5E8]/40 p-5 text-left transition-all hover:border-[#9FF5E8]/80"
                   data-testid="topic-flashcard-face"
                 >
                   <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#9FF5E8] mb-2">
@@ -452,7 +452,7 @@ function TopicContentDrawer({
                 <div className="flex items-center justify-between gap-2">
                   <button
                     type="button"
-                    className="px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold disabled:opacity-40"
+                    className="px-4 py-2 rounded-xl bg-[#1b1922] text-sm font-bold disabled:opacity-40"
                     style={{ color: "#9FF5E8", border: "1.5px solid #9FF5E8" }}
                     onClick={() => { setCardIdx(i => Math.max(0, i - 1)); setFlipped(false); }}
                     disabled={cardIdx === 0}
@@ -460,7 +460,7 @@ function TopicContentDrawer({
                   >← {isAf ? "Vorige" : "Prev"}</button>
                   <button
                     type="button"
-                    className="inline-flex items-center px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold"
+                    className="inline-flex items-center px-4 py-2 rounded-xl bg-[#1b1922] text-sm font-bold"
                     style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
                     onClick={() => {
                       try { localStorage.removeItem(lsKey); } catch {}
@@ -482,7 +482,7 @@ function TopicContentDrawer({
                   ><RotateCcw className="w-3 h-3 mr-1" />{isAf ? "Van Voor Af" : "Start Over"}</button>
                   <button
                     type="button"
-                    className="px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold disabled:opacity-40"
+                    className="px-4 py-2 rounded-xl bg-[#1b1922] text-sm font-bold disabled:opacity-40"
                     style={{ color: "#9FF5E8", border: "1.5px solid #9FF5E8" }}
                     onClick={() => { setCardIdx(i => Math.min(cards.length - 1, i + 1)); setFlipped(false); }}
                     disabled={cardIdx >= cards.length - 1}
@@ -491,7 +491,7 @@ function TopicContentDrawer({
                 </div>
                 <Link href={deepLinkHref}>
                   <button
-                    className="w-full px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold transition-all hover:scale-[1.02]"
+                    className="w-full px-4 py-2 rounded-xl bg-[#1b1922] text-sm font-bold transition-all hover:scale-[1.02]"
                     style={{ color: "#9FF5E8", border: "1.5px solid #9FF5E8" }}
                     data-testid="button-open-flashcards-page"
                   >
@@ -570,7 +570,7 @@ function LiteratureWorkDialog({
           </p>
         ) : (
           <Tabs defaultValue="overview" className="mt-2">
-            <TabsList className="grid grid-cols-4 bg-white/[.03] border border-white/10">
+            <TabsList className="grid grid-cols-4 bg-[#1b1922] border border-[#1b1922]">
               <TabsTrigger value="overview" data-testid="tab-lit-overview">{isAf ? "Oorsig" : "Overview"}</TabsTrigger>
               <TabsTrigger value="characters" data-testid="tab-lit-characters">{isAf ? "Karakters" : "Characters"}</TabsTrigger>
               <TabsTrigger value="devices" data-testid="tab-lit-devices">{isAf ? "Tegnieke" : "Devices"}</TabsTrigger>
@@ -597,7 +597,7 @@ function LiteratureWorkDialog({
               {data.characters.length === 0 ? (
                 <p className="text-sm text-white py-4 text-center">{isAf ? "Karakters word nog voorberei." : "Characters being prepared."}</p>
               ) : data.characters.map((c, i) => (
-                <div key={i} className="rounded-xl bg-white/5 border border-white/10 p-3" data-testid={`lit-character-${i}`}>
+                <div key={i} className="rounded-xl bg-[#1b1922] border border-[#1b1922] p-3" data-testid={`lit-character-${i}`}>
                   <p className="text-sm font-bold text-[#9FF5E8]">{c.name}</p>
                   <p className="text-xs text-white mt-1">{c.description}</p>
                 </div>
@@ -608,7 +608,7 @@ function LiteratureWorkDialog({
               {data.literaryDevices.length === 0 ? (
                 <p className="text-sm text-white py-4 text-center">{isAf ? "Tegnieke word nog voorberei." : "Literary devices being prepared."}</p>
               ) : data.literaryDevices.map((d, i) => (
-                <div key={i} className="rounded-xl bg-white/5 border border-white/10 p-3" data-testid={`lit-device-${i}`}>
+                <div key={i} className="rounded-xl bg-[#1b1922] border border-[#1b1922] p-3" data-testid={`lit-device-${i}`}>
                   <p className="text-sm font-bold text-[#9FF5E8]">{d.name}</p>
                   <p className="text-xs text-white mt-1">{d.explanation}</p>
                 </div>
@@ -619,7 +619,7 @@ function LiteratureWorkDialog({
               {data.essayFrameworks.length === 0 ? (
                 <p className="text-sm text-white py-4 text-center">{isAf ? "Opsteleraamwerke kom binnekort." : "Essay frameworks coming soon."}</p>
               ) : data.essayFrameworks.map((e, i) => (
-                <div key={i} className="rounded-xl bg-white/5 border border-white/10 p-3" data-testid={`lit-essay-${i}`}>
+                <div key={i} className="rounded-xl bg-[#1b1922] border border-[#1b1922] p-3" data-testid={`lit-essay-${i}`}>
                   <p className="text-sm font-bold text-white">"{e.prompt}"</p>
                   <ul className="mt-2 space-y-1">
                     {e.outline.map((step, j) => (
@@ -1014,14 +1014,14 @@ export default function SubjectDetailPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 overflow-x-hidden">
         <div className="space-y-6">
           <Link href="/subjects">
-            <button data-testid="button-back" className="inline-flex items-center px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold" style={{ color: "#9FF5E8", border: "1.5px solid #9FF5E8" }}>
+            <button data-testid="button-back" className="inline-flex items-center px-4 py-2 rounded-xl bg-[#1b1922] text-sm font-bold" style={{ color: "#9FF5E8", border: "1.5px solid #9FF5E8" }}>
               <ArrowLeft className="w-4 h-4 mr-1" />
               {isAf ? "Alle Vakke" : "All Subjects"}
             </button>
           </Link>
 
           {loading ? (
-            <div className="rounded-3xl border border-white/10 bg-[#050508] bg-[linear-gradient(rgba(255,255,255,.05),rgba(255,255,255,.05))] p-6 sm:p-8">
+            <div className="rounded-3xl border border-[#1b1922] bg-[#050508] bg-[linear-gradient(#1b1922,#1b1922)] p-6 sm:p-8">
               <div className="flex items-center gap-5">
                 <Skeleton className="w-20 h-20 rounded-2xl" />
                 <div className="flex-1 space-y-3">
@@ -1036,7 +1036,7 @@ export default function SubjectDetailPage() {
             const masteryHex = mastery ? getBandHex(mastery.overallBand) : hex;
             return (
               <div
-                className="relative overflow-hidden rounded-3xl border bg-[#050508] bg-[linear-gradient(rgba(255,255,255,.05),rgba(255,255,255,.05))] p-6 sm:p-8"
+                className="relative overflow-hidden rounded-3xl border bg-[#050508] bg-[linear-gradient(#1b1922,#1b1922)] p-6 sm:p-8"
                 style={{
                   borderColor: `${hex}44`,
                   animation: "bt-fadeup .5s cubic-bezier(.22,1,.36,1) both",
@@ -1056,7 +1056,7 @@ export default function SubjectDetailPage() {
 
                 <div className="relative flex items-start gap-4 sm:gap-6 flex-wrap sm:flex-nowrap">
                   <div
-                    className="shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center bg-white/[.03]"
+                    className="shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center bg-[#1b1922]"
                     style={{
                       border: `1.5px solid ${hex}`,
                     }}
@@ -1070,13 +1070,13 @@ export default function SubjectDetailPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1.5">
                       <span
-                        className="text-[10px] font-bold uppercase tracking-[0.18em] px-2 py-0.5 rounded-full bg-white/[.03]"
+                        className="text-[10px] font-bold uppercase tracking-[0.18em] px-2 py-0.5 rounded-full bg-[#1b1922]"
                         style={{ color: hex, border: `1px solid ${hex}55` }}
                       >
                         {subject.code}
                       </span>
                       <span
-                        style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}
+                        style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}
                       >
                         {isAf ? "Graad 12 NSS" : "Grade 12 NSC"}
                       </span>
@@ -1105,7 +1105,7 @@ export default function SubjectDetailPage() {
 
                   {mastery && (
                     <div
-                      className="shrink-0 flex flex-col items-center justify-center gap-0.5 px-5 py-3 rounded-2xl bg-white/[.03]"
+                      className="shrink-0 flex flex-col items-center justify-center gap-0.5 px-5 py-3 rounded-2xl bg-[#1b1922]"
                       style={{
                         border: `1.5px solid ${masteryHex}`,
                       }}
@@ -1131,7 +1131,7 @@ export default function SubjectDetailPage() {
               </div>
             );
           })() : (
-            <div className="rounded-3xl border border-white/10 bg-[#050508] bg-[linear-gradient(rgba(255,255,255,.05),rgba(255,255,255,.05))] p-8 text-center">
+            <div className="rounded-3xl border border-[#1b1922] bg-[#050508] bg-[linear-gradient(#1b1922,#1b1922)] p-8 text-center">
               <div role="heading" aria-level={1} className="text-2xl sm:text-3xl font-black text-white">
                 {isAf ? "Vak Nie Gevind" : "Subject Not Found"}
               </div>
@@ -1152,7 +1152,7 @@ export default function SubjectDetailPage() {
             <div className="grid gap-3 sm:grid-cols-2" data-testid="exam-shortcuts">
               <Link href={miniMockHref}>
                 <button
-                  className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-[#050508] bg-[linear-gradient(rgba(255,255,255,.05),rgba(255,255,255,.05))] text-left transition-all hover:-translate-y-1.5"
+                  className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-[#050508] bg-[linear-gradient(#1b1922,#1b1922)] text-left transition-all hover:-translate-y-1.5"
                   style={{ border: "1.5px solid #FFE29A" }}
                   data-testid="button-mini-mock-shortcut"
                 >
@@ -1176,7 +1176,7 @@ export default function SubjectDetailPage() {
               </Link>
               <Link href={`/exam/full?subject=${encodeURIComponent(subject.name)}`}>
                 <button
-                  className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-[#050508] bg-[linear-gradient(rgba(255,255,255,.05),rgba(255,255,255,.05))] text-left transition-all hover:-translate-y-1.5"
+                  className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-[#050508] bg-[linear-gradient(#1b1922,#1b1922)] text-left transition-all hover:-translate-y-1.5"
                   style={{ border: "1.5px solid #C5B3FF" }}
                   data-testid="button-full-exam-shortcut"
                 >
@@ -1258,7 +1258,7 @@ export default function SubjectDetailPage() {
                           name: label,
                           capsCode: topic.capsCode,
                         })}
-                        className="shrink-0 flex flex-col items-start gap-0.5 px-3 py-2 rounded-xl bg-white/[.03] transition-all hover:scale-[1.02] active:scale-[0.98] text-left relative"
+                        className="shrink-0 flex flex-col items-start gap-0.5 px-3 py-2 rounded-xl bg-[#1b1922] transition-all hover:scale-[1.02] active:scale-[0.98] text-left relative"
                         style={{ border: `1.5px solid ${bandHex}` }}
                         data-testid={`chip-ready-topic-${topic.id}`}
                       >
@@ -1312,7 +1312,7 @@ export default function SubjectDetailPage() {
                   </NeonBadge>
                 </div>
                 <div className="grid grid-cols-3 gap-4">
-                  <div className="text-center p-3 rounded-xl bg-white/[.03]" style={{ border: `1px solid ${getBandHex(mastery.overallBand)}55` }}>
+                  <div className="text-center p-3 rounded-xl bg-[#1b1922]" style={{ border: `1px solid ${getBandHex(mastery.overallBand)}55` }}>
                     <p className="text-3xl font-black text-white tabular-nums">{currentScore}%</p>
                     <p className="text-[10px] text-white uppercase tracking-[0.14em] mt-1">{isAf ? "Huidige" : "Current"}</p>
                   </div>
@@ -1322,12 +1322,12 @@ export default function SubjectDetailPage() {
                       <p className="text-[10px] text-white">{scoreDiff >= 0 ? (isAf ? 'Op Koers' : 'On Track') : (isAf ? 'Moet Verbeter' : 'Needs Work')}</p>
                     </div>
                   </div>
-                  <div className="text-center p-3 rounded-xl bg-white/[.03]" style={{ border: "1px solid #9FF5E855" }}>
+                  <div className="text-center p-3 rounded-xl bg-[#1b1922]" style={{ border: "1px solid #9FF5E855" }}>
                     <p className="text-3xl font-black text-white tabular-nums">{targetScore}%</p>
                     <p className="text-[10px] text-white uppercase tracking-[0.14em] mt-1">{isAf ? "Teiken" : "Target"}</p>
                   </div>
                 </div>
-                <div className="h-2 rounded-full bg-white/[.03] overflow-hidden mt-3" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
+                <div className="h-2 rounded-full bg-[#1b1922] overflow-hidden mt-3" style={{ border: "1px solid #1b1922" }}>
                   <div className="h-full rounded-full" style={{ width: `${Math.min(100, Math.max(0, currentScore))}%`, background: "linear-gradient(90deg, #FFE29A, #FFE29A, #94F7C5, #9FF5E8, #9FD8FF, #C5B3FF, #FFB7E5)" }} />
                 </div>
                 <div className="flex justify-between mt-1">
@@ -1343,7 +1343,7 @@ export default function SubjectDetailPage() {
           <Tabs defaultValue="practice" className="w-full">
             <TabsList
               className="w-full h-auto p-1 rounded-2xl flex gap-1 flex-wrap justify-start bg-transparent"
-              style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.08)" }}
+              style={{ background: "#1b1922", border: "1px solid #1b1922" }}
             >
               {([
                 { value: "practice", en: "Practice", af: "Oefen",      Icon: Zap,      hex: "#FFE29A" },
@@ -1354,7 +1354,7 @@ export default function SubjectDetailPage() {
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
-                  className="flex-1 min-w-[72px] flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-black uppercase tracking-[0.12em] transition-all border-0 shadow-none data-[state=active]:bg-white/10 data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-white hover:text-white data-[state=active]:shadow-none"
+                  className="flex-1 min-w-[72px] flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-black uppercase tracking-[0.12em] transition-all border-0 shadow-none data-[state=active]:bg-[#1b1922] data-[state=active]:text-white data-[state=inactive]:bg-transparent data-[state=inactive]:text-white hover:text-white data-[state=active]:shadow-none"
                 >
                   <tab.Icon className="w-3.5 h-3.5" style={{ color: tab.hex }} />
                   {isAf ? tab.af : tab.en}
@@ -1370,7 +1370,7 @@ export default function SubjectDetailPage() {
                   {isBST && (
                     <Link href="/bst-exam">
                       <button
-                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold transition-all hover:scale-[1.02]"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#1b1922] text-sm font-bold transition-all hover:scale-[1.02]"
                         style={{ border: "1.5px solid #FFE29A", color: "#FFE29A" }}
                         data-testid="button-crunch-time"
                       >
@@ -1380,7 +1380,7 @@ export default function SubjectDetailPage() {
                   )}
                   <Link href="/exam-mode">
                     <button
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold transition-all hover:scale-[1.02]"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#1b1922] text-sm font-bold transition-all hover:scale-[1.02]"
                       style={{ border: "1.5px solid #FFE29A", color: "#FFE29A" }}
                       data-testid="button-exam-mode"
                     >
@@ -1390,7 +1390,7 @@ export default function SubjectDetailPage() {
                   </Link>
                   <Link href={`/tutor?subject=${id}`}>
                     <button
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold transition-all hover:scale-[1.02]"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#1b1922] text-sm font-bold transition-all hover:scale-[1.02]"
                       style={{ border: "1.5px solid #C5B3FF", color: "#C5B3FF" }}
                       data-testid="button-smart-tutor"
                     >
@@ -1419,7 +1419,7 @@ export default function SubjectDetailPage() {
                           : `Focus on your weakest topic: ${weakestTopic.name} (${weakestTopic.masteryScore}%)`}
                       </p>
                       <button
-                        className="w-full px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold transition-all hover:scale-[1.02]"
+                        className="w-full px-4 py-2 rounded-xl bg-[#1b1922] text-sm font-bold transition-all hover:scale-[1.02]"
                         style={{ color: "#FFE29A", border: "1.5px solid #FFE29A" }}
                         onClick={() => {
                           setRecommendedTopicFocus(weakestTopic.name);
@@ -1448,7 +1448,7 @@ export default function SubjectDetailPage() {
                       </p>
                       <Link href={`/revision/${subject.id}`}>
                         <button
-                          className="w-full px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold transition-all hover:scale-[1.02]"
+                          className="w-full px-4 py-2 rounded-xl bg-[#1b1922] text-sm font-bold transition-all hover:scale-[1.02]"
                           style={{ color: "#C5B3FF", border: "1.5px solid #C5B3FF" }}
                           data-testid="button-revision-mode"
                         >
@@ -1494,7 +1494,7 @@ export default function SubjectDetailPage() {
                       return (
                         <div
                           key={topic.id}
-                          className="p-4 rounded-xl bg-white/[.03] transition-all duration-200 hover:-translate-y-px"
+                          className="p-4 rounded-xl bg-[#1b1922] transition-all duration-200 hover:-translate-y-px"
                           style={{ border: `1px solid ${tHex}55` }}
                           data-testid={`topic-mastery-${topic.id}`}
                         >
@@ -1506,7 +1506,7 @@ export default function SubjectDetailPage() {
                                   {isAf ? (topic.nameAfrikaans || topic.name) : topic.name}
                                 </p>
                                 {topic.capsCode && (
-                                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-white/[.03]" style={{ color: tHex, border: `1px solid ${tHex}55` }}>{topic.capsCode}</span>
+                                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#1b1922]" style={{ color: tHex, border: `1px solid ${tHex}55` }}>{topic.capsCode}</span>
                                 )}
                                 {topic.hasNotes && (
                                   <span
@@ -1534,12 +1534,12 @@ export default function SubjectDetailPage() {
                               <span className="font-black text-lg text-white tabular-nums">
                                 {topic.masteryScore}%
                               </span>
-                              <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-white/[.03] uppercase tracking-[0.14em]" style={{ color: tHex, border: `1px solid ${tHex}` }}>
+                              <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-[#1b1922] uppercase tracking-[0.14em]" style={{ color: tHex, border: `1px solid ${tHex}` }}>
                                 {getBandLabel(topic.masteryBand, isAf)}
                               </span>
                             </div>
                           </div>
-                          <div className="h-1.5 rounded-full bg-white/[.03] overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
+                          <div className="h-1.5 rounded-full bg-[#1b1922] overflow-hidden" style={{ border: "1px solid #1b1922" }}>
                             <div className="h-full rounded-full transition-all duration-700" style={{ width: `${topic.masteryScore}%`, background: tHex }} />
                           </div>
                           {topic.confidenceLevel > 0 && (
@@ -1569,7 +1569,7 @@ export default function SubjectDetailPage() {
                                   capsCode: topic.capsCode,
                                 })}
                                 disabled={!hasContent}
-                                className={`mt-3 w-full inline-flex flex-col items-center justify-center gap-0.5 py-2 rounded-xl bg-white/[.03] text-[11px] font-black uppercase tracking-[0.18em] transition-all ${hasContent ? "hover:scale-[1.01] cursor-pointer" : "opacity-40 cursor-not-allowed"}`}
+                                className={`mt-3 w-full inline-flex flex-col items-center justify-center gap-0.5 py-2 rounded-xl bg-[#1b1922] text-[11px] font-black uppercase tracking-[0.18em] transition-all ${hasContent ? "hover:scale-[1.01] cursor-pointer" : "opacity-40 cursor-not-allowed"}`}
                                 style={{ color: tHex, border: `1.5px solid ${tHex}` }}
                                 data-testid={`button-topic-content-${topic.id}`}
                               >
@@ -1600,7 +1600,7 @@ export default function SubjectDetailPage() {
                                     subjectName: isAf ? (subject.nameAfrikaans || subject.name) : subject.name,
                                   });
                                 }}
-                                className="mt-2 w-full inline-flex flex-col items-center justify-center gap-0.5 py-2 rounded-xl bg-white/[.03] text-[11px] font-black uppercase tracking-[0.18em] transition-all hover:scale-[1.01] cursor-pointer"
+                                className="mt-2 w-full inline-flex flex-col items-center justify-center gap-0.5 py-2 rounded-xl bg-[#1b1922] text-[11px] font-black uppercase tracking-[0.18em] transition-all hover:scale-[1.01] cursor-pointer"
                                 style={{ color: tHex, border: `1.5px solid ${tHex}` }}
                                 data-testid={`button-quiz-topic-${topic.id}`}
                               >
@@ -1618,7 +1618,7 @@ export default function SubjectDetailPage() {
                       );
                     })}
 
-                    <div className="mt-4 p-4 rounded-xl bg-white/[.03]" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
+                    <div className="mt-4 p-4 rounded-xl bg-[#1b1922]" style={{ border: "1px solid #1b1922" }}>
                       <p className="text-[10px] font-bold mb-2 uppercase tracking-[0.18em] text-white">{isAf ? "Bemeestering Bande" : "Mastery Bands"}</p>
                       <div className="flex items-center gap-4 flex-wrap">
                         {[
@@ -1666,12 +1666,12 @@ export default function SubjectDetailPage() {
                       return (
                         <div
                           key={idx}
-                          className="flex items-center justify-between gap-3 p-3 rounded-xl bg-white/[.03] transition-all duration-200 hover:-translate-y-px"
+                          className="flex items-center justify-between gap-3 p-3 rounded-xl bg-[#1b1922] transition-all duration-200 hover:-translate-y-px"
                           style={{ border: `1px solid ${pHex}55` }}
                           data-testid={`plan-item-${idx}`}
                         >
                           <div className="flex items-center gap-3 flex-1 min-w-0">
-                            <div className="w-10 h-10 rounded-lg flex items-center justify-center text-[10px] font-black shrink-0 bg-white/[.03] uppercase tracking-[0.14em]"
+                            <div className="w-10 h-10 rounded-lg flex items-center justify-center text-[10px] font-black shrink-0 bg-[#1b1922] uppercase tracking-[0.14em]"
                               style={{ border: `1.5px solid ${pHex}`, color: pHex }}>
                               {item.day}
                             </div>
@@ -1681,7 +1681,7 @@ export default function SubjectDetailPage() {
                             </div>
                           </div>
                           <div className="flex items-center gap-2 shrink-0">
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white/[.03] inline-flex items-center gap-1" style={{ color: "#9FF5E8", border: "1px solid #9FF5E855" }}>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#1b1922] inline-flex items-center gap-1" style={{ color: "#9FF5E8", border: "1px solid #9FF5E855" }}>
                               <Clock className="w-3 h-3" /> {item.duration}min
                             </span>
                             {item.priority === "high" && <NeonBadge color="pink">{isAf ? "Prioriteit" : "Priority"}</NeonBadge>}
@@ -1719,7 +1719,7 @@ export default function SubjectDetailPage() {
                       return (
                         <div
                           key={badge.id}
-                          className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[.03]"
+                          className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#1b1922]"
                           style={{ border: "1px solid #FFE29A44" }}
                           data-testid={`badge-${badge.badgeCode}`}
                         >
@@ -1751,7 +1751,7 @@ export default function SubjectDetailPage() {
                         onClick={() => saveLitMutation.mutate(litSelections)}
                         disabled={saveLitMutation.isPending}
                         data-testid="button-save-literature"
-                        className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold transition-all hover:scale-[1.02] disabled:opacity-60"
+                        className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-[#1b1922] text-sm font-bold transition-all hover:scale-[1.02] disabled:opacity-60"
                         style={{ color: "#9FF5E8", border: "1.5px solid #9FF5E8" }}
                       >
                         {litSaved ? (
@@ -1785,7 +1785,7 @@ export default function SubjectDetailPage() {
                               return (
                                 <div
                                   key={w.id}
-                                  className="flex items-start justify-between gap-2 rounded-xl bg-white/[.03] p-3"
+                                  className="flex items-start justify-between gap-2 rounded-xl bg-[#1b1922] p-3"
                                   style={{ border: "1px solid #9FF5E833" }}
                                   data-testid={`lit-work-card-${w.id}`}
                                 >
@@ -1799,7 +1799,7 @@ export default function SubjectDetailPage() {
                                     <button
                                       type="button"
                                       onClick={() => setLitWorkDialog({ id: dbWork.id, title: dbWork.title })}
-                                      className="shrink-0 inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold transition-all hover:scale-[1.02]"
+                                      className="shrink-0 inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-[#1b1922] text-sm font-bold transition-all hover:scale-[1.02]"
                                       style={{ color: "#9FF5E8", border: "1.5px solid #9FF5E8" }}
                                       data-testid={`button-notes-${w.id}`}
                                     >
@@ -1860,7 +1860,7 @@ export default function SubjectDetailPage() {
                                       <button
                                         type="button"
                                         onClick={() => setLitWorkDialog({ id: dbWork.id, title: dbWork.title })}
-                                        className="shrink-0 inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold transition-all hover:scale-[1.02]"
+                                        className="shrink-0 inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-[#1b1922] text-sm font-bold transition-all hover:scale-[1.02]"
                                         style={{ color: "#9FF5E8", border: "1.5px solid #9FF5E8" }}
                                         data-testid={`button-view-lit-${cat.type}`}
                                       >
@@ -1876,7 +1876,7 @@ export default function SubjectDetailPage() {
                         })}
                       </div>
                       {hasAnySelection && (
-                        <div className="mt-4 p-3 rounded-xl bg-white/[.03]" style={{ border: "1px solid #9FF5E855" }}>
+                        <div className="mt-4 p-3 rounded-xl bg-[#1b1922]" style={{ border: "1px solid #9FF5E855" }}>
                           <p className="text-xs text-white flex items-center gap-2">
                             <BookMarked className="w-4 h-4 shrink-0" style={{ color: "#9FF5E8" }} />
                             {isAf
@@ -1906,7 +1906,7 @@ export default function SubjectDetailPage() {
                       href={lnk.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 p-2.5 rounded-xl bg-white/[.03] text-sm font-semibold text-white hover:text-white transition-all hover:-translate-y-px"
+                      className="flex items-center gap-2 p-2.5 rounded-xl bg-[#1b1922] text-sm font-semibold text-white hover:text-white transition-all hover:-translate-y-px"
                       style={{ border: "1px solid #9FD8FF55" }}
                       data-testid={lnk.tid}
                     >
@@ -1914,7 +1914,7 @@ export default function SubjectDetailPage() {
                       <span>{lnk.label}</span>
                     </a>
                   ))}
-                  <div className="mt-3 p-3 rounded-xl bg-white/[.03]" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
+                  <div className="mt-3 p-3 rounded-xl bg-[#1b1922]" style={{ border: "1px solid #1b1922" }}>
                     <p className="text-[11px] text-white leading-relaxed">
                       {isAf
                         ? "Hierdie vakpaneel is KABV-belyn en gebaseer op ontleding van NSC-eksamenpatrone (10-jaar venster). Alle vrae is oorspronklik en gesimuleer."

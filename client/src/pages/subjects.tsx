@@ -383,7 +383,7 @@ export default function SubjectsPage() {
             />
             <span
               style={{
-                fontFamily: "'Permanent Marker',cursive",
+                fontFamily: "'Bebas Neue', sans-serif",
                 fontSize: 16,
                 color: "#9FF5E8",
                 transform: "rotate(-2deg)",
@@ -411,36 +411,22 @@ export default function SubjectsPage() {
               >
                 {t.heroHeading}
               </div>
-              <p className="text-white text-base sm:text-lg max-w-2xl mt-4" style={{ opacity: 0.94 }}>
+              <p className="text-white text-base sm:text-lg max-w-2xl mt-4">
                 {t.heroSubtitle}
               </p>
             </div>
 
             {/* Add subjects button */}
             {!isLoading && (
-              <button
+              <Button
                 type="button"
+                variant={showBrowseAll ? "outline" : "primary"}
                 data-testid="button-browse-all"
                 onClick={() => {
                   setShowBrowseAll((v) => !v);
                   setBrowseSearch("");
                 }}
-                className="shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all"
-                style={
-                  showBrowseAll
-                    ? {
-                        background: "transparent",
-                        border: "1.5px solid #9FF5E8",
-                        color: "#9FF5E8",
-                      }
-                    : {
-                        background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
-                        border: "none",
-                        color: "#050508",
-                      }
-                }
-                onMouseEnter={(e) => { if (!showBrowseAll) e.currentTarget.style.transform = "translateY(-2px)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}
+                className="shrink-0"
               >
                 {showBrowseAll ? (
                   <>
@@ -453,7 +439,7 @@ export default function SubjectsPage() {
                     {t.browseBtnLabel}
                   </>
                 )}
-              </button>
+              </Button>
             )}
           </div>
         </section>
@@ -463,8 +449,8 @@ export default function SubjectsPage() {
           <div
             className="relative p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8 overflow-hidden"
             style={{
-              background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
-              border: "1px solid rgba(255,255,255,.08)",
+              background: "linear-gradient(#1b1922, #1b1922), #050508",
+              border: "1px solid #1b1922",
               borderRadius: 22,
             }}
           >
@@ -497,21 +483,15 @@ export default function SubjectsPage() {
                 </Link>
               </p>
             </div>
-            <button
+            <Button
               type="button"
+              variant="primary"
               onClick={() => setShowBrowseAll(true)}
-              className="shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all"
-              style={{
-                background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
-                border: "none",
-                color: "#050508",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
-              onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
+              className="shrink-0"
             >
               <Plus className="w-3.5 h-3.5" />
               {t.addSubjectsBtn}
-            </button>
+            </Button>
           </div>
         )}
 
@@ -520,8 +500,8 @@ export default function SubjectsPage() {
           <div
             className="relative overflow-hidden mb-10"
             style={{
-              background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
-              border: "1px solid rgba(255,255,255,.08)",
+              background: "linear-gradient(#1b1922, #1b1922), #050508",
+              border: "1px solid #1b1922",
               borderRadius: 24,
             }}
           >
@@ -546,7 +526,7 @@ export default function SubjectsPage() {
                 <button
                   type="button"
                   onClick={() => setShowBrowseAll(false)}
-                  className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/[.03] hover:bg-white/10 transition-colors"
+                  className="w-9 h-9 flex items-center justify-center rounded-xl bg-[#1b1922] hover:bg-[#1b1922] transition-colors"
                   style={{ color: "#9FF5E8", border: "1.5px solid #9FF5E8" }}
                 >
                   <X className="w-4 h-4" />
@@ -564,7 +544,7 @@ export default function SubjectsPage() {
                   value={browseSearch}
                   onChange={(e) => setBrowseSearch(e.target.value)}
                   data-testid="input-browse-search"
-                  className="pl-11 h-12 bg-white/5 border-white/15 text-white placeholder:text-white rounded-xl focus-visible:border-[#9FF5E8] focus-visible:ring-[#9FF5E8]/30"
+                  className="pl-11 h-12 bg-[#1b1922] border-[#1b1922] text-white placeholder:text-white rounded-xl focus-visible:border-[#9FF5E8] focus-visible:ring-[#9FF5E8]/30"
                 />
               </div>
 
@@ -597,7 +577,7 @@ export default function SubjectsPage() {
                         data-testid={`browse-subject-${subject.id}`}
                         onClick={() => addSubjectMutation.mutate(subject.id)}
                         disabled={isAdding}
-                        className="flex items-center gap-3 p-3 rounded-xl bg-white/[.03] text-left transition-all hover:bg-white/5 disabled:opacity-60"
+                        className="flex items-center gap-3 p-3 rounded-xl bg-[#1b1922] text-left transition-all hover:bg-[#1b1922] disabled:opacity-60"
                         style={{
                           border: `1px solid ${hex}33`,
                         }}
@@ -629,8 +609,8 @@ export default function SubjectsPage() {
                         <div
                           className="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center transition-all"
                           style={{
-                            background: isAdding ? `${hex}22` : "rgba(255,255,255,0.05)",
-                            border: `1px solid ${isAdding ? hex : "rgba(255,255,255,0.12)"}`,
+                            background: isAdding ? `${hex}22` : "#1b1922",
+                            border: `1px solid ${isAdding ? hex : "#1b1922"}`,
                           }}
                         >
                           {isAdding ? (
@@ -665,14 +645,14 @@ export default function SubjectsPage() {
                   placeholder={t.searchPlaceholder}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-11 h-12 bg-white/5 border-white/15 text-white placeholder:text-white rounded-xl focus-visible:border-[#9FF5E8] focus-visible:ring-[#9FF5E8]/30"
+                  className="pl-11 h-12 bg-[#1b1922] border-[#1b1922] text-white placeholder:text-white rounded-xl focus-visible:border-[#9FF5E8] focus-visible:ring-[#9FF5E8]/30"
                   data-testid="input-search"
                 />
               </div>
 
               <div
-                className="flex flex-wrap items-center gap-1 rounded-xl bg-white/[.03] p-1"
-                style={{ border: "1px solid rgba(255,255,255,0.12)" }}
+                className="flex flex-wrap items-center gap-1 rounded-xl bg-[#1b1922] p-1"
+                style={{ border: "1px solid #1b1922" }}
                 data-testid="sort-group"
               >
                 <ArrowUpDown className="w-3.5 h-3.5 text-white ml-2 shrink-0" />
@@ -770,9 +750,9 @@ export default function SubjectsPage() {
               </div>
             ) : subjectsToShow.length > 0 ? (
               <div
-                className="relative text-center py-16 rounded-[22px] bg-[#050508] bg-[linear-gradient(rgba(255,255,255,.05),rgba(255,255,255,.05))] overflow-hidden"
+                className="relative text-center py-16 rounded-[22px] bg-[#050508] bg-[linear-gradient(#1b1922,#1b1922)] overflow-hidden"
                 style={{
-                  border: "1px solid rgba(255,255,255,0.1)",
+                  border: "1px solid #1b1922",
                 }}
               >
                 <Sparkles
@@ -801,7 +781,7 @@ export default function SubjectsPage() {
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div
                 key={i}
-                className="h-44 rounded-2xl bg-white/5 border border-white/10 animate-pulse"
+                className="h-44 rounded-2xl bg-[#1b1922] border border-[#1b1922] animate-pulse"
               />
             ))}
           </div>
@@ -832,7 +812,7 @@ function SortChip({
       className="px-4 py-2 rounded-xl text-sm font-bold transition-colors"
       style={{
         color: active ? "#0a0a0a" : hex,
-        background: active ? hex : "rgba(255,255,255,.03)",
+        background: active ? hex : "#1b1922",
         border: `1.5px solid ${hex}`,
       }}
     >
@@ -864,7 +844,7 @@ function CategoryPill({
       className="px-4 py-2 rounded-xl text-sm font-bold transition-colors flex items-center gap-2"
       style={{
         border: `1.5px solid ${hex}`,
-        background: active ? hex : "rgba(255,255,255,.03)",
+        background: active ? hex : "#1b1922",
         color: active ? "#0a0a0a" : hex,
       }}
     >
@@ -932,8 +912,8 @@ function SubjectNeonCard({
       data-testid={testId}
       className="group relative overflow-hidden cursor-pointer transition-all hover:-translate-y-1"
       style={{
-        background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
-        border: "1px solid rgba(255,255,255,.08)",
+        background: "linear-gradient(#1b1922, #1b1922), #050508",
+        border: "1px solid #1b1922",
         borderRadius: 22,
         transition: "transform .25s, box-shadow .25s",
         animation: `bt-fadeup .45s cubic-bezier(.22,1,.36,1) ${animDelay}s both`,
@@ -1012,7 +992,7 @@ function SubjectNeonCard({
           </div>
           <div
             className="h-1.5 rounded-full overflow-hidden"
-            style={{ background: "rgba(255,255,255,0.06)" }}
+            style={{ background: "#1b1922" }}
           >
             <div
               className="h-full rounded-full transition-all"

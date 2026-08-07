@@ -12,6 +12,7 @@ import rizzAvatar from "@assets/rizz-nav-transparent.png";
 import { rizzMascot } from "@/components/rizz-brand";
 import { LearnerHeader } from "@/components/learner-header";
 import { GraffitiSplats } from "@/components/graffiti-splats";
+import { Button } from "@/components/ui/button";
 
 interface JourneyEvent {
   id: string;
@@ -76,7 +77,7 @@ const EVENT_HEX: Record<string, string> = {
 };
 
 const marker = (color: string, size = 16): CSSProperties => ({
-  fontFamily: "'Permanent Marker',cursive",
+  fontFamily: "'Bebas Neue', sans-serif",
   fontSize: size,
   color,
   transform: "rotate(-2deg)",
@@ -90,7 +91,7 @@ const sticker = (color: string, rotate: number, pos: CSSProperties): CSSProperti
   position: "absolute",
   ...pos,
   transform: `rotate(${rotate}deg)`,
-  fontFamily: "'Permanent Marker',cursive",
+  fontFamily: "'Bebas Neue', sans-serif",
   fontSize: 16,
   lineHeight: 1.2,
   color,
@@ -201,7 +202,7 @@ export default function JourneyPage() {
         titleExtra={isParentView ? (
           <span
             className="text-[9px] font-black uppercase tracking-[0.22em] px-2 py-0.5 rounded-full shrink-0"
-            style={{ color: "#C5B3FF", border: "1px solid #C5B3FF", background: "rgba(255,255,255,.03)" }}
+            style={{ color: "#C5B3FF", border: "1px solid #C5B3FF", background: "#1b1922" }}
           >
             {t.parentBadge}
           </span>
@@ -259,7 +260,7 @@ export default function JourneyPage() {
                   ? `${journey?.learnerName ? journey.learnerName : "Jou"} Leerreis`
                   : `${journey?.learnerName ? journey.learnerName + "'s" : "Your"} Journey`}
               </div>
-              <p className="text-white font-medium text-sm sm:text-base max-w-2xl leading-relaxed" style={{ opacity: 0.94 }}>
+              <p className="text-white font-medium text-sm sm:text-base max-w-2xl leading-relaxed">
                 {t.heroSubtitle}
               </p>
               <span style={marker("#FFB7E5", 15)}>{t.hypeLine}</span>
@@ -404,7 +405,7 @@ export default function JourneyPage() {
                 {t.completedMilestones}
                 <span
                   className="ml-1 px-2 py-0.5 rounded-full text-[9px] font-black tabular-nums"
-                  style={{ background: "rgba(255,255,255,.03)", border: "1px solid #9FF5E8", color: "#9FF5E8" }}
+                  style={{ background: "#1b1922", border: "1px solid #9FF5E8", color: "#9FF5E8" }}
                 >
                   {completed.length}
                 </span>
@@ -426,8 +427,8 @@ export default function JourneyPage() {
                     <div
                       className="flex items-center gap-3 p-4 text-white text-sm"
                       style={{
-                        background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
-                        border: "1px solid rgba(255,255,255,.08)",
+                        background: "linear-gradient(#1b1922, #1b1922), #050508",
+                        border: "1px solid #1b1922",
                         borderRadius: 18,
                       }}
                     >
@@ -454,7 +455,7 @@ export default function JourneyPage() {
                         <div
                           className="flex-1 p-4 transition-all"
                           style={{
-                            background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
+                            background: "linear-gradient(#1b1922, #1b1922), #050508",
                             border: `1px solid ${hex}`,
                             borderRadius: 18,
                             
@@ -484,7 +485,7 @@ export default function JourneyPage() {
                                 <p className="font-black text-sm text-white leading-tight">
                                   {isAf ? event.titleAf : event.title}
                                 </p>
-                                <p className="text-[11px] text-white mt-1 leading-relaxed" style={{ opacity: 0.92 }}>
+                                <p className="text-[11px] text-white mt-1 leading-relaxed">
                                   {isAf ? event.descriptionAf : event.description}
                                 </p>
                               </div>
@@ -515,7 +516,7 @@ export default function JourneyPage() {
                   {t.upcomingGoals}
                   <span
                     className="ml-1 px-2 py-0.5 rounded-full text-[9px] font-black tabular-nums text-white"
-                    style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.18)" }}
+                    style={{ background: "#1b1922", border: "1px solid #1b1922" }}
                   >
                     {upcoming.length}
                   </span>
@@ -529,7 +530,7 @@ export default function JourneyPage() {
                         key={event.id}
                         className="flex items-start gap-3 p-4"
                         style={{
-                          background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
+                          background: "linear-gradient(#1b1922, #1b1922), #050508",
                           border: `1px dashed ${hex}55`,
                           borderRadius: 18,
                         }}
@@ -544,7 +545,7 @@ export default function JourneyPage() {
                           <p className="font-black text-sm text-white leading-tight">
                             {isAf ? event.titleAf : event.title}
                           </p>
-                          <p className="text-[11px] text-white mt-1 leading-relaxed" style={{ opacity: 0.92 }}>
+                          <p className="text-[11px] text-white mt-1 leading-relaxed">
                             {isAf ? event.descriptionAf : event.description}
                           </p>
                         </div>
@@ -560,7 +561,7 @@ export default function JourneyPage() {
               <section
                 className="relative p-6 sm:p-7 flex flex-col sm:flex-row items-center justify-between gap-5 overflow-hidden"
                 style={{
-                  background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
+                  background: "linear-gradient(#1b1922, #1b1922), #050508",
                   border: "1.5px solid #FFB7E5",
                   borderRadius: 22,
                   // No bt-fadeup — see hero section for why the animation was
@@ -573,40 +574,30 @@ export default function JourneyPage() {
                     {isAf ? "Klein treë, GROOT resultate!" : "Small steps BIG results!"}
                   </span>
                   <h3 className="font-black text-xl text-white">{t.ctaHeading}</h3>
-                  <p className="text-sm text-white mt-1 leading-relaxed" style={{ opacity: 0.92 }}>
+                  <p className="text-sm text-white mt-1 leading-relaxed">
                     {t.ctaDescription}
                   </p>
                 </div>
                 <div className="shrink-0 flex flex-col sm:flex-row items-stretch gap-2.5">
                   <Link href="/exam-ready">
-                    <button
-                      className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-extrabold text-sm hover:bg-white/10 transition-all"
-                      style={{ background: "rgba(255,255,255,.03)", color: "#fff", border: "1.5px solid rgba(255,255,255,.2)" }}
+                    <Button
+                      variant="outline"
+                      className="w-full"
                       data-testid="button-exam-readiness"
                     >
-                      <Target className="w-4 h-4" style={{ color: "#C5B3FF" }} />
+                      <Target className="w-4 h-4" />
                       {t.examReadyLink}
-                    </button>
+                    </Button>
                   </Link>
                   <Link href="/subjects">
-                    <button
-                      className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-extrabold text-sm transition-all"
-                      style={{
-                        background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
-                        color: "#050508",
-                        border: "none",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = "translateY(-2px)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = "none";
-                      }}
+                    <Button
+                      variant="primary"
+                      className="w-full"
                       data-testid="button-start-studying"
                     >
                       {t.ctaButton}
                       <ArrowRight className="w-4 h-4" />
-                    </button>
+                    </Button>
                   </Link>
                 </div>
               </section>

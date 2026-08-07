@@ -1,6 +1,6 @@
-// BrainTrack NSC Practice Centre — restyled to the "Permanent Marker Street
+// BrainTrack NSC Practice Centre — restyled to the "Bebas Neue Street
 // Pastel" design system (docs/design-guidelines.md). #050508 ground, pastel
-// accent cards, Permanent Marker eyebrows, rainbow hero, gradient action
+// accent cards, Bebas Neue eyebrows, rainbow hero, gradient action
 // buttons, pure white text. RESTYLE ONLY — queries, SEO and data-testids
 // preserved exactly.
 import { useState, type CSSProperties } from "react";
@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 import { PublicFooter } from "@/components/public-footer";
+import { Button } from "@/components/ui/button";
 
 const DBE_BASE_URL = "https://www.education.gov.za/Curriculum/NationalSeniorCertificate(NSC)Examinations/NSCPastExaminationpapers.aspx";
 
@@ -92,8 +93,8 @@ const RAINBOW_TEXT: CSSProperties = {
   color: "transparent",
 };
 const CARD: CSSProperties = {
-  background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
-  border: "1px solid rgba(255,255,255,.08)",
+  background: "linear-gradient(#1b1922, #1b1922), #050508",
+  border: "1px solid #1b1922",
   borderRadius: 20,
 };
 const PRIMARY_BTN: CSSProperties = {
@@ -105,20 +106,20 @@ const PRIMARY_BTN: CSSProperties = {
 };
 const SECONDARY_BTN: CSSProperties = {
   background: "transparent",
-  border: "1.5px solid rgba(255,255,255,.2)",
+  border: "1.5px solid #1b1922",
   color: "#fff",
   borderRadius: 10,
   fontWeight: 700,
 };
 const marker = (color: string, size = 15): CSSProperties => ({
-  fontFamily: "'Permanent Marker',cursive",
+  fontFamily: "'Bebas Neue', sans-serif",
   fontSize: size,
   color,
   transform: "rotate(-2deg)",
   display: "inline-block",
 });
 const accentCard = (hex: string): CSSProperties => ({
-  background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
+  background: "linear-gradient(#1b1922, #1b1922), #050508",
   border: `1.5px solid ${hex}55`,
   borderRadius: 20,
 });
@@ -317,7 +318,7 @@ export default function PastPapersPage() {
       {/* ── Sticky header ─────────────────────────────────────────── */}
       <header
         className="sticky top-0 z-50 border-b"
-        style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "rgba(255,255,255,.08)" }}
+        style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "#1b1922" }}
       >
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16 gap-4">
@@ -325,7 +326,7 @@ export default function PastPapersPage() {
               <Link href="/dashboard">
                 <button
                   data-testid="button-back-dashboard"
-                  className="inline-flex items-center justify-center gap-2 min-h-[44px] min-w-[44px] px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 shrink-0"
+                  className="inline-flex items-center justify-center gap-2 min-h-[44px] min-w-[44px] px-4 py-2 rounded-xl bg-[#1b1922] text-sm font-bold hover:bg-[#1b1922] shrink-0"
                   style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
                 >
                   <ArrowLeft className="w-4 h-4" />
@@ -340,11 +341,11 @@ export default function PastPapersPage() {
               <button
                 onClick={() => setLanguage("en")}
                 data-testid="button-lang-en"
-                className="inline-flex items-center justify-center min-h-[44px] px-3 py-2 rounded-xl text-sm font-bold transition-colors hover:bg-white/10"
+                className="inline-flex items-center justify-center min-h-[44px] px-3 py-2 rounded-xl text-sm font-bold transition-colors hover:bg-[#1b1922]"
                 style={{
                   color: "#C5B3FF",
                   border: "1.5px solid #C5B3FF",
-                  background: language === "en" ? "rgba(197,179,255,.16)" : "rgba(255,255,255,.03)",
+                  background: language === "en" ? "rgba(197,179,255,.16)" : "#1b1922",
                 }}
               >
                 English
@@ -352,11 +353,11 @@ export default function PastPapersPage() {
               <button
                 onClick={() => setLanguage("af")}
                 data-testid="button-lang-af"
-                className="inline-flex items-center justify-center min-h-[44px] px-3 py-2 rounded-xl text-sm font-bold transition-colors hover:bg-white/10"
+                className="inline-flex items-center justify-center min-h-[44px] px-3 py-2 rounded-xl text-sm font-bold transition-colors hover:bg-[#1b1922]"
                 style={{
                   color: "#C5B3FF",
                   border: "1.5px solid #C5B3FF",
-                  background: language === "af" ? "rgba(197,179,255,.16)" : "rgba(255,255,255,.03)",
+                  background: language === "af" ? "rgba(197,179,255,.16)" : "#1b1922",
                 }}
               >
                 Afrikaans
@@ -393,7 +394,7 @@ export default function PastPapersPage() {
           >
             {text.title}
           </div>
-          <p className="text-white text-base sm:text-lg" style={{ opacity: 0.94 }}>
+          <p className="text-white text-base sm:text-lg">
             {text.subtitle}
           </p>
         </section>
@@ -401,7 +402,7 @@ export default function PastPapersPage() {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList
             className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto gap-1 p-1.5"
-            style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.08)", borderRadius: 16 }}
+            style={{ background: "#1b1922", border: "1px solid #1b1922", borderRadius: 16 }}
           >
             {tabs.map(({ value, label, Icon, testid }) => (
               <TabsTrigger
@@ -437,18 +438,18 @@ export default function PastPapersPage() {
                 <div role="heading" aria-level={2} className="text-xl sm:text-2xl font-black" style={RAINBOW_TEXT}>
                   {text.comingSoonTitle}
                 </div>
-                <p className="text-white max-w-xl" style={{ opacity: 0.94 }}>
+                <p className="text-white max-w-xl">
                   {text.comingSoonBody}
                 </p>
                 <Link href="/exam/full">
-                  <button
+                  <Button
+                    variant="primary"
+                    size="lg"
                     data-testid="link-to-full-exam"
-                    className="inline-flex items-center justify-center px-6 py-3 text-sm transition-all hover:-translate-y-0.5"
-                    style={PRIMARY_BTN}
                   >
                     <FileText className="w-4 h-4 mr-2" />
                     {text.comingSoonCta}
-                  </button>
+                  </Button>
                 </Link>
               </div>
             ) : (
@@ -457,7 +458,7 @@ export default function PastPapersPage() {
               <Sparkles className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: "#9FD8FF" }} />
               <div>
                 <p className="text-sm text-white font-semibold">{text.disclaimer}</p>
-                <p className="text-xs text-white mt-1" style={{ opacity: 0.9 }}>{text.legalNote}</p>
+                <p className="text-xs text-white mt-1">{text.legalNote}</p>
               </div>
             </div>
 
@@ -467,7 +468,7 @@ export default function PastPapersPage() {
                   <div role="heading" aria-level={2} className="font-black text-base text-white">
                     {language === "af" ? "Vakke" : "Subjects"}
                   </div>
-                  <p className="text-xs text-white mt-0.5 mb-3" style={{ opacity: 0.9 }}>10 {text.years}</p>
+                  <p className="text-xs text-white mt-0.5 mb-3">10 {text.years}</p>
                   <div className="space-y-1.5 max-h-[500px] overflow-y-auto pr-1">
                     {subjectsFailed ? (
                       /* Server-side failure — distinct from "you haven't picked
@@ -479,13 +480,13 @@ export default function PastPapersPage() {
                             ? "Ons kon nie jou vakke laai nie. Dis aan ons kant, nie joune nie."
                             : "We couldn't load your subjects. That's on our side, not yours."}
                         </p>
-                        <button
+                        <Button
+                          variant="outline"
+                          size="sm"
                           onClick={() => window.location.reload()}
-                          className="px-4 py-2 text-xs transition-all hover:bg-white/5"
-                          style={SECONDARY_BTN}
                         >
                           {language === "af" ? "Probeer weer" : "Try again"}
-                        </button>
+                        </Button>
                       </div>
                     ) : hasNoEnrollment ? (
                       <div className="py-6 text-center space-y-3">
@@ -495,12 +496,12 @@ export default function PastPapersPage() {
                             : "Complete your subject selection to see your past papers."}
                         </p>
                         <Link href="/onboarding">
-                          <button
-                            className="px-4 py-2 text-xs transition-all hover:bg-white/5"
-                            style={SECONDARY_BTN}
+                          <Button
+                            variant="outline"
+                            size="sm"
                           >
                             {language === "af" ? "Kies vakke" : "Select subjects"}
-                          </button>
+                          </Button>
                         </Link>
                       </div>
                     ) : visibleSubjects.map((subject, idx) => {
@@ -509,12 +510,12 @@ export default function PastPapersPage() {
                       return (
                         <button
                           key={subject.code}
-                          className="w-full flex items-center gap-2 px-3 py-2.5 text-left text-sm font-bold transition-all hover:bg-white/5"
+                          className="w-full flex items-center gap-2 px-3 py-2.5 text-left text-sm font-bold transition-all hover:bg-[#1b1922]"
                           style={{
                             borderRadius: 12,
                             color: isActive ? hex : "#fff",
                             background: isActive ? `${hex}14` : "transparent",
-                            border: isActive ? `1.5px solid ${hex}` : "1px solid rgba(255,255,255,.1)",
+                            border: isActive ? `1.5px solid ${hex}` : "1px solid #1b1922",
                           }}
                           onClick={() => setSelectedSubject(subject.code)}
                           data-testid={`button-subject-${subject.code}`}
@@ -547,7 +548,7 @@ export default function PastPapersPage() {
                         {language === "af" ? "Historiese Tendense" : "Historical Trends"}
                       </span>
                     </div>
-                    <p className="text-sm text-white mt-1 mb-4" style={{ opacity: 0.9 }}>{text.selectSubject}</p>
+                    <p className="text-sm text-white mt-1 mb-4">{text.selectSubject}</p>
                     <div className="grid gap-3">
                       {selectedIngested && selectedIngested.years.length > 0 ? (
                         <div className="space-y-3">
@@ -563,7 +564,7 @@ export default function PastPapersPage() {
                                   <p className="font-black text-sm" style={{ color: hex }}>{y.year}</p>
                                   <span
                                     className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                                    style={{ color: "#fff", border: "1px solid rgba(255,255,255,.25)" }}
+                                    style={{ color: "#fff", border: "1px solid #1b1922" }}
                                   >
                                     {y.papers.length} {language === "af" ? "vraestelle" : "papers"} · {y.memos.length} {language === "af" ? "memo's" : "memos"}
                                   </span>
@@ -590,7 +591,7 @@ export default function PastPapersPage() {
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       data-testid={`link-memo-${y.year}-p${m}`}
-                                      className="inline-flex items-center px-3.5 py-2 text-xs transition-all hover:bg-white/5"
+                                      className="inline-flex items-center px-3.5 py-2 text-xs transition-all hover:bg-[#1b1922]"
                                       style={SECONDARY_BTN}
                                     >
                                       <Check className="w-3.5 h-3.5 mr-1.5" style={{ color: "#94F7C5" }} />
@@ -612,17 +613,17 @@ export default function PastPapersPage() {
                               ? `Amptelike vraestelle vir ${selectedSubjectData.nameAf} is nog nie opgelaai nie. Besoek die DBO-webwerf.`
                               : `Official papers for ${selectedSubjectData.name} have not been uploaded yet. Visit the DBE website.`}
                           </p>
-                          <a
-                            href={DBE_BASE_URL}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            data-testid="button-view-dbe"
-                            className="inline-flex items-center px-5 py-2.5 text-sm transition-all hover:-translate-y-0.5"
-                            style={PRIMARY_BTN}
-                          >
-                            <ExternalLink className="w-4 h-4 mr-2" />
-                            {text.viewOnDBE}
-                          </a>
+                          <Button asChild variant="primary">
+                            <a
+                              href={DBE_BASE_URL}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              data-testid="button-view-dbe"
+                            >
+                              <ExternalLink className="w-4 h-4 mr-2" />
+                              {text.viewOnDBE}
+                            </a>
+                          </Button>
                         </div>
                       )}
                     </div>
@@ -649,7 +650,7 @@ export default function PastPapersPage() {
                   <div role="heading" aria-level={2} className="font-black text-base text-white">
                     {language === "af" ? "Vakke" : "Subjects"}
                   </div>
-                  <p className="text-xs text-white mt-0.5 mb-3" style={{ opacity: 0.9 }}>
+                  <p className="text-xs text-white mt-0.5 mb-3">
                     {language === "af" ? "Patroon-analise" : "Pattern Analysis"}
                   </p>
                   <div className="space-y-1.5">
@@ -660,12 +661,12 @@ export default function PastPapersPage() {
                       return (
                         <button
                           key={code}
-                          className="w-full flex items-center gap-2 px-3 py-2.5 text-left text-sm font-bold transition-all hover:bg-white/5"
+                          className="w-full flex items-center gap-2 px-3 py-2.5 text-left text-sm font-bold transition-all hover:bg-[#1b1922]"
                           style={{
                             borderRadius: 12,
                             color: isActive ? hex : "#fff",
                             background: isActive ? `${hex}14` : "transparent",
-                            border: isActive ? `1.5px solid ${hex}` : "1px solid rgba(255,255,255,.1)",
+                            border: isActive ? `1.5px solid ${hex}` : "1px solid #1b1922",
                           }}
                           onClick={() => setSelectedSubject(code)}
                           data-testid={`button-pattern-${code}`}
@@ -748,7 +749,7 @@ export default function PastPapersPage() {
                 <p className="text-sm font-bold text-white">
                   {language === "af" ? "Wetlik Voldoen" : "Legally Compliant"}
                 </p>
-                <p className="text-xs text-white" style={{ opacity: 0.9 }}>
+                <p className="text-xs text-white">
                   {language === "af"
                     ? "Alle vrae is OORSPRONKLIK en GESIMULEER. Amptelike DBE-inhoud word slegs via eksterne skakels verskaf."
                     : "All questions are ORIGINAL and SIMULATED. Official DBE content is only provided via external links."}
@@ -803,16 +804,16 @@ export default function PastPapersPage() {
                       </span>
                     </div>
                     <Link href={available ? "/bst-exam" : "#"}>
-                      <button
-                        className="w-full inline-flex items-center justify-center px-4 py-2.5 text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                        style={available ? PRIMARY_BTN : SECONDARY_BTN}
+                      <Button
+                        variant={available ? "primary" : "outline"}
+                        className="w-full"
                         disabled={!available}
                       >
                         <FileText className="w-4 h-4 mr-2" />
                         {available
                           ? (language === "af" ? "Begin Eksamen" : "Start Exam")
                           : (language === "af" ? "Binnekort" : "Coming Soon")}
-                      </button>
+                      </Button>
                     </Link>
                   </div>
                 );
@@ -828,7 +829,7 @@ export default function PastPapersPage() {
                   {visibleSubjects.filter(s => s.code === "BUS" || !!findIngestedFor(s.name)).length}
                   <span className="text-sm font-bold text-white">/{visibleSubjects.length}</span>
                 </p>
-                <p className="text-[11px] text-white mt-1" style={{ opacity: 0.9 }}>
+                <p className="text-[11px] text-white mt-1">
                   {language === "af" ? "Vakke met simulasie" : "Subjects with simulator"}
                 </p>
               </div>
@@ -837,7 +838,7 @@ export default function PastPapersPage() {
                   {language === "af" ? "Belyning" : "Alignment"}
                 </div>
                 <p className="text-2xl font-black" style={RAINBOW_TEXT}>100%</p>
-                <p className="text-[11px] text-white mt-1" style={{ opacity: 0.9 }}>
+                <p className="text-[11px] text-white mt-1">
                   {language === "af" ? "KABV-belyn" : "CAPS aligned"}
                 </p>
               </div>
@@ -848,7 +849,7 @@ export default function PastPapersPage() {
                 <p className="text-2xl font-black text-white">
                   {language === "af" ? "Outomaties" : "Auto"}
                 </p>
-                <p className="text-[11px] text-white mt-1" style={{ opacity: 0.9 }}>
+                <p className="text-[11px] text-white mt-1">
                   {language === "af" ? "Onmiddellike terugvoer" : "Instant feedback"}
                 </p>
               </div>
@@ -859,7 +860,7 @@ export default function PastPapersPage() {
                 <p className="text-2xl font-black text-white">
                   {language === "af" ? "Ingesluit" : "Included"}
                 </p>
-                <p className="text-[11px] text-white mt-1" style={{ opacity: 0.9 }}>
+                <p className="text-[11px] text-white mt-1">
                   {language === "af" ? "Volledige verduidelikings" : "Full explanations"}
                 </p>
               </div>
@@ -952,7 +953,7 @@ export default function PastPapersPage() {
                           {language === "af" ? "Hoe BrainTrack dit gebruik:" : "How BrainTrack uses this:"}
                         </span>
                       </div>
-                      <p className="text-xs text-white" style={{ opacity: 0.92 }}>{how}</p>
+                      <p className="text-xs text-white">{how}</p>
                     </div>
                   </div>
                 </div>
@@ -973,7 +974,7 @@ export default function PastPapersPage() {
                     ? "Beter langtermyn retensie vs tradisionele studeermetodes"
                     : "Better long-term retention vs traditional study methods"}
                 </p>
-                <p className="text-xs text-white mt-4" style={{ opacity: 0.85 }}>
+                <p className="text-xs text-white mt-4">
                   Sources: Roediger & Karpicke (2006), Psychological Science | Ebbinghaus (1885) | Fleming & Mills (1992)
                 </p>
               </div>

@@ -110,8 +110,8 @@ interface MonthlySummary {
 
 /* ── Executive brand primitives ─────────────────────────────────────────────
    Per the design system: "Parent/School reports = restrained, executive;
-   accents only." White-on-dark panels (rgba(255,255,255,.035) fill, 1px
-   rgba(255,255,255,.1) hairline, radius 20), landing pastels for values and
+   accents only." White-on-dark panels (#1b1922 fill, 1px
+   #1b1922 hairline, radius 20), landing pastels for values and
    accents, pure #fff text (opacity ≤.94 only for secondary lines), gradient
    primary buttons — no graffiti scatter, no marker lettering except one
    small encouragement accent.                                              */
@@ -131,8 +131,8 @@ const INK = "0 2px 0 rgba(0,0,0,0.85)";
 
 /** Executive panel chrome — the one card recipe used across this page. */
 const panel = (hex?: string): React.CSSProperties => ({
-  background: "rgba(255,255,255,.035)",
-  border: "1px solid rgba(255,255,255,.1)",
+  background: "#1b1922",
+  border: "1px solid #1b1922",
   ...(hex ? { borderLeft: `3px solid ${hex}` } : {}),
   borderRadius: 20,
 });
@@ -142,7 +142,6 @@ const panel = (hex?: string): React.CSSProperties => ({
 const PRIMARY_GRADIENT = "linear-gradient(100deg,#9FF5E8,#C5B3FF)";
 const BTN_BASE =
   "inline-flex items-center justify-center gap-2 rounded-[10px] text-sm font-bold transition-transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-60 disabled:hover:translate-y-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white";
-const BTN_PRIMARY = `${BTN_BASE} px-5 py-2.5`;
 const BTN_SECONDARY = `${BTN_BASE} px-4 py-2 bg-transparent`;
 
 const primaryFill = (hex: string): React.CSSProperties => ({
@@ -387,7 +386,7 @@ function StatTile({
       data-testid={testId}
     >
       <div className="flex items-start justify-between gap-2">
-        <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-white leading-snug" style={{ opacity: 0.94 }}>{label}</p>
+        <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-white leading-snug">{label}</p>
         <Icon className="w-4 h-4 shrink-0" style={{ color: hex }} />
       </div>
       <p className="text-3xl font-black leading-none tabular-nums mt-2.5" style={{ color: hex }}>
@@ -673,7 +672,7 @@ function ReadinessRing({ pct, hex, size = 92 }: { pct: number; hex: string; size
           </linearGradient>
         </defs>
         {/* Track */}
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={stroke} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#1b1922" strokeWidth={stroke} />
         {/* Progress */}
         <circle
           cx={size / 2}
@@ -885,7 +884,7 @@ function MonthlySummaryPanel({ summary, isAf }: { summary: MonthlySummary; isAf:
                     <span className="text-xs text-white font-medium">{s.subjectName}</span>
                     <span className="text-xs font-bold" style={{ color: "#9FF5E8" }}>{s.accuracy}%</span>
                   </div>
-                  <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.08)" }}>
+                  <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "#1b1922" }}>
                     <div className="h-full rounded-full transition-all duration-700" style={{ width: `${s.accuracy}%`, background: "#9FF5E8" }} />
                   </div>
                 </div>
@@ -912,8 +911,9 @@ function SubscriptionPanel({ isAf }: { isAf: boolean }) {
 
   const statusMap: Record<string, { en: string; af: string; hex: string }> = {
     active:       { en: "Active",          af: "Aktief",         hex: "#94F7C5" },
-    trial:        { en: "Free Trial",      af: "Gratis Proeftyd", hex: "#9FF5E8" },
-    trialing:     { en: "Free Trial",      af: "Gratis Proeftyd", hex: "#9FF5E8" },
+    // Grandfathered trial/trialing users still have real access — show as Active.
+    trial:        { en: "Active",          af: "Aktief",         hex: "#94F7C5" },
+    trialing:     { en: "Active",          af: "Aktief",         hex: "#94F7C5" },
     pending:      { en: "Pending",         af: "Hangend",        hex: "#FFE29A" },
     grace:        { en: "Payment Issue",   af: "Betaalprobleem", hex: "#FFE29A" },
     grace_period: { en: "Payment Issue",   af: "Betaalprobleem", hex: "#FFE29A" },
@@ -938,7 +938,7 @@ function SubscriptionPanel({ isAf }: { isAf: boolean }) {
   }
 
   const nextLabel = (status === "trial" || status === "trialing")
-    ? (isAf ? "Proeftyd verstryk" : "Trial ends")
+    ? (isAf ? "Toegang tot" : "Access until")
     : (isAf ? "Volgende fakturering" : "Next billing");
 
   return (
@@ -969,8 +969,8 @@ function SubscriptionPanel({ isAf }: { isAf: boolean }) {
         <Link href="/subscribe">
           <Button
             size="sm"
-            className={`${BTN_SECONDARY} shrink-0`}
-            style={primaryFill(PASTEL.cyan)}
+            variant="primary"
+            className="shrink-0"
             data-testid="button-manage-subscription"
           >
             {isAf ? "Bestuur Betaling" : "Manage Payment"}
@@ -1089,7 +1089,7 @@ function ParentReferralChildRow({
   return (
     <div
       className="rounded-xl p-3 flex flex-col sm:flex-row sm:items-center gap-3"
-      style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.08)" }}
+      style={{ background: "#1b1922", border: "1px solid #1b1922" }}
       data-testid={`parent-referral-child-row-${kid.learnerUserId}`}
     >
       <div className="flex-1 min-w-0">
@@ -1299,10 +1299,10 @@ function WhatsAppLinkStatusPanel({ isAf }: { isAf: boolean }) {
         {!isOpened && (isFailed || isInFlight) && (
           <Button
             size="sm"
+            variant="outline"
             disabled={resending || resendCooldown > 0 || isInFlight}
             onClick={handleResend}
-            className={`${BTN_SECONDARY} shrink-0`}
-            style={secondaryFill(hex)}
+            className="shrink-0"
             data-testid="button-resend-whatsapp-link"
             title={isInFlight ? (isAf ? "Wag totdat die skakel afgelewer is" : "Wait until delivery is confirmed") : undefined}
           >
@@ -1419,18 +1419,18 @@ function DownloadReportButton({ learnerName, isAf }: { learnerName: string; isAf
       className="inline-block"
       data-testid="button-download-report-wrapper"
     >
-      <button
+      <Button
         onClick={handleDownload}
         disabled={loading}
+        variant="primary"
         title={hint}
         aria-label={hint}
-        className={`${BTN_PRIMARY} disabled:cursor-wait`}
-        style={primaryFill(PASTEL.cyan)}
+        className="disabled:cursor-wait"
         data-testid="button-download-report"
       >
         {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
         {isAf ? "Laai Verslag Af" : "Download Report"}
-      </button>
+      </Button>
     </span>
   );
 }
@@ -1446,7 +1446,7 @@ const BAR_HEX: Record<string, string> = {
   "bg-cyan-500":    "#9FF5E8",
   "bg-cyan-400":    "#9FF5E8",
   "bg-muted-foreground/40": "#ffffff",
-  "bg-white/25":    "#ffffff",
+  "bg-[#1b1922]":    "#ffffff",
 };
 
 function AnimatedBar({ value, color, delay = 0 }: { value: number; color: string; delay?: number }) {
@@ -1457,7 +1457,7 @@ function AnimatedBar({ value, color, delay = 0 }: { value: number; color: string
   }, [value, delay]);
   const fill = BAR_HEX[color] ?? color;
   return (
-    <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.08)" }}>
+    <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "#1b1922" }}>
       <div
         className="h-full rounded-full transition-all duration-700 ease-out"
         style={{ width: `${width}%`, background: fill }}
@@ -1717,9 +1717,9 @@ export default function ParentDashboardPage() {
       >
         <div
           className="max-w-md w-full text-center rounded-2xl p-8"
-          style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.1)" }}
+          style={{ background: "#1b1922", border: "1px solid #1b1922" }}
         >
-          <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}>
+          <p style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}>
             {isAf ? "Nog geen leerder gekoppel nie" : "No learner linked yet"}
           </p>
           <p className="text-sm text-white mt-3">
@@ -1728,43 +1728,43 @@ export default function ParentDashboardPage() {
               : "Create and activate your child's account in under a minute — you get their sign-in details on screen immediately."}
           </p>
           <Link href="/parent/activate-child">
-            <button
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold mt-5 transition-transform hover:-translate-y-0.5"
-              style={{ background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", color: "#050508", border: "none" }}
+            <Button
+              variant="primary"
+              className="mt-5"
               data-testid="button-activate-child-empty"
             >
               <UserPlus className="w-4 h-4" />
               {isAf ? "Voeg jou kind by / aktiveer" : "Add / activate your child"}
-            </button>
+            </Button>
           </Link>
-          <p className="text-xs text-white mt-4" style={{ opacity: 0.85 }}>
+          <p className="text-xs text-white mt-4">
             {isAf
               ? "Het jou kind reeds 'n rekening? Sodra hulle dit aan jou koppel, verskyn hul vordering hier."
               : "Child already has an account? Once they link it to you, their progress shows up here."}
           </p>
           <Link href="/dashboard">
-            <button
-              className="inline-flex items-center px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10 mt-4"
-              style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
+            <Button
+              variant="outline"
+              className="mt-4"
               data-testid="link-home"
             >
               {isAf ? "Tuis" : "Home"}
-            </button>
+            </Button>
           </Link>
 
           {/* Admins land on this dead end whenever no family is linked, which
               is exactly when they want to review the layout. Surface the
               sample-data preview here rather than leaving it a secret URL. */}
           {isAdmin && (
-            <div className="mt-6 pt-5" style={{ borderTop: "1px solid rgba(255,255,255,.1)" }}>
-              <p className="text-xs text-white/80">
+            <div className="mt-6 pt-5" style={{ borderTop: "1px solid #1b1922" }}>
+              <p className="text-xs text-white">
                 {isAf
                   ? "Admin: laai hierdie bladsy met voorbeelddata om die ontwerp na te gaan. Niks word in die databasis geskep nie."
                   : "Admin: load this page with sample data to review the design. Nothing is written to the database."}
               </p>
               <button
                 onClick={() => { window.location.href = "/parent?preview=1"; }}
-                className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold hover:bg-white/10 mt-3"
+                className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold hover:bg-[#1b1922] mt-3"
                 style={{ color: PASTEL.amber, border: `1.5px solid ${PASTEL.amber}` }}
                 data-testid="parent-preview-enter"
               >
@@ -1811,7 +1811,7 @@ export default function ParentDashboardPage() {
         data-testid="parent-sidebar"
         style={{
           flex: "none",
-          borderRight: "1px solid rgba(255,255,255,.1)",
+          borderRight: "1px solid #1b1922",
           display: "flex",
           flexDirection: "column",
           gap: 6,
@@ -1870,7 +1870,7 @@ export default function ParentDashboardPage() {
                     border: active ? `1px solid ${PASTEL.cyan}` : "1px solid transparent",
                     transition: "all .2s",
                   }}
-                  onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = "rgba(255,255,255,.05)"; }}
+                  onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = "#1b1922"; }}
                   onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = "transparent"; }}
                 >
                   <Icon className="w-4 h-4 shrink-0" />
@@ -1893,13 +1893,13 @@ export default function ParentDashboardPage() {
             <>
               <p className="text-sm font-bold text-white mt-1 leading-tight">{sidebarLearnerName}</p>
               {sidebarLastActive && (
-                <p className="text-[11px] text-white mt-1" style={{ opacity: 0.88 }}>
+                <p className="text-[11px] text-white mt-1">
                   {nt.lastActive}: {sidebarLastActive}
                 </p>
               )}
             </>
           ) : (
-            <p className="text-[11px] text-white mt-1" style={{ opacity: 0.88 }}>{nt.noLearner}</p>
+            <p className="text-[11px] text-white mt-1">{nt.noLearner}</p>
           )}
         </div>
 
@@ -1919,14 +1919,14 @@ export default function ParentDashboardPage() {
             fontSize: 14,
             color: "#fff",
             background: "transparent",
-            border: "1px solid rgba(255,255,255,.14)",
+            border: "1px solid #1b1922",
             borderRadius: 14,
             padding: "11px 14px",
             cursor: "pointer",
             transition: "all .2s",
           }}
           onMouseEnter={(e) => { e.currentTarget.style.borderColor = PASTEL.pink; e.currentTarget.style.color = PASTEL.pink; }}
-          onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,.14)"; e.currentTarget.style.color = "#fff"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#1b1922"; e.currentTarget.style.color = "#fff"; }}
         >
           <LogOut className="w-4 h-4 shrink-0" />
           <span className="btp-navlabel">{nt.signOut}</span>
@@ -1940,7 +1940,7 @@ export default function ParentDashboardPage() {
         style={{
           background: "rgba(5,5,8,.85)",
           backdropFilter: "blur(14px)",
-          borderBottom: "1px solid rgba(255,255,255,.07)",
+          borderBottom: "1px solid #1b1922",
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -2028,7 +2028,7 @@ export default function ParentDashboardPage() {
                   ? "Admin-voorskou — niks hier is werklik nie."
                   : "Admin preview — nothing on this page is real."}
               </p>
-              <p className="text-xs text-white/80 mt-0.5">
+              <p className="text-xs text-white mt-0.5">
                 {isAf
                   ? "Elke leerder, punt, vak en aktiwiteit hieronder is versinde demodata wat slegs vir ontwerp-oorsig gewys word. Geen rekords is in die databasis geskep nie. Verwyder ?preview=1 uit die URL om na regte data terug te keer."
                   : "Every learner, mark, subject and activity below is invented demo data shown for design review only. No records were created in the database. Remove ?preview=1 from the URL to return to live data."}
@@ -2036,7 +2036,7 @@ export default function ParentDashboardPage() {
             </div>
             <button
               onClick={() => { window.location.href = "/parent"; }}
-              className="sm:ml-auto shrink-0 px-3 py-2 rounded-xl text-xs font-bold hover:bg-white/10"
+              className="sm:ml-auto shrink-0 px-3 py-2 rounded-xl text-xs font-bold hover:bg-[#1b1922]"
               style={{ color: PASTEL.amber, border: `1.5px solid ${PASTEL.amber}` }}
               data-testid="parent-preview-exit"
             >
@@ -2103,8 +2103,7 @@ export default function ParentDashboardPage() {
             <Button
               onClick={() => refetchChildProgress()}
               disabled={isRefetchingChildProgress}
-              className={BTN_SECONDARY}
-              style={secondaryFill(PASTEL.pink)}
+              variant="outline"
               data-testid="button-retry-parent-dashboard"
             >
               <RefreshCw className={`w-4 h-4 ${isRefetchingChildProgress ? "animate-spin" : ""}`} />
@@ -2543,7 +2542,7 @@ export default function ParentDashboardPage() {
                               <span>{isAf ? "Aanvanklik" : "Initial"}</span>
                               <span className="font-semibold">{subject.initialMark}%</span>
                             </div>
-                            <AnimatedBar value={subject.initialMark} color="bg-white/25" delay={i * 60} />
+                            <AnimatedBar value={subject.initialMark} color="bg-[#1b1922]" delay={i * 60} />
                           </div>
                           <ChevronRight className="w-3.5 h-3.5 text-white shrink-0" />
                           <div className="flex-1 space-y-1">
@@ -2803,8 +2802,8 @@ export default function ParentDashboardPage() {
               <Link href={selectedLearnerId ? `/journey?parent=1&learnerId=${encodeURIComponent(selectedLearnerId)}` : "/journey?parent=1"}>
                 <Button
                   size="sm"
-                  className={`${BTN_SECONDARY} shrink-0`}
-                  style={secondaryFill(PASTEL.emerald)}
+                  variant="outline"
+                  className="shrink-0"
                 >
                   {isAf ? "Sien Reis" : "View Journey"}
                   <ChevronRight className="w-3.5 h-3.5" />
@@ -2829,14 +2828,14 @@ export default function ParentDashboardPage() {
               {isAf ? "Vra jou kind om sy aktiveringskode in Instellings te deel — sodra dit gekoppel is, sien jy hul vordering hier." : "Ask your child to share their activation code from Settings — once linked, you'll see their progress here."}
             </p>
             <div className="mt-6">
-              <a
-                href="/subscribe"
-                className={BTN_PRIMARY}
-                style={primaryFill(PASTEL.purple)}
-                data-testid="link-parent-get-started"
-              >
-                {isAf ? "Begin nou — Student Life" : "Get Started — Student Life"}
-              </a>
+              <Button asChild variant="primary">
+                <a
+                  href="/subscribe"
+                  data-testid="link-parent-get-started"
+                >
+                  {isAf ? "Begin nou — Student Life" : "Get Started — Student Life"}
+                </a>
+              </Button>
             </div>
           </section>
         )}
@@ -3223,7 +3222,7 @@ const PARENT_FAQ = {
     { q: "How do I see my child's progress?", a: "Your dashboard shows weekly reports including study days, minutes studied, subjects practised, and mastery levels." },
     { q: "What does the mastery percentage mean?", a: "Mastery shows how well your child understands each topic. Green (75%+) means strong, amber (50-74%) developing, red means more practice needed." },
     { q: "Can I see which subjects my child is struggling with?", a: "Yes — the subject breakdown highlights weak areas in red. Use this for focused conversations with your child or their teachers." },
-    { q: "How does the 14-day free trial work?", a: "Full access for 14 days. Cancel any time during the trial and you're never charged. If you don't cancel, R169 goes off on day 14 and every month after." },
+    { q: "How does billing work?", a: "Student Life is R169/month, charged when you sign up and giving full access from day one. Cancel any time in the app — no lock-in. Prefer once-off? The Exam Season Pass (R550, to 15 Dec 2026), Prelim Sprint (R250, 6 weeks) and Finals Blitz (R250, 6 weeks) are single payments with no recurring billing." },
     { q: "Is the content aligned with the NSC curriculum?", a: "Yes — all questions, topics, and study plans come from the CAPS curriculum and 10 years of real NSC exam papers." },
     { q: "How do I contact support?", a: "Email learn@kth-tech.com or use the help button in the app. We respond within 24 hours." },
   ],
@@ -3231,7 +3230,7 @@ const PARENT_FAQ = {
     { q: "Hoe sien ek my kind se vordering?", a: "Jou dashboard wys weeklikse verslae met studiedae, minute gestudeer, vakke geoefen en bemeesteringsvlakke." },
     { q: "Wat beteken die bemeesteringspersentasie?", a: "Bemeestering wys hoe goed jou kind elke onderwerp verstaan. Groen (75%+) beteken sterk, amber (50-74%) ontwikkelend, rooi beteken meer oefening nodig." },
     { q: "Kan ek sien met watter vakke my kind sukkel?", a: "Ja — die vakuiteensetting lig swak areas in rooi uit vir gefokusde gesprekke." },
-    { q: "Hoe werk die 14-dae gratis proeftydperk?", a: "Volle toegang vir 14 dae. Kanselleer enige tyd tydens die proeftydperk en jy word nooit gehef nie. As jy nie kanselleer nie, word R169 outomaties op dag 14 gehef en elke maand daarna." },
+    { q: "Hoe werk die fakturering?", a: "Student Life is R169/maand, gehef wanneer jy aanmeld, met volle toegang van dag een af. Kanselleer enige tyd in die app — geen vasklouing. Verkies eenmalig? Die Eksamen Seisoenkaart (R550, tot 15 Des 2026), Voorlopige Sprint (R250, 6 weke) en Finale Blitz (R250, 6 weke) is enkele betalings sonder herhalende fakturering." },
     { q: "Is die inhoud in lyn met die NSC-kurrikulum?", a: "Ja — alle vrae en studieplanne kom uit die KABV-kurrikulum en 10 jaar se werklike NSC-eksamenvraestelle." },
     { q: "Hoe kontak ek ondersteuning?", a: "Stuur 'n e-pos aan learn@kth-tech.com of gebruik die hulpknoppie in die app." },
   ],
@@ -3247,7 +3246,7 @@ function ParentFAQ({ isAf }: { isAf: boolean }) {
       </Heading>
       <div>
         {items.map((item, idx) => (
-          <div key={idx} style={{ borderTop: idx === 0 ? "none" : "1px solid rgba(255,255,255,.1)" }}>
+          <div key={idx} style={{ borderTop: idx === 0 ? "none" : "1px solid #1b1922" }}>
             <button
               onClick={() => setOpenIdx(openIdx === idx ? null : idx)}
               className="flex items-center justify-between w-full py-3.5 text-left text-sm font-bold text-white transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white rounded-md"

@@ -94,48 +94,83 @@ export async function recordEventOnce(eventId: string, eventType: string, payloa
   }
 }
 
-/** Exam Blast: once-off R550, season access through 15 Dec 2026 (SAST).
- *  The learner starts on the SAME R1 card-capture → 14-day free trial →
- *  day-14 autocharge machine as premium, but on day 14 the once-off R550 is
- *  charged instead of the R169 recurring — no recurring billing, hard end
- *  date. Cancelling inside the 14 days leaves only the non-refundable R1. */
+/** Exam Season Pass: once-off R550, season access through 15 Dec 2026 (SAST).
+ *  Pay-now model: the learner is charged the full R550 immediately on
+ *  checkout — no R1 card-capture, no trial. Access runs to the fixed season
+ *  end (EXAM_BOOST_END). No recurring billing. */
 export const EXAM_BOOST_PRICE_MINOR = 55000; // R550.00 in cents
 export const EXAM_BOOST_END = new Date("2026-12-15T23:59:59+02:00");
 
-async function activateSubscription(opts: {
+/** Exam sprints: once-off R250, rolling 6-week (42-day) full access from
+ *  purchase. Prelim Sprint (Aug–Sep) and Finals Blitz (Oct–Nov) are the SAME
+ *  machine, different label/window. Pay-now: full R250 charged immediately,
+ *  no trial, no recurring. */
+export const PRELIM_SPRINT_PRICE_MINOR = 25000; // R250.00 in cents
+export const FINALS_BLITZ_PRICE_MINOR = 25000;  // R250.00 in cents
+export const SPRINT_DAYS = 42; // rolling 6-week access window
+export const PRELIM_SPRINT_DAYS = SPRINT_DAYS; // back-compat alias
+
+export async function activateSubscription(opts: {
   userId: string;
   customerCode?: string | null;
   subscriptionCode?: string | null;
   amountMinor?: number | null;
   nextPaymentDate?: string | null;
-  /** "premium" (R169/month recurring, default) or "exam_boost" (R550 once-off). */
-  product?: "premium" | "exam_boost";
-}): Promise<void> {
+  /** "premium" (R169/month recurring, default), "exam_boost" (R550 once-off,
+   *  season end), or "prelim_sprint" / "finals_blitz" (R250 once-off, +42 days). */
+  product?: "premium" | "exam_boost" | "prelim_sprint" | "finals_blitz";
+  /** True only when this call flipped the sub from a non-active state into
+   *  active (a fresh paid activation) — lets callers fire post-payment
+   *  onboarding once, and never on an idempotent replay or a renewal. */
+}): Promise<{ newlyActivated: boolean }> {
   const { userId, customerCode, subscriptionCode, amountMinor, nextPaymentDate, product } = opts;
   const isExamBoost = product === "exam_boost";
-  const [existing] = await db.select({ id: subscriptions.id })
+  const isPrelimSprint = product === "prelim_sprint";
+  const isFinalsBlitz = product === "finals_blitz";
+  const isSprint = isPrelimSprint || isFinalsBlitz;
+  const isOnceOff = isExamBoost || isSprint;
+  const [existing] = await db.select()
     .from(subscriptions)
     .where(eq(subscriptions.userId, userId));
+
+  const newlyActivated = !existing || existing.status !== "active";
+  const now = new Date();
+  const planName = isExamBoost ? "exam_boost" : isFinalsBlitz ? "finals_blitz" : isPrelimSprint ? "prelim_sprint" : "premium";
+  const defaultPrice = isExamBoost ? 550 : isSprint ? 250 : 169;
 
   const values: any = {
     userId,
     userRole: "learner",
     status: "active",
-    plan: isExamBoost ? "exam_boost" : "premium",
-    priceRands: amountMinor ? Math.round(amountMinor / 100) : isExamBoost ? 550 : 169,
+    plan: planName,
+    priceRands: amountMinor ? Math.round(amountMinor / 100) : defaultPrice,
     paymentProvider: "paystack",
     billingMethod: "paystack",
-    startDate: new Date(),
-    // Once-off: never renews; access runs to the fixed season end instead.
-    nextRenewalAt: isExamBoost ? null : nextPaymentDate ? new Date(nextPaymentDate) : null,
+    // Idempotent: preserve the original start on a duplicate verify/webhook.
+    startDate: (existing as any)?.startDate ?? now,
+    // Once-off products never renew; recurring premium carries its next date.
+    nextRenewalAt: isOnceOff ? null : nextPaymentDate ? new Date(nextPaymentDate) : null,
     lastPaymentStatus: "paid",
-    lastPaymentAt: new Date(),
-    updatedAt: new Date(),
+    lastPaymentAt: now,
+    updatedAt: now,
   };
   if (isExamBoost) {
     values.endDate = EXAM_BOOST_END;
-    // A once-off purchase must clear any trial bookkeeping so the day-14
-    // autocharge cron can never also bill this learner R169.
+    // A once-off purchase must clear any trial bookkeeping so no autocharge
+    // cron can ever also bill this learner.
+    values.trialEndsAt = null;
+  } else if (isSprint) {
+    // Rolling 6-week access (Prelim Sprint / Finals Blitz). If this learner is
+    // ALREADY on an active sprint, preserve the existing window instead of
+    // extending it on a duplicate verify/webhook delivery (never demote /
+    // re-roll an active sub).
+    const alreadyActiveSprint =
+      existing && existing.status === "active" &&
+      ((existing as any).plan === "prelim_sprint" || (existing as any).plan === "finals_blitz") &&
+      (existing as any).endDate;
+    values.endDate = alreadyActiveSprint
+      ? (existing as any).endDate
+      : new Date(now.getTime() + SPRINT_DAYS * 24 * 60 * 60 * 1000);
     values.trialEndsAt = null;
   }
   if (customerCode) values.paystackCustomerCode = customerCode;
@@ -145,6 +180,68 @@ async function activateSubscription(opts: {
     await db.update(subscriptions).set(values).where(eq(subscriptions.id, existing.id));
   } else {
     await db.insert(subscriptions).values(values);
+  }
+  return { newlyActivated };
+}
+
+/**
+ * Best-effort post-payment onboarding. Fired after a NEW paid subscription is
+ * activated (verify or webhook). Sends the branded welcome email and, when the
+ * checkout carried an (untrusted) learnerCell in metadata, the one-time
+ * onboarding magic-link. NEVER throws — activation correctness comes first, so
+ * every branch swallows its own errors.
+ */
+async function firePostPaymentOnboarding(opts: {
+  userId: string;
+  metadata?: Record<string, any> | null;
+  baseUrl: string;
+}): Promise<void> {
+  try {
+    const { userId, metadata, baseUrl } = opts;
+    const [learner] = await db
+      .select({
+        email: users.email,
+        firstName: users.firstName,
+        preferredLanguage: (users as any).preferredLanguage,
+      })
+      .from(users)
+      .where(eq(users.id, userId));
+    const lang: "en" | "af" = (learner as any)?.preferredLanguage === "af" ? "af" : "en";
+    const base = (baseUrl || "").replace(/\/+$/, "");
+
+    if (learner?.email) {
+      try {
+        const { sendWelcomeEmail } = await import("./email");
+        await sendWelcomeEmail({
+          to: learner.email,
+          firstName: learner.firstName ?? "",
+          language: lang,
+          dashboardUrl: `${base}/dashboard`,
+        });
+      } catch (err: any) {
+        console.error("[paystack] post-payment welcome email failed:", err?.message ?? err);
+      }
+    }
+
+    const rawCell = typeof metadata?.learnerCell === "string" ? metadata.learnerCell : null;
+    if (rawCell) {
+      try {
+        const { isValidSACell, normaliseSACell } = await import("./netcash");
+        if (isValidSACell(rawCell)) {
+          const { issueAndSendOnboardingLink } = await import("./sms/onboarding-link");
+          await issueAndSendOnboardingLink({
+            userId,
+            learnerCell: normaliseSACell(rawCell),
+            language: lang,
+            baseUrl: base,
+          });
+        }
+      } catch (err: any) {
+        console.error("[paystack] post-payment onboarding link failed:", err?.message ?? err);
+      }
+    }
+  } catch (err: any) {
+    console.error("[paystack] firePostPaymentOnboarding threw:", err?.message ?? err);
   }
 }
 
@@ -259,39 +356,68 @@ export function registerPaystackRoutes(app: Express, isAuthenticated: any) {
 
       const appUrl = (process.env.APP_URL || "").replace(/\/+$/, "");
       // The product is chosen server-side off a whitelisted body flag — the
-      // client can pick WHICH product, never the amount.
-      const isExamBoost = req.body?.product === "exam_boost";
-      const body = isExamBoost
-        ? {
-            email: user.email,
-            // Exam Blast now reuses the SAME machine as premium: an R1.00
-            // card-capture that starts the 14-day free trial. metadata.product
-            // = "exam_boost" round-trips to the webhook (purpose:"card_capture")
-            // so the trial row is tagged exam_boost and the day-14 cron charges
-            // the R550 once-off (NOT R169 recurring). No R550 is charged upfront.
-            amount: 100, // R1.00 in minor units — verification charge, non-refundable
-            currency: "ZAR",
-            channels: ["card"],
-            callback_url: `${appUrl}/subscribe?paystack=return`,
-            metadata: {
-              userId,
-              parentEmail: user.email,
-              purpose: "card_capture",
-              product: "exam_boost",
-            },
-          }
-        : {
-            email: user.email,
-            plan: planCode(),
-            // Paystack requires a non-zero amount on initialize even when a plan
-            // is supplied ("Invalid Amount Sent" otherwise). The plan's own
-            // amount takes precedence for the actual charge; this is in minor
-            // units (R169.00 = 16900 cents).
-            amount: 16900,
-            currency: "ZAR",
-            callback_url: `${appUrl}/subscribe?paystack=return`,
-            metadata: { userId, product: "BrainTrack Premium" },
-          };
+      // client can pick WHICH product, never the amount. Pay-now for all three:
+      // an immediate full charge, no R1 card-capture, no trial.
+      const product =
+        req.body?.product === "exam_boost" ? "exam_boost"
+        : req.body?.product === "prelim_sprint" ? "prelim_sprint"
+        : req.body?.product === "finals_blitz" ? "finals_blitz"
+        : "premium";
+
+      // Optional onboarding hints — round-tripped through Paystack metadata so
+      // post-payment can fire the learner onboarding link/welcome email. NOT
+      // trusted for anything security-sensitive: amount, product and access are
+      // all server-owned and amount-verified on activation.
+      const learnerCell = typeof req.body?.learnerCell === "string" ? req.body.learnerCell.slice(0, 20) : undefined;
+      const parentCell = typeof req.body?.parentCell === "string" ? req.body.parentCell.slice(0, 20) : undefined;
+      const onboardingMeta: Record<string, unknown> = {};
+      if (learnerCell) onboardingMeta.learnerCell = learnerCell;
+      if (parentCell) onboardingMeta.parentCell = parentCell;
+
+      const callbackUrl = `${appUrl}/subscribe?paystack=return`;
+      let body: Record<string, unknown>;
+      if (product === "exam_boost") {
+        body = {
+          email: user.email,
+          // Immediate FULL charge — R550 once-off season pass.
+          amount: EXAM_BOOST_PRICE_MINOR,
+          currency: "ZAR",
+          callback_url: callbackUrl,
+          metadata: { userId, ...onboardingMeta, product: "exam_boost", purpose: "exam_boost" },
+        };
+      } else if (product === "prelim_sprint") {
+        body = {
+          email: user.email,
+          // Immediate FULL charge — R250 once-off, 6-week access.
+          amount: PRELIM_SPRINT_PRICE_MINOR,
+          currency: "ZAR",
+          callback_url: callbackUrl,
+          metadata: { userId, ...onboardingMeta, product: "prelim_sprint", purpose: "prelim_sprint" },
+        };
+      } else if (product === "finals_blitz") {
+        body = {
+          email: user.email,
+          // Immediate FULL charge — R250 once-off, 6-week access (Oct–Nov finals).
+          amount: FINALS_BLITZ_PRICE_MINOR,
+          currency: "ZAR",
+          callback_url: callbackUrl,
+          metadata: { userId, ...onboardingMeta, product: "finals_blitz", purpose: "finals_blitz" },
+        };
+      } else {
+        body = {
+          email: user.email,
+          plan: planCode(),
+          // Paystack requires a non-zero amount on initialize even when a plan
+          // is supplied ("Invalid Amount Sent" otherwise). The plan's own
+          // amount takes precedence for the actual charge; this is in minor
+          // units (R169.00 = 16900 cents). Charges immediately + sets up the
+          // recurring plan.
+          amount: 16900,
+          currency: "ZAR",
+          callback_url: callbackUrl,
+          metadata: { userId, ...onboardingMeta, product: "BrainTrack Premium" },
+        };
+      }
       const data = await paystackFetch("/transaction/initialize", {
         method: "POST",
         body: JSON.stringify(body),
@@ -325,19 +451,32 @@ export function registerPaystackRoutes(app: Express, isAuthenticated: any) {
       if (paid) {
         // Trust the userId we set at initialize time, not anything client-sent.
         const userId = data?.metadata?.userId || req.user.claims.sub;
-        // Exam Blast only counts when the verified amount actually covers the
-        // R550 — the product label alone can't unlock season access.
-        const isExamBoost =
-          data?.metadata?.product === "exam_boost" &&
-          (data?.amount ?? 0) >= EXAM_BOOST_PRICE_MINOR;
-        await activateSubscription({
+        const meta = data?.metadata ?? {};
+        const amount = data?.amount ?? 0;
+        // Amount is verified server-side: a once-off product only unlocks when
+        // the verified charge actually covers its price. Otherwise → premium.
+        let product: "premium" | "exam_boost" | "prelim_sprint" | "finals_blitz" = "premium";
+        if (meta.product === "exam_boost" && amount >= EXAM_BOOST_PRICE_MINOR) {
+          product = "exam_boost";
+        } else if (meta.product === "prelim_sprint" && amount >= PRELIM_SPRINT_PRICE_MINOR) {
+          product = "prelim_sprint";
+        } else if (meta.product === "finals_blitz" && amount >= FINALS_BLITZ_PRICE_MINOR) {
+          product = "finals_blitz";
+        }
+        const { newlyActivated } = await activateSubscription({
           userId,
           customerCode: data?.customer?.customer_code ?? null,
           subscriptionCode: null,
-          amountMinor: data?.amount ?? null,
+          amountMinor: amount || null,
           nextPaymentDate: null,
-          product: isExamBoost ? "exam_boost" : "premium",
+          product,
         });
+        // Best-effort onboarding — only on a fresh activation, never blocks the
+        // payment confirmation.
+        if (newlyActivated) {
+          const appUrl = (process.env.APP_URL || "").replace(/\/+$/, "");
+          await firePostPaymentOnboarding({ userId, metadata: meta, baseUrl: appUrl });
+        }
       }
       return res.json({ paid, status: data?.status ?? "unknown" });
     } catch (err: any) {
@@ -416,11 +555,11 @@ export function registerPaystackRoutes(app: Express, isAuthenticated: any) {
             break;
           }
           if (purpose === "exam_boost") {
-            // Once-off R550 Exam Blast — season access to 30 Nov, no
+            // Once-off R550 Exam Season Pass — season access to 15 Dec, no
             // recurring subscription. Amount is verified server-side so a
             // relabelled cheaper charge can never unlock it.
             if (userId && (d?.amount ?? 0) >= EXAM_BOOST_PRICE_MINOR) {
-              await activateSubscription({
+              const { newlyActivated } = await activateSubscription({
                 userId,
                 customerCode: d?.customer?.customer_code ?? null,
                 subscriptionCode: null,
@@ -428,8 +567,56 @@ export function registerPaystackRoutes(app: Express, isAuthenticated: any) {
                 nextPaymentDate: null,
                 product: "exam_boost",
               });
+              if (newlyActivated) {
+                const appUrl = (process.env.APP_URL || "").replace(/\/+$/, "");
+                await firePostPaymentOnboarding({ userId, metadata: d?.metadata ?? null, baseUrl: appUrl });
+              }
             } else {
               console.warn(`[paystack] exam_boost charge ignored — userId=${!!userId}, amount=${d?.amount}`);
+            }
+            break;
+          }
+          if (purpose === "prelim_sprint") {
+            // Once-off R250 Prelim Sprint — rolling 6-week (42-day) access, no
+            // recurring subscription. Amount is verified server-side so a
+            // relabelled cheaper charge can never unlock it.
+            if (userId && (d?.amount ?? 0) >= PRELIM_SPRINT_PRICE_MINOR) {
+              const { newlyActivated } = await activateSubscription({
+                userId,
+                customerCode: d?.customer?.customer_code ?? null,
+                subscriptionCode: null,
+                amountMinor: d?.amount ?? null,
+                nextPaymentDate: null,
+                product: "prelim_sprint",
+              });
+              if (newlyActivated) {
+                const appUrl = (process.env.APP_URL || "").replace(/\/+$/, "");
+                await firePostPaymentOnboarding({ userId, metadata: d?.metadata ?? null, baseUrl: appUrl });
+              }
+            } else {
+              console.warn(`[paystack] prelim_sprint charge ignored — userId=${!!userId}, amount=${d?.amount}`);
+            }
+            break;
+          }
+          if (purpose === "finals_blitz") {
+            // Once-off R250 Finals Blitz — rolling 6-week (42-day) access
+            // (Oct–Nov finals), no recurring subscription. Amount is verified
+            // server-side so a relabelled cheaper charge can never unlock it.
+            if (userId && (d?.amount ?? 0) >= FINALS_BLITZ_PRICE_MINOR) {
+              const { newlyActivated } = await activateSubscription({
+                userId,
+                customerCode: d?.customer?.customer_code ?? null,
+                subscriptionCode: null,
+                amountMinor: d?.amount ?? null,
+                nextPaymentDate: null,
+                product: "finals_blitz",
+              });
+              if (newlyActivated) {
+                const appUrl = (process.env.APP_URL || "").replace(/\/+$/, "");
+                await firePostPaymentOnboarding({ userId, metadata: d?.metadata ?? null, baseUrl: appUrl });
+              }
+            } else {
+              console.warn(`[paystack] finals_blitz charge ignored — userId=${!!userId}, amount=${d?.amount}`);
             }
             break;
           }

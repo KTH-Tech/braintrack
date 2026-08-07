@@ -120,7 +120,6 @@ const ExamReadyPage = lazy(() => import("@/pages/exam-ready"));
 const PrivacyPolicyPage = lazy(() => import("@/pages/privacy-policy"));
 const TermsOfServicePage = lazy(() => import("@/pages/terms-of-service"));
 const SettingsPage = lazy(() => import("@/pages/settings"));
-const PartnerSchoolsPage = lazy(() => import("@/pages/partner-schools"));
 const ParentDashboardPage = lazy(() => import("@/pages/parent-dashboard"));
 const ParentActivateChildPage = lazy(() => import("@/pages/parent-activate-child"));
 const ActivatePage = lazy(() => import("@/pages/activate"));
@@ -1064,7 +1063,6 @@ function Router() {
           </RequireSchoolAdminRoute>
         </Route>
 
-        <Route path="/partner-schools" component={PartnerSchoolsPage} />
         <Route path="/join/:code" component={JoinPage} />
 
         <Route path="/school-onboarding" component={SchoolOnboardingPage} />

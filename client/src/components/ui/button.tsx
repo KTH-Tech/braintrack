@@ -21,49 +21,36 @@ const base =
 const buttonVariants = cva(base, {
   variants: {
     variant: {
-      // ── Base ──────────────────────────────────────────────────────────
-      default:
-        "bg-foreground text-background hover:bg-foreground/90",
-      primary:
-        "bg-primary text-primary-foreground hover:brightness-110",
-      secondary:
-        "bg-muted text-foreground border-2 border-border hover:bg-muted/70",
-      outline:
-        "bg-transparent text-foreground border-2 border-border hover:bg-muted",
-      ghost:
-        "bg-transparent text-foreground hover:bg-muted",
-      link:
-        "bg-transparent text-foreground underline-offset-4 hover:underline normal-case tracking-normal",
-      destructive:
-        "bg-destructive text-destructive-foreground hover:brightness-110",
+      // ── ONE consistent system ─────────────────────────────────────────
+      // Every "filled/action" variant renders the SAME primary sticker so the
+      // app has ONE button look; every "outline/secondary" variant renders the
+      // SAME outline. Variant NAMES kept so no call site breaks — only the look
+      // is unified. Change PRIMARY / OUTLINE below to restyle every button at
+      // once. Primary = solid sky #9FD8FF, near-black ink + border (pastel is
+      // light, so dark ink for contrast).
+      // Rainbow graffiti sticker — matches the hero CTA (.pub-btn) end-to-end.
+      default:      "text-[#050508] border-2 border-[#050508] [background-image:var(--bt-rainbow)] [background-size:200%_100%] hover:brightness-105",
+      primary:      "text-[#050508] border-2 border-[#050508] [background-image:var(--bt-rainbow)] [background-size:200%_100%] hover:brightness-105",
+      cta:          "text-[#050508] border-2 border-[#050508] [background-image:var(--bt-rainbow)] [background-size:200%_100%] hover:brightness-105",
+      "cta-gold":   "text-[#050508] border-2 border-[#050508] [background-image:var(--bt-rainbow)] [background-size:200%_100%] hover:brightness-105",
+      gradient:     "text-[#050508] border-2 border-[#050508] [background-image:var(--bt-rainbow)] [background-size:200%_100%] hover:brightness-105",
+      cyan:         "text-[#050508] border-2 border-[#050508] [background-image:var(--bt-rainbow)] [background-size:200%_100%] hover:brightness-105",
+      blue:         "text-[#050508] border-2 border-[#050508] [background-image:var(--bt-rainbow)] [background-size:200%_100%] hover:brightness-105",
+      pink:         "text-[#050508] border-2 border-[#050508] [background-image:var(--bt-rainbow)] [background-size:200%_100%] hover:brightness-105",
+      green:        "text-[#050508] border-2 border-[#050508] [background-image:var(--bt-rainbow)] [background-size:200%_100%] hover:brightness-105",
+      orange:       "text-[#050508] border-2 border-[#050508] [background-image:var(--bt-rainbow)] [background-size:200%_100%] hover:brightness-105",
+      gold:         "text-[#050508] border-2 border-[#050508] [background-image:var(--bt-rainbow)] [background-size:200%_100%] hover:brightness-105",
 
-      // ── CTA — electric blue sticker ───────────────────────────────────
-      cta:
-        "bg-[#9FD8FF] text-white border-2 border-[#9FD8FF] hover:bg-[#0057D6]",
+      // Secondary / outline — identical everywhere.
+      secondary:    "bg-transparent text-white border-2 border-[#9FD8FF] hover:bg-[#9FD8FF]/10",
+      outline:      "bg-transparent text-white border-2 border-[#9FD8FF] hover:bg-[#9FD8FF]/10",
+      "cta-outline":"bg-transparent text-white border-2 border-[#9FD8FF] hover:bg-[#9FD8FF]/10",
+      neon:         "bg-transparent text-white border-2 border-[#9FD8FF] hover:bg-[#9FD8FF]/10",
 
-      // ── CTA outline — secondary action next to a cta ──────────────────
-      "cta-outline":
-        "bg-transparent text-[#9FD8FF] border-2 border-[#9FD8FF] hover:bg-[#9FD8FF]/10" +
-        " dark:text-[#6EE7F9] dark:border-[#6EE7F9] dark:hover:bg-[#6EE7F9]/10",
-
-      // ── CTA gold — standout yellow sticker ───────────────────────────
-      "cta-gold":
-        "bg-[#FFE29A] text-[#02040A] border-2 border-[#FFE29A] hover:bg-[#E6CF00]",
-
-      // ── Legacy names restyled ─────────────────────────────────────────
-      gradient:
-        "bg-[#C5B3FF] text-white border-2 border-[#C5B3FF] hover:brightness-110",
-      neon:
-        "bg-transparent text-[#C5B3FF] border-2 border-[#C5B3FF] hover:bg-[#C5B3FF]/10" +
-        " dark:text-[#6EE7F9] dark:border-[#6EE7F9] dark:hover:bg-[#6EE7F9]/10",
-
-      // ── Solid brand fills — Gen Z sticker style ───────────────────────
-      cyan:   "bg-[#6EE7F9] text-[#02040A] border-2 border-[#6EE7F9] hover:brightness-110",
-      blue:   "bg-[#9FD8FF] text-white border-2 border-[#9FD8FF] hover:brightness-110",
-      pink:   "bg-[#FFB7E5] text-white border-2 border-[#FFB7E5] hover:brightness-110",
-      green:  "bg-[#94F7C5] text-[#02040A] border-2 border-[#94F7C5] hover:brightness-110",
-      orange: "bg-[#FFE29A] text-[#02040A] border-2 border-[#FFE29A] hover:brightness-110",
-      gold:   "bg-[#FFE29A] text-[#02040A] border-2 border-[#FFE29A] hover:brightness-110",
+      // Quiet + destructive kept functional (destructive stays red for safety).
+      ghost:        "bg-transparent text-white hover:bg-[#0e0d12]",
+      link:         "bg-transparent text-[#9FD8FF] underline-offset-4 hover:underline normal-case tracking-normal",
+      destructive:  "bg-[#FF6B6B] text-[#050508] border-2 border-[#050508] hover:brightness-105",
     },
     size: {
       // WCAG 2.5.5: minimum 44 × 44 px tap target for school-procurement a11y.

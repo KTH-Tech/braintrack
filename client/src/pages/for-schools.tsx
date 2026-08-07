@@ -5,7 +5,6 @@
 // simple steps. Pure-black street-graffiti design: sticker cards with hard
 // offset shadows (zero blur), pure #fff/#000 text (no grey, no faded white),
 // bt- prefixed keyframes. Bilingual EN/AF. Shared PublicNav + PublicFooter.
-import { Link } from "wouter";
 import { useSEO } from "@/hooks/use-seo";
 import { useLanguage } from "@/lib/language-context";
 import { PublicNav } from "@/components/public-nav";
@@ -200,20 +199,18 @@ export default function ForSchoolsPage() {
               className="btfs-in"
               style={{ ["--d" as string]: ".4s", display: "flex", justifyContent: "center", gap: 14, marginTop: 30, flexWrap: "wrap" }}
             >
-              <Link href="/partner-schools">
+              <a href={`mailto:${CONTACT_EMAIL}`} style={{ textDecoration: "none" }}>
                 <button
-                  className="btfs-btn"
+                  className="pub-btn"
                   data-testid="button-hero-apply"
-                  style={{ ["--sh" as string]: "#94F7C5", fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 15, color: "#000", background: WORDMARK_GRADIENT, border: "2.5px solid #000", boxShadow: "6px 6px 0 0 #94F7C5", borderRadius: 14, padding: "15px 26px", cursor: "pointer" }}
                 >
                   {t.ctaPrimary}
                 </button>
-              </Link>
+              </a>
               <a href={`mailto:${CONTACT_EMAIL}`} style={{ textDecoration: "none" }}>
                 <button
-                  className="btfs-btn"
+                  className="pub-btn-outline"
                   data-testid="button-hero-email"
-                  style={{ ["--sh" as string]: "#C5B3FF", fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 15, color: "#fff", background: "#000", border: "2.5px solid #fff", boxShadow: "6px 6px 0 0 #C5B3FF", borderRadius: 14, padding: "15px 26px", cursor: "pointer" }}
                 >
                   {t.ctaSecondary}
                 </button>
@@ -354,20 +351,18 @@ export default function ForSchoolsPage() {
               {t.closeBody}
             </p>
             <div style={{ display: "flex", justifyContent: "center", gap: 14, flexWrap: "wrap" }}>
-              <Link href="/partner-schools">
+              <a href={`mailto:${CONTACT_EMAIL}`} style={{ textDecoration: "none" }}>
                 <button
-                  className="btfs-btn"
+                  className="pub-btn"
                   data-testid="button-cta-apply"
-                  style={{ ["--sh" as string]: "#94F7C5", fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 15, color: "#000", background: WORDMARK_GRADIENT, border: "2.5px solid #000", boxShadow: "6px 6px 0 0 #94F7C5", borderRadius: 14, padding: "15px 26px", cursor: "pointer" }}
                 >
                   {t.closeCtaPrimary}
                 </button>
-              </Link>
+              </a>
               <a href={`mailto:${CONTACT_EMAIL}`} style={{ textDecoration: "none" }}>
                 <button
-                  className="btfs-btn"
+                  className="pub-btn-outline"
                   data-testid="button-cta-email"
-                  style={{ ["--sh" as string]: "#9FD8FF", fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 15, color: "#fff", background: "#000", border: "2.5px solid #fff", boxShadow: "6px 6px 0 0 #9FD8FF", borderRadius: 14, padding: "15px 26px", cursor: "pointer" }}
                 >
                   {t.closeCtaSecondary}
                 </button>

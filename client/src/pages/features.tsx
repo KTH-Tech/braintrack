@@ -1,7 +1,7 @@
 // BrainTrack features — pure-black street-graffiti sticker redesign.
 // Learner-first: leads with what the app does FOR a Grade 12 matric (past
 // papers + memos, Rizz AI support, daily plans, weak-spot radar, XP/streaks,
-// parent visibility as backup) then a sticker CTA to start free / sign in.
+// parent visibility as backup) then a sticker CTA to start now / sign in.
 // Shared shell: PublicNav (fixed 64px) + PublicFooter. Pure #000, no grey text,
 // hard-offset shadows only (zero blur). Bilingual EN/AF. bt-* keyframes only.
 import { useEffect, useRef, useState } from "react";
@@ -52,8 +52,8 @@ const COPY = {
       { icon: "👀", color: "#FFB7E5", title: "Your people, in the loop", body: "Parents get a clean weekly report — so the nagging turns into high-fives, and you get backup instead of pressure." },
     ],
     ctaEyebrow: "ready when you are",
-    ctaHead: "Start free. Watch your marks move.",
-    ctaBtn: "Start your 14-day trial",
+    ctaHead: "Start now. Watch your marks move.",
+    ctaBtn: "Start now",
     ctaSignin: "I already have an account",
     ctaLoggedIn: "Go to My Dashboard",
   },
@@ -80,8 +80,8 @@ const COPY = {
       { icon: "👀", color: "#FFB7E5", title: "Jou mense, in die prentjie", body: "Ouers kry 'n skoon weeklikse verslag — so raak die geneul hoë-vywe, en jy kry rugsteun in plaas van druk." },
     ],
     ctaEyebrow: "gereed wanneer jy is",
-    ctaHead: "Begin gratis. Sien jou punte skuif.",
-    ctaBtn: "Begin jou 14-dae proeftydperk",
+    ctaHead: "Begin nou. Sien jou punte skuif.",
+    ctaBtn: "Begin nou",
     ctaSignin: "Ek het reeds 'n rekening",
     ctaLoggedIn: "My Paneelbord",
   },
@@ -175,7 +175,7 @@ export default function FeaturesPage() {
     canonical: "https://braintrack.tech/features",
     ogTitle: "BrainTrack™ Features — CAPS Plan, NSC Past Papers & AI Support",
     ogDescription:
-      "CAPS-aligned study plan, 10 years of NSC past papers with memos, gap detection, Rizz AI support, and progress tracking for Grade 12 Matric. Try free for 14 days.",
+      "CAPS-aligned study plan, 10 years of NSC past papers with memos, gap detection, Rizz AI support, and progress tracking for Grade 12 Matric. Full access from day one.",
     ogUrl: "https://braintrack.tech/features",
     jsonLd: featuresBreadcrumb,
   });
@@ -221,7 +221,7 @@ export default function FeaturesPage() {
               key={i}
               aria-hidden
               style={{
-                position: "absolute", fontFamily: "'Permanent Marker',cursive",
+                position: "absolute", fontFamily: "'Bebas Neue', system-ui, sans-serif",
                 fontSize: s.size, color: s.color, transform: `rotate(${s.rotate}deg)`,
                 pointerEvents: "none", zIndex: 0,
                 animation: `bt-float ${7 + i}s ease-in-out infinite`,
@@ -233,7 +233,7 @@ export default function FeaturesPage() {
           ))}
 
           <Reveal style={{ position: "relative", zIndex: 1 }}>
-            <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#9FF5E8", fontSize: 18, transform: "rotate(-2deg)", display: "inline-block" }}>
+            <div style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", color: "#9FF5E8", fontSize: 18, transform: "rotate(-2deg)", display: "inline-block" }}>
               {t.eyebrow}
             </div>
             <h1
@@ -268,7 +268,7 @@ export default function FeaturesPage() {
         {/* ── Subjects ─────────────────────────────────────────── */}
         <section style={{ maxWidth: 1000, margin: "0 auto", padding: "8px 20px 8px", textAlign: "center" }}>
           <Reveal>
-            <h2 className="btf-h2" style={{ fontFamily: "'Permanent Marker',cursive", color: "#fff", margin: "0 0 22px", transform: "rotate(-1deg)" }}>
+            <h2 className="btf-h2" style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", color: "#fff", margin: "0 0 22px", transform: "rotate(-1deg)" }}>
               {t.subjectsHead}
             </h2>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center" }}>
@@ -291,7 +291,7 @@ export default function FeaturesPage() {
         {/* ── Feature sticker cards ────────────────────────────── */}
         <section style={{ maxWidth: 1080, margin: "0 auto", padding: "48px 20px 0", textAlign: "center" }}>
           <Reveal>
-            <h2 className="btf-h2" style={{ fontFamily: "'Permanent Marker',cursive", color: "#fff", margin: "0 0 34px", transform: "rotate(-1deg)" }}>
+            <h2 className="btf-h2" style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", color: "#fff", margin: "0 0 34px", transform: "rotate(-1deg)" }}>
               {t.featsHead}
             </h2>
           </Reveal>
@@ -338,7 +338,7 @@ export default function FeaturesPage() {
                 transform: "rotate(-.4deg)",
               }}
             >
-              <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#FFB7E5", fontSize: 16, transform: "rotate(-2deg)", display: "inline-block" }}>
+              <div style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", color: "#FFB7E5", fontSize: 16, transform: "rotate(-2deg)", display: "inline-block" }}>
                 {t.ctaEyebrow}
               </div>
               <div className="btf-h2" style={{ fontWeight: 900, letterSpacing: "-1px", lineHeight: 1.12, color: "#fff", margin: "10px 0 26px", fontFamily: "'Poppins',sans-serif" }}>
@@ -347,16 +347,9 @@ export default function FeaturesPage() {
               <div className="btf-cta-row" style={{ display: "flex", flexWrap: "wrap", gap: 16, justifyContent: "center" }}>
                 <Link href={isAuthenticated ? "/dashboard" : "/subscribe"}>
                   <button
-                    className="btf-btn bt-btn"
+                    className="pub-btn btf-btn"
                     data-testid="button-features-cta"
-                    style={{
-                      ["--s" as string]: "#FFE29A",
-                      fontFamily: "'Poppins',sans-serif", fontWeight: 900, fontSize: 16,
-                      color: "#000", background: "linear-gradient(100deg,#FFB7E5,#FFE29A,#9FF5E8,#C5B3FF,#FFB7E5)",
-                      backgroundSize: "200% 100%", animation: "bt-rainbow 5s linear infinite",
-                      border: "2.5px solid #000", borderRadius: 12, padding: "15px 34px",
-                      boxShadow: "6px 6px 0 0 #FFE29A", whiteSpace: "nowrap", cursor: "pointer",
-                    } as React.CSSProperties}
+                    style={{ ["--s" as string]: "#FFE29A" } as React.CSSProperties}
                   >
                     {isAuthenticated ? t.ctaLoggedIn : t.ctaBtn}
                   </button>
@@ -364,15 +357,9 @@ export default function FeaturesPage() {
                 {!isAuthenticated && (
                   <a href="/signin">
                     <button
-                      className="btf-btn"
+                      className="pub-btn-outline btf-btn"
                       data-testid="button-features-signin"
-                      style={{
-                        ["--s" as string]: "#9FD8FF",
-                        fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 16,
-                        color: "#fff", background: "#000", border: "2.5px solid #9FD8FF",
-                        borderRadius: 12, padding: "15px 30px", boxShadow: "6px 6px 0 0 #9FD8FF",
-                        whiteSpace: "nowrap", cursor: "pointer",
-                      } as React.CSSProperties}
+                      style={{ ["--a" as string]: "#9FD8FF", ["--s" as string]: "#9FD8FF" } as React.CSSProperties}
                     >
                       {t.ctaSignin}
                     </button>

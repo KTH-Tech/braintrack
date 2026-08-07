@@ -90,9 +90,9 @@ export function buildWhatsAppDeepLink(
 export function buildParentConsentShareText(consentUrl: string, lang: ShareLang): string {
   const url = (consentUrl ?? "").trim();
   if (lang === "af") {
-    return `Haai! 👋 Keur asseblief my BrainTrack-rekening goed sodat ek my gratis proeftydperk kan begin — tik net hierdie skakel: ${url} (een tik, geen registrasie).`;
+    return `Haai! 👋 Keur asseblief my BrainTrack-rekening goed sodat ek kan begin — tik net hierdie skakel: ${url} (een tik, geen registrasie).`;
   }
-  return `Hi! 👋 Please approve my BrainTrack account so I can start my free trial — just tap this link: ${url} (one tap, no signup needed).`;
+  return `Hi! 👋 Please approve my BrainTrack account so I can get started — just tap this link: ${url} (one tap, no signup needed).`;
 }
 
 /**

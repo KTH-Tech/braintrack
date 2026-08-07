@@ -6,6 +6,7 @@ import { useLanguage } from "@/lib/language-context";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { ArrowLeft, CheckCircle2, XCircle, RotateCcw, Trophy, BookOpen, Loader2, Target, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
 
 interface RevisionQuestion {
   id: number;
@@ -59,14 +60,6 @@ const cardStyle = (accent?: string, radius = 22): CSSProperties => ({
   border: accent ? `1.5px solid ${accent}` : "1px solid rgba(255,255,255,.08)",
   borderRadius: radius,
 });
-
-const primaryBtnStyle: CSSProperties = {
-  background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
-  color: "#050508",
-  border: "none",
-  borderRadius: 12,
-  fontWeight: 800,
-};
 
 export default function RevisionPage() {
   const { subjectId } = useParams<{ subjectId: string }>();
@@ -445,21 +438,16 @@ export default function RevisionPage() {
                 )}
 
                 {submitted && (
-                  <button
+                  <Button
+                    variant="primary"
+                    size="lg"
                     onClick={handleNext}
-                    className="w-full py-3 text-sm transition-all"
-                    style={primaryBtnStyle}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = "translateY(-2px)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = "none";
-                    }}
+                    className="w-full"
                   >
                     {currentIdx < totalQuestions - 1
                       ? (isAf ? "Volgende Vraag" : "Next Question")
                       : (isAf ? "Sien Resultate" : "See Results")}
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>
@@ -498,18 +486,9 @@ export default function RevisionPage() {
                 </>
               )}
               <Link href={`/subject/${subjectId}`}>
-                <button
-                  className="px-6 py-2.5 text-sm transition-all"
-                  style={primaryBtnStyle}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "translateY(-2px)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "none";
-                  }}
-                >
+                <Button variant="primary">
                   {isAf ? "Terug na Vak" : "Back to Subject"}
-                </button>
+                </Button>
               </Link>
             </div>
           </div>
@@ -552,33 +531,23 @@ export default function RevisionPage() {
                   : (isAf ? "Bly oefen – jy sal dit kry!" : "Keep practicing — you'll get there!")}
               </span>
               <div className="flex gap-3 justify-center flex-wrap">
-                <button
+                <Button
+                  variant="outline"
                   onClick={() => {
                     setCurrentIdx(0);
                     setAnswers({});
                     setSubmitted(false);
                     setPhase("quiz");
                   }}
-                  className="inline-flex items-center px-5 py-2.5 text-sm font-bold hover:bg-white/5 transition-colors"
-                  style={{ background: "transparent", border: "1.5px solid #9FD8FF", color: "#9FD8FF", borderRadius: 12 }}
                 >
-                  <RotateCcw className="w-4 h-4 mr-2" />
+                  <RotateCcw className="w-4 h-4" />
                   {isAf ? "Herhaal" : "Retry"}
-                </button>
+                </Button>
                 <Link href={`/subject/${subjectId}`}>
-                  <button
-                    className="inline-flex items-center px-5 py-2.5 text-sm transition-all"
-                    style={primaryBtnStyle}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = "translateY(-2px)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = "none";
-                    }}
-                  >
-                    <BookOpen className="w-4 h-4 mr-2" />
+                  <Button variant="primary">
+                    <BookOpen className="w-4 h-4" />
                     {isAf ? "Terug na Vak" : "Back to Subject"}
-                  </button>
+                  </Button>
                 </Link>
               </div>
             </div>

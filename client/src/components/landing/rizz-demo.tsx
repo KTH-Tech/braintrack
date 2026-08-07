@@ -152,7 +152,7 @@ export function RizzDemo({ language }: { language: "en" | "af" }) {
   const wrongTitle = en ? "Not quite — try again:" : "Nie heeltemal nie — probeer weer:";
   const tryAgain = en ? "Try again" : "Probeer weer";
   const nextQ = en ? "Next question" : "Volgende vraag";
-  const doneCtaLbl = en ? "Start free — 14 days" : "Begin gratis — 14 dae";
+  const doneCtaLbl = en ? "See plans — from R169" : "Sien planne — vanaf R169";
   const doneMsg = en
     ? "Nice work — that's just three questions. Rizz has thousands more waiting."
     : "Mooi werk — dit was net drie vrae. Rizz het duisende meer wat wag.";
@@ -221,8 +221,8 @@ export function RizzDemo({ language }: { language: "en" | "af" }) {
         }
         .bt-rizzq-opt:hover:not(:disabled) {
           transform: translateY(-2px);
-          background: rgba(255,255,255,.06) !important;
-          border-color: rgba(255,255,255,.35) !important;
+          background: #14111c !important;
+          border-color: #9FD8FF !important;
         }
         .bt-rizzq-opt:disabled { cursor: default; }
       `}</style>
@@ -234,7 +234,7 @@ export function RizzDemo({ language }: { language: "en" | "af" }) {
             display: "inline-flex",
             alignItems: "center",
             gap: 10,
-            fontFamily: "'Permanent Marker',cursive",
+            fontFamily: "'Bebas Neue', system-ui, sans-serif",
             color: "#C5B3FF",
             fontSize: 17,
             letterSpacing: ".5px",
@@ -463,12 +463,12 @@ export function RizzDemo({ language }: { language: "en" | "af" }) {
               ? isCorrectOpt
                 ? "#94F7C5"
                 : "#FFB7E5"
-              : "rgba(255,255,255,.16)";
+              : "#9FD8FF";
             const bg = revealCorrect
               ? isCorrectOpt
                 ? "rgba(148,247,197,.14)"
                 : "rgba(255,183,229,.12)"
-              : "rgba(255,255,255,.03)";
+              : "#0e0d12";
             const textColor = revealCorrect
               ? isCorrectOpt
                 ? "#94F7C5"
@@ -525,7 +525,7 @@ export function RizzDemo({ language }: { language: "en" | "af" }) {
                       ? isCorrectOpt
                         ? "#94F7C5"
                         : "#FFB7E5"
-                      : "rgba(255,255,255,.08)",
+                      : "#050508",
                   }}
                 >
                   {revealCorrect ? (
@@ -691,23 +691,8 @@ export function RizzDemo({ language }: { language: "en" | "af" }) {
                 <button
                   type="button"
                   data-testid="rizz-demo-cta"
-                  style={{
-                    fontFamily: "'Poppins',sans-serif",
-                    fontWeight: 900,
-                    fontSize: 14,
-                    color: "#050508",
-                    background:
-                      "linear-gradient(100deg,#FFB7E5,#FFE29A,#9FF5E8,#C5B3FF,#FFB7E5)",
-                    backgroundSize: "200% 100%",
-                    animation: "bt-rainbow 5s linear infinite",
-                    border: "none",
-                    borderRadius: 10,
-                    padding: "12px 22px",
-                    cursor: "pointer",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 8,
-                  }}
+                  className="pub-btn"
+                  style={{ display: "inline-flex", alignItems: "center", gap: 8 }}
                 >
                   {doneCtaLbl} <ArrowRight size={16} strokeWidth={2.8} />
                 </button>

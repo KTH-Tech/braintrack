@@ -262,7 +262,7 @@ function CoverageBanner({
             </span>
           )}
         </div>
-        <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden">
+        <div className="w-full h-1.5 rounded-full bg-[#0e0d12] overflow-hidden">
           <div
             className="h-full rounded-full transition-all duration-500"
             style={{
@@ -278,9 +278,9 @@ function CoverageBanner({
           onClick={onToggleFilter}
           className="shrink-0 flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold uppercase tracking-widest transition-all"
           style={{
-            background: showUnreviewedOnly ? `${HEX.amber}33` : "rgba(255,255,255,0.05)",
+            background: showUnreviewedOnly ? `${HEX.amber}33` : "#0e0d12",
             color: showUnreviewedOnly ? HEX.amber : "#fff",
-            border: `1px solid ${showUnreviewedOnly ? HEX.amber : "rgba(255,255,255,0.10)"}`,
+            border: `1px solid ${showUnreviewedOnly ? HEX.amber : "#1b1922"}`,
           }}
         >
           <Filter size={11} />
@@ -338,7 +338,7 @@ function SubjectBreakdownPanel({
           style={{ border: `1px solid ${accent}22`, background: `${accent}08` }}
           data-testid="coverage-by-subject-panel"
         >
-          <div className="px-4 py-2 border-b border-white/5">
+          <div className="px-4 py-2 border-b border-[#1b1922]">
             <span className="text-[10px] font-bold uppercase tracking-widest text-white">
               {bySubject.length} subjects · click name to filter
             </span>
@@ -362,7 +362,7 @@ function SubjectBreakdownPanel({
                     <span className="text-[10px] text-white w-20 text-right">
                       {reviewed} / {total}
                     </span>
-                    <div className="w-20 h-1.5 rounded-full bg-white/10 overflow-hidden">
+                    <div className="w-20 h-1.5 rounded-full bg-[#0e0d12] overflow-hidden">
                       <div
                         className="h-full rounded-full transition-all duration-300"
                         style={{ width: `${pct}%`, background: allDone ? HEX.mint : accent }}
@@ -514,7 +514,7 @@ function BulkImportPanel({
               Schema example (click to copy)
             </label>
             <pre
-              className="cursor-pointer rounded-lg bg-white/5 p-3 text-[10px] text-white ring-1 ring-white/10 hover:text-white transition-colors overflow-x-auto"
+              className="cursor-pointer rounded-lg bg-[#0e0d12] p-3 text-[10px] text-white ring-1 ring-white/10 hover:text-white transition-colors overflow-x-auto"
               onClick={() => { setRaw(schemaHint); setParseError(null); setResult(null); }}
               title="Click to copy example into editor"
             >
@@ -1422,7 +1422,7 @@ export default function AdminContentEditorPage() {
         </div>
 
         {/* Tab bar */}
-        <div className="mb-6 flex gap-2 border-b border-white/10">
+        <div className="mb-6 flex gap-2 border-b border-[#1b1922]">
           {TABS.map((t) => (
             <button
               key={t.id}

@@ -45,7 +45,7 @@ export default function DBEPortalLogin() {
       <div
         className="w-full max-w-sm rounded-2xl p-8 space-y-7 relative z-10 overflow-hidden"
         style={{
-          background: "#0a0b12",
+          background: "#0e0d12",
           border: "1.5px solid rgba(110,231,249,0.35)",
           boxShadow:
             "0 0 80px rgba(0,0,0,0.8), inset 0 0 30px rgba(0,0,0,0.6)",
@@ -111,12 +111,7 @@ export default function DBEPortalLogin() {
             <>
               <a
                 href={`/signin?returnTo=${returnTo}`}
-                className="flex items-center justify-center gap-2 w-full rounded-xl py-3 text-sm font-black uppercase tracking-[0.1em] transition-all"
-                style={{
-                  color: "#0a0a0a",
-                  background: "linear-gradient(135deg, #6EE7F9 0%, #1aa8b4 100%)",
-                  boxShadow: "0 4px 16px rgba(0,0,0,0.4)",
-                }}
+                className="pub-btn w-full flex items-center justify-center gap-2"
                 data-testid="btn-sign-in"
               >
                 <ShieldCheck className="w-4 h-4" />

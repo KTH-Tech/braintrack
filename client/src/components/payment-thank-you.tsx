@@ -45,27 +45,26 @@ const BENEFITS = [
  * funnel, so the bright treatment is the point. Every other surface stays
  * black.
  *
- * Copy is held to what the server actually does — the R1 is a real, non-
- * refundable verification charge, and the first R169 fires on day 14 (see
- * server/paystack.ts:157). No "refunded" or "day 15" language here.
+ * Copy is held to what the server actually does — pay-now: the learner is
+ * charged in full at checkout and access begins immediately. Full access from
+ * the first payment; no "day 14" language here.
  */
 export function PaymentThankYou({
   isAf,
   navigate,
   learnerName,
-  variant = "trial_started",
+  variant = "access_live",
 }: {
   isAf: boolean;
   navigate: (to: string) => void;
   learnerName?: string | null;
-  /** `trial_started` = the R1 card-verification landed and the 14-day trial
-   *  just began (the launch-dominant path, and what the printed poster
-   *  describes). `subscription_active` = a returning/lapsed user just paid
-   *  R169 — the R1 wording would be wrong for them. */
-  variant?: "trial_started" | "subscription_active";
+  /** `access_live` = generic "full access is live" confirmation (kept for
+   *  the null-billing-method path). `subscription_active` = a paid subscriber
+   *  (monthly or once-off). Both are pay-now. */
+  variant?: "access_live" | "subscription_active";
 }) {
   const [copied, setCopied] = useState(false);
-  const isTrial = variant === "trial_started";
+  const isGenericAccess = variant === "access_live";
 
   const { data: referral } = useQuery<ReferralLinkResp>({
     queryKey: ["/api/referral/my-link"],
@@ -239,18 +238,18 @@ export function PaymentThankYou({
               {isAf ? "Alles is reg." : "You're all set."}
             </p>
             <p style={{ fontSize: "clamp(14px,2.4vw,16px)", lineHeight: 1.6, margin: 0 }}>
-              {isTrial ? (
+              {isGenericAccess ? (
                 isAf ? (
                   <>
-                    Jou R1-verifikasiebetaling was suksesvol en jou{" "}
-                    <strong style={{ color: "#9B6BFF" }}>14-DAE GRATIS PROEFTYDPERK</strong>{" "}
-                    het amptelik begin!
+                    Jou betaling was suksesvol en jou{" "}
+                    <strong style={{ color: "#9B6BFF" }}>VOLLE TOEGANG</strong>{" "}
+                    is nou lewendig!
                   </>
                 ) : (
                   <>
-                    Your R1 verification payment was successful and your{" "}
-                    <strong style={{ color: "#9B6BFF" }}>14-DAY FREE TRIAL</strong> has
-                    officially started!
+                    Your payment was successful and your{" "}
+                    <strong style={{ color: "#9B6BFF" }}>FULL ACCESS</strong> is now
+                    live!
                   </>
                 )
               ) : isAf ? (
@@ -266,10 +265,10 @@ export function PaymentThankYou({
               )}
             </p>
             <p style={{ fontSize: 13, lineHeight: 1.6, margin: "10px 0 0", opacity: 0.78 }}>
-              {isTrial
+              {isGenericAccess
                 ? isAf
-                  ? "Die R1 is 'n eenmalige, nie-terugbetaalbare verifikasieheffing. R169/maand begin op dag 14 — kanselleer voor dan en jy word nooit gehef nie. Verskyn op jou staat as KTH-TECH."
-                  : "The R1 is a one-off, non-refundable verification charge. R169/month starts on day 14 — cancel before then and you're never charged. Appears on your statement as KTH-TECH."
+                  ? "Jou toegang begin dadelik. Verskyn op jou staat as KTH-TECH."
+                  : "Your access begins immediately. Appears on your statement as KTH-TECH."
                 : isAf
                   ? "R169/maand · Kanselleer enige tyd in die app. Verskyn op jou staat as KTH-TECH."
                   : "R169/month · Cancel anytime in the app. Appears on your statement as KTH-TECH."}

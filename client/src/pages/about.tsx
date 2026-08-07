@@ -334,16 +334,8 @@ export default function AboutPage() {
           <div style={{ textAlign: "center" }}>
             <Link href={ctaHref} data-testid="link-signup-child">
               <button
-                className="bta-cta"
-                style={{
-                  fontFamily: "'Poppins',sans-serif", fontWeight: 900, fontSize: "clamp(15px,3vw,17px)",
-                  color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
-                  animation: "bt-rainbow 5s linear infinite",
-                  border: "2.5px solid #050508", borderRadius: 12,
-                  boxShadow: "6px 6px 0 0 #FFE29A",
-                  padding: "16px 36px", whiteSpace: "nowrap", cursor: "pointer",
-                  display: "inline-flex", alignItems: "center", gap: 10,
-                }}
+                className="pub-btn"
+                style={{ display: "inline-flex", alignItems: "center", gap: 10 }}
               >
                 {ctaLabel}
                 <ArrowRight style={{ width: 18, height: 18 }} />

@@ -11,8 +11,8 @@ import { ConfettiBurst } from "@/components/confetti-burst";
 import { buildParentConsentWhatsAppLink } from "@/lib/parent-share";
 
 // Gate screen for minor learners whose parent hasn't yet granted consent +
-// captured a card. Polls subscription status; the moment consent + card land
-// (which starts the 14-day trial server-side) the learner is sent through to
+// paid. Polls subscription status; the moment consent + payment land
+// (which grants full access server-side) the learner is sent through to
 // the dashboard. Resending reuses the existing consent-email machinery
 // (POST /api/onboarding/parent-consent/request).
 
@@ -54,11 +54,11 @@ const T = {
   en: {
     eyebrow: "almost in! 🚀",
     heading: "waiting for your parent 💌",
-    sub: "Send your parent or guardian the approval link on WhatsApp below. Once they approve and add a card, your 14-day free trial unlocks automatically — no charge for 14 days.",
+    sub: "Send your parent or guardian the approval link on WhatsApp below. Once they approve and complete payment, your full access unlocks automatically.",
     sentTo: "Consent link is for",
     stepConsent: "Parent approves",
-    stepCard: "Card added (R1 verification)",
-    stepTrial: "Your 14-day trial starts",
+    stepCard: "Payment complete",
+    stepTrial: "Your access starts",
     resend: "Resend the email too (optional)",
     resending: "Sending…",
     resent: "Email sent!",
@@ -81,18 +81,18 @@ const T = {
     shareGetLinkFailedDesc: "Please check the email address and try again.",
     checking: "checking with the parentals…",
     allDone: "you're in! 🔥",
-    allDoneSub: "Consent + card confirmed. Your trial is live.",
+    allDoneSub: "Consent + payment confirmed. Your access is live.",
     goDashboard: "Go to my dashboard",
     signout: "Sign out",
   },
   af: {
     eyebrow: "amper binne! 🚀",
     heading: "ons wag vir jou ouer 💌",
-    sub: "Stuur die goedkeuringskakel hieronder op WhatsApp aan jou ouer of voog. Sodra hulle goedkeur en 'n kaart byvoeg, ontsluit jou 14-dae gratis proeftydperk outomaties — geen koste vir 14 dae nie.",
+    sub: "Stuur die goedkeuringskakel hieronder op WhatsApp aan jou ouer of voog. Sodra hulle goedkeur en die betaling voltooi, ontsluit jou volle toegang outomaties.",
     sentTo: "Toestemmingskakel is vir",
     stepConsent: "Ouer keur goed",
-    stepCard: "Kaart bygevoeg (R1-verifikasie)",
-    stepTrial: "Jou 14-dae proeftydperk begin",
+    stepCard: "Betaling voltooi",
+    stepTrial: "Jou toegang begin",
     resend: "Stuur die e-pos ook weer (opsioneel)",
     resending: "Stuur…",
     resent: "E-pos gestuur!",
@@ -115,7 +115,7 @@ const T = {
     shareGetLinkFailedDesc: "Gaan asseblief die e-posadres na en probeer weer.",
     checking: "ons hoor by die ouers…",
     allDone: "jy's binne! 🔥",
-    allDoneSub: "Toestemming + kaart bevestig. Jou proeftydperk is aktief.",
+    allDoneSub: "Toestemming + betaling bevestig. Jou toegang is aktief.",
     goDashboard: "Gaan na my dashboard",
     signout: "Teken uit",
   },
@@ -255,12 +255,12 @@ export default function WaitingForParentPage() {
       <GraffitiSplats variant="full" opacity={0.4} />
       <div className="relative z-10 w-full max-w-md">
         <div
-          className="rounded-3xl border border-white/10 overflow-hidden"
+          className="rounded-3xl border border-[#1b1922] overflow-hidden"
           style={{ background: "#050508", animation: "bt-fadeup .6s cubic-bezier(.22,1,.36,1) both" }}
         >
           <div aria-hidden className="h-[3px]" style={{ background: "linear-gradient(95deg,#FFB7E5,#FFE29A,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)" }} />
           <div className="p-8 text-center space-y-5">
-            <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#FFE29A", fontSize: 16, transform: "rotate(-2deg)" }}>
+            <div style={{ fontFamily: "'Bebas Neue', sans-serif", color: "#FFE29A", fontSize: 16, transform: "rotate(-2deg)" }}>
               {done ? t.allDone : t.eyebrow}
             </div>
 
@@ -304,7 +304,7 @@ export default function WaitingForParentPage() {
                     consent link with a one-tap WhatsApp share + copy. */}
                 <div
                   className="text-left rounded-2xl p-4 space-y-3"
-                  style={{ background: "rgba(255,255,255,.04)", border: "1.5px solid #94F7C5" }}
+                  style={{ background: "#1b1922", border: "1.5px solid #94F7C5" }}
                   data-testid="consent-share-block"
                 >
                   <p style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 800, color: "#fff", fontSize: 15 }}>
@@ -316,7 +316,7 @@ export default function WaitingForParentPage() {
                     <>
                       <div
                         className="rounded-xl p-3"
-                        style={{ background: "rgba(0,0,0,.45)", border: "1px solid rgba(255,255,255,.14)" }}
+                        style={{ background: "rgba(0,0,0,.45)", border: "1px solid #1b1922" }}
                       >
                         <p className="text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: "#94F7C5" }}>
                           {t.shareLinkLabel}
@@ -348,7 +348,7 @@ export default function WaitingForParentPage() {
                           style={{
                             fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 15,
                             color: linkCopied ? "#94F7C5" : "#fff", background: "transparent",
-                            border: `2px solid ${linkCopied ? "#94F7C5" : "rgba(255,255,255,.25)"}`,
+                            border: `2px solid ${linkCopied ? "#94F7C5" : "#1b1922"}`,
                             borderRadius: 12, padding: "11px 20px", cursor: "pointer",
                           }}
                         >
@@ -382,7 +382,8 @@ export default function WaitingForParentPage() {
                         data-testid="consent-get-link"
                         style={{
                           fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 15,
-                          color: "#062012", background: "#94F7C5", border: "none",
+                          color: "#050508", backgroundImage: "var(--bt-rainbow)", backgroundSize: "200% 100%",
+                          border: "2px solid #050508",
                           borderRadius: 12, padding: "13px 20px",
                           cursor: linkMutation.isPending ? "not-allowed" : "pointer",
                           opacity: (linkMutation.isPending || (!parentEmailOnFile && !/.+@.+\..+/.test(shareEmail.trim()))) ? 0.6 : 1,
@@ -396,7 +397,7 @@ export default function WaitingForParentPage() {
                 </div>
 
                 {/* Step checklist */}
-                <div className="text-left space-y-3 rounded-2xl border border-white/10 p-4" style={{ background: "rgba(255,255,255,.03)" }}>
+                <div className="text-left space-y-3 rounded-2xl border border-[#1b1922] p-4" style={{ background: "#1b1922" }}>
                   {[
                     { label: t.stepConsent, complete: consentGranted, icon: <CheckCircle2 className="w-4 h-4" /> },
                     { label: t.stepCard, complete: cardCaptured, icon: <CreditCard className="w-4 h-4" /> },
@@ -407,7 +408,7 @@ export default function WaitingForParentPage() {
                         className="w-6 h-6 rounded-full flex items-center justify-center flex-none"
                         style={step.complete
                           ? { background: "#94F7C5", color: "#050508" }
-                          : { border: "1.5px solid rgba(255,255,255,.25)", color: "rgba(255,255,255,.9)" }}
+                          : { border: "1.5px solid #1b1922", color: "#fff" }}
                       >
                         {step.complete ? <CheckCircle2 className="w-4 h-4" /> : <span className="text-[11px]">{i + 1}</span>}
                       </span>
@@ -416,7 +417,7 @@ export default function WaitingForParentPage() {
                   ))}
                 </div>
 
-                <div className="flex items-center justify-center gap-2 text-[15px]" style={{ fontFamily: "'Permanent Marker',cursive", color: "#9FF5E8" }}>
+                <div className="flex items-center justify-center gap-2 text-[15px]" style={{ fontFamily: "'Bebas Neue', sans-serif", color: "#9FF5E8" }}>
                   <Loader2 className="w-3.5 h-3.5" style={{ animation: "bt-spin 1.4s linear infinite" }} />
                   {t.checking}
                 </div>

@@ -90,7 +90,7 @@ const COPY = {
       { label: "Exam readiness", c1: "#C5B3FF", c2: "#9FD8FF" },
     ],
     ctaHead: "Ready to put the evidence to work?",
-    ctaBtn: "Start free — 14 days",
+    ctaBtn: "See plans — from R169",
   },
   af: {
     badge: "🔬 Bewysgebaseer · eweknie-beoordeelde beginsels",
@@ -167,7 +167,7 @@ const COPY = {
       { label: "Eksamengereedheid", c1: "#C5B3FF", c2: "#9FD8FF" },
     ],
     ctaHead: "Gereed om die bewyse aan die werk te sit?",
-    ctaBtn: "Begin gratis — 14 dae",
+    ctaBtn: "Sien planne — vanaf R169",
   },
 } as const;
 
@@ -325,7 +325,7 @@ export default function ResearchPage() {
                 🤖
               </div>
               <div>
-                <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#94F7C5", fontSize: 18, transform: "rotate(-2deg)" }}>{t.rizz.eyebrow}</div>
+                <div style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", color: "#94F7C5", fontSize: 18, transform: "rotate(-2deg)" }}>{t.rizz.eyebrow}</div>
                 <div style={{ fontWeight: 900, fontSize: "clamp(20px,4vw,28px)", letterSpacing: "-.5px", color: "#fff" }}>{t.rizz.title}</div>
               </div>
             </div>
@@ -341,7 +341,7 @@ export default function ResearchPage() {
 
           {/* ── The science ────────────────────────────────────── */}
           <div style={{ textAlign: "center", margin: "80px 0 40px" }}>
-            <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#FFB7E5", fontSize: 20, transform: "rotate(-2deg)" }}>{t.sciEyebrow}</div>
+            <div style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", color: "#FFB7E5", fontSize: 20, transform: "rotate(-2deg)" }}>{t.sciEyebrow}</div>
             <h2 style={{ fontSize: "clamp(28px,6vw,40px)", fontWeight: 900, letterSpacing: "-1px", color: "#fff", margin: "6px 0 0" }}>
               {t.sciHead1}
               <span style={{ backgroundImage: WORDMARK_GRADIENT, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>
@@ -421,15 +421,8 @@ export default function ResearchPage() {
             <h2 style={{ fontSize: "clamp(22px,5vw,34px)", fontWeight: 900, letterSpacing: "-1px", color: "#fff", margin: "0 0 24px" }}>{t.ctaHead}</h2>
             <Link href="/subscribe">
               <button
-                className="btr-sticker"
+                className="pub-btn"
                 data-testid="button-research-cta"
-                style={{
-                  fontFamily: "'Poppins',sans-serif", fontWeight: 900, fontSize: 16,
-                  color: "#000", background: "#FFE29A",
-                  border: "2.5px solid #000", boxShadow: "6px 6px 0 0 #FFE29A",
-                  borderRadius: 12, padding: "16px 34px", cursor: "pointer",
-                  transform: "rotate(-.5deg)",
-                }}
               >
                 {t.ctaBtn}
               </button>

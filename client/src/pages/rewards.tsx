@@ -6,6 +6,7 @@ import { useLocation } from "wouter";
 import { Flame, Star, Zap, Target, Trophy, GraduationCap, Award, BookOpen, Coins, Lock, Loader2, ShoppingBag, ArrowRight, Users, Copy, Check, Share2, Linkedin, Sparkles, Medal } from "lucide-react";
 import { GraffitiSplats } from "@/components/graffiti-splats";
 import { LearnerHeader } from "@/components/learner-header";
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
 const BADGE_INFO: Record<string, {
@@ -65,7 +66,7 @@ const T = {
     friendSingular: "friend",
     friendPlural: "friends",
     signedUpWaiting: "signed up — waiting on payment.",
-    paidSubNote: "Only paid subscriptions count — free trials don't qualify.",
+    paidSubNote: "Only paid subscriptions count toward rewards.",
     spendCoins: "Spend your coins",
     spendDesc: "Power-ups like Streak Freeze, 2x Coins and the Mystery Box are waiting in the Learner Store.",
     goToStore: "Go to Store",
@@ -74,7 +75,7 @@ const T = {
     webShare: "Share",
     upgradeToRefer: "Subscribe to unlock referrals",
     upgradeToReferDesc: "Start your Student Life subscription to get a personal referral code and earn free months.",
-    upgradeCta: "Start Free Trial",
+    upgradeCta: "Subscribe now",
     leaderboardHeading: "Referral Leaderboard",
     leaderboardSubtitle: "Top learners by paid referrals.",
     leaderboardEmpty: "No paid referrals yet — be the first to climb the board!",
@@ -115,7 +116,7 @@ const T = {
     friendSingular: "vriend",
     friendPlural: "vriende",
     signedUpWaiting: "het ingeteken — wag op betaling.",
-    paidSubNote: "Slegs betaalde intekenings tel — gratis proeftydperke tel nie.",
+    paidSubNote: "Slegs betaalde intekenings tel vir belonings.",
     spendCoins: "Spandeer jou munte",
     spendDesc: "Hupstote soos Reeks Vries, 2x Munte en die Raaiselkas wag in die Leerderwinkel.",
     goToStore: "Gaan na winkel",
@@ -124,7 +125,7 @@ const T = {
     webShare: "Deel",
     upgradeToRefer: "Teken in om verwysings te ontsluit",
     upgradeToReferDesc: "Begin jou Student Life-intekening om 'n persoonlike verwysings kode te kry en gratis maande te verdien.",
-    upgradeCta: "Begin Gratis Proef",
+    upgradeCta: "Teken nou in",
     leaderboardHeading: "Verwysings Ranglys",
     leaderboardSubtitle: "Top leerders volgens betaalde verwysings.",
     leaderboardEmpty: "Nog geen betaalde verwysings nie — wees die eerste!",
@@ -274,7 +275,7 @@ export default function RewardsPage() {
   return (
     <div className="min-h-screen text-white relative" style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}>
       {/* One fixed full-page graffiti wall behind everything */}
-      <div aria-hidden className="pointer-events-none fixed inset-0" style={{ zIndex: 0, opacity: 0.9 }}>
+      <div aria-hidden className="pointer-events-none fixed inset-0" style={{ zIndex: 0 }}>
         <GraffitiSplats variant="full" opacity={0.9} />
       </div>
       <LearnerHeader
@@ -290,8 +291,8 @@ export default function RewardsPage() {
         <div
           className="relative rounded-2xl overflow-hidden p-6 sm:p-8"
           style={{
-            background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
-            border: "1px solid rgba(255,255,255,0.08)",
+            background: "linear-gradient(#1b1922, #1b1922), #050508",
+            border: "1px solid #1b1922",
           }}
           data-testid="rewards-hero"
         >
@@ -308,7 +309,7 @@ export default function RewardsPage() {
               <Trophy className="w-7 h-7" style={{ color: "#FFE29A" }} />
             </div>
             <div className="flex-1 min-w-0">
-              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFE29A", transform: "rotate(-2deg)", display: "inline-block" }}>
+              <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: "#FFE29A", transform: "rotate(-2deg)", display: "inline-block" }}>
                 {isAf ? "verdien dit, dra dit!" : "earn it, flex it!"} 🏆
               </span>
               <div
@@ -367,7 +368,7 @@ export default function RewardsPage() {
                         if (!tx) return null;
                         const positive = (tx.amount ?? 0) > 0;
                         return (
-                          <div key={i} className="flex justify-between items-center text-sm py-1 border-b last:border-0" style={{ borderColor: "rgba(255,255,255,0.06)" }} data-testid={`tx-row-${i}`}>
+                          <div key={i} className="flex justify-between items-center text-sm py-1 border-b last:border-0" style={{ borderColor: "#1b1922" }} data-testid={`tx-row-${i}`}>
                             <span className="text-white truncate max-w-[180px]">{tx.description || tx.reason || ""}</span>
                             <span className="font-bold tabular-nums" style={{ color: positive ? "#9FD8FF" : "#FFB7E5" }}>
                               {positive ? "+" : ""}{tx.amount ?? 0}
@@ -406,7 +407,7 @@ export default function RewardsPage() {
                           key={m}
                           className="flex flex-col items-center flex-1 rounded-xl py-2 bg-black/40 transition-all"
                           style={{
-                            border: hit ? "1px solid rgba(255,226,154,0.6)" : "1px solid rgba(255,255,255,0.1)",
+                            border: hit ? "1px solid rgba(255,226,154,0.6)" : "1px solid #1b1922",
                           }}
                           data-testid={`milestone-${m}`}
                         >
@@ -485,12 +486,12 @@ export default function RewardsPage() {
                       <div
                         key={code}
                         className="flex flex-col items-center gap-2 p-3 rounded-xl bg-black/40 text-center"
-                        style={{ border: "1px dashed rgba(255,255,255,0.14)" }}
+                        style={{ border: "1px dashed #1b1922" }}
                         data-testid={`locked-badge-${code}`}
                       >
                         <div
                           className="w-11 h-11 rounded-full bg-black flex items-center justify-center relative"
-                          style={{ border: "1px solid rgba(255,255,255,0.1)" }}
+                          style={{ border: "1px solid #1b1922" }}
                         >
                           <Icon className="w-5 h-5 text-white" />
                           <Lock className="w-3 h-3 text-white absolute -bottom-0.5 -right-0.5" />
@@ -523,16 +524,15 @@ export default function RewardsPage() {
                       <p className="font-bold text-sm text-white mb-1">{t.upgradeToRefer}</p>
                       <p className="text-xs text-white max-w-xs mx-auto">{t.upgradeToReferDesc}</p>
                     </div>
-                    <button
+                    <Button
+                      variant="primary"
                       onClick={() => setLocation("/subscribe")}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm hover:opacity-90 transition-opacity"
-                      style={{ background: "#9FD8FF", color: "#0a0a0a" }}
                       data-testid="button-upgrade-to-refer"
                     >
                       <Sparkles className="w-4 h-4" />
                       {t.upgradeCta}
                       <ArrowRight className="w-4 h-4" />
-                    </button>
+                    </Button>
                   </div>
                 ) : (
                   /* ── Active subscriber — show code + link + progress ── */
@@ -628,7 +628,7 @@ export default function RewardsPage() {
                           <span className="text-white"> / {referral?.threshold ?? 2} </span>
                           {t.paidReferrals}
                         </p>
-                        <div className="h-2 rounded-full bg-white/10 mt-2 overflow-hidden">
+                        <div className="h-2 rounded-full bg-[#1b1922] mt-2 overflow-hidden">
                           <div
                             className="h-full rounded-full transition-all"
                             style={{
@@ -694,8 +694,8 @@ export default function RewardsPage() {
                             key={`${row.rank}-${row.displayName}`}
                             className="grid grid-cols-[auto_1fr_auto] gap-x-3 items-center px-3 py-2 rounded-lg"
                             style={{
-                              background: isMe ? "rgba(159,216,255,0.12)" : "rgba(255,255,255,0.03)",
-                              border: isMe ? "1px solid rgba(159,216,255,0.5)" : "1px solid rgba(255,255,255,0.06)",
+                              background: isMe ? "rgba(159,216,255,0.12)" : "#1b1922",
+                              border: isMe ? "1px solid rgba(159,216,255,0.5)" : "1px solid #1b1922",
                             }}
                             data-testid={`leaderboard-row-${row.rank}`}
                           >
@@ -762,16 +762,16 @@ export default function RewardsPage() {
                 <p className="text-sm text-white flex-1">
                   {t.spendDesc}
                 </p>
-                <button
+                <Button
+                  variant="primary"
                   onClick={() => setLocation("/store")}
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm hover:opacity-90 transition-opacity shrink-0"
-                  style={{ background: "#94F7C5", color: "#0a0a0a" }}
+                  className="shrink-0"
                   data-testid="button-go-to-store"
                 >
                   <ShoppingBag className="w-4 h-4" />
                   {t.goToStore}
                   <ArrowRight className="w-4 h-4" />
-                </button>
+                </Button>
               </div>
             </CosmicCard>
 
@@ -799,7 +799,7 @@ function CosmicCard({
     <div
       className={`relative rounded-2xl overflow-hidden transition-all ${className}`}
       style={{
-        background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
+        background: "linear-gradient(#1b1922, #1b1922), #050508",
         border: `1px solid ${hex}44`,
       }}
       data-testid={testId}
@@ -830,7 +830,7 @@ function CosmicCardTitle({
       <Icon className="w-4 h-4" style={{ color: hex }} />
       <span
         className="flex-1"
-        style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: hex, transform: "rotate(-1.5deg)", display: "inline-block" }}
+        style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 16, color: hex, transform: "rotate(-1.5deg)", display: "inline-block" }}
       >
         {children}
       </span>

@@ -4,6 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import QRCode from "qrcode";
 import { Download, QrCode as QrIcon, Link2, Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { AdminTopNav } from "@/components/admin-top-nav";
 import { useLanguage } from "@/lib/language-context";
 import { useSEO } from "@/hooks/use-seo";
@@ -93,8 +94,6 @@ export default function AdminQrGeneratorPage() {
     }
   }
 
-  const btnPrimary =
-    "inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold transition-transform hover:scale-[1.03] active:scale-[0.97] disabled:opacity-40";
   const btnSecondary =
     "inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold transition-transform hover:scale-[1.03]";
 
@@ -190,7 +189,7 @@ export default function AdminQrGeneratorPage() {
                       className="w-9 h-9 rounded-xl transition-transform hover:scale-110"
                       style={{
                         background: c,
-                        border: colorIdx === i ? "2.5px solid #fff" : "1.5px solid rgba(255,255,255,0.2)",
+                        border: colorIdx === i ? "2.5px solid #fff" : "1.5px solid #fff",
                       }}
                     />
                   ))}
@@ -221,16 +220,15 @@ export default function AdminQrGeneratorPage() {
                 </div>
               </div>
 
-              <button
+              <Button
                 onClick={download}
                 disabled={!!error}
-                className={btnPrimary}
-                style={{ background: "#94F7C5", color: "#0a0a0a" }}
+                variant="primary"
                 data-testid="button-qr-download"
               >
                 <Download className="w-4 h-4" />
                 {isAf ? "Laai PNG af" : "Download PNG"}
-              </button>
+              </Button>
             </div>
 
             {/* ── Preview ──────────────────────────────── */}

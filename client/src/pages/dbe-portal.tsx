@@ -175,7 +175,7 @@ function StatCard({ label, value, sub, icon: Icon, onClick, valueColor, barPct }
         <div style={{ flex: 1, minHeight: 10 }} />
         {/* Line 4 — thin progress bar, its own block under everything else */}
         {showBar && (
-          <div className="w-full overflow-hidden" style={{ height: 6, borderRadius: 999, background: "rgba(255,255,255,0.1)" }} aria-hidden>
+          <div className="w-full overflow-hidden" style={{ height: 6, borderRadius: 999, background: "#1b1922" }} aria-hidden>
             <div style={{ width: `${clampedPct}%`, height: "100%", background: resolvedColor, borderRadius: 999, transition: "width .8s ease" }} />
           </div>
         )}
@@ -199,7 +199,7 @@ function CoverageBar({ label, valueText, pct, color, testId }: {
         <span className="text-white uppercase font-bold truncate" style={{ fontSize: 10, letterSpacing: "0.08em" }}>{label}</span>
         <span className="font-black tabular-nums shrink-0" style={{ fontSize: 10, color }}>{valueText}</span>
       </div>
-      <div className="w-full overflow-hidden" style={{ height: 6, borderRadius: 999, background: "rgba(255,255,255,0.1)" }} aria-hidden>
+      <div className="w-full overflow-hidden" style={{ height: 6, borderRadius: 999, background: "#1b1922" }} aria-hidden>
         <div style={{ width: `${clamped}%`, height: "100%", background: color, borderRadius: 999, transition: "width .8s ease" }} />
       </div>
     </div>
@@ -247,7 +247,7 @@ function YearUploadButton({ subject, year, isMemo, label, disabled }: {
       <Button
         size="sm"
         variant="outline"
-        className={`h-6 text-[10px] gap-0.5 px-1.5 bg-transparent rounded-md ${isMemo ? "border-[#94F7C5]/40 text-[#94F7C5] hover:bg-white/[0.04] hover:border-[#94F7C5]" : "border-[#9FD8FF]/40 text-[#9FD8FF] hover:bg-white/[0.04] hover:border-[#9FD8FF]"}`}
+        className={`h-6 text-[10px] gap-0.5 px-1.5 bg-transparent rounded-md ${isMemo ? "border-[#94F7C5]/40 text-[#94F7C5] hover:bg-[#1b1922] hover:border-[#94F7C5]" : "border-[#9FD8FF]/40 text-[#9FD8FF] hover:bg-[#1b1922] hover:border-[#9FD8FF]"}`}
         disabled={disabled || uploading}
         onClick={(e) => { e.stopPropagation(); inputRef.current?.click(); }}
         title={`Upload ${isMemo ? "memo" : "paper"} PDF directly`}
@@ -333,7 +333,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
       }}
       data-testid={`subject-row-${row.subject}`}
     >
-      <div className="flex items-center gap-3 cursor-pointer hover:bg-white/[0.03] transition-colors" style={{ padding: "12px 14px", borderRadius: 14 }} onClick={() => {
+      <div className="flex items-center gap-3 cursor-pointer hover:bg-[#1b1922] transition-colors" style={{ padding: "12px 14px", borderRadius: 14 }} onClick={() => {
         const next = !open;
         setOpen(next);
         try {
@@ -380,7 +380,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <div className="shrink-0 overflow-hidden" style={{ width: 120, height: 7, borderRadius: 999, background: "rgba(255,255,255,0.1)" }}>
+          <div className="shrink-0 overflow-hidden" style={{ width: 120, height: 7, borderRadius: 999, background: "#1b1922" }}>
             <div className="h-full" style={{ width: `${pct}%`, background: accent, borderRadius: 999, transition: "width .8s ease" }} />
           </div>
           <span className="text-right tabular-nums" style={{ fontSize: 11, fontWeight: 800, letterSpacing: "0.5px", color: accent, minWidth: 78 }}>{statusLabel} · {pct}%</span>
@@ -388,7 +388,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
       </div>
 
       {open && (
-        <div className="space-y-4" style={{ padding: "12px 14px 16px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+        <div className="space-y-4" style={{ padding: "12px 14px 16px", borderTop: "1px solid #1b1922" }}>
           {/* Action buttons */}
           <div className="space-y-2">
             <div className="uppercase text-white" style={{ fontSize: 11, fontWeight: 700, letterSpacing: "1px" }}>Actions</div>
@@ -462,7 +462,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
               )}
               {hasQuestions && (
                 <button
-                  className={`${ghostBtn} text-white bg-transparent border border-white/25 hover:border-[#9FD8FF]`}
+                  className={`${ghostBtn} text-white bg-transparent border border-[#1b1922] hover:border-[#9FD8FF]`}
                   disabled={isPipelineRunning || qaMutation.isPending}
                   onClick={(e) => { e.stopPropagation(); qaMutation.mutate({ subject: row.subject, type: "verbatim" }); }}
                   title="Run a quality check on a sample of ingested questions — scores memo accuracy, CAPS alignment, and structure">
@@ -490,9 +490,9 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
                 const hasLocalPaper = (localYr?.papers?.length ?? 0) > 0;
                 const hasLocalMemo = (localYr?.memos?.length ?? 0) > 0;
                 if (!hasAnyCatalog && !hasPaper && !hasMemo && !hasLocalPaper && !hasLocalMemo) return null;
-                const yrBorderColor = hasPaper && hasMemo ? "rgba(159,245,232,0.35)" : hasFailed ? "rgba(255,183,229,0.35)" : hasPaper ? "rgba(255,226,154,0.35)" : "rgba(255,255,255,0.1)";
+                const yrBorderColor = hasPaper && hasMemo ? "rgba(159,245,232,0.35)" : hasFailed ? "rgba(255,183,229,0.35)" : hasPaper ? "rgba(255,226,154,0.35)" : "#1b1922";
                 return (
-                  <div key={yr} className="rounded-xl p-2.5 space-y-2" style={{ background: "rgba(255,255,255,0.035)", border: `1px solid ${yrBorderColor}` }} data-testid={`year-card-${row.subject}-${yr}`}>
+                  <div key={yr} className="rounded-xl p-2.5 space-y-2" style={{ background: "#0e0d12", border: `1px solid ${yrBorderColor}` }} data-testid={`year-card-${row.subject}-${yr}`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-black text-white">{yr}</span>
@@ -505,7 +505,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
                         <span className="text-[10px] font-black" style={{ color: hasMemo ? "#94F7C5" : "#ffffff" }}>M{hasMemo ? "✓" : "–"}</span>
                       </div>
                     </div>
-                    <div className="w-full h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)" }}>
+                    <div className="w-full h-1 rounded-full overflow-hidden" style={{ background: "#1b1922" }}>
                       <div className="h-full rounded-full transition-all" style={{ width: `${Math.max(yrPct, 0)}%`, background: yrPct === 100 ? "#9FF5E8" : yrPct > 0 ? "#FFE29A" : "transparent" }} />
                     </div>
                     {yrUrls && (
@@ -556,7 +556,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
           {/* Quality info */}
           {row.verifiedChecks && (
             <div className="grid grid-cols-2 gap-2">
-              <div className="rounded-xl bg-white/[0.035] p-2.5 text-[11px]" style={{ border: qualityPassed ? "1px solid rgba(159,245,232,0.35)" : "1px solid rgba(255,255,255,0.1)" }}>
+              <div className="rounded-xl bg-[#0e0d12] p-2.5 text-[11px]" style={{ border: qualityPassed ? "1px solid rgba(159,245,232,0.35)" : "1px solid #1b1922" }}>
                 <div className="flex items-center gap-1.5 mb-1">
                   <ShieldCheck className="w-3.5 h-3.5" style={{ color: qualityPassed ? "#9FF5E8" : "#ffffff" }} />
                   <span className="font-black uppercase tracking-[0.1em] text-[10px]" style={{ color: qualityPassed ? "#9FF5E8" : "#ffffff" }}>Verbatim</span>
@@ -566,7 +566,7 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
                   <span className="font-black" style={{ color: qualityPassed ? "#9FF5E8" : "#FFE29A" }}>{row.avgQualityScore ?? 0}%</span>
                 </div>
               </div>
-              <div className="rounded-xl bg-white/[0.035] p-2.5 text-[11px]" style={{ border: row.simulationQuality >= 80 ? "1px solid rgba(197,179,255,0.35)" : "1px solid rgba(255,255,255,0.1)" }}>
+              <div className="rounded-xl bg-[#0e0d12] p-2.5 text-[11px]" style={{ border: row.simulationQuality >= 80 ? "1px solid rgba(197,179,255,0.35)" : "1px solid #1b1922" }}>
                 <div className="flex items-center gap-1.5 mb-1">
                   <Zap className="w-3.5 h-3.5" style={{ color: row.simulatedCount > 0 ? "#C5B3FF" : "#ffffff" }} />
                   <span className="font-black uppercase tracking-[0.1em] text-[10px]" style={{ color: row.simulatedCount > 0 ? "#C5B3FF" : "#ffffff" }}>AI Simulated</span>
@@ -669,7 +669,7 @@ function OverviewSubjectGrid({ subjects, status, statusLoading, seedSubject, gen
               style={
                 sortKey === opt.value
                   ? { color: "#050508", border: "1.5px solid #9FD8FF", background: "#9FD8FF" }
-                  : { color: "#ffffff", border: "1.5px solid rgba(255,255,255,0.18)", background: "transparent" }
+                  : { color: "#ffffff", border: "1.5px solid #1b1922", background: "transparent" }
               }
             >
               {opt.label}
@@ -687,12 +687,12 @@ function OverviewSubjectGrid({ subjects, status, statusLoading, seedSubject, gen
         const hasNothing = total === 0 && !isRunning;
         const accent = ready ? "#9FF5E8" : isRunning ? "#FFE29A" : "#9FD8FF";
         const cardStyle: React.CSSProperties = ready
-          ? { background: "rgba(255,255,255,0.035)", border: "1px solid rgba(159,245,232,0.35)", borderRadius: 14 }
+          ? { background: "#0e0d12", border: "1px solid rgba(159,245,232,0.35)", borderRadius: 14 }
           : isRunning
-          ? { background: "rgba(255,255,255,0.035)", border: "1px solid rgba(255,226,154,0.35)", borderRadius: 14 }
-          : { background: "rgba(255,255,255,0.035)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 14 };
+          ? { background: "#0e0d12", border: "1px solid rgba(255,226,154,0.35)", borderRadius: 14 }
+          : { background: "#0e0d12", border: "1px solid #1b1922", borderRadius: 14 };
         const ghostBtn = "h-7 text-xs gap-1 inline-flex items-center justify-center rounded-[10px] px-2.5 font-bold text-white hover:border-[#9FD8FF] transition-colors disabled:opacity-40";
-        const ghostStyle: React.CSSProperties = { border: "1px solid rgba(255,255,255,0.25)", background: "transparent" };
+        const ghostStyle: React.CSSProperties = { border: "1px solid #1b1922", background: "transparent" };
         const neonBtn = "h-7 text-xs gap-1 inline-flex items-center justify-center rounded-[10px] px-2.5 font-extrabold transition-transform hover:-translate-y-[2px] disabled:opacity-40 disabled:hover:translate-y-0";
         const cyanBtnStyle: React.CSSProperties = { color: "#050508", background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", border: "none" };
         const purpleBtnStyle: React.CSSProperties = { color: "#050508", background: "linear-gradient(100deg,#9FD8FF,#C5B3FF)", border: "none" };
@@ -734,7 +734,7 @@ function OverviewSubjectGrid({ subjects, status, statusLoading, seedSubject, gen
                   <CheckCircle2 className="w-3 h-3" /> Live
                 </span>
               ) : hasNothing ? (
-                <span className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.1em] rounded-md px-2 py-0.5 text-white whitespace-nowrap" style={{ border: "1px solid rgba(255,255,255,0.18)" }}>
+                <span className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.1em] rounded-md px-2 py-0.5 text-white whitespace-nowrap" style={{ border: "1px solid #1b1922" }}>
                   Empty
                 </span>
               ) : null}
@@ -848,7 +848,7 @@ function MissingMemosPanel() {
   const toggleSort = (field: typeof sort.field) => setSort((p) => p.field === field ? { field, dir: p.dir === "asc" ? "desc" : "asc" } : { field, dir: "desc" });
 
   return (
-    <Card className="bg-white/[0.035] border-white/10 rounded-[20px] shadow-none">
+    <Card className="bg-[#0e0d12] border-[#1b1922] rounded-[20px] shadow-none">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-start gap-2">
@@ -861,7 +861,7 @@ function MissingMemosPanel() {
               <p className="text-xs text-white mt-0.5">Ingested questions without memo text — use Re-ingest to retry specific papers.</p>
             </div>
           </div>
-          <Button variant="outline" size="sm" className="gap-1.5 rounded-[10px] bg-transparent border-white/25 text-white hover:border-[#9FD8FF] hover:bg-transparent hover:text-white" onClick={() => {
+          <Button variant="outline" size="sm" className="gap-1.5 rounded-[10px] bg-transparent border-[#1b1922] text-white hover:border-[#9FD8FF] hover:bg-transparent hover:text-white" onClick={() => {
             setShow((v: boolean) => {
               const next = !v;
               try {
@@ -901,7 +901,7 @@ function MissingMemosPanel() {
             <div className="overflow-x-auto rounded-lg border border-white/[0.08]">
               <table className="w-full text-xs" data-testid="table-missing-memos">
                 <thead>
-                  <tr className="border-b border-white/10 text-[11px] uppercase" style={{ letterSpacing: "0.5px" }}>
+                  <tr className="border-b border-[#1b1922] text-[11px] uppercase" style={{ letterSpacing: "0.5px" }}>
                     <th className="text-left px-3 py-2"><button onClick={() => toggleSort("subject")} className="font-bold uppercase text-white hover:text-[#FFE29A]">Subject</button></th>
                     <th className="text-center px-3 py-2"><button onClick={() => toggleSort("year")} className="font-bold uppercase text-white hover:text-[#FFE29A]">Year</button></th>
                     <th className="text-center px-3 py-2 font-bold text-white">Paper</th>
@@ -917,7 +917,7 @@ function MissingMemosPanel() {
                     const reingestKey = `${r.subject}|${r.year}`;
                     const isRe = reingesting.has(reingestKey);
                     return (
-                      <tr key={rowKey} className="border-b border-white/[0.06] hover:bg-white/[0.03] transition-colors">
+                      <tr key={rowKey} className="border-b border-white/[0.06] hover:bg-[#1b1922] transition-colors">
                         <td className="px-3 py-2 font-medium text-white max-w-[180px] truncate">{r.subject}</td>
                         <td className="px-3 py-2 text-center text-white">{r.year}</td>
                         <td className="px-3 py-2 text-center text-white">P{r.paperNumber}</td>
@@ -1550,7 +1550,7 @@ export default function DBEPortal() {
           <h3 className="text-sm font-semibold text-white uppercase tracking-wider">{label} ({subjects.length})</h3>
           <span className="text-xs text-white">{groupDone}/{groupTotal} papers · {formatNumber(groupQuestions, language)} questions</span>
         </div>
-        <div style={{ background: "rgba(255,255,255,0.035)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 20, padding: "8px 24px" }}>
+        <div style={{ background: "#0e0d12", border: "1px solid #1b1922", borderRadius: 20, padding: "8px 24px" }}>
         {subjects.map((row) => (
           <SubjectAccordion key={row.subject} row={row} localFiles={localFilesData}
             onIngest={(s, y) => runMutation.mutate({ subject: s, year: y })}
@@ -1589,7 +1589,7 @@ export default function DBEPortal() {
           it read as a different app from the rest of the admin surface. The
           shared sidebar now handles navigation; this keeps only the live
           pipeline summary. */}
-      <div className="sticky top-0 z-40" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)", background: "rgba(5,5,8,0.95)", backdropFilter: "blur(8px)" }}>
+      <div className="sticky top-0 z-40" style={{ borderBottom: "1px solid #1b1922", background: "rgba(5,5,8,0.95)", backdropFilter: "blur(8px)" }}>
         <div className="flex h-9 flex-wrap items-center justify-between gap-4 text-[11px] font-semibold text-white" style={{ padding: "0 40px" }}>
           <div className="flex flex-wrap items-center gap-3">
             <span className="flex items-center gap-1.5">
@@ -1681,7 +1681,7 @@ export default function DBEPortal() {
             </p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <Button size="sm" variant="outline" className="gap-1.5 rounded-[10px] bg-transparent border-white/25 text-white hover:border-[#9FD8FF] hover:bg-transparent hover:text-white" onClick={() => { queryClient.invalidateQueries({ queryKey: ["/api/admin/dbe-ingestion/subjects"] }); queryClient.invalidateQueries({ queryKey: ["/api/admin/dbe-ingestion/status"] }); refetchSubjects(); toast({ title: "Refreshed" }); }} data-testid="btn-refresh">
+            <Button size="sm" variant="outline" className="gap-1.5 rounded-[10px] bg-transparent border-[#1b1922] text-white hover:border-[#9FD8FF] hover:bg-transparent hover:text-white" onClick={() => { queryClient.invalidateQueries({ queryKey: ["/api/admin/dbe-ingestion/subjects"] }); queryClient.invalidateQueries({ queryKey: ["/api/admin/dbe-ingestion/status"] }); refetchSubjects(); toast({ title: "Refreshed" }); }} data-testid="btn-refresh">
               <RefreshCw className="w-3.5 h-3.5" /> Refresh
             </Button>
             <Button size="sm" variant="outline" className="gap-1.5 rounded-[10px] border-0 font-extrabold text-[#050508] hover:text-[#050508] hover:-translate-y-[2px] transition-transform"
@@ -1725,7 +1725,7 @@ export default function DBEPortal() {
         </div>
 
         {/* Primary actions row */}
-        <div className="space-y-0" style={{ background: "rgba(255,255,255,0.035)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 20, padding: 24 }}>
+        <div className="space-y-0" style={{ background: "#0e0d12", border: "1px solid #1b1922", borderRadius: 20, padding: 24 }}>
           {/* Row: Ingestion */}
           <div className="flex items-center gap-3 flex-wrap pb-3">
             <span className="uppercase text-white w-20 shrink-0" style={{ fontSize: 11, fontWeight: 700, letterSpacing: "1px" }}>Ingestion</span>
@@ -1737,7 +1737,7 @@ export default function DBEPortal() {
           </div>
 
           {/* Row: AI & Questions */}
-          <div className="flex items-center gap-3 flex-wrap py-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+          <div className="flex items-center gap-3 flex-wrap py-3" style={{ borderTop: "1px solid #1b1922" }}>
             <span className="uppercase text-white w-20 shrink-0" style={{ fontSize: 11, fontWeight: 700, letterSpacing: "1px", opacity: openaiReady ? 1 : 0.9 }}>
               AI & Qs
               {!openaiReady && <span className="block normal-case tracking-normal font-bold text-[9px] mt-0.5" style={{ color: "#FFB7E5" }}>No key</span>}
@@ -1751,9 +1751,9 @@ export default function DBEPortal() {
               {!openaiReady && <span className="ml-1 text-[9px] px-1 py-0.5 rounded font-black" style={{ background: "rgba(255,183,229,0.15)", color: "#FFB7E5", border: "1px solid rgba(255,183,229,0.3)" }}>Requires key</span>}
             </Button>
             {/* Crunch Time controls */}
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1.5" style={{ borderRadius: 10, border: `1.5px solid ${openaiReady ? "rgba(159,216,255,0.5)" : "rgba(255,255,255,0.25)"}` }}>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1.5" style={{ borderRadius: 10, border: `1.5px solid ${openaiReady ? "rgba(159,216,255,0.5)" : "#1b1922"}` }}>
               <span className="text-[10px] uppercase font-bold" style={{ letterSpacing: "1px", color: openaiReady ? "#9FD8FF" : "#ffffff" }}>Papers</span>
-              <input type="number" min={1} max={20} value={papersPerSubject} onChange={(e) => setPapersPerSubject(Math.max(1, Math.min(20, Number(e.target.value) || 1)))} disabled={simulateAllMutation.isPending || crunchStatus?.running || anyRunning || !openaiReady} className="h-6 w-12 rounded bg-transparent px-1 text-center text-xs font-bold text-white focus:outline-none disabled:opacity-40" style={{ border: "1px solid rgba(255,255,255,0.25)" }} data-testid="input-papers-per-subject" />
+              <input type="number" min={1} max={20} value={papersPerSubject} onChange={(e) => setPapersPerSubject(Math.max(1, Math.min(20, Number(e.target.value) || 1)))} disabled={simulateAllMutation.isPending || crunchStatus?.running || anyRunning || !openaiReady} className="h-6 w-12 rounded bg-transparent px-1 text-center text-xs font-bold text-white focus:outline-none disabled:opacity-40" style={{ border: "1px solid #1b1922" }} data-testid="input-papers-per-subject" />
               <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-white">/subj</span>
             </div>
             <Button size="sm" onClick={() => simulateAllMutation.mutate(papersPerSubject)} disabled={simulateAllMutation.isPending || crunchStatus?.running || anyRunning || !openaiReady} className="gap-2 rounded-[10px] border-0 font-extrabold text-[#050508] hover:text-[#050508] hover:-translate-y-[2px] transition-transform disabled:opacity-40" style={{ background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)" }}
@@ -1768,7 +1768,7 @@ export default function DBEPortal() {
             )}
             {crunchStatus?.running && crunchStatus.total > 0 && (
               <div className="flex items-center gap-2">
-                <div className="h-1.5 w-28 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.1)" }}>
+                <div className="h-1.5 w-28 rounded-full overflow-hidden" style={{ background: "#1b1922" }}>
                   <div className="h-full bg-gradient-to-r from-[#9FF5E8] to-[#FFB7E5] transition-all" style={{ width: `${Math.min(100, Math.round((crunchStatus.done / crunchStatus.total) * 100))}%` }} />
                 </div>
                 <span className="text-[11px] font-bold text-white tabular-nums">{formatNumber(crunchStatus.done, language)}/{formatNumber(crunchStatus.total, language)}</span>
@@ -1777,14 +1777,14 @@ export default function DBEPortal() {
           </div>
 
           {/* Row: Validation */}
-          <div className="flex items-center gap-3 flex-wrap py-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+          <div className="flex items-center gap-3 flex-wrap py-3" style={{ borderTop: "1px solid #1b1922" }}>
             <span className="uppercase text-white w-20 shrink-0" style={{ fontSize: 11, fontWeight: 700, letterSpacing: "1px" }}>Validation</span>
-            <Button size="sm" variant="outline" className="gap-2 rounded-[10px] bg-transparent border-white/25 text-white hover:border-[#9FD8FF] hover:bg-transparent hover:text-white" onClick={() => rebuildMasteryMutation.mutate()} disabled={rebuildMasteryMutation.isPending}
+            <Button size="sm" variant="outline" className="gap-2 rounded-[10px] bg-transparent border-[#1b1922] text-white hover:border-[#9FD8FF] hover:bg-transparent hover:text-white" onClick={() => rebuildMasteryMutation.mutate()} disabled={rebuildMasteryMutation.isPending}
               title="Recalculate mastery levels and topic coverage scores across all subjects"
               data-testid="btn-rebuild-mastery">
               {rebuildMasteryMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <GraduationCap className="w-4 h-4" />} Rebuild Mastery
             </Button>
-            <Button size="sm" variant="outline" className="gap-2 rounded-[10px] bg-transparent border-white/25 text-white hover:border-[#9FD8FF] hover:bg-transparent hover:text-white" onClick={() => validateAllMutation.mutate()} disabled={validateAllMutation.isPending || validateStatus?.running}
+            <Button size="sm" variant="outline" className="gap-2 rounded-[10px] bg-transparent border-[#1b1922] text-white hover:border-[#9FD8FF] hover:bg-transparent hover:text-white" onClick={() => validateAllMutation.mutate()} disabled={validateAllMutation.isPending || validateStatus?.running}
               title="Score every ingested question for memo accuracy, CAPS alignment, and structural quality"
               data-testid="btn-validate-ingestion">
               {validateAllMutation.isPending || validateStatus?.running ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />} Validate All
@@ -1797,9 +1797,9 @@ export default function DBEPortal() {
           </div>
 
           {/* Row: Nightly Jobs */}
-          <div className="flex items-center gap-3 flex-wrap pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+          <div className="flex items-center gap-3 flex-wrap pt-3" style={{ borderTop: "1px solid #1b1922" }}>
             <span className="uppercase text-white w-20 shrink-0" style={{ fontSize: 11, fontWeight: 700, letterSpacing: "1px" }}>Nightly</span>
-            <Button size="sm" variant="outline" className="gap-2 rounded-[10px] bg-transparent border-white/25 text-white hover:border-[#9FD8FF] hover:bg-transparent hover:text-white disabled:opacity-40"
+            <Button size="sm" variant="outline" className="gap-2 rounded-[10px] bg-transparent border-[#1b1922] text-white hover:border-[#9FD8FF] hover:bg-transparent hover:text-white disabled:opacity-40"
               onClick={() => seedNotesMutation.mutate(undefined)} disabled={seedNotesMutation.isPending || seedNotesStatus?.running || !openaiReady}
               title={openaiReady ? "Generate one baseline AI study note per topic for all ingested subjects (skips topics that already have notes)" : "Requires OpenAI API key — configure AI_INTEGRATIONS_OPENAI_API_KEY"}>
               {seedNotesMutation.isPending || seedNotesStatus?.running ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5" />} Seed Notes
@@ -1823,7 +1823,7 @@ export default function DBEPortal() {
             )}
             {seedNotesStatus?.running && seedNotesStatus.total > 0 && (
               <div className="flex items-center gap-2 flex-wrap">
-                <div className="h-1.5 w-28 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.1)" }}>
+                <div className="h-1.5 w-28 rounded-full overflow-hidden" style={{ background: "#1b1922" }}>
                   <div className="h-full rounded-full transition-all" style={{ width: `${Math.min(100, Math.round(((seedNotesStatus.done + seedNotesStatus.skipped) / seedNotesStatus.total) * 100))}%`, background: "#94F7C5" }} />
                 </div>
                 <span className="text-[11px] font-bold text-[#94F7C5] tabular-nums">
@@ -1840,7 +1840,7 @@ export default function DBEPortal() {
         {/* Search */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white" />
-          <Input placeholder="Search subjects…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-transparent rounded-[10px] border-white/25 text-white placeholder:text-white focus-visible:border-[#9FD8FF]" data-testid="input-search" />
+          <Input placeholder="Search subjects…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-transparent rounded-[10px] border-[#1b1922] text-white placeholder:text-white focus-visible:border-[#9FD8FF]" data-testid="input-search" />
         </div>
 
         {/* Main tabs */}
@@ -1869,7 +1869,7 @@ export default function DBEPortal() {
 
           {/* Advanced tab — accordion with year-by-year detail */}
           <TabsContent value="advanced">
-            <div style={{ background: "rgba(255,255,255,0.035)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 20, padding: "8px 24px" }}>
+            <div style={{ background: "#0e0d12", border: "1px solid #1b1922", borderRadius: 20, padding: "8px 24px" }}>
             {filtered.map((row) => (
               <SubjectAccordion key={row.subject} row={row} localFiles={localFilesData}
                 onIngest={(s, y) => runMutation.mutate({ subject: s, year: y })}
@@ -1931,7 +1931,7 @@ export default function DBEPortal() {
             </div>
 
             {/* Sync History */}
-            <Card className="bg-white/[0.035] border-white/10 rounded-[20px] shadow-none" data-testid="sync-history-panel">
+            <Card className="bg-[#0e0d12] border-[#1b1922] rounded-[20px] shadow-none" data-testid="sync-history-panel">
               <CardHeader className="py-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -1939,7 +1939,7 @@ export default function DBEPortal() {
                     <CardTitle className="text-sm text-white">Sync History</CardTitle>
                     {syncHistory && syncHistory.length > 0 && <span className="text-xs text-white">— last {syncHistory.length} syncs</span>}
                   </div>
-                  <Button size="sm" variant="ghost" className="h-7 px-2 text-xs gap-1.5 text-white hover:text-white hover:bg-white/[0.06]" onClick={() => refetchSyncHistory()} data-testid="btn-refresh-sync-history">
+                  <Button size="sm" variant="ghost" className="h-7 px-2 text-xs gap-1.5 text-white hover:text-white hover:bg-[#1b1922]" onClick={() => refetchSyncHistory()} data-testid="btn-refresh-sync-history">
                     <RefreshCw className="w-3 h-3" /> Refresh
                   </Button>
                 </div>
@@ -1951,7 +1951,7 @@ export default function DBEPortal() {
                   <div className="overflow-x-auto rounded-lg border border-white/[0.08]">
                     <table className="w-full text-xs">
                       <thead>
-                        <tr className="border-b border-white/10 text-[11px] uppercase" style={{ letterSpacing: "0.5px" }}>
+                        <tr className="border-b border-[#1b1922] text-[11px] uppercase" style={{ letterSpacing: "0.5px" }}>
                           <th className="text-left px-4 py-2 font-bold text-white">Timestamp</th>
                           <th className="text-left px-4 py-2 font-bold text-white">Status</th>
                           <th className="text-left px-4 py-2 font-bold text-white">Subjects</th>
@@ -1961,7 +1961,7 @@ export default function DBEPortal() {
                       </thead>
                       <tbody>
                         {syncHistory.map((entry, i) => (
-                          <tr key={entry.id} className={`border-t border-white/[0.06] ${i % 2 === 0 ? "" : "bg-white/[0.02]"}`}>
+                          <tr key={entry.id} className={`border-t border-white/[0.06] ${i % 2 === 0 ? "" : "bg-[#0e0d12]"}`}>
                             <td className="px-4 py-2 tabular-nums text-white whitespace-nowrap">
                               {entry.timestamp ? formatDateTime(entry.timestamp, language, { dateStyle: "short", timeStyle: "short" }) : "—"}
                             </td>
@@ -1991,7 +1991,7 @@ export default function DBEPortal() {
 
       {/* Question preview dialog */}
       <Dialog open={!!previewSubject} onOpenChange={(o) => { if (!o) { setPreviewSubject(null); setPreviewYear(null); } }}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto dark bg-[#050508] border-white/10 rounded-[20px]">
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto dark bg-[#050508] border-[#1b1922] rounded-[20px]">
           <DialogHeader>
             <DialogTitle className="text-white">Question Preview — {previewSubject}</DialogTitle>
             <DialogDescription className="text-white">Sample verbatim questions from the ingested papers.</DialogDescription>
@@ -1999,7 +1999,7 @@ export default function DBEPortal() {
           {previewData?.questions?.length ? (
             <div className="space-y-3 mt-2">
               {previewData.questions.slice(0, 10).map((q) => (
-                <div key={q.id} className="border border-white/10 rounded-lg p-3 space-y-1">
+                <div key={q.id} className="border border-[#1b1922] rounded-lg p-3 space-y-1">
                   <div className="flex items-center gap-2 text-[10px] text-white">
                     <span>{q.year}</span> · <span>P{q.paperNumber}</span> · <span>{q.language}</span> · <span>{q.marks ?? "?"}M</span> · <span>{q.cognitiveLevel}</span>
                   </div>

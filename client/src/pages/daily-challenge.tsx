@@ -26,6 +26,7 @@ import {
 import type { DailyChallenge, DailyChallengeQuestion } from "@shared/schema";
 import { LearnerHeader } from "@/components/learner-header";
 import { GraffitiSplats } from "@/components/graffiti-splats";
+import { Button } from "@/components/ui/button";
 
 const CHALLENGE_TIME_LIMIT = 300;
 
@@ -40,7 +41,7 @@ const halo = (hex: string, a = 0.32) => {
 };
 
 const marker = (color: string, size = 16): CSSProperties => ({
-  fontFamily: "'Permanent Marker',cursive",
+  fontFamily: "'Bebas Neue', sans-serif",
   fontSize: size,
   color,
   transform: "rotate(-2deg)",
@@ -56,8 +57,8 @@ const rainbowText: CSSProperties = {
 };
 
 const cardStyle = (accent?: string, radius = 22): CSSProperties => ({
-  background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
-  border: accent ? `1.5px solid ${accent}` : "1px solid rgba(255,255,255,.08)",
+  background: "linear-gradient(#1b1922, #1b1922), #050508",
+  border: accent ? `1.5px solid ${accent}` : "1px solid #1b1922",
   borderRadius: radius,
 });
 
@@ -69,7 +70,7 @@ const primaryBtnStyle: CSSProperties = {
   fontWeight: 800,
 };
 
-const secondaryBtnStyle = (accent = "rgba(255,255,255,.2)", color = "#fff"): CSSProperties => ({
+const secondaryBtnStyle = (accent = "#1b1922", color = "#fff"): CSSProperties => ({
   background: "transparent",
   border: `1.5px solid ${accent}`,
   color,
@@ -250,9 +251,9 @@ export default function DailyChallengePage() {
     return (
       <PageShell>
         <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
-          <div className="h-16 w-full animate-pulse" style={{ background: "rgba(255,255,255,.05)", borderRadius: 18 }} />
-          <div className="h-3 w-full animate-pulse rounded-full" style={{ background: "rgba(255,255,255,.05)" }} />
-          <div className="h-80 animate-pulse" style={{ background: "rgba(255,255,255,.05)", borderRadius: 24 }} />
+          <div className="h-16 w-full animate-pulse" style={{ background: "#1b1922", borderRadius: 18 }} />
+          <div className="h-3 w-full animate-pulse rounded-full" style={{ background: "#1b1922" }} />
+          <div className="h-80 animate-pulse" style={{ background: "#1b1922", borderRadius: 24 }} />
         </div>
       </PageShell>
     );
@@ -272,7 +273,7 @@ export default function DailyChallengePage() {
             <div role="heading" aria-level={2} className="text-xl font-extrabold text-white">
               {isAf ? "Uitdaging kom binnekort" : "Challenge coming soon"}
             </div>
-            <p className="text-sm text-white max-w-sm mx-auto" style={{ opacity: 0.92 }}>
+            <p className="text-sm text-white max-w-sm mx-auto">
               {isAf
                 ? "Geen vrae beskikbaar nie. Kies vakke in Instellings en probeer môre weer."
                 : "No questions available. Pick your subjects in Settings and check back tomorrow."}
@@ -280,19 +281,14 @@ export default function DailyChallengePage() {
           </div>
           <div className="flex gap-2 pt-2">
             <Link href="/settings">
-              <button
-                className="px-5 py-2.5 text-sm transition-all"
-                style={primaryBtnStyle}
-                onMouseEnter={(e) => primaryHover(e, true)}
-                onMouseLeave={(e) => primaryHover(e, false)}
-              >
+              <Button variant="primary">
                 {isAf ? "Instellings" : "Settings"}
-              </button>
+              </Button>
             </Link>
             <Link href="/dashboard">
-              <button className="px-5 py-2.5 text-sm hover:bg-white/5 transition-colors" style={secondaryBtnStyle()}>
+              <Button variant="outline">
                 Dashboard
-              </button>
+              </Button>
             </Link>
           </div>
         </div>
@@ -318,38 +314,34 @@ export default function DailyChallengePage() {
                 <div role="heading" aria-level={2} className="text-xl font-extrabold text-white">
                   {isAf ? "Vrae word nog voorberei" : "Questions aren't ready yet"}
                 </div>
-                <p className="text-sm text-white max-w-md" style={{ opacity: 0.92 }}>
+                <p className="text-sm text-white max-w-md">
                   {isAf
                     ? "Kies jou vakke in Instellings sodat ons 'n gepersonaliseerde daaglikse uitdaging vir jou kan skep."
                     : "Select your subjects in Settings so we can build a personalised Daily Challenge just for you."}
                 </p>
               </div>
               <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-                <button
-                  className="inline-flex items-center gap-2 px-5 py-2.5 text-sm hover:bg-white/5 transition-colors disabled:opacity-60"
-                  style={secondaryBtnStyle("#9FF5E8", "#9FF5E8")}
+                <Button
+                  variant="outline"
                   data-testid="button-retry-challenge"
                   onClick={() => refetchChallenge()}
                   disabled={isRefetching}
                 >
                   <RefreshCw className={`w-4 h-4 ${isRefetching ? "animate-spin" : ""}`} />
                   {isAf ? "Probeer weer" : "Try Again"}
-                </button>
+                </Button>
                 <Link href="/settings">
-                  <button
-                    className="px-5 py-2.5 text-sm transition-all"
-                    style={primaryBtnStyle}
-                    onMouseEnter={(e) => primaryHover(e, true)}
-                    onMouseLeave={(e) => primaryHover(e, false)}
+                  <Button
+                    variant="primary"
                     data-testid="button-go-to-settings"
                   >
                     {isAf ? "Gaan na Instellings" : "Go to Settings"}
-                  </button>
+                  </Button>
                 </Link>
                 <Link href="/dashboard">
-                  <button className="px-5 py-2.5 text-sm hover:bg-white/5 transition-colors" style={secondaryBtnStyle()} data-testid="button-back-to-dashboard-503">
+                  <Button variant="outline" data-testid="button-back-to-dashboard-503">
                     {isAf ? "Terug na Dashboard" : "Back to Dashboard"}
-                  </button>
+                  </Button>
                 </Link>
               </div>
             </div>
@@ -372,29 +364,26 @@ export default function DailyChallengePage() {
               <div role="heading" aria-level={2} className="text-xl font-extrabold text-white">
                 {isAf ? "Kon nie vandag se uitdaging laai nie" : "Couldn't load today's challenge"}
               </div>
-              <p className="text-sm text-white max-w-md" style={{ opacity: 0.92 }}>
+              <p className="text-sm text-white max-w-md">
                 {isAf
                   ? "Ons kon nie aan die bediener koppel nie. Kyk jou internetverbinding en probeer weer."
                   : "We couldn't reach the server. Check your connection and try again."}
               </p>
             </div>
             <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-              <button
+              <Button
+                variant="primary"
                 onClick={() => refetchChallenge()}
                 disabled={isRefetching}
-                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm transition-all disabled:opacity-60"
-                style={primaryBtnStyle}
-                onMouseEnter={(e) => primaryHover(e, true)}
-                onMouseLeave={(e) => primaryHover(e, false)}
                 data-testid="button-retry-daily-challenge"
               >
                 <RefreshCw className={`w-4 h-4 ${isRefetching ? "animate-spin" : ""}`} />
                 {isRefetching ? (isAf ? "Probeer..." : "Retrying...") : (isAf ? "Probeer Weer" : "Try Again")}
-              </button>
+              </Button>
               <Link href="/dashboard">
-                <button className="px-5 py-2.5 text-sm hover:bg-white/5 transition-colors" style={secondaryBtnStyle()} data-testid="button-back-to-dashboard">
+                <Button variant="outline" data-testid="button-back-to-dashboard">
                   {isAf ? "Terug na Dashboard" : "Back to Dashboard"}
-                </button>
+                </Button>
               </Link>
             </div>
           </div>
@@ -417,7 +406,7 @@ export default function DailyChallengePage() {
             <div role="heading" aria-level={2} className="text-xl font-extrabold text-white" data-testid="text-time-up-title">
               {isAf ? "Tyd is op!" : "Time's up!"}
             </div>
-            <p className="text-sm text-white max-w-sm mx-auto" style={{ opacity: 0.92 }}>
+            <p className="text-sm text-white max-w-sm mx-auto">
               {isAf
                 ? "Die 5 minute is verby en jy het nog nie 'n antwoord gekies nie. Geen probleem nie — probeer môre weer met 'n vars uitdaging."
                 : "The 5 minutes ran out before you picked any answers. No worries — come back tomorrow for a fresh challenge."}
@@ -425,15 +414,12 @@ export default function DailyChallengePage() {
           </div>
           <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
             <Link href="/dashboard">
-              <button
-                className="px-5 py-2.5 text-sm transition-all"
-                style={primaryBtnStyle}
-                onMouseEnter={(e) => primaryHover(e, true)}
-                onMouseLeave={(e) => primaryHover(e, false)}
+              <Button
+                variant="primary"
                 data-testid="button-time-up-dashboard"
               >
                 {isAf ? "Terug na Dashboard" : "Back to Dashboard"}
-              </button>
+              </Button>
             </Link>
           </div>
         </div>
@@ -457,7 +443,7 @@ export default function DailyChallengePage() {
         titleColor="#9FF5E8"
         maxWidthClassName="max-w-4xl"
         titleExtra={
-          <span className="hidden sm:block text-[10px] font-bold uppercase tracking-[0.18em] text-white shrink-0" style={{ opacity: 0.85 }}>
+          <span className="hidden sm:block text-[10px] font-bold uppercase tracking-[0.18em] text-white shrink-0">
             {dayLabel} · {dateLabel}
           </span>
         }
@@ -465,7 +451,7 @@ export default function DailyChallengePage() {
           <>
             <div
               className="hidden min-[400px]:flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-              style={{ background: "rgba(255,255,255,.03)", border: "1px solid #FFE29A" }}
+              style={{ background: "#1b1922", border: "1px solid #FFE29A" }}
               data-testid="text-challenge-streak"
               title={isAf ? "Reeks" : "Streak"}
             >
@@ -479,7 +465,7 @@ export default function DailyChallengePage() {
               <div
                 className="relative flex items-center gap-1.5 pl-2 pr-3 py-1.5 rounded-full transition-colors"
                 style={{
-                  background: "rgba(255,255,255,.03)",
+                  background: "#1b1922",
                   border: `1px solid ${timerHex}`,
                   ...(timerUrgent ? { animation: "bt-glowpulse 1.2s ease-in-out infinite" } : {}),
                 }}
@@ -563,8 +549,8 @@ export default function DailyChallengePage() {
                         isCurrent
                           ? { background: RAINBOW_GRADIENT }
                           : answered
-                          ? { background: "#9FF5E8", opacity: 0.7 }
-                          : { background: "rgba(255,255,255,.1)" }
+                          ? { background: "#9FF5E8" }
+                          : { background: "#1b1922" }
                       }
                     />
                   </button>
@@ -576,15 +562,15 @@ export default function DailyChallengePage() {
               <span className="text-sm font-bold text-white">
                 {isAf ? "Vraag" : "Question"}{" "}
                 <span style={{ color: "#9FF5E8" }}>{currentQuestion + 1}</span>
-                <span className="text-white" style={{ opacity: 0.85 }}>/{questions.length}</span>
+                <span className="text-white">/{questions.length}</span>
               </span>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-white hidden sm:inline" style={{ opacity: 0.85 }}>
+                <span className="text-xs text-white hidden sm:inline">
                   {answeredCount}/{questions.length} {isAf ? "beantwoord" : "answered"}
                 </span>
                 <span
                   className="text-xs font-extrabold px-3 py-1 rounded-full"
-                  style={{ color: "#C5B3FF", background: "rgba(255,255,255,.03)", border: "1px solid #C5B3FF" }}
+                  style={{ color: "#C5B3FF", background: "#1b1922", border: "1px solid #C5B3FF" }}
                 >
                   {isAf ? questions[currentQuestion]?.subjectAf || questions[currentQuestion]?.subject : questions[currentQuestion]?.subject}
                 </span>
@@ -626,14 +612,14 @@ export default function DailyChallengePage() {
                         className="w-full min-h-0 text-left p-4 transition-all duration-200 font-semibold text-base"
                         style={{
                           borderRadius: 18,
-                          background: isSelected ? halo("#9FF5E8", 0.08) : "rgba(255,255,255,.03)",
-                          border: isSelected ? "2px solid #9FF5E8" : "2px solid rgba(255,255,255,.08)",
+                          background: isSelected ? halo("#9FF5E8", 0.08) : "#1b1922",
+                          border: isSelected ? "2px solid #9FF5E8" : "2px solid #1b1922",
                         }}
                         onMouseEnter={(e) => {
                           if (!isSelected) e.currentTarget.style.border = "2px solid rgba(159,245,232,.5)";
                         }}
                         onMouseLeave={(e) => {
-                          if (!isSelected) e.currentTarget.style.border = "2px solid rgba(255,255,255,.08)";
+                          if (!isSelected) e.currentTarget.style.border = "2px solid #1b1922";
                         }}
                         data-testid={`button-option-${i}`}
                       >
@@ -643,7 +629,7 @@ export default function DailyChallengePage() {
                             style={
                               isSelected
                                 ? { background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", color: "#050508" }
-                                : { background: "rgba(255,255,255,.06)", color: "#ffffff" }
+                                : { background: "#1b1922", color: "#ffffff" }
                             }
                           >
                             {String.fromCharCode(65 + i)}
@@ -661,40 +647,33 @@ export default function DailyChallengePage() {
             </div>
 
             <div className="relative flex items-center justify-between gap-3">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => setCurrentQuestion(Math.max(0, currentQuestion - 1))}
                 disabled={currentQuestion === 0}
-                className="inline-flex items-center px-5 py-2.5 text-sm hover:bg-white/5 transition-colors disabled:opacity-50"
-                style={secondaryBtnStyle()}
                 data-testid="button-prev-question"
               >
                 <ChevronLeft className="w-4 h-4 mr-1" /> {isAf ? "Vorige" : "Previous"}
-              </button>
+              </Button>
 
               {currentQuestion === questions.length - 1 ? (
-                <button
+                <Button
+                  variant="primary"
                   onClick={handleSubmit}
                   disabled={submitMutation.isPending || answeredCount < questions.length}
-                  className="inline-flex items-center px-8 py-2.5 text-sm transition-all disabled:opacity-60"
-                  style={primaryBtnStyle}
-                  onMouseEnter={(e) => primaryHover(e, true)}
-                  onMouseLeave={(e) => primaryHover(e, false)}
                   data-testid="button-submit-challenge"
                 >
                   {submitMutation.isPending ? (isAf ? "Dien in..." : "Submitting...") : isAf ? "Dien in" : "Submit"}
                   <Sparkles className="w-4 h-4 ml-1" />
-                </button>
+                </Button>
               ) : (
-                <button
+                <Button
+                  variant="primary"
                   onClick={() => setCurrentQuestion(Math.min(questions.length - 1, currentQuestion + 1))}
-                  className="inline-flex items-center px-5 py-2.5 text-sm transition-all"
-                  style={primaryBtnStyle}
-                  onMouseEnter={(e) => primaryHover(e, true)}
-                  onMouseLeave={(e) => primaryHover(e, false)}
                   data-testid="button-next-question"
                 >
                   {isAf ? "Volgende" : "Next"} <ChevronRight className="w-4 h-4 ml-1" />
-                </button>
+                </Button>
               )}
             </div>
           </>
@@ -812,7 +791,7 @@ function ResultsView({
                 </p>
                 <p className="text-sm font-bold text-white">{isAf ? "Korrek" : "Correct"}</p>
               </div>
-              <div className="w-px h-12" style={{ background: "rgba(255,255,255,.2)" }} />
+              <div className="w-px h-12" style={{ background: "#1b1922" }} />
               <div className="text-center" data-testid="text-result-percentage">
                 <p className="text-5xl font-black text-white tabular-nums">
                   {percentage}%
@@ -823,14 +802,14 @@ function ResultsView({
             <div className="flex items-center justify-center gap-2 pt-4 flex-wrap">
               <div
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-                style={{ background: "rgba(255,255,255,.03)", border: "1px solid #9FD8FF" }}
+                style={{ background: "#1b1922", border: "1px solid #9FD8FF" }}
               >
                 <Clock className="w-4 h-4" style={{ color: "#9FD8FF" }} />
                 <span className="text-sm font-bold text-white tabular-nums">{formatTime(timeSpent)}</span>
               </div>
               <div
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-                style={{ background: "rgba(255,255,255,.03)", border: "1px solid #FFE29A" }}
+                style={{ background: "#1b1922", border: "1px solid #FFE29A" }}
               >
                 <Flame className="w-4 h-4" style={{ color: "#FFE29A" }} />
                 <span className="text-sm font-bold text-white">
@@ -839,7 +818,7 @@ function ResultsView({
               </div>
               <div
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-                style={{ background: "rgba(255,255,255,.03)", border: "1px solid #FFB7E5" }}
+                style={{ background: "#1b1922", border: "1px solid #FFB7E5" }}
               >
                 <Sparkles className="w-4 h-4" style={{ color: "#FFB7E5" }} />
                 <span className="text-sm font-bold text-white">+{xpEarned} XP</span>
@@ -863,20 +842,20 @@ function ResultsView({
               <p className="text-sm font-bold text-white">
                 {isAf ? "Volgende uitdaging" : "Next challenge"}
               </p>
-              <p className="text-xs text-white" style={{ opacity: 0.9 }}>
+              <p className="text-xs text-white">
                 {isAf ? "Ontsluit oor" : "Unlocks in"}{" "}
                 <span className="font-bold tabular-nums" style={{ color: "#9FF5E8" }}>{nextIn}</span>
               </p>
             </div>
           </div>
           <Link href="/dashboard">
-            <button
-              className="px-4 py-2 text-sm hover:bg-white/5 transition-colors"
-              style={secondaryBtnStyle("#9FD8FF", "#9FD8FF")}
+            <Button
+              variant="outline"
+              size="sm"
               data-testid="button-back-home"
             >
               Dashboard
-            </button>
+            </Button>
           </Link>
         </div>
       </div>
@@ -924,19 +903,19 @@ function ResultsView({
                     isToday ? "scale-110" : ""
                   }`}
                   style={{
-                    background: dayHex ? halo(dayHex, 0.08) : "rgba(255,255,255,.03)",
-                    border: dayHex ? `2px solid ${halo(dayHex, 0.5)}` : "2px solid rgba(255,255,255,.08)",
+                    background: dayHex ? halo(dayHex, 0.08) : "#1b1922",
+                    border: dayHex ? `2px solid ${halo(dayHex, 0.5)}` : "2px solid #1b1922",
                   }}
                   data-testid={`history-day-${i}`}
                   title={formatDate(date, isAf ? "af" : "en", { weekday: "long", day: "numeric", month: "short" })}
                 >
-                  <span className="text-[9px] font-bold text-white" style={{ opacity: 0.85 }}>
+                  <span className="text-[9px] font-bold text-white">
                     {formatDate(date, isAf ? "af" : "en", { weekday: "short" }).slice(0, 2)}
                   </span>
                   {completed ? (
                     <span className="text-base font-extrabold text-white tabular-nums">{score}</span>
                   ) : (
-                    <span className="text-base text-white" style={{ opacity: 0.85 }}>—</span>
+                    <span className="text-base text-white">—</span>
                   )}
                 </div>
               );
@@ -976,7 +955,7 @@ function ResultsView({
               key={i}
               className="overflow-hidden transition-all"
               style={{
-                background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
+                background: "linear-gradient(#1b1922, #1b1922), #050508",
                 border: `1.5px solid ${halo(rowHex, 0.45)}`,
                 borderRadius: 20,
               }}
@@ -1019,12 +998,12 @@ function ResultsView({
                               ? halo("#94F7C5", 0.1)
                               : wasSelected && !isAnswer
                               ? halo("#FF8DA1", 0.1)
-                              : "rgba(255,255,255,.03)",
+                              : "#1b1922",
                             border: isAnswer
                               ? `1px solid ${halo("#94F7C5", 0.5)}`
                               : wasSelected && !isAnswer
                               ? `1px solid ${halo("#FF8DA1", 0.5)}`
-                              : "1px solid rgba(255,255,255,.08)",
+                              : "1px solid #1b1922",
                           }}
                         >
                           <span className="font-bold mr-2">{String.fromCharCode(65 + j)}.</span>

@@ -4,6 +4,7 @@ import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/language-context";
 import { AdminTopNav } from "@/components/admin-top-nav";
+import { Button } from "@/components/ui/button";
 import { NeonShell, halo, type NeonHex } from "@/components/admin-ui";
 import { formatNumber } from "@/lib/formatters";
 import { apiRequest } from "@/lib/queryClient";
@@ -11,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import {
   Activity, AlertTriangle, BarChart3, CheckCircle2, Database, Eye, FileEdit, FileText, Flag,
   GraduationCap, Gift, Layers, Loader2, LogOut, Mail, Package,
-  ShieldAlert, Store, Users, Zap, Handshake, School, ChevronDown, ChevronUp, QrCode,
+  ShieldAlert, Users, Zap, Handshake, School, ChevronDown, ChevronUp, QrCode,
   BookOpen, CreditCard, Inbox, ShieldCheck, Footprints,
 } from "lucide-react";
 import {
@@ -154,7 +155,7 @@ function FraudFlagsPanel({ isAf }: { isAf: boolean }) {
             data-testid="fraud-flags-toggle-reviewed"
             className="shrink-0 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider transition-colors"
             style={{
-              border: `1px solid ${showReviewed ? "#FFE29A" : "rgba(255,255,255,0.18)"}`,
+              border: `1px solid ${showReviewed ? "#FFE29A" : "#1b1922"}`,
               color: showReviewed ? "#FFE29A" : "#fff",
               background: showReviewed ? "rgba(255,226,154,0.12)" : "transparent",
             }}
@@ -165,7 +166,7 @@ function FraudFlagsPanel({ isAf }: { isAf: boolean }) {
 
         <div className="overflow-x-auto rounded-xl" style={{ border: "1px solid rgba(255,226,154,0.28)" }}>
           <table className="w-full text-xs" data-testid="fraud-flags-table">
-            <thead className="bg-black/60 text-white">
+            <thead className="bg-[#0e0d12] text-white">
               <tr className="text-left">
                 <th className="px-3 py-2 font-bold uppercase tracking-wider">#</th>
                 <th className="px-3 py-2 font-bold uppercase tracking-wider">{isAf ? "Verwyser-ID" : "Referrer ID"}</th>
@@ -205,7 +206,7 @@ function FraudFlagsPanel({ isAf }: { isAf: boolean }) {
                   return (
                     <tr
                       key={flag.id}
-                      className="border-t border-white/5"
+                      className="border-t border-[#1b1922]"
                       data-testid={`fraud-flag-row-${flag.id}`}
                     >
                       <td className="px-3 py-2 text-white tabular-nums font-mono">{flag.id}</td>
@@ -401,7 +402,7 @@ function DbHealthPanel({ isAf }: { isAf: boolean }) {
                 <p className="text-[10px] mt-1" style={{ color: "#fff" }}>
                   {isAf ? `${data!.poolStats.idle} ledig · ${data!.poolStats.waiting} wag` : `${data!.poolStats.idle} idle · ${data!.poolStats.waiting} waiting`}
                 </p>
-                <div className="mt-2 h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.1)" }}>
+                <div className="mt-2 h-1.5 rounded-full overflow-hidden" style={{ background: "#1b1922" }}>
                   <div
                     className="h-full rounded-full transition-all"
                     style={{
@@ -559,7 +560,7 @@ function PartnerSchoolInquiriesPanel({ isAf }: { isAf: boolean }) {
                 <div key={inq.id} className="rounded-xl overflow-hidden" style={{ border: `1px solid ${color}30` }}>
                   <button
                     type="button"
-                    className="w-full text-left px-4 py-3 flex items-center gap-3 bg-black/40 hover:bg-black/60 transition-colors"
+                    className="w-full text-left px-4 py-3 flex items-center gap-3 bg-[#0e0d12] hover:bg-[#1b1922] transition-colors"
                     onClick={() => setExpanded(isOpen ? null : inq.id)}
                     data-testid={`inq-row-${inq.id}`}
                   >
@@ -585,7 +586,7 @@ function PartnerSchoolInquiriesPanel({ isAf }: { isAf: boolean }) {
                   </button>
 
                   {isOpen && (
-                    <div className="px-4 pb-4 bg-black/20 space-y-3">
+                    <div className="px-4 pb-4 bg-[#0e0d12] space-y-3">
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-3">
                         {[
                           { label: isAf ? "Skool" : "School", value: inq.schoolName },
@@ -598,7 +599,7 @@ function PartnerSchoolInquiriesPanel({ isAf }: { isAf: boolean }) {
                           { label: isAf ? "Skooltipe" : "School type", value: inq.schoolType },
                           { label: isAf ? "Ontvang" : "Received", value: fmt(inq.createdAt) },
                         ].map(({ label, value }) => (
-                          <div key={label} className="rounded-lg bg-black/40 px-3 py-2" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
+                          <div key={label} className="rounded-lg bg-[#0e0d12] px-3 py-2" style={{ border: "1px solid #1b1922" }}>
                             <div className="text-[10px] font-black uppercase tracking-wider text-white">{label}</div>
                             <div className="text-xs text-white mt-0.5 break-all">{value}</div>
                           </div>
@@ -614,8 +615,8 @@ function PartnerSchoolInquiriesPanel({ isAf }: { isAf: boolean }) {
                           onChange={(e) => setNoteInputs((prev) => ({ ...prev, [inq.id]: e.target.value }))}
                           rows={2}
                           placeholder={isAf ? "Voeg notas by…" : "Add notes…"}
-                          className="w-full px-3 py-2 rounded-lg bg-black/50 text-white text-xs placeholder-white focus:outline-none resize-none"
-                          style={{ border: "1px solid rgba(255,255,255,0.15)" }}
+                          className="w-full px-3 py-2 rounded-lg bg-[#0e0d12] text-white text-xs placeholder-white focus:outline-none resize-none"
+                          style={{ border: "1px solid #1b1922" }}
                         />
                       </div>
 
@@ -727,7 +728,7 @@ function SchoolEnquiriesPanel({ isAf }: { isAf: boolean }) {
                 <div key={enq.id} className="rounded-xl overflow-hidden" style={{ border: `1px solid ${sc}30` }}>
                   <button
                     type="button"
-                    className="w-full text-left px-4 py-3 flex items-center gap-3 bg-black/40 hover:bg-black/60 transition-colors"
+                    className="w-full text-left px-4 py-3 flex items-center gap-3 bg-[#0e0d12] hover:bg-[#1b1922] transition-colors"
                     onClick={() => setExpanded(isOpen ? null : enq.id)}
                     data-testid={`enq-row-${enq.id}`}
                   >
@@ -753,7 +754,7 @@ function SchoolEnquiriesPanel({ isAf }: { isAf: boolean }) {
                   </button>
 
                   {isOpen && (
-                    <div className="px-4 pb-4 bg-black/20 space-y-3">
+                    <div className="px-4 pb-4 bg-[#0e0d12] space-y-3">
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-3">
                         {[
                           { label: isAf ? "Skool" : "School", value: enq.schoolName },
@@ -763,7 +764,7 @@ function SchoolEnquiriesPanel({ isAf }: { isAf: boolean }) {
                           { label: isAf ? "Leerders" : "Learners", value: enq.numLearners ? String(enq.numLearners) : "—" },
                           { label: isAf ? "Ontvang" : "Received", value: fmt(enq.createdAt) },
                         ].map(({ label, value }) => (
-                          <div key={label} className="rounded-lg bg-black/40 px-3 py-2" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
+                          <div key={label} className="rounded-lg bg-[#0e0d12] px-3 py-2" style={{ border: "1px solid #1b1922" }}>
                             <div className="text-[10px] font-black uppercase tracking-wider text-white">{label}</div>
                             <div className="text-xs text-white mt-0.5 break-all">{value}</div>
                           </div>
@@ -779,8 +780,8 @@ function SchoolEnquiriesPanel({ isAf }: { isAf: boolean }) {
                           onChange={(e) => setNoteInputs((prev) => ({ ...prev, [enq.id]: e.target.value }))}
                           rows={2}
                           placeholder={isAf ? "Voeg notas by…" : "Add notes…"}
-                          className="w-full px-3 py-2 rounded-lg bg-black/50 text-white text-xs placeholder-white focus:outline-none resize-none"
-                          style={{ border: "1px solid rgba(255,255,255,0.15)" }}
+                          className="w-full px-3 py-2 rounded-lg bg-[#0e0d12] text-white text-xs placeholder-white focus:outline-none resize-none"
+                          style={{ border: "1px solid #1b1922" }}
                         />
                       </div>
 
@@ -952,7 +953,7 @@ function DbeCoveragePanel({ isAf, language }: { isAf: boolean; language: string 
                 { label: "Coverage", labelAf: "Dekking", value: `${t!.pct}%`, tone: (t!.pct >= 90 ? "#94F7C5" : t!.pct >= 50 ? "#9FD8FF" : "#FFE29A") as string, testId: "dbe-pct" },
                 { label: "Subjects at 0%", labelAf: "Vakke op 0%", value: formatNumber(t!.zeroReleasedCount, language), tone: (t!.zeroReleasedCount > 0 ? "#FFB7E5" : "#94F7C5") as string, testId: "dbe-zero-count" },
               ].map(({ label, labelAf, value, tone, testId }) => (
-                <div key={label} className="rounded-xl bg-black/40 p-3" style={{ border: `1px solid ${halo(color, 0.3)}` }} data-testid={testId}>
+                <div key={label} className="rounded-xl bg-[#0e0d12] p-3" style={{ border: `1px solid ${halo(color, 0.3)}` }} data-testid={testId}>
                   <div className="text-[10px] font-black uppercase tracking-[0.18em]" style={{ color }}>
                     {isAf ? labelAf : label}
                   </div>
@@ -968,7 +969,7 @@ function DbeCoveragePanel({ isAf, language }: { isAf: boolean; language: string 
                 {formatNumber(t!.released, language)} / {formatNumber(t!.total, language)}
               </span>
             </div>
-            <div className="h-3 rounded-full overflow-hidden mb-5" style={{ background: "rgba(255,255,255,0.1)" }} data-testid="dbe-overall-bar">
+            <div className="h-3 rounded-full overflow-hidden mb-5" style={{ background: "#1b1922" }} data-testid="dbe-overall-bar">
               <div className="h-full rounded-full transition-all" style={{ width: `${t!.pct}%`, background: color }} />
             </div>
 
@@ -989,7 +990,7 @@ function DbeCoveragePanel({ isAf, language }: { isAf: boolean; language: string 
                 return (
                   <div
                     key={s.subject}
-                    className="rounded-lg px-2.5 py-2 bg-black/40"
+                    className="rounded-lg px-2.5 py-2 bg-[#0e0d12]"
                     style={{ border: `1px solid ${c}` }}
                     title={`${s.subject} — ${s.released} / ${s.total} released (${s.pct}%)`}
                     data-testid={`dbe-subject-${s.subject.replace(/\s+/g, "-").toLowerCase()}`}
@@ -1001,7 +1002,7 @@ function DbeCoveragePanel({ isAf, language }: { isAf: boolean; language: string 
                         {formatNumber(s.released, language)}/{formatNumber(s.total, language)}
                       </span>
                     </div>
-                    <div className="mt-1.5 h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.12)" }}>
+                    <div className="mt-1.5 h-1 rounded-full overflow-hidden" style={{ background: "#1b1922" }}>
                       <div className="h-full rounded-full" style={{ width: `${Math.max(s.pct, s.released > 0 ? 2 : 0)}%`, background: c }} />
                     </div>
                   </div>
@@ -1099,7 +1100,7 @@ function SubscriptionFunnelPanel({ isAf, language }: { isAf: boolean; language: 
                 return (
                   <div
                     key={s.status}
-                    className="rounded-xl bg-black/40 p-3"
+                    className="rounded-xl bg-[#0e0d12] p-3"
                     style={{ border: `1px solid ${halo(m.color, 0.4)}` }}
                     data-testid={`funnel-stage-${s.status}`}
                   >
@@ -1118,7 +1119,7 @@ function SubscriptionFunnelPanel({ isAf, language }: { isAf: boolean; language: 
             </div>
 
             {total === 0 ? (
-              <p className="text-white text-xs mt-5 py-6 text-center rounded-xl bg-black/30" data-testid="funnel-empty">
+              <p className="text-white text-xs mt-5 py-6 text-center rounded-xl bg-[#0e0d12]" data-testid="funnel-empty">
                 {isAf
                   ? "Geen intekeningrekords nog nie. Die tregter verskyn sodra die eerste proef begin."
                   : "No subscription records yet. The funnel appears as soon as the first trial starts."}
@@ -1128,25 +1129,25 @@ function SubscriptionFunnelPanel({ isAf, language }: { isAf: boolean; language: 
                 <div className="mt-5" style={{ height: Math.max(chartData.length * 34 + 24, 120) }} data-testid="funnel-chart">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={chartData} layout="vertical" margin={{ top: 4, right: 16, bottom: 4, left: 4 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.12)" horizontal={false} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#fff" horizontal={false} />
                       <XAxis
                         type="number"
                         allowDecimals={false}
-                        stroke="rgba(255,255,255,0.3)"
+                        stroke="#fff"
                         tick={{ fill: "#ffffff", fontSize: 10 }}
                       />
                       <YAxis
                         type="category"
                         dataKey="label"
                         width={88}
-                        stroke="rgba(255,255,255,0.3)"
+                        stroke="#fff"
                         tick={{ fill: "#ffffff", fontSize: 10 }}
                       />
                       <RechartsTooltip
-                        cursor={{ fill: "rgba(255,255,255,0.06)" }}
+                        cursor={{ fill: "#fff" }}
                         contentStyle={{
                           background: "#050508",
-                          border: "1px solid rgba(255,255,255,0.25)",
+                          border: "1px solid #1b1922",
                           borderRadius: 12,
                           color: "#ffffff",
                           fontSize: 11,
@@ -1366,13 +1367,6 @@ export default function AdminDashboardPage() {
       Icon: Package, testId: "quick-products",
     },
     {
-      href: "/partner-schools", color: "#FFE29A",
-      title: "Partner Schools", titleAf: "Vennootskole",
-      desc: "Manage channels, pipelines, and contacts.",
-      descAf: "Bestuur kanale, pyplyne en kontakte.",
-      Icon: Store, testId: "quick-schools",
-    },
-    {
       href: "/learn/admin/school-qr", color: "#9FD8FF",
       title: "School QR Codes", titleAf: "Skool QR-kodes",
       desc: "Download or print unique QR codes for each partner school.",
@@ -1469,8 +1463,8 @@ export default function AdminDashboardPage() {
         <section
           className="relative overflow-hidden p-6 sm:p-8 md:p-10"
           style={{
-            background: "rgba(255,255,255,0.035)",
-            border: "1px solid rgba(255,255,255,0.1)",
+            background: "#0e0d12",
+            border: "1px solid #1b1922",
             borderRadius: 20,
           }}
           data-testid="admin-hero"
@@ -1500,7 +1494,7 @@ export default function AdminDashboardPage() {
             <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1"
               style={{
                 border: emergencyLoading
-                  ? "1px solid rgba(255,255,255,0.3)"
+                  ? "1px solid #1b1922"
                   : emergencyActive
                     ? "1px solid rgba(255,226,154,0.5)"
                     : "1px solid rgba(148,247,197,0.5)",
@@ -1627,7 +1621,7 @@ export default function AdminDashboardPage() {
                     <NeonShell key={label} color={color} className="p-4" testId={testId}>
                       <div className="flex items-center gap-2 mb-3">
                         <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                          style={{ background: "rgba(255,255,255,0.035)", border: `1px solid ${h}` }}>
+                          style={{ background: "#0e0d12", border: `1px solid ${h}` }}>
                           <Icon className="w-4 h-4" style={{ color }} />
                         </div>
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] leading-tight" style={{ color }}>
@@ -1692,7 +1686,7 @@ export default function AdminDashboardPage() {
                 { label: "Rewarded",         labelAf: "Beloon",      value: referralSummary?.rewarded ?? 0,               testId: "ref-rewarded" },
                 { label: "Free Months",      labelAf: "Gratis Maande", value: referralSummary?.monthsAwarded ?? 0,        testId: "ref-months" },
               ].map(({ label, labelAf, value, testId }) => (
-                <div key={label} className="rounded-xl bg-black/40 p-3" style={{ border: "1px solid rgba(159,216,255,0.35)" }} data-testid={testId}>
+                <div key={label} className="rounded-xl bg-[#0e0d12] p-3" style={{ border: "1px solid rgba(159,216,255,0.35)" }} data-testid={testId}>
                   <div className="text-[10px] font-black uppercase tracking-[0.18em]" style={{ color: "#9FD8FF" }}>
                     {isAf ? labelAf : label}
                   </div>
@@ -1732,7 +1726,7 @@ export default function AdminDashboardPage() {
                       aria-pressed={active}
                       className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider transition-colors"
                       style={{
-                        border: `1px solid ${active ? "#9FD8FF" : "rgba(255,255,255,0.18)"}`,
+                        border: `1px solid ${active ? "#9FD8FF" : "#1b1922"}`,
                         color: active ? "#9FD8FF" : "#fff",
                         background: active ? "rgba(159,216,255,0.12)" : "transparent",
                       }}
@@ -1747,8 +1741,8 @@ export default function AdminDashboardPage() {
                   onChange={(e) => setRefSearchInput(e.target.value)}
                   placeholder={isAf ? "Soek op e-pos…" : "Search by email…"}
                   data-testid="ref-search-input"
-                  className="ml-1 flex-1 min-w-[200px] px-3 py-1.5 rounded-lg bg-black/50 text-white text-xs placeholder-white focus:outline-none"
-                  style={{ border: "1px solid rgba(255,255,255,0.18)" }}
+                  className="ml-1 flex-1 min-w-[200px] px-3 py-1.5 rounded-lg bg-[#0e0d12] text-white text-xs placeholder-white focus:outline-none"
+                  style={{ border: "1px solid #1b1922" }}
                 />
                 <input
                   type="date"
@@ -1756,8 +1750,8 @@ export default function AdminDashboardPage() {
                   onChange={(e) => setRefFrom(e.target.value)}
                   data-testid="ref-from-date"
                   aria-label={isAf ? "Vanaf datum" : "From date"}
-                  className="px-2 py-1.5 rounded-lg bg-black/50 text-white text-xs focus:outline-none"
-                  style={{ border: "1px solid rgba(255,255,255,0.18)" }}
+                  className="px-2 py-1.5 rounded-lg bg-[#0e0d12] text-white text-xs focus:outline-none"
+                  style={{ border: "1px solid #1b1922" }}
                 />
                 <input
                   type="date"
@@ -1765,8 +1759,8 @@ export default function AdminDashboardPage() {
                   onChange={(e) => setRefTo(e.target.value)}
                   data-testid="ref-to-date"
                   aria-label={isAf ? "Tot datum" : "To date"}
-                  className="px-2 py-1.5 rounded-lg bg-black/50 text-white text-xs focus:outline-none"
-                  style={{ border: "1px solid rgba(255,255,255,0.18)" }}
+                  className="px-2 py-1.5 rounded-lg bg-[#0e0d12] text-white text-xs focus:outline-none"
+                  style={{ border: "1px solid #1b1922" }}
                 />
                 {(refStatus !== "all" || refSearchInput || refFrom || refTo) && (
                   <button
@@ -1780,7 +1774,7 @@ export default function AdminDashboardPage() {
                     }}
                     data-testid="ref-clear-filters"
                     className="px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider text-white hover:text-white"
-                    style={{ border: "1px solid rgba(255,255,255,0.18)" }}
+                    style={{ border: "1px solid #1b1922" }}
                   >
                     {isAf ? "Maak skoon" : "Clear"}
                   </button>
@@ -1789,7 +1783,7 @@ export default function AdminDashboardPage() {
 
               <div className="overflow-x-auto rounded-xl" style={{ border: "1px solid rgba(159,216,255,0.28)" }}>
                 <table className="w-full text-xs" data-testid="ref-recent-table">
-                  <thead className="bg-black/60 text-white">
+                  <thead className="bg-[#0e0d12] text-white">
                     <tr className="text-left">
                       <th className="px-3 py-2 font-bold uppercase tracking-wider">{isAf ? "Verwyser" : "Referrer"}</th>
                       <th className="px-3 py-2 font-bold uppercase tracking-wider">{isAf ? "Verwysde" : "Referee"}</th>
@@ -1831,7 +1825,7 @@ export default function AdminDashboardPage() {
                           r.status === "converted" ? "#9FD8FF" :
                           "#C5B3FF";
                         return (
-                          <tr key={r.id} className="border-t border-white/5" data-testid={`ref-row-${r.id}`}>
+                          <tr key={r.id} className="border-t border-[#1b1922]" data-testid={`ref-row-${r.id}`}>
                             <td className="px-3 py-2 text-white">
                               <div className="font-bold truncate max-w-[180px]">{referrerName || r.referrerEmail || "—"}</div>
                               {referrerName && r.referrerEmail && (
@@ -1943,7 +1937,7 @@ export default function AdminDashboardPage() {
                       <div className="p-5 space-y-3">
                         <div className="flex items-start justify-between">
                           <div className="w-11 h-11 rounded-xl flex items-center justify-center"
-                            style={{ background: "rgba(255,255,255,0.035)", border: `1px solid ${h}` }}>
+                            style={{ background: "#0e0d12", border: `1px solid ${h}` }}>
                             {busy ? (
                               <Loader2 className="w-5 h-5 animate-spin" style={{ color }} />
                             ) : (
@@ -1973,7 +1967,7 @@ export default function AdminDashboardPage() {
                       <div className="p-5 space-y-3">
                         <div className="flex items-start justify-between">
                           <div className="w-11 h-11 rounded-xl flex items-center justify-center"
-                            style={{ background: "rgba(255,255,255,0.035)", border: `1px solid ${h}` }}>
+                            style={{ background: "#0e0d12", border: `1px solid ${h}` }}>
                             <Icon className="w-5 h-5" style={{ color }} />
                           </div>
                           <span className="text-[10px] font-black uppercase tracking-[0.22em]" style={{ color }}>→</span>
@@ -2058,21 +2052,21 @@ function TestPaymentSection() {
               placeholder="admin@example.com"
               aria-label={isAf ? "E-pos" : "Email"}
               className="h-11 rounded-xl px-3 text-white text-sm outline-none"
-              style={{ background: "rgba(0,0,0,0.35)", border: "1px solid rgba(255,255,255,0.16)", minWidth: 220 }}
+              style={{ background: "#0e0d12", border: "1px solid #1b1922", minWidth: 220 }}
               data-testid="input-test-payment-email"
             />
-            <button
+            <Button
               onClick={() => testPayment.mutate()}
               disabled={!email || testPayment.isPending}
-              className="h-11 px-5 rounded-xl font-extrabold text-[#050508] disabled:opacity-40 inline-flex items-center gap-2 whitespace-nowrap"
-              style={{ background: "linear-gradient(100deg,#9FF5E8,#94F7C5)", border: "none" }}
+              variant="primary"
+              className="whitespace-nowrap"
               data-testid="button-test-payment"
             >
               {testPayment.isPending
                 ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden />
                 : <CreditCard className="w-4 h-4" aria-hidden />}
               {isAf ? "Stuur R1" : "Send R1"}
-            </button>
+            </Button>
           </div>
         </div>
       </NeonShell>

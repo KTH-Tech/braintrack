@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { X, Share, Download } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
 import { useInstallPrompt } from "@/hooks/use-install-prompt";
 import { useAuth } from "@/hooks/use-auth";
 import {
@@ -184,22 +185,15 @@ export function InstallBanner() {
         </div>
 
         {!ios && canInstall && (
-          <button
-            className="prismglass-btn"
+          <Button
+            variant="primary"
+            size="sm"
+            className="shrink-0"
             onClick={handleInstall}
             disabled={isInstalling}
-            style={{
-              flexShrink: 0,
-              fontSize: "0.82rem",
-              padding: "8px 16px",
-              borderRadius: "10px",
-              whiteSpace: "nowrap",
-              cursor: isInstalling ? "wait" : "pointer",
-              opacity: isInstalling ? 0.7 : 1,
-            }}
           >
             {isInstalling ? "Installing…" : "Install"}
-          </button>
+          </Button>
         )}
 
         <button

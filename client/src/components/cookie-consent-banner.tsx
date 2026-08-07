@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { Cookie, X, ChevronDown, ChevronUp, Lock } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/language-context";
 import { useAuth } from "@/hooks/use-auth";
 import { GraffitiSplats } from "@/components/graffiti-splats";
@@ -186,22 +187,22 @@ export function CookieConsentBanner() {
               {isAf ? "Voorkeure" : "Manage preferences"}
               {expanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
             </button>
-            <button
+            <Button
+              variant="outline"
+              size="sm"
               onClick={handleDecline}
-              className="px-4 py-2 text-sm font-bold rounded-xl text-white"
-              style={{ background: "#000", border: "1px solid #fff" }}
               data-testid="button-cookie-decline"
             >
               {isAf ? "Weier" : "Decline"}
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
               onClick={handleAcceptAll}
-              className="px-4 py-2 text-sm font-bold rounded-xl"
-              style={{ background: "#94F7C5", color: "#000" }}
               data-testid="button-cookie-accept"
             >
               {isAf ? "Aanvaar alles" : "Accept all"}
-            </button>
+            </Button>
             <button
               onClick={handleDecline}
               className="ml-1 text-white"
@@ -288,14 +289,14 @@ export function CookieConsentBanner() {
             </div>
 
             <div className="flex justify-end">
-              <button
+              <Button
+                variant="primary"
+                size="sm"
                 onClick={handleSavePreferences}
-                className="px-4 py-2 text-sm font-bold rounded-xl"
-                style={{ background: "#94F7C5", color: "#000" }}
                 data-testid="button-cookie-save-preferences"
               >
                 {isAf ? "Stoor voorkeure" : "Save preferences"}
-              </button>
+              </Button>
             </div>
           </div>
         )}

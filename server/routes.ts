@@ -20,8 +20,9 @@ import { alias } from "drizzle-orm/pg-core";
 import { setupAuth, registerAuthRoutes, isAuthenticated, rotateSigningKey, generateAccessToken, generateRefreshToken } from "./replit_integrations/auth";
 import { registerLocalAuthRoutes } from "./local-auth";
 import { activateChildSchema, activateChild, type ActivationDeps } from "./parent-activation";
-import { registerPaystackRoutes, isPaystackConfigured, paystackFetch, recordEventOnce, applyCardCaptureSuccess, EXAM_BOOST_PRICE_MINOR, EXAM_BOOST_END } from "./paystack";
+import { registerPaystackRoutes, isPaystackConfigured, paystackFetch, recordEventOnce, activateSubscription, EXAM_BOOST_PRICE_MINOR, EXAM_BOOST_END, PRELIM_SPRINT_PRICE_MINOR, FINALS_BLITZ_PRICE_MINOR } from "./paystack";
 import { registerRizzRoutes } from "./rizz";
+import { registerGamesRoutes } from "./games/routes";
 import { registerWhatsAppWebhook } from "./whatsapp/webhook";
 import { createBrainTrackWhatsAppHandler } from "./whatsapp/handler";
 import { authStorage } from "./replit_integrations/auth/storage";
@@ -1558,6 +1559,11 @@ export async function registerRoutes(
   // Netcash retired per owner decision, 2026-07-19).
   registerPaystackRoutes(app, isAuthenticated);
 
+  // Learning-games arcade (Rapid Fire, Memory Match) — hallucination-safe decks,
+  // score recording + school/global/school-vs-school leaderboards, free-vs-paid
+  // gate. All endpoints auth-guarded inside the module. See server/games/*.
+  registerGamesRoutes(app);
+
   // Rizz — role-aware AI mascot + troubleshooting agent. Role and data scope
   // are resolved from the authenticated session inside the handler (visitors
   // allowed), so this is intentionally NOT wrapped in isAuthenticated here.
@@ -3020,126 +3026,17 @@ export async function registerRoutes(
   // so the UI can surface a friendly message — the rest of the app
   // (trial signup, route protection, push reminders) keeps working.
 
-  // ─── Netcash: trial signup (no payment required) ────────────────────
-  const trialStartSchema = z.object({
-    plan: z.string().default("brain-boost"),
-    parentCell: z.string().min(10).max(15),
-    learnerCell: z.string().min(10).max(15),
-    language: z.enum(["en", "af"]).optional(),
-    parentApproval: z.literal(true, {
-      errorMap: () => ({ message: "Parent / guardian approval is required to start the free trial" }),
-    }),
-  });
-
-  app.post("/api/subscribe/start-trial", isAuthenticated, paymentLimiter, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const parsed = trialStartSchema.safeParse(req.body);
-      if (!parsed.success) return res.status(400).json(formatZodError(parsed.error));
-      const { plan, parentCell, learnerCell, parentApproval } = parsed.data;
-
-      if (!isValidSACell(parentCell)) {
-        return res.status(400).json({
-          error: "invalid_parent_cell",
-          message: "Please enter a valid South African mobile number for the parent / guardian (e.g. 082 123 4567)",
-        });
-      }
-      if (!isValidSACell(learnerCell)) {
-        return res.status(400).json({
-          error: "invalid_learner_cell",
-          message: "Please enter a valid South African mobile number for the learner (e.g. 082 123 4567)",
-        });
-      }
-
-      const existing = await storage.getSubscription(userId);
-      if (existing && (existing.status === "active" || existing.status === "trial")) {
-        return res.json({ alreadyActive: true, subscription: toPublicSubscription(existing as any) });
-      }
-      // Minors may NOT self-activate a trial. Their trial starts only when
-      // the parent grants consent AND captures a card on the parent-consent
-      // page (see /api/parent-consent/card-capture/*).
-      const trialUser = await authStorage.getUser(userId);
-      if ((trialUser as any)?.isMinor) {
-        return res.status(403).json({
-          error: "parent_consent_required",
-          message: "A parent or guardian must approve and add a card before the trial can start.",
-        });
-      }
-      // One-time trial eligibility: if a subscription already exists in any
-      // post-trial state (lapsed / failed / pending / cancelled), the user
-      // has already consumed their free trial. Steer them to the paid
-      // Reactivate flow instead of re-issuing another 14-day window.
-      if (existing) {
-        return res.status(409).json({
-          error: "trial_already_used",
-          message: "Your free trial has already been used. Please choose a payment method to reactivate your subscription.",
-          subscription: toPublicSubscription(existing as any),
-        });
-      }
-
-      const learnerCellNorm = normaliseSACell(learnerCell);
-      const sub = await storage.startTrial(userId, normaliseSACell(parentCell), learnerCellNorm, plan, 169, parentApproval);
-
-      // POPIA audit: log billing consent at trial start
-      const trialConsentIp = (req.headers["x-forwarded-for"] as string | undefined)?.split(",")[0]?.trim() ?? req.socket?.remoteAddress ?? null;
-      const trialConsentUa = req.headers["user-agent"] ?? null;
-      await storage.insertConsentLog({ userId, consentType: "billing", action: "granted", version: "1.0", ipAddress: trialConsentIp, userAgent: trialConsentUa, metadata: { plan, priceRands: 169, billingMethod: "trial", event: "trial_started" } });
-
-      // Task #460 — send branded welcome email to the learner (best-effort,
-      // never blocks trial creation).
-      const lang = (parsed.data.language === "af" ? "af" : "en") as "en" | "af";
-      (async () => {
-        try {
-          const learner = await authStorage.getUser(userId);
-          if (!learner?.email) return;
-          const { sendWelcomeEmail } = await import("./email");
-          const trialEndsAt = sub.trialEndsAt ?? new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
-          const emailLang: "en" | "af" = learner.preferredLanguage === "af" ? "af" : lang;
-          await sendWelcomeEmail({
-            to: learner.email,
-            firstName: learner.firstName ?? "",
-            trialEndsAt,
-            language: emailLang,
-            dashboardUrl: `${publicBaseUrl(req)}/dashboard`,
-          });
-        } catch (err: unknown) {
-          console.error("[task-460] sendWelcomeEmail threw:", err instanceof Error ? err.message : String(err));
-        }
-      })();
-
-      // Welcome push upon activation — best-effort, never blocks the response.
-      sendWelcomePush(userId).catch((err) =>
-        console.error("[welcome-push] threw:", err instanceof Error ? err.message : String(err)),
-      );
-
-      // Task #412 — fire off the learner's onboarding magic-link SMS. We
-      // never block trial-creation on SMS delivery: a clear retry path is
-      // surfaced on the parent's confirmation card if Twilio fails.
-      const link = await issueAndSendOnboardingLink({
-        userId,
-        learnerCell: learnerCellNorm,
-        language: lang,
-        baseUrl: publicBaseUrl(req),
-      }).catch((err) => {
-        console.error("[task-412] issueAndSendOnboardingLink threw:", err);
-        return { ok: false, jti: "", url: "", smsError: "send_exception", smsErrorMessage: err?.message || "Unexpected error" } as const;
-      });
-
-      return res.status(201).json({
-        trialStarted: true,
-        subscription: sub,
-        sms: {
-          sent: link.ok,
-          to: learnerCellNorm,
-          jti: link.jti || null,
-          error: link.ok ? null : link.smsError ?? "send_failed",
-          message: link.ok ? null : link.smsErrorMessage ?? null,
-        },
-      });
-    } catch (error) {
-      console.error("start-trial error:", error);
-      res.status(500).json({ error: "Failed to start trial" });
-    }
+  // ─── Trial signup — DISCONTINUED (pay-now model) ────────────────────
+  app.post("/api/subscribe/start-trial", isAuthenticated, paymentLimiter, async (_req: any, res) => {
+    // Pay-now model: BrainTrack no longer offers a free trial. This route stays
+    // registered so older clients get a clear, actionable message instead of a
+    // 404 — but it never starts a new trial. The grandfathered trial machine
+    // (storage.startTrial, day-14 charge-trials cron, card_capture webhook) is
+    // deliberately left intact for learners who signed up under the old model.
+    return res.status(410).json({
+      error: "trial_discontinued",
+      message: "BrainTrack no longer offers a free trial. Please choose a plan to start.",
+    });
   });
 
   // ─── Task #412: resend onboarding link to learner cell ───────────────
@@ -4609,65 +4506,82 @@ export async function registerRoutes(
     }
   });
 
-  // ── Parent consent + card capture (Paystack) ──────────────────────────────
+  // ── Parent consent + immediate payment (Paystack) ─────────────────────────
   // The consent email's JWT is the bearer of trust for both endpoints (same
-  // trust model as /api/onboarding/parent-consent/confirm). Card capture is a
-  // R1.00 card-only Paystack transaction (metadata purpose:"card_capture")
-  // whose authorization_code is stored for the day-14 trial conversion charge.
-  // Consent + card together are what start the learner's 14-day trial.
+  // trust model as /api/onboarding/parent-consent/confirm). Pay-now model: the
+  // parent pays the FULL amount immediately (no R1 card-capture, no trial). On
+  // a verified charge the learner's parental consent is granted AND the paid
+  // subscription is activated in one step. Amounts are server-owned; the client
+  // only picks WHICH product.
   app.post("/api/parent-consent/card-capture/initialize", paymentLimiter, async (req, res) => {
     try {
-      // product picks WHICH offer the day-14 conversion charges (server owns
-      // the amounts): "premium" (default) → R169/month; "exam_boost" → R550
-      // once-off season pass. Whitelisted here so the client can never inject
-      // an arbitrary value; it round-trips to the webhook via metadata.product.
+      // product picks WHICH offer the parent pays for (server owns the
+      // amounts): "premium" → R169/month recurring; "exam_boost" → R550
+      // once-off season pass; "prelim_sprint" / "finals_blitz" → R250
+      // once-off, 6-week access. Whitelisted so the client can never inject
+      // an arbitrary value.
       const body = z.object({
         token: z.string().min(10).max(2000),
-        product: z.enum(["premium", "exam_boost"]).optional().default("premium"),
+        product: z.enum(["premium", "exam_boost", "prelim_sprint", "finals_blitz"]).optional().default("premium"),
       }).parse(req.body);
       const { verifyParentConsentToken } = await import("./parent-consent");
       const result = verifyParentConsentToken(body.token);
       if (!result.ok) return res.status(400).json({ error: result.reason });
       if (!isPaystackConfigured()) {
-        return res.status(503).json({ error: "payments_unavailable", message: "Card capture is not available in this environment." });
+        return res.status(503).json({ error: "payments_unavailable", message: "Payment is not available in this environment." });
       }
 
       const learnerUserId = result.learnerUserId;
       const existingSub = await storage.getSubscription(learnerUserId);
       const learner = await authStorage.getUser(learnerUserId);
       if (!learner) return res.status(404).json({ error: "learner_not_found" });
-      if ((existingSub as any)?.paystackAuthorizationCode && (learner as any)?.parentConsentGranted) {
+      // Already paid & active — don't send the parent through checkout again.
+      if ((existingSub as any)?.status === "active" && (learner as any)?.parentConsentGranted) {
         return res.json({ alreadyCaptured: true });
       }
 
       const appUrl = (process.env.APP_URL || publicBaseUrl(req)).replace(/\/+$/, "");
       const callbackUrl = `${appUrl}/parent-consent?token=${encodeURIComponent(body.token)}&paystack=return`;
+
+      // Immediate full charge per product. premium uses the plan so the
+      // recurring subscription is set up; the once-off products charge their
+      // fixed amount with no recurring plan.
+      const isExamBoost = body.product === "exam_boost";
+      const isPrelimSprint = body.product === "prelim_sprint";
+      const isFinalsBlitz = body.product === "finals_blitz";
+      const chargeBody: Record<string, unknown> = isExamBoost
+        ? { email: result.parentEmail, amount: EXAM_BOOST_PRICE_MINOR, currency: "ZAR", callback_url: callbackUrl }
+        : isPrelimSprint
+        ? { email: result.parentEmail, amount: PRELIM_SPRINT_PRICE_MINOR, currency: "ZAR", callback_url: callbackUrl }
+        : isFinalsBlitz
+        ? { email: result.parentEmail, amount: FINALS_BLITZ_PRICE_MINOR, currency: "ZAR", callback_url: callbackUrl }
+        : {
+            email: result.parentEmail,
+            plan: process.env.PAYSTACK_PLAN_CODE,
+            amount: 16900, // R169.00 minor units; plan amount takes precedence
+            currency: "ZAR",
+            callback_url: callbackUrl,
+          };
+      (chargeBody as any).metadata = {
+        userId: learnerUserId,
+        parentEmail: result.parentEmail,
+        product: body.product,
+        // purpose mirrors the product so the charge.success webhook activates
+        // the right once-off product; premium falls through to the plan-code
+        // branch. NOT "card_capture" — this is a real paid activation.
+        purpose: body.product,
+      };
+
       const data = await paystackFetch("/transaction/initialize", {
         method: "POST",
-        body: JSON.stringify({
-          email: result.parentEmail,
-          // R1.00 verification charge — minor units. Yields a reusable
-          // authorization_code on charge.success.
-          amount: 100,
-          currency: "ZAR",
-          channels: ["card"],
-          callback_url: callbackUrl,
-          metadata: {
-            userId: learnerUserId,
-            parentEmail: result.parentEmail,
-            purpose: "card_capture",
-            // "premium" | "exam_boost" — round-trips to the charge.success
-            // webhook so day-14 conversion charges the right amount.
-            product: body.product,
-          },
-        }),
+        body: JSON.stringify(chargeBody),
       });
 
       return res.json({ authorizationUrl: data.authorization_url, reference: data.reference });
     } catch (err: any) {
       if (err instanceof z.ZodError) return res.status(400).json(formatZodError(err));
-      console.error("[paystack] card-capture initialize failed:", err?.message ?? err);
-      return res.status(502).json({ error: "initialize_failed", message: "Could not start card verification. Please try again." });
+      console.error("[paystack] parent-consent initialize failed:", err?.message ?? err);
+      return res.status(502).json({ error: "initialize_failed", message: "Could not start payment. Please try again." });
     }
   });
 
@@ -4683,30 +4597,56 @@ export async function registerRoutes(
 
       const data = await paystackFetch(`/transaction/verify/${encodeURIComponent(reference)}`);
       const paid = data?.status === "success";
-      const purposeOk = data?.metadata?.purpose === "card_capture";
       const userOk = String(data?.metadata?.userId ?? "") === result.learnerUserId;
-      if (!paid || !purposeOk || !userOk) {
+      // Amount is verified server-side per product — a relabelled cheaper
+      // charge can never unlock a more expensive product or activate at all.
+      const amount = data?.amount ?? 0;
+      const metaProduct = data?.metadata?.product;
+      let product: "premium" | "exam_boost" | "prelim_sprint" | "finals_blitz" = "premium";
+      if (metaProduct === "exam_boost" && amount >= EXAM_BOOST_PRICE_MINOR) product = "exam_boost";
+      else if (metaProduct === "prelim_sprint" && amount >= PRELIM_SPRINT_PRICE_MINOR) product = "prelim_sprint";
+      else if (metaProduct === "finals_blitz" && amount >= FINALS_BLITZ_PRICE_MINOR) product = "finals_blitz";
+      const amountOk =
+        product === "exam_boost" ? amount >= EXAM_BOOST_PRICE_MINOR
+        : product === "prelim_sprint" ? amount >= PRELIM_SPRINT_PRICE_MINOR
+        : product === "finals_blitz" ? amount >= FINALS_BLITZ_PRICE_MINOR
+        : amount >= 16900; // premium: full R169 (plan amount) must have cleared
+      if (!paid || !userOk || !amountOk) {
         return res.json({ ok: false, captured: false, status: data?.status ?? "unknown" });
       }
 
-      // Tag the trial with the product chosen at initialize (round-tripped via
-      // Paystack metadata) so day-14 conversion charges the right amount —
-      // whether this return path or the webhook applies the capture first.
-      const captureProduct = data?.metadata?.product === "exam_boost" ? "exam_boost" : "premium";
-      const capture = await applyCardCaptureSuccess({
+      const now = new Date();
+      // Grant parental consent on the learner row (source of truth for the
+      // consent gate) together with billing — the parent has now paid in full.
+      const userPatch: any = {
+        parentConsentGranted: true,
+        parentConsentGrantedAt: now,
+        updatedAt: now,
+      };
+      if (result.parentEmail) userPatch.parentEmail = result.parentEmail.toLowerCase();
+      await db.update(users).set(userPatch).where(eq(users.id, result.learnerUserId));
+
+      // Activate the paid subscription for the right product (server-owned
+      // amount already verified). NOT a trial, NOT applyCardCaptureSuccess.
+      await activateSubscription({
         userId: result.learnerUserId,
-        parentEmail: result.parentEmail,
-        authorizationCode: data?.authorization?.authorization_code ?? null,
         customerCode: data?.customer?.customer_code ?? null,
-        product: captureProduct,
+        subscriptionCode: data?.plan?.subscription_code ?? null,
+        amountMinor: amount || null,
+        nextPaymentDate: null,
+        product,
       });
+      // Stamp the consent audit fields onto the subscription row too.
+      await db.update(subscriptions)
+        .set({ parentConsent: true, parentConsentDate: now, parentEmail: result.parentEmail, updatedAt: now } as any)
+        .where(eq(subscriptions.userId, result.learnerUserId));
 
       // POPIA audit: parental consent granted together with billing consent
-      // (card captured for the R169/month subscription after the trial).
+      // (parent paid in full — no trial).
       const ccIp = (req.headers["x-forwarded-for"] as string | undefined)?.split(",")[0]?.trim() ?? req.socket?.remoteAddress ?? null;
       const ccUa = req.headers["user-agent"] ?? null;
-      await storage.insertConsentLog({ userId: result.learnerUserId, consentType: "parental", action: "granted", version: "1.0", ipAddress: ccIp, userAgent: ccUa, metadata: { parentEmail: result.parentEmail, cardCaptured: true } });
-      await storage.insertConsentLog({ userId: result.learnerUserId, consentType: "billing", action: "granted", version: "1.0", ipAddress: ccIp, userAgent: ccUa, metadata: { plan: "brain_boost", priceRands: 169, billingMethod: "paystack", event: "parent_card_captured" } });
+      await storage.insertConsentLog({ userId: result.learnerUserId, consentType: "parental", action: "granted", version: "1.0", ipAddress: ccIp, userAgent: ccUa, metadata: { parentEmail: result.parentEmail, paidInFull: true, product } });
+      await storage.insertConsentLog({ userId: result.learnerUserId, consentType: "billing", action: "granted", version: "1.0", ipAddress: ccIp, userAgent: ccUa, metadata: { plan: product, amountMinor: amount, billingMethod: "paystack", event: "parent_paid" } });
 
       const learner = await authStorage.getUser(result.learnerUserId);
       const learnerName = [learner?.firstName, learner?.lastName].filter(Boolean).join(" ").trim() || null;
@@ -4720,18 +4660,17 @@ export async function registerRoutes(
           learnerName: learnerName ?? "",
           language: lang,
           dashboardUrl: `${publicBaseUrl(req)}/dashboard`,
-        }).catch((err: unknown) => console.error("[card-capture] sendConsentConfirmedEmail threw:", err instanceof Error ? err.message : String(err)));
+        }).catch((err: unknown) => console.error("[parent-consent] sendConsentConfirmedEmail threw:", err instanceof Error ? err.message : String(err)));
       }
 
       return res.json({
         ok: true,
         captured: true,
+        activated: true,
         learnerName,
-        trialStarted: capture.trialStarted,
-        trialEndsAt: capture.trialEndsAt ? capture.trialEndsAt.toISOString() : null,
       });
     } catch (err: any) {
-      console.error("[paystack] card-capture verify failed:", err?.message ?? err);
+      console.error("[paystack] parent-consent verify failed:", err?.message ?? err);
       return res.status(502).json({ error: "verify_failed" });
     }
   });

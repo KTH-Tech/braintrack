@@ -290,7 +290,7 @@ export default function AdminPartnerBrandingPage() {
               <NeonShell color="#C5B3FF">
                 <div className="p-6 space-y-6">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "rgba(255,255,255,0.035)", border: "1px solid rgba(197,179,255,0.5)" }}>
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "#0e0d12", border: "1px solid rgba(197,179,255,0.5)" }}>
                       <Building2 className="w-5 h-5" style={{ color: "#C5B3FF" }} />
                     </div>
                     <h2 className="text-base font-black text-white">{isAf ? "Vennootnaam" : "Partner Name"}</h2>
@@ -337,7 +337,7 @@ export default function AdminPartnerBrandingPage() {
                         </div>
                       </div>
                     ) : (
-                      <button type="button" onClick={() => fileInputRef.current?.click()} className="w-full flex flex-col items-center justify-center gap-2 rounded-xl py-6 text-sm font-semibold transition-all hover:bg-white/5" style={{ border: "2px dashed rgba(197,179,255,0.4)", color: "#C5B3FF" }} data-testid="btn-upload-logo">
+                      <button type="button" onClick={() => fileInputRef.current?.click()} className="w-full flex flex-col items-center justify-center gap-2 rounded-xl py-6 text-sm font-semibold transition-all hover:bg-[#1b1922]" style={{ border: "2px dashed rgba(197,179,255,0.4)", color: "#C5B3FF" }} data-testid="btn-upload-logo">
                         <ImageIcon className="w-8 h-8 opacity-60" />
                         <span>{isAf ? "Klik om logo op te laai" : "Click to upload logo"}</span>
                         <span className="text-[11px] text-white font-normal">{isAf ? "PNG, JPG of SVG · maks 2 MB" : "PNG, JPG or SVG · max 2 MB"}</span>
@@ -365,7 +365,7 @@ export default function AdminPartnerBrandingPage() {
               <NeonShell color="#9FF5E8">
                 <div className="p-6 space-y-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "rgba(255,255,255,0.035)", border: "1px solid rgba(159,245,232,0.5)" }}>
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "#0e0d12", border: "1px solid rgba(159,245,232,0.5)" }}>
                       <ImageIcon className="w-5 h-5" style={{ color: "#9FF5E8" }} />
                     </div>
                     <h2 className="text-base font-black text-white">{isAf ? "Verslag-kopstuk-voorskou" : "Report Header Preview"}</h2>
@@ -435,7 +435,7 @@ export default function AdminPartnerBrandingPage() {
               <NeonShell color="#FFE29A">
                 <div className="p-6 space-y-6">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "rgba(255,255,255,0.035)", border: "1px solid rgba(255,226,154,0.5)" }}>
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "#0e0d12", border: "1px solid rgba(255,226,154,0.5)" }}>
                       <Clock className="w-5 h-5" style={{ color: "#FFE29A" }} />
                     </div>
                     <h3 className="text-base font-black text-white">{isAf ? "Skedule-instellings" : "Schedule Settings"}</h3>
@@ -455,8 +455,8 @@ export default function AdminPartnerBrandingPage() {
                       data-testid="toggle-schedule-enabled"
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold text-xs transition"
                       style={{
-                        background: scheduleEnabled ? "rgba(255,226,154,0.2)" : "rgba(255,255,255,0.06)",
-                        border: `1px solid ${scheduleEnabled ? "#FFE29A" : "rgba(255,255,255,0.15)"}`,
+                        background: scheduleEnabled ? "rgba(255,226,154,0.2)" : "#0e0d12",
+                        border: `1px solid ${scheduleEnabled ? "#FFE29A" : "#1b1922"}`,
                         color: scheduleEnabled ? "#FFE29A" : "#fff",
                       }}
                     >
@@ -481,9 +481,9 @@ export default function AdminPartnerBrandingPage() {
                           data-testid={`btn-freq-${f}`}
                           className="py-2 rounded-xl text-xs font-bold transition"
                           style={{
-                            background: scheduleFrequency === f ? "#FFE29A" : "rgba(255,255,255,0.04)",
+                            background: scheduleFrequency === f ? "#FFE29A" : "#0e0d12",
                             color: scheduleFrequency === f ? "#000" : "#fff",
-                            border: `1px solid ${scheduleFrequency === f ? "#FFE29A" : "rgba(255,255,255,0.12)"}`,
+                            border: `1px solid ${scheduleFrequency === f ? "#FFE29A" : "#1b1922"}`,
                           }}
                         >
                           {f === "weekly" ? (isAf ? "Weekliks" : "Weekly") : (isAf ? "Maandeliks" : "Monthly")}
@@ -572,7 +572,7 @@ export default function AdminPartnerBrandingPage() {
               <NeonShell color="#94F7C5">
                 <div className="p-6 space-y-5">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "rgba(255,255,255,0.035)", border: "1px solid rgba(148,247,197,0.5)" }}>
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "#0e0d12", border: "1px solid rgba(148,247,197,0.5)" }}>
                       <Send className="w-5 h-5" style={{ color: "#94F7C5" }} />
                     </div>
                     <h3 className="text-base font-black text-white">{isAf ? "Stuur & Skedule-opsomming" : "Send & Schedule Summary"}</h3>
@@ -680,7 +680,7 @@ export default function AdminPartnerBrandingPage() {
                     </thead>
                     <tbody className="divide-y divide-white/5">
                       {sendLog.slice(0, 50).map((entry) => (
-                        <tr key={entry.id} className="hover:bg-white/3 transition">
+                        <tr key={entry.id} className="hover:bg-[#1b1922] transition">
                           <td className="py-2.5 pr-4 text-white whitespace-nowrap">
                             {entry.sentAt
                               ? new Date(entry.sentAt).toLocaleDateString("en-ZA", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })
@@ -763,7 +763,7 @@ export default function AdminPartnerBrandingPage() {
                       {(optOutLogData?.log ?? []).slice(0, 50).map((entry) => {
                         const isResub = entry.action === "resubscribed";
                         return (
-                          <tr key={entry.id} className="hover:bg-white/3 transition">
+                          <tr key={entry.id} className="hover:bg-[#1b1922] transition">
                             <td className="py-2.5 pr-4 text-white whitespace-nowrap">
                               {entry.createdAt
                                 ? new Date(entry.createdAt).toLocaleDateString("en-ZA", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })

@@ -9,6 +9,7 @@ import { ConfettiBurst } from "@/components/confetti-burst";
 import { useLanguage } from "@/lib/language-context";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
 import {
   AlertCircle,
   ArrowLeft,
@@ -25,6 +26,9 @@ import {
 
 /* ── Street-pastel building blocks ─────────────────────────────────────── */
 
+// Primary/submit actions route through the shared <Button> so they render the
+// app's rainbow graffiti hero sticker. The local wrapper keeps the existing
+// call-site API (onClick / disabled / testId / full / size) unchanged.
 function PrimaryBtn({ children, onClick, disabled, testId, full, size = "md" }: {
   children: React.ReactNode;
   onClick?: () => void;
@@ -34,25 +38,24 @@ function PrimaryBtn({ children, onClick, disabled, testId, full, size = "md" }: 
   size?: "md" | "lg";
 }) {
   return (
-    <button
+    <Button
       type="button"
+      variant="primary"
+      size={size === "lg" ? "lg" : "default"}
       onClick={onClick}
       disabled={disabled}
       data-testid={testId}
-      className={`${full ? "w-full " : ""}inline-flex items-center justify-center gap-2 rounded-xl font-bold transition-all disabled:opacity-40 ${size === "lg" ? "px-6 py-3.5 text-base" : "px-5 py-2.5 text-sm"}`}
-      style={{
-        background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
-        color: "#050508",
-      }}
-      onMouseEnter={(e) => { if (!disabled) e.currentTarget.style.transform = "translateY(-2px)"; }}
-      onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}
+      className={full ? "w-full" : undefined}
     >
       {children}
-    </button>
+    </Button>
   );
 }
 
-function GhostBtn({ children, onClick, disabled, testId, color = "#ffffff", full }: {
+// Secondary actions route through the shared outline variant so every quiet
+// action shares one consistent look. `color` is accepted for call-site
+// compatibility but no longer drives a bespoke tint.
+function GhostBtn({ children, onClick, disabled, testId, full }: {
   children: React.ReactNode;
   onClick?: () => void;
   disabled?: boolean;
@@ -61,22 +64,16 @@ function GhostBtn({ children, onClick, disabled, testId, color = "#ffffff", full
   full?: boolean;
 }) {
   return (
-    <button
+    <Button
       type="button"
+      variant="outline"
       onClick={onClick}
       disabled={disabled}
       data-testid={testId}
-      className={`${full ? "w-full " : ""}inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all disabled:opacity-40`}
-      style={{
-        background: "transparent",
-        color,
-        border: color === "#ffffff" ? "1.5px solid rgba(255,255,255,.2)" : `1.5px solid ${color}`,
-      }}
-      onMouseEnter={(e) => { if (!disabled) e.currentTarget.style.transform = "translateY(-2px)"; }}
-      onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}
+      className={full ? "w-full" : undefined}
     >
       {children}
-    </button>
+    </Button>
   );
 }
 
@@ -90,8 +87,8 @@ function GlassCard({ children, accent, className = "", style }: {
     <div
       className={`relative overflow-hidden ${className}`}
       style={{
-        background: "rgba(255,255,255,.03)",
-        border: accent ? `1.5px solid ${accent}` : "1px solid rgba(255,255,255,.08)",
+        background: "#1b1922",
+        border: accent ? `1.5px solid ${accent}` : "1px solid #1b1922",
         borderRadius: 22,
         ...style,
       }}
@@ -115,23 +112,23 @@ function StreetShell({ isAf, eyebrow, onExit, children }: {
 
       <header
         className="sticky top-0 z-50 border-b"
-        style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "rgba(255,255,255,.08)" }}
+        style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "#1b1922" }}
       >
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-14 gap-4">
             <div className="flex items-center gap-2 min-w-0">
               <Zap className="w-4 h-4 shrink-0" style={{ color: "#9FF5E8" }} />
-              <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}>
+              <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}>
                 Mini Mock
               </span>
-              <span className="hidden sm:inline text-[11px] font-bold uppercase tracking-[0.18em] text-white truncate" style={{ opacity: 0.85 }}>
+              <span className="hidden sm:inline text-[11px] font-bold uppercase tracking-[0.18em] text-white truncate">
                 · {eyebrow}
               </span>
             </div>
             {onExit ? (
               <button
                 onClick={onExit}
-                className="inline-flex items-center justify-center gap-1.5 min-h-[44px] min-w-[44px] px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
+                className="inline-flex items-center justify-center gap-1.5 min-h-[44px] min-w-[44px] px-4 py-2 rounded-xl bg-[#1b1922] text-sm font-bold hover:bg-[#1b1922]"
                 style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}
               >
                 <ArrowLeft className="w-4 h-4" />
@@ -140,7 +137,7 @@ function StreetShell({ isAf, eyebrow, onExit, children }: {
             ) : (
               <Link href="/dashboard">
                 <button
-                  className="inline-flex items-center justify-center gap-1.5 min-h-[44px] min-w-[44px] px-4 py-2 rounded-xl bg-white/[.03] text-sm font-bold hover:bg-white/10"
+                  className="inline-flex items-center justify-center gap-1.5 min-h-[44px] min-w-[44px] px-4 py-2 rounded-xl bg-[#1b1922] text-sm font-bold hover:bg-[#1b1922]"
                   style={{ color: "#9FD8FF", border: "1.5px solid #9FD8FF" }}
                 >
                   <ArrowLeft className="w-4 h-4" />
@@ -418,17 +415,17 @@ export default function ExamMiniMockPage() {
             >
               <Trophy className="w-8 h-8" style={{ color: gradeHex }} />
             </div>
-            <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 18, color: gradeHex, transform: "rotate(-1.5deg)" }}>
+            <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 18, color: gradeHex, transform: "rotate(-1.5deg)" }}>
               {isAf ? "Mini Mock voltooi!" : "Mini Mock complete!"}
             </div>
             <div className="text-5xl font-black tabular-nums text-white">
-              {totalAwarded} <span className="text-white" style={{ opacity: 0.85 }}>/ {totalAvailable}</span>
+              {totalAwarded} <span className="text-white">/ {totalAvailable}</span>
             </div>
             <div className="text-2xl font-black tabular-nums" style={{ color: gradeHex }}>{pct}%</div>
-            <div className="h-2.5 rounded-full overflow-hidden mx-auto max-w-sm" style={{ background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.08)" }}>
+            <div className="h-2.5 rounded-full overflow-hidden mx-auto max-w-sm" style={{ background: "#1b1922", border: "1px solid #1b1922" }}>
               <div className="h-full rounded-full" style={{ width: `${pct}%`, background: `linear-gradient(90deg,#9FF5E8,${gradeHex})` }} />
             </div>
-            <p className="text-sm text-white" style={{ opacity: 0.9 }}>
+            <p className="text-sm text-white">
               {isAf
                 ? `${questions.length} vrae gemerk volgens DBE memo`
                 : `${questions.length} questions marked from the DBE memo`}
@@ -477,7 +474,7 @@ export default function ExamMiniMockPage() {
       <StreetShell isAf={isAf} eyebrow={`${subject} · ${currentIdx + 1}/${questions.length}`} onExit={reset}>
         {/* Focused exam chrome — slim progress rail */}
         <div className="flex items-center gap-3">
-          <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.08)" }}>
+          <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: "#1b1922", border: "1px solid #1b1922" }}>
             <div
               className="h-full rounded-full transition-all duration-300"
               style={{ width: `${progressPct}%`, background: "linear-gradient(90deg,#9FF5E8,#C5B3FF)" }}
@@ -535,7 +532,7 @@ export default function ExamMiniMockPage() {
               </div>
             )}
             <ExamQuestionText text={currentQ.questionText} className="text-base text-white" />
-            <p className="text-xs text-white" style={{ opacity: 0.85 }}>
+            <p className="text-xs text-white">
               {currentQ.simulated || currentQ.year == null
                 ? (isAf ? "BrainTrack-oefenvraag · KABV-belyn" : "BrainTrack practice question · CAPS-aligned")
                 : `${isAf ? "Bron: DBE" : "Source: DBE"} ${currentQ.year} · ${isAf ? "Vraestel" : "Paper"} ${currentQ.paperNumber}`}
@@ -553,8 +550,8 @@ export default function ExamMiniMockPage() {
                       disabled={!!currentResult}
                       className="w-full text-left p-3 rounded-xl transition-all disabled:opacity-60 flex items-center gap-3"
                       style={{
-                        background: active ? "rgba(159,245,232,.08)" : "rgba(255,255,255,.02)",
-                        border: active ? "1.5px solid #9FF5E8" : "1.5px solid rgba(255,255,255,.12)",
+                        background: active ? "rgba(159,245,232,.08)" : "#1b1922",
+                        border: active ? "1.5px solid #9FF5E8" : "1.5px solid #1b1922",
                       }}
                     >
                       <span
@@ -562,7 +559,7 @@ export default function ExamMiniMockPage() {
                         style={{
                           background: active ? "linear-gradient(100deg,#9FF5E8,#C5B3FF)" : "rgba(5,5,8,.6)",
                           color: active ? "#050508" : "#ffffff",
-                          border: active ? "none" : "1px solid rgba(255,255,255,.18)",
+                          border: active ? "none" : "1px solid #1b1922",
                         }}
                       >
                         {o.letter}
@@ -580,7 +577,7 @@ export default function ExamMiniMockPage() {
                 rows={5}
                 disabled={!!currentResult}
                 className="resize-none text-white placeholder:text-white rounded-xl focus-visible:ring-[#9FF5E8]/40 focus-visible:border-[#9FF5E8]"
-                style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid rgba(255,255,255,.18)" }}
+                style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #1b1922" }}
               />
             )}
 
@@ -652,7 +649,7 @@ export default function ExamMiniMockPage() {
       <section style={{ animation: "bt-fadeup .5s cubic-bezier(.22,1,.36,1) both" }}>
         <div className="inline-flex items-center gap-2 mb-3">
           <Brain className="w-4 h-4" style={{ color: "#FFB7E5" }} />
-          <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
+          <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
             {isAf ? "Toets jouself" : "Test yourself"}
           </span>
         </div>
@@ -670,7 +667,7 @@ export default function ExamMiniMockPage() {
         >
           Mini Mock
         </div>
-        <p className="text-white text-sm sm:text-base mt-3 max-w-xl" style={{ opacity: 0.9 }}>
+        <p className="text-white text-sm sm:text-base mt-3 max-w-xl">
           {isAf
             ? "Kies 'n vak en onderwerp. Jy kry 5–15 vrae uit DBE-vraestelle, en elke antwoord word onmiddellik teen die memo gemerk."
             : "Pick a subject and topic. You'll get 5–15 questions from DBE papers, each marked instantly against the memo."}
@@ -700,7 +697,7 @@ export default function ExamMiniMockPage() {
                 <p className="font-bold text-white">
                   {isAf ? "Kon nie vakke laai nie" : "Couldn't load subjects"}
                 </p>
-                <p className="text-sm text-white" style={{ opacity: 0.85 }}>
+                <p className="text-sm text-white">
                   {isAf
                     ? "Kyk jou internetverbinding en probeer weer."
                     : "Check your connection and try again."}
@@ -722,7 +719,7 @@ export default function ExamMiniMockPage() {
                 <SelectTrigger
                   data-testid="select-subject"
                   className="h-12 rounded-xl text-white"
-                  style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid rgba(255,255,255,.18)" }}
+                  style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #1b1922" }}
                 >
                   <SelectValue placeholder={
                     subjectsLoading
@@ -739,7 +736,7 @@ export default function ExamMiniMockPage() {
                 </SelectContent>
               </Select>
               {!subjectsLoading && (subjects?.length ?? 0) === 0 && (
-                <p className="text-xs text-white" style={{ opacity: 0.85 }}>
+                <p className="text-xs text-white">
                   {isAf
                     ? "Geen vakke met vrygestelde vrae beskikbaar nie. Probeer later weer."
                     : "No subjects with released questions are available yet. Please check back later."}
@@ -754,7 +751,7 @@ export default function ExamMiniMockPage() {
               <Select value={topic} onValueChange={(v) => { setTopic(v); setStartError(""); }} disabled={loadingStart}>
                 <SelectTrigger
                   className="h-12 rounded-xl text-white"
-                  style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid rgba(255,255,255,.18)" }}
+                  style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #1b1922" }}
                 >
                   <SelectValue />
                 </SelectTrigger>
@@ -803,8 +800,8 @@ export default function ExamMiniMockPage() {
                             border: "none",
                           }
                         : {
-                            background: "rgba(255,255,255,.03)",
-                            border: "1.5px solid rgba(255,255,255,.12)",
+                            background: "#1b1922",
+                            border: "1.5px solid #1b1922",
                             color: "#ffffff",
                           }
                     }

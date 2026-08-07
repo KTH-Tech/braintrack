@@ -127,24 +127,9 @@ export default function NotFound() {
           >
             <Link href="/">
               <span
-                className="bt-nf-sticker"
+                className="pub-btn"
                 data-testid="link-404-home"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 8,
-                  cursor: "pointer",
-                  background: "#94F7C5",
-                  color: "#000",
-                  border: "2.5px solid #94F7C5",
-                  borderRadius: 16,
-                  padding: "14px 26px",
-                  fontWeight: 900,
-                  fontSize: 15,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.04em",
-                  boxShadow: "6px 6px 0 0 #FFE29A",
-                }}
+                style={{ display: "inline-flex", alignItems: "center", gap: 8, cursor: "pointer" }}
               >
                 {isAf ? "Terug na tuisblad" : "Back to home"}
               </span>
@@ -152,24 +137,9 @@ export default function NotFound() {
 
             <Link href="/signin">
               <span
-                className="bt-nf-sticker"
+                className="pub-btn-outline"
                 data-testid="link-404-signin"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 8,
-                  cursor: "pointer",
-                  background: "#000",
-                  color: "#fff",
-                  border: "2.5px solid #FFE29A",
-                  borderRadius: 16,
-                  padding: "14px 26px",
-                  fontWeight: 900,
-                  fontSize: 15,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.04em",
-                  boxShadow: "6px 6px 0 0 #FFB7E5",
-                }}
+                style={{ display: "inline-flex", alignItems: "center", gap: 8, cursor: "pointer" }}
               >
                 {isAf ? "Kom in" : "Sign in"}
               </span>

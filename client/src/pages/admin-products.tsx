@@ -194,7 +194,7 @@ export default function AdminProductsPage() {
 
       <main className="max-w-5xl mx-auto px-4 py-6">
         <Tabs defaultValue="plans">
-          <TabsList className="mb-6 p-1.5 rounded-full h-auto flex-wrap bg-white/[0.035] border border-white/10">
+          <TabsList className="mb-6 p-1.5 rounded-full h-auto flex-wrap bg-[#0e0d12] border border-[#1b1922]">
             <TabsTrigger value="plans" className="rounded-full gap-2 text-xs px-4 py-2 border border-transparent data-[state=active]:bg-[#9FF5E8] data-[state=active]:text-[#050508] data-[state=active]:font-black text-white hover:text-white transition-colors"><CreditCard className="w-3.5 h-3.5" />{tr.plansTab} ({plans.length})</TabsTrigger>
             <TabsTrigger value="products" className="rounded-full gap-2 text-xs px-4 py-2 border border-transparent data-[state=active]:bg-[#9FF5E8] data-[state=active]:text-[#050508] data-[state=active]:font-black text-white hover:text-white transition-colors"><ShoppingBag className="w-3.5 h-3.5" />{tr.productsTab} ({products.length})</TabsTrigger>
             <TabsTrigger value="settings" className="rounded-full gap-2 text-xs px-4 py-2 border border-transparent data-[state=active]:bg-[#9FF5E8] data-[state=active]:text-[#050508] data-[state=active]:font-black text-white hover:text-white transition-colors"><Settings className="w-3.5 h-3.5" />{tr.settingsTab}</TabsTrigger>
@@ -228,11 +228,11 @@ export default function AdminProductsPage() {
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-2 text-xs">
-                        <div className="rounded-lg p-2" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                        <div className="rounded-lg p-2" style={{ background: "#0e0d12", border: "1px solid #1b1922" }}>
                           <div className="text-white">{tr.dailyQ}</div>
                           <div className="font-bold text-white">{plan.daily_questions_limit === -1 ? tr.unlimited : plan.daily_questions_limit}</div>
                         </div>
-                        <div className="rounded-lg p-2" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                        <div className="rounded-lg p-2" style={{ background: "#0e0d12", border: "1px solid #1b1922" }}>
                           <div className="text-white">{tr.fullSols}</div>
                           <div className="font-bold text-white">{plan.daily_full_solutions_limit === -1 ? tr.unlimited : `${plan.daily_full_solutions_limit}${tr.perDay}`}</div>
                         </div>
@@ -248,7 +248,7 @@ export default function AdminProductsPage() {
                           {featureList.length > 4 && <li className="text-[10px] text-white ml-4.5">+{featureList.length - 4} {tr.more}</li>}
                         </ul>
                       )}
-                      <div className="flex items-center justify-between pt-2" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+                      <div className="flex items-center justify-between pt-2" style={{ borderTop: "1px solid #1b1922" }}>
                         <div className="flex items-center gap-2">
                           {plan.is_active
                             ? <><CheckCircle className="w-3.5 h-3.5 text-[#94F7C5]" /><span className="text-xs text-[#94F7C5] font-bold">{tr.active}</span></>
@@ -271,15 +271,15 @@ export default function AdminProductsPage() {
           <TabsContent value="products">
             <div className="flex items-center justify-between mb-4">
               <p className="text-xs text-white">{products.length} {isAf ? "produkte" : "products"}</p>
-              <button
+              <Button
+                size="sm"
+                variant="primary"
                 onClick={() => { setForm(blankForm); setShowCreateDialog(true); }}
-                className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-[0.12em] transition-transform hover:scale-[1.02]"
-                style={{ background: "linear-gradient(90deg,#9FF5E8,#9FD8FF)", color: "#000" }}
                 data-testid="button-add-product"
               >
                 <PlusCircle className="w-3.5 h-3.5" />
                 {isAf ? "Voeg produk by" : "Add Product"}
-              </button>
+              </Button>
             </div>
             {productsLoading ? (
               <p className="text-sm text-white">{tr.loadingProducts}</p>
@@ -287,14 +287,15 @@ export default function AdminProductsPage() {
               <div className="text-center py-16 text-white">
                 <Package className="w-8 h-8 mx-auto mb-3 opacity-40" />
                 <p className="text-sm font-medium">{tr.noProducts}</p>
-                <button
+                <Button
+                  size="sm"
+                  variant="primary"
+                  className="mt-3"
                   onClick={() => { setForm(blankForm); setShowCreateDialog(true); }}
-                  className="mt-3 inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-[0.12em]"
-                  style={{ background: "linear-gradient(90deg,#9FF5E8,#9FD8FF)", color: "#000" }}
                 >
                   <PlusCircle className="w-3.5 h-3.5" />
                   {isAf ? "Skep eerste produk" : "Create first product"}
-                </button>
+                </Button>
               </div>
             ) : (
               <div className="space-y-6">
@@ -317,7 +318,7 @@ export default function AdminProductsPage() {
                                 <AdminBadge color="#FFB7E5" className="mt-1">{product.slug}</AdminBadge>
                               </div>
                             </div>
-                            <div className="flex items-center justify-between pt-2" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+                            <div className="flex items-center justify-between pt-2" style={{ borderTop: "1px solid #1b1922" }}>
                               <div className="flex items-center gap-1.5">
                                 {product.is_active
                                   ? <><CheckCircle className="w-3.5 h-3.5 text-[#94F7C5]" /><span className="text-xs text-[#94F7C5] font-bold">{tr.active}</span></>
@@ -380,7 +381,7 @@ export default function AdminProductsPage() {
                     </div>
                   </div>
                   {nudgeThresholdInput !== null && nudgeThresholdInput !== platformConfig?.installNudgeSessionThreshold && (
-                    <div className="mt-4 pt-4 flex items-center justify-between gap-3" style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+                    <div className="mt-4 pt-4 flex items-center justify-between gap-3" style={{ borderTop: "1px solid #1b1922" }}>
                       <p className="text-[11px] font-bold" style={{ color: "#FFE29A" }}>
                         {tr.unsavedPrefix} {platformConfig?.installNudgeSessionThreshold ?? 2}
                       </p>
@@ -388,7 +389,7 @@ export default function AdminProductsPage() {
                         <button
                           onClick={() => setNudgeThresholdInput(null)}
                           className="h-7 px-3 rounded-lg text-xs font-bold uppercase tracking-wider text-white transition"
-                          style={{ border: "1px solid rgba(255,255,255,0.2)" }}
+                          style={{ border: "1px solid #1b1922" }}
                         >
                           {tr.cancel}
                         </button>
@@ -436,7 +437,7 @@ export default function AdminProductsPage() {
                     value={form.nameEn}
                     onChange={e => setField("nameEn", e.target.value)}
                     placeholder="e.g. Student Life Pack"
-                    className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#9FF5E8]/50 h-9 text-sm"
+                    className="rounded-xl bg-[#0e0d12] border-[#1b1922] text-white placeholder:text-white focus-visible:ring-[#9FF5E8]/50 h-9 text-sm"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -445,7 +446,7 @@ export default function AdminProductsPage() {
                     value={form.nameAf}
                     onChange={e => setField("nameAf", e.target.value)}
                     placeholder="e.g. Student Life-pak"
-                    className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#9FF5E8]/50 h-9 text-sm"
+                    className="rounded-xl bg-[#0e0d12] border-[#1b1922] text-white placeholder:text-white focus-visible:ring-[#9FF5E8]/50 h-9 text-sm"
                   />
                 </div>
               </div>
@@ -458,7 +459,7 @@ export default function AdminProductsPage() {
                     value={form.slug}
                     onChange={e => setField("slug", slugify(e.target.value))}
                     placeholder="brain-boost-pack"
-                    className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#9FF5E8]/50 h-9 text-sm font-mono"
+                    className="rounded-xl bg-[#0e0d12] border-[#1b1922] text-white placeholder:text-white focus-visible:ring-[#9FF5E8]/50 h-9 text-sm font-mono"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -468,7 +469,7 @@ export default function AdminProductsPage() {
                     onChange={e => setField("category", e.target.value)}
                     placeholder={categories[0] || "power-up"}
                     list="category-list"
-                    className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#9FF5E8]/50 h-9 text-sm"
+                    className="rounded-xl bg-[#0e0d12] border-[#1b1922] text-white placeholder:text-white focus-visible:ring-[#9FF5E8]/50 h-9 text-sm"
                   />
                   <datalist id="category-list">
                     {categories.map(c => <option key={c} value={c} />)}
@@ -482,7 +483,7 @@ export default function AdminProductsPage() {
                     value={form.priceRands}
                     onChange={e => setField("priceRands", e.target.value)}
                     placeholder="49"
-                    className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#9FF5E8]/50 h-9 text-sm"
+                    className="rounded-xl bg-[#0e0d12] border-[#1b1922] text-white placeholder:text-white focus-visible:ring-[#9FF5E8]/50 h-9 text-sm"
                   />
                 </div>
               </div>
@@ -495,7 +496,7 @@ export default function AdminProductsPage() {
                   onChange={e => setField("descriptionEn", e.target.value)}
                   placeholder="Short English description…"
                   rows={2}
-                  className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#9FF5E8]/50 text-sm resize-none"
+                  className="rounded-xl bg-[#0e0d12] border-[#1b1922] text-white placeholder:text-white focus-visible:ring-[#9FF5E8]/50 text-sm resize-none"
                 />
               </div>
 
@@ -507,7 +508,7 @@ export default function AdminProductsPage() {
                   onChange={e => setField("descriptionAf", e.target.value)}
                   placeholder="Kort Afrikaanse beskrywing…"
                   rows={2}
-                  className="rounded-xl bg-white/5 border-white/15 text-white placeholder:text-white focus-visible:ring-[#9FF5E8]/50 text-sm resize-none"
+                  className="rounded-xl bg-[#0e0d12] border-[#1b1922] text-white placeholder:text-white focus-visible:ring-[#9FF5E8]/50 text-sm resize-none"
                 />
               </div>
 
@@ -525,7 +526,7 @@ export default function AdminProductsPage() {
             </div>
 
             {/* Actions */}
-            <div className="flex justify-end gap-3 mt-6 pt-5 border-t border-white/10">
+            <div className="flex justify-end gap-3 mt-6 pt-5 border-t border-[#1b1922]">
               <Button
                 variant="ghost"
                 size="sm"
@@ -535,15 +536,15 @@ export default function AdminProductsPage() {
               >
                 {tr.cancel}
               </Button>
-              <button
+              <Button
+                size="sm"
+                variant="primary"
                 onClick={() => createProductMutation.mutate(form)}
                 disabled={createProductMutation.isPending || !form.nameEn || !form.nameAf || !form.slug || !form.descriptionEn || !form.descriptionAf || !form.category || !form.priceRands}
-                className="inline-flex items-center gap-2 rounded-xl px-5 py-2 text-xs font-black uppercase tracking-[0.12em] disabled:opacity-40 disabled:cursor-not-allowed transition-transform hover:scale-[1.02]"
-                style={{ background: "linear-gradient(90deg,#9FF5E8,#9FD8FF)", color: "#000" }}
               >
                 <PlusCircle className="w-3.5 h-3.5" />
                 {createProductMutation.isPending ? (isAf ? "Skep…" : "Creating…") : (isAf ? "Skep Produk" : "Create Product")}
-              </button>
+              </Button>
             </div>
           </div>
         </DialogContent>

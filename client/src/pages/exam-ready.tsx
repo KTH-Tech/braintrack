@@ -1,6 +1,6 @@
-// BrainTrack Exam Ready — restyled to the "Permanent Marker Street Pastel"
+// BrainTrack Exam Ready — restyled to the "Bebas Neue Street Pastel"
 // design system (docs/design-guidelines.md). #050508 ground, pastel accent
-// cards, Permanent Marker eyebrows, aqua→purple gradient action buttons,
+// cards, Bebas Neue eyebrows, aqua→purple gradient action buttons,
 // pure white text. RESTYLE ONLY — all hooks, anti-cheat logic, mutations
 // and data-testids preserved exactly.
 import { useState, useEffect, useRef, useCallback, type CSSProperties } from "react";
@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/language-context";
 import { LearnerHeader } from "@/components/learner-header";
 import { GraffitiSplats } from "@/components/graffiti-splats";
+import { Button } from "@/components/ui/button";
 import {
   AlertTriangle,
   Clock,
@@ -82,8 +83,8 @@ const RAINBOW_TEXT: CSSProperties = {
   color: "transparent",
 };
 const CARD: CSSProperties = {
-  background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
-  border: "1px solid rgba(255,255,255,.08)",
+  background: "linear-gradient(#1b1922, #1b1922), #050508",
+  border: "1px solid #1b1922",
   borderRadius: 20,
 };
 const PRIMARY_BTN: CSSProperties = {
@@ -95,13 +96,13 @@ const PRIMARY_BTN: CSSProperties = {
 };
 const SECONDARY_BTN: CSSProperties = {
   background: "transparent",
-  border: "1.5px solid rgba(255,255,255,.2)",
+  border: "1.5px solid #1b1922",
   color: "#fff",
   borderRadius: 12,
   fontWeight: 700,
 };
 const marker = (color: string, size = 15): CSSProperties => ({
-  fontFamily: "'Permanent Marker',cursive",
+  fontFamily: "'Bebas Neue', sans-serif",
   fontSize: size,
   color,
   transform: "rotate(-2deg)",
@@ -614,11 +615,10 @@ export default function ExamReadyPage() {
               </p>
             </div>
             <div className="space-y-3 mt-6">
-              <button
-                className="w-full px-5 py-3 text-sm transition-all"
-                style={PRIMARY_BTN}
-                onMouseEnter={lift}
-                onMouseLeave={unlift}
+              <Button
+                variant="primary"
+                size="lg"
+                className="w-full"
                 onClick={() => {
                   setExamState("setup");
                   setSelectedPaperId(null);
@@ -629,15 +629,16 @@ export default function ExamReadyPage() {
                 data-testid="button-restart-exam"
               >
                 {isAfrikaans ? "Begin Nuwe Eksamen" : "Start New Exam"}
-              </button>
-              <button
-                className="w-full px-5 py-3 text-sm transition-all hover:bg-white/5"
-                style={SECONDARY_BTN}
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                className="w-full"
                 onClick={() => navigate("/dashboard")}
                 data-testid="button-back-dashboard"
               >
                 {isAfrikaans ? "Terug na Tuisbladsy" : "Back to Dashboard"}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -688,24 +689,24 @@ export default function ExamReadyPage() {
               </div>
             </div>
             <div className="space-y-3 mt-6">
-              <button
-                className="w-full px-5 py-3 text-sm transition-all"
-                style={PRIMARY_BTN}
-                onMouseEnter={lift}
-                onMouseLeave={unlift}
+              <Button
+                variant="primary"
+                size="lg"
+                className="w-full"
                 onClick={() => navigate("/progress")}
                 data-testid="button-view-results"
               >
                 {isAfrikaans ? "Sien Resultate" : "View Results"}
-              </button>
-              <button
-                className="w-full px-5 py-3 text-sm transition-all hover:bg-white/5"
-                style={SECONDARY_BTN}
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                className="w-full"
                 onClick={() => navigate("/dashboard")}
                 data-testid="button-back-dashboard-completed"
               >
                 {isAfrikaans ? "Terug na Tuisbladsy" : "Back to Dashboard"}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -771,7 +772,7 @@ export default function ExamReadyPage() {
               >
                 {isAfrikaans ? "Eksamen Gereed Modus" : "Exam Ready Mode"}
               </div>
-              <p className="text-white text-base sm:text-lg max-w-xl mx-auto" style={{ opacity: 0.94 }}>
+              <p className="text-white text-base sm:text-lg max-w-xl mx-auto">
                 {isAfrikaans ? "Oefen onder werklike eksamentoestande met bedrogkontrolering" : "Practice under real exam conditions with anti-cheat monitoring"}
               </p>
             </section>
@@ -807,7 +808,7 @@ export default function ExamReadyPage() {
               <div role="heading" aria-level={2} className="font-black text-lg text-white">
                 {isAfrikaans ? "Kies Jou Vraestel" : "Choose Your Paper"}
               </div>
-              <p className="text-sm text-white mt-1 mb-4" style={{ opacity: 0.9 }}>
+              <p className="text-sm text-white mt-1 mb-4">
                 {isAfrikaans
                   ? "Hierdie is gesimuleerde KABV-belynde vraestelle — nie amptelike DBO-eksamens nie."
                   : "These are simulated CAPS-aligned papers — not official DBE exams."}
@@ -864,8 +865,8 @@ export default function ExamReadyPage() {
                                     className="p-3 cursor-pointer transition-all min-h-[44px]"
                                     style={{
                                       borderRadius: 14,
-                                      background: isSelected ? `${hex}14` : "rgba(255,255,255,.03)",
-                                      border: isSelected ? `1.5px solid ${hex}` : "1px solid rgba(255,255,255,.1)",
+                                      background: isSelected ? `${hex}14` : "#1b1922",
+                                      border: isSelected ? `1.5px solid ${hex}` : "1px solid #1b1922",
                                     }}
                                     role="button"
                                     tabIndex={0}
@@ -883,7 +884,7 @@ export default function ExamReadyPage() {
                                     <div className="flex items-center justify-between gap-3">
                                       <div className="min-w-0">
                                         <p className="font-bold truncate" style={{ color: isSelected ? hex : "#fff" }}>{name}</p>
-                                        <p className="text-sm text-white" style={{ opacity: 0.9 }}>
+                                        <p className="text-sm text-white">
                                           {isAfrikaans ? "Vraestel" : "Paper"} {paper.paperNumber} — {paper.totalMarks} {isAfrikaans ? "punte" : "marks"} — {paper.duration}
                                         </p>
                                       </div>
@@ -909,11 +910,10 @@ export default function ExamReadyPage() {
                   );
                 })()}
 
-                <button
-                  className="w-full inline-flex items-center justify-center px-5 py-3 text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  style={PRIMARY_BTN}
-                  onMouseEnter={lift}
-                  onMouseLeave={unlift}
+                <Button
+                  variant="primary"
+                  size="lg"
+                  className="w-full"
                   disabled={!selectedSubject || !selectedPaperNum}
                   onClick={() => {
                     if (selectedSubject && selectedPaperNum) {
@@ -935,7 +935,7 @@ export default function ExamReadyPage() {
                 >
                   <Play className="w-4 h-4 mr-2" />
                   {isAfrikaans ? "Begin Eksamen" : "Start Exam"}
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -981,20 +981,20 @@ export default function ExamReadyPage() {
             </p>
           </div>
           <div className="space-y-3 mt-6">
-            <button
-              className="w-full inline-flex items-center justify-center px-5 py-3 text-sm transition-all"
-              style={PRIMARY_BTN}
-              onMouseEnter={lift}
-              onMouseLeave={unlift}
+            <Button
+              variant="primary"
+              size="lg"
+              className="w-full"
               onClick={enterFullscreen}
               data-testid="button-enter-fullscreen"
             >
               <Maximize2 className="w-4 h-4 mr-2" />
               {isAfrikaans ? "Volskerm & Begin" : "Enter Fullscreen & Start"}
-            </button>
-            <button
-              className="w-full px-5 py-3 text-sm transition-all hover:bg-white/5"
-              style={SECONDARY_BTN}
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-full"
               onClick={() => {
                 setExamState("setup");
                 setSelectedPaperId(null);
@@ -1002,7 +1002,7 @@ export default function ExamReadyPage() {
               data-testid="button-cancel-ready"
             >
               {isAfrikaans ? "Kanselleer" : "Cancel"}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -1029,20 +1029,20 @@ export default function ExamReadyPage() {
               {isAfrikaans ? "Onaktiwiteit Gedetekteer!" : "Inactivity Detected!"}
             </div>
             <p className="text-lg text-white">{isAfrikaans ? "Beweeg jou muis of tik om die eksamen voort te sit" : "Move your mouse or type to continue the exam"}</p>
-            <p className="text-sm mt-2 text-white" style={{ opacity: 0.9 }}>{isAfrikaans ? "Eksamen word in 5 sekondes gekanselleer as daar geen aktiwiteit is nie" : "Exam will be cancelled in 5 seconds if no activity"}</p>
+            <p className="text-sm mt-2 text-white">{isAfrikaans ? "Eksamen word in 5 sekondes gekanselleer as daar geen aktiwiteit is nie" : "Exam will be cancelled in 5 seconds if no activity"}</p>
           </div>
         </div>
       )}
 
       <header
         className="border-b p-4"
-        style={{ background: "rgba(5,5,8,.94)", borderColor: "rgba(255,255,255,.08)", backdropFilter: "blur(10px)" }}
+        style={{ background: "rgba(5,5,8,.94)", borderColor: "#1b1922", backdropFilter: "blur(10px)" }}
       >
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-4 min-w-0">
             <div className="min-w-0">
               <p className="font-black truncate" style={marker("#9FF5E8", 16)}>{selectedSubject}</p>
-              <p className="text-sm text-white" style={{ opacity: 0.9 }}>
+              <p className="text-sm text-white">
                 {selectedPaper?.year} {selectedPaper?.month} - {isAfrikaans ? "Vraestel" : "Paper"} {selectedPaper?.paperNumber}
               </p>
             </div>
@@ -1067,9 +1067,8 @@ export default function ExamReadyPage() {
               <span className="font-mono font-bold text-sm" style={{ color: "#FFE29A" }}>{formatTime(timeUsed)}</span>
             </div>
 
-            <button
-              className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-              style={{ background: "transparent", border: `1.5px solid ${ALERT_HEX}`, color: ALERT_HEX }}
+            <Button
+              variant="primary"
               onClick={() => submitExamMutation.mutate()}
               disabled={submitExamMutation.isPending}
               data-testid="button-submit-exam"
@@ -1080,7 +1079,7 @@ export default function ExamReadyPage() {
                 <Send className="w-4 h-4 mr-2" />
               )}
               {isAfrikaans ? "Dien Eksamen In" : "Submit Exam"}
-            </button>
+            </Button>
           </div>
         </div>
       </header>
@@ -1088,7 +1087,7 @@ export default function ExamReadyPage() {
       <div className="flex-1 flex flex-col md:flex-row">
         <aside
           className="w-full md:w-64 shrink-0 border-b md:border-b-0 md:border-r p-4 overflow-y-auto max-h-48 md:max-h-none"
-          style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", borderColor: "rgba(255,255,255,.08)" }}
+          style={{ background: "linear-gradient(#1b1922, #1b1922), #050508", borderColor: "#1b1922" }}
         >
           <div role="heading" aria-level={2} className="font-bold text-white mb-3">
             {isAfrikaans ? "Vrae" : "Questions"}
@@ -1106,7 +1105,7 @@ export default function ExamReadyPage() {
                       ? { ...PRIMARY_BTN, borderRadius: 10 }
                       : isAnswered
                       ? { background: "rgba(148,247,197,.1)", color: "#94F7C5", border: "1px solid rgba(148,247,197,.5)", borderRadius: 10 }
-                      : { background: "rgba(255,255,255,.05)", color: "#fff", border: "1px solid rgba(255,255,255,.12)", borderRadius: 10 }
+                      : { background: "#1b1922", color: "#fff", border: "1px solid #1b1922", borderRadius: 10 }
                   }
                   onClick={() => setCurrentQuestionIndex(idx)}
                   data-testid={`question-nav-${idx}`}
@@ -1122,7 +1121,7 @@ export default function ExamReadyPage() {
               <span className="text-white">{isAfrikaans ? "Vordering" : "Progress"}</span>
               <span className="text-white font-bold">{answeredCount}/{totalQuestions}</span>
             </div>
-            <div className="h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.08)" }}>
+            <div className="h-2 rounded-full overflow-hidden" style={{ background: "#1b1922" }}>
               <div
                 className="h-full rounded-full transition-all"
                 style={{
@@ -1187,13 +1186,13 @@ export default function ExamReadyPage() {
                   style={{
                     userSelect: 'text', // Allow typing but block selection for copy
                     background: "rgba(5,5,8,.6)",
-                    border: "1.5px solid rgba(255,255,255,.18)",
+                    border: "1.5px solid #1b1922",
                     borderRadius: 12,
                     color: "#fff",
                     fontFamily: "'Poppins',sans-serif",
                   }}
                   onFocus={(e) => { e.currentTarget.style.borderColor = "#9FF5E8"; }}
-                  onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,.18)"; }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = "#1b1922"; }}
                   onPaste={(e) => e.preventDefault()} // Extra paste prevention
                   onCopy={(e) => e.preventDefault()} // Extra copy prevention
                   onCut={(e) => e.preventDefault()} // Extra cut prevention
@@ -1202,28 +1201,24 @@ export default function ExamReadyPage() {
               </div>
 
               <div className="flex justify-between pt-4">
-                <button
-                  className="inline-flex items-center px-5 py-2.5 text-sm transition-all hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
-                  style={SECONDARY_BTN}
+                <Button
+                  variant="outline"
                   disabled={currentQuestionIndex === 0}
                   onClick={() => setCurrentQuestionIndex(prev => prev - 1)}
                   data-testid="button-prev-question"
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   {isAfrikaans ? "Vorige" : "Previous"}
-                </button>
-                <button
-                  className="inline-flex items-center px-5 py-2.5 text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  style={PRIMARY_BTN}
-                  onMouseEnter={lift}
-                  onMouseLeave={unlift}
+                </Button>
+                <Button
+                  variant="primary"
                   disabled={currentQuestionIndex === totalQuestions - 1}
                   onClick={() => setCurrentQuestionIndex(prev => prev + 1)}
                   data-testid="button-next-question"
                 >
                   {isAfrikaans ? "Volgende" : "Next"}
                   <ArrowRight className="w-4 h-4 ml-2" />
-                </button>
+                </Button>
               </div>
             </div>
           ) : (

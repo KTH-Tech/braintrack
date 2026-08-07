@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useLanguage } from "@/lib/language-context";
 import { incrementQuizSessionCount, recordMilestone } from "@/lib/quiz-session-tracker";
+import { Button } from "@/components/ui/button";
 import {
   Clock,
   Shield,
@@ -26,6 +27,9 @@ import {
 
 /* ── Street-pastel building blocks (design-guidelines.md) ───────────────── */
 
+// Primary/submit actions route through the shared <Button> so they render the
+// app's rainbow graffiti hero sticker. The local wrapper keeps the existing
+// call-site API (onClick / disabled / testId / full / size) unchanged.
 function PrimaryBtn({ children, onClick, disabled, testId, full, size = "md" }: {
   children: React.ReactNode;
   onClick?: () => void;
@@ -34,27 +38,25 @@ function PrimaryBtn({ children, onClick, disabled, testId, full, size = "md" }: 
   full?: boolean;
   size?: "sm" | "md" | "lg";
 }) {
-  const pad = size === "lg" ? "px-6 py-3.5 text-base" : size === "sm" ? "px-4 py-2 text-sm" : "px-5 py-2.5 text-sm";
   return (
-    <button
+    <Button
       type="button"
+      variant="primary"
+      size={size === "lg" ? "lg" : size === "sm" ? "sm" : "default"}
       onClick={onClick}
       disabled={disabled}
       data-testid={testId}
-      className={`${full ? "w-full " : ""}inline-flex items-center justify-center gap-2 rounded-xl font-bold transition-all disabled:opacity-40 ${pad}`}
-      style={{
-        background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
-        color: "#050508",
-      }}
-      onMouseEnter={(e) => { if (!disabled) e.currentTarget.style.transform = "translateY(-2px)"; }}
-      onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}
+      className={full ? "w-full" : undefined}
     >
       {children}
-    </button>
+    </Button>
   );
 }
 
-function GhostBtn({ children, onClick, disabled, testId, color = "#ffffff", full }: {
+// Secondary actions route through the shared outline variant so every quiet
+// action shares one consistent look. `color` is accepted for call-site
+// compatibility but no longer drives a bespoke tint.
+function GhostBtn({ children, onClick, disabled, testId, full }: {
   children: React.ReactNode;
   onClick?: () => void;
   disabled?: boolean;
@@ -63,22 +65,16 @@ function GhostBtn({ children, onClick, disabled, testId, color = "#ffffff", full
   full?: boolean;
 }) {
   return (
-    <button
+    <Button
       type="button"
+      variant="outline"
       onClick={onClick}
       disabled={disabled}
       data-testid={testId}
-      className={`${full ? "w-full " : ""}inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all disabled:opacity-40`}
-      style={{
-        background: "transparent",
-        color,
-        border: color === "#ffffff" ? "1.5px solid rgba(255,255,255,.2)" : `1.5px solid ${color}`,
-      }}
-      onMouseEnter={(e) => { if (!disabled) e.currentTarget.style.transform = "translateY(-2px)"; }}
-      onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}
+      className={full ? "w-full" : undefined}
     >
       {children}
-    </button>
+    </Button>
   );
 }
 
@@ -94,8 +90,8 @@ function GlassCard({ children, accent, className = "", style, testId }: {
       className={`relative overflow-hidden ${className}`}
       data-testid={testId}
       style={{
-        background: "rgba(255,255,255,.03)",
-        border: accent ? `1.5px solid ${accent}` : "1px solid rgba(255,255,255,.08)",
+        background: "#1b1922",
+        border: accent ? `1.5px solid ${accent}` : "1px solid #1b1922",
         borderRadius: 22,
         ...style,
       }}
@@ -423,12 +419,12 @@ export default function ExamSessionPage() {
               <div role="heading" aria-level={1} className="text-xl font-black text-white">
                 {isAf ? "Vraestel nie beskikbaar nie" : "Paper not available"}
               </div>
-              <p className="text-base text-white" style={{ opacity: 0.94 }}>
+              <p className="text-base text-white">
                 {isAf
                   ? "Hierdie vraestel is tans nie beskikbaar nie. Kies asseblief 'n ander vraestel."
                   : "This paper isn't currently available. Please pick another paper from Crunch Time."}
               </p>
-              <p className="text-sm text-white" style={{ opacity: 0.9 }}>
+              <p className="text-sm text-white">
                 {subjectName} — {paperId.toUpperCase()}
               </p>
               <PrimaryBtn onClick={() => navigate("/exam-mode")} full testId="button-back-to-crunch">
@@ -467,7 +463,7 @@ export default function ExamSessionPage() {
             <div className="space-y-5">
               <div className="inline-flex items-center gap-2">
                 <Shield className="w-4 h-4" style={{ color: "#9FF5E8" }} />
-                <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}>
+                <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}>
                   {isAf ? "Eksamentyd" : "Crunch Time"}
                 </span>
               </div>
@@ -486,7 +482,7 @@ export default function ExamSessionPage() {
                 >
                   {subjectName}
                 </div>
-                <p className="text-sm text-white mt-2" style={{ opacity: 0.94 }}>
+                <p className="text-sm text-white mt-2">
                   {paperId.toUpperCase()} — {mcqQuestions.length} {isAf ? "vrae" : "questions"}
                 </p>
               </div>
@@ -540,7 +536,7 @@ export default function ExamSessionPage() {
       >
         <div
           className="p-3 border-b sticky top-0 z-50"
-          style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "rgba(255,255,255,.08)" }}
+          style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "#1b1922" }}
         >
           <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2 min-w-0">
@@ -566,7 +562,7 @@ export default function ExamSessionPage() {
             </div>
             <div className="flex items-center gap-3">
               <span className="text-xs font-bold tabular-nums text-white">{totalAnswered}/{totalQuestions}</span>
-              <div className="w-24 h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.08)" }}>
+              <div className="w-24 h-1.5 rounded-full overflow-hidden" style={{ background: "#1b1922", border: "1px solid #1b1922" }}>
                 <div
                   className="h-full rounded-full transition-all duration-300"
                   style={{ width: `${progressPct}%`, background: "linear-gradient(90deg,#9FF5E8,#C5B3FF)" }}
@@ -621,8 +617,8 @@ export default function ExamSessionPage() {
                               onClick={() => setAnswers(prev => ({ ...prev, [q.id]: opt.label }))}
                               data-testid={`option-${q.id}-${opt.label}`}
                               style={{
-                                background: active ? "rgba(159,245,232,.08)" : "rgba(255,255,255,.02)",
-                                border: active ? "1.5px solid #9FF5E8" : "1.5px solid rgba(255,255,255,.12)",
+                                background: active ? "rgba(159,245,232,.08)" : "#1b1922",
+                                border: active ? "1.5px solid #9FF5E8" : "1.5px solid #1b1922",
                               }}
                             >
                               <span
@@ -630,7 +626,7 @@ export default function ExamSessionPage() {
                                 style={{
                                   background: active ? "linear-gradient(100deg,#9FF5E8,#C5B3FF)" : "rgba(5,5,8,.6)",
                                   color: active ? "#050508" : "#ffffff",
-                                  border: active ? "none" : "1px solid rgba(255,255,255,.18)",
+                                  border: active ? "none" : "1px solid #1b1922",
                                 }}
                               >
                                 {opt.label}
@@ -647,7 +643,7 @@ export default function ExamSessionPage() {
                         placeholder={isAf ? "Tik jou antwoord hier…" : "Type your answer here…"}
                         rows={Math.min(8, Math.max(3, q.marks * 2))}
                         className="font-medium text-sm text-white placeholder:text-white rounded-xl focus-visible:ring-[#9FF5E8]/40 focus-visible:border-[#9FF5E8]"
-                        style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid rgba(255,255,255,.18)" }}
+                        style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #1b1922" }}
                         data-testid={`answer-${q.id}`}
                       />
                     )}
@@ -683,10 +679,10 @@ export default function ExamSessionPage() {
                 >
                   <Trophy className="w-8 h-8" style={{ color: band.hex }} />
                 </div>
-                <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 18, color: band.hex, transform: "rotate(-1.5deg)" }}>
+                <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 18, color: band.hex, transform: "rotate(-1.5deg)" }}>
                   {isAf ? "Eksamen Voltooi!" : "Exam Complete!"}
                 </div>
-                <p className="text-sm text-white" style={{ opacity: 0.94 }}>
+                <p className="text-sm text-white">
                   {subjectName} — {paperId.toUpperCase()}
                 </p>
                 <div className="text-5xl font-black tabular-nums" style={{ color: band.hex }}>
@@ -701,7 +697,7 @@ export default function ExamSessionPage() {
                 >
                   {band.label}
                 </span>
-                <div className="h-2.5 rounded-full overflow-hidden mx-auto max-w-sm" style={{ background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.08)" }}>
+                <div className="h-2.5 rounded-full overflow-hidden mx-auto max-w-sm" style={{ background: "#1b1922", border: "1px solid #1b1922" }}>
                   <div className="h-full rounded-full" style={{ width: `${examResult.percentage}%`, background: `linear-gradient(90deg,#9FF5E8,${band.hex})` }} />
                 </div>
               </div>
@@ -734,7 +730,7 @@ export default function ExamSessionPage() {
                           : <XCircle className="w-4 h-4" style={{ color: "#FF8DA1" }} />}
                         <span className="text-sm font-bold text-white">Q{d.questionNumber}</span>
                       </div>
-                      <div className="text-xs text-white" style={{ opacity: 0.9 }}>
+                      <div className="text-xs text-white">
                         {d.userAnswer ? `${isAf ? "Jou" : "Your"}: ${d.userAnswer}` : (isAf ? "Nie beantwoord" : "Not answered")}
                       </div>
                     </div>

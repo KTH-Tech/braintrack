@@ -260,7 +260,7 @@ export default function AdminEmailsPage() {
 
   const headerActions = (
     <div className="flex items-center gap-2">
-      <div role="group" className="flex items-center rounded-xl p-0.5" style={{ border: "1px solid rgba(255,255,255,0.14)", background: "rgba(255,255,255,0.03)" }}>
+      <div role="group" className="flex items-center rounded-xl p-0.5" style={{ border: "1px solid #1b1922", background: "#0e0d12" }}>
         <button
           type="button"
           onClick={() => setActiveTab("templates")}
@@ -286,7 +286,7 @@ export default function AdminEmailsPage() {
       </div>
 
       {activeTab === "templates" && (
-        <div role="group" className="flex items-center rounded-full p-0.5" style={{ border: "1px solid rgba(255,255,255,0.14)", background: "rgba(255,255,255,0.03)" }}>
+        <div role="group" className="flex items-center rounded-full p-0.5" style={{ border: "1px solid #1b1922", background: "#0e0d12" }}>
           {(["en", "af"] as Lang[]).map((l) => (
             <button
               key={l}
@@ -306,7 +306,7 @@ export default function AdminEmailsPage() {
       <Link
         href="/learn/admin/reports"
         className="flex items-center justify-center w-9 h-9 rounded-xl text-white transition"
-        style={{ border: "1px solid rgba(255,255,255,0.14)" }}
+        style={{ border: "1px solid #1b1922" }}
         aria-label={isAf ? "Terug na Admin" : "Back to Admin"}
         data-testid="link-admin"
       >
@@ -315,7 +315,7 @@ export default function AdminEmailsPage() {
       <button
         onClick={() => navigate("/dashboard")}
         className="flex items-center justify-center w-9 h-9 rounded-xl text-white transition"
-        style={{ border: "1px solid rgba(255,255,255,0.14)" }}
+        style={{ border: "1px solid #1b1922" }}
         aria-label={isAf ? "Kontroleskerm" : "Dashboard"}
         data-testid="button-home"
       >
@@ -327,13 +327,13 @@ export default function AdminEmailsPage() {
   return (
     <AdminGround>
       <AdminTopNav current="emails" />
-      <div className="sticky top-0 z-40 border-b border-white/10" style={{ background: "rgba(5,5,8,0.9)", backdropFilter: "blur(8px)" }}>
+      <div className="sticky top-0 z-40 border-b border-[#1b1922]" style={{ background: "rgba(5,5,8,0.9)", backdropFilter: "blur(8px)" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-wrap items-center gap-4 justify-between">
           <div className="flex items-center gap-3 min-w-0">
             <span
               aria-hidden
               className="shrink-0 inline-flex items-center justify-center w-11 h-11 rounded-xl"
-              style={{ background: "rgba(255,255,255,0.035)", border: "1px solid rgba(159,245,232,0.4)" }}
+              style={{ background: "#0e0d12", border: "1px solid rgba(159,245,232,0.4)" }}
             >
               <Mail className="w-5 h-5" style={{ color: "#9FF5E8" }} />
             </span>
@@ -410,7 +410,7 @@ export default function AdminEmailsPage() {
               </p>
             </div>
 
-            <div className="h-px" style={{ background: "rgba(255,255,255,0.1)" }} />
+            <div className="h-px" style={{ background: "#1b1922" }} />
 
             <div className="space-y-1.5">
               <label className="flex items-center gap-1.5 text-xs font-black text-white uppercase tracking-widest">
@@ -553,13 +553,13 @@ export default function AdminEmailsPage() {
                           className="w-full text-left p-3 rounded-xl transition flex items-start gap-3"
                           style={active
                             ? { background: halo(catColor, 0.1), border: `1px solid ${catColor}` }
-                            : { background: "rgba(255,255,255,0.035)", border: "1px solid rgba(255,255,255,0.1)" }}
+                            : { background: "#0e0d12", border: "1px solid #1b1922" }}
                         >
                           <div
                             className="flex items-center justify-center w-8 h-8 rounded-lg shrink-0"
                             style={active
                               ? { background: halo(catColor, 0.18), border: `1px solid ${catColor}`, color: catColor }
-                              : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", color: "#fff" }}
+                              : { background: "#0e0d12", border: "1px solid #1b1922", color: "#fff" }}
                           >
                             <Icon className="w-4 h-4" />
                           </div>

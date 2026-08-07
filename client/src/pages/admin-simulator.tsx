@@ -392,7 +392,7 @@ export default function AdminSimulatorPage() {
       <AdminTopNav current="simulator" />
       <div style={{ maxWidth: 1180, margin: "0 auto", padding: "28px 20px 64px" }}>
         <h1 style={{ fontSize: 30, fontWeight: 900, letterSpacing: -0.8, margin: "0 0 6px" }}>Simulator</h1>
-        <p style={{ fontSize: 13.5, lineHeight: 1.65, color: "#fff", opacity: 0.92, maxWidth: 760, margin: "0 0 22px" }}>
+        <p style={{ fontSize: 13.5, lineHeight: 1.65, color: "#fff", maxWidth: 760, margin: "0 0 22px" }}>
           {t(
             `Generate original, examiner-grounded exam content — questions + memo + supporting material — then release it to learners. Released content feeds BOTH the Mini Mock AND the Full Exam (/exam/full); learners never see the verbatim DBE papers. Every release gets a version number and BUILDS on the previous one — nothing is ever un-released. Release bar: ${releaseBar}%+ quality.`,
             `Genereer oorspronklike, eksaminator-gegronde eksameninhoud — vrae + memo + ondersteunende materiaal — en stel dit dan vry aan leerders. Vrygestelde inhoud voed BEIDE die Mini Mock ÉN die Volle Eksamen (/exam/full); leerders sien nooit die woordelikse DBE-vraestelle nie. Elke vrystelling kry 'n weergawenommer en BOU op die vorige een — niks word ooit teruggetrek nie. Vrystellingsdrempel: ${releaseBar}%+ kwaliteit.`,
@@ -408,7 +408,7 @@ export default function AdminSimulatorPage() {
             <p style={{ margin: 0, fontWeight: 700 }}>
               {t("No subjects with ingested content yet.", "Geen vakke met ingeneemde inhoud nie.")}
             </p>
-            <p style={{ margin: "6px 0 0", fontSize: 13.5, opacity: 0.92 }}>
+            <p style={{ margin: "6px 0 0", fontSize: 13.5 }}>
               {t(
                 "Every subject with a usable ingested bank shows here with a Generate button — ingest real papers in the DBE Portal first.",
                 "Elke vak met 'n bruikbare ingeneemde bank verskyn hier met 'n Genereer-knoppie — neem eers regte vraestelle in by die DBE Portaal.",
@@ -449,13 +449,13 @@ export default function AdminSimulatorPage() {
                 marginBottom: 14,
               }}
             >
-              <span style={{ fontWeight: 900, fontSize: 12.5, letterSpacing: 0.4, textTransform: "uppercase", opacity: 0.85 }}>
+              <span style={{ fontWeight: 900, fontSize: 12.5, letterSpacing: 0.4, textTransform: "uppercase" }}>
                 {t("Bulk actions", "Massa-aksies")}
               </span>
 
               {/* Variable generate-count selector */}
               <div style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
-                <span style={{ fontSize: 12, opacity: 0.8 }}>{t("Count", "Getal")}:</span>
+                <span style={{ fontSize: 12 }}>{t("Count", "Getal")}:</span>
                 {([10, 25, 50] as GenCount[]).map((c) => (
                   <button
                     key={c}
@@ -524,7 +524,7 @@ export default function AdminSimulatorPage() {
                   alignItems: "center",
                   gap: 8,
                   background: "#050508",
-                  border: "2px solid rgba(255,255,255,0.22)",
+                  border: "2px solid #1b1922",
                   borderRadius: 11,
                   padding: "0 12px",
                   flex: "1 1 220px",
@@ -559,7 +559,7 @@ export default function AdminSimulatorPage() {
                 style={{
                   background: "#050508",
                   color: "#fff",
-                  border: "2px solid rgba(255,255,255,0.22)",
+                  border: "2px solid #1b1922",
                   borderRadius: 11,
                   padding: "0 12px",
                   fontFamily: "inherit",
@@ -606,13 +606,13 @@ export default function AdminSimulatorPage() {
               })}
             </div>
 
-            <p style={{ fontSize: 12, opacity: 0.7, margin: "0 0 12px" }}>
+            <p style={{ fontSize: 12, margin: "0 0 12px" }}>
               {t("Showing", "Wys")} {visible.length}/{subjects.length} {t("subjects", "vakke")}
             </p>
 
             {/* ── SUBJECT ROWS ───────────────────────────────────────────── */}
             {!visible.length ? (
-              <div style={{ background: "#050508", border: "2.5px solid rgba(255,255,255,0.22)", borderRadius: 16, padding: 22 }}>
+              <div style={{ background: "#050508", border: "2.5px solid #1b1922", borderRadius: 16, padding: 22 }}>
                 <p style={{ margin: 0, fontWeight: 700 }}>
                   {t("No subjects match your filters.", "Geen vakke pas by jou filters nie.")}
                 </p>
@@ -653,7 +653,7 @@ export default function AdminSimulatorPage() {
                           <p style={{ fontWeight: 900, fontSize: 17, margin: 0, color: accent }}>{s.subject}</p>
                           <ReadinessChip state={r} n={s.unreleasedEligible} isAf={isAf} />
                         </div>
-                        <p style={{ fontSize: 12.5, margin: "6px 0 0", color: "#fff", opacity: 0.92 }}>
+                        <p style={{ fontSize: 12.5, margin: "6px 0 0", color: "#fff" }}>
                           {s.total} {t("questions", "vrae")} · {t("avg quality", "gem. kwaliteit")} {s.avgQuality}%
                           {" · "}{s.ge92} ≥{releaseBar}%
                           {" · "}<FileText style={{ width: 11, height: 11, display: "inline" }} /> {s.withStimulus} {t("with passage", "met leesteks")}
@@ -667,7 +667,7 @@ export default function AdminSimulatorPage() {
                               position: "relative",
                               height: 12,
                               borderRadius: 999,
-                              background: "rgba(255,255,255,0.10)",
+                              background: "#1b1922",
                               overflow: "hidden",
                             }}
                           >
@@ -904,10 +904,10 @@ function KpiCard({ testid, accent, label, big, pct }: { testid: string; accent: 
         padding: "14px 16px",
       }}
     >
-      <p style={{ margin: 0, fontSize: 11, fontWeight: 800, letterSpacing: 0.3, textTransform: "uppercase", color: "#fff", opacity: 0.72 }}>{label}</p>
+      <p style={{ margin: 0, fontSize: 11, fontWeight: 800, letterSpacing: 0.3, textTransform: "uppercase", color: "#fff" }}>{label}</p>
       <p style={{ margin: "4px 0 0", fontSize: 28, fontWeight: 900, lineHeight: 1, color: accent }}>{big}</p>
       {typeof pct === "number" && (
-        <div style={{ height: 7, borderRadius: 999, background: "rgba(255,255,255,0.10)", overflow: "hidden", marginTop: 10 }}>
+        <div style={{ height: 7, borderRadius: 999, background: "#1b1922", overflow: "hidden", marginTop: 10 }}>
           <div style={{ height: "100%", width: `${Math.min(100, Math.max(0, pct))}%`, background: accent, borderRadius: 999 }} />
         </div>
       )}
@@ -979,7 +979,7 @@ function QaModal({
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ margin: 0, fontSize: 11, fontWeight: 800, letterSpacing: 0.4, textTransform: "uppercase", color: "#fff", opacity: 0.72 }}>
+            <p style={{ margin: 0, fontSize: 11, fontWeight: 800, letterSpacing: 0.4, textTransform: "uppercase", color: "#fff" }}>
               {t("QA report", "GK-verslag")}
             </p>
             <p style={{ margin: "2px 0 0", fontSize: 20, fontWeight: 900, color: accent }}>{subject}</p>
@@ -991,7 +991,7 @@ function QaModal({
             style={{
               display: "inline-flex", alignItems: "center", justifyContent: "center",
               background: "transparent", color: "#fff",
-              border: "2px solid rgba(255,255,255,0.3)", borderRadius: 10,
+              border: "2px solid #1b1922", borderRadius: 10,
               width: 40, height: 40, cursor: "pointer", flexShrink: 0,
             }}
           >
@@ -1020,7 +1020,7 @@ function QaModal({
                 <p style={{ margin: 0, fontWeight: 900, fontSize: 17, letterSpacing: 0.3 }}>
                   {report.meetsCriteria ? t("MEETS CRITERIA", "VOLDOEN AAN KRITERIA") : t("NEEDS WORK", "BENODIG WERK")}
                 </p>
-                <p style={{ margin: "2px 0 0", fontSize: 12, fontWeight: 700, opacity: 0.85 }}>
+                <p style={{ margin: "2px 0 0", fontSize: 12, fontWeight: 700 }}>
                   {report.totals.total} {t("questions", "vrae")} · {report.totals.released} {t("released", "vrygestel")} · {report.totals.unreleased} {t("unreleased", "onvrygestel")}
                 </p>
               </div>
@@ -1031,7 +1031,7 @@ function QaModal({
             )}
 
             {/* Criteria checklist */}
-            <p style={{ fontSize: 11, fontWeight: 800, letterSpacing: 0.4, textTransform: "uppercase", opacity: 0.72, margin: "0 0 8px" }}>
+            <p style={{ fontSize: 11, fontWeight: 800, letterSpacing: 0.4, textTransform: "uppercase", margin: "0 0 8px" }}>
               {t("Criteria", "Kriteria")}
             </p>
             <div style={{ display: "grid", gap: 8, marginBottom: 18 }}>
@@ -1049,7 +1049,7 @@ function QaModal({
                     {c.pass ? <Check style={{ width: 18, height: 18, strokeWidth: 3 }} /> : <X style={{ width: 18, height: 18, strokeWidth: 3 }} />}
                   </span>
                   <span style={{ fontWeight: 800, fontSize: 13.5, flex: 1, minWidth: 0 }}>{c.label}</span>
-                  <span style={{ fontSize: 12.5, fontWeight: 700, color: "#fff", opacity: 0.9, textAlign: "right" }}>
+                  <span style={{ fontSize: 12.5, fontWeight: 700, color: "#fff", textAlign: "right" }}>
                     {t("value", "waarde")} {c.value} / {t("target", "teiken")} {c.threshold}
                     {c.failingCount > 0 && (
                       <span style={{ color: P.pink }}> · {c.failingCount} {t("failing", "misluk")}</span>
@@ -1060,7 +1060,7 @@ function QaModal({
             </div>
 
             {/* Language coverage */}
-            <p style={{ fontSize: 11, fontWeight: 800, letterSpacing: 0.4, textTransform: "uppercase", opacity: 0.72, margin: "0 0 8px" }}>
+            <p style={{ fontSize: 11, fontWeight: 800, letterSpacing: 0.4, textTransform: "uppercase", margin: "0 0 8px" }}>
               {t("Language coverage", "Taaldekking")}
             </p>
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 18 }}>
@@ -1069,22 +1069,22 @@ function QaModal({
                   <LangPill label="EN" n={report.language.en} accent={P.sky} />
                   <LangPill label="AF" n={report.language.af} accent={P.violet} />
                   {report.supportingMaterial && (
-                    <span style={{ fontSize: 12.5, fontWeight: 700, opacity: 0.9, alignSelf: "center" }}>
+                    <span style={{ fontSize: 12.5, fontWeight: 700, alignSelf: "center" }}>
                       <FileText style={{ width: 12, height: 12, display: "inline" }} /> {report.supportingMaterial.withStimulus}/{report.supportingMaterial.total} {t("with supporting material", "met ondersteunende materiaal")}
                     </span>
                   )}
                 </>
               ) : (
-                <span style={{ fontSize: 12.5, opacity: 0.7 }}>{t("Unavailable (migration pending)", "Nie beskikbaar (migrasie hangend)")}</span>
+                <span style={{ fontSize: 12.5 }}>{t("Unavailable (migration pending)", "Nie beskikbaar (migrasie hangend)")}</span>
               )}
             </div>
 
             {/* Worst-5 sample */}
-            <p style={{ fontSize: 11, fontWeight: 800, letterSpacing: 0.4, textTransform: "uppercase", opacity: 0.72, margin: "0 0 8px" }}>
+            <p style={{ fontSize: 11, fontWeight: 800, letterSpacing: 0.4, textTransform: "uppercase", margin: "0 0 8px" }}>
               {t("Lowest-scoring rows", "Laagste-gegradeerde rye")}
             </p>
             {report.worst.length === 0 ? (
-              <p style={{ fontSize: 13, opacity: 0.7, margin: 0 }}>{t("No rows yet.", "Nog geen rye nie.")}</p>
+              <p style={{ fontSize: 13, margin: 0 }}>{t("No rows yet.", "Nog geen rye nie.")}</p>
             ) : (
               <div style={{ display: "grid", gap: 8 }}>
                 {report.worst.map((w) => (
@@ -1092,7 +1092,7 @@ function QaModal({
                     key={w.id}
                     data-testid={`sim-qa-worst-${w.id}`}
                     style={{
-                      border: "2px solid rgba(255,255,255,0.18)",
+                      border: "2px solid #1b1922",
                       borderRadius: 11, padding: "10px 14px",
                     }}
                   >
@@ -1103,7 +1103,7 @@ function QaModal({
                       {w.language && <Tag text={w.language.toUpperCase()} c={P.sky} />}
                       <Tag text={w.hasMemo ? t("memo ✓", "memo ✓") : t("no memo", "geen memo")} c={w.hasMemo ? P.mint : P.pink} />
                     </div>
-                    <p style={{ margin: 0, fontSize: 12.5, color: "#fff", opacity: 0.9, lineHeight: 1.5 }}>
+                    <p style={{ margin: 0, fontSize: 12.5, color: "#fff", lineHeight: 1.5 }}>
                       {w.questionText || t("(empty)", "(leeg)")}…
                     </p>
                   </div>
@@ -1204,7 +1204,7 @@ function CoverageModal({
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ margin: 0, fontSize: 11, fontWeight: 800, letterSpacing: 0.4, textTransform: "uppercase", color: "#fff", opacity: 0.72 }}>
+            <p style={{ margin: 0, fontSize: 11, fontWeight: 800, letterSpacing: 0.4, textTransform: "uppercase", color: "#fff" }}>
               {t("CAPS topic coverage", "CAPS-onderwerpdekking")}
             </p>
             <p style={{ margin: "2px 0 0", fontSize: 20, fontWeight: 900, color: accent }}>{subject}</p>
@@ -1217,7 +1217,7 @@ function CoverageModal({
             style={{
               display: "inline-flex", alignItems: "center", justifyContent: "center",
               background: "transparent", color: "#fff",
-              border: "2px solid rgba(255,255,255,0.3)", borderRadius: 10,
+              border: "2px solid #1b1922", borderRadius: 10,
               width: 40, height: 40, cursor: busy ? "not-allowed" : "pointer", flexShrink: 0,
               opacity: busy ? 0.4 : 1,
             }}
@@ -1247,7 +1247,7 @@ function CoverageModal({
                 <p style={{ margin: 0, fontWeight: 900, fontSize: 15 }}>
                   {report.coveredCount}/{report.totalTopics} {t("CAPS topics covered", "CAPS-onderwerpe gedek")}
                 </p>
-                <p style={{ margin: "2px 0 0", fontSize: 12, fontWeight: 700, opacity: 0.85 }}>
+                <p style={{ margin: "2px 0 0", fontSize: 12, fontWeight: 700 }}>
                   ⚡ {report.highYieldCovered}/{report.highYieldTotal} {t("high-yield covered", "hoë-opbrengs gedek")} · {missing.length} {t("missing", "ontbreek")}
                 </p>
               </div>
@@ -1281,22 +1281,22 @@ function CoverageModal({
               </button>
               {busy && gen && (
                 <span data-testid="sim-coverage-progress" style={{ fontSize: 12.5, fontWeight: 800, color: accent }}>
-                  {gen.done + 1}/{gen.total}… <span style={{ opacity: 0.8, fontWeight: 700 }}>{gen.current}</span>
+                  {gen.done + 1}/{gen.total}… <span style={{ fontWeight: 700 }}>{gen.current}</span>
                 </span>
               )}
               {!busy && missing.length > missingCap && (
-                <span style={{ fontSize: 11.5, opacity: 0.7 }}>
+                <span style={{ fontSize: 11.5 }}>
                   {t(`Top ${missingCap} high-yield first`, `Boonste ${missingCap} hoë-opbrengs eerste`)}
                 </span>
               )}
             </div>
 
             {/* Topic list */}
-            <p style={{ fontSize: 11, fontWeight: 800, letterSpacing: 0.4, textTransform: "uppercase", opacity: 0.72, margin: "0 0 8px" }}>
+            <p style={{ fontSize: 11, fontWeight: 800, letterSpacing: 0.4, textTransform: "uppercase", margin: "0 0 8px" }}>
               {t("Topics", "Onderwerpe")}
             </p>
             {report.topics.length === 0 ? (
-              <p style={{ fontSize: 13, opacity: 0.7, margin: 0 }}>{t("No CAPS topics available for this subject.", "Geen CAPS-onderwerpe vir hierdie vak nie.")}</p>
+              <p style={{ fontSize: 13, margin: 0 }}>{t("No CAPS topics available for this subject.", "Geen CAPS-onderwerpe vir hierdie vak nie.")}</p>
             ) : (
               <div style={{ display: "grid", gap: 8 }}>
                 {report.topics.map((tp) => (
@@ -1305,7 +1305,7 @@ function CoverageModal({
                     data-testid={`sim-coverage-topic-${tp.topic}`}
                     style={{
                       display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
-                      border: `2px solid ${tp.covered ? "rgba(148,247,197,0.5)" : tp.highYield ? P.pink : "rgba(255,255,255,0.18)"}`,
+                      border: `2px solid ${tp.covered ? "rgba(148,247,197,0.5)" : tp.highYield ? P.pink : "#1b1922"}`,
                       borderRadius: 11, padding: "10px 14px",
                     }}
                   >
@@ -1315,7 +1315,7 @@ function CoverageModal({
                     <span style={{ fontWeight: 800, fontSize: 13.5, flex: 1, minWidth: 120 }}>{tp.topic}</span>
                     {tp.highYield && <Tag text={`⚡ ${t("high-yield", "hoë-opbrengs")}`} c={P.butter} />}
                     {tp.frequencyRank != null && (
-                      <span style={{ fontSize: 10.5, fontWeight: 800, opacity: 0.65 }}>#{tp.frequencyRank}</span>
+                      <span style={{ fontSize: 10.5, fontWeight: 800 }}>#{tp.frequencyRank}</span>
                     )}
                     <span style={{ fontSize: 11.5, fontWeight: 800, color: tp.simulatedCount > 0 ? P.mint : "#fff", opacity: tp.simulatedCount > 0 ? 1 : 0.55 }}>
                       {tp.simulatedCount} {t("sim", "sim")}

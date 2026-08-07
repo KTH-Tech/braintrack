@@ -159,7 +159,7 @@ function NeonTile({
   return (
     <div
       className="p-4 flex flex-col gap-2 relative overflow-hidden"
-      style={{ background: "rgba(255,255,255,0.035)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 16 }}
+      style={{ background: "#0e0d12", border: "1px solid #1b1922", borderRadius: 16 }}
       data-testid={testId}
     >
       <span aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: color, opacity: 0.8 }} />
@@ -259,7 +259,7 @@ function LinkHistoryModal({
         className="w-full max-w-2xl rounded-2xl bg-black flex flex-col max-h-[80vh]"
         style={{ border: "1.5px solid #9FD8FF55" }}
       >
-        <div className="flex items-center gap-3 px-5 py-4 border-b border-white/10 shrink-0">
+        <div className="flex items-center gap-3 px-5 py-4 border-b border-[#1b1922] shrink-0">
           <Link2 className="w-4 h-4 shrink-0" style={{ color: "#9FD8FF" }} />
           <div className="flex-1 min-w-0">
             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white">Onboarding Link History</p>
@@ -269,7 +269,7 @@ function LinkHistoryModal({
             type="button"
             onClick={onClose}
             className="w-7 h-7 flex items-center justify-center rounded-lg text-white hover:text-white transition"
-            style={{ border: "1px solid rgba(255,255,255,0.1)" }}
+            style={{ border: "1px solid #1b1922" }}
           >
             <X className="w-4 h-4" />
           </button>
@@ -375,7 +375,7 @@ function LinkHistoryModal({
           )}
         </div>
 
-        <div className="px-5 py-3 border-t border-white/10 shrink-0 flex items-center justify-between">
+        <div className="px-5 py-3 border-t border-[#1b1922] shrink-0 flex items-center justify-between">
           <span className="text-[10px] text-white">
             {rows ? `${rows.length} link${rows.length !== 1 ? "s" : ""} issued` : ""}
           </span>
@@ -636,7 +636,7 @@ export default function AdminBillingPage() {
       )}
 
       <AdminTopNav current="billing" />
-      <div className="border-b border-white/10 bg-black/60 px-6 py-3">
+      <div className="border-b border-[#1b1922] bg-[#0e0d12] px-6 py-3">
         <div className="max-w-7xl mx-auto flex items-center gap-4">
           <div className="min-w-0">
             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white">Admin</p>
@@ -655,7 +655,7 @@ export default function AdminBillingPage() {
                 qc.invalidateQueries({ queryKey: ["/api/admin/billing?status=lapsed"] });
               }}
               className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg text-white hover:text-white transition"
-              style={{ border: "1px solid rgba(255,255,255,0.15)" }}
+              style={{ border: "1px solid #1b1922" }}
             >
               <RefreshCw className="w-3 h-3" /> Refresh
             </button>
@@ -675,9 +675,9 @@ export default function AdminBillingPage() {
               subLabel="Paid subscribers"
             />
             <NeonTile
-              color="#FFE29A" label="Trials" testId="kpi-trial"
+              color="#FFE29A" label="Legacy trials" testId="kpi-trial"
               value={summary?.trial ?? "—"} icon={Clock}
-              subLabel="14-day free trial"
+              subLabel="Grandfathered legacy access"
             />
             <NeonTile
               color="#FFE29A" label="Grace" testId="kpi-grace"
@@ -730,7 +730,7 @@ export default function AdminBillingPage() {
                       </thead>
                       <tbody>
                         {stuckLinks.links.slice(0, 10).map(l => (
-                          <tr key={l.jti} style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+                          <tr key={l.jti} style={{ borderTop: "1px solid #1b1922" }}>
                             <td className="py-1.5 pr-4 font-mono text-white">{l.sentTo}</td>
                             <td className="py-1.5 pr-4" style={{ color: "#FF8DA1" }}>{l.deliveryStatus}</td>
                             <td className="py-1.5 pr-4 text-white">{l.hoursAgo}h ago</td>
@@ -846,7 +846,7 @@ export default function AdminBillingPage() {
                 { k: "autoRetried", label: "Auto-retried", color: "#9FF5E8" },
               ] as Array<{ k: keyof Pick<SmsStats, "total"|"sent"|"delivered"|"opened"|"failed"|"pending"|"autoRetried">; label: string; color: string }>
               ).map(c => (
-                <div key={c.k} className="rounded-xl bg-white/5 px-3 py-2" data-testid={`sms-stat-${c.k}`}>
+                <div key={c.k} className="rounded-xl bg-[#0e0d12] px-3 py-2" data-testid={`sms-stat-${c.k}`}>
                   <div className="text-[10px] uppercase tracking-wider text-white">{c.label}</div>
                   <div className="text-2xl font-black" style={{ color: c.color }}>{smsStats[c.k] ?? 0}</div>
                 </div>
@@ -963,7 +963,7 @@ export default function AdminBillingPage() {
               )}
 
               {!actionLogLoading && actionLog && actionLog.length > 0 && (
-                <div className="px-4 py-2 border-t border-white/5 text-[10px] text-white">
+                <div className="px-4 py-2 border-t border-[#1b1922] text-[10px] text-white">
                   Showing last {actionLog.length} action{actionLog.length !== 1 ? "s" : ""}
                 </div>
               )}
@@ -1077,7 +1077,7 @@ export default function AdminBillingPage() {
               )}
 
               {!reminderHistoryLoading && reminderHistory && reminderHistory.length > 0 && (
-                <div className="px-4 py-2 border-t border-white/5 text-[10px] text-white">
+                <div className="px-4 py-2 border-t border-[#1b1922] text-[10px] text-white">
                   Showing last {reminderHistory.length} dispatch{reminderHistory.length !== 1 ? "es" : ""}
                 </div>
               )}
@@ -1085,7 +1085,7 @@ export default function AdminBillingPage() {
           )}
         </section>
 
-        <p className="text-xs text-white flex items-center gap-1.5 pt-2 border-t border-white/10">
+        <p className="text-xs text-white flex items-center gap-1.5 pt-2 border-t border-[#1b1922]">
           <AlertTriangle className="w-3 h-3" />
           Data from the Netcash webhook. Failed recurring payments enter a 3-day grace period before lapsing.
           Lapse enforcement runs daily at 04:30 UTC. Auto-refreshes every 30 s.
@@ -1097,7 +1097,7 @@ export default function AdminBillingPage() {
 
 function EmptyState({ message }: { message: string }) {
   return (
-    <p className="text-sm text-white italic px-4 py-8 text-center rounded-2xl bg-white/5 border border-white/10">
+    <p className="text-sm text-white italic px-4 py-8 text-center rounded-2xl bg-[#0e0d12] border border-[#1b1922]">
       {message}
     </p>
   );
@@ -1113,14 +1113,14 @@ function TableShell({ color, children }: { color: string; children: React.ReactN
 
 function Th({ children }: { children: React.ReactNode }) {
   return (
-    <th className="text-left px-4 py-2.5 text-[10px] font-black uppercase tracking-[0.18em] text-white bg-black/60 whitespace-nowrap">
+    <th className="text-left px-4 py-2.5 text-[10px] font-black uppercase tracking-[0.18em] text-white bg-[#0e0d12] whitespace-nowrap">
       {children}
     </th>
   );
 }
 
 function Td({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <td className={`px-4 py-3 border-t border-white/5 ${className}`}>{children}</td>;
+  return <td className={`px-4 py-3 border-t border-[#1b1922] ${className}`}>{children}</td>;
 }
 
 function LearnerCell({ row }: { row: BillingRow }) {

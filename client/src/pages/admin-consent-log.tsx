@@ -66,7 +66,7 @@ export default function AdminConsentLogPage() {
           <Link
             href="/learn/admin/reports"
             className="flex items-center justify-center w-9 h-9 rounded-xl text-white transition"
-            style={{ border: "1px solid rgba(255,255,255,0.15)" }}
+            style={{ border: "1px solid #1b1922" }}
             data-testid="link-back-reports"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -74,7 +74,7 @@ export default function AdminConsentLogPage() {
           <div className="flex items-center gap-3">
             <div
               className="w-10 h-10 rounded-xl flex items-center justify-center"
-              style={{ background: "rgba(255,255,255,0.035)", border: "1px solid rgba(197,179,255,0.5)" }}
+              style={{ background: "#0e0d12", border: "1px solid rgba(197,179,255,0.5)" }}
             >
               <ShieldCheck className="w-5 h-5" style={{ color: "#C5B3FF" }} />
             </div>
@@ -159,7 +159,7 @@ export default function AdminConsentLogPage() {
               {isAf ? "Laaste rekord metadata" : "Latest Record Metadata"}
             </h2>
             <NeonShell color="#9FD8FF" className="p-5" testId="consent-metadata-panel">
-              <pre className="text-xs text-white font-mono rounded-xl p-3 overflow-x-auto whitespace-pre-wrap" style={{ background: "rgba(0,0,0,0.4)", border: "1px solid rgba(255,255,255,0.08)" }}>
+              <pre className="text-xs text-white font-mono rounded-xl p-3 overflow-x-auto whitespace-pre-wrap" style={{ background: "#050508", border: "1px solid #1b1922" }}>
                 {JSON.stringify(rows[0].metadata, null, 2) ?? "null"}
               </pre>
             </NeonShell>

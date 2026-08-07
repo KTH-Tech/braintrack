@@ -13,11 +13,11 @@ export default function ParentPurchasePage() {
 
   useSEO({
     title: isAf
-      ? "Student Life — 14-dae gratis proef | BrainTrack"
-      : "Student Life — 14-Day Free Trial | BrainTrack",
+      ? "Student Life — volle toegang vanaf vandag | BrainTrack"
+      : "Student Life — full access from today | BrainTrack",
     description: isAf
-      ? "Student Life: R169/maand met 14 dae gratis. Kanselleer enige tyd."
-      : "Student Life: R169/month with 14 days free. Cancel anytime.",
+      ? "Student Life: R169/maand, gehef by aanmelding. Kanselleer enige tyd."
+      : "Student Life: R169/month, charged at signup. Cancel anytime.",
     canonical: "https://app.braintrack.tech/parent-purchase",
   });
 
@@ -44,7 +44,7 @@ export default function ParentPurchasePage() {
         </p>
 
         <h1 className="text-2xl sm:text-3xl font-black text-foreground mb-3">
-          {isAf ? "R169/maand · 14 dae gratis" : "R169/month · 14 days free"}
+          {isAf ? "R169/maand · kanselleer enige tyd" : "R169/month · cancel anytime"}
         </h1>
 
         <div className="flex items-center justify-center gap-2 mb-4 text-xs font-bold text-foreground">
@@ -56,8 +56,8 @@ export default function ParentPurchasePage() {
 
         <p className="text-sm text-foreground mb-2">
           {isAf
-            ? "Student Life gee jou kind volle toegang — studieplanne, regte NSC-vraestelle en memo's, onmiddellike nasien, en Rizz (KI-tutor). Geen heffing tydens die proeftydperk nie, en jy kanselleer enige tyd direk in die app."
-            : "Student Life gives your child full access — study plans, real NSC papers and memos, instant marking, and Rizz (AI tutor). No charge during the trial, and you cancel anytime directly in the app."}
+            ? "Student Life gee jou kind volle toegang — studieplanne, regte NSC-vraestelle en memo's, onmiddellike nasien, en Rizz (KI-tutor). Toegang begin dadelik ná betaling, en jy kanselleer enige tyd direk in die app."
+            : "Student Life gives your child full access — study plans, real NSC papers and memos, instant marking, and Rizz (AI tutor). Access begins immediately after payment, and you cancel anytime directly in the app."}
         </p>
 
         <p className="text-sm text-foreground mb-8">
