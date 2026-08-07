@@ -39,7 +39,7 @@ interface GoalProgressProps {
 function LuminousBar({ pct, hex, hex2 }: { pct: number; hex: string; hex2: string }) {
   const clampedPct = Math.min(100, Math.max(0, pct));
   return (
-    <div className="relative h-3 w-full rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.08)" }}>
+    <div className="relative h-3 w-full rounded-full overflow-hidden" style={{ background: "#0e0d12" }}>
       <div
         className="absolute left-0 top-0 h-full rounded-full transition-all duration-700"
         style={{
@@ -102,18 +102,18 @@ export function GoalProgress({ isAf }: GoalProgressProps) {
         className="overflow-hidden"
         data-testid="goal-progress-widget"
         style={{
-          background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
-          border: "1px solid rgba(255,255,255,.08)",
+          background: "linear-gradient(#0e0d12, #0e0d12), #050508",
+          border: "1px solid #1b1922",
           borderRadius: 20,
         }}
       >
-        <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom: "1px solid rgba(255,255,255,.08)" }}>
+        <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom: "1px solid #1b1922" }}>
           <div className="flex items-center gap-2.5 flex-wrap">
             <Target className="w-5 h-5" style={{ color: "#9FF5E8" }} />
             <h2 className="text-lg" style={{ color: "#ffffff", fontFamily: "'Poppins',sans-serif", fontWeight: 800 }}>
               {isAf ? "Daaglikse Doele" : "Daily Goals"}
             </h2>
-            <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
+            <span style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
               {isAf ? "elke dag tel!" : "every day counts!"}
             </span>
             {data && data.streakDays >= 2 && (
@@ -133,9 +133,9 @@ export function GoalProgress({ isAf }: GoalProgressProps) {
             onClick={openModal}
             aria-label={isAf ? "Stel doelwitte" : "Set goals"}
             className="inline-flex items-center justify-center w-11 h-11 rounded-lg text-white transition-colors"
-            style={{ background: "transparent", border: "1px solid rgba(255,255,255,.14)", cursor: "pointer" }}
+            style={{ background: "transparent", border: "1px solid #1b1922", cursor: "pointer" }}
             onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#9FF5E8")}
-            onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,.14)")}
+            onMouseLeave={(e) => (e.currentTarget.style.borderColor = "#fff")}
           >
             <Settings2 className="w-4 h-4" />
           </button>
@@ -144,8 +144,8 @@ export function GoalProgress({ isAf }: GoalProgressProps) {
         <div className="p-5 space-y-5">
           {isLoading ? (
             <>
-              <div className="h-14 rounded-xl animate-pulse" style={{ background: "rgba(255,255,255,.05)" }} />
-              <div className="h-14 rounded-xl animate-pulse" style={{ background: "rgba(255,255,255,.05)" }} />
+              <div className="h-14 rounded-xl animate-pulse" style={{ background: "#0e0d12" }} />
+              <div className="h-14 rounded-xl animate-pulse" style={{ background: "#0e0d12" }} />
             </>
           ) : data ? (
             <>

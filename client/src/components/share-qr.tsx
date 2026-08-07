@@ -79,7 +79,7 @@ export function ShareQr({
   return (
     <div className="flex flex-col items-center gap-3" data-testid="share-qr">
       {/* White quiet-zone card — the QR's deliberate light exception. Opaque. */}
-      <div className="rounded-2xl p-3" style={{ background: "#FFFFFF", border: "1px solid rgba(255,255,255,.14)" }}>
+      <div className="rounded-2xl p-3" style={{ background: "#FFFFFF", border: "1px solid #1b1922" }}>
         <canvas
           ref={canvasRef}
           aria-label={scanLabel}

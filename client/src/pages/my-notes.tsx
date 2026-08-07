@@ -19,7 +19,7 @@ export default function MyNotesPage() {
       {/* ── Sticky street header ── */}
       <header
         className="sticky top-0 z-50 border-b"
-        style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "rgba(255,255,255,.08)" }}
+        style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "#fff" }}
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 gap-4">
@@ -51,8 +51,8 @@ export default function MyNotesPage() {
         <div
           className="p-8 text-center"
           style={{
-            background: "rgba(255,255,255,.03)",
-            border: "1px dashed rgba(255,255,255,.18)",
+            background: "#0e0d12",
+            border: "1px dashed #1b1922",
             borderRadius: 20,
           }}
           data-testid="my-notes-unavailable"

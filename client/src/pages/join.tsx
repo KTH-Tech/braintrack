@@ -242,10 +242,10 @@ export default function JoinPage() {
             {(["details", "otp"] as const).map((s, i) => (
               <div key={s} className="flex items-center gap-2">
                 <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0"
-                  style={{ background: step === s || (step === "done" && i === 1) ? NEON : hexRgba(NEON, 0.12), color: step === s || (step === "done" && i === 1) ? "#000" : hexRgba(NEON, 0.5) }}>
+                  style={{ background: step === s || (step === "done" && i === 1) ? NEON : hexRgba(NEON, 0.12), color: step === s || (step === "done" && i === 1) ? "#050508" : hexRgba(NEON, 0.5) }}>
                   {(step === "otp" && i === 0) || step === "done" ? <CheckCircle2 className="w-3 h-3" /> : i + 1}
                 </div>
-                <span className="text-xs" style={{ color: step === s ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.3)" }}>
+                <span className="text-xs" style={{ color: step === s ? "#fff" : "#fff" }}>
                   {i === 0 ? t.step1 : t.step2}
                 </span>
                 {i === 0 && <ChevronRight className="w-3 h-3 text-white" />}
@@ -288,7 +288,7 @@ export default function JoinPage() {
                 disabled={!canSubmitDetails || joinMutation.isPending}
                 onClick={() => joinMutation.mutate()}
                 className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-40"
-                style={{ background: NEON, color: "#000" }}
+                style={{ background: NEON, color: "#050508" }}
               >
                 {joinMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <ChevronRight className="w-4 h-4" />}
                 {t.next}
@@ -321,7 +321,7 @@ export default function JoinPage() {
                 disabled={otp.length !== 6 || verifyMutation.isPending}
                 onClick={() => verifyMutation.mutate()}
                 className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-40"
-                style={{ background: NEON, color: "#000" }}
+                style={{ background: NEON, color: "#050508" }}
               >
                 {verifyMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
                 {t.verify}

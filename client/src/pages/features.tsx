@@ -2,7 +2,7 @@
 // Learner-first: leads with what the app does FOR a Grade 12 matric (past
 // papers + memos, Rizz AI support, daily plans, weak-spot radar, XP/streaks,
 // parent visibility as backup) then a sticker CTA to start now / sign in.
-// Shared shell: PublicNav (fixed 64px) + PublicFooter. Pure #000, no grey text,
+// Shared shell: PublicNav (fixed 64px) + PublicFooter. Pure #050508, no grey text,
 // hard-offset shadows only (zero blur). Bilingual EN/AF. bt-* keyframes only.
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
@@ -181,7 +181,7 @@ export default function FeaturesPage() {
   });
 
   return (
-    <div className="min-h-screen" style={{ background: "#000", color: "#fff", overflowX: "hidden" }} data-testid="page-features">
+    <div className="min-h-screen" style={{ background: "#050508", color: "#fff", overflowX: "hidden" }} data-testid="page-features">
       <PublicNav />
 
       <style>{`
@@ -313,7 +313,7 @@ export default function FeaturesPage() {
                     style={{
                       width: 52, height: 52, borderRadius: 14, display: "flex",
                       alignItems: "center", justifyContent: "center", fontSize: 25,
-                      background: "#000", border: `2.5px solid ${f.color}`,
+                      background: "#050508", border: `2.5px solid ${f.color}`,
                       boxShadow: `3px 3px 0 0 ${f.color}`, marginBottom: 18,
                     }}
                   >

@@ -42,10 +42,10 @@ export function PersonalBestsWidget({ isAf = false }: PersonalBestsWidgetProps) 
     return (
       <div
         className="h-full min-h-[180px] p-5 space-y-2"
-        style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: "1px solid rgba(255,255,255,.08)", borderRadius: 20 }}
+        style={{ background: "linear-gradient(#0e0d12, #0e0d12), #050508", border: "1px solid #1b1922", borderRadius: 20 }}
       >
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-12 rounded-xl animate-pulse" style={{ background: "rgba(255,255,255,.05)" }} />
+          <div key={i} className="h-12 rounded-xl animate-pulse" style={{ background: "#0e0d12" }} />
         ))}
       </div>
     );
@@ -55,7 +55,7 @@ export function PersonalBestsWidget({ isAf = false }: PersonalBestsWidgetProps) 
     return (
       <div
         className="h-full p-6 text-center flex flex-col items-center justify-center"
-        style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: `1.5px solid ${ACCENT}`, borderRadius: 20 }}
+        style={{ background: "linear-gradient(#0e0d12, #0e0d12), #050508", border: `1.5px solid ${ACCENT}`, borderRadius: 20 }}
       >
         <Trophy className="w-8 h-8 mx-auto mb-2" style={{ color: ACCENT }} />
         <p className="text-sm text-white font-semibold">
@@ -72,7 +72,7 @@ export function PersonalBestsWidget({ isAf = false }: PersonalBestsWidgetProps) 
   return (
     <div
       className="h-full p-4 flex flex-col gap-2"
-      style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: `1.5px solid ${ACCENT}`, borderRadius: 20 }}
+      style={{ background: "linear-gradient(#0e0d12, #0e0d12), #050508", border: `1.5px solid ${ACCENT}`, borderRadius: 20 }}
       data-testid="personal-bests-widget"
     >
       {topBests.map((pb, index) => {
@@ -84,7 +84,7 @@ export function PersonalBestsWidget({ isAf = false }: PersonalBestsWidgetProps) 
             key={pb.id}
             className="flex items-center gap-3 p-3 rounded-xl transition-colors"
             style={{
-              background: "rgba(255,255,255,.03)",
+              background: "#0e0d12",
               border: `1px solid ${hex}55`,
             }}
             data-testid={`personal-best-${pb.subject_code}`}
@@ -105,7 +105,7 @@ export function PersonalBestsWidget({ isAf = false }: PersonalBestsWidgetProps) 
                 {isAf ? pb.subject_name_af : pb.subject_name}
               </p>
               <div className="flex items-center gap-2 mt-1">
-                <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.08)" }}>
+                <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: "#0e0d12" }}>
                   <div
                     className="h-full rounded-full transition-[width] duration-500 ease-out"
                     style={{
@@ -122,7 +122,7 @@ export function PersonalBestsWidget({ isAf = false }: PersonalBestsWidgetProps) 
                 {pb.highest_score}%
               </p>
               {isTop ? (
-                <p style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
+                <p style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
                   {isAf ? "Rekord" : "Record"}
                 </p>
               ) : (

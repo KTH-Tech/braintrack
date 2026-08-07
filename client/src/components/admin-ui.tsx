@@ -8,7 +8,7 @@ import type { CSSProperties, ReactNode } from "react";
  * consent logs) — it is NOT the learner app. It must read as a clean,
  * professional, confident dashboard: strong hierarchy, generous spacing,
  * a coherent shell, legible data-dense tables. It deliberately does NOT
- * use the learner app's "Permanent Marker Street Pastel" vocabulary
+ * use the learner app's "Bebas Street Pastel" vocabulary
  * (graffiti stickers, cursive headings, confetti, mascots).
  *
  * Every admin page should build its cards, badges, buttons, inputs and
@@ -59,8 +59,8 @@ export function NeonShell({
     <div
       className={`relative overflow-hidden ${className}`}
       style={{
-        background: "rgba(255,255,255,0.035)",
-        border: "1px solid rgba(255,255,255,0.1)",
+        background: "#0e0d12",
+        border: "1px solid #1b1922",
         borderRadius: 20,
         ...style,
       }}
@@ -127,21 +127,21 @@ export function AdminButton({
  * inputs — dark fill, hairline border, no browser chrome. */
 export const adminInputClass =
   "w-full px-3 py-2 rounded-lg bg-black/50 text-white text-xs placeholder-white focus:outline-none";
-export const adminInputStyle: CSSProperties = { border: "1px solid rgba(255,255,255,0.18)" };
+export const adminInputStyle: CSSProperties = { border: "1px solid #1b1922" };
 
 /** Multi-line input matching adminInputClass. Admin forms are full of prose and
  * JSON textareas; without this they each invent their own fill/border/placeholder
  * and drift off the palette (usually via a faded placeholder, which reads grey). */
 export const adminTextareaClass =
   "w-full px-3 py-2 rounded-lg bg-black/50 text-white text-xs placeholder-white focus:outline-none resize-y";
-export const adminTextareaStyle: CSSProperties = { border: "1px solid rgba(255,255,255,0.18)" };
+export const adminTextareaStyle: CSSProperties = { border: "1px solid #1b1922" };
 
 /** Native <select> styled to match — kills the default white-box/system
  * chrome look (full restyle of the dropdown popover itself isn't
  * possible with a plain <select>, but the closed control now matches). */
 export const adminSelectClass =
   "px-3 py-2 rounded-lg bg-black/50 text-white text-xs focus:outline-none";
-export const adminSelectStyle: CSSProperties = { border: "1px solid rgba(255,255,255,0.18)", colorScheme: "dark" };
+export const adminSelectStyle: CSSProperties = { border: "1px solid #1b1922", colorScheme: "dark" };
 
 /** Table shell helpers — wrap <table> in a div using these classes for
  * the rounded/bordered container + consistent header/row treatment used

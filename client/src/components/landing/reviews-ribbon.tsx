@@ -203,9 +203,9 @@ export function ReviewsRibbon({ language }: { language: "en" | "af" }) {
           overflow: "hidden",
           padding: "6px 0 10px",
           WebkitMaskImage:
-            "linear-gradient(90deg,transparent 0,#000 8%,#000 92%,transparent 100%)",
+            "linear-gradient(90deg,transparent 0,#050508 8%,#050508 92%,transparent 100%)",
           maskImage:
-            "linear-gradient(90deg,transparent 0,#000 8%,#000 92%,transparent 100%)",
+            "linear-gradient(90deg,transparent 0,#050508 8%,#050508 92%,transparent 100%)",
         }}
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}

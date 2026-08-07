@@ -802,7 +802,7 @@ function SchoolEnquiriesPanel({ isAf }: { isAf: boolean }) {
                               className="px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-colors disabled:opacity-50"
                               style={{
                                 border: `1px solid ${sc2}`,
-                                color: active ? "#000" : sc2,
+                                color: active ? "#050508" : sc2,
                                 background: active ? sc2 : "transparent",
                               }}
                               data-testid={`enq-${enq.id}-status-${s}`}

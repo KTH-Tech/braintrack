@@ -236,7 +236,7 @@ export default function StorePage() {
         <section className="relative space-y-4 text-center">
           <div className="inline-flex items-center gap-2">
             <ShoppingBag className="w-4 h-4" style={{ color: "#FFE29A" }} />
-            <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#FFE29A", transform: "rotate(-2deg)", display: "inline-block" }}>
+            <span style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: 16, color: "#FFE29A", transform: "rotate(-2deg)", display: "inline-block" }}>
               {t.heroEyebrow} 💰
             </span>
           </div>
@@ -263,7 +263,7 @@ export default function StorePage() {
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="animate-pulse" style={{ height: 220, borderRadius: 22, background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.08)" }} />
+              <div key={i} className="animate-pulse" style={{ height: 220, borderRadius: 22, background: "#0e0d12", border: "1px solid #1b1922" }} />
             ))}
           </div>
         ) : (
@@ -287,7 +287,7 @@ export default function StorePage() {
                   key={item.key}
                   data-testid={`store-item-${item.key}`}
                   style={{
-                    background: `linear-gradient(160deg, ${hex}12, rgba(255,255,255,.05)), #050508`,
+                    background: `linear-gradient(160deg, ${hex}12, #0e0d12), #050508`,
                     border: `1.5px solid ${hex}`,
                     borderRadius: 22,
                     padding: 22,
@@ -365,14 +365,14 @@ export default function StorePage() {
         {/* Earn-coins footer */}
         <div
           className="relative text-center rounded-2xl px-6 py-8"
-          style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: "1px solid rgba(255,255,255,.08)" }}
+          style={{ background: "linear-gradient(#0e0d12, #0e0d12), #050508", border: "1px solid #1b1922" }}
         >
           <div
             aria-hidden
             className="absolute top-0 left-0 right-0 h-[2px] rounded-t-2xl"
             style={{ background: "linear-gradient(90deg,#FFB7E5,#FFE29A,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)" }}
           />
-          <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#94F7C5", transform: "rotate(-2deg)", display: "inline-block" }}>
+          <span style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: 15, color: "#94F7C5", transform: "rotate(-2deg)", display: "inline-block" }}>
             {isAf ? "meer munte = meer hupstote" : "more coins = more power"} ⚡
           </span>
           <p className="text-sm text-white mt-2">{t.earnCoins}</p>

@@ -40,7 +40,7 @@ const halo = (hex: string, a = 0.32) => {
 };
 
 const marker = (color: string, size = 16): CSSProperties => ({
-  fontFamily: "'Permanent Marker',cursive",
+  fontFamily: "'Bebas Neue', system-ui, sans-serif",
   fontSize: size,
   color,
   transform: "rotate(-2deg)",
@@ -56,8 +56,8 @@ const rainbowText: CSSProperties = {
 };
 
 const cardStyle = (accent?: string, radius = 22): CSSProperties => ({
-  background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
-  border: accent ? `1.5px solid ${accent}` : "1px solid rgba(255,255,255,.08)",
+  background: "linear-gradient(#0e0d12, #0e0d12), #050508",
+  border: accent ? `1.5px solid ${accent}` : "1px solid #1b1922",
   borderRadius: radius,
 });
 
@@ -208,7 +208,7 @@ export default function RevisionPage() {
       {/* ── Sticky street header ── */}
       <header
         className="sticky top-0 z-50 border-b"
-        style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "rgba(255,255,255,.08)" }}
+        style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "#fff" }}
       >
         <div className="max-w-3xl mx-auto px-4 h-16 flex items-center gap-3">
           <Link href={`/subject/${subjectId}`}>
@@ -229,7 +229,7 @@ export default function RevisionPage() {
             {data?.source === "ai_practice" && (
               <span
                 className="text-[10px] font-black uppercase tracking-[0.14em] px-2 py-0.5 rounded-full shrink-0"
-                style={{ color: "#C5B3FF", border: "1px solid #C5B3FF", background: "rgba(255,255,255,.03)" }}
+                style={{ color: "#C5B3FF", border: "1px solid #C5B3FF", background: "#0e0d12" }}
               >
                 {isAf ? "Oefensessie" : "Practice"}
               </span>
@@ -305,14 +305,14 @@ export default function RevisionPage() {
                 {current.topic && (
                   <span
                     className="text-xs font-bold px-2.5 py-0.5 rounded-full"
-                    style={{ color: "#FFE29A", border: "1px solid #FFE29A", background: "rgba(255,255,255,.03)" }}
+                    style={{ color: "#FFE29A", border: "1px solid #FFE29A", background: "#0e0d12" }}
                   >
                     {current.topic}
                   </span>
                 )}
               </div>
               {/* Rainbow progress bar */}
-              <div className="h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.08)" }}>
+              <div className="h-2 rounded-full overflow-hidden" style={{ background: "#0e0d12" }}>
                 <div
                   className="h-full rounded-full transition-all duration-500"
                   style={{
@@ -359,7 +359,7 @@ export default function RevisionPage() {
                       ? { background: halo("#FF8DA1", 0.1), border: `1.5px solid ${halo("#FF8DA1", 0.6)}` }
                       : selected
                       ? { background: halo("#9FF5E8", 0.08), border: "1.5px solid #9FF5E8" }
-                      : { background: "rgba(255,255,255,.03)", border: "1.5px solid rgba(255,255,255,.08)" };
+                      : { background: "#0e0d12", border: "1.5px solid #1b1922" };
 
                     return (
                       <button
@@ -374,7 +374,7 @@ export default function RevisionPage() {
                           if (!submitted && !selected) e.currentTarget.style.border = "1.5px solid rgba(159,245,232,.5)";
                         }}
                         onMouseLeave={(e) => {
-                          if (!submitted && !selected) e.currentTarget.style.border = "1.5px solid rgba(255,255,255,.08)";
+                          if (!submitted && !selected) e.currentTarget.style.border = "1.5px solid #1b1922";
                         }}
                       >
                         <span
@@ -386,7 +386,7 @@ export default function RevisionPage() {
                               ? { background: "#FF8DA1", color: "#050508" }
                               : selected
                               ? { background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)", color: "#050508" }
-                              : { background: "rgba(255,255,255,.06)", color: "#ffffff" }
+                              : { background: "#0e0d12", color: "#ffffff" }
                           }
                         >
                           {opt.label}
@@ -514,7 +514,7 @@ export default function RevisionPage() {
                   {correctCount}/{totalQuestions} {isAf ? "korrek" : "correct"}
                 </p>
               </div>
-              <div className="h-3 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.08)" }}>
+              <div className="h-3 rounded-full overflow-hidden" style={{ background: "#0e0d12" }}>
                 <div
                   className="h-full rounded-full"
                   style={{

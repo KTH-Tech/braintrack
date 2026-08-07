@@ -50,13 +50,13 @@ import {
 const PASTELS = ["#9FF5E8", "#9FD8FF", "#FFB7E5", "#C5B3FF", "#FFE29A", "#94F7C5"];
 
 const cardStyle = (accent?: string, radius = 22): CSSProperties => ({
-  background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
-  border: accent ? `1.5px solid ${accent}` : "1px solid rgba(255,255,255,.08)",
+  background: "linear-gradient(#0e0d12, #0e0d12), #050508",
+  border: accent ? `1.5px solid ${accent}` : "1px solid #1b1922",
   borderRadius: radius,
 });
 
 const marker = (color: string, size = 16): CSSProperties => ({
-  fontFamily: "'Permanent Marker',cursive",
+  fontFamily: "'Bebas Neue', system-ui, sans-serif",
   fontSize: size,
   color,
   transform: "rotate(-2deg)",
@@ -588,7 +588,7 @@ export default function BoostSessionPage() {
               {totalCorrect}
               <span className="text-2xl"> / {totalAnswered}</span>
             </div>
-            <div className="h-2.5 rounded-full overflow-hidden mx-auto max-w-sm" style={{ background: "rgba(255,255,255,.08)" }}>
+            <div className="h-2.5 rounded-full overflow-hidden mx-auto max-w-sm" style={{ background: "#0e0d12" }}>
               <div className="h-full rounded-full" style={{ width: `${pct}%`, background: `linear-gradient(90deg,#9FF5E8,${gradeHex})` }} />
             </div>
             <div className="grid grid-cols-3 gap-2 pt-2">
@@ -637,7 +637,7 @@ export default function BoostSessionPage() {
                       )}
                     </div>
                     {b.status === "done" && b.answered > 0 && (
-                      <div className="mt-2 h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.08)" }}>
+                      <div className="mt-2 h-1.5 rounded-full overflow-hidden" style={{ background: "#0e0d12" }}>
                         <div className="h-full rounded-full" style={{ width: `${subPct}%`, background: hex }} />
                       </div>
                     )}
@@ -712,13 +712,13 @@ export default function BoostSessionPage() {
                 <Clock className="w-3.5 h-3.5" />
                 {fmtClock(secondsLeft)}
               </span>
-              <span className="tabular-nums text-xs font-bold px-2.5 py-1.5 rounded-lg" style={{ background: "rgba(5,5,8,.6)", border: "1px solid rgba(255,255,255,.14)" }}>
+              <span className="tabular-nums text-xs font-bold px-2.5 py-1.5 rounded-lg" style={{ background: "rgba(5,5,8,.6)", border: "1px solid #1b1922" }}>
                 {fmtClock(sessionRemaining)} · {t.sessionLeft}
               </span>
             </div>
           </div>
           {/* Block time bar */}
-          <div className="mt-3 h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.08)" }}>
+          <div className="mt-3 h-1.5 rounded-full overflow-hidden" style={{ background: "#0e0d12" }}>
             <div className="h-full rounded-full" style={{ width: `${blockPct}%`, background: `linear-gradient(90deg,${hex},#fff0)`, transition: "width 1s linear" }} />
           </div>
           {/* Subject dots */}
@@ -733,11 +733,11 @@ export default function BoostSessionPage() {
                   background:
                     i < blockIdx
                       ? b.status === "no_questions"
-                        ? "rgba(255,255,255,.25)"
+                        ? "#fff"
                         : PASTELS[i % PASTELS.length]
                       : i === blockIdx
                         ? PASTELS[i % PASTELS.length]
-                        : "rgba(255,255,255,.14)",
+                        : "#fff",
                 }}
               />
             ))}
@@ -786,7 +786,7 @@ export default function BoostSessionPage() {
                         : wasWrong
                           ? "rgba(255,183,229,.14)"
                           : "rgba(5,5,8,.6)",
-                      border: `1.5px solid ${showCorrect ? "#94F7C5" : wasWrong ? "#FFB7E5" : "rgba(255,255,255,.14)"}`,
+                      border: `1.5px solid ${showCorrect ? "#94F7C5" : wasWrong ? "#FFB7E5" : "#1b1922"}`,
                       color: "#fff",
                       cursor: answerLocked ? "default" : "pointer",
                     }}

@@ -324,8 +324,8 @@ function SubjectAccordion({ row, localFiles, onIngest, onVerify, onPreview, onFi
     // running, pink failed, sky idle.
     <div
       style={{
-        background: "#050508",
-        border: `2px solid ${open ? accent : `${accent}66`}`,
+        background: "#0e0d12",
+        border: `2px solid ${accent}`,
         borderRadius: 16,
         boxShadow: open ? `5px 5px 0 0 ${accent}` : "none",
         marginBottom: 12,
@@ -590,6 +590,12 @@ type SubjectSortKey = "name-asc" | "memo-asc" | "memo-desc";
 
 const SUBJECT_SORT_LS_KEY = "dbe_overview_subject_sort";
 
+// Signature rainbow-pastel card cycle (pink→butter→mint→cyan→sky→violet).
+// Grids of cards cycle their border accent through this in order so a set of
+// cards reads as one rainbow-pastel system while the ONE structural recipe
+// (solid #0e0d12 fill · 1.5px solid border · 16px radius) stays identical.
+const RAINBOW_CYCLE: NeonHex[] = ["#FFB7E5", "#FFE29A", "#94F7C5", "#9FF5E8", "#9FD8FF", "#C5B3FF"];
+
 function OverviewSubjectGrid({ subjects, status, statusLoading, seedSubject, generateAi, restart, openaiReady }: {
   subjects: SubjectRow[];
   status: OverallStatus | undefined;
@@ -678,19 +684,17 @@ function OverviewSubjectGrid({ subjects, status, statusLoading, seedSubject, gen
         </div>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-3">
-      {sortedSubjects.map((s) => {
+      {sortedSubjects.map((s, i) => {
         // Verbatim panel: Live/Empty reflects INGESTED papers only. Simulated
         // counts belong to the Simulator screen.
         const total = s.questionsExtracted;
         const isRunning = s.isRunning || s.pipelinePhase === "ingesting" || s.pipelinePhase === "rebuilding_mastery" || s.pipelinePhase === "filling_missing";
         const ready = total > 0 && !isRunning;
         const hasNothing = total === 0 && !isRunning;
+        // Status meaning stays in the chip + bar fill (mint=live, butter=running).
         const accent = ready ? "#9FF5E8" : isRunning ? "#FFE29A" : "#9FD8FF";
-        const cardStyle: React.CSSProperties = ready
-          ? { background: "#0e0d12", border: "1px solid rgba(159,245,232,0.35)", borderRadius: 14 }
-          : isRunning
-          ? { background: "#0e0d12", border: "1px solid rgba(255,226,154,0.35)", borderRadius: 14 }
-          : { background: "#0e0d12", border: "1px solid #1b1922", borderRadius: 14 };
+        // ONE card recipe with the signature rainbow-pastel cycle on the border.
+        const cardStyle: React.CSSProperties = { background: "#0e0d12", border: `1.5px solid ${RAINBOW_CYCLE[i % RAINBOW_CYCLE.length]}`, borderRadius: 16 };
         const ghostBtn = "h-7 text-xs gap-1 inline-flex items-center justify-center rounded-[10px] px-2.5 font-bold text-white hover:border-[#9FD8FF] transition-colors disabled:opacity-40";
         const ghostStyle: React.CSSProperties = { border: "1px solid #1b1922", background: "transparent" };
         const neonBtn = "h-7 text-xs gap-1 inline-flex items-center justify-center rounded-[10px] px-2.5 font-extrabold transition-transform hover:-translate-y-[2px] disabled:opacity-40 disabled:hover:translate-y-0";
@@ -1613,7 +1617,7 @@ export default function DBEPortal() {
           without state and works on touch (the per-button title= tooltips
           don't). Two groups: ingest the real DBE papers vs. generate + serve
           simulated content. */}
-      <details style={{ margin: "16px 40px 0", border: "2px solid #9FD8FF", borderRadius: 14, boxShadow: "4px 4px 0 0 #9FD8FF", background: "#050508" }}>
+      <details style={{ margin: "16px 40px 0", border: "2px solid #9FD8FF", borderRadius: 14, boxShadow: "4px 4px 0 0 #9FD8FF", background: "#0e0d12" }}>
         <summary style={{ cursor: "pointer", padding: "12px 16px", fontWeight: 800, color: "#9FD8FF", fontSize: 13, letterSpacing: 0.3 }}>
           {language === "af" ? "Wat doen elke knoppie?" : "What each button does"}
         </summary>
@@ -1673,7 +1677,10 @@ export default function DBEPortal() {
         {/* Header */}
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <div className="text-white" data-testid="page-title" style={{ fontSize: 30, fontWeight: 900, letterSpacing: "-1px" }}>
+            <div style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: 14, letterSpacing: "1.5px", textTransform: "uppercase", color: "#C5B3FF" }}>
+              {language === "af" ? "DBE Inhoudsportaal" : "DBE Content Portal"}
+            </div>
+            <div className="text-white" data-testid="page-title" style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: "clamp(28px,5vw,40px)", fontWeight: 400, letterSpacing: "0.5px", lineHeight: 1.05 }}>
               Content operations
             </div>
             <p className="text-white text-[13px] mt-1">

@@ -26,7 +26,7 @@ export default function NotFound() {
   return (
     <div
       className="min-h-screen"
-      style={{ background: "#000", color: "#fff" }}
+      style={{ background: "#050508", color: "#fff" }}
       data-testid="page-not-found"
     >
       {/* keyframes must be bt-prefixed or a global switch kills them */}
@@ -70,7 +70,7 @@ export default function NotFound() {
           <div
             aria-hidden
             style={{
-              fontFamily: "'Permanent Marker',cursive",
+              fontFamily: "'Bebas Neue', system-ui, sans-serif",
               fontSize: "clamp(88px, 26vw, 200px)",
               lineHeight: 0.9,
               letterSpacing: "-2px",
@@ -89,7 +89,7 @@ export default function NotFound() {
           {/* Real (single) h1 — keeps the required copy */}
           <h1
             style={{
-              fontFamily: "'Permanent Marker',cursive",
+              fontFamily: "'Bebas Neue', system-ui, sans-serif",
               fontSize: "clamp(24px, 6vw, 40px)",
               color: "#fff",
               margin: "10px 0 0",

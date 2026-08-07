@@ -114,7 +114,7 @@ export default function RoleSelectPage() {
           position: "absolute", top: 20, right: 20, zIndex: 3,
           display: "flex", alignItems: "center", gap: 2, fontSize: 12, fontWeight: 800,
           fontFamily: "'Poppins',sans-serif", background: "transparent",
-          border: "1.5px solid rgba(255,255,255,.2)", borderRadius: 8,
+          border: "1.5px solid #1b1922", borderRadius: 8,
           overflow: "hidden", cursor: "pointer", userSelect: "none", padding: 0,
         }}
       >
@@ -136,7 +136,7 @@ export default function RoleSelectPage() {
       </span>
       <div
         style={{
-          fontFamily: "'Permanent Marker',cursive", fontSize: 18, color: "#9FF5E8",
+          fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: 18, color: "#9FF5E8",
           transform: "rotate(-2deg)", margin: "8px 0 18px", position: "relative", zIndex: 2,
         }}
       >
@@ -172,7 +172,7 @@ export default function RoleSelectPage() {
               data-testid={`button-role-${role}`}
               style={{
                 width: 220,
-                background: "linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015))",
+                background: "linear-gradient(160deg,#0e0d12,#0e0d12)",
                 border: `2px solid ${isSel ? s.accent : `${s.soft}.45)`}`,
                 borderRadius: 18, padding: "26px 20px", textAlign: "center",
                 cursor: roleMutation.isPending ? "default" : "pointer",

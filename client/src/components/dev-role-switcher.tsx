@@ -67,7 +67,7 @@ export function DevRoleSwitcher() {
     <div
       className="fixed bottom-3 left-3 z-[9999] flex items-center gap-1 rounded-full bg-black px-2 py-1.5 text-xs"
       style={{
-        border: "1px solid rgba(255,255,255,0.15)",
+        border: "1px solid #1b1922",
         boxShadow: "0 4px 16px rgba(0,0,0,0.6)",
       }}
       data-testid="dev-role-switcher"
@@ -86,9 +86,9 @@ export function DevRoleSwitcher() {
             disabled={busy !== null}
             className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 transition-colors disabled:opacity-50"
             style={{
-              border: `1px solid ${active ? hex : "rgba(255,255,255,0.18)"}`,
+              border: `1px solid ${active ? hex : "#1b1922"}`,
               background: active ? `${hex}18` : "transparent",
-              color: active ? hex : "rgba(255,255,255,0.7)",
+              color: active ? hex : "#fff",
             }}
             data-testid={`btn-dev-login-${role}`}
           >

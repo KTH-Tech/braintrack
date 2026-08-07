@@ -222,12 +222,12 @@ export default function AdminSchoolQRPage() {
           body { background: white !important; }
           .no-print { display: none !important; }
           .qr-card {
-            border: 1px solid #000 !important;
+            border: 1px solid #050508 !important;
             box-shadow: none !important;
             background: white !important;
             page-break-inside: avoid;
           }
-          .qr-card p, .qr-card span { color: #000 !important; }
+          .qr-card p, .qr-card span { color: #050508 !important; }
         }
       `}</style>
 

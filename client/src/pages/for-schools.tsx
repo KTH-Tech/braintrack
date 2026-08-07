@@ -3,7 +3,7 @@
 // LEARNERS; on this page the school is simply the fastest way to get that app
 // into their matrics' hands. Learner benefit leads; the school's role is three
 // simple steps. Pure-black street-graffiti design: sticker cards with hard
-// offset shadows (zero blur), pure #fff/#000 text (no grey, no faded white),
+// offset shadows (zero blur), pure #fff/#050508 text (no grey, no faded white),
 // bt- prefixed keyframes. Bilingual EN/AF. Shared PublicNav + PublicFooter.
 import { useSEO } from "@/hooks/use-seo";
 import { useLanguage } from "@/lib/language-context";
@@ -142,7 +142,7 @@ export default function ForSchoolsPage() {
   return (
     <div
       className="min-h-screen"
-      style={{ background: "#000", color: "#fff", overflowX: "hidden" }}
+      style={{ background: "#050508", color: "#fff", overflowX: "hidden" }}
       data-testid="page-for-schools"
     >
       <style>{`
@@ -170,13 +170,13 @@ export default function ForSchoolsPage() {
           <section style={{ textAlign: "center" }}>
             <div
               className="btfs-in"
-              style={{ ["--d" as string]: ".04s", display: "inline-flex", alignItems: "center", gap: 8, fontSize: 12, fontWeight: 900, letterSpacing: "1px", textTransform: "uppercase", color: "#000", background: "#94F7C5", border: "2.5px solid #000", boxShadow: "5px 5px 0 0 #94F7C5", borderRadius: 999, padding: "9px 18px", marginBottom: 22 }}
+              style={{ ["--d" as string]: ".04s", display: "inline-flex", alignItems: "center", gap: 8, fontSize: 12, fontWeight: 900, letterSpacing: "1px", textTransform: "uppercase", color: "#050508", background: "#94F7C5", border: "2.5px solid #050508", boxShadow: "5px 5px 0 0 #94F7C5", borderRadius: 999, padding: "9px 18px", marginBottom: 22 }}
             >
               {t.badge}
             </div>
             <div
               className="btfs-in"
-              style={{ ["--d" as string]: ".12s", fontFamily: "'Permanent Marker',cursive", color: "#FFB7E5", fontSize: "clamp(16px,4vw,20px)", transform: "rotate(-2deg)", marginBottom: 6 }}
+              style={{ ["--d" as string]: ".12s", fontFamily: "'Bebas Neue', system-ui, sans-serif", color: "#FFB7E5", fontSize: "clamp(16px,4vw,20px)", transform: "rotate(-2deg)", marginBottom: 6 }}
             >
               {t.eyebrow}
             </div>
@@ -222,7 +222,7 @@ export default function ForSchoolsPage() {
           <div
             style={{ marginTop: 40, background: "#050508", border: "2.5px solid #FFE29A", boxShadow: "6px 6px 0 0 #FFE29A", borderRadius: 18, padding: "18px 22px", textAlign: "center", transform: "rotate(-.4deg)" }}
           >
-            <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: "clamp(17px,3.4vw,24px)", color: "#FFE29A" }}>
+            <span style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: "clamp(17px,3.4vw,24px)", color: "#FFE29A" }}>
               {t.proof}
             </span>
           </div>
@@ -236,7 +236,7 @@ export default function ForSchoolsPage() {
                   key={fact}
                   className="btfs-chip"
                   data-testid={`chip-quickfact-${i}`}
-                  style={{ ["--i" as string]: i, fontSize: 13, fontWeight: 800, color, background: "#000", border: `2px solid ${color}`, borderRadius: 999, padding: "9px 16px" }}
+                  style={{ ["--i" as string]: i, fontSize: 13, fontWeight: 800, color, background: "#050508", border: `2px solid ${color}`, borderRadius: 999, padding: "9px 16px" }}
                 >
                   {fact}
                 </span>
@@ -247,7 +247,7 @@ export default function ForSchoolsPage() {
           {/* ── What learners get ────────────────────────────── */}
           <section style={{ marginTop: 84 }}>
             <div style={{ textAlign: "center", marginBottom: 34 }}>
-              <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#9FF5E8", fontSize: "clamp(15px,3vw,19px)", transform: "rotate(-1.5deg)", marginBottom: 8 }}>
+              <div style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", color: "#9FF5E8", fontSize: "clamp(15px,3vw,19px)", transform: "rotate(-1.5deg)", marginBottom: 8 }}>
                 the learner's app
               </div>
               <h2 style={{ fontSize: "clamp(26px,5vw,40px)", fontWeight: 900, letterSpacing: "-1.2px", color: "#fff", margin: "0 0 12px", lineHeight: 1.08 }}>
@@ -266,7 +266,7 @@ export default function ForSchoolsPage() {
                   data-testid={`card-app-${i}`}
                   style={{ ["--sh" as string]: c.color, background: "#050508", border: `2.5px solid ${c.color}`, boxShadow: `6px 6px 0 0 ${c.color}`, borderRadius: 18, padding: "24px 22px" }}
                 >
-                  <div style={{ width: 52, height: 52, borderRadius: 14, background: "#000", border: `2px solid ${c.color}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, marginBottom: 14 }}>
+                  <div style={{ width: 52, height: 52, borderRadius: 14, background: "#050508", border: `2px solid ${c.color}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, marginBottom: 14 }}>
                     {c.icon}
                   </div>
                   <div style={{ fontWeight: 900, fontSize: 18, letterSpacing: "-.4px", color: c.color, marginBottom: 6 }}>{c.title}</div>
@@ -279,7 +279,7 @@ export default function ForSchoolsPage() {
           {/* ── The school's simple role ─────────────────────── */}
           <section style={{ marginTop: 84 }}>
             <div style={{ textAlign: "center", marginBottom: 34 }}>
-              <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#FFB7E5", fontSize: "clamp(15px,3vw,19px)", transform: "rotate(-1.5deg)", marginBottom: 8 }}>
+              <div style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", color: "#FFB7E5", fontSize: "clamp(15px,3vw,19px)", transform: "rotate(-1.5deg)", marginBottom: 8 }}>
                 your three steps
               </div>
               <h2 style={{ fontSize: "clamp(26px,5vw,40px)", fontWeight: 900, letterSpacing: "-1.2px", color: "#fff", margin: "0 0 12px", lineHeight: 1.08 }}>
@@ -298,7 +298,7 @@ export default function ForSchoolsPage() {
                   data-testid={`card-step-${i}`}
                   style={{ ["--sh" as string]: s.color, background: "#050508", border: `2.5px solid ${s.color}`, boxShadow: `6px 6px 0 0 ${s.color}`, borderRadius: 18, padding: "26px 22px" }}
                 >
-                  <div style={{ width: 46, height: 46, borderRadius: 12, background: s.color, color: "#000", border: "2.5px solid #000", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Permanent Marker',cursive", fontSize: 22, marginBottom: 16 }}>
+                  <div style={{ width: 46, height: 46, borderRadius: 12, background: s.color, color: "#050508", border: "2.5px solid #050508", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: 22, marginBottom: 16 }}>
                     {i + 1}
                   </div>
                   <div style={{ fontWeight: 900, fontSize: 19, letterSpacing: "-.4px", color: "#fff", marginBottom: 6 }}>{s.title}</div>
@@ -311,7 +311,7 @@ export default function ForSchoolsPage() {
           {/* ── Zero risk / trust ────────────────────────────── */}
           <section style={{ marginTop: 84 }}>
             <div style={{ textAlign: "center", marginBottom: 34 }}>
-              <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#C5B3FF", fontSize: "clamp(15px,3vw,19px)", transform: "rotate(-1.5deg)", marginBottom: 8 }}>
+              <div style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", color: "#C5B3FF", fontSize: "clamp(15px,3vw,19px)", transform: "rotate(-1.5deg)", marginBottom: 8 }}>
                 the fine print, unfined
               </div>
               <h2 style={{ fontSize: "clamp(26px,5vw,40px)", fontWeight: 900, letterSpacing: "-1.2px", color: "#fff", margin: "0 0 12px", lineHeight: 1.08 }}>
@@ -341,7 +341,7 @@ export default function ForSchoolsPage() {
           <section
             style={{ marginTop: 88, background: "#050508", border: "2.5px solid #fff", boxShadow: "8px 8px 0 0 #FFB7E5", borderRadius: 24, padding: "clamp(32px,6vw,52px) clamp(22px,5vw,44px)", textAlign: "center" }}
           >
-            <div style={{ fontFamily: "'Permanent Marker',cursive", color: "#FFB7E5", fontSize: "clamp(15px,3vw,19px)", transform: "rotate(-2deg)", marginBottom: 10 }}>
+            <div style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", color: "#FFB7E5", fontSize: "clamp(15px,3vw,19px)", transform: "rotate(-2deg)", marginBottom: 10 }}>
               {t.closeEyebrow}
             </div>
             <h2 style={{ fontSize: "clamp(26px,5.5vw,44px)", fontWeight: 900, letterSpacing: "-1.4px", color: "#fff", margin: "0 0 16px", lineHeight: 1.06 }}>

@@ -72,7 +72,7 @@ export function MarkingFeedback({
     <div
       className={cn("relative overflow-hidden rounded-[22px] p-4 sm:p-5 space-y-4", className)}
       style={{
-        background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
+        background: "linear-gradient(#0e0d12, #0e0d12), #050508",
         border: `1.5px solid ${accentHex}`,
       }}
     >

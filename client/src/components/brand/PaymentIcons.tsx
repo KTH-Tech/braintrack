@@ -10,7 +10,7 @@ import * as React from "react";
  * NOT pixel-perfect brand marks. The real Visa / Mastercard / Amex logos
  * have trademark constraints when reproduced on a payment page; a
  * simplified chip that reads "we accept Visa" is aesthetically cleaner
- * (blends into the pure-#000 luxury-street-graffiti theme) AND legally
+ * (blends into the pure-#050508 luxury-street-graffiti theme) AND legally
  * safer than pasting the full-colour brand PNGs. All SVGs use
  * `currentColor` so a caller can invert / accent via CSS `color`.
  *
@@ -172,7 +172,7 @@ export function SecureCodeMark({ height = 30, color = "currentColor", title = "M
  * pastel dividers, followed by a small "Powered by Paystack" chip. Wraps
  * cleanly on mobile (< 480px) via flex-wrap + row gap; each chip has an
  * intrinsic width so nothing overflows. Colour defaults to pure #fff for
- * the pure-#000 background, and every icon inherits `color` so a caller
+ * the pure-#050508 background, and every icon inherits `color` so a caller
  * can accent them via a CSS variable if needed.
  */
 export function PaymentIconsRow({
@@ -191,7 +191,7 @@ export function PaymentIconsRow({
   isAf?: boolean;
 }) {
   const label = isAf ? labelAf : labelEn;
-  const dividerColor = "rgba(255,255,255,.18)";
+  const dividerColor = "#fff";
   return (
     <div
       className={className}

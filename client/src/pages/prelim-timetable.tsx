@@ -284,7 +284,7 @@ function isMySubject(name: string, myNames: string[]): boolean {
 function CountdownBadge({ days, isAf }: { days: number; isAf: boolean }) {
   if (days < 0) {
     return (
-      <span style={{ fontSize: 9, fontWeight: 700, color: "#6b7280", background: "rgba(255,255,255,0.06)", borderRadius: 4, padding: "1px 5px" }}>
+      <span style={{ fontSize: 9, fontWeight: 700, color: "#6b7280", background: "#0e0d12", borderRadius: 4, padding: "1px 5px" }}>
         {isAf ? "Verby" : "Past"}
       </span>
     );
@@ -348,7 +348,7 @@ export default function PrelimTimetablePage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: "#000" }}>
+    <div className="min-h-screen" style={{ background: "#050508" }}>
       {/* Space background */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(110,231,249,0.18) 0%, transparent 70%)" }} />
@@ -393,7 +393,7 @@ export default function PrelimTimetablePage() {
               <>Grade 12 <span style={{ background: "linear-gradient(90deg,#6EE7F9,#C5B3FF,#FFB7E5)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>Prelims 2026</span></>
             )}
           </h1>
-          <p className="text-sm" style={{ color: "rgba(255,255,255,0.55)" }}>
+          <p className="text-sm" style={{ color: "#fff" }}>
             {isAf ? "SACAI — Augustus/September 2026 · Registrasienr. 2011/100445/08" : "SACAI — August/September 2026 · Registration No. 2011/100445/08"}
           </p>
         </div>
@@ -412,7 +412,7 @@ export default function PrelimTimetablePage() {
                   className="relative px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all"
                   style={active
                     ? { background: "rgba(110,231,249,0.18)", border: "1px solid rgba(110,231,249,0.6)", color: "#6EE7F9" }
-                    : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.55)" }
+                    : { background: "#0e0d12", border: "1px solid #1b1922", color: "#fff" }
                   }
                 >
                   {w.label}
@@ -431,7 +431,7 @@ export default function PrelimTimetablePage() {
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all"
               style={mySubjectsOnly
                 ? { background: "rgba(255,183,229,0.18)", border: "1px solid rgba(255,183,229,0.6)", color: "#FFB7E5" }
-                : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.55)" }
+                : { background: "#0e0d12", border: "1px solid #1b1922", color: "#fff" }
               }
             >
               <Star className="w-3 h-3" />
@@ -441,7 +441,7 @@ export default function PrelimTimetablePage() {
         </div>
 
         {/* Week range label */}
-        <div className="flex items-center gap-2 text-sm font-bold" style={{ color: "rgba(255,255,255,0.6)" }}>
+        <div className="flex items-center gap-2 text-sm font-bold" style={{ color: "#fff" }}>
           <CalendarDays className="w-4 h-4" style={{ color: "#6EE7F9" }} />
           {isAf ? currentWeek.rangeAf : currentWeek.range}
         </div>
@@ -463,8 +463,8 @@ export default function PrelimTimetablePage() {
                   border: isToday
                     ? "1.5px solid rgba(255,226,154,0.7)"
                     : isPast
-                      ? "1px solid rgba(255,255,255,0.07)"
-                      : "1px solid rgba(255,255,255,0.12)",
+                      ? "1px solid #fff"
+                      : "1px solid #fff",
                   background: isToday
                     ? "rgba(255,226,154,0.06)"
                     : isPast
@@ -474,19 +474,19 @@ export default function PrelimTimetablePage() {
                 }}
               >
                 {/* Day header */}
-                <div className="flex items-center justify-between gap-3 px-4 py-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+                <div className="flex items-center justify-between gap-3 px-4 py-3" style={{ borderBottom: "1px solid #1b1922" }}>
                   <div className="flex items-center gap-3">
                     <div
                       style={{
                         width: 44, height: 44, borderRadius: 10, flexShrink: 0,
-                        background: isToday ? "rgba(255,226,154,0.22)" : "rgba(255,255,255,0.06)",
-                        border: isToday ? "1px solid rgba(255,226,154,0.55)" : "1px solid rgba(255,255,255,0.10)",
+                        background: isToday ? "rgba(255,226,154,0.22)" : "#0e0d12",
+                        border: isToday ? "1px solid rgba(255,226,154,0.55)" : "1px solid #1b1922",
                         display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
                       }}
                     >
-                      <span style={{ fontSize: 9, fontWeight: 800, color: isToday ? "#FFE29A" : "rgba(255,255,255,0.45)", lineHeight: 1, textTransform: "uppercase", letterSpacing: "0.06em" }}>{dayName}</span>
-                      <span style={{ fontSize: 17, fontWeight: 900, color: isToday ? "#FFE29A" : "rgba(255,255,255,0.85)", lineHeight: 1.1 }}>{num}</span>
-                      <span style={{ fontSize: 9, fontWeight: 700, color: isToday ? "#FFE29A" : "rgba(255,255,255,0.4)", lineHeight: 1 }}>{month}</span>
+                      <span style={{ fontSize: 9, fontWeight: 800, color: isToday ? "#FFE29A" : "#fff", lineHeight: 1, textTransform: "uppercase", letterSpacing: "0.06em" }}>{dayName}</span>
+                      <span style={{ fontSize: 17, fontWeight: 900, color: isToday ? "#FFE29A" : "#fff", lineHeight: 1.1 }}>{num}</span>
+                      <span style={{ fontSize: 9, fontWeight: 700, color: isToday ? "#FFE29A" : "#fff", lineHeight: 1 }}>{month}</span>
                     </div>
                     <div>
                       {isToday && (
@@ -495,7 +495,7 @@ export default function PrelimTimetablePage() {
                         </span>
                       )}
                       {!hasExams && (
-                        <span className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>
+                        <span className="text-xs" style={{ color: "#fff" }}>
                           {isAf ? "Geen eksamens" : "No exams"}
                         </span>
                       )}
@@ -506,7 +506,7 @@ export default function PrelimTimetablePage() {
 
                 {/* Sessions */}
                 {hasExams && (
-                  <div className="grid sm:grid-cols-2 gap-0 divide-y sm:divide-y-0 sm:divide-x" style={{ "--tw-divide-opacity": 1, borderColor: "rgba(255,255,255,0.08)" } as any}>
+                  <div className="grid sm:grid-cols-2 gap-0 divide-y sm:divide-y-0 sm:divide-x" style={{ "--tw-divide-opacity": 1, borderColor: "#fff" } as any}>
                     <SessionColumn
                       time="09:00"
                       slots={day.session1}
@@ -539,7 +539,7 @@ export default function PrelimTimetablePage() {
             <ChevronLeft className="w-4 h-4" />
             {isAf ? "Vorige week" : "Prev week"}
           </Button>
-          <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.35)" }}>
+          <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#fff" }}>
             {activeWeek + 1} / {WEEKS.length}
           </span>
           <Button
@@ -573,13 +573,13 @@ export default function PrelimTimetablePage() {
               const { day: dayName, num, month } = formatExamDate(p.date, isAf);
               return (
                 <div key={p.date} className="flex items-center gap-3 py-1.5">
-                  <span className="text-[11px] font-bold tabular-nums w-24 shrink-0" style={{ color: "rgba(255,255,255,0.45)" }}>
+                  <span className="text-[11px] font-bold tabular-nums w-24 shrink-0" style={{ color: "#fff" }}>
                     {dayName} {num} {month}
                   </span>
-                  <span className="text-xs font-medium flex-1" style={{ color: p.isBackup ? "rgba(255,255,255,0.45)" : "rgba(255,255,255,0.8)" }}>
+                  <span className="text-xs font-medium flex-1" style={{ color: p.isBackup ? "#fff" : "#fff" }}>
                     {isAf ? p.descriptionAf : p.description}
                     {p.isBackup && (
-                      <span className="ml-1.5 text-[9px] font-black uppercase px-1.5 py-0.5 rounded" style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.4)" }}>
+                      <span className="ml-1.5 text-[9px] font-black uppercase px-1.5 py-0.5 rounded" style={{ background: "#0e0d12", color: "#fff" }}>
                         {isAf ? "rugsteun" : "back-up"}
                       </span>
                     )}
@@ -593,7 +593,7 @@ export default function PrelimTimetablePage() {
             })}
           </div>
           <div className="px-4 pb-3">
-            <p className="text-[10px] leading-relaxed" style={{ color: "rgba(255,255,255,0.35)" }}>
+            <p className="text-[10px] leading-relaxed" style={{ color: "#fff" }}>
               {isAf
                 ? "* Geldige rede benodig vir rugsteungeleenthede. Verwys na SBA-beleid 8.1."
                 : "* A valid reason must be presented to qualify for back-up opportunities. Refer to SBA policy (8.1)."}
@@ -603,7 +603,7 @@ export default function PrelimTimetablePage() {
 
         {/* Correction note */}
         <div className="flex items-start gap-2 px-4 py-3 rounded-xl text-xs"
-          style={{ background: "rgba(255,226,154,0.07)", border: "1px solid rgba(255,226,154,0.3)", color: "rgba(255,255,255,0.65)" }}>
+          style={{ background: "rgba(255,226,154,0.07)", border: "1px solid rgba(255,226,154,0.3)", color: "#fff" }}>
           <Zap className="w-3.5 h-3.5 shrink-0 mt-0.5" style={{ color: "#FFE29A" }} />
           <span>
             {isAf
@@ -612,7 +612,7 @@ export default function PrelimTimetablePage() {
           </span>
         </div>
 
-        <footer className="pt-4 text-center text-[10px]" style={{ color: "rgba(255,255,255,0.25)", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+        <footer className="pt-4 text-center text-[10px]" style={{ color: "#fff", borderTop: "1px solid #1b1922" }}>
           {isAf ? "Bron: SACAI 2026 Finale Voorbereidende Eksamenrooster · Gr 12" : "Source: SACAI 2026 Final Preliminary Examination Timetable · Gr 12"}
           <br />
           {isAf ? "Kontak: info@sacai.org.za" : "Contact: info@sacai.org.za"}
@@ -638,13 +638,13 @@ function SessionColumn({
   return (
     <div className="p-4 space-y-2.5">
       <div className="flex items-center gap-1.5 mb-1">
-        <Clock className="w-3 h-3" style={{ color: "rgba(255,255,255,0.3)" }} />
-        <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.3)" }}>
+        <Clock className="w-3 h-3" style={{ color: "#fff" }} />
+        <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: "#fff" }}>
           {time}
         </span>
       </div>
       {!hasSlots ? (
-        <p className="text-[11px] italic" style={{ color: "rgba(255,255,255,0.2)" }}>
+        <p className="text-[11px] italic" style={{ color: "#fff" }}>
           —
         </p>
       ) : (
@@ -660,10 +660,10 @@ function SessionColumn({
               style={{
                 borderRadius: 10,
                 padding: "8px 10px",
-                background: isMatch ? `${neon}1a` : "rgba(255,255,255,0.04)",
+                background: isMatch ? `${neon}1a` : "#0e0d12",
                 border: isMatch
                   ? `1px solid ${neon}66`
-                  : "1px solid rgba(255,255,255,0.08)",
+                  : "1px solid #fff",
                 opacity: isPast ? 0.7 : 1,
               }}
             >
@@ -671,13 +671,13 @@ function SessionColumn({
                 <div className="min-w-0 flex-1">
                   <p
                     className="text-xs font-bold leading-tight"
-                    style={{ color: isMatch ? neon : "rgba(255,255,255,0.82)" }}
+                    style={{ color: isMatch ? neon : "#fff" }}
                     title={displayName}
                   >
                     {shortName}
                     {isMatch && <span className="ml-1.5" style={{ color: neon, fontSize: 8 }}>★</span>}
                   </p>
-                  <p className="text-[10px] mt-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>
+                  <p className="text-[10px] mt-0.5" style={{ color: "#fff" }}>
                     {slot.paperNumber ? `P${slot.paperNumber} · ` : ""}
                     {durationLabel(slot.durationMinutes, isAf)}
                   </p>

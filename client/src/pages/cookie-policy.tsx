@@ -9,10 +9,10 @@ import { useLanguage } from "@/lib/language-context";
 import { useSEO } from "@/hooks/use-seo";
 
 // ── Shared branded chrome for the four logged-out legal pages ───────────────
-// Pure-black street-graffiti: Permanent Marker title, hard-offset accent cards,
+// Pure-black street-graffiti: Bebas display title, hard-offset accent cards,
 // pure #fff body copy (no grey / no faded white), no glow/blur shadows.
 const H1_STYLE: CSSProperties = {
-  fontFamily: "'Permanent Marker',cursive",
+  fontFamily: "'Bebas Neue', system-ui, sans-serif",
   fontSize: 40,
   lineHeight: 1.15,
   letterSpacing: "-0.5px",
@@ -59,7 +59,7 @@ function LegalCrossNav({ isAf, activeHref }: { isAf: boolean; activeHref: string
               style={{
                 display: "inline-block", fontSize: 12.5, fontWeight: 700,
                 padding: "8px 14px", borderRadius: 999, cursor: "pointer",
-                color: active ? "#000" : l.accent,
+                color: active ? "#050508" : l.accent,
                 background: active ? l.accent : "transparent",
                 border: `2px solid ${l.accent}`,
               }}
@@ -102,7 +102,7 @@ export default function CookiePolicyPage() {
   });
 
   return (
-    <div className="min-h-screen" style={{ background: "#000", color: "#fff" }} data-testid="page-cookie-policy">
+    <div className="min-h-screen" style={{ background: "#050508", color: "#fff" }} data-testid="page-cookie-policy">
       <PublicNav />
       <main style={{ maxWidth: 820, margin: "0 auto", padding: "80px 20px 0" }}>
         <style>{LEGAL_BODY_CSS}</style>
@@ -159,7 +159,7 @@ export default function CookiePolicyPage() {
           </p>
 
           <div className="space-y-4">
-            <div className="rounded-xl overflow-hidden" style={{ border: "1px solid rgba(255,255,255,.12)" }}>
+            <div className="rounded-xl overflow-hidden" style={{ border: "1px solid #1b1922" }}>
               <div className="px-4 py-2 flex items-center gap-2" style={{ background: "rgba(159,245,232,.1)" }}>
                 <span className="text-xs font-bold" style={{ color: "#9FF5E8" }}>
                   {isAf ? "Noodsaaklik (altyd aan)" : "Essential (always on)"}
@@ -171,7 +171,7 @@ export default function CookiePolicyPage() {
               <div style={{ overflowX: "auto" }}>
                 <table className="w-full">
                   <thead>
-                    <tr style={{ background: "rgba(255,255,255,.05)" }}>
+                    <tr style={{ background: "#0e0d12" }}>
                       <th className="text-left p-3 font-semibold">{isAf ? "Naam" : "Name"}</th>
                       <th className="text-left p-3 font-semibold">{isAf ? "Tipe" : "Type"}</th>
                       <th className="text-left p-3 font-semibold">{isAf ? "Doel" : "Purpose"}</th>
@@ -224,7 +224,7 @@ export default function CookiePolicyPage() {
               </div>
             </div>
 
-            <div className="rounded-xl overflow-hidden" style={{ border: "1px solid rgba(255,255,255,.12)" }}>
+            <div className="rounded-xl overflow-hidden" style={{ border: "1px solid #1b1922" }}>
               <div className="px-4 py-2 flex items-center gap-2" style={{ background: "rgba(159,216,255,.1)" }}>
                 <span className="text-xs font-bold" style={{ color: "#9FD8FF" }}>
                   {isAf ? "Analise (opsioneel)" : "Analytics (optional)"}
@@ -236,7 +236,7 @@ export default function CookiePolicyPage() {
               <div style={{ overflowX: "auto" }}>
                 <table className="w-full">
                   <thead>
-                    <tr style={{ background: "rgba(255,255,255,.05)" }}>
+                    <tr style={{ background: "#0e0d12" }}>
                       <th className="text-left p-3 font-semibold">{isAf ? "Naam" : "Name"}</th>
                       <th className="text-left p-3 font-semibold">{isAf ? "Tipe" : "Type"}</th>
                       <th className="text-left p-3 font-semibold">{isAf ? "Doel" : "Purpose"}</th>
@@ -259,7 +259,7 @@ export default function CookiePolicyPage() {
               </div>
             </div>
 
-            <div className="rounded-xl overflow-hidden" style={{ border: "1px solid rgba(255,255,255,.12)" }}>
+            <div className="rounded-xl overflow-hidden" style={{ border: "1px solid #1b1922" }}>
               <div className="px-4 py-2 flex items-center gap-2" style={{ background: "rgba(255,226,154,.1)" }}>
                 <span className="text-xs font-bold" style={{ color: "#FFE29A" }}>
                   {isAf ? "Bemarking (opsioneel)" : "Marketing (optional)"}
@@ -325,7 +325,7 @@ export default function CookiePolicyPage() {
             {isAf
               ? "Om jou voorkeure te verander, verwyder die sleutel "
               : "To change your preferences, clear the key "}
-            <code className="font-mono px-1 py-0.5 rounded" style={{ background: "rgba(255,255,255,.06)", color: "#9FF5E8" }}>btk_cookie_consent</code>
+            <code className="font-mono px-1 py-0.5 rounded" style={{ background: "#0e0d12", color: "#9FF5E8" }}>btk_cookie_consent</code>
             {isAf
               ? " uit jou blaaier se plaaslike stoor — die banner sal dan weer verskyn."
               : " from your browser's local storage — the banner will then reappear."}
@@ -410,7 +410,7 @@ export default function CookiePolicyPage() {
               ? "Vir enige vrae oor ons gebruik van koekies of hierdie beleid:"
               : "For any questions about our use of cookies or this policy:"}
           </p>
-          <div className="p-4 rounded-xl space-y-2" style={{ background: "rgba(255,255,255,.04)", border: "1px solid rgba(255,255,255,.1)" }}>
+          <div className="p-4 rounded-xl space-y-2" style={{ background: "#0e0d12", border: "1px solid #1b1922" }}>
             <p><strong>{isAf ? "Verantwoordelike Party:" : "Responsible Party:"}</strong> {isAf ? "KTH Projects (Edms) Bpk h/a KTH-Tech" : "KTH Projects (Pty) Ltd t/a KTH-Tech"}</p>
             <p><strong>{isAf ? "Registrasienommer:" : "Registration number:"}</strong> 2025/627290/07</p>
             <p><strong>{isAf ? "Inligtingsbeampte:" : "Information Officer:"}</strong> BrainTrack (KTH-Tech)</p>

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@400;500;600;700;800;900&family=Permanent+Marker&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -155,7 +155,7 @@
   .anicon { transform: none !important; }
 }
 
-/* ── Luxury Street Graffiti: Poppins everywhere, Permanent Marker accents ── */
+/* ── Luxury Street Graffiti: Poppins everywhere, Bebas display accents ── */
 html, body {
   font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-weight: 400;
@@ -177,9 +177,9 @@ h3 { font-size: 1.25rem; line-height: 1.25; }
      decisions reference these vars. */
   --bt-bg: #050508;
   --bt-ink: #0D0D14;
-  --bt-card: rgba(255,255,255,.03);
-  --bt-card-2: rgba(255,255,255,.05);
-  --bt-line: rgba(255,255,255,.08);
+  --bt-card: #0e0d12;
+  --bt-card-2: #16141d;
+  --bt-line: #1b1922;
   --bt-line-strong: #1C1C26;
   --bt-text: #ffffff;
   --bt-aqua: #9FF5E8;
@@ -259,7 +259,7 @@ h3 { font-size: 1.25rem; line-height: 1.25; }
 }
 .bt-btn:hover { transform: translateY(-3px) rotate(-1deg); }
 .bt-eyebrow {
-  font-family: 'Permanent Marker', cursive; font-size: 16px;
+  font-family: 'Bebas Neue', system-ui, sans-serif; font-size: 16px;
   color: var(--bt-pink); transform: rotate(-2deg); display: inline-block;
 }
 .bt-chip {
@@ -309,7 +309,7 @@ h3 { font-size: 1.25rem; line-height: 1.25; }
 /* Full-width helper for stacked mobile CTAs. */
 .pub-btn-block { display: block; width: 100%; text-align: center; }
 /* Eyebrow / kicker — condensed display caps in a solid accent (replaces the
-   old Permanent Marker eyebrows). */
+   old marker eyebrows). */
 .pub-eyebrow {
   font-family: var(--bt-display); font-size: 18px; letter-spacing: 1.5px;
   text-transform: uppercase; color: var(--a, var(--bt-pink));
@@ -642,11 +642,11 @@ img {
 
   /* Cosmic glow tokens — for buttons / icons / headers */
 
-  --button-outline: rgba(255,255,255, .1);
-  --badge-outline: rgba(255,255,255, .06);
+  --button-outline: #1b1922;
+  --badge-outline: #1b1922;
 
-  --elevate-1: rgba(255,255,255, .04);
-  --elevate-2: rgba(255,255,255, .08);
+  --elevate-1: #16141d;
+  --elevate-2: #1f1c29;
 
   /* ─── Brand: Dark (graffiti neon on Deep Black) ──────────────────
      From the brand board: Deep Black #02040A ground, pure-white ink
@@ -762,18 +762,18 @@ html.light .rainbow-card-red {
   /* Light cards: near-white surface, but keep each card's neon identity as a
      soft coloured edge + gentle glow — matches the light brand board. */
   background:
-    linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,0.94) 100%) !important;
+    linear-gradient(180deg, #ffffff 0%, #fff 100%) !important;
   color: hsl(var(--foreground));
   border: 1.5px solid rgba(var(--tile-neon), 0.55) !important;
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.9),
+    inset 0 1px 0 #fff,
     0 8px 24px rgba(20,30,60,0.08),
     0 0 16px rgba(var(--tile-neon), 0.22) !important;
 }
 html.light .neon-tile:hover {
   border-color: rgba(var(--tile-neon), 0.9) !important;
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.9),
+    inset 0 1px 0 #fff,
     0 12px 30px rgba(20,30,60,0.12),
     0 0 24px rgba(var(--tile-neon), 0.35) !important;
   transform: translateY(-2px);
@@ -786,11 +786,11 @@ html.light .shadcn-card,
 html.light .glass,
 html.light .glass-neon,
 html.light .glass-rainbow {
-  background: linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,0.94) 100%) !important;
+  background: linear-gradient(180deg, #ffffff 0%, #fff 100%) !important;
   color: hsl(var(--foreground));
   border: 1.5px solid rgba(var(--tile-neon), 0.55) !important;
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.9),
+    inset 0 1px 0 #fff,
     0 8px 24px rgba(20,30,60,0.08),
     0 0 16px rgba(var(--tile-neon), 0.22) !important;
 }
@@ -801,7 +801,7 @@ html.light .glass-neon:hover,
 html.light .glass-rainbow:hover {
   border-color: rgba(var(--tile-neon), 0.9) !important;
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.9),
+    inset 0 1px 0 #fff,
     0 12px 30px rgba(20,30,60,0.12),
     0 0 24px rgba(var(--tile-neon), 0.35) !important;
 }
@@ -928,7 +928,7 @@ html.light .text-muted-foreground { color: hsl(var(--muted-foreground)); }
 
 .theme-dopamine .rainbow-btn,
 :root .rainbow-btn {
-  background: rgba(255, 255, 255, 0.05) !important;
+  background: #0e0d12 !important;
   color: white !important;
   border: none !important;
   position: relative;
@@ -1003,7 +1003,7 @@ html.light .text-muted-foreground { color: hsl(var(--muted-foreground)); }
 
 /* ---- Public Nav (fallback if inline styles stripped) ---- */
 .nav-glass {
-  background: #000;
+  background: #050508;
   border-bottom: 3px solid;
   border-image: linear-gradient(90deg,#006BFF,#00E5FF,#22FF66,#FFE600,#FF8A00,#FF2BD6,#8A2BFF) 1;
   box-shadow: 0 4px 24px rgba(0,0,0,0.8);
@@ -1023,13 +1023,13 @@ html.light .nav-glass {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-size: 12px;
-  border: 2px solid rgba(255,255,255,0.12);
+  border: 2px solid #1b1922;
   border-radius: 12px;
   padding: 6px 14px;
   color: #fff;
   transition: all 0.15s ease;
 }
-.nav-link:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.05); transform: scale(1.04); }
+.nav-link:hover { border-color: #fff; background: #0e0d12; transform: scale(1.04); }
 .nav-link-active { background: #006BFF !important; border-color: #006BFF !important; color: #fff !important; }
 .nav-active-indicator { display: none; } /* replaced by sticker fill */
 
@@ -1110,10 +1110,10 @@ html.light .nav-mobile-panel { background: #f9f9ff; border-top: 2px solid rgba(1
 
 /* Obsidian — deep dark academic */
 .theme-obsidian {
-  --button-outline: rgba(255,255,255, .1);
-  --badge-outline: rgba(255,255,255, .06);
-  --elevate-1: rgba(255,255,255, .05);
-  --elevate-2: rgba(255,255,255, .09);
+  --button-outline: #1b1922;
+  --badge-outline: #1b1922;
+  --elevate-1: #16141d;
+  --elevate-2: #1f1c29;
 
   /* obsidian: #0f0f1a bg, #1a1a2e card primary, #16213e card secondary, #2d2d44 borders */
   --background: 240 25% 8%;
@@ -1161,10 +1161,10 @@ html.light .nav-mobile-panel { background: #f9f9ff; border-top: 2px solid rgba(1
 
 /* Dusk — rose gold & black */
 .theme-dusk {
-  --button-outline: rgba(255,255,255, .08);
-  --badge-outline: rgba(255,255,255, .05);
-  --elevate-1: rgba(255,255,255, .04);
-  --elevate-2: rgba(255,255,255, .08);
+  --button-outline: #1b1922;
+  --badge-outline: #1b1922;
+  --elevate-1: #16141d;
+  --elevate-2: #1f1c29;
 
   --background: 0 0% 4%;
   --foreground: 20 20% 90%;
@@ -1485,10 +1485,10 @@ html.light .nav-mobile-panel { background: #f9f9ff; border-top: 2px solid rgba(1
 
 /* Velvet — Sunset: warm sunset tones on true black (coin-locked: 65 coins) */
 .theme-velvet {
-  --button-outline: rgba(255,255,255, .08);
-  --badge-outline: rgba(255,255,255, .05);
-  --elevate-1: rgba(255,255,255, .04);
-  --elevate-2: rgba(255,255,255, .08);
+  --button-outline: #1b1922;
+  --badge-outline: #1b1922;
+  --elevate-1: #16141d;
+  --elevate-2: #1f1c29;
 
   --background: 0 0% 0%;
   --foreground: 30 25% 92%;
@@ -1535,10 +1535,10 @@ html.light .nav-mobile-panel { background: #f9f9ff; border-top: 2px solid rgba(1
 
 /* Midnight — deep navy academic dark (coin-locked: 75 coins) */
 .theme-midnight {
-  --button-outline: rgba(255,255,255, .08);
-  --badge-outline: rgba(255,255,255, .05);
-  --elevate-1: rgba(255,255,255, .04);
-  --elevate-2: rgba(255,255,255, .08);
+  --button-outline: #1b1922;
+  --badge-outline: #1b1922;
+  --elevate-1: #16141d;
+  --elevate-2: #1f1c29;
 
   --background: 230 45% 7%;
   --foreground: 220 30% 92%;
@@ -1585,10 +1585,10 @@ html.light .nav-mobile-panel { background: #f9f9ff; border-top: 2px solid rgba(1
 
 /* Thunder — electric storm: deep charcoal, electric blue, white flash, cyan (coin-locked: 50 coins) */
 .theme-thunder {
-  --button-outline: rgba(255,255,255, .08);
-  --badge-outline: rgba(255,255,255, .05);
-  --elevate-1: rgba(255,255,255, .04);
-  --elevate-2: rgba(255,255,255, .08);
+  --button-outline: #1b1922;
+  --badge-outline: #1b1922;
+  --elevate-1: #16141d;
+  --elevate-2: #1f1c29;
 
   --background: 220 15% 5%;
   --foreground: 210 20% 93%;
@@ -1695,7 +1695,7 @@ html.light .nav-mobile-panel { background: #f9f9ff; border-top: 2px solid rgba(1
     letter-spacing: 0.0125em;
   }
   html:not(.light) body {
-    background-color: #000;
+    background-color: #050508;
     background-image: none;
   }
   html.light body {
@@ -1932,14 +1932,14 @@ html.light .nav-mobile-panel { background: #f9f9ff; border-top: 2px solid rgba(1
   pointer-events: none;
   z-index: 0;
   background-image:
-    radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.6) 50%, transparent 51%),
-    radial-gradient(1px 1px at 70% 50%, rgba(255,255,255,0.4) 50%, transparent 51%),
+    radial-gradient(1px 1px at 20% 30%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 70% 50%, #fff 50%, transparent 51%),
     radial-gradient(1.5px 1.5px at 40% 80%, rgba(6,182,212,0.6) 50%, transparent 51%),
     radial-gradient(1px 1px at 85% 20%, rgba(236,72,153,0.5) 50%, transparent 51%),
-    radial-gradient(1px 1px at 15% 65%, rgba(255,255,255,0.5) 50%, transparent 51%),
+    radial-gradient(1px 1px at 15% 65%, #fff 50%, transparent 51%),
     radial-gradient(2px 2px at 60% 15%, rgba(249,115,22,0.4) 50%, transparent 51%),
     radial-gradient(1px 1px at 90% 75%, rgba(34,197,94,0.45) 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 30% 10%, rgba(255,255,255,0.45) 50%, transparent 51%);
+    radial-gradient(1.5px 1.5px at 30% 10%, #fff 50%, transparent 51%);
   background-size: 320px 320px;
   background-repeat: repeat;
   opacity: 0.85;
@@ -1994,7 +1994,7 @@ html.light .nav-mobile-panel { background: #f9f9ff; border-top: 2px solid rgba(1
     90deg,
     transparent 0%,
     currentColor 40%,
-    rgba(255,255,255,0.9) 50%,
+    #fff 50%,
     currentColor 60%,
     transparent 100%
   );
@@ -2048,18 +2048,18 @@ h3.header-bare {
 
 /* Dark-mode section washes — pure black with a single wordmark-stop glow.
    Keeps the landing page on-brand with the cosmic-neon theme used app-wide. */
-.rainbow-wash-blue   { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(159,216,255,0.14) 0%, transparent 65%), #000; }
-.rainbow-wash-cyan   { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(110,231,249,0.16) 0%, transparent 65%), #000; }
-.rainbow-wash-purple { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(197,179,255,0.16) 0%, transparent 65%), #000; }
-.rainbow-wash-pink   { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(255,183,229,0.16) 0%, transparent 65%), #000; }
-.rainbow-wash-green  { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(197,179,255,0.14) 0%, transparent 65%), #000; }
-.rainbow-wash-amber  { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(255,226,154,0.14)  0%, transparent 65%), #000; }
+.rainbow-wash-blue   { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(159,216,255,0.14) 0%, transparent 65%), #050508; }
+.rainbow-wash-cyan   { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(110,231,249,0.16) 0%, transparent 65%), #050508; }
+.rainbow-wash-purple { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(197,179,255,0.16) 0%, transparent 65%), #050508; }
+.rainbow-wash-pink   { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(255,183,229,0.16) 0%, transparent 65%), #050508; }
+.rainbow-wash-green  { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(197,179,255,0.14) 0%, transparent 65%), #050508; }
+.rainbow-wash-amber  { background: radial-gradient(ellipse 70% 55% at 50% 0%,   rgba(255,226,154,0.14)  0%, transparent 65%), #050508; }
 .rainbow-wash-full   {
   background:
     radial-gradient(ellipse 55% 45% at 15% 0%,  rgba(255,226,154,0.12)  0%, transparent 60%),
     radial-gradient(ellipse 55% 45% at 85% 0%,  rgba(255,183,229,0.12)  0%, transparent 60%),
     radial-gradient(ellipse 60% 50% at 50% 100%,rgba(110,231,249,0.14)  0%, transparent 65%),
-    #000;
+    #050508;
 }
 html.light .rainbow-wash-blue,
 html.light .rainbow-wash-cyan,
@@ -2072,14 +2072,14 @@ html.light .rainbow-wash-full {
 }
 
 .rainbow-card {
-  background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(59,130,246,0.08) 25%, rgba(6,182,212,0.09) 50%, rgba(236,72,153,0.08) 75%, rgba(255,255,255,0.06) 100%);
+  background: linear-gradient(135deg, #0e0d12 0%, rgba(59,130,246,0.08) 25%, rgba(6,182,212,0.09) 50%, rgba(236,72,153,0.08) 75%, #0e0d12 100%);
   border: 1.5px solid rgba(6,182,212,0.28);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), 0 4px 20px rgba(6,182,212,0.14);
+  box-shadow: inset 0 1px 0 #1b1922, 0 4px 20px rgba(6,182,212,0.14);
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 .rainbow-card:hover {
   border-color: rgba(6,182,212,0.45);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.24), 0 8px 32px rgba(6,182,212,0.22);
+  box-shadow: inset 0 1px 0 #1b1922, 0 8px 32px rgba(6,182,212,0.22);
   transform: translateY(-2px);
 }
 
@@ -2092,7 +2092,7 @@ html.light .rainbow-wash-full {
 .rainbow-card-amber,
 .rainbow-card-orange,
 .rainbow-card-red {
-  border: 1px solid rgba(255,255,255,0.10) !important;
+  border: 1px solid #1b1922 !important;
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
@@ -2100,40 +2100,40 @@ html.light .rainbow-wash-full {
 .rainbow-card-blue {
   background:
     linear-gradient(160deg, rgba(159,216,255,0.30) 0%, rgba(159,216,255,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(159,216,255,0.22), 0 4px 14px rgba(0,0,0,0.60) !important;
+  box-shadow: inset 0 1px 0 #1b1922, 0 6px 22px rgba(159,216,255,0.22), 0 4px 14px rgba(0,0,0,0.60) !important;
 }
 .rainbow-card-cyan {
   background:
     linear-gradient(160deg, rgba(110,231,249,0.30) 0%, rgba(110,231,249,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(110,231,249,0.22), 0 4px 14px rgba(0,0,0,0.60) !important;
+  box-shadow: inset 0 1px 0 #1b1922, 0 6px 22px rgba(110,231,249,0.22), 0 4px 14px rgba(0,0,0,0.60) !important;
 }
 .rainbow-card-purple {
   background:
     linear-gradient(160deg, rgba(197,179,255,0.30) 0%, rgba(197,179,255,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(197,179,255,0.24), 0 4px 14px rgba(0,0,0,0.60) !important;
+  box-shadow: inset 0 1px 0 #1b1922, 0 6px 22px rgba(197,179,255,0.24), 0 4px 14px rgba(0,0,0,0.60) !important;
 }
 .rainbow-card-pink {
   background:
     linear-gradient(160deg, rgba(255,183,229,0.30) 0%, rgba(255,183,229,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(255,183,229,0.24), 0 4px 14px rgba(0,0,0,0.60) !important;
+  box-shadow: inset 0 1px 0 #1b1922, 0 6px 22px rgba(255,183,229,0.24), 0 4px 14px rgba(0,0,0,0.60) !important;
 }
 .rainbow-card-green {
   /* violet stands in for green (no green in wordmark palette) */
   background:
     linear-gradient(160deg, rgba(197,179,255,0.30) 0%, rgba(197,179,255,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(197,179,255,0.22), 0 4px 14px rgba(0,0,0,0.60) !important;
+  box-shadow: inset 0 1px 0 #1b1922, 0 6px 22px rgba(197,179,255,0.22), 0 4px 14px rgba(0,0,0,0.60) !important;
 }
 .rainbow-card-amber,
 .rainbow-card-orange {
   background:
     linear-gradient(160deg, rgba(255,226,154,0.30) 0%, rgba(255,226,154,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(255,226,154,0.24), 0 4px 14px rgba(0,0,0,0.60) !important;
+  box-shadow: inset 0 1px 0 #1b1922, 0 6px 22px rgba(255,226,154,0.24), 0 4px 14px rgba(0,0,0,0.60) !important;
 }
 .rainbow-card-red {
   /* warm orange stands in for red (no red in wordmark palette) */
   background:
     linear-gradient(160deg, rgba(255,226,154,0.32) 0%, rgba(255,226,154,0.08) 60%, rgba(0,0,0,0.60) 100%) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 22px rgba(255,226,154,0.24), 0 4px 14px rgba(0,0,0,0.60) !important;
+  box-shadow: inset 0 1px 0 #1b1922, 0 6px 22px rgba(255,226,154,0.24), 0 4px 14px rgba(0,0,0,0.60) !important;
 }
 
 .rainbow-card-blue:hover,
@@ -2145,7 +2145,7 @@ html.light .rainbow-wash-full {
 .rainbow-card-orange:hover,
 .rainbow-card-red:hover {
   transform: translateY(-2px);
-  border-color: rgba(255,255,255,0.20) !important;
+  border-color: #fff !important;
 }
 
 /* Equal-height cards inside any CSS grid */
@@ -2213,11 +2213,11 @@ html.light .rainbow-wash-full {
   );
   background-size: 300% 300%;
   /* animation disabled — only .anicon-* may animate */
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid #1b1922;
   border-radius: 0.75rem;
   padding: 0.5rem 1rem;
   display: inline-block;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+  box-shadow: inset 0 1px 0 #1b1922;
 }
 
 .rainbow-border {
@@ -2432,7 +2432,7 @@ html.light .rainbow-wash-full {
 }
 
 .rizz-chat-header {
-  background: #000;
+  background: #050508;
   border-bottom: 2px solid rgba(110,231,249,0.35);
   border-radius: 1.25rem 1.25rem 0 0;
 }
@@ -2468,8 +2468,8 @@ html.light .rainbow-wash-full {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.07);
+  border: 1px solid #1b1922;
+  background: #0e0d12;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2477,8 +2477,8 @@ html.light .rainbow-wash-full {
   transition: background 0.2s ease, border-color 0.2s ease;
 }
 .rizz-close-btn:hover {
-  background: rgba(255,255,255,0.14);
-  border-color: rgba(255,255,255,0.22);
+  background: #0e0d12;
+  border-color: #fff;
 }
 
 .rizz-messages-area {
@@ -2526,7 +2526,7 @@ html.light .rainbow-wash-full {
 
 .rizz-input-border-top {
   border-top: 2px solid rgba(110,231,249,0.35);
-  background: #000;
+  background: #050508;
 }
 
 .rizz-input {
@@ -2599,7 +2599,7 @@ html.light .rainbow-wash-full {
 .theme-dopamine [data-slot="card"],
 [class*="theme-"][class*="-dark"] [data-slot="card"] {
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.08),
+    inset 0 1px 0 #1b1922,
     0 0 0 1px hsl(var(--primary) / 0.32),
     0 0 28px hsl(var(--primary) / 0.18);
 }
@@ -2626,7 +2626,7 @@ html.light .rainbow-wash-full {
       #FF2BD6 360deg);
   padding: 2.5px;
   box-shadow:
-    0 0 0 1px rgba(255,255,255,0.06),
+    0 0 0 1px #1b1922,
     0 8px 24px rgba(0,0,0,0.55),
     0 0 28px rgba(255,226,154,0.25),
     0 0 36px rgba(110,231,249,0.20),
@@ -2858,10 +2858,10 @@ html.light .rainbow-wash-full {
 }
 
 .theme-glitter {
-  --button-outline: rgba(255,255,255, .12);
-  --badge-outline: rgba(255,255,255, .08);
-  --elevate-1: rgba(255,255,255, .04);
-  --elevate-2: rgba(255,255,255, .08);
+  --button-outline: #1b1922;
+  --badge-outline: #1b1922;
+  --elevate-1: #16141d;
+  --elevate-2: #1f1c29;
 
   --background: 188 25% 12%;
   --foreground: 188 20% 92%;
@@ -2957,10 +2957,10 @@ html.light .rainbow-wash-full {
 
 /* Ocean — deep cyan-teal glassmorphism (store unlock: 120 coins) */
 .theme-ocean {
-  --button-outline: rgba(255,255,255, .08);
-  --badge-outline: rgba(255,255,255, .05);
-  --elevate-1: rgba(255,255,255, .04);
-  --elevate-2: rgba(255,255,255, .08);
+  --button-outline: #1b1922;
+  --badge-outline: #1b1922;
+  --elevate-1: #16141d;
+  --elevate-2: #1f1c29;
 
   --background: 210 40% 5%;
   --foreground: 190 80% 92%;
@@ -3013,10 +3013,10 @@ html.light .rainbow-wash-full {
 
 /* Solar — warm amber-gold glassmorphism dark (store unlock: 120 coins) */
 .theme-solar {
-  --button-outline: rgba(255,255,255, .08);
-  --badge-outline: rgba(255,255,255, .05);
-  --elevate-1: rgba(255,255,255, .04);
-  --elevate-2: rgba(255,255,255, .08);
+  --button-outline: #1b1922;
+  --badge-outline: #1b1922;
+  --elevate-1: #16141d;
+  --elevate-2: #1f1c29;
 
   --background: 25 30% 5%;
   --foreground: 38 90% 92%;
@@ -3072,8 +3072,8 @@ html.light .rainbow-wash-full {
   inset: 0;
   z-index: 0;
   opacity: 0.95;
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 25%, #000 100%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 25%, #000 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #050508 25%, #050508 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #050508 25%, #050508 100%);
 }
 .sa-landmark-scene .sa-blink {
   /* animation disabled — only .anicon-* may animate */
@@ -3220,10 +3220,10 @@ html.light .rainbow-wash-full {
 }
 
 /* ── Hand-drawn graffiti type (brand board) ────────────────────────────
-   .graffiti-hand — Permanent Marker tag lettering for headings/labels.
+   .graffiti-hand — Bebas tag lettering for headings/labels.
    .spray-title  — wrapper for a heading with a SpraySmear behind it. */
 .graffiti-hand {
-  font-family: 'Permanent Marker', cursive;
+  font-family: 'Bebas Neue', system-ui, sans-serif;
   letter-spacing: 0.02em;
   font-weight: 400; /* marker font has one weight; keep it un-bolded */
 }
@@ -3297,9 +3297,9 @@ html.light .rainbow-wash-full {
   /* ---- Core surfaces ---- */
   --bt-bg:            #050508;
   --bt-ink:          #0D0D14;
-  --bt-card:         rgba(255,255,255,.03);
-  --bt-card-2:       rgba(255,255,255,.05);
-  --bt-line:         rgba(255,255,255,.08);
+  --bt-card:         #0e0d12;
+  --bt-card-2:       #16141d;
+  --bt-line:         #1b1922;
   --bt-line-strong:  #1C1C26;
   --bt-text:         #ffffff;
 
@@ -3328,7 +3328,7 @@ html.light .rainbow-wash-full {
 
   /* ---- Type ---- */
   --bt-font:        'Poppins', system-ui, sans-serif;
-  --bt-font-mark:   'Permanent Marker', cursive;
+  --bt-font-mark:   'Bebas Neue', system-ui, sans-serif;
 
   /* ---- Radius ---- */
   --bt-r-sm: 10px;

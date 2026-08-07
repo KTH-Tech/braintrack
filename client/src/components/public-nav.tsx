@@ -51,7 +51,7 @@ export function PublicNav() {
     <nav
       className="fixed top-0 left-0 right-0 z-50"
       style={{
-        background: "#000",
+        background: "#050508",
         borderBottom: "3px solid transparent",
         borderImage: "linear-gradient(90deg,#9FD8FF,#6EE7F9,#94F7C5,#FFE29A,#FFE29A,#FFB7E5,#C5B3FF) 1",
         boxShadow: "0 4px 24px rgba(0,0,0,0.8)",
@@ -78,7 +78,7 @@ export function PublicNav() {
                     data-testid={`link-nav-${link.en.toLowerCase().replace(/\s+/g, "-")}`}
                     style={isActive ? {
                       background: link.color,
-                      color: link.dark ? "#000" : "#fff",
+                      color: link.dark ? "#050508" : "#fff",
                       border: `2px solid ${link.color}`,
                     } : {
                       background: "transparent",
@@ -160,7 +160,7 @@ export function PublicNav() {
                 className="inline-flex items-center justify-center w-9 h-9 rounded-xl text-white transition-all hover:scale-105"
                 style={{ background: mobileOpen ? "#FFB7E5" : "rgba(255,183,229,0.12)", border: "1.5px solid #FFB7E5" }}
               >
-                {mobileOpen ? <X className="h-5 w-5" style={{ color: mobileOpen ? "#000" : "#FFB7E5" }} /> : <Menu className="h-5 w-5" style={{ color: "#FFB7E5" }} />}
+                {mobileOpen ? <X className="h-5 w-5" style={{ color: mobileOpen ? "#050508" : "#FFB7E5" }} /> : <Menu className="h-5 w-5" style={{ color: "#FFB7E5" }} />}
               </button>
             </div>
           </div>
@@ -188,7 +188,7 @@ export function PublicNav() {
                   onClick={() => setMobileOpen(false)}
                   style={isActive ? {
                     background: link.color,
-                    color: link.dark ? "#000" : "#fff",
+                    color: link.dark ? "#050508" : "#fff",
                     border: `2px solid ${link.color}`,
                     animationDelay: `${idx * 50}ms`,
                   } : {

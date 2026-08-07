@@ -1265,7 +1265,7 @@ export default function SubjectDetailPage() {
                         {isPriority && (
                           <span
                             className="absolute -top-2 -right-1 text-[8px] font-black uppercase tracking-[0.1em] px-1.5 py-0.5 rounded-full"
-                            style={{ background: bandHex, color: "#000" }}
+                            style={{ background: bandHex, color: "#050508" }}
                             data-testid={`chip-priority-badge-${topic.id}`}
                           >
                             {isAf ? "Prioriteit" : "Priority"}

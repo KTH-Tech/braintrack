@@ -135,7 +135,7 @@ export default function AdminQrGeneratorPage() {
                   <button
                     onClick={copyLink}
                     className={btnSecondary}
-                    style={{ background: "#000", border: "1.5px solid #9FF5E8", color: "#9FF5E8" }}
+                    style={{ background: "#050508", border: "1.5px solid #9FF5E8", color: "#9FF5E8" }}
                     data-testid="button-qr-copy"
                     aria-label={isAf ? "Kopieer skakel" : "Copy link"}
                   >
@@ -162,7 +162,7 @@ export default function AdminQrGeneratorPage() {
                       onClick={() => setValue(`${origin}${p.path}`)}
                       className={btnSecondary}
                       style={{
-                        background: "#000",
+                        background: "#050508",
                         border: `1.5px solid ${PASTEL[i % PASTEL.length]}`,
                         color: PASTEL[i % PASTEL.length],
                       }}
@@ -211,7 +211,7 @@ export default function AdminQrGeneratorPage() {
                       style={
                         size === s
                           ? { background: "#9FF5E8", color: "#0a0a0a", border: "1.5px solid #9FF5E8" }
-                          : { background: "#000", color: "#9FF5E8", border: "1.5px solid #9FF5E8" }
+                          : { background: "#050508", color: "#9FF5E8", border: "1.5px solid #9FF5E8" }
                       }
                     >
                       {s}px

@@ -79,11 +79,11 @@ const KEYFRAMES = `
    particle so the sparkle reads as scattered starbursts across the whole
    layer, not a synchronised strobe. */
 @keyframes bt-gtwinkle {
-  0%, 100%   { filter: brightness(1)   drop-shadow(0 0 0    rgba(255,255,255,0)); transform: scale(1); }
-  45%        { filter: brightness(1)   drop-shadow(0 0 0    rgba(255,255,255,0)); transform: scale(1); }
-  55%        { filter: brightness(2.4) drop-shadow(0 0 12px rgba(255,255,255,.9)); transform: scale(1.35); }
-  60%        { filter: brightness(1.2) drop-shadow(0 0 3px  rgba(255,255,255,.4)); transform: scale(1.05); }
-  70%        { filter: brightness(1)   drop-shadow(0 0 0    rgba(255,255,255,0)); transform: scale(1); }
+  0%, 100%   { filter: brightness(1)   drop-shadow(0 0 0    transparent); transform: scale(1); }
+  45%        { filter: brightness(1)   drop-shadow(0 0 0    transparent); transform: scale(1); }
+  55%        { filter: brightness(2.4) drop-shadow(0 0 12px #fff); transform: scale(1.35); }
+  60%        { filter: brightness(1.2) drop-shadow(0 0 3px  #fff); transform: scale(1.05); }
+  70%        { filter: brightness(1)   drop-shadow(0 0 0    transparent); transform: scale(1); }
 }
 @keyframes bt-gbloom {
   0%   { transform: translate(-50%,-50%) scale(0.3); opacity: 0; }
@@ -364,7 +364,7 @@ export function ConfettiBurst({ count = 220 }: { count?: number }) {
         style={{
           position: "absolute",
           inset: 0,
-          background: "radial-gradient(circle at 50% 44%, #FFFFFF 0%, rgba(255,255,255,.6) 30%, rgba(255,255,255,0) 70%)",
+          background: "radial-gradient(circle at 50% 44%, #FFFFFF 0%, #fff 30%, transparent 70%)",
           mixBlendMode: "screen",
           animation: "bt-gflash 0.26s ease-out both",
         }}
@@ -380,7 +380,7 @@ export function ConfettiBurst({ count = 220 }: { count?: number }) {
           borderRadius: "50%",
           mixBlendMode: "screen",
           background:
-            "radial-gradient(circle, rgba(255,255,255,0.9) 0%, #9FD8FF 26%, #FFB7E5 52%, rgba(197,179,255,0) 72%)",
+            "radial-gradient(circle, #fff 0%, #9FD8FF 26%, #FFB7E5 52%, rgba(197,179,255,0) 72%)",
           animation: "bt-gbloom 0.95s cubic-bezier(.16,.8,.3,1) both",
         }}
       />
@@ -410,8 +410,8 @@ export function ConfettiBurst({ count = 220 }: { count?: number }) {
           background:
             "conic-gradient(from 0deg, #9FF5E8, #9FD8FF, #FFB7E5, #C5B3FF, #FFE29A, #94F7C5, #9FF5E8)",
           WebkitMask:
-            "radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px))",
-          mask: "radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px))",
+            "radial-gradient(farthest-side, transparent calc(100% - 3px), #050508 calc(100% - 3px))",
+          mask: "radial-gradient(farthest-side, transparent calc(100% - 3px), #050508 calc(100% - 3px))",
           mixBlendMode: "screen",
           animation: "bt-gring 0.75s cubic-bezier(.16,.8,.3,1) both",
         }}
@@ -425,8 +425,8 @@ export function ConfettiBurst({ count = 220 }: { count?: number }) {
           background:
             "conic-gradient(from 120deg, #FFB7E5, #C5B3FF, #9FD8FF, #94F7C5, #FFE29A, #FFB7E5)",
           WebkitMask:
-            "radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2.5px))",
-          mask: "radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2.5px))",
+            "radial-gradient(farthest-side, transparent calc(100% - 2.5px), #050508 calc(100% - 2.5px))",
+          mask: "radial-gradient(farthest-side, transparent calc(100% - 2.5px), #050508 calc(100% - 2.5px))",
           mixBlendMode: "screen",
           animation: "bt-gring 0.85s cubic-bezier(.16,.8,.3,1) 0.05s both",
         }}

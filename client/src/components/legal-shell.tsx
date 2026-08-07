@@ -30,8 +30,8 @@ export function LegalSection({
     <section
       data-testid={testId}
       style={{
-        background: "rgba(255,255,255,.03)",
-        border: "1px solid rgba(255,255,255,.08)",
+        background: "#0e0d12",
+        border: "1px solid #1b1922",
         borderRadius: 16,
         padding: "22px 26px",
       }}
@@ -90,7 +90,7 @@ export function LegalShell({
           display: "flex", alignItems: "center", gap: 12,
           padding: "12px 24px", position: "sticky", top: 0, zIndex: 50,
           background: "rgba(5,5,8,.85)", backdropFilter: "blur(14px)",
-          borderBottom: "1px solid rgba(255,255,255,.07)",
+          borderBottom: "1px solid #1b1922",
         }}
       >
         <Link href="/">
@@ -108,7 +108,7 @@ export function LegalShell({
             data-testid="button-language-toggle"
             style={{
               display: "flex", alignItems: "center", gap: 2, fontSize: 11, fontWeight: 800,
-              border: "1.5px solid rgba(255,255,255,.2)", borderRadius: 8,
+              border: "1.5px solid #1b1922", borderRadius: 8,
               overflow: "hidden", cursor: "pointer", userSelect: "none",
             }}
           >
@@ -137,7 +137,7 @@ export function LegalShell({
           style={{
             display: "inline-flex", alignItems: "center", gap: 8,
             fontSize: 12.5, fontWeight: 700, color: "#fff", opacity: 0.94,
-            border: "1px solid rgba(255,255,255,.18)", borderRadius: 999,
+            border: "1px solid #1b1922", borderRadius: 999,
             padding: "6px 14px", marginBottom: 20,
           }}
         >

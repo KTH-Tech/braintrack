@@ -353,7 +353,7 @@ export default function AdminPartnerBrandingPage() {
                     disabled={saveBrandingMutation.isPending || !isBrandingDirty}
                     data-testid="btn-save-branding"
                     className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-black text-sm uppercase tracking-wider transition disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{ background: "#C5B3FF", color: "#000" }}
+                    style={{ background: "#C5B3FF", color: "#050508" }}
                   >
                     {saveBrandingMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
                     {saveBrandingMutation.isPending ? (isAf ? "Stoor…" : "Saving…") : (isAf ? "Stoor Veranderinge" : "Save Changes")}
@@ -482,7 +482,7 @@ export default function AdminPartnerBrandingPage() {
                           className="py-2 rounded-xl text-xs font-bold transition"
                           style={{
                             background: scheduleFrequency === f ? "#FFE29A" : "#0e0d12",
-                            color: scheduleFrequency === f ? "#000" : "#fff",
+                            color: scheduleFrequency === f ? "#050508" : "#fff",
                             border: `1px solid ${scheduleFrequency === f ? "#FFE29A" : "#1b1922"}`,
                           }}
                         >
@@ -560,7 +560,7 @@ export default function AdminPartnerBrandingPage() {
                     disabled={saveScheduleMutation.isPending}
                     data-testid="btn-save-schedule"
                     className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-black text-sm uppercase tracking-wider transition disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{ background: "#FFE29A", color: "#000" }}
+                    style={{ background: "#FFE29A", color: "#050508" }}
                   >
                     {saveScheduleMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
                     {saveScheduleMutation.isPending ? (isAf ? "Stoor…" : "Saving…") : (isAf ? "Stoor Skedule" : "Save Schedule")}

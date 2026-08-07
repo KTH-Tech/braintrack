@@ -37,7 +37,7 @@ export function KthTechLogo({
       <title>{title}</title>
       <circle cx="120" cy="120" r="112" fill="none" stroke={monochrome} strokeWidth="4" />
       <circle cx="120" cy="120" r="100" fill="none" stroke={monochrome} strokeWidth="2.5" />
-      <g fill={monochrome} fontFamily="'Bebas Neue','Impact','Arial Black',sans-serif" fontWeight={900} textAnchor="middle">
+      <g fill={monochrome} fontFamily="'Bebas Neue', system-ui, sans-serif" fontWeight={900} textAnchor="middle">
         <text x="120" y="130" fontSize="86" letterSpacing="2">KTH</text>
         <text x="120" y="172" fontSize="30" letterSpacing="10">TECH</text>
       </g>
@@ -65,7 +65,7 @@ export function KthTechChip({
       <KthTechLogo size={size} title={label} />
       <span
         style={{
-          fontFamily: "'Bebas Neue','Impact','Arial Black',sans-serif",
+          fontFamily: "'Bebas Neue', system-ui, sans-serif",
           fontWeight: 900,
           letterSpacing: 3,
           textTransform: "uppercase",

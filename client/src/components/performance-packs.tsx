@@ -904,7 +904,7 @@ export function RescuePackAlert({ isAf }: { isAf: boolean }) {
             key={pack.id ?? idx}
             className="relative overflow-hidden"
             style={{
-              background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
+              background: "linear-gradient(#0e0d12, #0e0d12), #050508",
               border: "1.5px solid #FF8DA1",
               borderRadius: 20,
               animation: "bt-fadeup .45s cubic-bezier(.22,1,.36,1) both",
@@ -925,7 +925,7 @@ export function RescuePackAlert({ isAf }: { isAf: boolean }) {
                   <ShieldAlert className="w-5 h-5" style={{ color: "#FF8DA1" }} />
                 </div>
                 <div className="min-w-0">
-                  <div style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 16, color: "#FF8DA1", transform: "rotate(-1.5deg)", display: "inline-block" }}>
+                  <div style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: 16, color: "#FF8DA1", transform: "rotate(-1.5deg)", display: "inline-block" }}>
                     {isAf ? "Reddingspakket" : "Rescue Pack"}
                   </div>
                   <p className="text-base font-black text-white leading-tight">

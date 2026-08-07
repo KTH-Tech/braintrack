@@ -13,9 +13,9 @@ interface Star {
 }
 
 const NEON_HUES = [
-  "rgba(255,255,255,1)",
-  "rgba(255,255,255,1)",
-  "rgba(255,255,255,1)",
+  "#fff",
+  "#fff",
+  "#fff",
   "rgba(6,182,212,1)",   // cyan
   "rgba(236,72,153,1)",  // pink
   "rgba(59,130,246,1)",  // blue

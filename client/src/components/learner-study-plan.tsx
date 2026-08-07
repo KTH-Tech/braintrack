@@ -121,7 +121,7 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
       className="relative overflow-hidden"
       data-testid="study-plan-widget"
       style={{
-        background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
+        background: "linear-gradient(#0e0d12, #0e0d12), #050508",
         border: `1.5px solid ${ACCENT}`,
         borderRadius: 20,
       }}
@@ -133,14 +133,14 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
         style={{ background: "linear-gradient(90deg,#FFB7E5,#FFE29A,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)" }}
       />
 
-      <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid rgba(255,255,255,.08)" }}>
+      <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid #1b1922" }}>
         <div className="flex items-center gap-2">
           <Target className="w-4 h-4" style={{ color: ACCENT }} />
           <h2 className="text-sm uppercase tracking-[0.14em]" style={{ color: ACCENT, fontFamily: "'Poppins',sans-serif", fontWeight: 800 }}>
             {isAf ? "Studieplan" : "Study Plan"}
           </h2>
         </div>
-        <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
+        <span style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
           {isAf ? "Top 3 swak" : "Top 3 weak"}
         </span>
       </div>
@@ -155,7 +155,7 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
             <div
               className="relative rounded-2xl p-4 overflow-hidden"
               style={{
-                background: "rgba(255,255,255,.03)",
+                background: "#0e0d12",
                 border: `1.5px solid ${u.hex}`,
               }}
             >
@@ -236,7 +236,7 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
             <div
               key={i}
               className="h-16 rounded-xl animate-pulse"
-              style={{ background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.08)" }}
+              style={{ background: "#0e0d12", border: "1px solid #1b1922" }}
             />
           ))
         ) : topics.length === 0 ? (
@@ -266,7 +266,7 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
                 className="flex items-center gap-3 p-3 rounded-xl"
                 data-testid={`study-plan-topic-${idx}`}
                 style={{
-                  background: "rgba(255,255,255,.03)",
+                  background: "#0e0d12",
                   border: `1px solid ${pastel.hex}55`,
                 }}
               >
@@ -321,7 +321,7 @@ export function LearnerStudyPlan({ isAf }: StudyPlanProps) {
         )}
 
         {(readinessEntries.length > 0 || overallReadiness > 0) && (
-          <div className="pt-3 mt-1 space-y-2" style={{ borderTop: "1px solid rgba(255,255,255,.08)" }} data-testid="readiness-summary">
+          <div className="pt-3 mt-1 space-y-2" style={{ borderTop: "1px solid #1b1922" }} data-testid="readiness-summary">
             <div className="flex items-center justify-between gap-2">
               <p className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.16em]" style={{ color: ACCENT, fontFamily: "'Poppins',sans-serif", fontWeight: 800 }}>
                 <ShieldCheck className="w-3.5 h-3.5" />

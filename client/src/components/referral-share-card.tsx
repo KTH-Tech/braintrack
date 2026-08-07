@@ -74,7 +74,7 @@ export function ReferralShareCard({ isAf = false }: { isAf?: boolean }) {
         <div
           role="heading"
           aria-level={2}
-          style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 18, color: "#94F7C5" }}
+          style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: 18, color: "#94F7C5" }}
         >
           {isAf ? "Bring jou tjommies" : "Bring your squad"}
         </div>

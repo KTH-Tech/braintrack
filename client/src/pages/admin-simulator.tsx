@@ -388,7 +388,7 @@ export default function AdminSimulatorPage() {
   const t = (en: string, af: string) => (isAf ? af : en);
 
   return (
-    <div className="min-h-screen text-white" style={{ background: "#000", fontFamily: "'Poppins',sans-serif" }}>
+    <div className="min-h-screen text-white" style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}>
       <AdminTopNav current="simulator" />
       <div style={{ maxWidth: 1180, margin: "0 auto", padding: "28px 20px 64px" }}>
         <h1 style={{ fontSize: 30, fontWeight: 900, letterSpacing: -0.8, margin: "0 0 6px" }}>Simulator</h1>

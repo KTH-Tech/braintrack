@@ -155,7 +155,7 @@ export default function SignInPage() {
   const isSignIn = mode === "signin";
 
   return (
-    <div className="min-h-screen" style={{ background: "#000", color: "#fff" }} data-testid="page-signin">
+    <div className="min-h-screen" style={{ background: "#050508", color: "#fff" }} data-testid="page-signin">
       <PublicNav />
 
       <main style={{ paddingTop: 64 }}>
@@ -181,7 +181,7 @@ export default function SignInPage() {
         >
           <h1
             style={{
-              fontFamily: "'Permanent Marker',cursive",
+              fontFamily: "'Bebas Neue', system-ui, sans-serif",
               fontSize: "clamp(30px,8.5vw,44px)",
               lineHeight: 1.05,
               letterSpacing: "-.5px",
@@ -275,7 +275,7 @@ export default function SignInPage() {
                       <span key={r} className="bts-role" data-testid={`role-${r}`} onClick={() => setRole(r)}
                         style={{
                           flex: 1, textAlign: "center", padding: "11px 14px", borderRadius: 12, fontWeight: 800, fontSize: 14,
-                          color: role === r ? "#000" : "#fff",
+                          color: role === r ? "#050508" : "#fff",
                           background: role === r ? "#9FF5E8" : "transparent",
                           border: `2px solid ${role === r ? "#9FF5E8" : "#fff"}`,
                         }}>
@@ -294,9 +294,9 @@ export default function SignInPage() {
 
               <button type="submit" className="bts-cta" disabled={submit.isPending} data-testid="button-submit-auth"
                 style={{
-                  fontFamily: "'Poppins',sans-serif", fontWeight: 900, fontSize: 16, color: "#000",
+                  fontFamily: "'Poppins',sans-serif", fontWeight: 900, fontSize: 16, color: "#050508",
                   background: CTA_GRADIENT, backgroundSize: "200% 100%", animation: "bt-rainbow 5s linear infinite",
-                  border: "2.5px solid #000", borderRadius: 12, padding: "15px 20px", cursor: "pointer",
+                  border: "2.5px solid #050508", borderRadius: 12, padding: "15px 20px", cursor: "pointer",
                   boxShadow: "5px 5px 0 0 #fff", marginTop: 4,
                 }}>
                 {submit.isPending ? (isSignIn ? t.signingIn : t.creating) : (isSignIn ? t.signIn : t.signUp)}

@@ -35,7 +35,7 @@ export function NextMilestoneWidget({ isAf = false }: NextMilestoneWidgetProps) 
     return (
       <div
         className="h-full min-h-[180px] animate-pulse"
-        style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: "1px solid rgba(255,255,255,.08)", borderRadius: 20 }}
+        style={{ background: "linear-gradient(#0e0d12, #0e0d12), #050508", border: "1px solid #1b1922", borderRadius: 20 }}
       />
     );
   }
@@ -44,7 +44,7 @@ export function NextMilestoneWidget({ isAf = false }: NextMilestoneWidgetProps) 
     return (
       <div
         className="h-full p-5 text-center flex flex-col items-center justify-center"
-        style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: `1.5px solid ${ACCENT}`, borderRadius: 20 }}
+        style={{ background: "linear-gradient(#0e0d12, #0e0d12), #050508", border: `1.5px solid ${ACCENT}`, borderRadius: 20 }}
       >
         <Trophy className="w-7 h-7 mx-auto mb-2" style={{ color: ACCENT }} />
         <p className="text-sm font-semibold text-white">
@@ -70,7 +70,7 @@ export function NextMilestoneWidget({ isAf = false }: NextMilestoneWidgetProps) 
     <Link href="/rewards" className="block h-full">
       <div
         className="h-full p-5 flex flex-col gap-4 cursor-pointer transition-transform hover:-translate-y-1"
-        style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: `1.5px solid ${ACCENT}`, borderRadius: 20 }}
+        style={{ background: "linear-gradient(#0e0d12, #0e0d12), #050508", border: `1.5px solid ${ACCENT}`, borderRadius: 20 }}
         data-testid="next-milestone-widget"
       >
         <div className="flex items-center gap-3">
@@ -86,7 +86,7 @@ export function NextMilestoneWidget({ isAf = false }: NextMilestoneWidgetProps) 
             </p>
             <p
               className="truncate"
-              style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", transformOrigin: "left center" }}
+              style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", transformOrigin: "left center" }}
             >
               {isAf ? milestone.nameAf : milestone.name}
             </p>
@@ -97,7 +97,7 @@ export function NextMilestoneWidget({ isAf = false }: NextMilestoneWidgetProps) 
         </div>
 
         <div className="space-y-1.5">
-          <div className="h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,.08)" }}>
+          <div className="h-2 rounded-full overflow-hidden" style={{ background: "#0e0d12" }}>
             <div
               className="h-full rounded-full transition-[width] duration-700 ease-out"
               style={{

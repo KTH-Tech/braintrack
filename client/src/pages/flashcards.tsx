@@ -935,7 +935,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
             style={{
               background: "#050508",
               // Hard offset in the accent colour, not a blurred black drop —
-              // on a #000 page a soft dark shadow is invisible anyway, so it
+              // on a #050508 page a soft dark shadow is invisible anyway, so it
               // was pure cost. This reads as a printed sticker edge.
               boxShadow: "7px 7px 0 0 #9FF5E8",
               backfaceVisibility: "hidden",

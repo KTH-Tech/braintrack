@@ -47,7 +47,7 @@ export function YouVsYouChart({ isAf = false }: YouVsYouChartProps) {
     return (
       <div
         className="h-full min-h-[180px] animate-pulse"
-        style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: "1px solid rgba(255,255,255,.08)", borderRadius: 20 }}
+        style={{ background: "linear-gradient(#0e0d12, #0e0d12), #050508", border: "1px solid #1b1922", borderRadius: 20 }}
       />
     );
   }
@@ -55,7 +55,7 @@ export function YouVsYouChart({ isAf = false }: YouVsYouChartProps) {
     return (
       <div
         className="h-full p-5 flex flex-col items-center justify-center text-center"
-        style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: `1.5px solid ${ACCENT}`, borderRadius: 20 }}
+        style={{ background: "linear-gradient(#0e0d12, #0e0d12), #050508", border: `1.5px solid ${ACCENT}`, borderRadius: 20 }}
       >
         <Target className="w-7 h-7 mb-2" style={{ color: ACCENT }} />
         <p className="text-sm font-semibold text-white">
@@ -79,14 +79,14 @@ export function YouVsYouChart({ isAf = false }: YouVsYouChartProps) {
   return (
     <div
       className="h-full p-5 flex flex-col gap-4"
-      style={{ background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508", border: `1.5px solid ${ACCENT}`, borderRadius: 20 }}
+      style={{ background: "linear-gradient(#0e0d12, #0e0d12), #050508", border: `1.5px solid ${ACCENT}`, borderRadius: 20 }}
       data-testid="you-vs-you-chart"
     >
       <div className="flex items-center justify-between gap-3">
         <p className="text-[11px] uppercase tracking-[0.18em]" style={{ color: ACCENT, fontFamily: "'Poppins',sans-serif", fontWeight: 800 }}>
           {isAf ? "Hierdie week vs vorige" : "This week vs last"}
         </p>
-        <span style={{ fontFamily: "'Permanent Marker',cursive", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
+        <span style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
           {isAf ? "jy vs JY" : "you vs YOU"}
         </span>
       </div>
@@ -98,7 +98,7 @@ export function YouVsYouChart({ isAf = false }: YouVsYouChartProps) {
             <div
               key={labelEn}
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl"
-              style={{ background: "rgba(255,255,255,.03)", border: `1px solid ${hex}55` }}
+              style={{ background: "#0e0d12", border: `1px solid ${hex}55` }}
             >
               <div
                 className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"

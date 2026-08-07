@@ -17,8 +17,8 @@ import { Target, TrendingUp, Zap, Sparkles } from "lucide-react";
 
 const BG = "#050508";
 const cardStyle = (accent?: string, radius = 20): CSSProperties => ({
-  background: "linear-gradient(rgba(255,255,255,.05), rgba(255,255,255,.05)), #050508",
-  border: accent ? `1.5px solid ${accent}` : "1px solid rgba(255,255,255,.08)",
+  background: "linear-gradient(#0e0d12, #0e0d12), #050508",
+  border: accent ? `1.5px solid ${accent}` : "1px solid #1b1922",
   borderRadius: radius,
 });
 

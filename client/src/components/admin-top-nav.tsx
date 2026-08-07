@@ -134,7 +134,7 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
           width: 240,
           zIndex: 40,
           background: "#050508",
-          borderRight: "1px solid rgba(255,255,255,.07)",
+          borderRight: "1px solid #1b1922",
           padding: "22px 14px",
           display: "flex",
           flexDirection: "column",
@@ -205,7 +205,7 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
                       border: active ? "1px solid #9FF5E8" : "1px solid transparent",
                       transition: "all .2s",
                     }}
-                    onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = "rgba(255,255,255,.05)"; }}
+                    onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = "#0e0d12"; }}
                     onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = "transparent"; }}
                   >
                     <Icon style={{ width: 15, height: 15, flex: "none" }} />
@@ -231,14 +231,14 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
                 fontSize: 12,
                 color: "#fff",
                 background: "transparent",
-                border: "1px solid rgba(255,255,255,.2)",
+                border: "1px solid #1b1922",
                 borderRadius: 10,
                 padding: "8px 10px",
                 cursor: "pointer",
                 transition: "border-color .2s",
               }}
               onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#9FD8FF"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,.2)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#fff"; }}
             >
               {isAf ? "EN" : "AF"}
             </button>
@@ -252,7 +252,7 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
                 justifyContent: "center",
                 width: 38,
                 color: "#fff",
-                border: "1px solid rgba(255,255,255,.2)",
+                border: "1px solid #1b1922",
                 borderRadius: 10,
                 transition: "border-color .2s",
               }}
@@ -274,13 +274,13 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
               fontSize: 13,
               color: "#fff",
               background: "transparent",
-              border: "1px solid rgba(255,255,255,.14)",
+              border: "1px solid #1b1922",
               borderRadius: 10,
               padding: "9px 12px",
               transition: "all .2s",
             }}
             onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#FFB7E5"; e.currentTarget.style.color = "#FFB7E5"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,.14)"; e.currentTarget.style.color = "#fff"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#fff"; e.currentTarget.style.color = "#fff"; }}
           >
             <LogOut style={{ width: 15, height: 15 }} />
             {isAf ? "Teken Uit" : "Logout"}

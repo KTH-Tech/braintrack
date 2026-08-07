@@ -168,7 +168,7 @@ export default function AboutPage() {
   });
 
   return (
-    <div className="min-h-screen" style={{ background: "#000", color: "#fff" }} data-testid="page-about">
+    <div className="min-h-screen" style={{ background: "#050508", color: "#fff" }} data-testid="page-about">
       <PublicNav />
 
       <main style={{ paddingTop: 64, overflowX: "hidden" }}>
@@ -195,7 +195,7 @@ export default function AboutPage() {
             <div
               data-testid="text-about-tagline"
               style={{
-                fontFamily: "'Permanent Marker',cursive",
+                fontFamily: "'Bebas Neue', system-ui, sans-serif",
                 color: "#9FF5E8",
                 fontSize: "clamp(16px,4vw,20px)",
                 transform: "rotate(-2deg)",

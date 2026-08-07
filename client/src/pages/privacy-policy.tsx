@@ -9,10 +9,10 @@ import { useLanguage } from "@/lib/language-context";
 import { useSEO } from "@/hooks/use-seo";
 
 // ── Shared branded chrome for the four logged-out legal pages ───────────────
-// Pure-black street-graffiti: Permanent Marker title, hard-offset accent cards,
+// Pure-black street-graffiti: Bebas display title, hard-offset accent cards,
 // pure #fff body copy (no grey / no faded white), no glow/blur shadows.
 const H1_STYLE: CSSProperties = {
-  fontFamily: "'Permanent Marker',cursive",
+  fontFamily: "'Bebas Neue', system-ui, sans-serif",
   fontSize: 40,
   lineHeight: 1.15,
   letterSpacing: "-0.5px",
@@ -59,7 +59,7 @@ function LegalCrossNav({ isAf, activeHref }: { isAf: boolean; activeHref: string
               style={{
                 display: "inline-block", fontSize: 12.5, fontWeight: 700,
                 padding: "8px 14px", borderRadius: 999, cursor: "pointer",
-                color: active ? "#000" : l.accent,
+                color: active ? "#050508" : l.accent,
                 background: active ? l.accent : "transparent",
                 border: `2px solid ${l.accent}`,
               }}
@@ -101,7 +101,7 @@ export default function PrivacyPolicyPage() {
   });
 
   return (
-    <div className="min-h-screen" style={{ background: "#000", color: "#fff" }} data-testid="page-privacy-policy">
+    <div className="min-h-screen" style={{ background: "#050508", color: "#fff" }} data-testid="page-privacy-policy">
       <PublicNav />
       <main style={{ maxWidth: 820, margin: "0 auto", padding: "80px 20px 0" }}>
         <style>{LEGAL_BODY_CSS}</style>

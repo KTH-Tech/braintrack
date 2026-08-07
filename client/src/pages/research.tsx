@@ -193,7 +193,7 @@ export default function ResearchPage() {
   });
 
   return (
-    <div className="min-h-screen" style={{ background: "#000", color: "#fff", overflowX: "hidden" }} data-testid="page-research">
+    <div className="min-h-screen" style={{ background: "#050508", color: "#fff", overflowX: "hidden" }} data-testid="page-research">
       <PublicNav />
 
       <main style={{ paddingTop: 64 }}>
@@ -216,8 +216,8 @@ export default function ResearchPage() {
             <div
               style={{
                 display: "inline-block", fontSize: 12, fontWeight: 900,
-                letterSpacing: "1px", textTransform: "uppercase", color: "#000",
-                background: "#94F7C5", border: "2.5px solid #000",
+                letterSpacing: "1px", textTransform: "uppercase", color: "#050508",
+                background: "#94F7C5", border: "2.5px solid #050508",
                 boxShadow: "5px 5px 0 0 #94F7C5", borderRadius: 999,
                 padding: "9px 18px", marginBottom: 22, transform: "rotate(-1deg)",
               }}
@@ -256,7 +256,7 @@ export default function ResearchPage() {
                 className="btr-sticker"
                 data-testid={`card-stat-${i}`}
                 style={{
-                  background: "#000", border: `2.5px solid ${rs.color}`,
+                  background: "#050508", border: `2.5px solid ${rs.color}`,
                   boxShadow: `6px 6px 0 0 ${rs.color}`, borderRadius: 18,
                   padding: "24px 18px", textAlign: "center",
                 }}
@@ -271,7 +271,7 @@ export default function ResearchPage() {
           <section
             data-testid="section-patterns"
             style={{
-              background: "#000", border: "2.5px solid #FFB7E5",
+              background: "#050508", border: "2.5px solid #FFB7E5",
               boxShadow: "6px 6px 0 0 #FFB7E5", borderRadius: 20,
               padding: "clamp(22px,4vw,32px)",
             }}
@@ -285,7 +285,7 @@ export default function ResearchPage() {
                     <span style={{ color: "#fff" }}>{rb.topic}</span>
                     <span style={{ color: rb.color, whiteSpace: "nowrap" }}>{rb.freq}</span>
                   </div>
-                  <div style={{ height: 14, borderRadius: 999, background: "#141418", border: "2px solid #000", overflow: "hidden" }}>
+                  <div style={{ height: 14, borderRadius: 999, background: "#141418", border: "2px solid #050508", overflow: "hidden" }}>
                     <div
                       style={{
                         height: "100%", width: `${rb.pct}%`, borderRadius: 999,
@@ -302,8 +302,8 @@ export default function ResearchPage() {
           {/* ── Quote sticker ──────────────────────────────────── */}
           <div
             style={{
-              marginTop: 26, background: "#9FD8FF", color: "#000",
-              border: "2.5px solid #000", boxShadow: "6px 6px 0 0 #9FD8FF",
+              marginTop: 26, background: "#9FD8FF", color: "#050508",
+              border: "2.5px solid #050508", boxShadow: "6px 6px 0 0 #9FD8FF",
               borderRadius: 16, padding: "24px 28px", fontSize: "clamp(15px,2.6vw,18px)",
               lineHeight: 1.6, fontWeight: 700, transform: "rotate(-.5deg)",
             }}
@@ -315,13 +315,13 @@ export default function ResearchPage() {
           <section
             data-testid="section-rizz"
             style={{
-              marginTop: 26, background: "#000", border: "2.5px solid #94F7C5",
+              marginTop: 26, background: "#050508", border: "2.5px solid #94F7C5",
               boxShadow: "6px 6px 0 0 #94F7C5", borderRadius: 22,
               padding: "clamp(24px,4vw,36px)",
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
-              <div style={{ width: 60, height: 60, flex: "none", borderRadius: 16, background: "#000", border: "2.5px solid #94F7C5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32 }}>
+              <div style={{ width: 60, height: 60, flex: "none", borderRadius: 16, background: "#050508", border: "2.5px solid #94F7C5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32 }}>
                 🤖
               </div>
               <div>
@@ -359,12 +359,12 @@ export default function ResearchPage() {
                 className="btr-sticker"
                 data-testid={`card-pillar-${i}`}
                 style={{
-                  background: "#000", border: `2.5px solid ${rp.color}`,
+                  background: "#050508", border: `2.5px solid ${rp.color}`,
                   boxShadow: `6px 6px 0 0 ${rp.color}`, borderRadius: 20, padding: 26,
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
-                  <div style={{ width: 54, height: 54, flex: "none", borderRadius: 14, background: "#000", border: `2.5px solid ${rp.color}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28 }}>
+                  <div style={{ width: 54, height: 54, flex: "none", borderRadius: 14, background: "#050508", border: `2.5px solid ${rp.color}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28 }}>
                     {rp.emoji}
                   </div>
                   <div>
@@ -387,7 +387,7 @@ export default function ResearchPage() {
           {/* ── Research model flow ────────────────────────────── */}
           <section
             style={{
-              marginTop: 56, background: "#000", border: "2.5px solid #C5B3FF",
+              marginTop: 56, background: "#050508", border: "2.5px solid #C5B3FF",
               boxShadow: "6px 6px 0 0 #C5B3FF", borderRadius: 22,
               padding: "clamp(24px,4vw,36px)", textAlign: "center",
             }}
@@ -409,7 +409,7 @@ export default function ResearchPage() {
             <div style={{ height: 6, borderRadius: 999, background: FLOW_GRADIENT, backgroundSize: "300% 100%", animation: "bt-flow 4s linear infinite", marginBottom: 24 }} />
             <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 10 }}>
               {t.outputs.map((ro) => (
-                <span key={ro.label} style={{ fontSize: 13.5, fontWeight: 900, color: "#000", background: `linear-gradient(100deg,${ro.c1},${ro.c2})`, border: "2px solid #000", borderRadius: 999, padding: "10px 18px" }}>
+                <span key={ro.label} style={{ fontSize: 13.5, fontWeight: 900, color: "#050508", background: `linear-gradient(100deg,${ro.c1},${ro.c2})`, border: "2px solid #050508", borderRadius: 999, padding: "10px 18px" }}>
                   {ro.label}
                 </span>
               ))}

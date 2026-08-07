@@ -151,7 +151,7 @@ export function CookieConsentBanner() {
           <div className="flex items-start gap-3 flex-1 min-w-0">
             <div
               className="mt-0.5 shrink-0 w-8 h-8 rounded-lg flex items-center justify-center"
-              style={{ background: "#000", border: "1px solid #6EE7F9" }}
+              style={{ background: "#050508", border: "1px solid #6EE7F9" }}
             >
               <Cookie className="w-4 h-4" style={{ color: "#6EE7F9" }} />
             </div>
@@ -217,7 +217,7 @@ export function CookieConsentBanner() {
         {expanded && (
           <div
             className="px-4 py-4 space-y-4"
-            style={{ borderTop: "1px solid rgba(255,255,255,0.12)" }}
+            style={{ borderTop: "1px solid #1b1922" }}
             data-testid="cookie-preferences-panel"
           >
             <p className="text-xs text-white">
@@ -227,7 +227,7 @@ export function CookieConsentBanner() {
             </p>
 
             <div>
-              <div className="flex items-start justify-between gap-4 py-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.12)" }}>
+              <div className="flex items-start justify-between gap-4 py-3" style={{ borderBottom: "1px solid #1b1922" }}>
                 <div className="space-y-0.5 flex-1">
                   <div className="flex items-center gap-1.5">
                     <p className="text-xs font-bold text-white">
@@ -249,7 +249,7 @@ export function CookieConsentBanner() {
                 />
               </div>
 
-              <div className="flex items-start justify-between gap-4 py-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.12)" }}>
+              <div className="flex items-start justify-between gap-4 py-3" style={{ borderBottom: "1px solid #1b1922" }}>
                 <div className="space-y-0.5 flex-1">
                   <p className="text-xs font-bold text-white">
                     {isAf ? "Analitiese koekies" : "Analytics cookies"}
@@ -268,7 +268,7 @@ export function CookieConsentBanner() {
                 />
               </div>
 
-              <div className="flex items-start justify-between gap-4 py-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.12)" }}>
+              <div className="flex items-start justify-between gap-4 py-3" style={{ borderBottom: "1px solid #1b1922" }}>
                 <div className="space-y-0.5 flex-1">
                   <p className="text-xs font-bold text-white">
                     {isAf ? "Bemarkingskoekies" : "Marketing cookies"}

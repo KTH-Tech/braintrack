@@ -58,7 +58,7 @@ const CardTitle = React.forwardRef<HTMLDivElement, CardTitleProps>(
               borderRadius: 9,
               background: `linear-gradient(135deg, ${tint}33, ${tint}11)`,
               border: `1px solid ${tint}66`,
-              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.18)",
+              boxShadow: "inset 0 1px 0 #1b1922",
               color: tint,
             }}
           >

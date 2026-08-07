@@ -329,7 +329,7 @@ function SchoolOnboardingForm({ onClose, onSuccess }: { onClose: () => void; onS
                 <div
                   className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black bg-black shrink-0"
                   style={
-                    done ? { color: "#000", background: A, border: `1.5px solid ${A}` }
+                    done ? { color: "#050508", background: A, border: `1.5px solid ${A}` }
                     : active ? { color: A, border: `1.5px solid ${A}` }
                     : { color: "#fff", border: "1px solid #1b1922" }
                   }
@@ -517,7 +517,7 @@ function SchoolOnboardingForm({ onClose, onSuccess }: { onClose: () => void; onS
               disabled={!canNext()}
               onClick={() => setStep(s => s + 1)}
               className="inline-flex items-center gap-1.5 rounded-xl px-5 py-2 text-xs font-black uppercase tracking-[0.16em] disabled:opacity-35 transition-transform hover:scale-[1.02]"
-              style={{ background: `linear-gradient(90deg,${A},#9FD8FF)`, color: "#000" }}
+              style={{ background: `linear-gradient(90deg,${A},#9FD8FF)`, color: "#050508" }}
             >
               {isAf ? "Volgende" : "Next"} →
             </button>
@@ -526,7 +526,7 @@ function SchoolOnboardingForm({ onClose, onSuccess }: { onClose: () => void; onS
               disabled={createMutation.isPending || !form.schoolName.trim()}
               onClick={() => createMutation.mutate()}
               className="inline-flex items-center gap-1.5 rounded-xl px-5 py-2 text-xs font-black uppercase tracking-[0.16em] disabled:opacity-35 transition-transform hover:scale-[1.02]"
-              style={{ background: `linear-gradient(90deg,${A},#9FD8FF)`, color: "#000" }}
+              style={{ background: `linear-gradient(90deg,${A},#9FD8FF)`, color: "#050508" }}
             >
               {createMutation.isPending
                 ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> {isAf ? "Skep…" : "Creating…"}</>

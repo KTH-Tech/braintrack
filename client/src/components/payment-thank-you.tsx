@@ -110,7 +110,7 @@ export function PaymentThankYou({
         <div style={{ textAlign: "center", marginBottom: 8 }}>
           <div
             style={{
-              fontFamily: "'Permanent Marker',cursive",
+              fontFamily: "'Bebas Neue', system-ui, sans-serif",
               fontSize: "clamp(30px,7vw,54px)",
               lineHeight: 1,
               letterSpacing: -1,
@@ -153,7 +153,7 @@ export function PaymentThankYou({
               aria-level={1}
               data-testid="thank-you-heading"
               style={{
-                fontFamily: "'Permanent Marker',cursive",
+                fontFamily: "'Bebas Neue', system-ui, sans-serif",
                 fontSize: "clamp(56px,15vw,124px)",
                 lineHeight: 0.82,
                 letterSpacing: -2,
@@ -229,7 +229,7 @@ export function PaymentThankYou({
           <div style={{ minWidth: 0 }}>
             <p
               style={{
-                fontFamily: "'Permanent Marker',cursive",
+                fontFamily: "'Bebas Neue', system-ui, sans-serif",
                 fontSize: "clamp(19px,3.6vw,25px)",
                 margin: "0 0 8px",
               }}
@@ -293,7 +293,7 @@ export function PaymentThankYou({
               <Gift style={{ width: 22, height: 22, color: PASTEL.mint, flex: "none" }} />
               <p
                 style={{
-                  fontFamily: "'Permanent Marker',cursive",
+                  fontFamily: "'Bebas Neue', system-ui, sans-serif",
                   fontSize: "clamp(17px,3.2vw,22px)",
                   color: PASTEL.mint,
                   margin: 0,
@@ -418,7 +418,7 @@ export function PaymentThankYou({
             display: "inline-block",
             background: "#161018",
             color: "#fff",
-            fontFamily: "'Permanent Marker',cursive",
+            fontFamily: "'Bebas Neue', system-ui, sans-serif",
             fontSize: "clamp(13px,2.5vw,18px)",
             padding: "9px 22px",
             borderRadius: 6,
@@ -495,7 +495,7 @@ export function PaymentThankYou({
         >
           <div
             style={{
-              fontFamily: "'Permanent Marker',cursive",
+              fontFamily: "'Bebas Neue', system-ui, sans-serif",
               fontSize: "clamp(20px,4vw,30px)",
               lineHeight: 1.15,
               transform: "rotate(-1.5deg)",

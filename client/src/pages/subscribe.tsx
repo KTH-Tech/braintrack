@@ -132,8 +132,8 @@ const SCOPED_CSS = `
 
 const RAINBOW_BTN_STYLE: React.CSSProperties = {
   fontFamily: "'Poppins',sans-serif", fontWeight: 900, fontSize: 15,
-  color: "#000", background: CTA_GRADIENT, backgroundSize: "200% 100%",
-  animation: "bt-rainbow 5s linear infinite", border: "2.5px solid #000",
+  color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
+  animation: "bt-rainbow 5s linear infinite", border: "2.5px solid #050508",
   borderRadius: 12, padding: "15px 24px", cursor: "pointer",
   boxShadow: "5px 5px 0 0 #fff",
 };
@@ -148,7 +148,7 @@ const OUTLINE_BTN_STYLE: React.CSSProperties = {
 /** Centered dark screen for the flow states (success / payment / errors). */
 function WallScreen({ children, testId }: { children: ReactNode; testId?: string }) {
   return (
-    <div className="min-h-screen" style={{ background: "#000", color: "#fff", overflowX: "hidden" }}>
+    <div className="min-h-screen" style={{ background: "#050508", color: "#fff", overflowX: "hidden" }}>
       <style>{SCOPED_CSS}</style>
       <PublicNav />
       <main style={{ paddingTop: 64 }}>
@@ -624,7 +624,7 @@ export default function SubscribePage() {
   ];
 
   return (
-    <div className="min-h-screen" style={{ background: "#000", overflowX: "hidden", color: "#fff" }}>
+    <div className="min-h-screen" style={{ background: "#050508", overflowX: "hidden", color: "#fff" }}>
       <style>{SCOPED_CSS}</style>
       <PublicNav />
 
@@ -694,70 +694,41 @@ export default function SubscribePage() {
               : "Pick a plan and start straight away. R169/month (cancel anytime), or a once-off season or sprint pass."}
           </div>
 
-          {/* ── Trust-signal stack ── */}
+          {/* ── ONE short trust line ── */}
           <div
             data-testid="subscribe-trust-stack"
             style={{
-              display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap",
-              maxWidth: 780, margin: "24px auto 40px",
+              display: "inline-flex", alignItems: "center", gap: 9, flexWrap: "wrap",
+              justifyContent: "center", margin: "20px auto 22px",
+              fontFamily: "'Poppins',sans-serif", fontSize: 12.5, fontWeight: 600, color: "#fff",
             }}
           >
-            <span style={trustPillStyle}>
-              <Lock style={{ width: 13, height: 13, color: "#94F7C5" }} />
-              {isAf ? "Paystack veilige fakturering" : "Paystack secure billing"}
-            </span>
-            <span style={trustPillStyle}>
-              <ShieldCheck style={{ width: 13, height: 13, color: "#9FD8FF" }} />
-              {isAf ? "POPIA-nakomend" : "POPIA compliant"}
-            </span>
-            <span style={trustPillStyle}>
-              <BookOpen style={{ width: 13, height: 13, color: "#FFB7E5" }} />
-              {isAf ? "KABV-belyn · NSS 2026" : "CAPS-aligned · NSC 2026"}
-            </span>
-            <span style={trustPillStyle}>
-              <GraduationCap style={{ width: 13, height: 13, color: "#FFE29A" }} />
-              {isAf ? "10 jaar NSS-vraestelle + memo's" : "10+ years NSC past papers + memos"}
-            </span>
+            <Lock style={{ width: 13, height: 13, color: "#94F7C5", flex: "none" }} />
+            {isAf
+              ? "Paystack veilige fakturering · POPIA-nakomend · kanselleer enige tyd"
+              : "Paystack secure billing · POPIA compliant · cancel anytime"}
           </div>
 
-          {/* ── Payment methods trust strip ── */}
+          {/* ── "Appears as KTH-TECH" charging-entity note ── */}
           <div
             data-testid="subscribe-payment-strip"
             style={{ maxWidth: 780, margin: "0 auto 30px" }}
           >
-            <PaymentIconsRow color="#fff" height={26} isAf={isAf} />
-            <div
+            <span
+              data-testid="subscribe-kth-charging-entity"
               style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 14,
-                flexWrap: "wrap",
-                marginTop: 14,
+                display: "inline-flex", alignItems: "center", gap: 8,
+                color: "#fff", fontFamily: "'Poppins',sans-serif",
+                fontSize: 12, fontWeight: 600,
               }}
             >
-              <PaystackBadge isAf={isAf} />
-              <span style={{ color: "#C5B3FF", fontSize: 12 }} aria-hidden>·</span>
-              <span
-                data-testid="subscribe-kth-charging-entity"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 8,
-                  color: "#fff",
-                  fontFamily: "'Poppins',sans-serif",
-                  fontSize: 11.5,
-                  fontWeight: 600,
-                }}
-              >
-                <span>
-                  {isAf
-                    ? "Jy betaal by KTH-Tech (BrainTrack se moedermaatskappy)"
-                    : "You're checking out with KTH-Tech (BrainTrack's parent)"}
-                </span>
-                <KthTechChip size={18} />
+              <span>
+                {isAf
+                  ? "Jy betaal by KTH-Tech (BrainTrack se moedermaatskappy)"
+                  : "You're checking out with KTH-Tech (BrainTrack's parent)"}
               </span>
-            </div>
+              <KthTechChip size={18} />
+            </span>
           </div>
         </div>
 
@@ -772,7 +743,7 @@ export default function SubscribePage() {
           </div>
         )}
 
-        {/* ── Three pay-now product cards ── */}
+        {/* ── Four pay-now product cards ── */}
         <div className="bts-grid4" style={{ maxWidth: 1100, margin: "0 auto" }}>
           {PRODUCTS.map((prod) => (
             <div
@@ -780,11 +751,11 @@ export default function SubscribePage() {
               className="bts-plan-card"
               data-testid={`subscribe-card-${prod.key}`}
               style={{
-                background: "#050508",
+                background: "#0e0d12",
                 border: `2.5px solid ${prod.accent}`,
-                borderRadius: 24,
+                borderRadius: 18,
                 boxShadow: `6px 6px 0 0 ${prod.shadow}`,
-                padding: 30,
+                padding: 28,
                 position: "relative",
                 display: "flex",
                 flexDirection: "column",
@@ -803,7 +774,7 @@ export default function SubscribePage() {
                   {prod.badge}
                 </span>
               )}
-              <div style={{ fontWeight: 800, fontSize: 18, color: "#fff" }}>{prod.name}</div>
+              <div style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 16, color: "#fff" }}>{prod.name}</div>
               <div
                 data-testid={prod.key === "monthly" ? "text-subscribe-price" : `text-subscribe-price-${prod.key}`}
                 style={{ display: "flex", alignItems: "baseline", gap: 6, margin: "8px 0 2px" }}
@@ -828,7 +799,9 @@ export default function SubscribePage() {
                 data-testid={prod.testId}
                 style={{ marginTop: 22 }}
               >
-                {isAf ? "Betaal nou" : "Pay now"}
+                {prod.key === "monthly"
+                  ? (isAf ? "Registreer nou" : "Sign up now")
+                  : (isAf ? "Betaal nou" : "Pay now")}
               </button>
             </div>
           ))}
@@ -885,14 +858,7 @@ export default function SubscribePage() {
           </div>
         </div>
 
-        {/* Local trust row (kept lean; SA-specific proof points) */}
-        <div style={{ display: "flex", gap: 22, justifyContent: "center", flexWrap: "wrap", marginTop: 30, fontSize: 13.5, color: "#fff" }}>
-          <span>{isAf ? "🔒 Veilige Paystack-betaling" : "🔒 Secure Paystack payment"}</span>
-          <span>{isAf ? "🇿🇦 Rand-pryse, geen buitelandse valuta" : "🇿🇦 Rand pricing, no forex"}</span>
-          <span>{isAf ? "🎓 Skool-grootmaatlisensies beskikbaar" : "🎓 School bulk licences available"}</span>
-        </div>
-
-        <p style={{ textAlign: "center", color: "#fff", fontSize: 12, marginTop: 26, padding: "0 16px", lineHeight: 1.7 }}>
+        <p style={{ textAlign: "center", color: "#fff", fontSize: 12, marginTop: 34, padding: "0 16px", lineHeight: 1.7 }}>
           {isAf ? (
             <>
               {"Deur voort te gaan stem jy in tot ons "}
@@ -1184,7 +1150,7 @@ function PaymentPickerScreen({
           data-testid="button-paystack-checkout"
           style={{
             "--c": "#94F7C5",
-            width: "100%", textAlign: "left", background: "#000",
+            width: "100%", textAlign: "left", background: "#050508",
             border: "2px solid #fff", borderRadius: 18, padding: "18px 20px",
             cursor: anyLoading ? "not-allowed" : "pointer", opacity: anyLoading ? 0.6 : 1,
             fontFamily: "'Poppins',sans-serif", color: "#fff",

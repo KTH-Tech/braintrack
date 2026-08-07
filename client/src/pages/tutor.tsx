@@ -555,7 +555,7 @@ export default function TutorPage() {
             style={
               mode === "chat"
                 ? { background: "#6EE7F9", color: "#050508" }
-                : { color: "#C5B3FF", border: "1.5px solid #C5B3FF", background: "#000" }
+                : { color: "#C5B3FF", border: "1.5px solid #C5B3FF", background: "#050508" }
             }
             data-testid="button-mode-chat"
           >
@@ -568,7 +568,7 @@ export default function TutorPage() {
             style={
               mode === "notes"
                 ? { background: "#6EE7F9", color: "#050508" }
-                : { color: "#6EE7F9", border: "1.5px solid #6EE7F9", background: "#000" }
+                : { color: "#6EE7F9", border: "1.5px solid #6EE7F9", background: "#050508" }
             }
             data-testid="button-mode-notes"
           >
@@ -598,7 +598,7 @@ export default function TutorPage() {
                         className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-none"
                         style={notesView === "notes"
                           ? { background: "#6EE7F9", color: "#050508" }
-                          : { color: "#6EE7F9", border: "1.5px solid #6EE7F9", background: "#000" }}
+                          : { color: "#6EE7F9", border: "1.5px solid #6EE7F9", background: "#050508" }}
                         data-testid="button-notes-view-notes"
                       >
                         <NotebookPen className="w-3.5 h-3.5" />{t.notesViewLabel}
@@ -608,7 +608,7 @@ export default function TutorPage() {
                         className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-none"
                         style={notesView === "mindmap"
                           ? { background: "#6EE7F9", color: "#050508" }
-                          : { color: "#C5B3FF", border: "1.5px solid #C5B3FF", background: "#000" }}
+                          : { color: "#C5B3FF", border: "1.5px solid #C5B3FF", background: "#050508" }}
                         data-testid="button-notes-view-mindmap"
                       >
                         <Network className="w-3.5 h-3.5" />{t.mindmapViewLabel}
