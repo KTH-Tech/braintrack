@@ -68,50 +68,35 @@ async function countGamesToday(userId: string): Promise<number> {
   return Number(r.rows?.[0]?.n ?? 0);
 }
 
-/** A learner's personal best + rank for a game/subject in a scope/period. */
-async function bestAndRank(opts: {
+/**
+ * LEARNER-ONLY stats (founder decision 2026-08: no leaderboards — a learner
+ * only ever competes with themself, "you vs you"). Returns the caller's own
+ * best + play count for a game/subject. No ranks, no other users' data.
+ */
+async function personalStats(opts: {
   userId: string;
   game: GameName;
   subjectId: number | null;
-  schoolId?: number | null;
   since?: Date | null;
-}): Promise<{ best: number | null; rank: number | null; totalPlayers: number }> {
-  const { userId, game, subjectId, schoolId, since } = opts;
+}): Promise<{ best: number | null; plays: number }> {
+  const { userId, game, subjectId, since } = opts;
   const subjectClause =
     subjectId == null ? sql`AND subject_id IS NULL` : sql`AND subject_id = ${subjectId}`;
-  const schoolClause = schoolId == null ? sql`` : sql`AND school_id = ${schoolId}`;
   const sinceClause = since == null ? sql`` : sql`AND created_at >= ${since.toISOString()}`;
 
-  const r = await db.execute<{ user_id: string; best_score: number; rank: number }>(sql`
-    WITH best AS (
-      SELECT user_id, MAX(score) AS best_score
-        FROM game_scores
-       WHERE game = ${game}
-         ${subjectClause}
-         ${schoolClause}
-         ${sinceClause}
-       GROUP BY user_id
-    )
-    SELECT user_id, best_score,
-           RANK() OVER (ORDER BY best_score DESC) AS rank
-      FROM best
+  const r = await db.execute<{ best_score: number | null; plays: number }>(sql`
+    SELECT MAX(score) AS best_score, COUNT(*)::int AS plays
+      FROM game_scores
+     WHERE user_id = ${userId}
+       AND game = ${game}
+       ${subjectClause}
+       ${sinceClause}
   `);
-  const rows = r.rows ?? [];
-  const totalPlayers = rows.length;
-  const mine = rows.find((x) => x.user_id === userId);
+  const row = r.rows?.[0];
   return {
-    best: mine ? Number(mine.best_score) : null,
-    rank: mine ? Number(mine.rank) : null,
-    totalPlayers,
+    best: row?.best_score == null ? null : Number(row.best_score),
+    plays: Number(row?.plays ?? 0),
   };
-}
-
-/** Privacy-safe display name: first name + last initial (POPIA minimisation). */
-function displayName(firstName: string | null, lastName: string | null): string {
-  const f = (firstName || "").trim();
-  const l = (lastName || "").trim();
-  if (!f && !l) return "Learner";
-  return l ? `${f} ${l.charAt(0).toUpperCase()}.` : f;
 }
 
 export function registerGamesRoutes(app: Express): void {
@@ -250,17 +235,16 @@ export function registerGamesRoutes(app: Express): void {
       const isSubscriber = await storage.hasActiveSubscription(userId);
       const playsToday = await countGamesToday(userId);
 
-      // Free tier past its daily allowance: do NOT record. Return their existing
-      // best/rank so the client can still show a view-only board + upsell.
+      // Free tier past its daily allowance: do NOT record. Return their own
+      // existing best so the client can still show personal stats + upsell.
       if (!isSubscriber && playsToday >= DAILY_FREE_LIMIT) {
-        const standing = await bestAndRank({ userId, game, subjectId });
+        const standing = await personalStats({ userId, game, subjectId });
         return res.status(403).json({
           error: "daily_limit",
           recorded: false,
-          viewOnly: true,
           message: "Free plan includes one game a day. Subscribe for unlimited plays.",
           best: standing.best,
-          rank: standing.rank,
+          plays: standing.plays,
         });
       }
 
@@ -294,13 +278,13 @@ export function registerGamesRoutes(app: Express): void {
         console.error("Non-fatal: game reward award failed:", e);
       }
 
-      const standing = await bestAndRank({ userId, game, subjectId });
+      const standing = await personalStats({ userId, game, subjectId });
+      const isNewBest = standing.best != null && score >= standing.best;
       return res.json({
         recorded: true,
-        viewOnly: !isSubscriber,
         best: standing.best,
-        rank: standing.rank,
-        totalPlayers: standing.totalPlayers,
+        plays: standing.plays,
+        newPersonalBest: isNewBest,
       });
     } catch (err: any) {
       console.error("Error recording game score:", err);
@@ -308,7 +292,11 @@ export function registerGamesRoutes(app: Express): void {
     }
   });
 
-  // ── GET /api/games/leaderboard?game=&subject=&scope=&period= ─────────────
+  // ── GET /api/games/leaderboard?game=&subject=&period= ────────────────────
+  // LEARNER-ONLY (founder decision 2026-08): ranked leaderboards are removed —
+  // a learner only ever competes with themself ("you vs you"). The URL is kept
+  // for compatibility but returns ONLY the caller's own arcade stats: no other
+  // learners' names/ranks, no school-vs-school boards.
   app.get("/api/games/leaderboard", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
@@ -316,140 +304,22 @@ export function registerGamesRoutes(app: Express): void {
       if (!GAME_NAMES.includes(game)) {
         return res.status(400).json({ error: "Unknown or missing game" });
       }
-      const subjectId = req.query.subject ? parseInt(req.query.subject as string, 10) : null;
-      const scope = ["school", "global", "schools"].includes(req.query.scope as string)
-        ? (req.query.scope as "school" | "global" | "schools")
-        : "global";
+      const subjectIdRaw = req.query.subject ? parseInt(req.query.subject as string, 10) : null;
+      const subjectId = subjectIdRaw != null && !Number.isNaN(subjectIdRaw) ? subjectIdRaw : null;
       const period = req.query.period === "week" ? "week" : "all";
       const since = period === "week" ? new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) : null;
 
-      const isSubscriber = await storage.hasActiveSubscription(userId);
-
-      const subjectClause =
-        subjectId == null || Number.isNaN(subjectId)
-          ? sql``
-          : sql`AND gs.subject_id = ${subjectId}`;
-      const sinceClause = since == null ? sql`` : sql`AND gs.created_at >= ${since.toISOString()}`;
-
-      // Requesting user's school (for scope=school and to flag their own row).
-      const [me] = await db
-        .select({ schoolId: users.schoolId })
-        .from(users)
-        .where(eq(users.id, userId));
-      const mySchoolId = me?.schoolId ?? null;
-
-      // ── School-vs-school aggregate (the "63 schools competing" board) ──────
-      if (scope === "schools") {
-        const r = await db.execute<{
-          school_id: number;
-          school_name: string | null;
-          total_score: number;
-          avg_score: number;
-          plays: number;
-          players: number;
-        }>(sql`
-          SELECT gs.school_id,
-                 ps.school_name,
-                 SUM(gs.score)::int         AS total_score,
-                 ROUND(AVG(gs.score))::int  AS avg_score,
-                 COUNT(*)::int              AS plays,
-                 COUNT(DISTINCT gs.user_id)::int AS players
-            FROM game_scores gs
-            LEFT JOIN partner_schools ps ON ps.id = gs.school_id
-           WHERE gs.game = ${game}
-             AND gs.school_id IS NOT NULL
-             ${subjectClause}
-             ${sinceClause}
-           GROUP BY gs.school_id, ps.school_name
-           ORDER BY avg_score DESC, total_score DESC
-           LIMIT ${LEADERBOARD_TOP}
-        `);
-        const rows = (r.rows ?? []).map((x, i) => ({
-          rank: i + 1,
-          schoolId: x.school_id,
-          schoolName: x.school_name || `School #${x.school_id}`,
-          totalScore: Number(x.total_score),
-          avgScore: Number(x.avg_score),
-          plays: Number(x.plays),
-          players: Number(x.players),
-          isMySchool: mySchoolId != null && x.school_id === mySchoolId,
-        }));
-        return res.json({ scope, game, period, subjectId, viewOnly: !isSubscriber, rows });
-      }
-
-      // ── Per-learner board (global or within the user's school) ─────────────
-      if (scope === "school" && mySchoolId == null) {
-        return res.json({
-          scope,
-          game,
-          period,
-          subjectId,
-          viewOnly: !isSubscriber,
-          rows: [],
-          note: "No school linked to this account.",
-        });
-      }
-      const schoolClause =
-        scope === "school" ? sql`AND gs.school_id = ${mySchoolId}` : sql``;
-
-      const r = await db.execute<{
-        user_id: string;
-        first_name: string | null;
-        last_name: string | null;
-        best_score: number;
-        plays: number;
-        rank: number;
-      }>(sql`
-        WITH best AS (
-          SELECT gs.user_id,
-                 MAX(gs.score) AS best_score,
-                 COUNT(*)      AS plays
-            FROM game_scores gs
-           WHERE gs.game = ${game}
-             ${subjectClause}
-             ${schoolClause}
-             ${sinceClause}
-           GROUP BY gs.user_id
-        )
-        SELECT b.user_id, u.first_name, u.last_name, b.best_score, b.plays,
-               RANK() OVER (ORDER BY b.best_score DESC) AS rank
-          FROM best b
-          LEFT JOIN users u ON u.id = b.user_id
-         ORDER BY b.best_score DESC
-         LIMIT ${LEADERBOARD_TOP}
-      `);
-
-      const allRows = r.rows ?? [];
-      const rows = allRows.map((x) => ({
-        rank: Number(x.rank),
-        userId: x.user_id === userId ? x.user_id : undefined, // only expose own id
-        name: displayName(x.first_name, x.last_name),
-        best: Number(x.best_score),
-        plays: Number(x.plays),
-        isMe: x.user_id === userId,
-      }));
-
-      // The requester's own standing, even if outside the top N.
-      const mine = await bestAndRank({
-        userId,
-        game,
-        subjectId,
-        schoolId: scope === "school" ? mySchoolId : null,
-        since,
-      });
-
+      const me = await personalStats({ userId, game, subjectId, since });
       return res.json({
-        scope,
+        learnerOnly: true,
         game,
         period,
         subjectId,
-        viewOnly: !isSubscriber,
-        me: { best: mine.best, rank: mine.rank, totalPlayers: mine.totalPlayers },
-        rows,
+        me: { best: me.best, plays: me.plays },
       });
     } catch (err: any) {
-      console.error("Error building leaderboard:", err);
-      res.status(500).json({ error: "Failed to load leaderboard" });
+      console.error("Error loading personal game stats:", err);
+      res.status(500).json({ error: "Failed to load stats" });
     }
   });
 }

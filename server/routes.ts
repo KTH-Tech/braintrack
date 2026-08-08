@@ -6915,69 +6915,34 @@ Create comprehensive study notes for the topic provided.`;
     }
   });
 
-  // Returns the top N referrers ranked by paid conversions
-  // (status IN ('converted','rewarded')), plus the current user's own rank
-  // and conversion count. Display names are anonymised to first name +
-  // last initial; users with no first name fall back to "Learner".
+  // LEARNER-ONLY (founder decision 2026-08): the ranked referral leaderboard
+  // is removed — learners are never compared with each other. The URL is kept
+  // for compatibility but returns ONLY the caller's own paid-referral count
+  // (top is always empty; rank is always null).
   app.get("/api/referral/leaderboard", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const limit = Math.min(Math.max(parseInt(String(req.query.limit ?? "10"), 10) || 10, 1), 50);
       const { userReferrals } = await import("@shared/schema");
 
-      const rows = await db
-        .select({
-          referrerId: userReferrals.referrerId,
-          conversions: sql<number>`count(*)::int`,
-          lastConvertedAt: sql<Date | null>`max(coalesce(${userReferrals.rewardedAt}, ${userReferrals.convertedAt}))`,
-        })
+      const [mine] = await db
+        .select({ conversions: sql<number>`count(*)::int` })
         .from(userReferrals)
-        .where(inArray(userReferrals.status, ["converted", "rewarded"]))
-        .groupBy(userReferrals.referrerId)
-        .orderBy(
-          desc(sql`count(*)`),
-          sql`max(coalesce(${userReferrals.rewardedAt}, ${userReferrals.convertedAt})) asc nulls last`,
+        .where(
+          and(
+            eq(userReferrals.referrerId, userId),
+            inArray(userReferrals.status, ["converted", "rewarded"]),
+          ),
         );
 
-      const referrerIds = rows.map((r) => r.referrerId);
-      const userRows = referrerIds.length
-        ? await db
-            .select({ id: users.id, firstName: users.firstName, lastName: users.lastName })
-            .from(users)
-            .where(inArray(users.id, referrerIds))
-        : [];
-      const userMap = new Map(userRows.map((u) => [u.id, u]));
-
-      const anonymise = (id: string): string => {
-        const u = userMap.get(id);
-        const first = (u?.firstName ?? "").trim();
-        const lastInitial = (u?.lastName ?? "").trim().charAt(0);
-        if (first && lastInitial) return `${first} ${lastInitial.toUpperCase()}.`;
-        if (first) return first;
-        return "Learner";
-      };
-
-      const ranked = rows.map((r, idx) => ({
-        rank: idx + 1,
-        userId: r.referrerId,
-        displayName: anonymise(r.referrerId),
-        conversions: Number(r.conversions),
-        isCurrentUser: r.referrerId === userId,
-      }));
-
-      const top = ranked.slice(0, limit).map(({ userId: _uid, ...rest }) => rest);
-      const me = ranked.find((r) => r.userId === userId) ?? null;
-
       return res.json({
-        top,
-        me: me
-          ? {
-              rank: me.rank,
-              displayName: me.displayName,
-              conversions: me.conversions,
-              totalRanked: ranked.length,
-            }
-          : { rank: null, displayName: anonymise(userId), conversions: 0, totalRanked: ranked.length },
+        learnerOnly: true,
+        top: [],
+        me: {
+          rank: null,
+          displayName: "You",
+          conversions: Number(mine?.conversions ?? 0),
+          totalRanked: 0,
+        },
       });
     } catch (err: any) {
       console.error("Error in /api/referral/leaderboard:", err);

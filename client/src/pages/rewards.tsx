@@ -76,15 +76,6 @@ const T = {
     upgradeToRefer: "Subscribe to unlock referrals",
     upgradeToReferDesc: "Start your Student Life subscription to get a personal referral code and earn free months.",
     upgradeCta: "Subscribe now",
-    leaderboardHeading: "Referral Leaderboard",
-    leaderboardSubtitle: "Top learners by paid referrals.",
-    leaderboardEmpty: "No paid referrals yet — be the first to climb the board!",
-    leaderboardYou: "You",
-    leaderboardRank: "Rank",
-    leaderboardLearner: "Learner",
-    leaderboardPaid: "Paid",
-    leaderboardYourRank: "Your rank",
-    leaderboardUnranked: "Refer a friend to enter the leaderboard.",
   },
   af: {
     pageTitle: "Belonings",
@@ -126,15 +117,6 @@ const T = {
     upgradeToRefer: "Teken in om verwysings te ontsluit",
     upgradeToReferDesc: "Begin jou Student Life-intekening om 'n persoonlike verwysings kode te kry en gratis maande te verdien.",
     upgradeCta: "Teken nou in",
-    leaderboardHeading: "Verwysings Ranglys",
-    leaderboardSubtitle: "Top leerders volgens betaalde verwysings.",
-    leaderboardEmpty: "Nog geen betaalde verwysings nie — wees die eerste!",
-    leaderboardYou: "Jy",
-    leaderboardRank: "Rang",
-    leaderboardLearner: "Leerder",
-    leaderboardPaid: "Betaal",
-    leaderboardYourRank: "Jou rang",
-    leaderboardUnranked: "Verwys 'n vriend om op die ranglys te kom.",
   },
 } as const;
 
@@ -181,13 +163,6 @@ export default function RewardsPage() {
     monthsEarned: number;
   }>({
     queryKey: ["/api/referral/my-link"],
-  });
-
-  const { data: leaderboard } = useQuery<{
-    top: { rank: number; displayName: string; conversions: number; isCurrentUser: boolean }[];
-    me: { rank: number | null; displayName: string; conversions: number; totalRanked: number };
-  }>({
-    queryKey: ["/api/referral/leaderboard"],
   });
 
   const { data: subscriptionStatus } = useQuery<{ active: boolean; status: string | null; trialEndsAt: string | null }>({
@@ -667,91 +642,9 @@ export default function RewardsPage() {
               </div>
             </CosmicCard>
 
-            {/* Referral Leaderboard */}
-            <CosmicCard hex="#FFE29A" halo="rgba(255,226,154," testId="card-referral-leaderboard">
-              <CosmicCardTitle hex="#FFE29A" halo="rgba(255,226,154," icon={Medal}>
-                {t.leaderboardHeading}
-              </CosmicCardTitle>
-              <div className="p-5 pt-3 space-y-3">
-                <p className="text-sm text-white">{t.leaderboardSubtitle}</p>
-                {(!leaderboard || leaderboard.top.length === 0) ? (
-                  <p className="text-sm text-white italic py-4 text-center" data-testid="leaderboard-empty">
-                    {t.leaderboardEmpty}
-                  </p>
-                ) : (
-                  <>
-                    <div className="grid grid-cols-[auto_1fr_auto] gap-x-3 text-[10px] uppercase tracking-[0.18em] text-white font-bold px-3 pb-1">
-                      <span>{t.leaderboardRank}</span>
-                      <span>{t.leaderboardLearner}</span>
-                      <span className="text-right">{t.leaderboardPaid}</span>
-                    </div>
-                    <ul className="space-y-1.5" data-testid="leaderboard-list">
-                      {leaderboard.top.map((row) => {
-                        const isMe = row.isCurrentUser;
-                        const medal = row.rank === 1 ? "#FFE29A" : row.rank === 2 ? "#9FD8FF" : row.rank === 3 ? "#FFE29A" : null;
-                        return (
-                          <li
-                            key={`${row.rank}-${row.displayName}`}
-                            className="grid grid-cols-[auto_1fr_auto] gap-x-3 items-center px-3 py-2 rounded-lg"
-                            style={{
-                              background: isMe ? "rgba(159,216,255,0.12)" : "#1b1922",
-                              border: isMe ? "1px solid rgba(159,216,255,0.5)" : "1px solid #1b1922",
-                            }}
-                            data-testid={`leaderboard-row-${row.rank}`}
-                          >
-                            <span
-                              className="font-black text-sm tabular-nums min-w-[1.75rem] text-center"
-                              style={{ color: medal ?? (isMe ? "#9FD8FF" : "#FFFFFF") }}
-                            >
-                              {row.rank}
-                            </span>
-                            <span className="text-sm text-white truncate flex items-center gap-2">
-                              {row.displayName}
-                              {isMe && (
-                                <span
-                                  className="text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider"
-                                  style={{ background: "rgba(159,216,255,0.2)", color: "#9FD8FF", border: "1px solid rgba(159,216,255,0.5)" }}
-                                >
-                                  {t.leaderboardYou}
-                                </span>
-                              )}
-                            </span>
-                            <span className="font-bold text-sm tabular-nums" style={{ color: isMe ? "#9FD8FF" : "#FFE29A" }}>
-                              {row.conversions}
-                            </span>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                    {leaderboard.me && !leaderboard.top.some((r) => r.isCurrentUser) && (
-                      <div
-                        className="mt-3 px-3 py-2 rounded-lg flex items-center justify-between"
-                        style={{ background: "rgba(159,216,255,0.10)", border: "1px solid rgba(159,216,255,0.5)" }}
-                        data-testid="leaderboard-you-row"
-                      >
-                        <span className="text-xs text-white">
-                          {t.leaderboardYourRank}:{" "}
-                          <span className="font-black text-white">
-                            {leaderboard.me.rank ? `#${leaderboard.me.rank}` : "—"}
-                          </span>
-                        </span>
-                        <span className="text-xs text-white">
-                          <span className="font-bold tabular-nums" style={{ color: "#9FD8FF" }}>
-                            {leaderboard.me.conversions}
-                          </span>{" "}
-                          <span className="text-white">{t.paidReferrals}</span>
-                        </span>
-                      </div>
-                    )}
-                    {leaderboard.me && leaderboard.me.rank === null && (
-                      <p className="text-xs text-white italic mt-2 text-center">
-                        {t.leaderboardUnranked}
-                      </p>
-                    )}
-                  </>
-                )}
-              </div>
-            </CosmicCard>
+            {/* Referral leaderboard removed (founder decision 2026-08):
+                learners are never ranked against each other — rewards stay
+                "you vs you". Personal referral stats live in the card above. */}
 
             {/* Store CTA */}
             <CosmicCard hex="#9FD8FF" halo="rgba(159,216,255," testId="card-store-cta">
