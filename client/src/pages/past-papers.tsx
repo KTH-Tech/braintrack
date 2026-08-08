@@ -28,6 +28,8 @@ import {
 import { Link } from "wouter";
 import { PublicFooter } from "@/components/public-footer";
 import { Button } from "@/components/ui/button";
+import { useEntitlements } from "@/hooks/use-entitlements";
+import { SeasonPassLockedCard } from "@/components/plan-scope";
 
 const DBE_BASE_URL = "https://www.education.gov.za/Curriculum/NationalSeniorCertificate(NSC)Examinations/NSCPastExaminationpapers.aspx";
 
@@ -252,6 +254,10 @@ export default function PastPapersPage() {
   };
 
   const text = t[language];
+
+  // Per-product journey: sprint plans do not include the exam-tips vault —
+  // they see an on-brand Season-Pass upsell card in its place instead.
+  const { plan: entPlan, entitlements: ent } = useEntitlements();
 
   const selectedSubjectData = SUBJECTS.find(s => s.code === selectedSubject);
   const patterns = selectedSubject ? TEN_YEAR_PATTERNS[selectedSubject as keyof typeof TEN_YEAR_PATTERNS] : null;
@@ -707,13 +713,25 @@ export default function PastPapersPage() {
                       </div>
                     </div>
 
-                    <div className="p-6" style={accentCard("#9FD8FF")}>
-                      <div className="flex items-center gap-2 mb-3">
-                        <GraduationCap className="w-5 h-5" style={{ color: "#9FD8FF" }} />
-                        <div role="heading" aria-level={2} className="font-black text-white">{text.examTips}</div>
+                    {entPlan && !ent.examTipsVault ? (
+                      /* Sprint plans: exam-tips vault is Season Pass / Monthly
+                         exclusive — on-brand locked card, never a dead end. */
+                      <SeasonPassLockedCard
+                        isAf={language === "af"}
+                        feature={language === "af"
+                          ? "Die eksamenstrategie-kluis (eksamenwenke per vak) is by die Seisoenkaart en Maandeliks ingesluit."
+                          : "The exam strategy vault (per-subject exam tips) is included with the Season Pass and Monthly."}
+                        testId="locked-exam-tips-vault"
+                      />
+                    ) : (
+                      <div className="p-6" style={accentCard("#9FD8FF")}>
+                        <div className="flex items-center gap-2 mb-3">
+                          <GraduationCap className="w-5 h-5" style={{ color: "#9FD8FF" }} />
+                          <div role="heading" aria-level={2} className="font-black text-white">{text.examTips}</div>
+                        </div>
+                        <p className="text-white">{patterns.tips}</p>
                       </div>
-                      <p className="text-white">{patterns.tips}</p>
-                    </div>
+                    )}
                   </div>
                 ) : (
                   <div className="h-full flex items-center justify-center p-6" style={CARD}>

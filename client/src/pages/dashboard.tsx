@@ -47,6 +47,7 @@ import { GoalProgress } from "@/components/goal-progress";
 import { YouVsYouChart } from "@/components/you-vs-you-chart";
 import { PersonalBestsWidget } from "@/components/personal-bests-widget";
 import { useEarliestPrelimDate, FINALS_DATE } from "@/components/exam-countdown";
+import { useEntitlements } from "@/hooks/use-entitlements";
 import { ReferralShareCard } from "@/components/referral-share-card";
 import { GraffitiSplats } from "@/components/graffiti-splats";
 import { Button } from "@/components/ui/button";
@@ -584,6 +585,10 @@ export default function DashboardPage() {
   //   hasAnyPrelimData && !PRELIMS_DATE → all past       (show 0-day card, no CTA)
   //   hasAnyPrelimData && PRELIMS_DATE  → upcoming       (live countdown)
   const { earliestPrelim, targetDate, hasAnyPrelimData } = useEarliestPrelimDate();
+  // Per-product journey: which war-room hero this learner sees. `plan` is
+  // only non-null when the server confirmed an ACTIVE subscription — no sub,
+  // load errors, or signed-out states render no war-room (existing journey).
+  const { plan: entPlan, planKey: entPlanKey, sprintDay } = useEntitlements();
   // When all prelims are past we pass a past-date sentinel so CountdownDigits
   // renders 0 days rather than showing the "no data" Settings CTA.
   const PRELIMS_DATE: Date | null = targetDate ?? (hasAnyPrelimData ? new Date(0) : null);
@@ -1192,6 +1197,112 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+
+        {/* ── Plan-aware war-room hero (per-product journeys) ──
+            Renders ONLY when the server confirmed an active subscription
+            (entPlan non-null). Sprints get their focused war-room; Season /
+            Monthly / legacy-full plans get Distinction HQ. No-sub learners
+            see the dashboard exactly as before. */}
+        {entPlan && (entPlanKey === "prelim_sprint" || entPlanKey === "finals_blitz") && (() => {
+          const isPrelim = entPlanKey === "prelim_sprint";
+          const hex = isPrelim ? "#9FF5E8" : "#FFB7E5";
+          const target = isPrelim ? (PRELIMS_DATE ?? FINALS_DATE) : FINALS_DATE;
+          const dayN = sprintDay ?? 1;
+          return (
+            <div
+              data-testid={isPrelim ? "war-room-prelim" : "war-room-finals"}
+              style={{ background: "#050508", border: `2.5px solid ${hex}`, borderRadius: 24, boxShadow: `6px 6px 0 0 ${hex}`, padding: 26 }}
+            >
+              <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
+                <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 26, letterSpacing: 1, color: hex }}>
+                  {isPrelim
+                    ? (isAf ? "🎯 VOORLOPIGE OORLOGSKAMER" : "🎯 PRELIM WAR-ROOM")
+                    : (isAf ? "🔥 FINALE OORLOGSKAMER" : "🔥 FINALS WAR-ROOM")}
+                </div>
+                <div style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 13, color: "#050508", background: hex, borderRadius: 999, padding: "5px 14px" }}>
+                  {isAf ? `Dag ${dayN} van 42` : `Day ${dayN} of 42`}
+                </div>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap", marginTop: 16 }}>
+                <div>
+                  <div className="tabular-nums" style={{ fontSize: 40, fontWeight: 900, color: hex, lineHeight: 1 }}>
+                    {daysTo(target)}{t.daysShort}
+                  </div>
+                  <div style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 13, color: "#fff", marginTop: 4 }}>
+                    {isPrelim
+                      ? (isAf ? "tot jou voorlopige eksamens" : "until your prelims")
+                      : (isAf ? "tot die NSS-finale" : "until the NSC finals")}
+                  </div>
+                </div>
+                {!isPrelim && (
+                  <div style={{ borderLeft: `2.5px solid ${hex}`, paddingLeft: 18 }}>
+                    <div className="tabular-nums" style={{ fontSize: 40, fontWeight: 900, color: "#fff", lineHeight: 1 }}>
+                      {stats?.papersCompleted ?? 0}
+                    </div>
+                    <div style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 13, color: "#fff", marginTop: 4 }}>
+                      {isAf ? "vraestelle voltooi" : "papers completed"}
+                    </div>
+                  </div>
+                )}
+              </div>
+              {/* 42-day sprint tracker bar */}
+              <div style={{ marginTop: 16, height: 10, borderRadius: 999, border: `1.5px solid ${hex}`, overflow: "hidden" }}>
+                <div style={{ height: "100%", width: `${Math.round((dayN / 42) * 100)}%`, background: hex }} />
+              </div>
+              <div style={{ marginTop: 16 }}>
+                <Link href="/daily-challenge">
+                  <Button variant="primary" data-testid={isPrelim ? "war-room-prelim-cta" : "war-room-finals-cta"}>
+                    {isPrelim
+                      ? (isAf ? "Vandag se voorlopige dril →" : "Today's prelim drill →")
+                      : (isAf ? "Vandag se finale dril →" : "Today's finals drill →")}
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          );
+        })()}
+        {entPlan && entPlanKey !== "prelim_sprint" && entPlanKey !== "finals_blitz" && (
+          <div
+            data-testid="war-room-distinction"
+            style={{ background: "#050508", border: "2.5px solid #FFE29A", borderRadius: 24, boxShadow: "6px 6px 0 0 #C5B3FF", padding: 26 }}
+          >
+            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
+              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 26, letterSpacing: 1, color: "#FFE29A" }}>
+                {isAf ? "👑 ONDERSKEIDING-HK" : "👑 DISTINCTION HQ"}
+              </div>
+              <div style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 13, color: "#050508", background: "#FFE29A", borderRadius: 999, padding: "5px 14px" }}>
+                {isAf ? "volle seisoen ontsluit" : "full season unlocked"}
+              </div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap", marginTop: 16 }}>
+              {PRELIMS_DATE && (
+                <div>
+                  <div className="tabular-nums" style={{ fontSize: 40, fontWeight: 900, color: "#9FF5E8", lineHeight: 1 }}>
+                    {daysTo(PRELIMS_DATE)}{t.daysShort}
+                  </div>
+                  <div style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 13, color: "#fff", marginTop: 4 }}>
+                    {isAf ? "tot voorlopige eksamens" : "until prelims"}
+                  </div>
+                </div>
+              )}
+              <div style={{ borderLeft: PRELIMS_DATE ? "2.5px solid #FFE29A" : "none", paddingLeft: PRELIMS_DATE ? 18 : 0 }}>
+                <div className="tabular-nums" style={{ fontSize: 40, fontWeight: 900, color: "#FFB7E5", lineHeight: 1 }}>
+                  {daysTo(FINALS_DATE)}{t.daysShort}
+                </div>
+                <div style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 13, color: "#fff", marginTop: 4 }}>
+                  {isAf ? "tot die NSS-finale" : "until the NSC finals"}
+                </div>
+              </div>
+            </div>
+            <div style={{ marginTop: 16, display: "flex", gap: 12, flexWrap: "wrap" }}>
+              <Link href="/past-papers">
+                <Button variant="primary" data-testid="war-room-distinction-cta">
+                  {isAf ? "Eksamenstrategie-kluis →" : "Exam strategy vault →"}
+                </Button>
+              </Link>
+            </div>
+          </div>
+        )}
 
         {/* ── Exam countdown — DBE 2026 ──
             The two clocks (prelims + finals). Both run on REAL per-learner

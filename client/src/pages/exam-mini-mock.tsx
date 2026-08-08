@@ -10,6 +10,7 @@ import { useLanguage } from "@/lib/language-context";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+import { PlanScopeBadge } from "@/components/plan-scope";
 import {
   AlertCircle,
   ArrowLeft,
@@ -652,6 +653,7 @@ export default function ExamMiniMockPage() {
           <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block" }}>
             {isAf ? "Toets jouself" : "Test yourself"}
           </span>
+          <PlanScopeBadge isAf={isAf} />
         </div>
         <div
           role="heading"

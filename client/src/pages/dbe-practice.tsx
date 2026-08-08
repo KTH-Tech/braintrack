@@ -14,6 +14,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/language-context";
 import { useAuth } from "@/hooks/use-auth";
+import { useEntitlements } from "@/hooks/use-entitlements";
+import { PlanScopeBadge, SeasonPassLockedCard } from "@/components/plan-scope";
 import {
   PatGuidanceBanner,
   CreativeWritingGuidanceBanner,
@@ -106,6 +108,9 @@ export default function DbePracticePage() {
   const { logout } = useAuth();
   const { language, toggleLanguage } = useLanguage();
   const isAf = language === "af";
+  // Per-product journey: sprint plans see the 3 most recent exam years
+  // (server-filtered) plus an upgrade card for the full archive.
+  const { plan: entPlan, entitlements: ent } = useEntitlements();
   const search = useSearch();
   const params = new URLSearchParams(search);
   const subject = params.get("subject") ?? "";
@@ -333,6 +338,7 @@ export default function DbePracticePage() {
             >
               {isAf ? "Regte vraestelle. Regte oefening. 🔥" : "Real papers. Real reps. 🔥"}
             </span>
+            <PlanScopeBadge isAf={isAf} />
           </div>
           <div
             role="heading"
@@ -359,6 +365,20 @@ export default function DbePracticePage() {
               : "Work through real DBE questions and AI practice sets — memos on demand, zero pressure."}
           </p>
         </section>
+
+        {/* Sprint plans: server already scopes the list to the 3 most recent
+            exam years — this card explains why and offers the upgrade path. */}
+        {entPlan && ent.paperYears === 3 && (
+          <div style={{ maxWidth: 440 }}>
+            <SeasonPassLockedCard
+              isAf={isAf}
+              feature={isAf
+                ? "Jou sprint sluit die 3 mees onlangse eksamenjare in. Die volle 10-jaar-argief is 'n Seisoenkaart-eksklusief."
+                : "Your sprint includes the 3 most recent exam years. The full 10-year archive is a Season Pass exclusive."}
+              testId="locked-full-archive"
+            />
+          </div>
+        )}
 
         {isLoading ? (
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>

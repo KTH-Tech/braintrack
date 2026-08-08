@@ -4,6 +4,7 @@ import { Link } from "wouter";
 import { useLanguage } from "@/lib/language-context";
 import { LearnerHeader } from "@/components/learner-header";
 import { GraffitiSplats } from "@/components/graffiti-splats";
+import { PlanScopeBadge } from "@/components/plan-scope";
 import { Button } from "@/components/ui/button";
 import { Target, TrendingUp, Zap, Sparkles } from "lucide-react";
 
@@ -240,12 +241,15 @@ export default function PredictorPage() {
 
         {/* Hero — sells the predictor in one honest line. */}
         <div style={cardStyle("#9FF5E8", 24)} className="p-6 mb-8" data-testid="predictor-hero">
-          <span
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider mb-3"
-            style={{ background: "#9FF5E8", color: BG }}
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            {t.heroBadge}
+          <span className="inline-flex flex-wrap items-center gap-2 mb-3">
+            <span
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider"
+              style={{ background: "#9FF5E8", color: BG }}
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              {t.heroBadge}
+            </span>
+            <PlanScopeBadge isAf={isAf} />
           </span>
           <h1 className="text-2xl sm:text-3xl font-black text-white leading-tight">{t.heroLine}</h1>
           <p className="text-sm font-bold text-white/90 mt-2">{t.honest}</p>

@@ -524,15 +524,17 @@ export default function SubscribePage() {
       perks: isAf
         ? [
             "Alles oopgesluit, elke vak",
-            "Onbeperkte vraestel-drille & memo's",
-            "Studieplan wat by jou aanpas",
-            "Rizz KI-tutor + weeklikse ouerverslae",
+            "Volle 10-jaar vraestel-argief",
+            "👑 Onderskeiding-HK: albei oorlogskamers + wenke-kluis",
+            "Rizz KI-tutor + aanpasbare studieplan",
+            "Weeklikse ouerverslae",
           ]
         : [
             "Everything unlocked, every subject",
-            "Unlimited past-paper drills & memos",
-            "Study plan that adapts to you",
-            "Rizz AI tutor + weekly parent reports",
+            "Full 10-year past-paper archive",
+            "👑 Distinction HQ: both war-rooms + exam-tips vault",
+            "Rizz AI tutor + adaptive study plan",
+            "Weekly parent reports",
           ],
       accent: "#FFB7E5",
       shadow: "#FFE29A",
@@ -550,15 +552,17 @@ export default function SubscribePage() {
         : "Once-off R250 · 6 weeks full access — built for prelims.",
       perks: isAf
         ? [
-            "6 weke volle toegang",
-            "Laser-fokus op voorlopige voorbereiding",
-            "Elke vraestel + onmiddellike nasien",
+            "🎯 6-weke Voorlopige Oorlogskamer-paneel",
+            "3 mees onlangse jare se vraestelle + memo's",
+            "Voorlopige-modus drille, proewe & voorspeller",
+            "Weeklikse ouerverslae",
             "Een betaling, geen herhalende fakturering",
           ]
         : [
-            "6 weeks of full access",
-            "Laser-focused on prelim prep",
-            "Every past paper + instant marking",
+            "🎯 6-week Prelim War-Room dashboard",
+            "3 most recent years of past papers + memos",
+            "Prelim-mode drills, mocks & predictor",
+            "Weekly parent reports",
             "One payment, no recurring billing",
           ],
       accent: "#9FD8FF",
@@ -577,15 +581,17 @@ export default function SubscribePage() {
         : "Once-off R250 · 6 weeks full access — built for the Oct–Nov finals.",
       perks: isAf
         ? [
-            "6 weke volle toegang",
-            "Ingestel op die NSS-eindeksamens",
-            "Elke vraestel + onmiddellike nasien",
+            "🔥 6-weke Finale Oorlogskamer-paneel",
+            "3 mees onlangse jare se vraestelle + memo's",
+            "Finale-modus drille, proewe & voorspeller",
+            "Weeklikse ouerverslae",
             "Een betaling, geen herhalende fakturering",
           ]
         : [
-            "6 weeks of full access",
-            "Tuned for the NSC final exams",
-            "Every past paper + instant marking",
+            "🔥 6-week Finals War-Room dashboard",
+            "3 most recent years of past papers + memos",
+            "Finals-mode drills, mocks & predictor",
+            "Weekly parent reports",
             "One payment, no recurring billing",
           ],
       accent: "#C5B3FF",
@@ -605,14 +611,16 @@ export default function SubscribePage() {
       perks: isAf
         ? [
             "Volle platform tot 15 Des 2026",
-            "Voorlopige én finale eksamens gedek",
-            "Elke NSS-vraestel + memo",
+            "Volle 10-jaar vraestel-argief",
+            "👑 Onderskeiding-HK: albei oorlogskamers + wenke-kluis",
+            "Weeklikse ouerverslae",
             "Een betaling, geen herhalende fakturering",
           ]
         : [
             "Full platform access to 15 Dec 2026",
-            "Prelims and finals both covered",
-            "Every NSC past paper + memo",
+            "Full 10-year past-paper archive",
+            "👑 Distinction HQ: both war-rooms + exam-tips vault",
+            "Weekly parent reports",
             "One payment, no recurring billing",
           ],
       accent: "#94F7C5",

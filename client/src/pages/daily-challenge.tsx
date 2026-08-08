@@ -27,6 +27,7 @@ import type { DailyChallenge, DailyChallengeQuestion } from "@shared/schema";
 import { LearnerHeader } from "@/components/learner-header";
 import { GraffitiSplats } from "@/components/graffiti-splats";
 import { Button } from "@/components/ui/button";
+import { PlanScopeBadge } from "@/components/plan-scope";
 
 const CHALLENGE_TIME_LIMIT = 300;
 
@@ -443,9 +444,12 @@ export default function DailyChallengePage() {
         titleColor="#9FF5E8"
         maxWidthClassName="max-w-4xl"
         titleExtra={
-          <span className="hidden sm:block text-[10px] font-bold uppercase tracking-[0.18em] text-white shrink-0">
-            {dayLabel} · {dateLabel}
-          </span>
+          <>
+            <PlanScopeBadge isAf={isAf} />
+            <span className="hidden sm:block text-[10px] font-bold uppercase tracking-[0.18em] text-white shrink-0">
+              {dayLabel} · {dateLabel}
+            </span>
+          </>
         }
         actions={
           <>

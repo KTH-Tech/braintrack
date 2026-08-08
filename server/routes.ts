@@ -15,6 +15,7 @@ import { pool, db } from "./db";
 import { users } from "@shared/models/auth";
 import { subjects, topics, onboardingResults, linkVisits, examPapers, userStreaks, installBannerEvents, studySessions, attempts, topicMastery, userProgress, boostQuizWrongAnswers, learningEvents, learnerGoals, storeItems, userUnlocks, userBadges, parentLinks, subscriptions, questions as questionsTable, schoolReferrals, onboardingLinkTokens, topicNotes, topicFlashcards, literatureWorks, literatureNotes, partnerSchools, systemConfig, schoolEnquiries, adminBillingReminders, dbeVerbatimQuestions, pushSubscriptions, phoneOtpCodes, type UserProgress, type Subscription, type PushSubscription } from "@shared/schema";
 import { getCuratedTopicCountsBySubject, bumpCuratedTopicCountVersion } from "./curated-topic-count-cache";
+import { entitlementsForPlan, planKeyForPlan, type Entitlements } from "@shared/entitlements";
 import { eq, sql, and, desc, asc, isNull, isNotNull, or, gte, lt, lte, count, inArray, notInArray, ilike, type SQL } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { setupAuth, registerAuthRoutes, isAuthenticated, rotateSigningKey, generateAccessToken, generateRefreshToken } from "./replit_integrations/auth";
@@ -1870,6 +1871,49 @@ export async function registerRoutes(
       console.error("Error resetting role:", error);
       res.status(500).json({ error: "Failed to reset role" });
     }
+  });
+
+  // ── Per-product entitlements (Task: product journeys) ──────────────────
+  // Resolves the caller's subscription plan to its feature entitlements.
+  // SAFETY CONTRACT: this must NEVER throw and must NEVER reduce an existing
+  // user's access — any error, missing sub, inactive sub, or unknown plan
+  // value resolves to FULL (premium-level) entitlements. Whether the user has
+  // access AT ALL stays the job of the existing paywall/hasActiveSubscription
+  // checks; entitlements only shape the journey for users who are already in.
+  async function resolveEntitlements(userId: string): Promise<{
+    plan: string | null;
+    entitlements: Entitlements;
+    startDate: string | null;
+    endDate: string | null;
+  }> {
+    try {
+      const sub = await storage.getSubscription(userId);
+      const active = sub ? await storage.hasActiveSubscription(userId) : false;
+      // Only an ACTIVE sub's plan shapes the journey. Inactive/absent subs
+      // fall back to full — the paywall (not this map) decides access.
+      const plan = active && sub?.plan ? String(sub.plan) : null;
+      return {
+        plan,
+        entitlements: entitlementsForPlan(plan),
+        startDate: sub?.startDate ? new Date(sub.startDate).toISOString() : null,
+        endDate: sub?.endDate ? new Date(sub.endDate).toISOString() : null,
+      };
+    } catch (err) {
+      console.error("[entitlements] resolve failed — falling back to full:", err);
+      return { plan: null, entitlements: entitlementsForPlan(null), startDate: null, endDate: null };
+    }
+  }
+
+  app.get("/api/me/entitlements", isAuthenticated, async (req: any, res) => {
+    const userId = req.user.claims.sub;
+    const resolved = await resolveEntitlements(userId);
+    res.json({
+      plan: resolved.plan,
+      planKey: planKeyForPlan(resolved.plan),
+      entitlements: resolved.entitlements,
+      startDate: resolved.startDate,
+      endDate: resolved.endDate,
+    });
   });
 
   app.get("/api/user/subscription-status", isAuthenticated, async (req: any, res) => {
@@ -16302,7 +16346,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
 
   // GET /api/dbe/available — which subjects have real ingested questions
   // Task #394 — release-gate: only papers passing ≥98% memo + mark coverage.
-  app.get("/api/dbe/available", isAuthenticated, async (_req: any, res) => {
+  app.get("/api/dbe/available", isAuthenticated, async (req: any, res) => {
     try {
       const { dbeVerbatimQuestions } = await import("@shared/schema");
       const rows = await db
@@ -16324,9 +16368,28 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         )
         .orderBy(dbeVerbatimQuestions.subject, dbeVerbatimQuestions.year, dbeVerbatimQuestions.paperNumber);
 
+      // Sprint entitlement: 42-day sprint products see only the 3 most recent
+      // exam years PER SUBJECT. Purely additive filter — every other plan
+      // (and any resolution error) sees the full archive unchanged.
+      let visibleRows = rows;
+      const { entitlements: callerEnts } = await resolveEntitlements(req.user.claims.sub);
+      if (callerEnts.paperYears === 3) {
+        const yearsBySubject: Record<string, number[]> = {};
+        for (const row of rows) {
+          (yearsBySubject[row.subject] ??= []).push(row.year);
+        }
+        const allowed: Record<string, Set<number>> = {};
+        for (const [subj, years] of Object.entries(yearsBySubject)) {
+          allowed[subj] = new Set(
+            Array.from(new Set(years)).sort((a, b) => b - a).slice(0, 3),
+          );
+        }
+        visibleRows = rows.filter((r) => allowed[r.subject]?.has(r.year));
+      }
+
       // Group by subject
       const bySubject: Record<string, { subject: string; papers: typeof rows }> = {};
-      for (const row of rows) {
+      for (const row of visibleRows) {
         if (!bySubject[row.subject]) bySubject[row.subject] = { subject: row.subject, papers: [] };
         bySubject[row.subject].papers.push(row);
       }
@@ -16367,7 +16430,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       // serve time so learners never open a question they cannot answer from
       // the card alone. gateSource() is a pure, unit-tested check.
       const { gateSource } = await import("./exam-source-hygiene");
-      const verbatimRows = verbatimRowsRaw.filter((r: any) =>
+      let verbatimRows = verbatimRowsRaw.filter((r: any) =>
         gateSource({
           questionText: r.questionText,
           memoText: r.memoText,
@@ -16375,6 +16438,25 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
           needsStimulus: r.needsStimulus,
         }).usable,
       );
+
+      // Sprint entitlement: 3 most recent released exam years for this
+      // subject only (mirrors /api/dbe/available so a sprint user cannot
+      // reach older years by requesting them directly). Additive filter —
+      // full-entitlement callers are untouched.
+      const { entitlements: callerEnts } = await resolveEntitlements(req.user.claims.sub);
+      if (callerEnts.paperYears === 3 && verbatimRows.length > 0) {
+        const yearRows = await db
+          .selectDistinct({ year: dbeVerbatimQuestions.year })
+          .from(dbeVerbatimQuestions)
+          .where(and(
+            eq(dbeVerbatimQuestions.subject, subject),
+            sql`${dbeVerbatimQuestions.releasedAt} IS NOT NULL`,
+          ));
+        const allowedYears = new Set(
+          yearRows.map((r) => r.year).sort((a, b) => b - a).slice(0, 3),
+        );
+        verbatimRows = verbatimRows.filter((r: any) => allowedYears.has(r.year));
+      }
 
       const aiRows = wantAi && !year && !paperNumber
         ? await db.select().from(dbeSimulatedQuestions)
