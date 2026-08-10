@@ -89,6 +89,10 @@ export async function generateVerifyReleaseMcqs(opts: {
   subject: string;
   count?: number;
   topicCount?: number;
+  /** Restrict generation to ONE language ("Afrikaans" | "English"). Used by
+   *  the AF-parity seeding runs so the whole count goes to that language
+   *  instead of English consuming the quota first. Omit = all available. */
+  language?: string;
 }): Promise<McqPipelineResult> {
   const subject = opts.subject.trim();
   const targetCount = Math.max(4, Math.min(60, opts.count ?? 20));
@@ -121,10 +125,21 @@ export async function generateVerifyReleaseMcqs(opts: {
   for (const p of profiles) {
     const langs = await languagesFor(p.subject, p.paperNumber);
     if (!langs.length) continue;
-    // English first; only add Afrikaans if it has its own exemplars.
-    const orderedLangs = langs.includes("English")
+    // English first; only add Afrikaans if it has its own exemplars — unless
+    // opts.language pins the run to one language (AF-parity seeding), in which
+    // case the full per-paper quota goes to that language alone.
+    let orderedLangs = langs.includes("English")
       ? ["English", ...langs.filter((l) => l !== "English")]
       : langs;
+    if (opts.language) {
+      orderedLangs = orderedLangs.filter((l) => l === opts.language);
+      if (!orderedLangs.length) {
+        result.errors.push(
+          `no ${opts.language} exemplars for ${p.subject} P${p.paperNumber} — ingest ${opts.language} papers first`,
+        );
+        continue;
+      }
+    }
 
     for (const language of orderedLangs) {
       let stats;

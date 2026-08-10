@@ -46,6 +46,9 @@ const OPT = {
   topicCount: Number(val("--topics", "6")),
   limit: val("--limit") ? Number(val("--limit")) : Infinity,
   dry: has("--dry"),
+  // --lang Afrikaans → the ENTIRE count goes to Afrikaans (AF-parity runs).
+  // Without it the pipeline does English first and Afrikaans opportunistically.
+  lang: val("--lang"),
 };
 
 async function main() {
@@ -77,6 +80,7 @@ async function main() {
     try {
       const r = await generateVerifyReleaseMcqs({
         subject, count: OPT.count, topicCount: OPT.topicCount,
+        language: OPT.lang,
       });
       totals.generated += r.generated; totals.banked += r.banked;
       totals.verified += r.verified; totals.released += r.released;
@@ -93,9 +97,12 @@ async function main() {
     }
   }
 
-  // Show how many subjects now actually have servable (released+verified) MCQs.
-  const covered = await db.execute<{ subject: string; n: number }>(sql`
-    SELECT subject, count(*)::int AS n
+  // Coverage report split EN vs AF so the language gap is always visible
+  // (both storage conventions counted: "English"/"en", "Afrikaans"/"af").
+  const covered = await db.execute<{ subject: string; en: number; af: number }>(sql`
+    SELECT subject,
+           count(*) FILTER (WHERE language IN ('English','en'))::int   AS en,
+           count(*) FILTER (WHERE language IN ('Afrikaans','af'))::int AS af
       FROM generated_questions
      WHERE released_at IS NOT NULL AND quality_flag = 'pass'
        AND mcq_options IS NOT NULL AND correct_option IS NOT NULL
@@ -107,8 +114,12 @@ async function main() {
   console.log(`TOTALS — generated ${totals.generated} · banked ${totals.banked} · ` +
     `verified ${totals.verified} · RELEASED ${totals.released} · held ${totals.held} · ` +
     `errors ${totals.errors}`);
-  console.log(`Subjects with servable MCQs now: ${(covered.rows ?? []).length}`);
-  (covered.rows ?? []).forEach((r) => console.log(`   ${r.subject}: ${r.n}`));
+  const rows = covered.rows ?? [];
+  const afGap = rows.filter((r) => r.en > 0 && r.af === 0).length;
+  console.log(`Subjects with servable MCQs: ${rows.length} · EN-only (no AF yet): ${afGap}`);
+  rows.forEach((r) => console.log(
+    `   ${r.subject}: EN ${r.en} · AF ${r.af}${r.af === 0 && r.en > 0 ? "   ← needs --lang Afrikaans run" : ""}`,
+  ));
   console.log("═".repeat(72));
 
   await pool.end();
