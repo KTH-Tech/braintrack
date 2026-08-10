@@ -30,7 +30,6 @@ import { useSEO } from "@/hooks/use-seo";
 import { useLanguage } from "@/lib/language-context";
 import { useRolePromptNav } from "@/components/role-prompt-modal";
 import iconTransparent from "@/assets/handoff/icon-transparent.png";
-import heroGraffiti from "@/assets/hero-graffiti.png";
 import { KthMark } from "@/components/kth-mark";
 import { PublicFooter } from "@/components/public-footer";
 import { RizzDemo } from "@/components/landing/rizz-demo";
@@ -51,11 +50,11 @@ const COPY = {
     tForSchools: "For Schools",
     tEnter: "Log on",
     predictorBadge: "We don't guess what's on your paper — we've read 10 years of them.",
-    heroHead1: "Grade 12 matric prep with real NSC past papers, memos and ",
-    heroAccent: "a 24/7 AI tutor",
+    heroHead1: "The learning platform that ",
+    heroAccent: "doesn't feel like school",
     heroTail: ".",
     heroSub:
-      "The Grade 12 matric app: CAPS-aligned plans, instant marking, a tutor that never sleeps.",
+      "A CAPS-aligned matric ecosystem — diagnostics, study plans and parent visibility, all in one.",
     ctaStart: "Start now",
     ctaPlans: "See plans",
     heroAlt: "BrainTrack — Grade 12 matric, study smarter not harder",
@@ -183,11 +182,11 @@ const COPY = {
     tForSchools: "Vir Skole",
     tEnter: "Meld aan",
     predictorBadge: "Ons raai nie wat op jou vraestel is nie — ons het 10 jaar s'n gelees.",
-    heroHead1: "Graad 12-matriekvoorbereiding met regte NSS-vraestelle, memo's en ",
-    heroAccent: "'n 24/7 KI-tutor",
+    heroHead1: "Die leerplatform wat ",
+    heroAccent: "nie soos skool voel nie",
     heroTail: ".",
     heroSub:
-      "Die Graad 12-matriek-app: KABV-belynde planne, kitsnasien, 'n tutor wat nooit slaap nie.",
+      "'n KABV-belynde matriek-ekosisteem — diagnostiek, studieplanne en ouersigbaarheid, alles in een.",
     ctaStart: "Begin nou",
     ctaPlans: "Sien planne",
     heroAlt: "BrainTrack — Graad 12-matriek, leer slimmer nie harder nie",
@@ -861,17 +860,30 @@ export default function LandingPage() {
             <Target size={16} strokeWidth={2.6} style={{ color: "#9FF5E8" }} aria-hidden />
             {t.predictorBadge}
           </div>
-          {/* Hero centerpiece — the transparent graffiti wordmark art already
-              carries the headline + taglines ("STUDY SMARTER NOT HARDER",
-              "OWN IT NOW"), so the overlaid HTML below stays minimal: CTAs +
-              trust strip only. Replaces the old text headline so nothing
-              competes with the art. */}
-          <img
-            src={heroGraffiti}
-            alt={t.heroAlt}
+          {/* Hero headline — the founder's pick (2026-08): the classic text
+              hero ("The learning platform that doesn't feel like school") with
+              the gradient accent + floating graffiti scatter marks, NOT the
+              baked-in PNG art. Copy is pay-now era — no trial language. */}
+          <h1
+            className="btl-hero-head"
             data-testid="hero-title"
-            style={{ display: "block", width: "100%", maxWidth: 1040, height: "auto", objectFit: "contain", margin: "0 auto" }}
-          />
+            style={{ fontSize: "clamp(30px,7.5vw,58px)", fontWeight: 900, lineHeight: 1.1, letterSpacing: "-1.5px", margin: 0, fontFamily: "'Poppins',sans-serif", color: "#fff" }}
+          >
+            {t.heroHead1}
+            <span
+              style={{
+                background: HEADLINE_GRADIENT,
+                WebkitBackgroundClip: "text", backgroundClip: "text",
+                color: "transparent", WebkitTextFillColor: "transparent",
+              }}
+            >
+              {t.heroAccent}
+            </span>
+            {t.heroTail}
+          </h1>
+          <div style={{ marginTop: 18, fontSize: 17, lineHeight: 1.65, color: "#fff", maxWidth: 620, marginLeft: "auto", marginRight: "auto" }}>
+            {t.heroSub}
+          </div>
           <div style={{ display: "flex", gap: 16, justifyContent: "center", marginTop: 32, flexWrap: "wrap" }}>
             <button
               onClick={handleCta}
