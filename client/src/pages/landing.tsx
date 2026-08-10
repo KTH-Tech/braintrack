@@ -30,6 +30,7 @@ import { useSEO } from "@/hooks/use-seo";
 import { useLanguage } from "@/lib/language-context";
 import { useRolePromptNav } from "@/components/role-prompt-modal";
 import iconTransparent from "@/assets/handoff/icon-transparent.png";
+import heroGraffiti from "@/assets/hero-graffiti.png";
 import { KthMark } from "@/components/kth-mark";
 import { PublicFooter } from "@/components/public-footer";
 import { RizzDemo } from "@/components/landing/rizz-demo";
@@ -860,29 +861,31 @@ export default function LandingPage() {
             <Target size={16} strokeWidth={2.6} style={{ color: "#9FF5E8" }} aria-hidden />
             {t.predictorBadge}
           </div>
-          {/* Hero headline — the founder's pick (2026-08): the classic text
-              hero ("The learning platform that doesn't feel like school") with
-              the gradient accent + floating graffiti scatter marks, NOT the
-              baked-in PNG art. Copy is pay-now era — no trial language. */}
-          <h1
-            className="btl-hero-head"
-            data-testid="hero-title"
-            style={{ fontSize: "clamp(30px,7.5vw,58px)", fontWeight: 900, lineHeight: 1.1, letterSpacing: "-1.5px", margin: 0, fontFamily: "'Poppins',sans-serif", color: "#fff" }}
+          {/* Hero centerpiece — founder's final pick (2026-08-10): the graffiti
+              art hero from the launch deploy. The transparent PNG's black
+              linework vanished on the near-black ground before, so the art now
+              sits on a light "concrete wall" panel (every stroke visible) with
+              a slow float (bt-heromark @ --mr:0deg = pure bob, exempt from the
+              reduced-motion kill-switch via its own media rule). */}
+          <div
+            style={{
+              background: "#FBF7ED",
+              border: "2.5px solid #050508",
+              borderRadius: 24,
+              padding: "14px 14px 8px",
+              maxWidth: 1040,
+              margin: "0 auto",
+              boxShadow: "8px 8px 0 0 #C5B3FF",
+              animation: "bt-heromark 7s ease-in-out infinite",
+              ["--mr" as any]: "0deg",
+            }}
           >
-            {t.heroHead1}
-            <span
-              style={{
-                background: HEADLINE_GRADIENT,
-                WebkitBackgroundClip: "text", backgroundClip: "text",
-                color: "transparent", WebkitTextFillColor: "transparent",
-              }}
-            >
-              {t.heroAccent}
-            </span>
-            {t.heroTail}
-          </h1>
-          <div style={{ marginTop: 18, fontSize: 17, lineHeight: 1.65, color: "#fff", maxWidth: 620, marginLeft: "auto", marginRight: "auto" }}>
-            {t.heroSub}
+            <img
+              src={heroGraffiti}
+              alt={t.heroAlt}
+              data-testid="hero-title"
+              style={{ display: "block", width: "100%", height: "auto", objectFit: "contain" }}
+            />
           </div>
           <div style={{ display: "flex", gap: 16, justifyContent: "center", marginTop: 32, flexWrap: "wrap" }}>
             <button
