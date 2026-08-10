@@ -86,12 +86,20 @@ export async function buildRapidFireDeck(opts: {
   //   AND solver_verdict='agree' AND caps_verdict='on_syllabus'
   // plus MCQ shape guards. Original generated_questions only — never verbatim DBE.
   const fetchRows = async (language: string): Promise<Row[]> => {
+    // Corpus stores both "Afrikaans"/"af" and "English"/"en" conventions —
+    // match both spellings so AF content is never silently hidden.
+    const alt =
+      language === "Afrikaans" ? "af"
+      : language === "af" ? "Afrikaans"
+      : language === "English" ? "en"
+      : language === "en" ? "English"
+      : language;
     const r = await db.execute<Row>(sql`
       SELECT id, question_text, answer_text, topic,
              mcq_options, correct_option, marks
         FROM generated_questions
        WHERE subject = ${subjectName}
-         AND language = ${language}
+         AND language IN (${language}, ${alt})
          AND released_at IS NOT NULL
          AND quality_flag = 'pass'
          AND mcq_options IS NOT NULL

@@ -2169,7 +2169,18 @@ export async function registerRoutes(
     try {
       const userId = req.user.claims.sub;
       const subjectId = parseInt(req.params.id);
-      const lang = (req.query.lang as string) === "af" ? "af" : "en";
+      // Language: an explicit ?lang wins; otherwise fall back to the learner's
+      // stored preference so Afrikaans learners get Afrikaans content even when
+      // a client omits the param (previously this silently defaulted to "en").
+      let langQ = req.query.lang as string | undefined;
+      if (langQ !== "af" && langQ !== "en") {
+        const [me] = await db
+          .select({ preferredLanguage: users.preferredLanguage })
+          .from(users)
+          .where(eq(users.id, userId));
+        langQ = me?.preferredLanguage === "af" ? "af" : "en";
+      }
+      const lang = langQ;
       const isAf = lang === "af";
       const difficulty = ["easy", "medium", "hard"].includes(req.query.difficulty as string)
         ? (req.query.difficulty as string)
@@ -2235,6 +2246,14 @@ export async function registerRoutes(
         const topicClause = withTopic && topicFocus
           ? sql`AND topic ILIKE ${"%" + topicFocus + "%"}`
           : sql``;
+        // The corpus stores BOTH language conventions ("Afrikaans"/"af",
+        // "English"/"en") depending on which pipeline wrote the row. An exact
+        // match silently hid AF rows stored as "af" — Afrikaans learners then
+        // fell back to English. Match both spellings of the requested language.
+        const langVariants =
+          language === "Afrikaans" ? ["Afrikaans", "af"]
+          : language === "English" ? ["English", "en"]
+          : [language, language];
         const r = await db.execute<{
           id: number; question_text: string; answer_text: string | null;
           topic: string | null; cognitive_level: string | null;
@@ -2245,7 +2264,7 @@ export async function registerRoutes(
                  mcq_options, correct_option, marks
             FROM generated_questions
            WHERE subject = ${subjectRow.name}
-             AND language = ${language}
+             AND language IN (${langVariants[0]}, ${langVariants[1]})
              AND released_at IS NOT NULL
              AND quality_flag = 'pass'
              AND mcq_options IS NOT NULL
@@ -5430,7 +5449,13 @@ export async function registerRoutes(
                marks, cognitive_level, topic, mcq_options, correct_option
           FROM generated_questions
          WHERE subject = ${paper.subjectName}
-           AND language = ${paper.language}
+           -- Corpus stores both "Afrikaans"/"af" and "English"/"en" depending
+           -- on the writing pipeline; exact matching hid AF content from AF
+           -- papers. Match both spellings of the paper's language.
+           AND language IN (
+             ${paper.language},
+             ${paper.language === "Afrikaans" ? "af" : paper.language === "English" ? "en" : paper.language === "af" ? "Afrikaans" : paper.language === "en" ? "English" : paper.language}
+           )
            AND released_at IS NOT NULL
            AND quality_flag = 'pass'
            AND mcq_options IS NOT NULL
@@ -21888,7 +21913,18 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
     try {
       const userId = req.user.claims.sub;
       const subjectId = parseInt(req.params.id);
-      const lang = (req.query.lang as string) === "af" ? "af" : "en";
+      // Language: an explicit ?lang wins; otherwise fall back to the learner's
+      // stored preference so Afrikaans learners get Afrikaans content even when
+      // a client omits the param (previously this silently defaulted to "en").
+      let langQ = req.query.lang as string | undefined;
+      if (langQ !== "af" && langQ !== "en") {
+        const [me] = await db
+          .select({ preferredLanguage: users.preferredLanguage })
+          .from(users)
+          .where(eq(users.id, userId));
+        langQ = me?.preferredLanguage === "af" ? "af" : "en";
+      }
+      const lang = langQ;
       const isAf = lang === "af";
 
       const [subjectRow] = await db.select().from(subjects).where(eq(subjects.id, subjectId));
