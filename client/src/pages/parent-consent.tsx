@@ -8,11 +8,11 @@ import { useSEO } from "@/hooks/use-seo";
 // Task #43 — Public confirmation landing for parent-consent email links.
 // Reads ?token=… . No auth is required — the JWT is the bearer of trust.
 //
-// Card-on-consent flow: granting consent now also captures the parent's card
-// via a R1.00 Paystack verification charge (channels: ["card"]). The learner's
-// 14-day trial starts only once BOTH consent and the card are captured. If
-// Paystack isn't configured in this environment we fall back to the legacy
-// consent-only confirmation so the flow never dead-ends.
+// Pay-now-on-consent flow: approving takes the parent straight to Paystack
+// checkout, where the R169/month subscription is charged immediately
+// (channels: ["card"]). Full access unlocks once BOTH consent and payment
+// land. If Paystack isn't configured in this environment we fall back to the
+// legacy consent-only confirmation so the flow never dead-ends.
 export default function ParentConsentPage() {
   const { language } = useLanguage();
   const isAf = language === "af";
@@ -111,6 +111,12 @@ export default function ParentConsentPage() {
     <div className="min-h-screen flex items-center justify-center px-4 py-12">
       <Card className="max-w-md w-full" data-testid="parent-consent-card">
         <CardHeader>
+          <p
+            className="uppercase"
+            style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 16, letterSpacing: "0.16em", color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}
+          >
+            {isAf ? "een laaste stap!" : "one last step!"}
+          </p>
           <CardTitle>
             {isAf ? "Ouer / Voog Toestemming" : "Parent / Guardian Consent"}
           </CardTitle>
@@ -118,13 +124,13 @@ export default function ParentConsentPage() {
         <CardContent className="space-y-4 text-center">
           {status === "loading" && (
             <>
-              <Loader2 className="w-10 h-10 animate-spin text-primary mx-auto" />
+              <Loader2 className="w-10 h-10 animate-spin mx-auto" style={{ color: "#9FF5E8" }} />
               <p className="text-sm text-white">{isAf ? "Laai…" : "Loading…"}</p>
             </>
           )}
           {status === "redirecting" && (
             <>
-              <Loader2 className="w-10 h-10 animate-spin text-primary mx-auto" />
+              <Loader2 className="w-10 h-10 animate-spin mx-auto" style={{ color: "#9FF5E8" }} />
               <p className="text-sm text-white">
                 {isAf ? "Ons neem jou na die veilige betaalblad…" : "Taking you to the secure payment page…"}
               </p>
@@ -148,6 +154,7 @@ export default function ParentConsentPage() {
                 <li>✓ {isAf ? "Kanselleer enige tyd in die app" : "Cancel anytime in the app"}</li>
               </ul>
               <Button
+                variant="primary"
                 className="w-full mt-2"
                 onClick={handleApproveAndAddCard}
                 data-testid="button-approve-add-card"
@@ -164,7 +171,7 @@ export default function ParentConsentPage() {
           )}
           {status === "ok" && (
             <>
-              <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto" />
+              <CheckCircle2 className="w-12 h-12 mx-auto" style={{ color: "#94F7C5" }} />
               <h2 className="text-lg font-bold" data-testid="consent-confirmed-title">
                 {isAf ? "Toestemming bevestig" : "Consent confirmed"}
               </h2>
@@ -184,12 +191,12 @@ export default function ParentConsentPage() {
                     : "Payment successful — R169/month, cancel anytime. Appears on your statement as KTH-TECH."}
                 </p>
               )}
-              <Button asChild className="mt-2"><a href="/">{isAf ? "Klaar" : "Done"}</a></Button>
+              <Button asChild variant="primary" className="mt-2"><a href="/">{isAf ? "Klaar" : "Done"}</a></Button>
             </>
           )}
           {status === "error" && (
             <>
-              <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto" />
+              <AlertTriangle className="w-12 h-12 mx-auto" style={{ color: "#FF8DA1" }} />
               <h2 className="text-lg font-bold" data-testid="consent-error-title">
                 {isAf ? "Skakel ongeldig" : "Link invalid"}
               </h2>
@@ -200,6 +207,9 @@ export default function ParentConsentPage() {
                   ? (isAf ? "Die betaling is nie voltooi nie. Maak die skakel weer oop om te probeer." : "The payment wasn't completed. Open the link again to retry.")
                   : (isAf ? "Ons kon nie hierdie skakel verifieer nie." : "We couldn't verify this link.")}
               </p>
+              <Button asChild variant="primary" className="mt-2" data-testid="button-consent-error-home">
+                <a href="/">{isAf ? "Gaan na tuisblad" : "Go to homepage"}</a>
+              </Button>
             </>
           )}
         </CardContent>

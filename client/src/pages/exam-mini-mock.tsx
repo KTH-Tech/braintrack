@@ -88,7 +88,7 @@ function GlassCard({ children, accent, className = "", style }: {
     <div
       className={`relative overflow-hidden ${className}`}
       style={{
-        background: "#1b1922",
+        background: "#0e0d12",
         border: accent ? `1.5px solid ${accent}` : "1px solid #1b1922",
         borderRadius: 22,
         ...style,
@@ -520,11 +520,11 @@ export default function ExamMiniMockPage() {
                 readable. Only present when the question actually needs it. */}
             {currentQ.stimulusText && currentQ.stimulusText.trim().length > 0 && (
               <div
-                className="rounded-2xl p-4 mb-1"
-                style={{ background: "#050508", border: "2px solid #9FD8FF", boxShadow: "4px 4px 0 0 #9FD8FF" }}
+                className="rounded-xl p-3 sm:p-4 space-y-1.5 mb-1"
+                style={{ background: "rgba(159,216,255,.06)", border: "1px solid #9FD8FF" }}
                 data-testid="mini-mock-stimulus"
               >
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] mb-2" style={{ color: "#9FD8FF" }}>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: "#9FD8FF" }}>
                   {isAf ? "Lees die teks" : "Read the text"}
                 </p>
                 <p className="text-sm text-white whitespace-pre-line leading-relaxed">

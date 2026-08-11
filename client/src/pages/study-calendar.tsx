@@ -777,413 +777,6 @@ export default function StudyCalendarPage() {
           </div>
         </div>
 
-        {/* ── Prelim Timetable CTA ── */}
-        <Link href="/prelim-timetable">
-          <div
-            className="group flex items-center justify-between gap-3 px-4 py-3.5 rounded-2xl cursor-pointer transition-all"
-            style={{
-              background: PANEL,
-              border: "1.5px solid #9FF5E8",
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
-          >
-            <div className="flex items-center gap-3 min-w-0">
-              <div
-                className="shrink-0 flex items-center justify-center"
-                style={{ width: 42, height: 42, borderRadius: 12, background: "#9FF5E822", border: "1px solid #9FF5E855" }}
-              >
-                <CalendarDays className="w-5 h-5" style={{ color: "#9FF5E8" }} />
-              </div>
-              <div className="min-w-0">
-                <p className="text-sm font-black truncate" style={{ color: "#9FF5E8" }}>
-                  {isAf ? "Vooreksamen Rooster 2026" : "Prelim Timetable 2026"}
-                </p>
-                <p className="text-[11px] mt-0.5 text-white truncate">
-                  {isAf ? "SACAI · Aug–Sep · 4 weke" : "SACAI · Aug–Sep · 4 weeks"}
-                </p>
-              </div>
-            </div>
-            <ChevronRight className="w-5 h-5 shrink-0 transition-transform group-hover:translate-x-0.5" style={{ color: "#9FF5E8" }} />
-          </div>
-        </Link>
-
-        {/* ── Stats strip ── */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-          {([
-            { label: isAf ? "Reeks" : "Streak",      value: stats?.studyStreak ?? 0,       icon: Flame,       neon: NEON.orange, testid: "plan-stat-streak"    },
-            { label: isAf ? "Gereedheid" : "Readiness", value: `${overallReadiness}%`,     icon: ShieldCheck, neon: NEON.violet, testid: "plan-stat-readiness" },
-            { label: isAf ? "Akkuraatheid" : "Accuracy", value:`${stats?.accuracy??0}%`,   icon: Target,      neon: NEON.cyan2,  testid: "plan-stat-accuracy"  },
-            { label: isAf ? "Vrae" : "Questions",    value: stats?.questionsAnswered ?? 0,  icon: Zap,         neon: NEON.cyan,   testid: "plan-stat-questions" },
-            { label: isAf ? "Vakke" : "Subjects",    value: mySubjects.length,              icon: BookOpen,    neon: NEON.green,  testid: "plan-stat-subjects"  },
-          ] as const).map(({ label, value, icon: Icon, neon, testid }) => (
-            <GlassCard key={label} className="flex items-center gap-3 p-4">
-              <div style={{ width:38,height:38,borderRadius:10,flexShrink:0,background:`${neon.hex}20`,border:`1px solid ${neon.hex}44`,display:"flex",alignItems:"center",justifyContent:"center" }}>
-                <Icon className="w-4 h-4" style={{ color:neon.hex }} />
-              </div>
-              <div>
-                <p style={{ fontSize:"10px", fontWeight:700, color:"#ffffff", textTransform:"uppercase", letterSpacing:"0.08em" }}>{label}</p>
-                <p className="text-xl font-bold tabular-nums" data-testid={testid} style={{ color:neon.text }}>{value}</p>
-              </div>
-            </GlassCard>
-          ))}
-        </div>
-
-        {/* ── Readiness Scores section ── */}
-        {(() => {
-          const entries = Object.entries(readinessData?.readiness ?? {})
-            .map(([id, score]) => ({ subjectId: Number(id), score: Number(score) }))
-            .filter(e => e.score >= 0)
-            .sort((a, b) => a.score - b.score);
-
-          if (entries.length === 0) return null;
-
-          const overallBand = readinessBand(overallReadiness);
-          const overallNeon =
-            overallBand === "green" ? NEON.green :
-            overallBand === "amber" ? NEON.gold : NEON.pink;
-
-          return (
-            <div data-testid="study-calendar-readiness">
-              <GlassCard neonColor="#C5B3FF" className="overflow-hidden">
-                <div
-                  className="px-5 py-4 flex items-center gap-2 flex-wrap"
-                  style={{ borderBottom: "1px solid #1b1922", background: "rgba(197,179,255,0.06)" }}
-                >
-                  <ShieldCheck className="w-4 h-4" style={{ color: "#C5B3FF" }} />
-                  <p className="font-bold text-sm" style={{ color:"#ffffff" }}>
-                    {isAf ? "Gereedheidstellings" : "Readiness Scores"}
-                  </p>
-                  <span
-                    className="ml-auto inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.18em] px-2.5 py-1 rounded-full"
-                    style={{
-                      background: "#050508",
-                      border: `1px solid ${overallNeon.hex}`,
-                      color: overallNeon.hex,
-                    }}
-                    data-testid="readiness-overall"
-                  >
-                    {isAf ? "Algeheel" : "Overall"}
-                    <span
-                      className="tabular-nums font-black"
-                      style={{ fontFamily: '"JetBrains Mono", monospace' }}
-                    >
-                      {overallReadiness}%
-                    </span>
-                  </span>
-                </div>
-                <div className="p-5 space-y-2.5">
-                  {entries.map((e, i) => {
-                    const subj = (subjects || []).find((s: any) => s.id === e.subjectId);
-                    const name = subj ? (isAf ? (subj.nameAfrikaans || subj.name) : subj.name) : (isAf ? "Vak" : "Subject");
-                    const neon = subjectNeon(subj?.name || "", i);
-                    const band = readinessBand(e.score);
-                    const bandHex = band === "green" ? "#94F7C5" : band === "amber" ? "#FFE29A" : "#FF8DA1";
-                    return (
-                      <div
-                        key={e.subjectId}
-                        className="rounded-xl p-3"
-                        style={{
-                          background: "#050508",
-                          border: `1px solid ${neon.hex}40`,
-                        }}
-                        data-testid={`readiness-row-${e.subjectId}`}
-                      >
-                        <div className="flex items-center justify-between gap-3 mb-2">
-                          <div className="flex items-center gap-2 min-w-0">
-                            <span
-                              className="inline-block w-2.5 h-2.5 rounded-full shrink-0"
-                              style={{ background: neon.hex }}
-                            />
-                            <span className="text-sm font-bold truncate" style={{ color: neon.text }}>
-                              {name}
-                            </span>
-                            <span
-                              className="text-[9px] font-black uppercase tracking-[0.16em] px-1.5 py-0.5 rounded-md shrink-0"
-                              style={{
-                                color: bandHex,
-                                border: `1px solid ${bandHex}66`,
-                                background: `${bandHex}14`,
-                              }}
-                            >
-                              {readinessBandLabel(e.score, isAf)}
-                            </span>
-                          </div>
-                          <span
-                            className="text-sm font-black tabular-nums shrink-0"
-                            style={{
-                              color: bandHex,
-                              fontFamily: '"JetBrains Mono", monospace',
-                            }}
-                          >
-                            {e.score}%
-                          </span>
-                        </div>
-                        <div
-                          className="relative h-1.5 rounded-full overflow-hidden"
-                          style={{ background: "#1b1922", border: "1px solid #1b1922" }}
-                        >
-                          <div
-                            className="absolute top-0 left-0 bottom-0 rounded-full transition-[width] duration-700"
-                            style={{
-                              width: `${Math.max(2, Math.min(100, e.score))}%`,
-                              background: `linear-gradient(90deg, ${neon.hex}, ${bandHex})`,
-                            }}
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </GlassCard>
-            </div>
-          );
-        })()}
-
-        {/* ── High-Yield Topics — real DBE exam-frequency "insider intel" ── */}
-        <div data-testid="study-calendar-high-yield-topics">
-          <GlassCard neonColor="#FFE29A" className="overflow-hidden">
-            <div
-              className="px-5 py-4 flex items-center gap-2 flex-wrap"
-              style={{ borderBottom: "1px solid #1b1922", background: "rgba(255,226,154,0.06)" }}
-            >
-              <Sparkles className="w-4 h-4" style={{ color: "#FFE29A" }} />
-              <p className="font-bold text-sm" style={{ color: "#ffffff" }}>
-                {isAf ? "Hoë-opbrengs Onderwerpe" : "High-Yield Topics"}
-              </p>
-              <span
-                className="ml-auto text-[10px] font-black uppercase tracking-[0.16em] px-2.5 py-1 rounded-full"
-                style={{ background: "#050508", border: "1px solid rgba(255,226,154,0.55)", color: "#FFE29A" }}
-              >
-                {isAf ? "Eksaminator-intel" : "Examiner Intel"}
-              </span>
-            </div>
-            <div className="px-5 pt-3">
-              <p style={{ fontSize: "11px", color: "#ffffff", lineHeight: 1.5 }}>
-                {isAf
-                  ? "Regte DBE-eksamendata — presies watter onderwerpe die meeste in die laaste ~10 jaar se vraestelle verskyn het."
-                  : "Real DBE exam data — exactly which topics have shown up most in the last ~10 years of papers."}
-              </p>
-            </div>
-
-            {selectedIds.length === 0 ? (
-              <div className="p-5 text-center">
-                <p style={{ color: "#ffffff", fontSize: "12px", marginTop: "4px" }}>
-                  {isAf ? "Kies jou vakke om jou eksaminator-intel te sien." : "Select your subjects to unlock your examiner intel."}
-                </p>
-                <Link href="/settings">
-                  <Button size="sm" className="mt-3" data-testid="button-select-subjects-high-yield">
-                    {isAf ? "Kies Vakke" : "Select Subjects"}
-                  </Button>
-                </Link>
-              </div>
-            ) : (
-              <>
-                {/* Subject tabs — only needed when more than one subject has data */}
-                {hySubjectsOrdered.length > 1 && (
-                  <div className="px-5 pt-3 flex gap-2 overflow-x-auto pb-1 -mx-1" style={{ scrollbarWidth: "none" }}>
-                    {hySubjectsOrdered.map((s) => {
-                      const isActive = hyActiveSubject?.subjectId === s.subjectId;
-                      return (
-                        <button
-                          key={s.subjectId}
-                          onClick={() => setHyActiveSubjectId(s.subjectId)}
-                          className="flex-shrink-0 px-3.5 py-2 rounded-lg text-[11px] font-bold transition-all"
-                          style={isActive
-                            ? { background: `${s.neon.hex}22`, border: `1.5px solid ${s.neon.hex}`, color: s.neon.text }
-                            : { background: INSET, border: `1px solid ${HAIRLINE}`, color: "#ffffff" }}
-                          data-testid={`hy-subject-tab-${s.subjectId}`}
-                        >
-                          {isAf ? (s.subjectNameAfrikaans || s.subjectName) : s.subjectName}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-
-                <div className="p-5 space-y-2.5">
-                  {highYieldLoading ? (
-                    [0, 1, 2].map((i) => (
-                      <div key={i} className="h-16 rounded-xl animate-pulse" style={{ background: "rgba(255,226,154,0.06)", border: "1px solid rgba(255,226,154,0.12)" }} />
-                    ))
-                  ) : !hyActiveSubject ? (
-                    <div className="text-center py-4">
-                      <p style={{ color: "#ffffff", fontSize: "12px" }}>
-                        {isAf ? "Geen eksamenpatroondata beskikbaar nie." : "No exam-pattern data available yet."}
-                      </p>
-                    </div>
-                  ) : hyActiveSubject.topics.length === 0 ? (
-                    <div className="text-center py-4">
-                      <p style={{ color: "#ffffff", fontSize: "12px" }}>
-                        {isAf
-                          ? `Nog geen eksamenpatroondata vir ${hyActiveSubject.subjectNameAfrikaans || hyActiveSubject.subjectName} nie.`
-                          : `No exam-pattern data for ${hyActiveSubject.subjectName} yet.`}
-                      </p>
-                    </div>
-                  ) : (
-                    hyActiveSubject.topics.map((t, i) => {
-                      const rank = i + 1;
-                      const neon = hyActiveSubject.neon;
-                      const isTop = rank === 1;
-                      const isPodium = rank <= 3;
-                      const badge = isTop ? "🔥" : isPodium ? "🎯" : null;
-                      const name = isAf && t.topicNameAfrikaans ? t.topicNameAfrikaans : t.topicName;
-                      // appearancesCount counts every question-level occurrence
-                      // (a topic can appear more than once within a single
-                      // paper), so it isn't bounded by totalYearsSampled — an
-                      // "X of the last Y sittings" fraction reads as
-                      // impossible once a topic appears twice in one paper.
-                      // State the raw count instead; always true regardless
-                      // of how the two numbers relate.
-                      const sittingsLabel = t.totalYearsSampled > 0
-                        ? (isAf
-                            ? `${t.appearancesCount}× voorgekom oor die laaste ${t.totalYearsSampled} jaar se vraestelle`
-                            : `Appeared ${t.appearancesCount}× across the last ${t.totalYearsSampled} years of papers`)
-                        : (isAf
-                            ? `Verskyn ${t.appearancesCount}× in die DBE-argief`
-                            : `Appeared ${t.appearancesCount}× in the DBE archive`);
-                      return (
-                        <div
-                          key={t.topicId}
-                          className="rounded-xl transition-all"
-                          style={{
-                            background: isTop ? `${neon.hex}18` : "#050508",
-                            border: `${isTop ? 1.5 : 1}px solid ${neon.hex}${isTop ? "" : "60"}`,
-                            padding: isTop ? "16px 18px" : "12px 14px",
-                          }}
-                          data-testid={`hy-topic-row-${t.topicId}`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <div
-                              className="flex items-center justify-center flex-shrink-0 font-black"
-                              style={{
-                                width: isTop ? 38 : isPodium ? 32 : 26,
-                                height: isTop ? 38 : isPodium ? 32 : 26,
-                                borderRadius: "50%",
-                                background: `${neon.hex}${isTop ? "30" : "20"}`,
-                                border: `1px solid ${neon.hex}66`,
-                                color: neon.text,
-                                fontSize: isTop ? 16 : 12,
-                              }}
-                            >
-                              {badge || `#${rank}`}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="font-bold truncate" style={{ color: isTop ? neon.text : "#ffffff", fontSize: isTop ? 15 : 13 }}>
-                                {name}
-                              </p>
-                              <p style={{ color: "#ffffff", fontSize: 11, marginTop: 2 }}>
-                                {sittingsLabel}
-                              </p>
-                            </div>
-                            <div
-                              className="flex-shrink-0 text-right rounded-lg px-2.5 py-1.5"
-                              style={{ background: `${neon.hex}18`, border: `1px solid ${neon.hex}44` }}
-                            >
-                              <p className="font-black tabular-nums" style={{ color: neon.hex, fontSize: isTop ? 18 : 14, lineHeight: 1 }}>
-                                {t.avgMarksPerAppearance}
-                              </p>
-                              <p style={{ fontSize: 8, fontWeight: 700, color: "#ffffff", textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                                {isAf ? "punte gem." : "avg marks"}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
-              </>
-            )}
-          </GlassCard>
-        </div>
-
-        {/* ── VARK Adaptive Recommendations ── */}
-        {varkInsights && varkInsights.eventCount >= 3 && (
-          <div data-testid="vark-calendar-insights">
-          <GlassCard className="p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-lg">
-                {varkPrimary === "visual" ? "👁" : varkPrimary === "auditory" ? "🔊" : varkPrimary === "read" ? "📖" : "✏"}
-              </span>
-              <p className="font-bold text-sm" style={{ color: "#ffffff" }}>
-                {isAf ? "Leerstyl Insigte" : "Style Insights"}
-              </p>
-              {varkInsights.styleEvolving && (
-                <span
-                  className="text-xs font-semibold px-2 py-0.5 rounded-full"
-                  style={{ background: "rgba(159,245,232,0.12)", color: "#9FF5E8", border: "1px solid rgba(159,245,232,0.40)" }}
-                >
-                  {isAf ? "Aan die ontwikkel" : "Evolving"}
-                </span>
-              )}
-            </div>
-
-            {/* Per-style performance bars */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
-              {(["visual","auditory","read","kinesthetic"] as const).map((style) => {
-                const s = varkInsights.stats[style];
-                const neonMap: Record<string, typeof NEON[keyof typeof NEON]> = { visual: NEON.blue, auditory: NEON.pink, read: NEON.cyan, kinesthetic: NEON.gold };
-                const neon = neonMap[style] || NEON.cyan2;
-                const icons: Record<string,string> = { visual:"👁", auditory:"🔊", read:"📖", kinesthetic:"✏" };
-                const labels: Record<string,string> = { visual:"Visual", auditory:"Auditory", read:"Read", kinesthetic:"Practice" };
-                const labelsAf: Record<string,string> = { visual:"Visueel", auditory:"Ouditief", read:"Lees", kinesthetic:"Oefen" };
-                const pct = s?.score ?? 0;
-                const isDominant = varkInsights.dominantStyle === style;
-                return (
-                  <div
-                    key={style}
-                    style={{
-                      borderRadius: 12,
-                      padding: "10px 12px",
-                      background: isDominant ? `${neon.hex}18` : INSET,
-                      border: `1px solid ${isDominant ? `${neon.hex}55` : HAIRLINE}`,
-                    }}
-                  >
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-xs font-semibold" style={{ color: isDominant ? neon.text : "#ffffff" }}>
-                        {icons[style]} {isAf ? labelsAf[style] : labels[style]}
-                      </span>
-                      {isDominant && (
-                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: `${neon.hex}30`, color: neon.text }}>
-                          {isAf ? "Top" : "Top"}
-                        </span>
-                      )}
-                    </div>
-                    <div style={{ height: 4, borderRadius: 2, background: "#1b1922", overflow: "hidden" }}>
-                      <div style={{ height: "100%", width: `${pct}%`, borderRadius: 2, background: neon.hex, transition: "width 0.6s ease" }} />
-                    </div>
-                    <div className="flex justify-between mt-1">
-                      <span style={{ fontSize: "10px", color:"#ffffff" }}>
-                        {s?.count ?? 0} {isAf ? "sess." : "sess."}
-                      </span>
-                      {s?.avgPerformance != null && (
-                        <span style={{ fontSize: "10px", fontWeight: 700, color: isDominant ? neon.text : "#ffffff" }}>
-                          {s.avgPerformance}%
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Recommendation text */}
-            {varkInsights.recommendation && (
-              <p style={{ fontSize: "12px", color:"#ffffff", lineHeight: 1.5 }}>
-                {varkInsights.recommendation}
-              </p>
-            )}
-            {!varkInsights.recommendation && (
-              <p style={{ fontSize: "12px", color:"#ffffff", lineHeight: 1.5 }}>
-                {isAf
-                  ? `Bly aktief om persoonlike leerstyl-aanbevelings te ontsluit.`
-                  : `Keep studying to unlock personalised learning style recommendations.`}
-              </p>
-            )}
-          </GlassCard>
-          </div>
-        )}
 
         {/* ── Week navigation bar (desktop + mobile) ── */}
         <div
@@ -1202,7 +795,15 @@ export default function StudyCalendarPage() {
 
           <div className="text-center min-w-0 px-1">
             <p style={{ fontFamily:"'Bebas Neue', sans-serif", fontSize:18, color: weekOffset === 0 ? "#9FF5E8" : "#ffffff", lineHeight:1, transform:"rotate(-1deg)", display:"inline-block" }}>
-              {weekOffset === 0 ? (isAf ? "Hierdie Week" : "This Week") : weekOffset < 0 ? (isAf ? `${Math.abs(weekOffset)} week(s) gelede` : `${Math.abs(weekOffset)} week(s) ago`) : (isAf ? `Oor ${weekOffset} week(s)` : `${weekOffset} week(s) ahead`)}
+              {weekOffset === 0
+                ? (isAf ? "Hierdie Week" : "This Week")
+                : weekOffset < 0
+                ? (isAf
+                    ? `${Math.abs(weekOffset)} ${Math.abs(weekOffset) === 1 ? "week" : "weke"} gelede`
+                    : `${Math.abs(weekOffset)} ${Math.abs(weekOffset) === 1 ? "week" : "weeks"} ago`)
+                : (isAf
+                    ? `Oor ${weekOffset} ${weekOffset === 1 ? "week" : "weke"}`
+                    : `${weekOffset} ${weekOffset === 1 ? "week" : "weeks"} ahead`)}
             </p>
             <p className="truncate" style={{ color:"#ffffff", fontSize:"12px", marginTop:3 }}>{weekRangeLabel()}</p>
           </div>
@@ -1254,77 +855,6 @@ export default function StudyCalendarPage() {
           )}
         </div>
 
-        {/* ===== EXAM DATE OVERLAY (T114) ===== */}
-        {examScheduleData?.schedule && examScheduleData.schedule.length > 0 && (() => {
-          const upcoming = (examScheduleData.schedule as any[])
-            .filter(e => !e.isPast)
-            .sort((a: any, b: any) => a.daysRemaining - b.daysRemaining);
-          const nonExamDays = ["2026-11-03", "2026-11-04", "2026-11-05", "2026-11-09"];
-          return (
-            <div data-testid="exam-overlay-section">
-              <GlassCard neonColor="#C5B3FF" className="overflow-hidden">
-                <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom:"1px solid #1b1922", background:"rgba(197,179,255,0.06)" }}>
-                  <GraduationCap className="w-4 h-4" style={{ color:"#C5B3FF" }} />
-                  <p className="font-bold text-sm" style={{ color:"#ffffff" }}>
-                    {isAf ? "NSC Eksamenrooster Oorleg" : "NSC Exam Calendar Overlay"}
-                  </p>
-                  <span className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background:"rgba(197,179,255,0.18)", color:"#dcb4ee", border:"1px solid rgba(197,179,255,0.45)" }}>
-                    2026
-                  </span>
-                </div>
-                <div className="p-5">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 mb-4">
-                    {upcoming.slice(0, 9).map((exam: any, i: number) => {
-                      const urgencyMap: Record<string, { color: string }> = {
-                        final_sprint:     { color: "#FFB7E5" },
-                        exam_prep_mode:   { color: "#FFE29A" },
-                        focused_revision: { color: "#FFE29A" },
-                        build_mastery:    { color: "#C5B3FF" },
-                      };
-                      const u = urgencyMap[exam.urgencyState] || urgencyMap.build_mastery;
-                      return (
-                        <div
-                          key={i}
-                          style={{ background:"#050508", border:`1.5px solid ${u.color}`, borderRadius:16, padding:"14px 16px", transition:"transform .2s" }}
-                          onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-4px)")}
-                          onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
-                          data-testid={`exam-overlay-item-${i}`}
-                        >
-                          <div style={{ display:"inline-block", fontSize:9, fontWeight:800, letterSpacing:1.5, padding:"2px 7px", borderRadius:6, background:`${u.color}1F`, color:u.color, textTransform:"uppercase" }}>
-                            P{exam.paperNumber}
-                          </div>
-                          <div className="tabular-nums" style={{ fontSize:22, fontWeight:900, color:u.color, marginTop:8, lineHeight:1 }}>{exam.daysRemaining}<span style={{ fontSize:10, fontWeight:700 }}>d</span></div>
-                          <p className="text-xs font-bold truncate" style={{ color:"#ffffff", marginTop:4 }}>{exam.subjectName}</p>
-                          <p className="text-[10px]" style={{ color:"#ffffff" }}>
-                            {formatDate(exam.examDate + "T00:00:00", language, { day: "numeric", month: "short" })}
-                          </p>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <div className="pt-3" style={{ borderTop:"1px solid #1b1922" }}>
-                    <p className="text-[10px] font-bold uppercase mb-2 flex items-center gap-1.5" style={{ color:"#ffffff", letterSpacing:"0.08em" }}>
-                      <Coffee className="w-3 h-3" style={{ color:"#FFE29A" }} />
-                      {isAf ? "Nie-eksamen Dae (inhaal & beplanning)" : "Non-Examination Days (catch-up & planning)"}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {nonExamDays.map(d => (
-                        <span
-                          key={d}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold"
-                          style={{ background:"rgba(255,226,154,0.10)", border:"1px solid rgba(255,226,154,0.40)", color:"#FFE29A" }}
-                        >
-                          <Coffee className="w-2.5 h-2.5" />
-                          {formatDate(d + "T00:00:00", language, { weekday: "short", day: "numeric", month: "short" })}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </GlassCard>
-            </div>
-          );
-        })()}
 
         {/* ── Day nav pills (all breakpoints) ── */}
         <div>
@@ -1381,87 +911,8 @@ export default function StudyCalendarPage() {
         {/* ── Main content area (grid + sidebar) ── */}
         <div className="grid lg:grid-cols-[1fr_300px] gap-6 min-w-0">
 
-          {/* Desktop 7-column week grid (hidden — using per-day view on all breakpoints) */}
+          {/* Day view column */}
           <div className="min-w-0 overflow-hidden">
-            <div className="hidden grid-cols-7 gap-2" data-testid="week-grid">
-              {weekPlan.map((day, idx) => {
-                const isToday = idx === todayIdx;
-                const isRestDay = idx === 6;
-                const dayExams = examsForDate(day.dateStr);
-                const isNonExam = NSC_NON_EXAM_DATES.includes(day.dateStr);
-
-                return (
-                  <div
-                    key={day.day}
-                    className="flex flex-col transition-all"
-                    style={{
-                      background: isToday ? "rgba(159,245,232,0.08)" : "#1b1922",
-                      border: isToday ? "1.5px solid rgba(159,245,232,0.55)" : "1px solid #1b1922",
-                      borderRadius:"14px",
-                      padding:"10px 8px", minHeight:"180px",
-                    }}
-                    data-testid={`day-col-${idx}`}
-                  >
-                    {/* Day header */}
-                    <div className="mb-2 text-center">
-                      <p style={{ fontFamily:"'Bebas Neue', sans-serif", fontSize:"15px", color:isToday?"#9FF5E8":"#ffffff", transform:"rotate(-2deg)" }}>
-                        {isAf ? day.shortAf : day.short}
-                      </p>
-                      <p style={{ fontSize:"13px", fontWeight:700, color:"#ffffff" }}>
-                        {day.date.getDate()}
-                      </p>
-                      {isToday && (
-                        <div style={{ display:"inline-block", marginTop:"3px", background:"rgba(159,245,232,0.12)", border:"1px solid rgba(159,245,232,0.60)", borderRadius:"6px", padding:"1px 6px", fontSize:"8px", fontWeight:700, color:"#9FF5E8" }}>
-                          {isAf ? "Vandag" : "Today"}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Official NSC exam chips */}
-                    {dayExams.map((exam: any, ei: number) => {
-                      const neon = subjectNeon(exam.subjectName || "", ei);
-                      return <ExamChip key={ei} name={isAf && exam.subjectNameAf ? exam.subjectNameAf : exam.subjectName} paper={exam.paper} neon={neon} />;
-                    })}
-
-                    {/* Non-exam rest day chip */}
-                    {isNonExam && <RestChip isAf={isAf} />}
-
-                    {/* Study slots */}
-                    {!isRestDay && day.slots.map((entry, si) => {
-                      const SlotIcon = entry.slot.icon;
-                      const studied = studiedIds.has(entry.subject?.id);
-                      return (
-                        <Link key={si} href={`/subject/${entry.subject.id}`}>
-                          <div
-                            className="mb-1.5 cursor-pointer transition-all hover:scale-[1.02]"
-                            style={{ background:`${entry.neon.hex}15`, border:`1px solid ${entry.neon.hex}35`, borderRadius:"8px", padding:"5px 7px", opacity:studied?0.6:1 }}
-                            data-testid={`slot-${idx}-${si}`}
-                          >
-                            <div className="flex items-center gap-1 mb-0.5">
-                              <SlotIcon className="w-2.5 h-2.5" style={{ color:entry.neon.hex }} />
-                              <span style={{ fontSize:"8px", fontWeight:700, color:entry.neon.text }}>{entry.slot.hours}</span>
-                            </div>
-                            <p style={{ fontSize:"10px", fontWeight:700, color:entry.neon.text, lineHeight:1.2 }} className="truncate">
-                              {getSubjectIcon(entry.subject.name)} {isAf && entry.subject.nameAfrikaans ? entry.subject.nameAfrikaans : entry.subject.name}
-                            </p>
-                          </div>
-                        </Link>
-                      );
-                    })}
-
-                    {/* Sunday rest */}
-                    {isRestDay && (
-                      <div style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", borderRadius:"10px", background:"rgba(148,247,197,0.05)", border:"1px dashed rgba(148,247,197,0.25)", padding:"8px", textAlign:"center" }}>
-                        <div>
-                          <Moon className="w-5 h-5 mx-auto mb-1" style={{ color:"#94F7C5" }} />
-                          <p style={{ fontSize:"9px", fontWeight:600, color:"#94F7C5" }}>{isAf ? "Rusdag" : "Rest Day"}</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
 
             {/* Per-day view (all breakpoints) */}
             <div data-testid="mobile-day-view">
@@ -1558,8 +1009,12 @@ export default function StudyCalendarPage() {
                             ? { label: isAf ? "Gebalanseerde dag" : "Balanced day", hex: "#6EE7F9", emoji: "⚖" }
                             : { label: isAf ? "Ligte dag" : "Light day", hex: "#C5B3FF", emoji: "🌙" };
                           const totalMinutes = day.slots.reduce((sum, s: any) => {
-                            const m = (s.slot.hours || "").match(/(\d+(?:\.\d+)?)\s*h/i);
-                            return sum + (m ? parseFloat(m[1]) * 60 : 60);
+                            // Slot hours are "HH:MM–HH:MM" ranges — parse start/end to real minutes.
+                            const m = (s.slot.hours || "").match(/(\d{1,2}):(\d{2})\s*[–-]\s*(\d{1,2}):(\d{2})/);
+                            if (!m) return sum + 60;
+                            const start = parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
+                            const end = parseInt(m[3], 10) * 60 + parseInt(m[4], 10);
+                            return sum + Math.max(0, end - start);
                           }, 0);
                           const hrs = Math.floor(totalMinutes / 60);
                           const mins = Math.round(totalMinutes % 60);
@@ -1642,7 +1097,7 @@ export default function StudyCalendarPage() {
                                     <span
                                       className="flex-shrink-0 rounded-full px-2 py-[2px]"
                                       style={{
-                                        fontSize: "9px",
+                                        fontSize: "10px",
                                         fontWeight: 800,
                                         letterSpacing: "0.04em",
                                         color: entry.neon.hex,
@@ -1743,11 +1198,11 @@ export default function StudyCalendarPage() {
                                 {isAf ? urg.af : urg.en}
                               </span>
                               <p className="font-bold truncate" style={{ fontSize:"12px", color:"#ffffff", marginTop:5 }}>{isAf && exam.subjectNameAf ? exam.subjectNameAf : exam.subjectName}</p>
-                              {exam.paper && <p style={{ fontSize:"9px", color:"#ffffff" }}>{exam.paper}</p>}
+                              {exam.paper && <p style={{ fontSize:"10px", color:"#ffffff" }}>{exam.paper}</p>}
                             </div>
                             <div className="text-right flex-shrink-0">
                               <p className="font-black tabular-nums" style={{ fontSize:"20px", color:neon.hex, lineHeight:1 }}>{exam.daysLeft}</p>
-                              <p style={{ fontSize:"8px", color:"#ffffff", fontWeight:700 }}>{isAf ? "dae" : "days"}</p>
+                              <p style={{ fontSize:"10px", color:"#ffffff", fontWeight:700 }}>{isAf ? "dae" : "days"}</p>
                             </div>
                           </div>
                         </div>
@@ -1843,7 +1298,7 @@ export default function StudyCalendarPage() {
               <div className="flex items-center gap-2 mb-3">
                 <CheckCircle2 className="w-4 h-4" style={{ color:"#94F7C5" }} />
                 <p style={{ fontFamily:"'Bebas Neue', sans-serif", fontSize:"16px", color:"#94F7C5", transform:"rotate(-1.5deg)" }}>
-                  {isAf ? "Hierdie week se doel" : "This week's target"}
+                  {isAf ? "Wenke" : "Tips"}
                 </p>
               </div>
               <div className="space-y-2 mb-4">
@@ -1867,6 +1322,480 @@ export default function StudyCalendarPage() {
             </div>
           </div>
         </div>
+
+        {/* ── Prelim Timetable CTA ── */}
+        <Link href="/prelim-timetable">
+          <div
+            className="group flex items-center justify-between gap-3 px-4 py-3.5 rounded-2xl cursor-pointer transition-all"
+            style={{
+              background: PANEL,
+              border: "1.5px solid #9FF5E8",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
+            onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              <div
+                className="shrink-0 flex items-center justify-center"
+                style={{ width: 42, height: 42, borderRadius: 12, background: "#9FF5E822", border: "1px solid #9FF5E855" }}
+              >
+                <CalendarDays className="w-5 h-5" style={{ color: "#9FF5E8" }} />
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-black truncate" style={{ color: "#9FF5E8" }}>
+                  {isAf ? "Vooreksamen Rooster 2026" : "Prelim Timetable 2026"}
+                </p>
+                <p className="text-[11px] mt-0.5 text-white truncate">
+                  {isAf ? "SACAI · Aug–Sep · 4 weke" : "SACAI · Aug–Sep · 4 weeks"}
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="w-5 h-5 shrink-0 transition-transform group-hover:translate-x-0.5" style={{ color: "#9FF5E8" }} />
+          </div>
+        </Link>
+
+        {/* ── Stats strip ── */}
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+          {([
+            { label: isAf ? "Reeks" : "Streak",      value: stats?.studyStreak ?? 0,       icon: Flame,       neon: NEON.orange, testid: "plan-stat-streak"    },
+            { label: isAf ? "Gereedheid" : "Readiness", value: `${overallReadiness}%`,     icon: ShieldCheck, neon: NEON.violet, testid: "plan-stat-readiness" },
+            { label: isAf ? "Akkuraatheid" : "Accuracy", value:`${stats?.accuracy??0}%`,   icon: Target,      neon: NEON.cyan2,  testid: "plan-stat-accuracy"  },
+            { label: isAf ? "Vrae" : "Questions",    value: stats?.questionsAnswered ?? 0,  icon: Zap,         neon: NEON.cyan,   testid: "plan-stat-questions" },
+            { label: isAf ? "Vakke" : "Subjects",    value: mySubjects.length,              icon: BookOpen,    neon: NEON.green,  testid: "plan-stat-subjects"  },
+          ] as const).map(({ label, value, icon: Icon, neon, testid }) => (
+            <GlassCard key={label} className="flex items-center gap-3 p-4">
+              <div style={{ width:38,height:38,borderRadius:10,flexShrink:0,background:`${neon.hex}20`,border:`1px solid ${neon.hex}44`,display:"flex",alignItems:"center",justifyContent:"center" }}>
+                <Icon className="w-4 h-4" style={{ color:neon.hex }} />
+              </div>
+              <div>
+                <p style={{ fontSize:"10px", fontWeight:700, color:"#ffffff", textTransform:"uppercase", letterSpacing:"0.08em" }}>{label}</p>
+                <p className="text-xl font-bold tabular-nums" data-testid={testid} style={{ color:neon.text }}>{value}</p>
+              </div>
+            </GlassCard>
+          ))}
+        </div>
+
+        {/* ===== EXAM DATE OVERLAY (T114) ===== */}
+        {examScheduleData?.schedule && examScheduleData.schedule.length > 0 && (() => {
+          const upcoming = (examScheduleData.schedule as any[])
+            .filter(e => !e.isPast)
+            .sort((a: any, b: any) => a.daysRemaining - b.daysRemaining);
+          const nonExamDays = ["2026-11-03", "2026-11-04", "2026-11-05", "2026-11-09"];
+          return (
+            <div data-testid="exam-overlay-section">
+              <GlassCard neonColor="#C5B3FF" className="overflow-hidden">
+                <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom:"1px solid #1b1922", background:"rgba(197,179,255,0.06)" }}>
+                  <GraduationCap className="w-4 h-4" style={{ color:"#C5B3FF" }} />
+                  <p className="font-bold text-sm" style={{ color:"#ffffff" }}>
+                    {isAf ? "NSC Eksamenrooster Oorleg" : "NSC Exam Calendar Overlay"}
+                  </p>
+                  <span className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background:"rgba(197,179,255,0.18)", color:"#C5B3FF", border:"1px solid rgba(197,179,255,0.45)" }}>
+                    2026
+                  </span>
+                </div>
+                <div className="p-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 mb-4">
+                    {upcoming.slice(0, 9).map((exam: any, i: number) => {
+                      const urgencyMap: Record<string, { color: string }> = {
+                        final_sprint:     { color: "#FFB7E5" },
+                        exam_prep_mode:   { color: "#FFE29A" },
+                        focused_revision: { color: "#FFE29A" },
+                        build_mastery:    { color: "#C5B3FF" },
+                      };
+                      const u = urgencyMap[exam.urgencyState] || urgencyMap.build_mastery;
+                      return (
+                        <div
+                          key={i}
+                          style={{ background:"#050508", border:`1.5px solid ${u.color}`, borderRadius:16, padding:"14px 16px", transition:"transform .2s" }}
+                          onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-4px)")}
+                          onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
+                          data-testid={`exam-overlay-item-${i}`}
+                        >
+                          <div style={{ display:"inline-block", fontSize:9, fontWeight:800, letterSpacing:1.5, padding:"2px 7px", borderRadius:6, background:`${u.color}1F`, color:u.color, textTransform:"uppercase" }}>
+                            P{exam.paperNumber}
+                          </div>
+                          <div className="tabular-nums" style={{ fontSize:22, fontWeight:900, color:u.color, marginTop:8, lineHeight:1 }}>{exam.daysRemaining}<span style={{ fontSize:10, fontWeight:700 }}>d</span></div>
+                          <p className="text-xs font-bold truncate" style={{ color:"#ffffff", marginTop:4 }}>{exam.subjectName}</p>
+                          <p className="text-[10px]" style={{ color:"#ffffff" }}>
+                            {formatDate(exam.examDate + "T00:00:00", language, { day: "numeric", month: "short" })}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="pt-3" style={{ borderTop:"1px solid #1b1922" }}>
+                    <p className="text-[10px] font-bold uppercase mb-2 flex items-center gap-1.5" style={{ color:"#ffffff", letterSpacing:"0.08em" }}>
+                      <Coffee className="w-3 h-3" style={{ color:"#FFE29A" }} />
+                      {isAf ? "Nie-eksamen Dae (inhaal & beplanning)" : "Non-Examination Days (catch-up & planning)"}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {nonExamDays.map(d => (
+                        <span
+                          key={d}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold"
+                          style={{ background:"rgba(255,226,154,0.10)", border:"1px solid rgba(255,226,154,0.40)", color:"#FFE29A" }}
+                        >
+                          <Coffee className="w-2.5 h-2.5" />
+                          {formatDate(d + "T00:00:00", language, { weekday: "short", day: "numeric", month: "short" })}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </GlassCard>
+            </div>
+          );
+        })()}
+
+        {/* ── Readiness Scores section ── */}
+        {(() => {
+          const entries = Object.entries(readinessData?.readiness ?? {})
+            .map(([id, score]) => ({ subjectId: Number(id), score: Number(score) }))
+            .filter(e => e.score >= 0)
+            .sort((a, b) => a.score - b.score);
+
+          if (entries.length === 0) return null;
+
+          const overallBand = readinessBand(overallReadiness);
+          const overallNeon =
+            overallBand === "green" ? NEON.green :
+            overallBand === "amber" ? NEON.gold : NEON.pink;
+
+          return (
+            <div data-testid="study-calendar-readiness">
+              <GlassCard neonColor="#C5B3FF" className="overflow-hidden">
+                <div
+                  className="px-5 py-4 flex items-center gap-2 flex-wrap"
+                  style={{ borderBottom: "1px solid #1b1922", background: "rgba(197,179,255,0.06)" }}
+                >
+                  <ShieldCheck className="w-4 h-4" style={{ color: "#C5B3FF" }} />
+                  <p className="font-bold text-sm" style={{ color:"#ffffff" }}>
+                    {isAf ? "Gereedheidstellings" : "Readiness Scores"}
+                  </p>
+                  <span
+                    className="ml-auto inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.18em] px-2.5 py-1 rounded-full"
+                    style={{
+                      background: "#050508",
+                      border: `1px solid ${overallNeon.hex}`,
+                      color: overallNeon.hex,
+                    }}
+                    data-testid="readiness-overall"
+                  >
+                    {isAf ? "Algeheel" : "Overall"}
+                    <span className="tabular-nums font-black">
+                      {overallReadiness}%
+                    </span>
+                  </span>
+                </div>
+                <div className="p-5 space-y-2.5">
+                  {entries.map((e, i) => {
+                    const subj = (subjects || []).find((s: any) => s.id === e.subjectId);
+                    const name = subj ? (isAf ? (subj.nameAfrikaans || subj.name) : subj.name) : (isAf ? "Vak" : "Subject");
+                    const neon = subjectNeon(subj?.name || "", i);
+                    const band = readinessBand(e.score);
+                    const bandHex = band === "green" ? "#94F7C5" : band === "amber" ? "#FFE29A" : "#FF8DA1";
+                    return (
+                      <div
+                        key={e.subjectId}
+                        className="rounded-xl p-3"
+                        style={{
+                          background: "#050508",
+                          border: `1px solid ${neon.hex}40`,
+                        }}
+                        data-testid={`readiness-row-${e.subjectId}`}
+                      >
+                        <div className="flex items-center justify-between gap-3 mb-2">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span
+                              className="inline-block w-2.5 h-2.5 rounded-full shrink-0"
+                              style={{ background: neon.hex }}
+                            />
+                            <span className="text-sm font-bold truncate" style={{ color: neon.text }}>
+                              {name}
+                            </span>
+                            <span
+                              className="text-[9px] font-black uppercase tracking-[0.16em] px-1.5 py-0.5 rounded-md shrink-0"
+                              style={{
+                                color: bandHex,
+                                border: `1px solid ${bandHex}66`,
+                                background: `${bandHex}14`,
+                              }}
+                            >
+                              {readinessBandLabel(e.score, isAf)}
+                            </span>
+                          </div>
+                          <span
+                            className="text-sm font-black tabular-nums shrink-0"
+                            style={{ color: bandHex }}
+                          >
+                            {e.score}%
+                          </span>
+                        </div>
+                        <div
+                          className="relative h-1.5 rounded-full overflow-hidden"
+                          style={{ background: "#1b1922", border: "1px solid #1b1922" }}
+                        >
+                          <div
+                            className="absolute top-0 left-0 bottom-0 rounded-full transition-[width] duration-700"
+                            style={{
+                              width: `${Math.max(2, Math.min(100, e.score))}%`,
+                              background: `linear-gradient(90deg, ${neon.hex}, ${bandHex})`,
+                            }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </GlassCard>
+            </div>
+          );
+        })()}
+
+        {/* ── High-Yield Topics — real DBE exam-frequency "insider intel" ── */}
+        <div data-testid="study-calendar-high-yield-topics">
+          <GlassCard neonColor="#FFE29A" className="overflow-hidden">
+            <div
+              className="px-5 py-4 flex items-center gap-2 flex-wrap"
+              style={{ borderBottom: "1px solid #1b1922", background: "rgba(255,226,154,0.06)" }}
+            >
+              <Sparkles className="w-4 h-4" style={{ color: "#FFE29A" }} />
+              <p className="font-bold text-sm" style={{ color: "#ffffff" }}>
+                {isAf ? "Hoë-opbrengs Onderwerpe" : "High-Yield Topics"}
+              </p>
+              <span
+                className="ml-auto text-[10px] font-black uppercase tracking-[0.16em] px-2.5 py-1 rounded-full"
+                style={{ background: "#050508", border: "1px solid rgba(255,226,154,0.55)", color: "#FFE29A" }}
+              >
+                {isAf ? "Eksaminator-intel" : "Examiner Intel"}
+              </span>
+            </div>
+            <div className="px-5 pt-3">
+              <p style={{ fontSize: "11px", color: "#ffffff", lineHeight: 1.5 }}>
+                {isAf
+                  ? "Regte DBE-eksamendata — presies watter onderwerpe die meeste in die laaste ~10 jaar se vraestelle verskyn het."
+                  : "Real DBE exam data — exactly which topics have shown up most in the last ~10 years of papers."}
+              </p>
+            </div>
+
+            {selectedIds.length === 0 ? (
+              <div className="p-5 text-center">
+                <p style={{ color: "#ffffff", fontSize: "12px", marginTop: "4px" }}>
+                  {isAf ? "Kies jou vakke om jou eksaminator-intel te sien." : "Select your subjects to unlock your examiner intel."}
+                </p>
+                <Link href="/settings">
+                  <Button size="sm" className="mt-3" data-testid="button-select-subjects-high-yield">
+                    {isAf ? "Kies Vakke" : "Select Subjects"}
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <>
+                {/* Subject tabs — only needed when more than one subject has data */}
+                {hySubjectsOrdered.length > 1 && (
+                  <div className="px-5 pt-3 flex gap-2 overflow-x-auto pb-1 -mx-1" style={{ scrollbarWidth: "none" }}>
+                    {hySubjectsOrdered.map((s) => {
+                      const isActive = hyActiveSubject?.subjectId === s.subjectId;
+                      return (
+                        <button
+                          key={s.subjectId}
+                          onClick={() => setHyActiveSubjectId(s.subjectId)}
+                          className="flex-shrink-0 min-h-[40px] px-3.5 py-2 rounded-lg text-[11px] font-bold transition-all"
+                          style={isActive
+                            ? { background: `${s.neon.hex}22`, border: `1.5px solid ${s.neon.hex}`, color: s.neon.text }
+                            : { background: INSET, border: `1px solid ${HAIRLINE}`, color: "#ffffff" }}
+                          data-testid={`hy-subject-tab-${s.subjectId}`}
+                        >
+                          {isAf ? (s.subjectNameAfrikaans || s.subjectName) : s.subjectName}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                <div className="p-5 space-y-2.5">
+                  {highYieldLoading ? (
+                    [0, 1, 2].map((i) => (
+                      <div key={i} className="h-16 rounded-xl animate-pulse" style={{ background: "rgba(255,226,154,0.06)", border: "1px solid rgba(255,226,154,0.12)" }} />
+                    ))
+                  ) : !hyActiveSubject ? (
+                    <div className="text-center py-4">
+                      <p style={{ color: "#ffffff", fontSize: "12px" }}>
+                        {isAf ? "Geen eksamenpatroondata beskikbaar nie." : "No exam-pattern data available yet."}
+                      </p>
+                    </div>
+                  ) : hyActiveSubject.topics.length === 0 ? (
+                    <div className="text-center py-4">
+                      <p style={{ color: "#ffffff", fontSize: "12px" }}>
+                        {isAf
+                          ? `Nog geen eksamenpatroondata vir ${hyActiveSubject.subjectNameAfrikaans || hyActiveSubject.subjectName} nie.`
+                          : `No exam-pattern data for ${hyActiveSubject.subjectName} yet.`}
+                      </p>
+                    </div>
+                  ) : (
+                    hyActiveSubject.topics.map((t, i) => {
+                      const rank = i + 1;
+                      const neon = hyActiveSubject.neon;
+                      const isTop = rank === 1;
+                      const isPodium = rank <= 3;
+                      const badge = isTop ? "🔥" : isPodium ? "🎯" : null;
+                      const name = isAf && t.topicNameAfrikaans ? t.topicNameAfrikaans : t.topicName;
+                      // appearancesCount counts every question-level occurrence
+                      // (a topic can appear more than once within a single
+                      // paper), so it isn't bounded by totalYearsSampled — an
+                      // "X of the last Y sittings" fraction reads as
+                      // impossible once a topic appears twice in one paper.
+                      // State the raw count instead; always true regardless
+                      // of how the two numbers relate.
+                      const sittingsLabel = t.totalYearsSampled > 0
+                        ? (isAf
+                            ? `${t.appearancesCount}× voorgekom oor die laaste ${t.totalYearsSampled} jaar se vraestelle`
+                            : `Appeared ${t.appearancesCount}× across the last ${t.totalYearsSampled} years of papers`)
+                        : (isAf
+                            ? `Verskyn ${t.appearancesCount}× in die DBE-argief`
+                            : `Appeared ${t.appearancesCount}× in the DBE archive`);
+                      return (
+                        <div
+                          key={t.topicId}
+                          className="rounded-xl transition-all"
+                          style={{
+                            background: isTop ? `${neon.hex}18` : "#050508",
+                            border: `${isTop ? 1.5 : 1}px solid ${neon.hex}${isTop ? "" : "60"}`,
+                            padding: isTop ? "16px 18px" : "12px 14px",
+                          }}
+                          data-testid={`hy-topic-row-${t.topicId}`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div
+                              className="flex items-center justify-center flex-shrink-0 font-black"
+                              style={{
+                                width: isTop ? 38 : isPodium ? 32 : 26,
+                                height: isTop ? 38 : isPodium ? 32 : 26,
+                                borderRadius: "50%",
+                                background: `${neon.hex}${isTop ? "30" : "20"}`,
+                                border: `1px solid ${neon.hex}66`,
+                                color: neon.text,
+                                fontSize: isTop ? 16 : 12,
+                              }}
+                            >
+                              {badge || `#${rank}`}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-bold truncate" style={{ color: isTop ? neon.text : "#ffffff", fontSize: isTop ? 15 : 13 }}>
+                                {name}
+                              </p>
+                              <p style={{ color: "#ffffff", fontSize: 11, marginTop: 2 }}>
+                                {sittingsLabel}
+                              </p>
+                            </div>
+                            <div
+                              className="flex-shrink-0 text-right rounded-lg px-2.5 py-1.5"
+                              style={{ background: `${neon.hex}18`, border: `1px solid ${neon.hex}44` }}
+                            >
+                              <p className="font-black tabular-nums" style={{ color: neon.hex, fontSize: isTop ? 18 : 14, lineHeight: 1 }}>
+                                {t.avgMarksPerAppearance}
+                              </p>
+                              <p style={{ fontSize: 10, fontWeight: 700, color: "#ffffff", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                                {isAf ? "punte gem." : "avg marks"}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </>
+            )}
+          </GlassCard>
+        </div>
+
+        {/* ── VARK Adaptive Recommendations ── */}
+        {varkInsights && varkInsights.eventCount >= 3 && (
+          <div data-testid="vark-calendar-insights">
+          <GlassCard className="p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-lg">
+                {varkPrimary === "visual" ? "👁" : varkPrimary === "auditory" ? "🔊" : varkPrimary === "read" ? "📖" : "✏"}
+              </span>
+              <p className="font-bold text-sm" style={{ color: "#ffffff" }}>
+                {isAf ? "Leerstyl Insigte" : "Style Insights"}
+              </p>
+              {varkInsights.styleEvolving && (
+                <span
+                  className="text-xs font-semibold px-2 py-0.5 rounded-full"
+                  style={{ background: "rgba(159,245,232,0.12)", color: "#9FF5E8", border: "1px solid rgba(159,245,232,0.40)" }}
+                >
+                  {isAf ? "Aan die ontwikkel" : "Evolving"}
+                </span>
+              )}
+            </div>
+
+            {/* Per-style performance bars */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
+              {(["visual","auditory","read","kinesthetic"] as const).map((style) => {
+                const s = varkInsights.stats[style];
+                const neonMap: Record<string, typeof NEON[keyof typeof NEON]> = { visual: NEON.blue, auditory: NEON.pink, read: NEON.cyan, kinesthetic: NEON.gold };
+                const neon = neonMap[style] || NEON.cyan2;
+                const icons: Record<string,string> = { visual:"👁", auditory:"🔊", read:"📖", kinesthetic:"✏" };
+                const labels: Record<string,string> = { visual:"Visual", auditory:"Auditory", read:"Read", kinesthetic:"Practice" };
+                const labelsAf: Record<string,string> = { visual:"Visueel", auditory:"Ouditief", read:"Lees", kinesthetic:"Oefen" };
+                const pct = s?.score ?? 0;
+                const isDominant = varkInsights.dominantStyle === style;
+                return (
+                  <div
+                    key={style}
+                    style={{
+                      borderRadius: 12,
+                      padding: "10px 12px",
+                      background: isDominant ? `${neon.hex}18` : INSET,
+                      border: `1px solid ${isDominant ? `${neon.hex}55` : HAIRLINE}`,
+                    }}
+                  >
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-xs font-semibold" style={{ color: isDominant ? neon.text : "#ffffff" }}>
+                        {icons[style]} {isAf ? labelsAf[style] : labels[style]}
+                      </span>
+                      {isDominant && (
+                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: `${neon.hex}30`, color: neon.text }}>
+                          {isAf ? "Top" : "Top"}
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ height: 4, borderRadius: 2, background: "#1b1922", overflow: "hidden" }}>
+                      <div style={{ height: "100%", width: `${pct}%`, borderRadius: 2, background: neon.hex, transition: "width 0.6s ease" }} />
+                    </div>
+                    <div className="flex justify-between mt-1">
+                      <span style={{ fontSize: "10px", color:"#ffffff" }}>
+                        {s?.count ?? 0} {isAf ? "sess." : "sess."}
+                      </span>
+                      {s?.avgPerformance != null && (
+                        <span style={{ fontSize: "10px", fontWeight: 700, color: isDominant ? neon.text : "#ffffff" }}>
+                          {s.avgPerformance}%
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Recommendation text */}
+            {varkInsights.recommendation && (
+              <p style={{ fontSize: "12px", color:"#ffffff", lineHeight: 1.5 }}>
+                {varkInsights.recommendation}
+              </p>
+            )}
+            {!varkInsights.recommendation && (
+              <p style={{ fontSize: "12px", color:"#ffffff", lineHeight: 1.5 }}>
+                {isAf
+                  ? `Bly aktief om persoonlike leerstyl-aanbevelings te ontsluit.`
+                  : `Keep studying to unlock personalised learning style recommendations.`}
+              </p>
+            )}
+          </GlassCard>
+          </div>
+        )}
 
         {/* ── Footer ── */}
         <footer className="pt-6 space-y-3" style={{ borderTop:"1px solid #1b1922" }} data-testid="study-plan-footer">

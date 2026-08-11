@@ -131,7 +131,7 @@ const T = {
     allSubjects: "All Subjects",
     noSubjectsFound: "No subjects found",
     tryDifferentSearch: "Try a different search term",
-    subjectsWillAppear: "Subjects will appear here once imported",
+    subjectsWillAppear: "No subjects available right now",
     browseAllTitle: "Browse all subjects",
     availableToAdd: "available to add",
     subjectSingular: "subject",
@@ -172,7 +172,7 @@ const T = {
     allSubjects: "Alle Vakke",
     noSubjectsFound: "Geen vakke gevind",
     tryDifferentSearch: "Probeer 'n ander soekterm",
-    subjectsWillAppear: "Vakke sal hier verskyn sodra dit ingevoer is",
+    subjectsWillAppear: "Geen vakke tans beskikbaar nie",
     browseAllTitle: "Blaai deur alle vakke",
     availableToAdd: "beskikbaar om by te voeg",
     subjectSingular: "vak",
@@ -215,7 +215,7 @@ export default function SubjectsPage() {
     queryKey: ["/api/user/onboarding"],
   });
 
-  const { data: subjects, isLoading } = useQuery<Subject[]>({
+  const { data: subjects, isLoading, isError: subjectsError, refetch: refetchSubjects } = useQuery<Subject[]>({
     queryKey: ["/api/subjects"],
   });
 
@@ -360,17 +360,9 @@ export default function SubjectsPage() {
       />
 
       <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-        {/* Ambient auras */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full blur-[120px] opacity-40"
-          style={{ background: "#9FF5E8" }}
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute top-40 -right-24 w-[380px] h-[380px] rounded-full blur-[120px] opacity-30"
-          style={{ background: "#FFB7E5" }}
-        />
+        {/* Ambient blur-glow blobs removed — the wall texture (GraffitiSplats)
+            carries the depth; soft bloom read as cheap neon against the flat
+            sticker cards. */}
 
         {/* Cosmic hero */}
         <section className="relative space-y-5 mb-10">
@@ -444,8 +436,44 @@ export default function SubjectsPage() {
           </div>
         </section>
 
+        {/* Error state — /api/subjects failed. Without this branch the page
+            fell through to "No subjects selected yet", which reads as data
+            loss to a learner. Retry re-runs the existing query. */}
+        {subjectsError && (
+          <div
+            className="relative p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8"
+            style={{
+              background: "#0e0d12",
+              border: "1.5px solid #FF8DA1",
+              borderRadius: 18,
+              boxShadow: "4px 4px 0 0 #FF8DA1",
+            }}
+            data-testid="subjects-error-card"
+          >
+            <div className="flex-1">
+              <p className="font-semibold text-white">
+                {isAf ? "Kon nie jou vakke laai nie" : "Couldn't load your subjects"}
+              </p>
+              <p className="text-sm text-white mt-0.5">
+                {isAf
+                  ? "Kontroleer jou verbinding en probeer weer."
+                  : "Check your connection and try again."}
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="primary"
+              onClick={() => refetchSubjects()}
+              className="shrink-0"
+              data-testid="button-subjects-retry"
+            >
+              {isAf ? "Probeer weer" : "Try again"}
+            </Button>
+          </div>
+        )}
+
         {/* Empty state — no subjects selected */}
-        {noSubjectsSelected && !showBrowseAll && (
+        {!subjectsError && noSubjectsSelected && !showBrowseAll && (
           <div
             className="relative p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8 overflow-hidden"
             style={{
@@ -526,7 +554,7 @@ export default function SubjectsPage() {
                 <button
                   type="button"
                   onClick={() => setShowBrowseAll(false)}
-                  className="w-9 h-9 flex items-center justify-center rounded-xl bg-[#1b1922] hover:bg-[#1b1922] transition-colors"
+                  className="w-10 h-10 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-xl bg-[#1b1922] hover:bg-[#1b1922] transition-colors"
                   style={{ color: "#9FF5E8", border: "1.5px solid #9FF5E8" }}
                 >
                   <X className="w-4 h-4" />
@@ -544,7 +572,7 @@ export default function SubjectsPage() {
                   value={browseSearch}
                   onChange={(e) => setBrowseSearch(e.target.value)}
                   data-testid="input-browse-search"
-                  className="pl-11 h-12 bg-[#1b1922] border-[#1b1922] text-white placeholder:text-white rounded-xl focus-visible:border-[#9FF5E8] focus-visible:ring-[#9FF5E8]/30"
+                  className="pl-11 h-12 bg-[#1b1922] border-[#1b1922] text-white placeholder:text-[#9FD8FF] rounded-xl focus-visible:border-[#9FF5E8] focus-visible:ring-[#9FF5E8]/30"
                 />
               </div>
 
@@ -579,14 +607,14 @@ export default function SubjectsPage() {
                         disabled={isAdding}
                         className="flex items-center gap-3 p-3 rounded-xl bg-[#1b1922] text-left transition-all hover:bg-[#1b1922] disabled:opacity-60"
                         style={{
-                          border: `1px solid ${hex}33`,
+                          border: `1px solid ${hex}`,
                         }}
                       >
                         <div
                           className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
                           style={{
                             background: `${hex}11`,
-                            border: `1px solid ${hex}44`,
+                            border: `1px solid ${hex}`,
                           }}
                         >
                           <Icon
@@ -610,7 +638,7 @@ export default function SubjectsPage() {
                           className="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center transition-all"
                           style={{
                             background: isAdding ? `${hex}22` : "#1b1922",
-                            border: `1px solid ${isAdding ? hex : "#1b1922"}`,
+                            border: `1px solid ${hex}`,
                           }}
                         >
                           {isAdding ? (
@@ -632,7 +660,7 @@ export default function SubjectsPage() {
         )}
 
         {/* Only show the grid/filters when not browsing-only or has subjects */}
-        {(subjectsToShow.length > 0 || (!noSubjectsSelected && !isLoading)) && (
+        {!subjectsError && (subjectsToShow.length > 0 || (!noSubjectsSelected && !isLoading)) && (
           <>
             {/* Search + sort */}
             <div className="flex flex-col sm:flex-row gap-3 mb-6">
@@ -645,7 +673,7 @@ export default function SubjectsPage() {
                   placeholder={t.searchPlaceholder}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-11 h-12 bg-[#1b1922] border-[#1b1922] text-white placeholder:text-white rounded-xl focus-visible:border-[#9FF5E8] focus-visible:ring-[#9FF5E8]/30"
+                  className="pl-11 h-12 bg-[#1b1922] border-[#1b1922] text-white placeholder:text-[#9FD8FF] rounded-xl focus-visible:border-[#9FF5E8] focus-visible:ring-[#9FF5E8]/30"
                   data-testid="input-search"
                 />
               </div>
@@ -713,7 +741,7 @@ export default function SubjectsPage() {
                 {filteredSubjects.length}{" "}
                 {isAf
                   ? filteredSubjects.length === 1 ? "vak gevind" : "vakke gevind"
-                  : filteredSubjects.length === 1 ? "subject" : "subjects"}
+                  : filteredSubjects.length === 1 ? "subject found" : "subjects found"}
               </p>
             )}
 
@@ -809,7 +837,7 @@ function SortChip({
       type="button"
       onClick={onClick}
       data-testid={testId}
-      className="px-4 py-2 rounded-xl text-sm font-bold transition-colors"
+      className="px-4 py-2 min-h-[40px] rounded-xl text-sm font-bold transition-colors"
       style={{
         color: active ? "#0a0a0a" : hex,
         background: active ? hex : "#1b1922",
@@ -841,7 +869,7 @@ function CategoryPill({
       type="button"
       onClick={onClick}
       data-testid={testId}
-      className="px-4 py-2 rounded-xl text-sm font-bold transition-colors flex items-center gap-2"
+      className="px-4 py-2 min-h-[40px] rounded-xl text-sm font-bold transition-colors flex items-center gap-2"
       style={{
         border: `1.5px solid ${hex}`,
         background: active ? hex : "#1b1922",
@@ -912,33 +940,19 @@ function SubjectNeonCard({
       data-testid={testId}
       className="group relative overflow-hidden cursor-pointer transition-all hover:-translate-y-1"
       style={{
-        background: "linear-gradient(#1b1922, #1b1922), #050508",
-        border: "1px solid #1b1922",
+        // Sticker system: solid pastel border + hard offset shadow (no blur).
+        // The blur aura, corner brackets and 2px top bar of the old cosmic
+        // look are gone — the card reads as a printed sticker on the wall.
+        background: "#0e0d12",
+        border: `2px solid ${hex}`,
         borderRadius: 22,
+        boxShadow: `4px 4px 0 0 ${hex}`,
         transition: "transform .25s, box-shadow .25s",
         animation: `bt-fadeup .45s cubic-bezier(.22,1,.36,1) ${animDelay}s both`,
       }}
-      onMouseEnter={(e) => (e.currentTarget.style.boxShadow = `0 14px 44px -18px ${hex}`)}
-      onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
+      onMouseEnter={(e) => (e.currentTarget.style.boxShadow = `7px 7px 0 0 ${hex}`)}
+      onMouseLeave={(e) => (e.currentTarget.style.boxShadow = `4px 4px 0 0 ${hex}`)}
     >
-      {/* 2px top bar */}
-      <div
-        aria-hidden
-        className="absolute top-0 left-0 right-0 h-[2px]"
-        style={{ background: hex }}
-      />
-      {/* Corner brackets */}
-      <span aria-hidden className="absolute top-2 left-2 w-3 h-3 border-t border-l" style={{ borderColor: hex }} />
-      <span aria-hidden className="absolute top-2 right-2 w-3 h-3 border-t border-r" style={{ borderColor: hex }} />
-      <span aria-hidden className="absolute bottom-2 left-2 w-3 h-3 border-b border-l" style={{ borderColor: hex }} />
-      <span aria-hidden className="absolute bottom-2 right-2 w-3 h-3 border-b border-r" style={{ borderColor: hex }} />
-      {/* Aura */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-16 -right-16 w-40 h-40 rounded-full blur-3xl opacity-30 transition-opacity group-hover:opacity-50"
-        style={{ background: hex }}
-      />
-
       <div className="relative p-5 sm:p-6 flex flex-col gap-4">
         {/* Top row */}
         <div className="flex items-start gap-4">

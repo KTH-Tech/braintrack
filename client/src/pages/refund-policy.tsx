@@ -100,7 +100,7 @@ export default function RefundPolicyPage() {
   useSEO({
     title: "Refund Policy | BrainTrack",
     description: "BrainTrack refund and cancellation policy — subscription billing, cancellation terms, and how refunds are handled under South African consumer law.",
-    canonical: "https://app.braintrack.tech/refund-policy",
+    canonical: "https://braintrack.tech/refund-policy",
   });
 
   const sections = {

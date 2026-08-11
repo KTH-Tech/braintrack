@@ -18,7 +18,7 @@ import {
   Download, Activity, Zap, TrendingDown, ShieldAlert, BarChart3,
   RefreshCw, Users, UserPlus, Sparkles, Rocket,
   MessageSquare, CheckCircle2, XCircle, Loader2, Send,
-  Link2, Settings2, CreditCard, ShieldCheck,
+  Link2, Settings2, CreditCard,
   Copy, Check, Share2, Gift,
 } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
@@ -32,6 +32,7 @@ import iconTransparent from "@/assets/handoff/icon-transparent.png";
 import rizzAvatar from "@/assets/handoff/rizz-avatar.png";
 import { calcReadiness, readinessBand } from "@/lib/readiness";
 import { downloadBlob } from "@/lib/download-file";
+import { useToast } from "@/hooks/use-toast";
 
 interface WeeklyReport {
   weekStarting: string;
@@ -211,7 +212,8 @@ const PARENT_NAV_LINKS = (t: ParentNavCopy, learnerId?: string | null) => [
   { href: "/parent/activate-child", match: ["/parent/activate-child"],  icon: UserPlus,    label: t.navAddChild },
   { href: "/parent-purchase",  match: ["/parent-purchase"],             icon: CreditCard,  label: t.navBilling  },
   { href: "/subscribe",        match: ["/subscribe"],                   icon: Sparkles,    label: t.navPlan     },
-  { href: "/parent-consent",   match: ["/parent-consent"],              icon: ShieldCheck, label: t.navConsent  },
+  // /parent-consent is token-scoped (email-link only) — without a token it
+  // dead-ends on "Link invalid", so it is deliberately NOT in the sidebar.
   { href: "/settings",         match: ["/settings"],                    icon: Settings2,   label: t.navSettings },
 ];
 
@@ -466,7 +468,7 @@ function CountdownClock({ dateStr, startTime, hex, isAf }: { dateStr: string; st
   return (
     <div className="flex flex-col items-end gap-0.5" aria-label={isAf ? "Aftel na eksamen" : "Countdown to exam"}>
       <span
-        className="text-[7px] font-black tracking-[0.28em] uppercase text-white"
+        className="text-[9px] font-black tracking-[0.28em] uppercase text-white"
         aria-hidden
       >
         {isAf ? "Jou tyd begin" : "Your time starts"}
@@ -484,7 +486,7 @@ function CountdownClock({ dateStr, startTime, hex, isAf }: { dateStr: string; st
                 <AlarmDigit value={p.v[0]} hex={urgentHex} />
                 <AlarmDigit value={p.v[1]} hex={urgentHex} />
               </div>
-              <span className="text-[7px] leading-none mt-[2px] font-black tracking-[0.22em]" style={{ color: `${urgentHex}cc` }}>{p.l}</span>
+              <span className="text-[9px] leading-none mt-[2px] font-black tracking-[0.22em]" style={{ color: urgentHex }}>{p.l}</span>
             </div>
             {i < parts.length - 1 && (
               <span
@@ -582,7 +584,7 @@ function ChildReadinessCard({
             {linkOpened && (
               <span
                 className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold"
-                style={{ color: "#94F7C5", border: "1px solid #94F7C566" }}
+                style={{ color: "#94F7C5", border: "1px solid #94F7C5" }}
                 data-testid={`parent-child-link-opened-${learnerId}`}
                 title={isAf ? "Jou kind het die teken-in-skakel oopgemaak" : "Your child has opened the sign-in link"}
               >
@@ -611,7 +613,7 @@ function ChildReadinessCard({
                   <span
                     key={id}
                     className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold"
-                    style={{ color: hex, border: `1px solid ${hex}66` }}
+                    style={{ color: hex, border: `1px solid ${hex}` }}
                     data-testid={`parent-child-pill-${learnerId}-${id}`}
                   >
                     <span className="w-1.5 h-1.5 rounded-full" style={{ background: hex }} />
@@ -954,7 +956,7 @@ function SubscriptionPanel({ isAf }: { isAf: boolean }) {
           </p>
           <h3 className="text-xl font-extrabold text-white tracking-tight">{planName}</h3>
           <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold"
-            style={{ color: s.hex, border: `1px solid ${s.hex}66` }}
+            style={{ color: s.hex, border: `1px solid ${s.hex}` }}
             data-testid="parent-subscription-status"
           >
             <span className="w-1.5 h-1.5 rounded-full" style={{ background: s.hex }} />
@@ -1391,6 +1393,7 @@ function ReportEmailOptOutToggle({ learnerUserId, isAf }: { learnerUserId: strin
 
 function DownloadReportButton({ learnerName, isAf }: { learnerName: string; isAf: boolean }) {
   const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
   const handleDownload = async () => {
     setLoading(true);
@@ -1402,6 +1405,11 @@ function DownloadReportButton({ learnerName, isAf }: { learnerName: string; isAf
       const pdfBlob = blob.type ? blob : new Blob([blob], { type: "application/pdf" });
       await downloadBlob(pdfBlob, filename);
     } catch {
+      toast({
+        title: isAf ? "Kon nie verslag aflaai nie" : "Couldn't download the report",
+        description: isAf ? "Probeer asseblief weer." : "Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -1485,45 +1493,44 @@ function AccuracyCompare({ initial, current, isAf }: { initial: number; current:
   );
 }
 
-function Sparkline({ studyDays, totalQ }: { studyDays: number; totalQ: number }) {
-  const days = ["M", "T", "W", "T", "F", "S", "S"];
-  const perDay = Math.round(totalQ / Math.max(studyDays, 1));
-  const raw = days.map((_, i) => {
-    if (i >= 7 - studyDays) return Math.max(1, perDay + Math.round(Math.sin(i * 1.4) * perDay * 0.4));
-    return 0;
-  });
-  const max = Math.max(...raw, 1);
-  const W = 140, H = 36, pad = 4;
-  const pts = raw.map((v, i) => {
-    const x = pad + (i / (days.length - 1)) * (W - pad * 2);
-    const y = H - pad - (v / max) * (H - pad * 2);
-    return `${x},${y}`;
-  });
-  const polyline = pts.join(" ");
-  const filled = `${pad},${H} ` + pts.join(" ") + ` ${W - pad},${H}`;
+// Honest 7-day view: we only know HOW MANY days were studied this week and the
+// total question count — not the per-day shape — so no synthetic wave. Each
+// study day renders one flat bar at the real average (totalQ / studyDays);
+// non-study days stay empty.
+function Sparkline({ studyDays, totalQ, isAf }: { studyDays: number; totalQ: number; isAf: boolean }) {
+  const days = isAf ? ["M", "D", "W", "D", "V", "S", "S"] : ["M", "T", "W", "T", "F", "S", "S"];
+  const activeDays = Math.max(0, Math.min(7, studyDays));
+  const perDay = activeDays > 0 ? Math.round(totalQ / activeDays) : 0;
   return (
     <div>
-      <p className="text-[10px] text-white mb-1 uppercase tracking-wider">7-day activity</p>
-      <svg width={W} height={H} className="overflow-visible" role="presentation" aria-hidden="true">
-        <defs>
-          <linearGradient id="spark-fill-cosmic" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="rgba(159,245,232,0.28)" />
-            <stop offset="100%" stopColor="rgba(159,245,232,0)" />
-          </linearGradient>
-        </defs>
-        <polygon points={filled} fill="url(#spark-fill-cosmic)" />
-        <polyline points={polyline} fill="none" stroke="#9FF5E8" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
-        {raw.map((v, i) => {
-          const x = pad + (i / (days.length - 1)) * (W - pad * 2);
-          const y = H - pad - (v / max) * (H - pad * 2);
-          return v > 0 ? <circle key={i} cx={x} cy={y} r="2.5" fill="#9FF5E8" /> : null;
+      <p className="text-[10px] text-white mb-1 uppercase tracking-wider">
+        {isAf ? "7-dae aktiwiteit" : "7-day activity"}
+      </p>
+      <div className="flex items-end gap-1" style={{ width: 140, height: 36 }} role="presentation" aria-hidden="true">
+        {days.map((_, i) => {
+          const active = i >= 7 - activeDays;
+          return (
+            <div
+              key={i}
+              className="flex-1 rounded-t-[3px]"
+              style={{
+                height: active ? "100%" : 3,
+                background: active ? "#9FF5E8" : "#1b1922",
+              }}
+            />
+          );
         })}
-      </svg>
-      <div className="flex justify-between mt-0.5" style={{ width: W }}>
+      </div>
+      <div className="flex justify-between mt-0.5" style={{ width: 140 }}>
         {days.map((d, i) => (
           <span key={i} className="text-[9px] text-white w-4 text-center">{d}</span>
         ))}
       </div>
+      <p className="text-[10px] text-white mt-1">
+        {isAf
+          ? `${activeDays}/7 dae · ±${perDay} vrae per studiedag`
+          : `${activeDays}/7 days · ±${perDay} questions per study day`}
+      </p>
     </div>
   );
 }
@@ -1791,6 +1798,12 @@ export default function ParentDashboardPage() {
         .btp-logo { transition: transform .25s; }
         .btp-logo:hover { transform: scale(1.1) rotate(-3deg); }
         .btp-sidebar { width: 240px; padding: 26px 18px; }
+        /* Daily Boost two-up collapses to a single column on phones — the
+           inline gridTemplateColumns loses to !important here. */
+        @media (max-width: 700px) {
+          .bt-grid-2col { grid-template-columns: minmax(0, 1fr) !important; }
+          .bt-grid-2col > * { min-width: 0 !important; }
+        }
         @media (max-width: 861px) {
           .btp-sidebar { width: 200px; padding: 20px 12px; }
         }
@@ -2430,7 +2443,7 @@ export default function ParentDashboardPage() {
                   current={childProgress.overallAccuracy}
                   isAf={isAf}
                 />
-                <Sparkline studyDays={childProgress.weeklyReport.studyDays} totalQ={childProgress.weeklyReport.questionsAnswered} />
+                <Sparkline studyDays={childProgress.weeklyReport.studyDays} totalQ={childProgress.weeklyReport.questionsAnswered} isAf={isAf} />
               </div>
 
               <div className="relative grid gap-4 sm:grid-cols-2">
@@ -2857,6 +2870,8 @@ export default function ParentDashboardPage() {
           )}
 
           <LinkHistorySection learnerId={selectedLearnerId} isAf={isAf} />
+
+          <ParentFAQ isAf={isAf} />
         </section>
 
       </main>

@@ -13,26 +13,26 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=bt2" />
     <meta name="theme-color" content="#050508" />
 
-    <title>BrainTrack™ | Grade 12 Matric Past Papers, Memos & AI Tutor — South Africa</title>
-    <meta name="description" content="Pass Matric with confidence. 10 years of NSC past papers + memos, CAPS-aligned weekly study plan, AI tutor, NSC 2026 exam timetable and parent reports. Built for SA Grade 12. R169/month — 14 days free." />
+    <title>Grade 12 Matric Past Papers & AI Tutor | BrainTrack™</title>
+    <meta name="description" content="Pass Matric with confidence. 10 years of NSC past papers + memos, a CAPS-aligned study plan and an AI tutor for SA Grade 12s. R169/month — cancel anytime." />
     <meta name="keywords" content="Matric past papers, NSC past papers, NSC past papers and memos, Grade 12 past papers, Grade 12 Matric prep, Matric exam papers 2026, NSC 2026 exam timetable, Matric prelims, Matric trial exams, Matric rewrite, Matric study guide South Africa, CAPS aligned revision, CAPS study plan, Grade 12 Mathematics past papers, Grade 12 Physical Sciences past papers, Grade 12 Life Sciences past papers, Grade 12 English HL, Grade 12 Afrikaans Huistaal, Grade 12 Accounting, Grade 12 Business Studies, Grade 12 Geography, Grade 12 History, NSC results 2025, Matric preparation, Graad 12 voorbereiding, Graad 12 vorige vraestelle, Matriek vraestelle en memorandums, AI tutor for Matric, online Matric tutoring South Africa, parent progress reports, BrainTrack" />
     <meta name="author" content="BrainTrack" />
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta name="geo.region" content="ZA" />
     <meta name="geo.country" content="South Africa" />
     <link rel="canonical" href="https://braintrack.tech/" /> <!-- nosemgrep: html.security.audit.missing-integrity -- canonical link is a metadata hint, not a subresource; integrity attribute is not applicable -->
-    <!-- hreflang alternate links are metadata hints for search engines (RFC 5988 / Google spec).
-         The SRI `integrity` attribute is NOT applicable to <link rel="alternate"> — SRI only
-         applies to <link rel="stylesheet"> and <script> that fetch cross-origin subresources.
-         Any scanner flagging these as "missing integrity" is reporting a false positive. -->
-    <link rel="alternate" hreflang="en-za" href="https://braintrack.tech/" />
-    <link rel="alternate" hreflang="af-za" href="https://braintrack.tech/" />
-    <link rel="alternate" hreflang="x-default" href="https://braintrack.tech/" />
+    <!-- NO hreflang links on purpose: EN/AF are served from the SAME URL via the
+         in-app language toggle (no /af/ or ?lang= URLs exist). hreflang pairs
+         pointing en-ZA and af-ZA at one identical URL are contradictory signals
+         and get ignored (or flagged) by Google. Language targeting is done via
+         og:locale (en_ZA + af_ZA alternate) and the <html lang> attribute, which
+         language-context.tsx switches live with the toggle. -->
+
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="BrainTrack" />
     <meta property="og:title" content="Matric Past Papers, Memos & AI Tutor for Grade 12 SA | BrainTrack™" />
-    <meta property="og:description" content="10 years of NSC past papers + memos, CAPS-aligned weekly revision, AI tutor and parent reports. Built for South African Matric learners. R169/month — 14 days free." />
+    <meta property="og:description" content="10 years of NSC past papers + memos, CAPS-aligned weekly revision, AI tutor and parent reports. Built for South African Matric learners. R169/month — cancel anytime." />
     <meta property="og:url" content="https://braintrack.tech/" />
     <meta property="og:image" content="https://braintrack.tech/og-image.jpg" />
     <meta property="og:image:width" content="1200" />
@@ -43,7 +43,7 @@
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Matric Past Papers, Memos & AI Tutor for Grade 12 SA | BrainTrack™" />
-    <meta name="twitter:description" content="10 years of NSC past papers + memos, CAPS-aligned weekly revision, AI tutor and parent reports. English & Afrikaans. R169/month — 14 days free." />
+    <meta name="twitter:description" content="10 years of NSC past papers + memos, CAPS-aligned weekly revision, AI tutor and parent reports. English & Afrikaans. R169/month — cancel anytime." />
     <meta name="twitter:image" content="https://braintrack.tech/og-image.jpg" />
     <meta name="twitter:image:alt" content="BrainTrack - Grade 12 NSC Exam Preparation" />
 
@@ -90,6 +90,11 @@
         "email": "learn@kth-tech.com",
         "contactType": "customer support",
         "availableLanguage": ["English", "Afrikaans"]
+      },
+      "parentOrganization": {
+        "@type": "Organization",
+        "name": "KTH Projects (Pty) Ltd t/a KTH-Tech",
+        "identifier": "2025/627290/07"
       },
       "sameAs": []
     }

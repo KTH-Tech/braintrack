@@ -148,7 +148,7 @@ export default function DbePracticePage() {
     },
   });
 
-  const { data, isLoading } = useQuery<QuestionsResponse>({
+  const { data, isLoading, isError, refetch, isRefetching } = useQuery<QuestionsResponse>({
     queryKey: ["/api/dbe/questions", subject, yearParam, paperParam, sourceFilter],
     queryFn: async () => {
       const qs = new URLSearchParams({ subject, source: sourceFilter });
@@ -156,6 +156,9 @@ export default function DbePracticePage() {
       if (paperParam) qs.set("paperNumber", paperParam);
       qs.set("limit", "500");
       const r = await fetch(`/api/dbe/questions?${qs}`, { credentials: "include" });
+      // AUDIT FIX: without this, a failed request either JSON-parse crashed or
+      // rendered the misleading "No questions available" empty state.
+      if (!r.ok) throw new Error(`dbe-questions ${r.status}`);
       return r.json();
     },
     enabled: !!subject,
@@ -242,7 +245,7 @@ export default function DbePracticePage() {
         .btx-nav { transition: transform .2s, background .2s; }
         .btx-nav:hover { transform: translateY(-1px); background: #1b1922 !important; }
         .btx-ghost { transition: border-color .2s, transform .2s; }
-        .btx-ghost:hover { border-color: #1b1922 !important; transform: translateY(-1px); }
+        .btx-ghost:hover { border-color: #fff !important; transform: translateY(-1px); }
         .btx-ghost:disabled { opacity: .4; cursor: not-allowed; transform: none; }
         .btx-jump { transition: border-color .2s, transform .2s; }
         .btx-jump:hover { border-color: #9FF5E8 !important; transform: translateY(-1px); }
@@ -385,6 +388,40 @@ export default function DbePracticePage() {
             <Skeleton className="h-12 rounded-xl bg-[#0e0d12]" />
             <Skeleton className="h-64 rounded-2xl bg-[#0e0d12]" />
           </div>
+        ) : isError ? (
+          // AUDIT FIX: request failures used to fall through to the "No
+          // questions available" empty state. Show a real error with retry.
+          <div
+            style={{
+              background: "#0e0d12",
+              border: "1.5px solid #FF8DA1",
+              borderRadius: 20,
+              padding: "56px 32px",
+              textAlign: "center",
+            }}
+            data-testid="dbe-questions-error"
+          >
+            <AlertCircle style={{ width: 48, height: 48, margin: "0 auto 12px", color: "#FF8DA1" }} />
+            <div role="heading" aria-level={2} style={{ fontSize: 18, fontWeight: 900, color: "#fff" }}>
+              {isAf ? "Kon nie vrae laai nie." : "Couldn't load questions."}
+            </div>
+            <p style={{ fontSize: 13, color: "#fff", marginTop: 8, maxWidth: 420, marginLeft: "auto", marginRight: "auto" }}>
+              {isAf
+                ? "Kontroleer jou internetverbinding en probeer weer."
+                : "Check your connection and try again."}
+            </p>
+            <div style={{ marginTop: 20 }}>
+              <Button
+                variant="primary"
+                disabled={isRefetching}
+                onClick={() => refetch()}
+                data-testid="button-retry-questions"
+              >
+                {isRefetching ? <Loader2 style={{ width: 14, height: 14 }} className="animate-spin" /> : null}
+                {isRefetching ? (isAf ? "Probeer…" : "Retrying…") : (isAf ? "Probeer weer" : "Try again")}
+              </Button>
+            </div>
+          </div>
         ) : questions.length === 0 ? (
           <div
             style={{
@@ -399,6 +436,11 @@ export default function DbePracticePage() {
             <div role="heading" aria-level={2} style={{ fontSize: 18, fontWeight: 900, color: "#fff" }}>
               {isAf ? "Geen vrae beskikbaar nie." : "No questions available."}
             </div>
+            <p style={{ fontSize: 13, color: "#fff", marginTop: 8, maxWidth: 460, marginLeft: "auto", marginRight: "auto" }}>
+              {isAf
+                ? "Daar is nog geen vrygestelde vrae vir hierdie vak en filterkeuse nie — probeer 'n ander jaar of vraestel, of kom binnekort terug."
+                : "There are no released questions for this subject and filter yet — try a different year or paper, or check back soon."}
+            </p>
             <Link href="/exam-mode">
               <button className="btx-ghost" style={{ ...ghostBtn, marginTop: 20 }}>
                 {isAf ? "Terug na Eksamens" : "Back to Exams"}
@@ -617,7 +659,7 @@ export default function DbePracticePage() {
                   style={{
                     position: "relative",
                     background: "#0e0d12",
-                    border: `1.5px solid ${srcHex}55`,
+                    border: `1.5px solid ${srcHex}`,
                     borderRadius: 20,
                     padding: 22,
                     overflow: "hidden",
@@ -642,7 +684,7 @@ export default function DbePracticePage() {
                             : (isAf ? "Eg DBE" : "Real DBE")}
                           {current.source === "ai" && current.qualityScore != null && ` · ${current.qualityScore}%`}
                         </span>
-                        <span style={{ ...pillBase, color: "#9FD8FF", border: "1px solid #9FD8FF66" }}>
+                        <span style={{ ...pillBase, color: "#9FD8FF", border: "1px solid #9FD8FF" }}>
                           {paperLabel(current)}
                         </span>
                         {current.topic && (
@@ -656,7 +698,7 @@ export default function DbePracticePage() {
                             {current.marks} {isAf ? current.marks === 1 ? "punt" : "punte" : current.marks === 1 ? "mark" : "marks"}
                           </span>
                         )}
-                        <span style={{ ...pillBase, color: "#FFB7E5", border: "1px solid #FFB7E566", textTransform: "capitalize", letterSpacing: ".5px" }}>
+                        <span style={{ ...pillBase, color: "#FFB7E5", border: "1px solid #FFB7E5", textTransform: "capitalize", letterSpacing: ".5px" }}>
                           {current.cognitiveLevel}
                         </span>
                       </div>

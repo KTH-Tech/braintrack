@@ -85,7 +85,7 @@ import {
 
 /* Opaque card base — the graffiti scatter sits behind the page and bled
    through when these were translucent, so every card paints #050508 first. */
-const CARD_BG = "linear-gradient(#1b1922, #1b1922), #050508";
+const CARD_BG = "linear-gradient(#0e0d12, #0e0d12), #050508";
 
 /* Palette (pastels only — no grey text ever). */
 const HEX = {
@@ -343,7 +343,7 @@ export default function ProgressPage() {
         <div className="space-y-8 relative z-10">
           {/* ── Hero ──────────────────────────────────────────────────────── */}
           <div
-            className="relative overflow-hidden rounded-3xl p-6 sm:p-8 md:p-10"
+            className="relative overflow-hidden rounded-2xl p-6 sm:p-8 md:p-10"
             style={{ background: CARD_BG, border: `1.5px solid ${HEX.sky}`, boxShadow: `0 0 0 1px rgba(159,216,255,0.28)` }}
           >
             <div
@@ -375,7 +375,7 @@ export default function ProgressPage() {
             <div className="relative flex flex-col lg:flex-row lg:items-center gap-8">
               <div className="flex-1 space-y-4 min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-[#1b1922]" style={{ border: `1px solid ${HEX.sky}8C` }}>
+                  <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 bg-[#1b1922]" style={{ border: `1px solid ${HEX.sky}` }}>
                     <span className="w-1.5 h-1.5 rounded-full progress-hero-pulse" style={{ background: HEX.sky }} />
                     <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: HEX.sky }}>
                       {isAf ? "Prestasieverslag" : "Performance Report"}
@@ -388,7 +388,7 @@ export default function ProgressPage() {
                       </span>
                     </div>
                   )}
-                  <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-[#1b1922]" style={{ border: `1px solid ${HEX.yellow}8C` }}>
+                  <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-[#1b1922]" style={{ border: `1px solid ${HEX.yellow}` }}>
                     <Flame className="w-3 h-3" style={{ color: HEX.yellow }} />
                     <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: HEX.yellow }}>
                       {streak} {isAf ? (streak === 1 ? "dag" : "dae") : (streak === 1 ? "day" : "days")}
@@ -453,7 +453,7 @@ export default function ProgressPage() {
                     { k: isAf ? "Vrae"       : "Questions", v: questions, hex: HEX.yellow },
                     { k: isAf ? "Streep"     : "Streak",    v: streak,    hex: HEX.yellow },
                   ].map(({ k, v, hex }) => (
-                    <div key={k} className="rounded-xl bg-[#1b1922] px-3 py-2" style={{ border: `1px solid ${hex}55` }}>
+                    <div key={k} className="rounded-xl bg-[#1b1922] px-3 py-2" style={{ border: `1px solid ${hex}` }}>
                       <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-white">{k}</div>
                       <div className="text-lg font-black" style={{ color: hex }}>{v}</div>
                     </div>
@@ -587,7 +587,7 @@ export default function ProgressPage() {
                           ? (isAf ? "Nog geen antwoorde nie." : "No answers yet.")
                           : `${breakdown.accuracy.raw}% ${isAf ? "reg oor" : "correct across"} ${questions} ${isAf ? "vrae" : "questions"}`
                       }
-                      source={isAf ? "Bron: attempts.is_correct" : "Source: attempts.is_correct"}
+                      source={isAf ? "Gemeet uit elke antwoord wat jy indien" : "Measured from every answer you submit"}
                       testid="recipe-accuracy"
                     />
                     <RecipeTile
@@ -600,7 +600,7 @@ export default function ProgressPage() {
                           ? (isAf ? "Beantwoord vrae om hierdie balk te vul." : "Answer questions to fill this bar.")
                           : `${breakdown.volume.raw} / 300 ${isAf ? "vrae aangepak" : "questions attempted"}`
                       }
-                      source={isAf ? "Bron: attempts (aantal)" : "Source: attempts (count)"}
+                      source={isAf ? "Getel uit al die vrae wat jy aanpak" : "Counted from every question you attempt"}
                       testid="recipe-volume"
                     />
                     <RecipeTile
@@ -613,7 +613,7 @@ export default function ProgressPage() {
                           ? (isAf ? "Kies vakke om hierdie balk te ontsluit." : "Pick subjects to unlock this bar.")
                           : `${activeSubjects.length} / ${stats.subjectProgress.length} ${isAf ? "vakke begin" : "subjects started"}`
                       }
-                      source={isAf ? "Bron: user_progress · onboarding_results" : "Source: user_progress · onboarding_results"}
+                      source={isAf ? "Gegrond op die vakke wat jy begin het" : "Based on the subjects you've started"}
                       testid="recipe-coverage"
                     />
                     <RecipeTile
@@ -626,7 +626,7 @@ export default function ProgressPage() {
                           ? (isAf ? "Studeer vandag om jou streep te begin." : "Study today to start your streak.")
                           : `${breakdown.consistency.raw}-${isAf ? "dag streep" : "day streak"} (${isAf ? "kap by 7" : "caps at 7"})`
                       }
-                      source={isAf ? "Bron: user_streaks.current_streak" : "Source: user_streaks.current_streak"}
+                      source={isAf ? "Gevolg uit jou daaglikse studiestreep" : "Tracked from your daily study streak"}
                       testid="recipe-consistency"
                     />
                   </div>
@@ -694,7 +694,7 @@ export default function ProgressPage() {
                             <Link key={subject.subjectId} href={`/subject/${subject.subjectId}`}>
                               <div
                                 className="p-4 rounded-2xl bg-[#1b1922] cursor-pointer transition-all hover:-translate-y-1.5 flex items-center gap-3"
-                                style={{ border: `1px solid ${hex}55` }}
+                                style={{ border: `1px solid ${hex}` }}
                                 data-testid={`ready-subject-${subject.subjectId}`}
                               >
                                 <span className="text-2xl shrink-0">{getSubjectIcon(subject.subjectName)}</span>
@@ -806,7 +806,7 @@ export default function ProgressPage() {
                               { k: isAf ? "Akkuraat"    : "Accurate",    v: `${activity.accuracy}%`,                        hex: HEX.sky },
                               { k: isAf ? "Studietyd 14d" : "Study time 14d", v: `${studyMinutes14d}m`,                    hex: HEX.pink },
                             ].map(({ k, v, hex }) => (
-                              <div key={k} className="rounded-xl bg-[#1b1922] px-3 py-2" style={{ border: `1px solid ${hex}55` }}>
+                              <div key={k} className="rounded-xl bg-[#1b1922] px-3 py-2" style={{ border: `1px solid ${hex}` }}>
                                 <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-white">{k}</div>
                                 <div className="text-lg font-black" style={{ color: hex }}>{v}</div>
                               </div>
@@ -847,7 +847,7 @@ export default function ProgressPage() {
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-3">
-                        <div className="rounded-xl bg-[#1b1922] px-3 py-3" style={{ border: `1px solid ${HEX.pink}55` }}>
+                        <div className="rounded-xl bg-[#1b1922] px-3 py-3" style={{ border: `1px solid ${HEX.pink}` }}>
                           <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-white">
                             {isAf ? "Hierdie week" : "This week"}
                           </div>
@@ -855,10 +855,10 @@ export default function ProgressPage() {
                             {studyMinutesThisWeek}<span className="text-sm font-semibold text-white ml-1">m</span>
                           </div>
                           <div className="text-[10px] font-semibold text-white mt-0.5">
-                            {isAf ? "van study_sessions" : "from study_sessions"}
+                            {isAf ? "uit jou studiesessies" : "from your study sessions"}
                           </div>
                         </div>
-                        <div className="rounded-xl bg-[#1b1922] px-3 py-3" style={{ border: `1px solid ${HEX.purple}55` }}>
+                        <div className="rounded-xl bg-[#1b1922] px-3 py-3" style={{ border: `1px solid ${HEX.purple}` }}>
                           <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-white">
                             {isAf ? "Laaste 14 dae" : "Last 14 days"}
                           </div>
@@ -866,7 +866,7 @@ export default function ProgressPage() {
                             {studyMinutes14d}<span className="text-sm font-semibold text-white ml-1">m</span>
                           </div>
                           <div className="text-[10px] font-semibold text-white mt-0.5">
-                            {isAf ? "gestapelde sessies" : "stacked sessions"}
+                            {isAf ? "alle sessies bymekaar" : "all sessions added up"}
                           </div>
                         </div>
                       </div>
@@ -876,8 +876,8 @@ export default function ProgressPage() {
                               ? "Sessietyd word aangeteken sodra jy 'n vraestel begin — dan meet ons ook hoe lank jy studeer."
                               : "Session time starts logging the moment you open a paper — that's when we can measure how long you study.")
                           : (isAf
-                              ? "Sessieduur uit study_sessions.duration_seconds. Nie afgelei uit die aantal vrae nie."
-                              : "Session duration from study_sessions.duration_seconds. Not inferred from question count.")}
+                              ? "Gemeet uit die werklike tyd wat jy in sessies deurbring — nie geraai uit die aantal vrae nie."
+                              : "Measured from the real time you spend in sessions — not guessed from how many questions you did.")}
                       </p>
                     </div>
                   </div>
@@ -904,7 +904,7 @@ export default function ProgressPage() {
                               <Link key={subject.subjectId} href={`/subject/${subject.subjectId}`}>
                                 <div
                                   className="p-4 rounded-2xl bg-[#1b1922] cursor-pointer transition-all hover:-translate-y-1.5"
-                                  style={{ border: `1px solid ${hex}55` }}
+                                  style={{ border: `1px solid ${hex}` }}
                                   data-testid={`progress-subject-${subject.subjectId}`}
                                 >
                                   <div className="flex items-center justify-between mb-2.5 gap-2">
@@ -1001,7 +1001,7 @@ export default function ProgressPage() {
                                 { k: isAf ? "Amber" : "Amber", v: topicSummary.amber, hex: HEX.yellow },
                                 { k: isAf ? "Rooi"  : "Red",   v: topicSummary.red,   hex: HEX.alert },
                               ].map(({ k, v, hex }) => (
-                                <div key={k} className="rounded-xl bg-[#1b1922] px-3 py-2" style={{ border: `1px solid ${hex}55` }}>
+                                <div key={k} className="rounded-xl bg-[#1b1922] px-3 py-2" style={{ border: `1px solid ${hex}` }}>
                                   <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-white">{k}</div>
                                   <div className="text-lg font-black" style={{ color: hex }}>{v}</div>
                                 </div>
@@ -1019,7 +1019,7 @@ export default function ProgressPage() {
                                     <div
                                       key={t.topicId}
                                       className="flex items-center justify-between gap-2 p-3 rounded-xl bg-[#1b1922]"
-                                      style={{ border: `1px solid ${HEX.mint}55` }}
+                                      style={{ border: `1px solid ${HEX.mint}` }}
                                       data-testid={`topic-strength-${t.topicId}`}
                                     >
                                       <div className="min-w-0 flex-1">
@@ -1048,7 +1048,7 @@ export default function ProgressPage() {
                                       <Link key={t.topicId} href={`/subject/${t.subjectId}`}>
                                         <div
                                           className="flex items-center justify-between gap-2 p-3 rounded-xl bg-[#1b1922] cursor-pointer transition-all hover:-translate-y-0.5"
-                                          style={{ border: `1px solid ${hex}55` }}
+                                          style={{ border: `1px solid ${hex}` }}
                                           data-testid={`topic-focus-${t.topicId}`}
                                         >
                                           <div className="min-w-0 flex-1">
@@ -1082,7 +1082,7 @@ export default function ProgressPage() {
                           <div className="text-center py-8 rounded-2xl bg-[#1b1922] border border-[#1b1922] p-6">
                             <Layers className="w-7 h-7 mx-auto mb-3 text-white" />
                             <p className="font-bold text-white">
-                              {isAf ? "Onderwerp-uiteensetting kom binnekort" : "Topic breakdown coming soon"}
+                              {isAf ? "Nog geen onderwerpbande nie" : "No topic bands yet"}
                             </p>
                             <p className="text-sm text-white mt-1">
                               {isAf
@@ -1113,7 +1113,7 @@ export default function ProgressPage() {
                               <Link key={topic.topicId} href={`/subject/${topic.topicId}`}>
                                 <div
                                   className="flex items-center justify-between p-4 rounded-2xl bg-[#1b1922] cursor-pointer transition-all hover:-translate-y-1"
-                                  style={{ border: `1px solid ${hex}55` }}
+                                  style={{ border: `1px solid ${hex}` }}
                                   data-testid={`weak-topic-${topic.topicId}`}
                                 >
                                   <div className="min-w-0 flex-1 flex items-center gap-2">
@@ -1153,8 +1153,8 @@ export default function ProgressPage() {
                     icon={Trophy}
                     title={isAf ? "Mylpale" : "Milestones"}
                     subtitle={isAf
-                      ? "Werklike prestasies uit personal_bests en jou kentekens"
-                      : "Real achievements from personal_bests and your badges"}
+                      ? "Werklike prestasies — jou persoonlike bestes en kentekens"
+                      : "Real achievements — your personal bests and badges"}
                     testid="panel-milestones"
                   >
                     <div className="p-5 grid gap-5 lg:grid-cols-2">

@@ -1129,7 +1129,7 @@ function SubscriptionFunnelPanel({ isAf, language }: { isAf: boolean; language: 
                 <div className="mt-5" style={{ height: Math.max(chartData.length * 34 + 24, 120) }} data-testid="funnel-chart">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={chartData} layout="vertical" margin={{ top: 4, right: 16, bottom: 4, left: 4 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#fff" horizontal={false} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#1b1922" horizontal={false} />
                       <XAxis
                         type="number"
                         allowDecimals={false}
@@ -1144,7 +1144,7 @@ function SubscriptionFunnelPanel({ isAf, language }: { isAf: boolean; language: 
                         tick={{ fill: "#ffffff", fontSize: 10 }}
                       />
                       <RechartsTooltip
-                        cursor={{ fill: "#fff" }}
+                        cursor={{ fill: "#1b1922" }}
                         contentStyle={{
                           background: "#050508",
                           border: "1px solid #1b1922",
@@ -2028,7 +2028,9 @@ function TestPaymentSection() {
   });
 
   return (
-    <section className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
+    // No max-w/px of its own — the parent <main> already provides the
+    // container, so doubling it up narrowed this section vs its siblings.
+    <section className="py-6">
       <NeonShell color="#9FF5E8" className="p-5" testId="admin-test-payment-section">
         <div className="flex flex-col sm:flex-row sm:items-end gap-4">
           <div className="flex-1 min-w-0">

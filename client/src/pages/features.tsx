@@ -109,11 +109,15 @@ function useInView<T extends HTMLElement>(): [React.RefObject<T>, boolean] {
   const ref = useRef<T>(null);
   const [inView, setInView] = useState(false);
   useEffect(() => {
+    // Fail-safe FIRST — set unconditionally, before any early return. Nothing
+    // may ever stay invisible: not if the ref never attaches, not if the
+    // observer never fires (throttled tab, odd embed, exotic browser). A blank
+    // section is a launch bug; a slightly-early reveal is not.
+    const failSafe = window.setTimeout(() => setInView(true), 1500);
     const el = ref.current;
-    if (!el) return;
-    if (prefersReducedMotion() || typeof IntersectionObserver === "undefined") {
+    if (!el || prefersReducedMotion() || typeof IntersectionObserver === "undefined") {
       setInView(true);
-      return;
+      return () => window.clearTimeout(failSafe);
     }
     const io = new IntersectionObserver(
       (entries) => {
@@ -125,16 +129,16 @@ function useInView<T extends HTMLElement>(): [React.RefObject<T>, boolean] {
       { threshold: 0.01, rootMargin: "0px 0px 25% 0px" },
     );
     io.observe(el);
-    const failSafe = window.setTimeout(() => setInView(true), 4000);
     return () => { io.disconnect(); window.clearTimeout(failSafe); };
   }, []);
   return [ref, inView];
 }
 
 /**
- * Scroll-reveal wrapper. Inline `animation: bt-fadeup …` so it survives the
- * global animation kill-switch in index.css; prefers-reduced-motion users get
- * the finished state immediately.
+ * Scroll-reveal wrapper. Uses an inline `animation: bt-rise …` so it survives
+ * the global animation kill-switch in index.css. Content is visible by
+ * default (landing.tsx pattern) — a failed/never-firing scroll observer costs
+ * only the entrance motion, never the content itself.
  */
 function Reveal({
   delay = 0,
@@ -154,8 +158,8 @@ function Reveal({
       className={className}
       style={
         inView
-          ? { ...style, animation: `bt-fadeup .8s cubic-bezier(.22,.75,.3,1) ${delay}ms both` }
-          : { ...style, opacity: 0 }
+          ? { ...style, animation: `bt-rise .85s cubic-bezier(.22,.75,.3,1) ${delay}ms both` }
+          : { ...style }
       }
     >
       {children}
@@ -171,7 +175,7 @@ export default function FeaturesPage() {
   useSEO({
     title: "Features | BrainTrack™ CAPS Study Plan & NSC Past Papers",
     description:
-      "Explore BrainTrack™ features: CAPS weekly study plan, NSC past papers with memos, gap detection, Rizz AI support, gamified progress & parent dashboard. R169/month.",
+      "BrainTrack™ features: CAPS weekly study plan, NSC past papers with memos, gap detection, Rizz AI tutor and parent dashboard. R169/month.",
     canonical: "https://braintrack.tech/features",
     ogTitle: "BrainTrack™ Features — CAPS Plan, NSC Past Papers & AI Support",
     ogDescription:

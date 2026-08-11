@@ -2,6 +2,7 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/language-context";
 import { BrandThemeToggle } from "@/components/theme-toggle";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -91,7 +92,7 @@ const T = {
     sessions: "Sessions",
     avgScore: "Avg score (%)",
     learners: "learners",
-    colorLegend: "Colour: green ≥75%, amber ≥50%, red <50%",
+    colorLegend: "Colour: mint ≥75%, butter ≥50%, pink <50%",
     printFooter: "BrainTrack School Dashboard",
     generated: "Generated",
     printAnon: "All data is anonymised and aggregated. No individual learner data is included.",
@@ -137,7 +138,7 @@ const T = {
     sessions: "Sessies",
     avgScore: "Gem. telling (%)",
     learners: "leerders",
-    colorLegend: "Kleur: groen ≥75%, amber ≥50%, rooi <50%",
+    colorLegend: "Kleur: mint ≥75%, botter ≥50%, pienk <50%",
     printFooter: "BrainTrack Skool-dashboard",
     generated: "Gegenereer",
     printAnon: "Alle data is geanonimiseer en saamgevoeg. Geen individuele leerderdata is ingesluit nie.",
@@ -151,13 +152,13 @@ const T = {
   },
 };
 
+// Brand pastels, cycling — mint, cyan, sky, pink, violet, butter.
 const SUBJECT_COLORS = [
-  "#6366f1", "#8b5cf6", "#06b6d4", "#10b981", "#f59e0b",
-  "#ef4444", "#ec4899", "#14b8a6", "#f97316", "#84cc16",
-  "#3b82f6", "#a855f7",
+  "#94F7C5", "#9FF5E8", "#9FD8FF", "#FFB7E5", "#C5B3FF", "#FFE29A",
 ];
 
-const STREAK_COLORS = ["#94a3b8", "#3b82f6", "#6366f1", "#8b5cf6"];
+// Mint → cyan → sky → violet (no grey, no stock blues).
+const STREAK_COLORS = ["#94F7C5", "#9FF5E8", "#9FD8FF", "#C5B3FF"];
 
 function formatMinutes(seconds: number): string {
   if (seconds < 60) return `${seconds}s`;
@@ -243,6 +244,7 @@ export default function SchoolDashboardPage() {
   const { language, toggleLanguage } = useLanguage();
   const af = language === "af";
   const t = T[af ? "af" : "en"];
+  const { toast } = useToast();
 
   const { data, isLoading, isError, error, refetch, isFetching } =
     useQuery<SchoolDashboardData>({
@@ -256,7 +258,10 @@ export default function SchoolDashboardPage() {
       const res = await fetch("/api/school/dashboard/export.csv");
       if (!res.ok) {
         const json = await res.json().catch(() => null);
-        if (json?.error) { alert(json.error); return; }
+        if (json?.error) {
+          toast({ title: t.exportFailed, description: json.error, variant: "destructive" });
+          return;
+        }
       }
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
@@ -266,7 +271,7 @@ export default function SchoolDashboardPage() {
       a.click();
       URL.revokeObjectURL(url);
     } catch {
-      alert(t.exportFailed);
+      toast({ title: t.exportFailed, variant: "destructive" });
     }
   };
 
@@ -358,7 +363,7 @@ export default function SchoolDashboardPage() {
 
   const streakTotal = streakDistribution.reduce((s, b) => s + b.count, 0);
 
-  const chartAxisStyle = { fontSize: 10, fill: "hsl(var(--muted-foreground))" };
+  const chartAxisStyle = { fontSize: 10, fill: "#fff" };
   const chartGridColor = "hsl(var(--border))";
   const chartCursorFill = "hsl(var(--muted) / 0.3)";
 
@@ -381,7 +386,10 @@ export default function SchoolDashboardPage() {
           <div className="flex items-center gap-3 min-w-0">
             <GraduationCap className="w-5 h-5 text-primary shrink-0" />
             <div className="min-w-0">
-              <p className="text-[10px] font-black uppercase tracking-widest text-primary">
+              <p
+                className="uppercase text-[#9FF5E8] leading-none"
+                style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 14, letterSpacing: "0.18em" }}
+              >
                 {t.schoolDashboard}
               </p>
               <h1 className="text-base font-black text-foreground truncate leading-tight">{school.name}</h1>
@@ -445,11 +453,11 @@ export default function SchoolDashboardPage() {
           <span className="text-white">
             {t.dataGenerated}: {generatedDate}
           </span>
-          <span className="text-primary/60 ml-auto print:hidden">{t.refreshesDaily}</span>
+          <span className="text-white ml-auto print:hidden">{t.refreshesDaily}</span>
         </div>
 
         {/* Privacy banner */}
-        <div className="flex items-start gap-2.5 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-xs text-foreground/80">
+        <div className="flex items-start gap-2.5 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-xs text-white">
           <ShieldCheck className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
           <span>{t.privacyNotice}</span>
         </div>
@@ -462,28 +470,31 @@ export default function SchoolDashboardPage() {
               value={summary.totalLearners.toLocaleString()}
               label={t.totalLearners}
               sub={t.heroEnrolled}
-              color="text-primary"
+              color="text-[#9FD8FF]"
             />
             <HeroStat
               icon={Zap}
               value={summary.activeLearners.toLocaleString()}
               label={t.activeLearners}
               sub={t.last30}
-              color="text-emerald-500"
+              color="text-[#94F7C5]"
             />
             <HeroStat
               icon={Target}
               value={`${summary.overallAccuracy}%`}
               label={t.overallAccuracy}
               sub={t.heroAccuracy}
-              color="text-amber-500"
+              color="text-[#FFE29A]"
             />
           </div>
         </Card>
 
         {/* Secondary metric cards */}
         <section>
-          <h2 className="text-[10px] font-black uppercase tracking-widest text-white mb-3">
+          <h2
+            className="uppercase text-white mb-3"
+            style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, letterSpacing: "0.18em" }}
+          >
             {t.keyMetrics}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -491,19 +502,19 @@ export default function SchoolDashboardPage() {
               icon={Clock}
               label={t.avgSession}
               value={formatMinutes(summary.avgSessionSeconds)}
-              color="text-cyan-500"
+              color="text-[#9FF5E8]"
             />
             <SecondaryMetricCard
               icon={BookOpen}
               label={t.studySessions}
               value={summary.totalSessions.toLocaleString()}
-              color="text-violet-500"
+              color="text-[#C5B3FF]"
             />
             <SecondaryMetricCard
               icon={BarChart3}
               label={t.attempts}
               value={summary.totalAttempts.toLocaleString()}
-              color="text-rose-500"
+              color="text-[#FFB7E5]"
             />
           </div>
         </section>
@@ -513,7 +524,10 @@ export default function SchoolDashboardPage() {
           {/* Subject Engagement */}
           <Card className="border-border/60 bg-card/60 ">
             <CardHeader className="pb-2 pt-4 px-4">
-              <CardTitle className="text-xs font-black uppercase tracking-widest text-white">
+              <CardTitle
+                className="uppercase text-white"
+                style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, letterSpacing: "0.18em" }}
+              >
                 {t.subjectEngagement}
               </CardTitle>
               <p className="text-[10px] text-white mt-0.5">{t.subjectEngagementSub}</p>
@@ -565,7 +579,10 @@ export default function SchoolDashboardPage() {
           {/* Avg Score by Subject */}
           <Card className="border-border/60 bg-card/60 ">
             <CardHeader className="pb-2 pt-4 px-4">
-              <CardTitle className="text-xs font-black uppercase tracking-widest text-white">
+              <CardTitle
+                className="uppercase text-white"
+                style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, letterSpacing: "0.18em" }}
+              >
                 {t.avgMastery}
               </CardTitle>
               <p className="text-[10px] text-white mt-0.5">{t.avgMasterySub}</p>
@@ -610,7 +627,7 @@ export default function SchoolDashboardPage() {
                           {avgScoreBySubject.map((row, i) => (
                             <Cell
                               key={i}
-                              fill={row.avgScore >= 75 ? "#10b981" : row.avgScore >= 50 ? "#f59e0b" : "#ef4444"}
+                              fill={row.avgScore >= 75 ? "#94F7C5" : row.avgScore >= 50 ? "#FFE29A" : "#FFB7E5"}
                             />
                           ))}
                         </Bar>
@@ -629,8 +646,11 @@ export default function SchoolDashboardPage() {
         {/* Streak Distribution — unified panel */}
         <Card className="border-border/60 bg-card/60 ">
           <CardHeader className="pb-2 pt-4 px-4">
-            <CardTitle className="text-xs font-black uppercase tracking-widest text-white flex items-center gap-1.5">
-              <Flame className="w-4 h-4 text-orange-500 shrink-0" />
+            <CardTitle
+              className="uppercase text-white flex items-center gap-1.5"
+              style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, letterSpacing: "0.18em" }}
+            >
+              <Flame className="w-4 h-4 text-[#FFE29A] shrink-0" />
               {t.streakActivity}
             </CardTitle>
           </CardHeader>
@@ -661,7 +681,7 @@ export default function SchoolDashboardPage() {
                     <Legend
                       iconSize={8}
                       iconType="circle"
-                      wrapperStyle={{ fontSize: 10, color: "hsl(var(--muted-foreground))" }}
+                      wrapperStyle={{ fontSize: 10, color: "#fff" }}
                     />
                   </PieChart>
                 </ResponsiveContainer>
@@ -674,7 +694,7 @@ export default function SchoolDashboardPage() {
                   return (
                     <div key={i}>
                       <div className="flex justify-between text-xs mb-1.5">
-                        <span className="font-semibold text-foreground/80">{bucket.label}</span>
+                        <span className="font-semibold text-white">{bucket.label}</span>
                         <span className="text-white tabular-nums">
                           {bucket.count} {t.learners} ({pct}%)
                         </span>

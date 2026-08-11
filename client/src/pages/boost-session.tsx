@@ -44,12 +44,14 @@ import {
   BookOpen,
   SkipForward,
   Square,
+  AlertCircle,
+  RefreshCw,
 } from "lucide-react";
 
 /* ── Design tokens (street/graffiti system used across learner pages) ── */
 const PASTELS = ["#9FF5E8", "#9FD8FF", "#FFB7E5", "#C5B3FF", "#FFE29A", "#94F7C5"];
 
-const cardStyle = (accent?: string, radius = 22): CSSProperties => ({
+const cardStyle = (accent?: string, radius = 18): CSSProperties => ({
   background: "linear-gradient(#0e0d12, #0e0d12), #050508",
   border: accent ? `1.5px solid ${accent}` : "1px solid #1b1922",
   borderRadius: radius,
@@ -81,6 +83,10 @@ const T = {
     noSubjectsHeadline: "No subjects selected",
     noSubjectsCopy: "Pick the subjects you're writing this year, then come boost them.",
     goToSettings: "Go to Settings",
+    introErrorHeadline: "Couldn't load your subjects",
+    introErrorCopy: "We couldn't reach the server. Check your connection and try again.",
+    tryAgain: "Try Again",
+    retrying: "Retrying...",
     loadingBlock: "Loading questions",
     blockOf: "Subject",
     sessionLeft: "session left",
@@ -130,6 +136,10 @@ const T = {
     noSubjectsHeadline: "Geen vakke gekies nie",
     noSubjectsCopy: "Kies eers die vakke wat jy vanjaar skryf, en kom boost hulle dan.",
     goToSettings: "Gaan na Instellings",
+    introErrorHeadline: "Kon nie jou vakke laai nie",
+    introErrorCopy: "Ons kon nie aan die bediener koppel nie. Kyk jou internetverbinding en probeer weer.",
+    tryAgain: "Probeer Weer",
+    retrying: "Probeer...",
     loadingBlock: "Laai vrae",
     blockOf: "Vak",
     sessionLeft: "sessie oor",
@@ -207,10 +217,22 @@ export default function BoostSessionPage() {
   const t = T[language];
   const { toast } = useToast();
 
-  const { data: profile } = useQuery<{ selectedSubjects?: number[] }>({
+  const {
+    data: profile,
+    isLoading: profileLoading,
+    error: profileError,
+    refetch: refetchProfile,
+    isRefetching: profileRefetching,
+  } = useQuery<{ selectedSubjects?: number[] }>({
     queryKey: ["/api/user/onboarding"],
   });
-  const { data: allSubjects } = useQuery<
+  const {
+    data: allSubjects,
+    isLoading: subjectsLoading,
+    error: subjectsError,
+    refetch: refetchSubjects,
+    isRefetching: subjectsRefetching,
+  } = useQuery<
     Array<{ id: number; name: string; nameAfrikaans: string | null }>
   >({ queryKey: ["/api/subjects"] });
 
@@ -471,6 +493,9 @@ export default function BoostSessionPage() {
 
   /* ══════════════════ INTRO ══════════════════ */
   if (phase === "intro") {
+    const introLoading = profileLoading || subjectsLoading;
+    const introError = profileError || subjectsError;
+    const introRefetching = profileRefetching || subjectsRefetching;
     const noSubjects = profile !== undefined && plan.length === 0;
     const perBlockMin = plan.length > 0 ? Math.round(plan[0].seconds / 60) : 0;
     return (
@@ -478,7 +503,35 @@ export default function BoostSessionPage() {
         <GraffitiSplats variant="corner" opacity={0.4} />
         <LearnerHeader backLabel={t.back} title={t.title} titleColor="#94F7C5" maxWidthClassName="max-w-2xl" />
         <main className="relative max-w-2xl mx-auto px-4 pb-16 pt-6 space-y-5" style={{ zIndex: 1 }}>
-          {noSubjects ? (
+          {introLoading ? (
+            <div className="space-y-5" data-testid="boost-session-intro-loading">
+              <div className="h-56 w-full animate-pulse" style={{ background: "#1b1922", borderRadius: 18 }} />
+              <div className="h-64 w-full animate-pulse" style={{ background: "#1b1922", borderRadius: 18 }} />
+            </div>
+          ) : introError ? (
+            <div style={cardStyle("#FF8DA1")} className="p-7 text-center space-y-3" data-testid="boost-session-intro-error">
+              <AlertCircle className="w-9 h-9 mx-auto" style={{ color: "#FF8DA1" }} />
+              <div className="text-xl font-black">{t.introErrorHeadline}</div>
+              <p className="text-sm leading-relaxed">{t.introErrorCopy}</p>
+              <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    if (profileError) void refetchProfile();
+                    if (subjectsError) void refetchSubjects();
+                  }}
+                  disabled={introRefetching}
+                  data-testid="button-retry-boost-intro"
+                >
+                  <RefreshCw className={`w-4 h-4 ${introRefetching ? "animate-spin" : ""}`} />
+                  {introRefetching ? t.retrying : t.tryAgain}
+                </Button>
+                <Link href="/dashboard">
+                  <Button variant="outline">{t.backToDash}</Button>
+                </Link>
+              </div>
+            </div>
+          ) : noSubjects ? (
             <div style={cardStyle("#FFE29A")} className="p-7 text-center space-y-3" data-testid="boost-session-no-subjects">
               <BookOpen className="w-9 h-9 mx-auto" style={{ color: "#FFE29A" }} />
               <div className="text-xl font-black">{t.noSubjectsHeadline}</div>
@@ -703,9 +756,9 @@ export default function BoostSessionPage() {
               <span
                 className="flex items-center gap-1.5 tabular-nums text-sm font-black px-3 py-1.5 rounded-lg"
                 style={{
-                  background: timerHot ? "rgba(255,183,229,.14)" : "rgba(5,5,8,.6)",
-                  border: `1px solid ${timerHot ? "#FFB7E5" : hex}`,
-                  color: timerHot ? "#FFB7E5" : hex,
+                  background: timerHot ? "rgba(255,141,161,.14)" : "rgba(5,5,8,.6)",
+                  border: `1px solid ${timerHot ? "#FF8DA1" : hex}`,
+                  color: timerHot ? "#FF8DA1" : hex,
                 }}
                 data-testid="boost-block-timer"
               >
@@ -784,9 +837,9 @@ export default function BoostSessionPage() {
                       background: showCorrect
                         ? "rgba(148,247,197,.14)"
                         : wasWrong
-                          ? "rgba(255,183,229,.14)"
+                          ? "rgba(255,141,161,.14)"
                           : "rgba(5,5,8,.6)",
-                      border: `1.5px solid ${showCorrect ? "#94F7C5" : wasWrong ? "#FFB7E5" : "#1b1922"}`,
+                      border: `1.5px solid ${showCorrect ? "#94F7C5" : wasWrong ? "#FF8DA1" : "#1b1922"}`,
                       color: "#fff",
                       cursor: answerLocked ? "default" : "pointer",
                     }}
@@ -794,7 +847,7 @@ export default function BoostSessionPage() {
                     <span
                       className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black shrink-0"
                       style={{
-                        background: showCorrect ? "#94F7C5" : wasWrong ? "#FFB7E5" : `${hex}26`,
+                        background: showCorrect ? "#94F7C5" : wasWrong ? "#FF8DA1" : `${hex}26`,
                         color: showCorrect || wasWrong ? "#050508" : hex,
                       }}
                     >
@@ -802,7 +855,7 @@ export default function BoostSessionPage() {
                     </span>
                     <span className="flex-1 leading-snug">{opt.text}</span>
                     {showCorrect && <CheckCircle2 className="w-5 h-5 shrink-0" style={{ color: "#94F7C5" }} />}
-                    {wasWrong && <XCircle className="w-5 h-5 shrink-0" style={{ color: "#FFB7E5" }} />}
+                    {wasWrong && <XCircle className="w-5 h-5 shrink-0" style={{ color: "#FF8DA1" }} />}
                   </button>
                 );
               })}

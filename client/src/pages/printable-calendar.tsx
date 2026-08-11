@@ -3,7 +3,7 @@ import { useLanguage } from "@/lib/language-context";
 import { useSEO } from "@/hooks/use-seo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Printer, ChevronLeft, ChevronRight, Download, Calendar } from "lucide-react";
+import { Printer, ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import brandLogo from "@/assets/handoff/icon-transparent.png";
@@ -12,10 +12,10 @@ import brandLogo from "@/assets/handoff/icon-transparent.png";
 // Oct/Nov 2026 session in the database) — never hardcoded again. A previous
 // hardcoded list here carried fabricated dates (Maths P1 was 7 days off).
 type PrintableExam = { date: string; subject: string; time: string };
-function useOfficialExamDates(): PrintableExam[] {
-  const { data } = useQuery<any>({ queryKey: ["/api/timetable"], staleTime: 60 * 60 * 1000 });
+function useOfficialExamDates(): { exams: PrintableExam[]; isLoading: boolean; isError: boolean } {
+  const { data, isLoading, isError } = useQuery<any>({ queryKey: ["/api/timetable"], staleTime: 60 * 60 * 1000 });
   const entries = data?.entries ?? [];
-  return entries
+  const exams = entries
     .filter((e: any) => !e.isNonExaminationDay && (e.session === "November" || !e.session))
     .map((e: any) => ({
       date: String(e.examDate ?? e.exam_date ?? "").slice(0, 10),
@@ -23,6 +23,7 @@ function useOfficialExamDates(): PrintableExam[] {
       time: String(e.startTime ?? e.start_time ?? "09:00").slice(0, 5),
     }))
     .sort((a: PrintableExam, b: PrintableExam) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+  return { exams, isLoading, isError };
 }
 
 const MONTHS_2026 = [
@@ -46,15 +47,15 @@ const WEEKDAYS_AF = ["Son", "Maa", "Din", "Woe", "Don", "Vry", "Sat"];
 export default function PrintableCalendar() {
   // Live official dates (verified against the DBE PDF) — replaces the old
   // fabricated hardcoded list; existing render code keeps its name.
-  const NSC_EXAM_DATES_2026 = useOfficialExamDates();
+  const { exams: NSC_EXAM_DATES_2026, isLoading: datesLoading, isError: datesError } = useOfficialExamDates();
   const { language, setLanguage } = useLanguage();
   const [currentMonthIndex, setCurrentMonthIndex] = useState(9);
   const [viewMode, setViewMode] = useState<"single" | "full">("single");
 
   useSEO({
-    title: "NSC 2026 Exam Timetable & Printable Study Calendar | BrainTrack",
+    title: "NSC 2026 Exam Timetable & Study Calendar | BrainTrack",
     description:
-      "Free printable NSC 2026 exam timetable and Grade 12 study calendar for South African matrics. Official DBE dates, month-by-month planner, English & Afrikaans.",
+      "Free printable NSC 2026 exam timetable and Grade 12 study calendar for South African matrics. Official DBE dates, English & Afrikaans.",
     canonical: "https://braintrack.tech/calendar",
     ogTitle: "NSC 2026 Exam Timetable & Printable Study Calendar — BrainTrack",
     ogDescription:
@@ -66,7 +67,6 @@ export default function PrintableCalendar() {
       title: "NSC 2026 Study Calendar",
       subtitle: "Exam dates + Study planning",
       print: "Print",
-      download: "Download PDF",
       examDates: "NSC Exam Dates",
       studyGoals: "My Study Goals",
       weeklyGoals: "Weekly Goals",
@@ -84,7 +84,6 @@ export default function PrintableCalendar() {
       title: "NSC 2026 Studiekalender",
       subtitle: "Eksamen datums + Studeer beplanning",
       print: "Druk",
-      download: "Laai PDF af",
       examDates: "NSC Eksamen Datums",
       studyGoals: "My Studiedoelwitte",
       weeklyGoals: "Weeklikse Doelwitte",
@@ -184,7 +183,7 @@ export default function PrintableCalendar() {
             key={i}
             className="border-b border-dotted border-border h-8 flex items-end"
           >
-            <span className="text-white text-sm mr-2">{i}.</span>
+            <span className="text-foreground print:text-black text-sm mr-2">{i}.</span>
           </div>
         ))}
       </div>
@@ -243,7 +242,7 @@ export default function PrintableCalendar() {
               <span className="font-mono text-xs w-20">
                 {date.getDate()}/{date.getMonth() + 1} {dayName}
               </span>
-              <span className="text-xs text-white w-12">{exam.time}</span>
+              <span className="text-xs text-foreground print:text-black w-12">{exam.time}</span>
               <span className="font-medium">{exam.subject}</span>
             </div>
           );
@@ -308,7 +307,17 @@ export default function PrintableCalendar() {
 
             <div className="w-px h-6 bg-border mx-2" />
 
-            <Button onClick={handlePrint} data-testid="button-print">
+            <Button
+              onClick={handlePrint}
+              data-testid="button-print"
+              disabled={datesLoading || datesError}
+              style={{
+                background: "linear-gradient(90deg,#FFE29A,#94F7C5,#9FF5E8,#9FD8FF,#C5B3FF,#FFB7E5)",
+                color: "#050508",
+                fontWeight: 800,
+                border: "none",
+              }}
+            >
               <Printer className="w-4 h-4 mr-2" />
               {text.print}
             </Button>
@@ -317,6 +326,27 @@ export default function PrintableCalendar() {
       </div>
 
       <div className="max-w-6xl mx-auto p-6 print:p-4">
+        {/* On-screen only: surface timetable query state — printing is disabled
+            until the official dates have loaded. */}
+        {(datesLoading || datesError) && (
+          <div
+            className="print:hidden mb-4 rounded-xl border p-3 text-sm font-semibold"
+            style={{ borderColor: datesError ? "#FF8DA1" : undefined }}
+            data-testid="printable-dates-status"
+          >
+            {datesError ? (
+              <span style={{ color: "#FF8DA1" }}>
+                {language === "af"
+                  ? "Kon nie die amptelike eksamendatums laai nie — druk is tydelik gedeaktiveer. Herlaai die bladsy om weer te probeer."
+                  : "Couldn't load the official exam dates — printing is temporarily disabled. Reload the page to try again."}
+              </span>
+            ) : (
+              <span>
+                {language === "af" ? "Laai amptelike eksamendatums…" : "Loading official exam dates…"}
+              </span>
+            )}
+          </div>
+        )}
         <div className="print:block hidden text-center mb-6">
           <img
             src={brandLogo}
@@ -325,7 +355,7 @@ export default function PrintableCalendar() {
             style={{ printColorAdjust: "exact", WebkitPrintColorAdjust: "exact" }}
           />
           <h1 className="text-2xl font-semibold">{text.title}</h1>
-          <p className="text-white">{text.subtitle}</p>
+          <p className="text-foreground print:text-black">{text.subtitle}</p>
           <p className="text-sm mt-1">www.braintrack.tech</p>
         </div>
 
@@ -392,6 +422,7 @@ export default function PrintableCalendar() {
           .print-brand-logo { display: block !important; width: 180px; height: auto; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           .print\\:break-before-page { break-before: page; }
           .print\\:break-inside-avoid { break-inside: avoid; }
+          .print\\:text-black { color: #000 !important; }
           @page { margin: 1cm; size: A4; }
         }
       `}</style>

@@ -52,8 +52,8 @@ function SectionCard({ color, icon: Icon, eyebrow, title, subtitle, children, te
     <section
       className="relative overflow-hidden"
       style={{
-        background: "linear-gradient(#1b1922, #1b1922), #050508",
-        border: "1px solid #1b1922",
+        background: "linear-gradient(#0e0d12, #0e0d12), #050508",
+        border: `1.5px solid ${color}`,
         borderRadius: 22,
         animation: `bt-fadeup .5s cubic-bezier(.22,1,.36,1) ${delay}s both`,
       }}
@@ -90,7 +90,7 @@ function SectionCard({ color, icon: Icon, eyebrow, title, subtitle, children, te
 
 /* Shared field styling — guideline inputs */
 const fieldClass =
-  "text-white placeholder:text-white rounded-xl focus-visible:ring-[#9FF5E8]/40 focus-visible:border-[#9FF5E8]";
+  "text-white placeholder:text-[#C5B3FF] rounded-xl focus-visible:ring-[#9FF5E8]/40 focus-visible:border-[#9FF5E8]";
 const fieldStyle: React.CSSProperties = {
   background: "rgba(5,5,8,.6)",
   border: "1.5px solid #1b1922",
@@ -208,6 +208,7 @@ const T = {
     yourSubjects: "Your Subjects",
     yourSubjectsSubtitle: "Tap to add or remove subjects (once per week)",
     loadingSubjects: "Loading subjects...",
+    subjectsLoadFailed: "Couldn't load the subject list. Reload the page to try again.",
     save: "Save",
     prelimEyebrow: "Big dates",
     prelimDates: "Preliminary Exam Dates",
@@ -252,16 +253,20 @@ const T = {
     passwordChanged: "Password Updated",
     passwordChangedDesc: "Use your new password next time you sign in.",
     passwordChangeFailed: "Could Not Update Password",
+    passwordChangeFallback: "Could not change the password. Please try again.",
     cancelPassword: "Cancel",
     selectAtLeast4: "Select at least 4 subjects",
     subjectsSelectedLabel: "subjects selected",
     nudgesEyebrow: "Stay in the loop",
     nudgesTitle: "Study nudges",
     nudgesSubtitle: "Short WhatsApp updates on your learner's study progress",
+    nudgesSubtitleLearner: "Short WhatsApp updates on your study streak and progress",
     nudgesToggleLabel: "Get study nudges via WhatsApp / SMS",
     nudgesToggleHint: "Day-3, day-7 and day-12 progress updates on your learner's studying. We'll try WhatsApp first; if it fails we fall back to SMS. Turn this off any time.",
+    nudgesToggleHintLearner: "Day-3, day-7 and day-12 updates on your study streak. We'll try WhatsApp first; if it fails we fall back to SMS. Turn this off any time.",
     nudgesSaved: "Preference saved",
     nudgesSaveFailed: "Could not save preference",
+    nudgesLoadFailed: "Couldn't load your nudge preference — reload the page to change it.",
   },
   af: {
     pageTitle: "Instellings",
@@ -325,6 +330,7 @@ const T = {
     yourSubjects: "Jou Vakke",
     yourSubjectsSubtitle: "Tik om vakke by te voeg of te verwyder (een keer per week)",
     loadingSubjects: "Vakke laai...",
+    subjectsLoadFailed: "Kon nie die vaklys laai nie. Herlaai die bladsy om weer te probeer.",
     save: "Stoor",
     prelimEyebrow: "Groot datums",
     prelimDates: "Vooreksamendatums",
@@ -369,16 +375,20 @@ const T = {
     passwordChanged: "Wagwoord Opgedateer",
     passwordChangedDesc: "Gebruik jou nuwe wagwoord wanneer jy weer aanmeld.",
     passwordChangeFailed: "Kon Nie Wagwoord Opdateer Nie",
+    passwordChangeFallback: "Kon nie die wagwoord verander nie. Probeer asseblief weer.",
     cancelPassword: "Kanselleer",
     selectAtLeast4: "Kies minstens 4 vakke",
     subjectsSelectedLabel: "vakke gekies",
     nudgesEyebrow: "Bly op hoogte",
     nudgesTitle: "Studie-nudges",
     nudgesSubtitle: "Kort WhatsApp-opdaterings oor jou leerder se studievordering",
+    nudgesSubtitleLearner: "Kort WhatsApp-opdaterings oor jou studiestreep en vordering",
     nudgesToggleLabel: "Ontvang studie-nudges via WhatsApp / SMS",
     nudgesToggleHint: "Dag-3, dag-7 en dag-12 vorderingsopdaterings oor jou leerder se studie. Ons probeer WhatsApp eerste; misluk dit, val ons terug op SMS. Skakel enige tyd af.",
+    nudgesToggleHintLearner: "Dag-3, dag-7 en dag-12 opdaterings oor jou studiestreep. Ons probeer WhatsApp eerste; misluk dit, val ons terug op SMS. Skakel enige tyd af.",
     nudgesSaved: "Voorkeur gestoor",
     nudgesSaveFailed: "Kon nie voorkeur stoor nie",
+    nudgesLoadFailed: "Kon nie jou nudge-voorkeur laai nie — herlaai die bladsy om dit te verander.",
   },
 } as const;
 
@@ -416,7 +426,7 @@ export default function SettingsPage() {
         body: JSON.stringify({ currentPassword, newPassword }),
       });
       const body = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(body?.message || "Could not change the password.");
+      if (!res.ok) throw new Error(body?.message || t.passwordChangeFallback);
       return body;
     },
     onSuccess: () => {
@@ -453,7 +463,7 @@ export default function SettingsPage() {
     queryKey: ["/api/user/onboarding"],
   });
 
-  const { data: subjects } = useQuery<Subject[]>({
+  const { data: subjects, isLoading: subjectsLoading, isError: subjectsError } = useQuery<Subject[]>({
     queryKey: ["/api/subjects"],
   });
 
@@ -465,7 +475,7 @@ export default function SettingsPage() {
   // WhatsApp / SMS nudge opt-in state. Backed by a raw-SQL endpoint so the
   // read gracefully degrades to `false` if migration 0035 hasn't been
   // applied on this environment yet.
-  const { data: nudgesPref } = useQuery<{ optIn: boolean; migrationPending?: boolean }>({
+  const { data: nudgesPref, isError: nudgesError } = useQuery<{ optIn: boolean; migrationPending?: boolean }>({
     queryKey: ["/api/user/whatsapp-opt-in"],
     retry: false,
   });
@@ -1004,11 +1014,20 @@ export default function SettingsPage() {
 
               return (
                 <div className="space-y-3">
-                  {(subjects || []).length === 0 ? (
+                  {subjectsLoading ? (
                     <div className="text-center py-6">
                       <BookOpen className="w-8 h-8 mx-auto mb-2" style={{ color: "#9FD8FF" }} />
                       <p className="text-sm text-white">
                         {t.loadingSubjects}
+                      </p>
+                    </div>
+                  ) : subjectsError || (subjects || []).length === 0 ? (
+                    /* Query settled without data — a real error line, not an
+                       eternal "loading" message. */
+                    <div className="text-center py-6">
+                      <AlertCircle className="w-8 h-8 mx-auto mb-2" style={{ color: "#FF8DA1" }} />
+                      <p className="text-sm font-bold" style={{ color: "#FF8DA1" }} data-testid="subjects-load-error">
+                        {t.subjectsLoadFailed}
                       </p>
                     </div>
                   ) : (
@@ -1255,7 +1274,7 @@ export default function SettingsPage() {
             icon={MessageCircle}
             eyebrow={t.nudgesEyebrow}
             title={t.nudgesTitle}
-            subtitle={t.nudgesSubtitle}
+            subtitle={user?.role === "learner" ? t.nudgesSubtitleLearner : t.nudgesSubtitle}
             testId="card-nudges"
             delay={0.22}
           >
@@ -1271,15 +1290,20 @@ export default function SettingsPage() {
                 type="checkbox"
                 className="mt-1 w-4 h-4 accent-[#9FF5E8] cursor-pointer"
                 checked={!!nudgesPref?.optIn}
-                disabled={updateWhatsAppOptInMutation.isPending || Boolean(nudgesPref?.migrationPending)}
+                disabled={updateWhatsAppOptInMutation.isPending || Boolean(nudgesPref?.migrationPending) || nudgesError}
                 onChange={(e) => updateWhatsAppOptInMutation.mutate(e.target.checked)}
                 data-testid="input-nudges-optin"
               />
               <div className="min-w-0">
                 <p className="font-bold text-white leading-snug">{t.nudgesToggleLabel}</p>
                 <p className="text-xs text-white mt-1 leading-snug">
-                  {t.nudgesToggleHint}
+                  {user?.role === "learner" ? t.nudgesToggleHintLearner : t.nudgesToggleHint}
                 </p>
+                {nudgesError && (
+                  <p className="text-xs font-bold mt-1 leading-snug" style={{ color: "#FF8DA1" }} data-testid="nudges-load-error">
+                    {t.nudgesLoadFailed}
+                  </p>
+                )}
               </div>
             </label>
           </SectionCard>

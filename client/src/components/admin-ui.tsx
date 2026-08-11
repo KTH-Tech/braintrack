@@ -22,6 +22,11 @@ export type NeonHex =
   | "#9FF5E8" | "#9FD8FF" | "#FFB7E5"
   | "#C5B3FF" | "#FFE29A" | "#94F7C5";
 
+/** Official admin error/destructive token. A soft coral-pink that sits
+ * alongside the six pastels without reading like a raw Tailwind red.
+ * Use for error cards, failed states and destructive accents. */
+export const ADMIN_ERROR = "#FF8DA1";
+
 export const NEON_PALETTE: NeonHex[] = [
   "#9FF5E8", "#9FD8FF", "#FFB7E5", "#C5B3FF", "#FFE29A", "#94F7C5",
 ];
@@ -47,13 +52,16 @@ export function halo(color: NeonHex, a = 0.28): string {
  * modals) instead of shadcn's generic <Card> or a bespoke local card.
  */
 export function NeonShell({
-  color, children, className = "", style, testId,
+  color, children, className = "", style, testId, dimmed = false,
 }: {
   color: NeonHex;
   children: ReactNode;
   className?: string;
   style?: CSSProperties;
   testId?: string;
+  /** Dims only the accent bar (e.g. an inactive catalogue item) — the card
+   * text stays solid white; never fade whole cards to signal state. */
+  dimmed?: boolean;
 }) {
   return (
     <div
@@ -66,7 +74,7 @@ export function NeonShell({
       }}
       data-testid={testId}
     >
-      <span aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: color, opacity: 0.8 }} />
+      <span aria-hidden className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: color, opacity: dimmed ? 0.25 : 0.8 }} />
       {children}
     </div>
   );
@@ -120,6 +128,50 @@ export function AdminButton({
     >
       {children}
     </button>
+  );
+}
+
+/** Error card for failed API loads. Renders inside a NeonShell (or any
+ * card body) in place of the empty state — a failed request must never
+ * fall through to "nothing here", which reads as the opposite of the
+ * truth. Optional `onRetry` renders a small retry button. */
+export function AdminAlert({
+  children, onRetry, retryLabel = "Retry", className = "", testId,
+}: {
+  children: ReactNode;
+  onRetry?: () => void;
+  retryLabel?: string;
+  className?: string;
+  testId?: string;
+}) {
+  return (
+    <div
+      className={`flex items-center gap-3 flex-wrap rounded-xl px-4 py-3 text-xs font-semibold ${className}`}
+      style={{
+        color: ADMIN_ERROR,
+        border: `1px solid ${ADMIN_ERROR}55`,
+        background: "rgba(255,141,161,0.08)",
+      }}
+      data-testid={testId}
+      role="alert"
+    >
+      <svg aria-hidden viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+        <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+        <line x1="12" y1="9" x2="12" y2="13" />
+        <line x1="12" y1="17" x2="12.01" y2="17" />
+      </svg>
+      <span className="flex-1 min-w-0">{children}</span>
+      {onRetry && (
+        <button
+          type="button"
+          onClick={onRetry}
+          className="inline-flex items-center px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition"
+          style={{ border: `1px solid ${ADMIN_ERROR}`, color: ADMIN_ERROR, background: "rgba(255,141,161,0.12)" }}
+        >
+          {retryLabel}
+        </button>
+      )}
+    </div>
   );
 }
 

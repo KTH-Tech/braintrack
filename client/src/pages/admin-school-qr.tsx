@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/language-context";
 import { useToast } from "@/hooks/use-toast";
 import { Download, Copy, Printer, CheckCircle2, Loader2, QrCode, Plus, X } from "lucide-react";
+import { AdminAlert } from "@/components/admin-ui";
 
 type Partner = {
   id: number;
@@ -28,6 +29,8 @@ function PartnerQRCard({ partner, baseUrl }: { partner: Partner; baseUrl: string
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
+  const { language } = useLanguage();
+  const isAf = language === "af";
   const url = `${baseUrl}/join/${partner.schoolCode}`;
 
   useEffect(() => {
@@ -54,7 +57,7 @@ function PartnerQRCard({ partner, baseUrl }: { partner: Partner; baseUrl: string
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast({ title: "Copy failed", description: url, variant: "destructive" });
+      toast({ title: isAf ? "Kopieer het misluk" : "Copy failed", description: url, variant: "destructive" });
     }
   }
 
@@ -62,14 +65,14 @@ function PartnerQRCard({ partner, baseUrl }: { partner: Partner; baseUrl: string
     <div
       className="qr-card flex flex-col items-center rounded-2xl p-6 gap-4"
       style={{
-        background: "#0a0a0a",
+        background: "#0e0d12",
         border: `1px solid ${hexToRgba(NEON, 0.22)}`,
       }}
     >
       {/* Partner name */}
       <div className="w-full text-center">
         <p className="font-bold text-white text-base leading-snug">{partner.schoolName}</p>
-        <p className="text-[11px] mt-1 font-mono" style={{ color: hexToRgba(NEON, 0.65) }}>
+        <p className="text-[11px] mt-1 font-mono" style={{ color: NEON }}>
           /join/{partner.schoolCode}
         </p>
       </div>
@@ -89,7 +92,9 @@ function PartnerQRCard({ partner, baseUrl }: { partner: Partner; baseUrl: string
 
       {/* Referral count */}
       <p className="text-[11px] text-white">
-        {partner.totalReferrals} learner{partner.totalReferrals !== 1 ? "s" : ""} joined
+        {isAf
+          ? `${partner.totalReferrals} leerder${partner.totalReferrals !== 1 ? "s" : ""} aangesluit`
+          : `${partner.totalReferrals} learner${partner.totalReferrals !== 1 ? "s" : ""} joined`}
       </p>
 
       {/* Actions */}
@@ -100,7 +105,7 @@ function PartnerQRCard({ partner, baseUrl }: { partner: Partner; baseUrl: string
           style={{ background: hexToRgba(NEON, 0.1), color: NEON, border: `1px solid ${hexToRgba(NEON, 0.25)}` }}
         >
           <Download className="w-3.5 h-3.5" />
-          Download
+          {isAf ? "Laai af" : "Download"}
         </button>
         <button
           onClick={copyLink}
@@ -108,7 +113,7 @@ function PartnerQRCard({ partner, baseUrl }: { partner: Partner; baseUrl: string
           style={{ background: hexToRgba("#C5B3FF", 0.1), color: "#C5B3FF", border: `1px solid ${hexToRgba("#C5B3FF", 0.25)}` }}
         >
           {copied ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-          {copied ? "Copied" : "Copy link"}
+          {copied ? (isAf ? "Gekopieer" : "Copied") : (isAf ? "Kopieer skakel" : "Copy link")}
         </button>
       </div>
     </div>
@@ -119,6 +124,8 @@ function AddPartnerForm({ onClose }: { onClose: () => void }) {
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
   const { toast } = useToast();
+  const { language } = useLanguage();
+  const isAf = language === "af";
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -135,17 +142,17 @@ function AddPartnerForm({ onClose }: { onClose: () => void }) {
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || "Failed to create partner");
+        throw new Error(err.error || (isAf ? "Kon nie vennoot skep nie" : "Failed to create partner"));
       }
       return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/partner-schools"] });
-      toast({ title: "Partner added" });
+      toast({ title: isAf ? "Vennoot bygevoeg" : "Partner added" });
       onClose();
     },
     onError: (e: Error) => {
-      toast({ title: "Error", description: e.message, variant: "destructive" });
+      toast({ title: isAf ? "Fout" : "Error", description: e.message, variant: "destructive" });
     },
   });
 
@@ -154,10 +161,10 @@ function AddPartnerForm({ onClose }: { onClose: () => void }) {
   return (
     <div
       className="rounded-2xl p-5 mb-8"
-      style={{ background: "#0a0a0a", border: `1px solid ${hexToRgba(NEON, 0.3)}` }}
+      style={{ background: "#0e0d12", border: `1px solid ${hexToRgba(NEON, 0.3)}` }}
     >
       <div className="flex items-center justify-between mb-4">
-        <p className="text-sm font-semibold text-white">New partner</p>
+        <p className="text-sm font-semibold text-white">{isAf ? "Nuwe vennoot" : "New partner"}</p>
         <button onClick={onClose} className="text-white hover:text-white">
           <X className="w-4 h-4" />
         </button>
@@ -165,7 +172,7 @@ function AddPartnerForm({ onClose }: { onClose: () => void }) {
       <div className="flex flex-col sm:flex-row gap-3">
         <input
           type="text"
-          placeholder="Partner name (e.g. D6 Education)"
+          placeholder={isAf ? "Vennootnaam (bv. D6 Education)" : "Partner name (e.g. D6 Education)"}
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="flex-1 px-3 py-2.5 rounded-xl bg-[#0e0d12] text-sm text-white placeholder:text-white focus:outline-none"
@@ -173,7 +180,7 @@ function AddPartnerForm({ onClose }: { onClose: () => void }) {
         />
         <input
           type="text"
-          placeholder="Code (e.g. D6)"
+          placeholder={isAf ? "Kode (bv. D6)" : "Code (e.g. D6)"}
           value={code}
           onChange={(e) => setCode(e.target.value.replace(/[^a-z0-9]/gi, "").toUpperCase())}
           className="w-full sm:w-36 px-3 py-2.5 rounded-xl bg-[#0e0d12] text-sm text-white font-mono uppercase placeholder:text-white focus:outline-none"
@@ -185,12 +192,12 @@ function AddPartnerForm({ onClose }: { onClose: () => void }) {
           disabled={!name.trim() || mutation.isPending}
           variant="primary"
         >
-          {mutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Add"}
+          {mutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : (isAf ? "Voeg by" : "Add")}
         </Button>
       </div>
       {(code || name) && (
-        <p className="text-[11px] mt-3 font-mono" style={{ color: hexToRgba(NEON, 0.5) }}>
-          QR will link to: /join/{code || codeSlug}
+        <p className="text-[11px] mt-3 font-mono" style={{ color: NEON }}>
+          {isAf ? "QR sal skakel na: " : "QR will link to: "}/join/{code || codeSlug}
         </p>
       )}
     </div>
@@ -203,7 +210,7 @@ export default function AdminSchoolQRPage() {
   const [showAdd, setShowAdd] = useState(false);
   const baseUrl = window.location.origin;
 
-  const { data: all = [], isLoading } = useQuery<Partner[]>({
+  const { data: all = [], isLoading, isError, refetch } = useQuery<Partner[]>({
     queryKey: ["/api/partner-schools"],
     queryFn: async () => {
       const res = await fetch("/api/partner-schools", { credentials: "include" });
@@ -285,8 +292,20 @@ export default function AdminSchoolQRPage() {
             </div>
           )}
 
+          {/* Error — a failed load must not fall through to "No partners yet" */}
+          {!isLoading && isError && (
+            <AdminAlert
+              className="no-print"
+              testId="partners-load-error"
+              onRetry={() => refetch()}
+              retryLabel={isAf ? "Probeer weer" : "Retry"}
+            >
+              {isAf ? "Kon nie vennote laai nie." : "Could not load partners."}
+            </AdminAlert>
+          )}
+
           {/* Empty */}
-          {!isLoading && partners.length === 0 && (
+          {!isLoading && !isError && partners.length === 0 && (
             <div className="text-center py-20">
               <QrCode className="w-10 h-10 mx-auto mb-3 text-white" />
               <p className="text-white text-sm mb-4">

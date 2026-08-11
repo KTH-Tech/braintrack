@@ -54,7 +54,6 @@ export function PublicNav() {
         background: "#050508",
         borderBottom: "3px solid transparent",
         borderImage: "linear-gradient(90deg,#9FD8FF,#6EE7F9,#94F7C5,#FFE29A,#FFE29A,#FFB7E5,#C5B3FF) 1",
-        boxShadow: "0 4px 24px rgba(0,0,0,0.8)",
       }}
       data-testid="nav-public"
     >
@@ -122,7 +121,7 @@ export function PublicNav() {
                   <button
                     data-testid="button-sign-out"
                     className="inline-flex items-center justify-center w-9 h-9 rounded-xl text-white transition-all hover:scale-105"
-                    style={{ background: "rgba(255,183,229,0.12)", border: "1.5px solid #FFB7E5" }}
+                    style={{ background: "#0e0d12", border: "1.5px solid #FFB7E5" }}
                   >
                     <LogOut className="h-3.5 w-3.5" style={{ color: "#FFB7E5" }} />
                   </button>
@@ -158,7 +157,7 @@ export function PublicNav() {
                 onClick={() => setMobileOpen(!mobileOpen)}
                 data-testid="button-mobile-menu"
                 className="inline-flex items-center justify-center w-9 h-9 rounded-xl text-white transition-all hover:scale-105"
-                style={{ background: mobileOpen ? "#FFB7E5" : "rgba(255,183,229,0.12)", border: "1.5px solid #FFB7E5" }}
+                style={{ background: mobileOpen ? "#FFB7E5" : "#0e0d12", border: "1.5px solid #FFB7E5" }}
               >
                 {mobileOpen ? <X className="h-5 w-5" style={{ color: mobileOpen ? "#050508" : "#FFB7E5" }} /> : <Menu className="h-5 w-5" style={{ color: "#FFB7E5" }} />}
               </button>
@@ -173,7 +172,7 @@ export function PublicNav() {
           data-testid="nav-mobile-menu"
           style={{
             background: "#050508",
-            borderTop: "2px solid rgba(255,183,229,0.4)",
+            borderTop: "2px solid #FFB7E5",
             animation: "nav-panel-open 0.2s ease-out",
           }}
         >
@@ -225,7 +224,7 @@ export function PublicNav() {
                   href="/api/auth/logout"
                   data-testid="link-mobile-sign-out"
                   className="nav-mobile-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-black uppercase tracking-wide"
-                  style={{ background: "rgba(255,183,229,0.1)", color: "#FFB7E5", border: "1.5px solid #FFB7E5", animationDelay: `${(navLinks.length + 1) * 50}ms` }}
+                  style={{ background: "#0e0d12", color: "#FFB7E5", border: "1.5px solid #FFB7E5", animationDelay: `${(navLinks.length + 1) * 50}ms` }}
                 >
                   <LogOut className="h-4 w-4" />
                   {language === "en" ? "Sign Out" : "Uitteken"}

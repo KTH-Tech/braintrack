@@ -192,7 +192,7 @@ function PastelInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
       {...props}
-      className={`w-full px-4 py-3 rounded-xl text-sm text-white outline-none transition-colors placeholder:text-white focus:border-[#9FF5E8] ${props.className ?? ""}`}
+      className={`w-full px-4 py-3 rounded-xl text-sm text-white outline-none transition-colors placeholder:text-[#9FD8FF] focus:border-[#9FF5E8] ${props.className ?? ""}`}
       style={{ ...inputStyle, ...(props.style ?? {}) }}
     />
   );
@@ -451,7 +451,7 @@ export default function ParentActivateChildPage() {
     !activate.isPending;
 
   const cardStyle: React.CSSProperties = {
-    background: "#050508",
+    background: "#0e0d12",
     border: "1px solid #1b1922",
   };
 

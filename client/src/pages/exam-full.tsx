@@ -98,7 +98,7 @@ function GlassCard({ children, accent, className = "", style, testId }: {
       className={`relative overflow-hidden ${className}`}
       data-testid={testId}
       style={{
-        background: "linear-gradient(#1b1922, #1b1922), #050508",
+        background: "#0e0d12",
         border: accent ? `1.5px solid ${accent}` : "1px solid #1b1922",
         borderRadius: 22,
         ...style,
@@ -474,6 +474,19 @@ export default function ExamFullPage() {
                       : "We're preparing original, memo-marked exams. Check back soon."}
                   </p>
                 </div>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center pt-1">
+                  <Link href="/exam/mini-mock">
+                    <PrimaryBtn testId="button-coming-soon-mini-mock">
+                      {isAf ? "Probeer Mini Mock" : "Try Mini Mock"}
+                      <ArrowRight className="w-4 h-4" />
+                    </PrimaryBtn>
+                  </Link>
+                  <Link href={preselectedSubject ? `/dbe-practice?subject=${encodeURIComponent(preselectedSubject)}` : "/dbe-practice"}>
+                    <GhostBtn testId="button-coming-soon-dbe">
+                      {isAf ? "DBE-oefening" : "DBE Practice"}
+                    </GhostBtn>
+                  </Link>
+                </div>
               </div>
             ) : (
               <div className="space-y-2">
@@ -508,11 +521,26 @@ export default function ExamFullPage() {
                 data-testid="full-exam-coming-soon"
               >
                 <GraduationCap className="w-4 h-4 mt-0.5 shrink-0" />
-                <span>
-                  {isAf
-                    ? `Eksamen vir ${comingSoon} kom binnekort — ons berei tans oorspronklike vrae voor.`
-                    : `Exam coming soon for ${comingSoon} — we're preparing original questions.`}
-                </span>
+                <div className="flex-1 space-y-3">
+                  <span>
+                    {isAf
+                      ? `Eksamen vir ${comingSoon} kom binnekort — ons berei tans oorspronklike vrae voor.`
+                      : `Exam coming soon for ${comingSoon} — we're preparing original questions.`}
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    <Link href="/exam/mini-mock">
+                      <PrimaryBtn size="sm" testId="button-coming-soon-subject-mini-mock">
+                        {isAf ? "Probeer Mini Mock" : "Try Mini Mock"}
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </PrimaryBtn>
+                    </Link>
+                    <Link href={`/dbe-practice?subject=${encodeURIComponent(comingSoon)}`}>
+                      <GhostBtn testId="button-coming-soon-subject-dbe">
+                        {isAf ? "DBE-oefening" : "DBE Practice"}
+                      </GhostBtn>
+                    </Link>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -592,7 +620,7 @@ export default function ExamFullPage() {
               <button
                 type="button"
                 onClick={() => setShowExitDialog(true)}
-                className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-[#1b1922] hover:bg-[#1b1922] transition-colors"
+                className="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-[#1b1922] hover:bg-[#1b1922] transition-colors"
                 style={{ color: "#FFB7E5", border: "1.5px solid #FFB7E5" }}
                 title={isAf ? "Verlaat eksamen" : "Leave exam"}
               >

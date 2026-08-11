@@ -753,8 +753,8 @@ const BRAND = {
   cyan: "#9FD8FF",
   yellow: "#FFE29A",
   mint: "#94F7C5",
-  ground: "#000000",
-  card: "#050508",
+  ground: "#050508",
+  card: "#0e0d12",
 } as const;
 
 const CONFETTI_COLORS = [BRAND.pink, BRAND.purple, BRAND.cyan, BRAND.yellow, BRAND.mint];
@@ -888,8 +888,8 @@ function StepBlock({
       data-testid={testId}
       className="rounded-2xl p-4 sm:p-5"
       style={{
-        background: done ? "rgba(148,247,197,.05)" : BRAND.card,
-        border: `1px solid ${done ? `${BRAND.mint}55` : "#1b1922"}`,
+        background: BRAND.card,
+        border: `${done ? "2.5px" : "1.5px"} solid ${done ? BRAND.mint : accent}`,
         transition: "background .3s ease, border-color .3s ease",
       }}
     >
@@ -908,7 +908,7 @@ function StepBlock({
         </span>
         <h3 className="text-white font-bold text-lg sm:text-xl leading-tight">{title}</h3>
       </div>
-      {hint && <p className="text-white text-[13px] leading-snug mb-3 opacity-100">{hint}</p>}
+      {hint && <p className="text-white text-[13px] leading-snug mb-3">{hint}</p>}
       {children}
     </div>
   );
@@ -1757,7 +1757,7 @@ export default function OnboardingPage() {
     boxShadow: "4px 4px 0 0 rgba(0,0,0,.85)",
   } as const;
   const ghostBtn =
-    "h-14 px-5 text-base font-bold rounded-2xl bg-transparent text-white border border-[#1b1922] hover:border-[#1b1922] hover:bg-[#1b1922] flex-1 sm:flex-none";
+    "h-14 px-5 text-base font-bold rounded-2xl bg-transparent text-white border border-[#9FD8FF] hover:bg-[#1b1922] flex-1 sm:flex-none";
 
   return (
     <div
@@ -1912,7 +1912,7 @@ export default function OnboardingPage() {
             aria-valuemax={100}
             aria-valuenow={Math.round(progress)}
             aria-label={t.progressBarLabel}
-            style={{ background: "#1b1922" }}
+            style={{ background: "#0e0d12" }}
           >
             <div
               className="h-full rounded-full"
@@ -1940,8 +1940,7 @@ export default function OnboardingPage() {
                       ? CONFETTI_COLORS[i]
                       : dotActive
                       ? `linear-gradient(90deg, ${BRAND.cyan}, ${BRAND.pink})`
-                      : "#1b1922",
-                    
+                      : "#0e0d12",
                   }}
                 />
               );
@@ -2002,9 +2001,9 @@ export default function OnboardingPage() {
                           data-testid={`option-${option.value}`}
                           className="w-full text-left flex items-center gap-3 rounded-2xl px-4 py-4 min-h-[64px]"
                           style={{
-                            background: isSel ? `${accent}1F` : "#1b1922",
-                            border: `1.5px solid ${isSel ? accent : "#1b1922"}`,
-                            
+                            background: "#0e0d12",
+                            border: `${isSel ? "2.5px" : "1.5px"} solid ${accent}`,
+                            boxShadow: isSel ? `4px 4px 0 0 ${accent}` : "none",
                             transition: "background .2s ease, border-color .2s ease, box-shadow .2s ease",
                             animation: anim(`bt-fadeup .4s cubic-bezier(.22,1,.36,1) ${0.04 * i}s both`),
                           }}
@@ -2015,7 +2014,7 @@ export default function OnboardingPage() {
                               width: 26,
                               height: 26,
                               background: isSel ? accent : "transparent",
-                              border: `1.5px solid ${isSel ? accent : "#1b1922"}`,
+                              border: `1.5px solid ${accent}`,
                             }}
                           >
                             {isSel && <Check className="w-4 h-4" style={{ color: BRAND.ground }} />}
@@ -2045,9 +2044,9 @@ export default function OnboardingPage() {
                           data-testid={`option-${option.value}`}
                           className="w-full text-left flex items-center gap-3 rounded-2xl px-4 py-4 min-h-[64px]"
                           style={{
-                            background: isChecked ? `${accent}1F` : "#1b1922",
-                            border: `1.5px solid ${isChecked ? accent : "#1b1922"}`,
-                            
+                            background: "#0e0d12",
+                            border: `${isChecked ? "2.5px" : "1.5px"} solid ${accent}`,
+                            boxShadow: isChecked ? `4px 4px 0 0 ${accent}` : "none",
                             transition: "background .2s ease, border-color .2s ease, box-shadow .2s ease",
                             animation: anim(`bt-fadeup .4s cubic-bezier(.22,1,.36,1) ${0.04 * i}s both`),
                           }}
@@ -2058,7 +2057,7 @@ export default function OnboardingPage() {
                               width: 26,
                               height: 26,
                               background: isChecked ? accent : "transparent",
-                              border: `1.5px solid ${isChecked ? accent : "#1b1922"}`,
+                              border: `1.5px solid ${accent}`,
                             }}
                           >
                             {isChecked && <Check className="w-4 h-4" style={{ color: BRAND.ground }} />}
@@ -2210,7 +2209,7 @@ export default function OnboardingPage() {
                               ? `linear-gradient(90deg, ${BRAND.cyan}, ${BRAND.purple})`
                               : isAnswered
                                 ? BRAND.mint
-                                : "#1b1922",
+                                : "#0e0d12",
                             transition: "all .35s cubic-bezier(.22,1,.36,1)",
                           }}
                         />
@@ -2239,8 +2238,9 @@ export default function OnboardingPage() {
                             data-testid={`vark-q-${varkStep}-option-${option.style}`}
                             className="w-full text-left flex items-center gap-3 rounded-2xl px-4 py-4 min-h-[64px]"
                             style={{
-                              background: isSel ? `${BRAND.purple}1F` : "#1b1922",
-                              border: `1.5px solid ${isSel ? BRAND.purple : "#1b1922"}`,
+                              background: "#0e0d12",
+                              border: `${isSel ? "2.5px" : "1.5px"} solid ${BRAND.purple}`,
+                              boxShadow: isSel ? `4px 4px 0 0 ${BRAND.purple}` : "none",
                               transition: "background .2s ease, border-color .2s ease",
                               animation: anim(`bt-fadeup .4s cubic-bezier(.22,1,.36,1) ${0.04 * i}s both`),
                             }}
@@ -2251,7 +2251,7 @@ export default function OnboardingPage() {
                                 width: 26,
                                 height: 26,
                                 background: isSel ? BRAND.purple : "transparent",
-                                border: `1.5px solid ${isSel ? BRAND.purple : "#1b1922"}`,
+                                border: `1.5px solid ${BRAND.purple}`,
                               }}
                             >
                               {isSel && <Check className="w-4 h-4" style={{ color: BRAND.ground }} />}
@@ -2276,8 +2276,9 @@ export default function OnboardingPage() {
                         className="rounded-2xl p-5 sm:p-6"
                         data-testid={`vark-result-primary-${varkPrimary}`}
                         style={{
-                          background: `${BRAND.purple}1F`,
-                          border: `1.5px solid ${BRAND.purple}`,
+                          background: BRAND.card,
+                          border: `2.5px solid ${BRAND.purple}`,
+                          boxShadow: `5px 5px 0 0 ${BRAND.purple}`,
                           animation: anim("bt-fadeup .45s cubic-bezier(.22,1,.36,1) both"),
                         }}
                       >
@@ -2302,8 +2303,8 @@ export default function OnboardingPage() {
                           className="rounded-2xl p-4 sm:p-5"
                           data-testid={`vark-result-secondary-${varkSecondary}`}
                           style={{
-                            background: `${BRAND.cyan}14`,
-                            border: `1px solid ${BRAND.cyan}66`,
+                            background: "#0e0d12",
+                            border: `1.5px solid ${BRAND.cyan}`,
                             animation: anim("bt-fadeup .45s cubic-bezier(.22,1,.36,1) .08s both"),
                           }}
                         >
@@ -2326,7 +2327,7 @@ export default function OnboardingPage() {
                         <div
                           className="rounded-2xl px-4 py-3"
                           data-testid="vark-result-no-secondary"
-                          style={{ background: "#1b1922", border: "1px solid #1b1922" }}
+                          style={{ background: "#0e0d12", border: `1px solid ${BRAND.cyan}` }}
                         >
                           <p className="text-white text-[13px] leading-relaxed">
                             {t.varkNoSecondary}
@@ -2339,7 +2340,7 @@ export default function OnboardingPage() {
                         variant="ghost"
                         onClick={handleVarkRetake}
                         data-testid="button-vark-retake"
-                        className="w-full sm:w-auto min-h-[48px] px-5 text-[14px] font-bold rounded-2xl text-white hover:bg-[#1b1922]"
+                        className="w-full sm:w-auto min-h-[48px] px-5 text-[14px] font-bold rounded-2xl text-white border border-[#9FD8FF] hover:bg-[#1b1922]"
                       >
                         <RotateCcw className="w-4 h-4 mr-2" aria-hidden />
                         {t.varkRetakeBtn}
@@ -2374,7 +2375,7 @@ export default function OnboardingPage() {
                     type="button"
                     onClick={handleSkipVark}
                     data-testid="onboarding-skip-vark"
-                    className="w-full min-h-[48px] px-5 text-[14px] font-bold rounded-2xl text-white bg-transparent border border-[#1b1922] hover:border-[#1b1922] hover:bg-[#1b1922] transition-colors"
+                    className="w-full min-h-[48px] px-5 text-[14px] font-bold rounded-2xl text-white bg-transparent border border-[#9FD8FF] hover:bg-[#1b1922] transition-colors"
                   >
                     {t.varkSkipBtn}
                   </button>
@@ -2406,8 +2407,8 @@ export default function OnboardingPage() {
                   className="flex items-center gap-3 rounded-2xl px-4 py-3"
                   data-testid="subject-counter"
                   style={{
-                    background: subjectsDone ? `${BRAND.mint}1A` : "#1b1922",
-                    border: `1.5px solid ${subjectsDone ? BRAND.mint : "#1b1922"}`,
+                    background: "#0e0d12",
+                    border: `${subjectsDone ? "2.5px" : "1.5px"} solid ${BRAND.mint}`,
                     transition: "background .3s ease, border-color .3s ease",
                   }}
                 >
@@ -2417,7 +2418,7 @@ export default function OnboardingPage() {
                       minWidth: 62,
                       height: 44,
                       fontSize: 18,
-                      background: subjectsDone ? BRAND.mint : "#1b1922",
+                      background: subjectsDone ? BRAND.mint : "#0e0d12",
                       color: subjectsDone ? BRAND.ground : "#FFFFFF",
                       animation: subjectsDone ? anim("bt-checkpop .45s cubic-bezier(.22,1,.36,1) both") : undefined,
                     }}
@@ -2451,7 +2452,7 @@ export default function OnboardingPage() {
                       onChange={(e) => setSubjectFilter(e.target.value)}
                       placeholder={t.subjectFilterPh}
                       className="h-12 pl-11 rounded-2xl text-white"
-                      style={{ background: "#1b1922", border: "1px solid #1b1922" }}
+                      style={{ background: "#0e0d12", border: `1.5px solid ${BRAND.cyan}` }}
                       data-testid="input-subject-filter"
                     />
                   </div>
@@ -2468,9 +2469,9 @@ export default function OnboardingPage() {
                           data-testid={`subject-cat-${cat}`}
                           className="shrink-0 rounded-full px-3.5 h-10 text-[13px] font-bold whitespace-nowrap"
                           style={{
-                            background: active ? cm.color : "#1b1922",
+                            background: active ? cm.color : "#0e0d12",
                             color: active ? BRAND.ground : "#FFFFFF",
-                            border: `1px solid ${active ? cm.color : "#1b1922"}`,
+                            border: `${active ? "2px" : "1px"} solid ${cm.color}`,
                           }}
                         >
                           {cm.icon} {label}
@@ -2494,9 +2495,9 @@ export default function OnboardingPage() {
                         key={subject.code}
                         className="rounded-2xl overflow-hidden"
                         style={{
-                          background: isSelected ? `${cm.color}16` : "#1b1922",
-                          border: `1.5px solid ${isSelected ? cm.color : "#1b1922"}`,
-                          
+                          background: "#0e0d12",
+                          border: `${isSelected ? "2.5px" : "1.5px"} solid ${cm.color}`,
+                          boxShadow: isSelected ? `4px 4px 0 0 ${cm.color}` : "none",
                           transition: "background .2s ease, border-color .2s ease, box-shadow .2s ease",
                         }}
                       >
@@ -2512,8 +2513,8 @@ export default function OnboardingPage() {
                             style={{
                               width: 42,
                               height: 42,
-                              background: isSelected ? cm.color : "#1b1922",
-                              border: `1px solid ${isSelected ? cm.color : "#1b1922"}`,
+                              background: isSelected ? cm.color : "#0e0d12",
+                              border: `1px solid ${cm.color}`,
                             }}
                           >
                             {cm.icon}
@@ -2527,7 +2528,7 @@ export default function OnboardingPage() {
                               width: 26,
                               height: 26,
                               background: isSelected ? cm.color : "transparent",
-                              border: `1.5px solid ${isSelected ? cm.color : "#1b1922"}`,
+                              border: `1.5px solid ${cm.color}`,
                             }}
                           >
                             {isSelected && <Check className="w-4 h-4" style={{ color: BRAND.ground }} />}
@@ -2552,8 +2553,8 @@ export default function OnboardingPage() {
                                   onChange={(e) => updateMark(subject.code, parseInt(e.target.value) || 0)}
                                   className="w-[76px] h-12 text-center font-extrabold text-xl rounded-xl text-white"
                                   style={{
-                                    background: "rgba(0,0,0,.35)",
-                                    border: `1.5px solid ${cm.color}66`,
+                                    background: "#0e0d12",
+                                    border: `1.5px solid ${cm.color}`,
                                   }}
                                   data-testid={`mark-${subject.code}`}
                                 />
@@ -2569,9 +2570,9 @@ export default function OnboardingPage() {
                                   data-testid={`mark-chip-${subject.code}-${v}`}
                                   className="rounded-full h-10 px-3 text-[13px] font-bold"
                                   style={{
-                                    background: mark === v ? cm.color : "#1b1922",
+                                    background: mark === v ? cm.color : "#0e0d12",
                                     color: mark === v ? BRAND.ground : "#FFFFFF",
-                                    border: `1px solid ${mark === v ? cm.color : "#1b1922"}`,
+                                    border: `${mark === v ? "2px" : "1px"} solid ${cm.color}`,
                                   }}
                                 >
                                   {v}
@@ -2618,8 +2619,9 @@ export default function OnboardingPage() {
               data-testid="card-school"
               className="rounded-3xl overflow-hidden"
               style={{
-                background: "rgba(28,28,38,.6)",
-                border: "1px solid #1b1922",
+                background: BRAND.card,
+                border: `2.5px solid ${BRAND.yellow}`,
+                boxShadow: `7px 7px 0 0 ${BRAND.yellow}`,
                 animation: anim("bt-fadeup .45s cubic-bezier(.22,1,.36,1) both"),
               }}
             >
@@ -2644,7 +2646,7 @@ export default function OnboardingPage() {
                       autoComplete="given-name"
                       aria-label={t.firstNameLabel}
                       className="h-14 rounded-2xl text-white text-base px-4"
-                      style={{ background: "rgba(0,0,0,.35)", border: "1px solid #1b1922" }}
+                      style={{ background: "#0e0d12", border: `1.5px solid ${BRAND.cyan}` }}
                       data-testid="input-first-name"
                     />
                     <Input
@@ -2657,7 +2659,7 @@ export default function OnboardingPage() {
                       autoComplete="family-name"
                       aria-label={t.lastNameLabel}
                       className="h-14 rounded-2xl text-white text-base px-4"
-                      style={{ background: "rgba(0,0,0,.35)", border: "1px solid #1b1922" }}
+                      style={{ background: "#0e0d12", border: `1.5px solid ${BRAND.cyan}` }}
                       data-testid="input-last-name"
                     />
                   </div>
@@ -2683,7 +2685,7 @@ export default function OnboardingPage() {
                     placeholder={t.schoolPlaceholder}
                     aria-label={t.schoolNameLabel}
                     className="h-14 rounded-2xl text-white text-base px-4"
-                    style={{ background: "rgba(0,0,0,.35)", border: "1px solid #1b1922" }}
+                    style={{ background: "#0e0d12", border: `1.5px solid ${BRAND.purple}` }}
                     data-testid="input-school-name"
                   />
                   {schoolSearching && (
@@ -2692,7 +2694,7 @@ export default function OnboardingPage() {
                   {schoolResults.length > 0 && (
                     <div
                       className="mt-2 rounded-2xl overflow-hidden max-h-56 overflow-y-auto"
-                      style={{ border: "1px solid #1b1922", background: "rgba(0,0,0,.45)" }}
+                      style={{ border: `1px solid ${BRAND.purple}`, background: "#0e0d12" }}
                     >
                       {schoolResults.map((s) => (
                         <button
@@ -2706,7 +2708,11 @@ export default function OnboardingPage() {
                             idNumberRef.current?.focus();
                           }}
                           className="w-full text-left px-4 py-3.5 min-h-[56px] hover:bg-[#1b1922]"
-                          style={{ background: schoolId === s.id ? `${BRAND.cyan}1A` : undefined, borderTop: "1px solid #1b1922" }}
+                          style={{
+                            background: "#0e0d12",
+                            borderLeft: schoolId === s.id ? `3px solid ${BRAND.cyan}` : "3px solid transparent",
+                            borderTop: `1px solid ${BRAND.purple}`,
+                          }}
                           data-testid={`school-result-${s.id}`}
                         >
                           <div className="font-bold text-white text-[15px] leading-snug">{s.name}</div>
@@ -2747,7 +2753,7 @@ export default function OnboardingPage() {
                     maxLength={13}
                     aria-label={t.idNumberLabel}
                     className="h-14 rounded-2xl text-white text-lg px-4 tracking-[0.16em] font-bold"
-                    style={{ background: "rgba(0,0,0,.35)", border: "1px solid #1b1922" }}
+                    style={{ background: "#0e0d12", border: `1.5px solid ${BRAND.yellow}` }}
                     data-testid="input-id-number"
                   />
                   {/* 13 pips so progress is visible without counting. */}
@@ -2758,7 +2764,7 @@ export default function OnboardingPage() {
                         className="flex-1 rounded-full"
                         style={{
                           height: 4,
-                          background: i < idNumber.length ? BRAND.yellow : "#1b1922",
+                          background: i < idNumber.length ? BRAND.yellow : "#0e0d12",
                           transition: "background .2s ease",
                         }}
                       />
@@ -2803,7 +2809,7 @@ export default function OnboardingPage() {
                       autoComplete="bday-day"
                       aria-label={t.dobDayPh}
                       className="h-14 w-[58px] text-center text-lg font-extrabold rounded-2xl text-white px-1"
-                      style={{ background: "rgba(0,0,0,.35)", border: "1px solid #1b1922" }}
+                      style={{ background: "#0e0d12", border: `1.5px solid ${BRAND.pink}` }}
                       data-testid="input-dob-day"
                     />
                     <span className="text-xl font-black shrink-0" style={{ color: BRAND.purple }}>/</span>
@@ -2822,7 +2828,7 @@ export default function OnboardingPage() {
                       autoComplete="bday-month"
                       aria-label={t.dobMonthPh}
                       className="h-14 w-[58px] text-center text-lg font-extrabold rounded-2xl text-white px-1"
-                      style={{ background: "rgba(0,0,0,.35)", border: "1px solid #1b1922" }}
+                      style={{ background: "#0e0d12", border: `1.5px solid ${BRAND.pink}` }}
                       data-testid="input-dob-month"
                     />
                     <span className="text-xl font-black shrink-0" style={{ color: BRAND.purple }}>/</span>
@@ -2837,7 +2843,7 @@ export default function OnboardingPage() {
                       autoComplete="bday-year"
                       aria-label={t.dobYearPh}
                       className="h-14 w-[86px] text-center text-lg font-extrabold rounded-2xl text-white px-1"
-                      style={{ background: "rgba(0,0,0,.35)", border: "1px solid #1b1922" }}
+                      style={{ background: "#0e0d12", border: `1.5px solid ${BRAND.pink}` }}
                       data-testid="input-dob-year"
                     />
                     <span className="text-2xl shrink-0" aria-hidden>🎂</span>
@@ -2878,8 +2884,8 @@ export default function OnboardingPage() {
                     aria-describedby={learnerCell.trim().length > 0 && normaliseWaNumber(learnerCell) === null ? "learner-cell-error" : undefined}
                     className="h-14 rounded-2xl text-white text-base px-4"
                     style={{
-                      background: "rgba(0,0,0,.35)",
-                      border: `1px solid ${learnerCell.trim().length > 0 && normaliseWaNumber(learnerCell) === null ? "#FF8DA1" : "#1b1922"}`,
+                      background: "#0e0d12",
+                      border: `1.5px solid ${learnerCell.trim().length > 0 && normaliseWaNumber(learnerCell) === null ? "#FF8DA1" : BRAND.mint}`,
                     }}
                     data-testid="input-learner-cell"
                   />
@@ -2917,7 +2923,8 @@ export default function OnboardingPage() {
               className="rounded-3xl overflow-hidden"
               style={{
                 background: BRAND.card,
-                border: "1px solid #1b1922",
+                border: `2.5px solid ${BRAND.pink}`,
+                boxShadow: `7px 7px 0 0 ${BRAND.pink}`,
                 animation: anim("bt-fadeup .45s cubic-bezier(.22,1,.36,1) both"),
               }}
             >
@@ -2949,8 +2956,8 @@ export default function OnboardingPage() {
                       key={item.label}
                       className="rounded-2xl px-4 py-3.5"
                       style={{
-                        background: `${item.color}14`,
-                        border: `1px solid ${item.color}55`,
+                        background: "#0e0d12",
+                        border: `1.5px solid ${item.color}`,
                         animation: anim(`bt-fadeup .45s cubic-bezier(.22,1,.36,1) ${0.06 * i}s both`),
                       }}
                     >
@@ -2991,14 +2998,14 @@ export default function OnboardingPage() {
                   return (
                     <div
                       className="rounded-2xl p-4 sm:p-5"
-                      style={{ background: `${accent}10`, border: `1px solid ${accent}55` }}
+                      style={{ background: BRAND.card, border: `2px solid ${accent}` }}
                       data-testid="parent-consent-panel"
                     >
                       {/* Why this exists — the part a 17-year-old actually needs. */}
                       <div className="flex items-start gap-3">
                         <div
                           className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                          style={{ border: `1px solid ${accent}66`, background: `${accent}14` }}
+                          style={{ border: `1.5px solid ${accent}`, background: "#0e0d12" }}
                         >
                           <ShieldCheck className="w-5 h-5" style={{ color: accent }} aria-hidden />
                         </div>
@@ -3016,7 +3023,7 @@ export default function OnboardingPage() {
                           address is not used for anything else. */}
                       <div
                         className="mt-4 rounded-2xl p-4"
-                        style={{ background: "rgba(0,0,0,.28)", border: "1px solid #1b1922" }}
+                        style={{ background: "#0e0d12", border: `1px solid ${accent}` }}
                         data-testid="consent-trust-panel"
                       >
                         <p className="text-[11px] font-bold uppercase tracking-[0.14em]" style={{ color: accent }}>
@@ -3053,8 +3060,8 @@ export default function OnboardingPage() {
                           aria-describedby={parentCell.trim().length > 0 && normaliseWaNumber(parentCell) === null ? "parent-cell-error" : undefined}
                           className="h-14 rounded-2xl text-white text-base px-4"
                           style={{
-                            background: "rgba(0,0,0,.35)",
-                            border: `1px solid ${parentCell.trim().length > 0 && normaliseWaNumber(parentCell) === null ? "#FF8DA1" : "#1b1922"}`,
+                            background: "#0e0d12",
+                            border: `1.5px solid ${parentCell.trim().length > 0 && normaliseWaNumber(parentCell) === null ? "#FF8DA1" : accent}`,
                           }}
                           data-testid="input-parent-cell"
                         />
@@ -3101,8 +3108,8 @@ export default function OnboardingPage() {
                             aria-describedby={showEmailError ? "parent-email-error" : undefined}
                             className="h-14 rounded-2xl text-white text-base px-4"
                             style={{
-                              background: "rgba(0,0,0,.35)",
-                              border: `1px solid ${showEmailError ? "#FF8DA1" : "#1b1922"}`,
+                              background: "#0e0d12",
+                              border: `1.5px solid ${showEmailError ? "#FF8DA1" : accent}`,
                             }}
                             data-testid="input-parent-email"
                           />
@@ -3122,7 +3129,7 @@ export default function OnboardingPage() {
                           <div className="flex flex-wrap gap-2 mt-3">
                             <Button
                               variant="outline"
-                              className="w-full sm:w-auto min-h-[52px] px-5 text-[15px] font-bold rounded-2xl bg-transparent text-white border border-[#1b1922] hover:bg-[#1b1922]"
+                              className="w-full sm:w-auto min-h-[52px] px-5 text-[15px] font-bold rounded-2xl bg-transparent text-white border border-[#9FD8FF] hover:bg-[#1b1922]"
                               onClick={() => consentMutation.mutate()}
                               disabled={!parentEmailReady || consentMutation.isPending}
                               data-testid="button-send-consent"
@@ -3135,7 +3142,7 @@ export default function OnboardingPage() {
                             {requested && (
                               <Button
                                 variant="ghost"
-                                className="w-full sm:w-auto min-h-[52px] px-4 text-[14px] font-bold rounded-2xl text-white hover:bg-[#1b1922]"
+                                className="w-full sm:w-auto min-h-[52px] px-4 text-[14px] font-bold rounded-2xl text-white border border-[#9FD8FF] hover:bg-[#1b1922]"
                                 onClick={() => setEditingParentEmail(false)}
                                 data-testid="button-cancel-change-email"
                               >
@@ -3155,7 +3162,7 @@ export default function OnboardingPage() {
                         <div className="mt-4 space-y-3" data-testid="consent-outcome">
                           <div
                             className="rounded-2xl p-4"
-                            style={{ background: "rgba(0,0,0,.28)", border: `1px solid ${accent}66` }}
+                            style={{ background: "#0e0d12", border: `1.5px solid ${accent}` }}
                             data-testid={manual ? "consent-manual-share" : "consent-sent-confirmation"}
                           >
                             <div className="flex items-start gap-2.5">
@@ -3173,7 +3180,7 @@ export default function OnboardingPage() {
                             {/* Link + share buttons — ALWAYS shown once minted. */}
                             <div
                               className="mt-3 rounded-xl p-3.5"
-                              style={{ background: "rgba(0,0,0,.45)", border: `1px solid ${accent}55` }}
+                              style={{ background: "#050508", border: `1px solid ${accent}` }}
                               data-testid="consent-link-block"
                             >
                               <p className="text-[11px] font-bold uppercase tracking-[0.14em]" style={{ color: accent }}>
@@ -3202,7 +3209,7 @@ export default function OnboardingPage() {
                                 type="button"
                                 variant="outline"
                                 className="mt-2 w-full min-h-[46px] px-5 text-[14px] font-bold rounded-xl bg-transparent border"
-                                style={{ color: linkCopied ? BRAND.mint : "#ffffff", borderColor: linkCopied ? BRAND.mint : "#1b1922" }}
+                                style={{ color: linkCopied ? BRAND.mint : "#ffffff", borderColor: linkCopied ? BRAND.mint : "#9FD8FF" }}
                                 onClick={handleCopyConsentLink}
                                 data-testid="button-copy-consent-link"
                               >
@@ -3248,7 +3255,7 @@ export default function OnboardingPage() {
 
                             <Button
                               variant="ghost"
-                              className="mt-2 min-h-[44px] px-3 text-[13px] font-bold rounded-xl text-white hover:bg-[#1b1922]"
+                              className="mt-2 min-h-[44px] px-3 text-[13px] font-bold rounded-xl text-white border border-[#9FD8FF] hover:bg-[#1b1922]"
                               onClick={() => { setEditingParentEmail(true); setLinkCopied(false); setCopyFailed(false); }}
                               data-testid="button-change-parent-email"
                             >
@@ -3259,7 +3266,7 @@ export default function OnboardingPage() {
                           {/* What the learner does while the parent decides. */}
                           <div
                             className="rounded-2xl p-4"
-                            style={{ background: `${BRAND.cyan}12`, border: `1px solid ${BRAND.cyan}44` }}
+                            style={{ background: "#0e0d12", border: `1.5px solid ${BRAND.cyan}` }}
                             data-testid="consent-waiting-panel"
                           >
                             <p className="text-[11px] font-bold uppercase tracking-[0.14em] flex items-center gap-1.5" style={{ color: BRAND.cyan }}>
@@ -3282,7 +3289,7 @@ export default function OnboardingPage() {
                 })()}
 
                 {/* Hand-off: what actually happens next. */}
-                <div className="rounded-2xl p-4 sm:p-5" style={{ background: `${BRAND.mint}12`, border: `1px solid ${BRAND.mint}44` }}>
+                <div className="rounded-2xl p-4 sm:p-5" style={{ background: "#0e0d12", border: `1.5px solid ${BRAND.mint}` }}>
                   <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white">🚀 {t.whatsNextTitle}</p>
                   <p className="text-white text-[14px] leading-relaxed mt-1.5">
                     {isMinor ? t.whatsNextMinor : t.whatsNextAdult}
@@ -3398,7 +3405,7 @@ export default function OnboardingPage() {
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(13,13,20,.86)" }} data-testid="onboarding-loading-overlay">
               <div
                 className="rounded-3xl p-7 text-center max-w-sm w-full"
-                style={{ background: BRAND.card, border: `1px solid ${BRAND.cyan}55` }}
+                style={{ background: BRAND.card, border: `2px solid ${BRAND.cyan}` }}
               >
                 <Loader2 className="w-9 h-9 animate-spin mx-auto mb-4" style={{ color: BRAND.cyan }} />
                 <h3 className="text-lg font-extrabold text-white mb-1">{t.preparingClassroomTitle}</h3>

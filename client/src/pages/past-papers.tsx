@@ -95,7 +95,7 @@ const RAINBOW_TEXT: CSSProperties = {
   color: "transparent",
 };
 const CARD: CSSProperties = {
-  background: "linear-gradient(#1b1922, #1b1922), #050508",
+  background: "#0e0d12",
   border: "1px solid #1b1922",
   borderRadius: 20,
 };
@@ -121,8 +121,8 @@ const marker = (color: string, size = 15): CSSProperties => ({
   display: "inline-block",
 });
 const accentCard = (hex: string): CSSProperties => ({
-  background: "linear-gradient(#1b1922, #1b1922), #050508",
-  border: `1.5px solid ${hex}55`,
+  background: "#0e0d12",
+  border: `1.5px solid ${hex}`,
   borderRadius: 20,
 });
 const pill = (hex: string): CSSProperties => ({
@@ -139,8 +139,8 @@ const pill = (hex: string): CSSProperties => ({
 
 export default function PastPapersPage() {
   useSEO({
-    title: "NSC Grade 12 Past Papers 2015–2025 | All Subjects | BrainTrack™",
-    description: "Access 10 years of official DBE NSC Grade 12 past exam papers with memos for all CAPS subjects — Mathematics, Physical Sciences, English, Afrikaans, Life Sciences, Business Studies and more.",
+    title: "NSC Grade 12 Past Papers & Memos 2015–2025 | BrainTrack",
+    description: "10 years of official DBE NSC Grade 12 past papers with memos — Mathematics, Physical Sciences, English, Afrikaans and every CAPS subject.",
     canonical: "https://braintrack.tech/past-papers",
     ogTitle: "NSC Grade 12 Past Papers 2015–2025 — All CAPS Subjects | BrainTrack™",
     ogDescription: "10 years of official DBE NSC past exam papers with memos for every Grade 12 CAPS subject. Free to browse — practise with real Matric-level questions.",
@@ -264,7 +264,7 @@ export default function PastPapersPage() {
 
   type IngestedYear = { year: number; papers: number[]; memos: number[] };
   type IngestedSubject = { subject: string; years: IngestedYear[] };
-  const { data: ingestedData } = useQuery<{ comingSoon?: boolean; subjects?: IngestedSubject[] }>({
+  const { data: ingestedData, isLoading: papersLoading } = useQuery<{ comingSoon?: boolean; subjects?: IngestedSubject[] }>({
     queryKey: ["/api/past-papers/list"],
   });
   // COPYRIGHT SAFETY: the server no longer serves verbatim DBE past papers.
@@ -275,7 +275,7 @@ export default function PastPapersPage() {
 
   // Filter SUBJECTS to only those the learner is enrolled in.
   // /api/subjects already returns only the learner's enrolled subjects.
-  const { data: enrolledSubjectsRaw, isError: subjectsFailed } = useQuery<{ code: string }[]>({
+  const { data: enrolledSubjectsRaw, isError: subjectsFailed, isLoading: subjectsLoading } = useQuery<{ code: string }[]>({
     queryKey: ["/api/subjects"],
     // Guard the shape. /api/subjects returns an array on success but an
     // `{ error }` object on a 500 (e.g. a schema/column drift like the 0034
@@ -476,7 +476,18 @@ export default function PastPapersPage() {
                   </div>
                   <p className="text-xs text-white mt-0.5 mb-3">10 {text.years}</p>
                   <div className="space-y-1.5 max-h-[500px] overflow-y-auto pr-1">
-                    {subjectsFailed ? (
+                    {subjectsLoading ? (
+                      /* Subject list skeleton — enrolled subjects still loading */
+                      <div className="space-y-1.5" data-testid="past-papers-subjects-skeleton">
+                        {[0, 1, 2].map((i) => (
+                          <div
+                            key={i}
+                            className="h-11 animate-pulse"
+                            style={{ background: "#1b1922", borderRadius: 12 }}
+                          />
+                        ))}
+                      </div>
+                    ) : subjectsFailed ? (
                       /* Server-side failure — distinct from "you haven't picked
                          subjects yet", otherwise an outage reads as the learner's
                          fault and they get sent to re-do onboarding for nothing. */
@@ -554,7 +565,11 @@ export default function PastPapersPage() {
                         {language === "af" ? "Historiese Tendense" : "Historical Trends"}
                       </span>
                     </div>
-                    <p className="text-sm text-white mt-1 mb-4">{text.selectSubject}</p>
+                    <p className="text-sm text-white mt-1 mb-4">
+                      {language === "af"
+                        ? "Blaai deur amptelike vraestelle en memo's per jaar."
+                        : "Browse official papers and memos by year."}
+                    </p>
                     <div className="grid gap-3">
                       {selectedIngested && selectedIngested.years.length > 0 ? (
                         <div className="space-y-3">
@@ -608,6 +623,18 @@ export default function PastPapersPage() {
                               </div>
                             );
                           })}
+                        </div>
+                      ) : papersLoading ? (
+                        /* Paper list still loading — never flash "not uploaded yet"
+                           while the query is in flight. */
+                        <div className="space-y-3" data-testid="past-papers-years-skeleton">
+                          {[0, 1].map((i) => (
+                            <div
+                              key={i}
+                              className="h-24 animate-pulse"
+                              style={{ background: "#1b1922", borderRadius: 16 }}
+                            />
+                          ))}
                         </div>
                       ) : (
                         <div
@@ -821,18 +848,29 @@ export default function PastPapersPage() {
                         NSC-Style
                       </span>
                     </div>
-                    <Link href={available ? "/bst-exam" : "#"}>
-                      <Button
-                        variant={available ? "primary" : "outline"}
-                        className="w-full"
-                        disabled={!available}
+                    {available ? (
+                      /* BST is served by the dedicated /bst-exam simulator; every
+                         other available subject routes to the Full Exam picker
+                         pre-selected on that subject (same target subject-detail
+                         uses) — never to the Business Studies exam. */
+                      <Link
+                        href={
+                          subject.code === "BUS"
+                            ? "/bst-exam"
+                            : `/exam/full?subject=${encodeURIComponent(subject.name)}`
+                        }
                       >
+                        <Button variant="primary" className="w-full">
+                          <FileText className="w-4 h-4 mr-2" />
+                          {language === "af" ? "Begin Eksamen" : "Start Exam"}
+                        </Button>
+                      </Link>
+                    ) : (
+                      <Button variant="outline" className="w-full" disabled>
                         <FileText className="w-4 h-4 mr-2" />
-                        {available
-                          ? (language === "af" ? "Begin Eksamen" : "Start Exam")
-                          : (language === "af" ? "Binnekort" : "Coming Soon")}
+                        {language === "af" ? "Binnekort" : "Coming Soon"}
                       </Button>
-                    </Link>
+                    )}
                   </div>
                 );
               })}
@@ -946,7 +984,7 @@ export default function PastPapersPage() {
                   hex: "#FFE29A",
                   Icon: Sparkles,
                   InnerIcon: BookOpen,
-                  title: language === "af" ? "Leerstvl-Aanpassing" : "Learning Style Adaptation",
+                  title: language === "af" ? "Leerstyl-Aanpassing" : "Learning Style Adaptation",
                   source: "VARK Model (Fleming, 1987)",
                   body: language === "af"
                     ? "Leerders presteer beter wanneer inhoud by hul voorkeurstyl aangepas word."

@@ -101,6 +101,22 @@ const SECONDARY_BTN: CSSProperties = {
   borderRadius: 12,
   fontWeight: 700,
 };
+// Server exam time budget — must match the timeAllowedMinutes sent to
+// POST /api/exam-sessions. The header clock counts DOWN from this.
+const EXAM_TIME_ALLOWED_MINUTES = 180;
+const EXAM_TIME_ALLOWED_SECONDS = EXAM_TIME_ALLOWED_MINUTES * 60;
+
+// Maps a Subject.code to the simulated-paper subjectCode. Used both to filter
+// the picker to the learner's subjects AND to reverse-match a selected
+// simulated paper back to a real exam_papers row when starting a session.
+const CODE_TO_SIM_CODE: Record<string, string> = {
+  MATH: "MATH", MATL: "MATHL", PHYS: "PHYS", LIFE: "LIFE",
+  ACC: "ACC", BUS: "BUS", ECO: "ECO", GEO: "GEO", HIS: "HIS",
+  ENGH: "ENG_HL", ENGF: "ENG_HL", AFRH: "AFR_HL", AFRF: "AFR_HL",
+  IT: "IT", CAT: "IT", AGR: "AGRIC", CON: "CONS",
+  TOUR: "TOUR", ART: "VISUAL", DRAMA: "DRAMA", MUSIC: "MUSIC",
+};
+
 const marker = (color: string, size = 15): CSSProperties => ({
   fontFamily: "'Bebas Neue', sans-serif",
   fontSize: size,
@@ -251,15 +267,13 @@ export default function ExamReadyPage() {
     queryKey: ["/api/subjects"],
   });
 
-  const selectedPaper = examPapers?.find(p => p.id === selectedPaperId) ?? null;
-
   const questions: SimulatedQuestion[] = selectedPaperData?.paper?.sections?.flatMap(s => s.questions) || [];
 
   const startExamMutation = useMutation({
     mutationFn: async (paperId: number) => {
       const res = await apiRequest("POST", "/api/exam-sessions", {
         examPaperId: paperId,
-        timeAllowedMinutes: 180,
+        timeAllowedMinutes: EXAM_TIME_ALLOWED_MINUTES,
       });
       return res.json();
     },
@@ -324,7 +338,10 @@ export default function ExamReadyPage() {
 
   const submitExamMutation = useMutation({
     mutationFn: async () => {
-      if (!sessionId) return;
+      // AUDIT FIX: this used to early-return on a missing sessionId, which
+      // still triggered onSuccess and showed "saved successfully" while
+      // nothing was persisted. Throw instead so failures surface honestly.
+      if (!sessionId) throw new Error("missing_session");
 
       // GPT Detection check
       const aiCheck = checkAllAnswersForAI();
@@ -343,6 +360,15 @@ export default function ExamReadyPage() {
       toast({
         title: isAfrikaans ? "Eksamen Ingedien" : "Exam Submitted",
         description: isAfrikaans ? "Jou antwoorde is suksesvol gestoor" : "Your answers have been saved successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: isAfrikaans ? "Indiening Misluk" : "Submission Failed",
+        description: isAfrikaans
+          ? "Kon nie jou eksamen indien nie. Jou antwoorde is nie gestoor nie — probeer asseblief weer."
+          : "Could not submit your exam. Your answers were not saved — please try again.",
+        variant: "destructive",
       });
     },
   });
@@ -559,7 +585,12 @@ export default function ExamReadyPage() {
 
   const currentQuestion = questions?.[currentQuestionIndex];
   const totalQuestions = questions?.length || 0;
-  const answeredCount = Object.keys(answers).filter(k => answers[parseInt(k)]?.trim()).length;
+  // AUDIT FIX: question ids are strings — indexing with parseInt(k) always
+  // missed, so answeredCount was stuck at 0.
+  const answeredCount = Object.keys(answers).filter(k => answers[k]?.trim()).length;
+  // Countdown shown in the active-exam header, derived from the same
+  // wall-clock timer that drives timeUsed (180 min allowance).
+  const timeRemaining = Math.max(0, EXAM_TIME_ALLOWED_SECONDS - timeUsed);
 
   const selectedPaperInfo = selectedPaperData?.paper;
   const selectedSubjectName = isAfrikaans ? selectedPaperInfo?.subjectNameAf : selectedPaperInfo?.subjectName;
@@ -729,7 +760,7 @@ export default function ExamReadyPage() {
       {
         Icon: Clock,
         hex: PASTELS[2],
-        text: isAfrikaans ? "Onaktiwiteit van meer as 10 sekondes gee 'n waarskuwing. Langer pouses kanselleer die eksamen." : "Pausing for more than 10 seconds triggers a warning. Extended pauses cancel the exam.",
+        text: isAfrikaans ? "Onaktiwiteit van meer as 60 sekondes gee 'n waarskuwing. Na 90 sekondes word die eksamen gekanselleer." : "Pausing for more than 60 seconds triggers a warning. After 90 seconds the exam is cancelled.",
       },
       {
         Icon: XCircle,
@@ -816,19 +847,12 @@ export default function ExamReadyPage() {
               <div className="space-y-4">
                 {(() => {
                   const learnerSubjectIds = (profile as any)?.selectedSubjects as number[] | undefined;
-                  const codeToSimCode: Record<string, string> = {
-                    MATH: "MATH", MATL: "MATHL", PHYS: "PHYS", LIFE: "LIFE",
-                    ACC: "ACC", BUS: "BUS", ECO: "ECO", GEO: "GEO", HIS: "HIS",
-                    ENGH: "ENG_HL", ENGF: "ENG_HL", AFRH: "AFR_HL", AFRF: "AFR_HL",
-                    IT: "IT", CAT: "IT", AGR: "AGRIC", CON: "CONS",
-                    TOUR: "TOUR", ART: "VISUAL", DRAMA: "DRAMA", MUSIC: "MUSIC",
-                  };
                   const learnerCodes = new Set<string>();
                   if (learnerSubjectIds && subjects) {
                     for (const sid of learnerSubjectIds) {
                       const subj = subjects.find(s => s.id === sid);
                       if (subj?.code) {
-                        const simCode = codeToSimCode[subj.code];
+                        const simCode = CODE_TO_SIM_CODE[subj.code];
                         if (simCode) learnerCodes.add(simCode);
                       }
                     }
@@ -901,9 +925,40 @@ export default function ExamReadyPage() {
                             ))}
                           </div>
                         </div>
-                      ) : (
+                      ) : simulatedPapersData === undefined ? (
                         <div className="flex items-center justify-center py-8">
                           <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#9FF5E8" }} />
+                        </div>
+                      ) : (
+                        // AUDIT FIX: an empty paper list used to spin forever.
+                        <div className="text-center py-8 space-y-4" data-testid="sim-papers-empty">
+                          <BookOpen className="w-10 h-10 mx-auto" style={{ color: "#FFE29A" }} />
+                          <div className="space-y-1">
+                            <p className="font-bold text-white">
+                              {isAfrikaans ? "Geen vraestelle beskikbaar nie" : "No papers available yet"}
+                            </p>
+                            <p className="text-sm text-white max-w-sm mx-auto">
+                              {isAfrikaans
+                                ? "Ons berei tans gesimuleerde vraestelle vir jou vakke voor. Probeer solank 'n Mini Mock."
+                                : "We're preparing simulated papers for your subjects. Try a Mini Mock in the meantime."}
+                            </p>
+                          </div>
+                          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                            <Button
+                              variant="primary"
+                              onClick={() => navigate("/exam/mini-mock")}
+                              data-testid="button-empty-mini-mock"
+                            >
+                              {isAfrikaans ? "Probeer Mini Mock" : "Try Mini Mock"}
+                            </Button>
+                            <Button
+                              variant="outline"
+                              onClick={() => navigate("/dashboard")}
+                              data-testid="button-empty-dashboard"
+                            >
+                              {isAfrikaans ? "Terug na Tuisbladsy" : "Back to Dashboard"}
+                            </Button>
+                          </div>
                         </div>
                       )}
                     </>
@@ -914,7 +969,7 @@ export default function ExamReadyPage() {
                   variant="primary"
                   size="lg"
                   className="w-full"
-                  disabled={!selectedSubject || !selectedPaperNum}
+                  disabled={!selectedSubject || !selectedPaperNum || startExamMutation.isPending}
                   onClick={() => {
                     if (selectedSubject && selectedPaperNum) {
                       if (isAfrikaans && questions.length > 0) {
@@ -928,12 +983,39 @@ export default function ExamReadyPage() {
                           return;
                         }
                       }
-                      setExamState("ready");
+                      // AUDIT FIX: startExamMutation was never invoked — the
+                      // exam ran without a server session and submissions were
+                      // silently lost. Resolve the simulated paper back to a
+                      // real exam_papers row and create the session; only its
+                      // onSuccess advances to the "ready" screen.
+                      const matchingSubjectIds = (subjects ?? [])
+                        .filter(s => s.code && CODE_TO_SIM_CODE[s.code] === selectedSubject)
+                        .map(s => s.id);
+                      const matchedPaper =
+                        (examPapers ?? []).find(
+                          p => matchingSubjectIds.includes(p.subjectId) && p.paperNumber === selectedPaperNum,
+                        ) ?? (examPapers ?? []).find(p => matchingSubjectIds.includes(p.subjectId));
+                      if (!matchedPaper) {
+                        toast({
+                          title: isAfrikaans ? "Fout" : "Error",
+                          description: isAfrikaans
+                            ? "Kon nie eksamen-sessie begin nie. Probeer asseblief 'n ander vraestel."
+                            : "Could not start an exam session. Please try another paper.",
+                          variant: "destructive",
+                        });
+                        return;
+                      }
+                      setSelectedPaperId(matchedPaper.id);
+                      startExamMutation.mutate(matchedPaper.id);
                     }
                   }}
                   data-testid="button-start-exam"
                 >
-                  <Play className="w-4 h-4 mr-2" />
+                  {startExamMutation.isPending ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Play className="w-4 h-4 mr-2" />
+                  )}
                   {isAfrikaans ? "Begin Eksamen" : "Start Exam"}
                 </Button>
               </div>
@@ -1029,7 +1111,7 @@ export default function ExamReadyPage() {
               {isAfrikaans ? "Onaktiwiteit Gedetekteer!" : "Inactivity Detected!"}
             </div>
             <p className="text-lg text-white">{isAfrikaans ? "Beweeg jou muis of tik om die eksamen voort te sit" : "Move your mouse or type to continue the exam"}</p>
-            <p className="text-sm mt-2 text-white">{isAfrikaans ? "Eksamen word in 5 sekondes gekanselleer as daar geen aktiwiteit is nie" : "Exam will be cancelled in 5 seconds if no activity"}</p>
+            <p className="text-sm mt-2 text-white">{isAfrikaans ? "Eksamen word gekanselleer ná 90 sekondes se onaktiwiteit" : "Exam will be cancelled after 90 seconds of inactivity"}</p>
           </div>
         </div>
       )}
@@ -1041,9 +1123,14 @@ export default function ExamReadyPage() {
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-4 min-w-0">
             <div className="min-w-0">
-              <p className="font-black truncate" style={marker("#9FF5E8", 16)}>{selectedSubject}</p>
+              <p className="font-black truncate" style={marker("#9FF5E8", 16)}>
+                {selectedSubjectName || selectedSubject}
+              </p>
               <p className="text-sm text-white">
-                {selectedPaper?.year} {selectedPaper?.month} - {isAfrikaans ? "Vraestel" : "Paper"} {selectedPaper?.paperNumber}
+                {isAfrikaans ? "Vraestel" : "Paper"} {selectedPaperInfo?.paperNumber ?? selectedPaperNum}
+                {selectedPaperInfo?.totalMarks
+                  ? ` — ${selectedPaperInfo.totalMarks} ${isAfrikaans ? "punte" : "marks"}`
+                  : ""}
               </p>
             </div>
           </div>
@@ -1063,8 +1150,13 @@ export default function ExamReadyPage() {
               className="flex items-center gap-2 px-3 py-1.5 rounded-full"
               style={{ border: "1px solid rgba(255,226,154,.5)" }}
             >
-              <Clock className="w-4 h-4" style={{ color: "#FFE29A" }} />
-              <span className="font-mono font-bold text-sm" style={{ color: "#FFE29A" }}>{formatTime(timeUsed)}</span>
+              <Clock className="w-4 h-4" style={{ color: timeRemaining <= 300 ? ALERT_HEX : "#FFE29A" }} />
+              <span
+                className="font-mono font-bold text-sm"
+                style={{ color: timeRemaining <= 300 ? ALERT_HEX : "#FFE29A" }}
+              >
+                {formatTime(timeRemaining)}
+              </span>
             </div>
 
             <Button

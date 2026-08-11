@@ -52,18 +52,18 @@ import { ReferralShareCard } from "@/components/referral-share-card";
 import { GraffitiSplats } from "@/components/graffiti-splats";
 import { Button } from "@/components/ui/button";
 
-const BADGE_INFO: Record<string, { name: string; nameAfrikaans: string; icon: any; color: string }> = {
-  streak_3:      { name: "3-Day Streak",    nameAfrikaans: "3-Dag Reeks",    icon: Flame,        color: "text-orange-500" },
-  streak_7:      { name: "7-Day Streak",    nameAfrikaans: "7-Dag Reeks",    icon: Flame,        color: "text-orange-500" },
-  streak_14:     { name: "14-Day Streak",   nameAfrikaans: "14-Dag Reeks",   icon: Flame,        color: "text-red-500"    },
-  streak_30:     { name: "30-Day Streak",   nameAfrikaans: "30-Dag Reeks",   icon: Flame,        color: "text-red-600"    },
-  questions_10:  { name: "10 Questions",    nameAfrikaans: "10 Vrae",        icon: Star,         color: "text-amber-500"  },
-  questions_50:  { name: "50 Questions",    nameAfrikaans: "50 Vrae",        icon: Star,         color: "text-yellow-500" },
-  questions_100: { name: "100 Questions",   nameAfrikaans: "100 Vrae",       icon: Zap,          color: "text-blue-500"   },
-  questions_500: { name: "500 Questions",   nameAfrikaans: "500 Vrae",       icon: Zap,          color: "text-blue-600"   },
-  subject_mastery:{ name: "Subject Master", nameAfrikaans: "Vak Meester",    icon: GraduationCap,color: "text-cyan-500" },
-  exam_complete: { name: "Exam Ready",      nameAfrikaans: "Eksamen Gereed", icon: Award,        color: "text-emerald-500"},
-  first_paper:   { name: "First Paper",     nameAfrikaans: "Eerste Vraestel",icon: BookOpen,     color: "text-cyan-500"   },
+const BADGE_INFO: Record<string, { name: string; nameAfrikaans: string; icon: any }> = {
+  streak_3:      { name: "3-Day Streak",    nameAfrikaans: "3-Dag Reeks",    icon: Flame         },
+  streak_7:      { name: "7-Day Streak",    nameAfrikaans: "7-Dag Reeks",    icon: Flame         },
+  streak_14:     { name: "14-Day Streak",   nameAfrikaans: "14-Dag Reeks",   icon: Flame         },
+  streak_30:     { name: "30-Day Streak",   nameAfrikaans: "30-Dag Reeks",   icon: Flame         },
+  questions_10:  { name: "10 Questions",    nameAfrikaans: "10 Vrae",        icon: Star          },
+  questions_50:  { name: "50 Questions",    nameAfrikaans: "50 Vrae",        icon: Star          },
+  questions_100: { name: "100 Questions",   nameAfrikaans: "100 Vrae",       icon: Zap           },
+  questions_500: { name: "500 Questions",   nameAfrikaans: "500 Vrae",       icon: Zap           },
+  subject_mastery:{ name: "Subject Master", nameAfrikaans: "Vak Meester",    icon: GraduationCap },
+  exam_complete: { name: "Exam Ready",      nameAfrikaans: "Eksamen Gereed", icon: Award         },
+  first_paper:   { name: "First Paper",     nameAfrikaans: "Eerste Vraestel",icon: BookOpen      },
 };
 
 const NAV_LINKS = (labels: { navHome: string; navSubjects: string; navTutor: string; navFlashcards: string; navProgress: string; navStudyPlan: string; navRewards: string; navStore: string; navJourney: string; navSettings: string }) => [
@@ -191,7 +191,7 @@ function LiveCountdownChips({
             background: tinted ? CHIP_ACCENTS[i].tint : "rgba(5,5,8,.5)",
             border: `1px solid ${CHIP_ACCENTS[i].hex}`,
             color: CHIP_ACCENTS[i].hex,
-            borderRadius: 8,
+            borderRadius: 12,
             padding: "6px 10px",
           }}
         >
@@ -278,7 +278,7 @@ const T = {
     averageLabel: "average",
     completedLabel: "completed",
     miniMockTitle: "⚡ Mini-Mock",
-    miniMockSub: "Practice hard!",
+    miniMockSub: "Short, sharp practice!",
     miniMockCta: "⚡ Start Mini Mock",
     fullExamTitle: "🎓 Full Exam",
     fullExamSub: "Complete DBE paper",
@@ -287,7 +287,7 @@ const T = {
     tutorCardSub: "Ask me anything!",
     tutorCardCta: "💬 Chat",
     crunchTitle: "✏️ Crunch Time",
-    crunchSub: "Practice hard!",
+    crunchSub: "Real exam pressure!",
     crunchCta: "✏️ Start",
     progressCardTitle: "📊 Progress",
     progressCardSub: "Track your gains!",
@@ -420,7 +420,7 @@ const T = {
     averageLabel: "gemiddeld",
     completedLabel: "voltooi",
     miniMockTitle: "⚡ Mini-Toets",
-    miniMockSub: "Oefen jou hartlap!",
+    miniMockSub: "Kort, skerp oefening!",
     miniMockCta: "⚡ Begin Mini-Toets",
     fullExamTitle: "🎓 Volle Eksamen",
     fullExamSub: "Volle DBE-vraestel",
@@ -429,7 +429,7 @@ const T = {
     tutorCardSub: "Vra my enigiets!",
     tutorCardCta: "💬 Gesels",
     crunchTitle: "✏️ Eksamentyd",
-    crunchSub: "Oefen jou hartlap!",
+    crunchSub: "Egte eksamendruk!",
     crunchCta: "✏️ Begin",
     progressCardTitle: "📊 Vordering",
     progressCardSub: "Kyk hoe ver jy gekom het!",
@@ -801,7 +801,7 @@ export default function DashboardPage() {
             <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 16, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}>
               {getGreeting()} ⚡
             </div>
-            <div role="heading" aria-level={1} style={{ fontSize: 32, fontWeight: 900, letterSpacing: -1, color: "#fff" }}>
+            <div role="heading" aria-level={1} style={{ fontFamily: "'Poppins',sans-serif", fontSize: 32, fontWeight: 900, letterSpacing: -1, color: "#fff" }}>
               {firstName} <span style={{ fontSize: 24 }}>🎧🔥</span>
             </div>
           </div>
@@ -811,7 +811,7 @@ export default function DashboardPage() {
             <button
               onClick={toggleLanguage}
               data-testid="button-language-toggle"
-              style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 14, color: "#C5B3FF", background: "transparent", border: "1px solid #C5B3FF", borderRadius: 10, padding: "10px 16px", cursor: "pointer" }}
+              style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 14, color: "#C5B3FF", background: "transparent", border: "1px solid #C5B3FF", borderRadius: 12, padding: "10px 16px", cursor: "pointer" }}
             >
               {language === "en" ? "EN" : "AF"}
             </button>
@@ -848,7 +848,7 @@ export default function DashboardPage() {
             data-testid="subscription-lapsed-banner"
             className="flex flex-wrap items-center justify-between gap-3 rounded-2xl px-5 py-3.5"
             style={{
-              background: "linear-gradient(135deg, rgba(255,183,229,0.12) 0%, #1b1922 60%), #050508",
+              background: "linear-gradient(135deg, rgba(255,183,229,0.12) 0%, #0e0d12 60%), #050508",
               border: "1.5px solid rgba(255,183,229,0.5)",
             }}
           >
@@ -959,6 +959,9 @@ export default function DashboardPage() {
         )}
 
         {/* ═══ Next-exam hero ═══ */}
+        <div aria-hidden style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 19, letterSpacing: 1, color: "#FFB7E5", transform: "rotate(-2deg)", display: "inline-block", marginBottom: -14, alignSelf: "flex-start" }}>
+          {isAf ? "Volgende op die rooster ⚡" : "Up next ⚡"}
+        </div>
         <div
           data-testid="learner-command-hero"
           style={{
@@ -1037,6 +1040,9 @@ export default function DashboardPage() {
         </div>
 
         {/* ── Stat stickers ── */}
+        <div aria-hidden style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 19, letterSpacing: 1, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block", marginBottom: -14, alignSelf: "flex-start" }}>
+          {isAf ? "Jou syfers 📊" : "Your numbers 📊"}
+        </div>
         <div className="bt-grid-stats" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 20 }}>
           {[
             { label: t.studyStreak,       value: stats?.studyStreak ?? 0,       suffix: "",  sub: t.daysInARow,     Icon: Flame,         hex: "#FFB7E5", tilt: -1.2, testid: "card-stat-streak",    statTestid: "stat-streak"    },
@@ -1048,7 +1054,7 @@ export default function DashboardPage() {
               key={label}
               data-testid={testid}
               style={{
-                background: "linear-gradient(160deg,#1b1922,#1b1922)",
+                background: "linear-gradient(160deg,#0e0d12,#0e0d12)",
                 border: `1.5px solid ${hex}`,
                 borderRadius: 20,
                 padding: "20px 22px",
@@ -1078,7 +1084,7 @@ export default function DashboardPage() {
         {/* ── Two-column: Subject mastery + Next mission / Fresh drops ── */}
         <div className="bt-grid-2col" style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr", gap: 24 }}>
           {/* Subject mastery */}
-          <div style={{ background: "linear-gradient(#1b1922, #1b1922), #050508", border: "1px solid #1b1922", borderRadius: 24, padding: 26 }}>
+          <div style={{ background: "linear-gradient(#0e0d12, #0e0d12), #050508", border: "1px solid #1b1922", borderRadius: 24, padding: 26 }}>
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10, flexWrap: "wrap", marginBottom: 20 }}>
               <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 18, color: "#fff" }}>{t.subjectsHeading} 📈</div>
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -1086,7 +1092,7 @@ export default function DashboardPage() {
                 <Link href="/settings">
                   <button
                     data-testid="link-manage-subjects"
-                    style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 12, color: "#fff", background: "transparent", border: "1px solid #1b1922", borderRadius: 10, padding: "6px 12px", cursor: "pointer" }}
+                    style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 12, color: "#fff", background: "transparent", border: "1px solid #9FF5E8", borderRadius: 12, padding: "6px 12px", cursor: "pointer" }}
                   >
                     {t.manageLabel}
                   </button>
@@ -1167,7 +1173,7 @@ export default function DashboardPage() {
             })()}
 
             {/* Fresh drops — recent achievements */}
-            <div style={{ background: "linear-gradient(#1b1922, #1b1922), #050508", border: "1px solid #1b1922", borderRadius: 24, padding: 24, flex: 1 }}>
+            <div style={{ background: "linear-gradient(#0e0d12, #0e0d12), #050508", border: "1px solid #1b1922", borderRadius: 24, padding: 24, flex: 1 }}>
               <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 16, color: "#fff", marginBottom: 16 }}>{t.freshDropsTitle}</div>
               {badges && badges.length > 0 ? (
                 <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -1313,10 +1319,9 @@ export default function DashboardPage() {
         <div style={{ background: "#050508", border: "2.5px solid #FFE29A", borderRadius: 24, boxShadow: "6px 6px 0 0 #FFE29A", padding: 26 }}>
           <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 8 }}>
             <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 18, color: "#fff" }}>{t.examCountdownHeading}</div>
-            <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
-              <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: "#FFB7E5" }}>{heroName}</span>
-              <LiveCountdownChips target={heroTarget} tinted size={20} />
-            </div>
+            {/* The live [d][h][m][s] chips render once in the next-exam hero —
+                the duplicate tinted copy that used to sit here was removed. */}
+            <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: "#FFB7E5" }}>{heroName}</span>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 16 }}>
             {/* Prelims tile */}
@@ -1406,10 +1411,13 @@ export default function DashboardPage() {
         <ReferralShareCard isAf={isAf} />
 
         {/* ── Prep status — graffiti sticker banner ── */}
+        <div aria-hidden style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 19, letterSpacing: 1, color: "#FFE29A", transform: "rotate(-2deg)", display: "inline-block", marginBottom: -14, alignSelf: "flex-start" }}>
+          {isAf ? "Jou spelplan 🎯" : "Your game plan 🎯"}
+        </div>
         <div
           data-testid="prep-status-indicator"
           style={{
-            background: `linear-gradient(120deg, ${ac.hex}14, #1b1922), #050508`,
+            background: `linear-gradient(120deg, ${ac.hex}14, #0e0d12), #050508`,
             border: `1.5px solid ${ac.hex}`,
             borderRadius: 20,
             padding: "20px 26px",
@@ -1457,14 +1465,14 @@ export default function DashboardPage() {
                 fontSize: 13,
                 color: "#fff",
                 background: "transparent",
-                border: "1.5px solid #1b1922",
-                borderRadius: 10,
+                border: `1.5px solid ${ac.hex}`,
+                borderRadius: 12,
                 padding: "10px 18px",
                 cursor: "pointer",
                 transition: "all .2s",
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.borderColor = ac.hex; e.currentTarget.style.color = ac.hex; }}
-              onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#1b1922"; e.currentTarget.style.color = "#fff"; }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = ac.hex; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = "#fff"; }}
             >
               {t.viewDetails}
             </button>
@@ -1495,7 +1503,7 @@ export default function DashboardPage() {
             <div
               data-testid="urgency-banner"
               style={{
-                background: `linear-gradient(120deg, ${u.hex}14, #1b1922), #050508`,
+                background: `linear-gradient(120deg, ${u.hex}14, #0e0d12), #050508`,
                 border: `1.5px solid ${u.hex}`,
                 borderRadius: 18,
                 padding: "14px 20px",
@@ -1526,11 +1534,11 @@ export default function DashboardPage() {
                   style={{
                     fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 13,
                     color: "#fff", background: "transparent",
-                    border: "1.5px solid #1b1922", borderRadius: 10,
+                    border: `1.5px solid ${u.hex}`, borderRadius: 12,
                     padding: "9px 16px", cursor: "pointer", transition: "all .2s",
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = u.hex; e.currentTarget.style.color = u.hex; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#1b1922"; e.currentTarget.style.color = "#fff"; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = u.hex; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = "#fff"; }}
                 >
                   {t.calendarLabel} <ChevronRight className="w-3 h-3 ml-1 inline" />
                 </button>
@@ -1602,7 +1610,7 @@ export default function DashboardPage() {
                   <div
                     style={{
                       height: "100%",
-                      background: "linear-gradient(160deg,#1b1922,#1b1922)",
+                      background: "linear-gradient(160deg,#0e0d12,#0e0d12)",
                       border: `1.5px solid ${hex}`,
                       borderRadius: 20,
                       padding: "18px 20px",
@@ -1642,7 +1650,7 @@ export default function DashboardPage() {
         {focusAreasData && (
           <div
             data-testid="panel-focus-areas"
-            style={{ background: "linear-gradient(#1b1922, #1b1922), #050508", border: "1px solid #1b1922", borderRadius: 24, padding: 26 }}
+            style={{ background: "linear-gradient(#0e0d12, #0e0d12), #050508", border: "1px solid #1b1922", borderRadius: 24, padding: 26 }}
           >
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10, flexWrap: "wrap", marginBottom: 6 }}>
               <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 18, color: "#fff", display: "flex", alignItems: "center", gap: 8 }}>
@@ -1673,7 +1681,7 @@ export default function DashboardPage() {
                         data-testid={`focus-area-${fa.topicId}`}
                         style={{
                           height: "100%",
-                          background: `linear-gradient(160deg, ${hex}12, #1b1922)`,
+                          background: `linear-gradient(160deg, ${hex}12, #0e0d12)`,
                           border: `1.5px solid ${hex}66`,
                           borderRadius: 18,
                           padding: 16,
@@ -1710,7 +1718,7 @@ export default function DashboardPage() {
         {profile && (
           <div
             data-testid="vark-style-badge"
-            style={{ background: "linear-gradient(150deg,rgba(197,179,255,.12),#1b1922), #050508", border: "1.5px solid rgba(197,179,255,.5)", borderRadius: 24, padding: 26 }}
+            style={{ background: "linear-gradient(150deg,rgba(197,179,255,.12),#0e0d12), #050508", border: "1.5px solid rgba(197,179,255,.5)", borderRadius: 24, padding: 26 }}
           >
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
               <div role="heading" aria-level={2} style={{ fontWeight: 800, fontSize: 18, color: "#fff", display: "flex", alignItems: "center", gap: 8 }}>
@@ -1784,9 +1792,9 @@ export default function DashboardPage() {
                 </div>
                 <Link href="/settings">
                   <button
-                    style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 13, color: "#fff", background: "transparent", border: "1.5px solid #1b1922", borderRadius: 10, padding: "8px 14px", cursor: "pointer", transition: "all .2s" }}
-                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#9FF5E8"; e.currentTarget.style.color = "#9FF5E8"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#1b1922"; e.currentTarget.style.color = "#fff"; }}
+                    style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 13, color: "#fff", background: "transparent", border: "1.5px solid #9FF5E8", borderRadius: 12, padding: "8px 14px", cursor: "pointer", transition: "all .2s" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = "#9FF5E8"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = "#fff"; }}
                   >
                     {t.viewLabel}
                   </button>

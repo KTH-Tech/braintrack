@@ -7,7 +7,7 @@ import { Flame, Star, Zap, Target, Trophy, GraduationCap, Award, BookOpen, Coins
 import { GraffitiSplats } from "@/components/graffiti-splats";
 import { LearnerHeader } from "@/components/learner-header";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const BADGE_INFO: Record<string, {
   name: string;
@@ -76,6 +76,7 @@ const T = {
     upgradeToRefer: "Subscribe to unlock referrals",
     upgradeToReferDesc: "Start your Student Life subscription to get a personal referral code and earn free months.",
     upgradeCta: "Subscribe now",
+    coinsLoadError: "Couldn't load your coin balance — try again in a bit.",
   },
   af: {
     pageTitle: "Belonings",
@@ -117,6 +118,7 @@ const T = {
     upgradeToRefer: "Teken in om verwysings te ontsluit",
     upgradeToReferDesc: "Begin jou Student Life-intekening om 'n persoonlike verwysings kode te kry en gratis maande te verdien.",
     upgradeCta: "Teken nou in",
+    coinsLoadError: "Kon nie jou muntsaldo laai nie — probeer netnou weer.",
   },
 } as const;
 
@@ -127,13 +129,15 @@ export default function RewardsPage() {
   const isAf = language === "af";
   const t = T[language];
 
-  if (user?.role === "parent") {
-    setLocation("/parent");
-    return null;
-  }
+  /* Parents get redirected to their own dashboard. The redirect runs in an
+     effect (never during render) and the early `return null` sits AFTER every
+     hook call below, so the rules of hooks hold on every render path. */
+  const isParent = user?.role === "parent";
+  useEffect(() => {
+    if (isParent) setLocation("/parent");
+  }, [isParent, setLocation]);
 
-
-  const { data: coins, isLoading: coinsLoading } = useQuery<{ balance: number; totalEarned: number; totalSpent: number }>({
+  const { data: coins, isLoading: coinsLoading, isError: coinsError } = useQuery<{ balance: number; totalEarned: number; totalSpent: number }>({
     queryKey: ["/api/user/coins"],
   });
 
@@ -165,7 +169,7 @@ export default function RewardsPage() {
     queryKey: ["/api/referral/my-link"],
   });
 
-  const { data: subscriptionStatus } = useQuery<{ active: boolean; status: string | null; trialEndsAt: string | null }>({
+  const { data: subscriptionStatus, isLoading: subscriptionLoading } = useQuery<{ active: boolean; status: string | null; trialEndsAt: string | null }>({
     queryKey: ["/api/user/subscription-status"],
   });
   const isSubscribed = subscriptionStatus?.active;
@@ -247,6 +251,8 @@ export default function RewardsPage() {
 
   const isLoading = coinsLoading || badgesLoading;
 
+  if (isParent) return null;
+
   return (
     <div className="min-h-screen text-white relative" style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}>
       {/* One fixed full-page graffiti wall behind everything */}
@@ -266,8 +272,8 @@ export default function RewardsPage() {
         <div
           className="relative rounded-2xl overflow-hidden p-6 sm:p-8"
           style={{
-            background: "linear-gradient(#1b1922, #1b1922), #050508",
-            border: "1px solid #1b1922",
+            background: "linear-gradient(#0e0d12, #0e0d12), #050508",
+            border: "1.5px solid #FFE29A",
           }}
           data-testid="rewards-hero"
         >
@@ -321,6 +327,13 @@ export default function RewardsPage() {
                   {t.coinBalance}
                 </CosmicCardTitle>
                 <div className="p-5 pt-3">
+                  {coinsError ? (
+                    /* Coins query failed — say so instead of showing a false 0. */
+                    <p className="text-sm font-bold py-2" style={{ color: "#FF8DA1" }} data-testid="coin-balance-error">
+                      {t.coinsLoadError}
+                    </p>
+                  ) : (
+                  <>
                   <div className="flex items-end gap-4 mb-4">
                     <span
                       className="text-5xl tabular-nums"
@@ -355,6 +368,8 @@ export default function RewardsPage() {
                   )}
                   {(!transactions || transactions.length === 0) && (
                     <p className="text-sm text-white">{t.noTransactions}</p>
+                  )}
+                  </>
                   )}
                 </div>
               </CosmicCard>
@@ -486,7 +501,13 @@ export default function RewardsPage() {
                 {t.referHeading}
               </CosmicCardTitle>
               <div className="p-5 pt-3 space-y-4">
-                {isSubscribed === false ? (
+                {subscriptionLoading ? (
+                  /* Hold the body until subscription status settles so the
+                     subscriber view never flashes for non-subscribers. */
+                  <div className="flex justify-center py-8">
+                    <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#9FD8FF" }} />
+                  </div>
+                ) : isSubscribed === false ? (
                   /* ── No active subscription — show upgrade CTA ── */
                   <div className="flex flex-col items-center gap-4 py-4 text-center">
                     <div
@@ -551,8 +572,8 @@ export default function RewardsPage() {
                       <p className="text-[11px] uppercase tracking-[0.2em] text-white font-bold mb-2">
                         {t.shareLink}
                       </p>
-                      <div className="flex items-center gap-2 p-3 rounded-xl bg-black/40" style={{ border: "1px solid rgba(159,216,255,0.25)" }}>
-                        <code className="flex-1 text-xs text-white truncate font-mono" data-testid="referral-link">
+                      <div className="flex flex-wrap items-center gap-2 p-3 rounded-xl bg-black/40" style={{ border: "1px solid rgba(159,216,255,0.25)" }}>
+                        <code className="flex-1 min-w-[140px] text-xs text-white truncate font-mono" data-testid="referral-link">
                           {referralCode?.link ?? referral?.link ?? "—"}
                         </code>
                         <button
@@ -692,8 +713,8 @@ function CosmicCard({
     <div
       className={`relative rounded-2xl overflow-hidden transition-all ${className}`}
       style={{
-        background: "linear-gradient(#1b1922, #1b1922), #050508",
-        border: `1px solid ${hex}44`,
+        background: "linear-gradient(#0e0d12, #0e0d12), #050508",
+        border: `1.5px solid ${hex}`,
       }}
       data-testid={testId}
     >

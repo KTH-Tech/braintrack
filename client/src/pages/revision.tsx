@@ -5,7 +5,6 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLanguage } from "@/lib/language-context";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { ArrowLeft, CheckCircle2, XCircle, RotateCcw, Trophy, BookOpen, Loader2, Target, AlertCircle } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 
 interface RevisionQuestion {
@@ -65,7 +64,6 @@ export default function RevisionPage() {
   const { subjectId } = useParams<{ subjectId: string }>();
   const { language, toggleLanguage } = useLanguage();
   const isAf = language === "af";
-  const { toast } = useToast();
 
   const [phase, setPhase] = useState<QuizPhase>("loading");
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -93,13 +91,9 @@ export default function RevisionPage() {
   });
 
   useEffect(() => {
-    if (!isLoading) {
-      if (error) {
-        toast({ title: isAf ? "Fout" : "Error", description: isAf ? "Kon nie vrae laai nie." : "Could not load questions.", variant: "destructive" });
-        setPhase("quiz");
-      } else if (data) {
-        setPhase("quiz");
-      }
+    if (!isLoading && (error || data)) {
+      // No toast here — the error card below already carries the message.
+      setPhase("quiz");
     }
   }, [isLoading, data, error]);
 
@@ -194,7 +188,7 @@ export default function RevisionPage() {
       >
         <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#9FF5E8" }} />
         <p className="text-sm text-white">
-          {isAf ? "Laai hersiening vrae..." : "Loading revision questions..."}
+          {isAf ? "Laai hersieningsvrae..." : "Loading revision questions..."}
         </p>
       </div>
     );
@@ -208,7 +202,7 @@ export default function RevisionPage() {
       {/* ── Sticky street header ── */}
       <header
         className="sticky top-0 z-50 border-b"
-        style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "#fff" }}
+        style={{ background: "rgba(5,5,8,.94)", backdropFilter: "blur(10px)", borderColor: "#1b1922" }}
       >
         <div className="max-w-3xl mx-auto px-4 h-16 flex items-center gap-3">
           <Link href={`/subject/${subjectId}`}>
@@ -463,7 +457,7 @@ export default function RevisionPage() {
                   <div role="heading" aria-level={2} className="text-xl font-extrabold text-white mb-2">
                     {isAf ? "Kon nie vrae laai nie" : "Could not load questions"}
                   </div>
-                  <p className="text-white mb-6" style={{ opacity: 0.92 }}>
+                  <p className="text-white mb-6">
                     {isAf
                       ? "Iets het verkeerd gegaan. Probeer asseblief weer."
                       : "Something went wrong loading revision questions. Please try again."}
@@ -478,7 +472,7 @@ export default function RevisionPage() {
                   <div role="heading" aria-level={2} className="text-xl font-extrabold text-white mb-2">
                     {isAf ? "Alles hersien!" : "All caught up!"}
                   </div>
-                  <p className="text-white mb-6" style={{ opacity: 0.92 }}>
+                  <p className="text-white mb-6">
                     {isAf
                       ? "Geen verkeerde antwoorde om te hersien nie. Doen die daaglikse vasvraag om jou hersiening te bou."
                       : "No wrong answers to revise. Do the daily quiz to build your revision list."}

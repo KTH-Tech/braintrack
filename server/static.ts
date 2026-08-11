@@ -52,8 +52,8 @@ export function serveStatic(app: Express) {
         } else if (f.endsWith("manifest.json")) {
           // PWA manifest — cache for 1 day
           res.setHeader("Cache-Control", "public, max-age=86400, stale-while-revalidate=3600");
-        } else if (f.endsWith("robots.txt") || f.endsWith("sitemap.xml")) {
-          // Crawl files — cache for 1 day
+        } else if (f.endsWith("robots.txt") || f.endsWith("sitemap.xml") || f.endsWith("llms.txt")) {
+          // Crawl + AI-answer-engine files — cache for 1 day
           res.setHeader("Cache-Control", "public, max-age=86400");
         } else if (f.endsWith(".woff") || f.endsWith(".woff2") || f.endsWith(".ttf")) {
           // Self-hosted fonts — cache for 1 year

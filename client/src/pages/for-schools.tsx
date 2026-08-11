@@ -13,6 +13,11 @@ import { PublicFooter } from "@/components/public-footer";
 const WORDMARK_GRADIENT =
   "linear-gradient(95deg,#9FD8FF,#94F7C5,#FFE29A,#FFB7E5,#C5B3FF)";
 const CONTACT_EMAIL = "learn@kth-tech.com";
+// Primary and secondary CTAs both mail the same address, but with distinct
+// pre-filled subjects so the two buttons open genuinely different intents
+// (apply-to-partner vs. ask-a-question) instead of duplicating each other.
+const PARTNER_SUBJECT = "We'd like to partner with BrainTrack";
+const QUESTION_SUBJECT = "Question about BrainTrack for our school";
 
 type Card = { icon: string; color: string; title: string; body: string };
 type Step = { color: string; title: string; body: string };
@@ -24,7 +29,7 @@ const COPY = {
     h1: "Give your matrics the app that gets them ready",
     sub: "BrainTrack is the matric app your Grade 12s actually study on — CAPS-aligned diagnostics, real NSC past papers, worked memos and a 24/7 AI tutor. Your school's only job is getting it into their hands. We handle everything else.",
     ctaPrimary: "Partner with BrainTrack →",
-    ctaSecondary: "Email our team",
+    ctaSecondary: "Ask us a question",
     proof: "Launching with 63 pilot schools across South Africa.",
     facts: [
       "No cost to the school",
@@ -33,6 +38,7 @@ const COPY = {
       "EN + AF, every subject",
       "Onboarded in minutes",
     ],
+    appEyebrow: "the learner's app",
     appHead: "What lands in your learners' hands",
     appSub: "It's not admin software for your office — it's the app your matrics open at 9pm the night before a test.",
     appCards: [
@@ -43,6 +49,7 @@ const COPY = {
       { icon: "🏆", color: "#FFE29A", title: "XP, streaks & rewards", body: "Motivation mechanics that keep learners coming back." },
       { icon: "👀", color: "#94F7C5", title: "Reports parents read", body: "Weekly progress updates families actually open." },
     ] as readonly Card[],
+    stepEyebrow: "your three steps",
     stepHead: "Your part is simple",
     stepSub: "No new systems, no teacher training, no marking. Three steps and your Grade 12s are in.",
     steps: [
@@ -50,6 +57,7 @@ const COPY = {
       { color: "#FFB7E5", title: "Share it", body: "Learners scan the QR or enter the code — and they're onboarded onto the app in minutes." },
       { color: "#94F7C5", title: "See the cohort", body: "Optional, anonymised class insights show engagement and exam readiness per subject." },
     ] as readonly Step[],
+    trustEyebrow: "the fine print, unfined",
     trustHead: "Zero risk. Zero admin.",
     trustSub: "The pitch is helping your matrics win — not selling your office another dashboard to manage.",
     trust: [
@@ -61,7 +69,7 @@ const COPY = {
     closeHead: "Ready to get your matrics ready?",
     closeBody: "Join the 63 pilot schools launching with BrainTrack. Get the matric app into your Grade 12s' hands — we'll handle the rest.",
     closeCtaPrimary: "Partner with BrainTrack →",
-    closeCtaSecondary: "Email our team",
+    closeCtaSecondary: "Ask us a question",
   },
   af: {
     badge: "🎓 Vir skoolhoofde, departementshoofde & Graad 12-spanne",
@@ -69,7 +77,7 @@ const COPY = {
     h1: "Gee jou matrieks die app wat hulle gereed kry",
     sub: "BrainTrack is die matriek-app waarop jou Graad 12's werklik studeer — KABV-belynde diagnostiek, regte NSS-vraestelle, uitgewerkte memo's en 'n 24/7 KI-tutor. Jou skool se enigste taak is om dit in hul hande te kry. Ons hanteer al die res.",
     ctaPrimary: "Vennoot met BrainTrack →",
-    ctaSecondary: "E-pos ons span",
+    ctaSecondary: "Vra ons 'n vraag",
     proof: "Ons begin met 63 loodsskole regoor Suid-Afrika.",
     facts: [
       "Geen koste vir die skool nie",
@@ -78,6 +86,7 @@ const COPY = {
       "EN + AF, elke vak",
       "Binne minute aan boord",
     ],
+    appEyebrow: "die leerder se app",
     appHead: "Wat in jou leerders se hande beland",
     appSub: "Dis nie admin-sagteware vir jou kantoor nie — dis die app wat jou matrieks om 9nm die aand voor 'n toets oopmaak.",
     appCards: [
@@ -88,6 +97,7 @@ const COPY = {
       { icon: "🏆", color: "#FFE29A", title: "XP, reekse & belonings", body: "Motiveringsmeganika wat leerders laat terugkom." },
       { icon: "👀", color: "#94F7C5", title: "Verslae wat ouers lees", body: "Weeklikse vorderingsopdaterings wat gesinne werklik oopmaak." },
     ] as readonly Card[],
+    stepEyebrow: "jou drie stappe",
     stepHead: "Jou deel is eenvoudig",
     stepSub: "Geen nuwe stelsels, geen onderwyseropleiding, geen nasien nie. Drie stappe en jou Graad 12's is in.",
     steps: [
@@ -95,6 +105,7 @@ const COPY = {
       { color: "#FFB7E5", title: "Deel dit", body: "Leerders skandeer die QR of voer die kode in — en hulle is binne minute op die app aan boord." },
       { color: "#94F7C5", title: "Sien die kohort", body: "Opsionele, geanonimiseerde klasinsigte wys betrokkenheid en eksamengereedheid per vak." },
     ] as readonly Step[],
+    trustEyebrow: "die kleingedrukte, sonder slaggate",
     trustHead: "Geen risiko. Geen administrasie.",
     trustSub: "Die doel is om jou matrieks te help wen — nie om jou kantoor nog 'n dashboard te verkoop om te bestuur nie.",
     trust: [
@@ -106,7 +117,7 @@ const COPY = {
     closeHead: "Gereed om jou matrieks gereed te kry?",
     closeBody: "Sluit aan by die 63 loodsskole wat met BrainTrack begin. Kry die matriek-app in jou Graad 12's se hande — ons hanteer die res.",
     closeCtaPrimary: "Vennoot met BrainTrack →",
-    closeCtaSecondary: "E-pos ons span",
+    closeCtaSecondary: "Vra ons 'n vraag",
   },
 } as const;
 
@@ -116,9 +127,9 @@ export default function ForSchoolsPage() {
   const en = language === "en";
 
   useSEO({
-    title: "For Schools | BrainTrack — Put the Matric App in Your Learners' Hands",
+    title: "For Schools | BrainTrack Matric App for Your Grade 12s",
     description:
-      "BrainTrack is the CAPS-aligned matric app for SA Grade 12 learners. Partner with your school to get it into your matrics' hands — no cost, no admin, POPIA-aligned. Launching with 63 pilot schools.",
+      "Partner with BrainTrack to give your Grade 12s the CAPS-aligned matric app — past papers, memos and a 24/7 AI tutor. No cost, no admin, POPIA-aligned.",
     canonical: "https://braintrack.tech/for-schools",
     ogTitle: "For Schools — Get the Matric App to Your Grade 12s | BrainTrack™",
     ogDescription:
@@ -199,7 +210,7 @@ export default function ForSchoolsPage() {
               className="btfs-in"
               style={{ ["--d" as string]: ".4s", display: "flex", justifyContent: "center", gap: 14, marginTop: 30, flexWrap: "wrap" }}
             >
-              <a href={`mailto:${CONTACT_EMAIL}`} style={{ textDecoration: "none" }}>
+              <a href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(PARTNER_SUBJECT)}`} style={{ textDecoration: "none" }}>
                 <button
                   className="pub-btn"
                   data-testid="button-hero-apply"
@@ -207,7 +218,7 @@ export default function ForSchoolsPage() {
                   {t.ctaPrimary}
                 </button>
               </a>
-              <a href={`mailto:${CONTACT_EMAIL}`} style={{ textDecoration: "none" }}>
+              <a href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(QUESTION_SUBJECT)}`} style={{ textDecoration: "none" }}>
                 <button
                   className="pub-btn-outline"
                   data-testid="button-hero-email"
@@ -248,7 +259,7 @@ export default function ForSchoolsPage() {
           <section style={{ marginTop: 84 }}>
             <div style={{ textAlign: "center", marginBottom: 34 }}>
               <div style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", color: "#9FF5E8", fontSize: "clamp(15px,3vw,19px)", transform: "rotate(-1.5deg)", marginBottom: 8 }}>
-                the learner's app
+                {t.appEyebrow}
               </div>
               <h2 style={{ fontSize: "clamp(26px,5vw,40px)", fontWeight: 900, letterSpacing: "-1.2px", color: "#fff", margin: "0 0 12px", lineHeight: 1.08 }}>
                 {t.appHead}
@@ -280,7 +291,7 @@ export default function ForSchoolsPage() {
           <section style={{ marginTop: 84 }}>
             <div style={{ textAlign: "center", marginBottom: 34 }}>
               <div style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", color: "#FFB7E5", fontSize: "clamp(15px,3vw,19px)", transform: "rotate(-1.5deg)", marginBottom: 8 }}>
-                your three steps
+                {t.stepEyebrow}
               </div>
               <h2 style={{ fontSize: "clamp(26px,5vw,40px)", fontWeight: 900, letterSpacing: "-1.2px", color: "#fff", margin: "0 0 12px", lineHeight: 1.08 }}>
                 {t.stepHead}
@@ -312,7 +323,7 @@ export default function ForSchoolsPage() {
           <section style={{ marginTop: 84 }}>
             <div style={{ textAlign: "center", marginBottom: 34 }}>
               <div style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", color: "#C5B3FF", fontSize: "clamp(15px,3vw,19px)", transform: "rotate(-1.5deg)", marginBottom: 8 }}>
-                the fine print, unfined
+                {t.trustEyebrow}
               </div>
               <h2 style={{ fontSize: "clamp(26px,5vw,40px)", fontWeight: 900, letterSpacing: "-1.2px", color: "#fff", margin: "0 0 12px", lineHeight: 1.08 }}>
                 {t.trustHead}
@@ -351,7 +362,7 @@ export default function ForSchoolsPage() {
               {t.closeBody}
             </p>
             <div style={{ display: "flex", justifyContent: "center", gap: 14, flexWrap: "wrap" }}>
-              <a href={`mailto:${CONTACT_EMAIL}`} style={{ textDecoration: "none" }}>
+              <a href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(PARTNER_SUBJECT)}`} style={{ textDecoration: "none" }}>
                 <button
                   className="pub-btn"
                   data-testid="button-cta-apply"
@@ -359,7 +370,7 @@ export default function ForSchoolsPage() {
                   {t.closeCtaPrimary}
                 </button>
               </a>
-              <a href={`mailto:${CONTACT_EMAIL}`} style={{ textDecoration: "none" }}>
+              <a href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(QUESTION_SUBJECT)}`} style={{ textDecoration: "none" }}>
                 <button
                   className="pub-btn-outline"
                   data-testid="button-cta-email"

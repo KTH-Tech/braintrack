@@ -31,6 +31,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { useMemo, useState, useEffect, useRef } from "react";
+import { Button } from "@/components/ui/button";
 import { LearnerHeader } from "@/components/learner-header";
 import { SubjectBoostPack } from "@/components/performance-packs";
 import type { Subject, OnboardingResult, UserBadge } from "@shared/schema";
@@ -145,7 +146,7 @@ function NeonStat({ hex, icon: Icon, value, label }: { hex: string; icon: any; v
   return (
     <div
       className="relative rounded-2xl bg-[#050508] bg-[linear-gradient(#1b1922,#1b1922)] p-4 text-center overflow-hidden"
-      style={{ border: `1px solid ${hex}66` }}
+      style={{ border: `1px solid ${hex}` }}
     >
       <Icon className="w-5 h-5 mx-auto mb-1" style={{ color: hex }} />
       <p className="text-2xl font-bold text-white tabular-nums">{value}</p>
@@ -617,7 +618,7 @@ function LiteratureWorkDialog({
 
             <TabsContent value="essays" className="mt-4 max-h-[55vh] overflow-y-auto space-y-4">
               {data.essayFrameworks.length === 0 ? (
-                <p className="text-sm text-white py-4 text-center">{isAf ? "Opsteleraamwerke kom binnekort." : "Essay frameworks coming soon."}</p>
+                <p className="text-sm text-white py-4 text-center">{isAf ? "Opsteleraamwerke word nog voorberei." : "Essay frameworks being prepared."}</p>
               ) : data.essayFrameworks.map((e, i) => (
                 <div key={i} className="rounded-xl bg-[#1b1922] border border-[#1b1922] p-3" data-testid={`lit-essay-${i}`}>
                   <p className="text-sm font-bold text-white">"{e.prompt}"</p>
@@ -790,7 +791,7 @@ export default function SubjectDetailPage() {
     queryKey: ["/api/subjects", id],
   });
 
-  const { data: mastery, isLoading: masteryLoading } = useQuery<SubjectMastery>({
+  const { data: mastery, isLoading: masteryLoading, isError: masteryError, refetch: refetchMastery } = useQuery<SubjectMastery>({
     queryKey: ["/api/subjects", id, "mastery", language],
     queryFn: () => fetch(`/api/subjects/${id}/mastery?lang=${language}`, { credentials: "include" }).then(r => { if (!r.ok) throw new Error(`mastery fetch failed: ${r.status}`); return r.json(); }),
   });
@@ -1014,7 +1015,7 @@ export default function SubjectDetailPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 overflow-x-hidden">
         <div className="space-y-6">
           <Link href="/subjects">
-            <button data-testid="button-back" className="inline-flex items-center px-4 py-2 rounded-xl bg-[#1b1922] text-sm font-bold" style={{ color: "#9FF5E8", border: "1.5px solid #9FF5E8" }}>
+            <button data-testid="button-back" className="inline-flex items-center px-4 py-2 min-h-[40px] rounded-xl bg-[#1b1922] text-sm font-bold" style={{ color: "#9FF5E8", border: "1.5px solid #9FF5E8" }}>
               <ArrowLeft className="w-4 h-4 mr-1" />
               {isAf ? "Alle Vakke" : "All Subjects"}
             </button>
@@ -1038,7 +1039,7 @@ export default function SubjectDetailPage() {
               <div
                 className="relative overflow-hidden rounded-3xl border bg-[#050508] bg-[linear-gradient(#1b1922,#1b1922)] p-6 sm:p-8"
                 style={{
-                  borderColor: `${hex}44`,
+                  borderColor: hex,
                   animation: "bt-fadeup .5s cubic-bezier(.22,1,.36,1) both",
                 }}
                 data-testid="subject-hero"
@@ -1138,6 +1139,41 @@ export default function SubjectDetailPage() {
             </div>
           )}
 
+          {/* Mastery fetch failed — without this branch every mastery-driven
+              section below silently vanished. Retry re-runs the existing query. */}
+          {masteryError && (
+            <div
+              className="p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4"
+              style={{
+                background: "#0e0d12",
+                border: "1.5px solid #FF8DA1",
+                borderRadius: 18,
+                boxShadow: "4px 4px 0 0 #FF8DA1",
+              }}
+              data-testid="mastery-error-card"
+            >
+              <div className="flex-1 min-w-0">
+                <p className="font-black text-base text-white">
+                  {isAf ? "Kon nie jou vorderingsdata laai nie" : "Couldn't load your progress data"}
+                </p>
+                <p className="text-sm text-white mt-1 leading-relaxed">
+                  {isAf
+                    ? "Jou bemeestering- en plan-afdelings kan nie nou gewys word nie. Probeer weer."
+                    : "Your mastery and plan sections can't be shown right now. Try again."}
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="primary"
+                className="shrink-0"
+                onClick={() => refetchMastery()}
+                data-testid="button-mastery-retry"
+              >
+                {isAf ? "Probeer weer" : "Try again"}
+              </Button>
+            </div>
+          )}
+
           {subject && (() => {
             const weakestTopicForShortcut = mastery && mastery.topics.length > 0
               ? [...mastery.topics].sort((a, b) => a.masteryScore - b.masteryScore)[0]
@@ -1151,18 +1187,20 @@ export default function SubjectDetailPage() {
             return (
             <div className="grid gap-3 sm:grid-cols-2" data-testid="exam-shortcuts">
               <Link href={miniMockHref}>
-                <button
-                  className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-[#050508] bg-[linear-gradient(#1b1922,#1b1922)] text-left transition-all hover:-translate-y-1.5"
-                  style={{ border: "1.5px solid #FFE29A" }}
+                {/* Primary CTA — shared rainbow Button (dark ink on the
+                    rainbow sticker), layout preserved via className overrides. */}
+                <Button
+                  variant="primary"
+                  className="w-full h-auto min-h-[44px] justify-between gap-3 px-4 py-3 text-left normal-case tracking-normal whitespace-normal transition-all hover:-translate-y-1.5"
                   data-testid="button-mini-mock-shortcut"
                 >
                   <div className="flex items-center gap-3">
-                    <Zap className="w-5 h-5" style={{ color: "#FFE29A" }} />
+                    <Zap className="w-5 h-5" style={{ color: "#050508" }} />
                     <div>
-                      <p className="font-black text-sm text-white uppercase tracking-[0.14em]">
+                      <p className="font-black text-sm text-[#050508] uppercase tracking-[0.14em]">
                         {isAf ? "Mini Mock" : "Mini Mock"}
                       </p>
-                      <p className="text-[11px] text-white" data-testid="text-mini-mock-shortcut-subtitle">
+                      <p className="text-[11px] text-[#050508]" data-testid="text-mini-mock-shortcut-subtitle">
                         {weakestTopicLabel
                           ? (isAf
                             ? `Fokus op swakste onderwerp: ${weakestTopicLabel}`
@@ -1171,8 +1209,8 @@ export default function SubjectDetailPage() {
                       </p>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5" style={{ color: "#FFE29A" }} />
-                </button>
+                  <ChevronRight className="w-5 h-5" style={{ color: "#050508" }} />
+                </Button>
               </Link>
               <Link href={`/exam/full?subject=${encodeURIComponent(subject.name)}`}>
                 <button
@@ -1302,6 +1340,9 @@ export default function SubjectDetailPage() {
               </div>
 
               <CosmicCard color="cyan" className="p-5" data-testid="current-vs-target">
+                <span aria-hidden className="block mb-1" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}>
+                  {isAf ? "waar jy staan ✦" : "where you stand ✦"}
+                </span>
                 <div className="flex items-center justify-between gap-4 flex-wrap mb-3">
                   <div className="flex items-center gap-2">
                     <Target className="w-5 h-5" style={{ color: "#9FF5E8" }} />
@@ -1370,11 +1411,11 @@ export default function SubjectDetailPage() {
                   {isBST && (
                     <Link href="/bst-exam">
                       <button
-                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#1b1922] text-sm font-bold transition-all hover:scale-[1.02]"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 min-h-[40px] rounded-xl bg-[#1b1922] text-sm font-bold transition-all hover:scale-[1.02]"
                         style={{ border: "1.5px solid #FFE29A", color: "#FFE29A" }}
                         data-testid="button-crunch-time"
                       >
-                        <Shield className="w-3.5 h-3.5" /> Crunch Time
+                        <Shield className="w-3.5 h-3.5" /> {isAf ? "Eksamentyd" : "Crunch Time"}
                       </button>
                     </Link>
                   )}
@@ -1418,9 +1459,9 @@ export default function SubjectDetailPage() {
                           ? `Fokus op jou swakste onderwerp: ${weakestTopic.nameAfrikaans || weakestTopic.name} (${weakestTopic.masteryScore}%)`
                           : `Focus on your weakest topic: ${weakestTopic.name} (${weakestTopic.masteryScore}%)`}
                       </p>
-                      <button
-                        className="w-full px-4 py-2 rounded-xl bg-[#1b1922] text-sm font-bold transition-all hover:scale-[1.02]"
-                        style={{ color: "#FFE29A", border: "1.5px solid #FFE29A" }}
+                      <Button
+                        variant="primary"
+                        className="w-full"
                         onClick={() => {
                           setRecommendedTopicFocus(weakestTopic.name);
                           const el = document.getElementById("boost-quiz-section");
@@ -1429,7 +1470,7 @@ export default function SubjectDetailPage() {
                         data-testid="button-recommended-quiz"
                       >
                         {isAf ? "Begin Vasvraag" : "Start Quiz"} →
-                      </button>
+                      </Button>
                     </CosmicCard>
 
                     <CosmicCard color="purple" className="p-5 space-y-3" data-testid="revision-mode-card">
@@ -1478,6 +1519,9 @@ export default function SubjectDetailPage() {
             {/* ── TOPICS tab ── */}
             <TabsContent value="topics" className="mt-6">
               <CosmicCard color="cyan" className="p-5">
+                <span aria-hidden className="block mb-1" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}>
+                  {isAf ? "vak vir vak 🎯" : "topic by topic 🎯"}
+                </span>
                 <div className="flex items-center gap-2 mb-4">
                   <Target className="w-5 h-5" style={{ color: "#9FF5E8" }} />
                   <h3 className="font-bold text-base text-white">{isAf ? "Onderwerp Bemeestering" : "Topic Mastery"}</h3>
@@ -1495,7 +1539,7 @@ export default function SubjectDetailPage() {
                         <div
                           key={topic.id}
                           className="p-4 rounded-xl bg-[#1b1922] transition-all duration-200 hover:-translate-y-px"
-                          style={{ border: `1px solid ${tHex}55` }}
+                          style={{ border: `1px solid ${tHex}` }}
                           data-testid={`topic-mastery-${topic.id}`}
                         >
                           <div className="flex items-start justify-between gap-4 flex-wrap mb-2">
@@ -1569,15 +1613,15 @@ export default function SubjectDetailPage() {
                                   capsCode: topic.capsCode,
                                 })}
                                 disabled={!hasContent}
-                                className={`mt-3 w-full inline-flex flex-col items-center justify-center gap-0.5 py-2 rounded-xl bg-[#1b1922] text-[11px] font-black uppercase tracking-[0.18em] transition-all ${hasContent ? "hover:scale-[1.01] cursor-pointer" : "opacity-40 cursor-not-allowed"}`}
-                                style={{ color: tHex, border: `1.5px solid ${tHex}` }}
+                                className={`mt-3 w-full inline-flex flex-col items-center justify-center gap-0.5 py-2 min-h-[40px] rounded-xl bg-[#1b1922] text-[11px] font-black uppercase tracking-[0.18em] transition-all ${hasContent ? "hover:scale-[1.01] cursor-pointer" : "cursor-not-allowed"}`}
+                                style={{ color: hasContent ? tHex : "#FF8DA1", border: `1.5px solid ${hasContent ? tHex : "#FF8DA1"}` }}
                                 data-testid={`button-topic-content-${topic.id}`}
                               >
                                 <span className="flex items-center gap-2">
                                   <FileText className="w-3.5 h-3.5" />
                                   {isAf ? "Notas & Oefenkaarte" : "Notes & Practice Cards"}
                                 </span>
-                                <span className="text-[9px] font-semibold normal-case tracking-normal opacity-[.85]">
+                                <span className="text-[9px] font-semibold normal-case tracking-normal text-white">
                                   {badgeLabel}
                                 </span>
                               </button>
@@ -1585,9 +1629,10 @@ export default function SubjectDetailPage() {
                           })()}
                           {(() => {
                             const qCount = topic.quizQuestionCount ?? 0;
-                            const quizBadgeLabel = qCount > 0
+                            const hasQuestions = qCount > 0;
+                            const quizBadgeLabel = hasQuestions
                               ? `${qCount} ${isAf ? "vrae beskikbaar" : "questions available"}`
-                              : (isAf ? "Vrae word voorberei" : "Coming soon");
+                              : (isAf ? "Vrae word voorberei" : "Questions being prepared");
                             return (
                               <button
                                 type="button"
@@ -1600,15 +1645,16 @@ export default function SubjectDetailPage() {
                                     subjectName: isAf ? (subject.nameAfrikaans || subject.name) : subject.name,
                                   });
                                 }}
-                                className="mt-2 w-full inline-flex flex-col items-center justify-center gap-0.5 py-2 rounded-xl bg-[#1b1922] text-[11px] font-black uppercase tracking-[0.18em] transition-all hover:scale-[1.01] cursor-pointer"
-                                style={{ color: tHex, border: `1.5px solid ${tHex}` }}
+                                disabled={!hasQuestions}
+                                className={`mt-2 w-full inline-flex flex-col items-center justify-center gap-0.5 py-2 min-h-[40px] rounded-xl bg-[#1b1922] text-[11px] font-black uppercase tracking-[0.18em] transition-all ${hasQuestions ? "hover:scale-[1.01] cursor-pointer" : "cursor-not-allowed"}`}
+                                style={{ color: hasQuestions ? tHex : "#FF8DA1", border: `1.5px solid ${hasQuestions ? tHex : "#FF8DA1"}` }}
                                 data-testid={`button-quiz-topic-${topic.id}`}
                               >
                                 <span className="flex items-center gap-2">
                                   <Zap className="w-3.5 h-3.5" />
                                   {isAf ? "Kwis Hierdie Onderwerp" : "Quiz this topic"}
                                 </span>
-                                <span className="text-[9px] font-semibold normal-case tracking-normal opacity-[.85]">
+                                <span className="text-[9px] font-semibold normal-case tracking-normal text-white">
                                   {quizBadgeLabel}
                                 </span>
                               </button>
@@ -1648,6 +1694,9 @@ export default function SubjectDetailPage() {
             {/* ── PLAN tab ── */}
             <TabsContent value="plan" className="space-y-6 mt-6">
               <CosmicCard color="blue" className="p-5">
+                <span aria-hidden className="block mb-1" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: "#9FD8FF", transform: "rotate(-2deg)", display: "inline-block" }}>
+                  {isAf ? "jou week 📅" : "your week 📅"}
+                </span>
                 <div className="flex items-center gap-2 mb-4">
                   <Calendar className="w-5 h-5" style={{ color: "#9FD8FF" }} />
                   <h3 className="font-bold text-base text-white">{isAf ? "Persoonlike Studieplan" : "Personalized Study Plan"}</h3>
@@ -1667,7 +1716,7 @@ export default function SubjectDetailPage() {
                         <div
                           key={idx}
                           className="flex items-center justify-between gap-3 p-3 rounded-xl bg-[#1b1922] transition-all duration-200 hover:-translate-y-px"
-                          style={{ border: `1px solid ${pHex}55` }}
+                          style={{ border: `1px solid ${pHex}` }}
                           data-testid={`plan-item-${idx}`}
                         >
                           <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -1720,7 +1769,7 @@ export default function SubjectDetailPage() {
                         <div
                           key={badge.id}
                           className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#1b1922]"
-                          style={{ border: "1px solid #FFE29A44" }}
+                          style={{ border: "1px solid #FFE29A" }}
                           data-testid={`badge-${badge.badgeCode}`}
                         >
                           <IconComp className="w-4 h-4" style={{ color: "#FFE29A" }} />
@@ -1742,6 +1791,9 @@ export default function SubjectDetailPage() {
                 const hasAnySelection = litCategories.some(cat => litSelections[cat.type]);
                 return (
                   <CosmicCard color="cyan" className="p-5" data-testid="card-literature-selection">
+                    <span aria-hidden className="block mb-1" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}>
+                      {isAf ? "jou boeke 📚" : "your set works 📚"}
+                    </span>
                     <div className="flex items-center justify-between gap-3 flex-wrap mb-2">
                       <h3 className="flex items-center gap-2 font-bold text-base text-white">
                         <BookMarked className="w-5 h-5" style={{ color: "#9FF5E8" }} />
@@ -1786,7 +1838,7 @@ export default function SubjectDetailPage() {
                                 <div
                                   key={w.id}
                                   className="flex items-start justify-between gap-2 rounded-xl bg-[#1b1922] p-3"
-                                  style={{ border: "1px solid #9FF5E833" }}
+                                  style={{ border: "1px solid #9FF5E8" }}
                                   data-testid={`lit-work-card-${w.id}`}
                                 >
                                   <div className="min-w-0 flex-1">
@@ -1891,6 +1943,9 @@ export default function SubjectDetailPage() {
               })()}
 
               <CosmicCard color="blue" className="p-5">
+                <span aria-hidden className="block mb-1" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 15, color: "#9FD8FF", transform: "rotate(-2deg)", display: "inline-block" }}>
+                  {isAf ? "reguit van die DBE 🏛" : "straight from the DBE 🏛"}
+                </span>
                 <div className="flex items-center gap-2 mb-4">
                   <ExternalLink className="w-5 h-5" style={{ color: "#9FD8FF" }} />
                   <h3 className="font-bold text-base text-white">{isAf ? "Amptelike Bronne" : "Official Sources"}</h3>
@@ -1907,7 +1962,7 @@ export default function SubjectDetailPage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 p-2.5 rounded-xl bg-[#1b1922] text-sm font-semibold text-white hover:text-white transition-all hover:-translate-y-px"
-                      style={{ border: "1px solid #9FD8FF55" }}
+                      style={{ border: "1px solid #9FD8FF" }}
                       data-testid={lnk.tid}
                     >
                       <ExternalLink className="w-3 h-3 shrink-0" style={{ color: "#9FD8FF" }} />

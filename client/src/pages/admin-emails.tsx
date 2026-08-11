@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLanguage } from "@/lib/language-context";
@@ -6,7 +6,7 @@ import { AdminTopNav } from "@/components/admin-top-nav";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import {
-  AdminGround, NeonShell, AdminBadge, AdminButton,
+  AdminGround, NeonShell, AdminBadge, AdminButton, AdminAlert,
   adminInputClass, adminInputStyle, halo, type NeonHex,
 } from "@/components/admin-ui";
 import {
@@ -123,22 +123,26 @@ export default function AdminEmailsPage() {
   const [settingsLoaded, setSettingsLoaded] = useState(false);
   const [settingsTestResult, setSettingsTestResult] = useState<SendResponse | null>(null);
 
-  const { data: emailConfig, isLoading: isConfigLoading } = useQuery<EmailConfig>({
+  const { data: emailConfig, isLoading: isConfigLoading, isError: isConfigError, refetch: refetchConfig } = useQuery<EmailConfig>({
     queryKey: ["/api/admin/email-config"],
     queryFn: async () => {
       const res = await fetch("/api/admin/email-config", { credentials: "include" });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return res.json();
     },
-    onSuccess: (cfg: EmailConfig) => {
-      if (!settingsLoaded) {
-        setFromEmailInput(cfg.fromEmail);
-        setFromNameInput(cfg.fromName);
-        setReplyToInput(cfg.replyTo);
-        setSettingsLoaded(true);
-      }
-    },
-  } as any);
+  });
+
+  // react-query v5 dropped per-query onSuccess — populate the settings form
+  // from the fetched config via an effect instead (same pattern as
+  // admin-partner-branding's schedule config).
+  useEffect(() => {
+    if (emailConfig && !settingsLoaded) {
+      setFromEmailInput(emailConfig.fromEmail);
+      setFromNameInput(emailConfig.fromName);
+      setReplyToInput(emailConfig.replyTo);
+      setSettingsLoaded(true);
+    }
+  }, [emailConfig, settingsLoaded]);
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -353,6 +357,18 @@ export default function AdminEmailsPage() {
       {/* ── SETTINGS TAB ── */}
       {activeTab === "settings" && (
         <div className="max-w-2xl mx-auto px-4 py-8">
+          {isConfigError && (
+            <AdminAlert
+              className="mb-6"
+              testId="config-load-error"
+              onRetry={() => refetchConfig()}
+              retryLabel={isAf ? "Probeer weer" : "Retry"}
+            >
+              {isAf
+                ? "Kon nie e-poskonfigurasie laai nie. Die vorm hieronder wys nie die gestoorde waardes nie."
+                : "Could not load email configuration. The form below does not reflect saved values."}
+            </AdminAlert>
+          )}
           {!isConfigLoading && emailConfig && (
             <div
               data-testid="config-status-banner"

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/lib/language-context";
@@ -82,6 +82,10 @@ const T = {
     coinsLabel: "coins",
     mysteryRewardTitle: "Mystery Box Reward!",
     mysteryThanks: "Nice!",
+    shelfError: "The shelf couldn't load",
+    shelfErrorDesc: "Something went wrong fetching the power-ups. Reload the page to try again.",
+    shelfEmpty: "Nothing on the shelf right now",
+    shelfEmptyDesc: "Power-ups will appear here as soon as they're available.",
   },
   af: {
     pageTitle: "Leerderwinkel",
@@ -105,6 +109,10 @@ const T = {
     coinsLabel: "munte",
     mysteryRewardTitle: "Raaiselkas Beloning!",
     mysteryThanks: "Dankie!",
+    shelfError: "Die rak kon nie laai nie",
+    shelfErrorDesc: "Iets het verkeerd geloop met die hupstote. Herlaai die bladsy om weer te probeer.",
+    shelfEmpty: "Niks op die rak op die oomblik nie",
+    shelfEmptyDesc: "Hupstote verskyn hier sodra hulle beskikbaar is.",
   },
 } as const;
 
@@ -121,12 +129,15 @@ export default function StorePage() {
   const [confirmItem, setConfirmItem] = useState<StoreItem | null>(null);
   const [mysteryReward, setMysteryReward] = useState<MysteryReward | null>(null);
 
-  if (user?.role === "parent") {
-    navigate("/parent");
-    return null;
-  }
+  /* Parents get redirected to their own dashboard. The redirect runs in an
+     effect (never during render) and the early `return null` sits AFTER every
+     hook call below, so the rules of hooks hold on every render path. */
+  const isParent = user?.role === "parent";
+  useEffect(() => {
+    if (isParent) navigate("/parent");
+  }, [isParent, navigate]);
 
-  const { data: storeData, isLoading } = useQuery<{
+  const { data: storeData, isLoading, isError: storeError } = useQuery<{
     items: StoreItem[];
     userUnlocks: string[];
     coinBalance: number;
@@ -206,6 +217,8 @@ export default function StorePage() {
     unlockMutation.mutate({ itemKey: confirmItem.key, method: "coins" });
   };
 
+  if (isParent) return null;
+
   return (
     <div className="min-h-screen text-white relative overflow-hidden" style={{ background: "#050508", fontFamily: "'Poppins',sans-serif" }}>
       <LearnerHeader
@@ -265,6 +278,23 @@ export default function StorePage() {
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="animate-pulse" style={{ height: 220, borderRadius: 22, background: "#0e0d12", border: "1px solid #1b1922" }} />
             ))}
+          </div>
+        ) : visibleItems.length === 0 ? (
+          /* Shelf settled but has nothing to show — branded card instead of a
+             blank gap. Alert-pink when the query failed, pastel when the API
+             simply returned no real power-ups. */
+          <div
+            className="relative text-center px-6 py-12"
+            style={{
+              background: "linear-gradient(#0e0d12, #0e0d12), #050508",
+              border: `1.5px solid ${storeError ? "#FF8DA1" : "#C5B3FF"}`,
+              borderRadius: 22,
+            }}
+            data-testid="store-shelf-empty"
+          >
+            <ShoppingBag className="w-8 h-8 mx-auto mb-3" style={{ color: storeError ? "#FF8DA1" : "#C5B3FF" }} />
+            <p className="text-lg font-black text-white">{storeError ? t.shelfError : t.shelfEmpty}</p>
+            <p className="text-sm text-white mt-1 max-w-md mx-auto">{storeError ? t.shelfErrorDesc : t.shelfEmptyDesc}</p>
           </div>
         ) : (
           <div className="relative grid grid-cols-1 sm:grid-cols-3 gap-5">

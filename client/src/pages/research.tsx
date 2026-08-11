@@ -176,8 +176,8 @@ export default function ResearchPage() {
   const t = COPY[language];
 
   useSEO({
-    title: "Research | BrainTrack™ Learning Science Behind Grade 12 Matric Prep",
-    description: "BrainTrack™ is built on spaced repetition, active recall and 10 years of real NSC exam patterns. Discover the learning science powering CAPS-aligned Matric preparation.",
+    title: "Research | The Science Behind BrainTrack™ Matric Prep",
+    description: "Spaced repetition, active recall and 10 years of NSC exam patterns — the learning science behind BrainTrack's CAPS-aligned Grade 12 Matric prep.",
     canonical: "https://braintrack.tech/research",
     ogTitle: "The Science Behind BrainTrack™ — Why It Improves Matric Marks",
     ogDescription: "Spaced repetition, active recall, and 10 years of NSC exam data power every BrainTrack feature. Learn the research behind South Africa's Grade 12 prep platform.",
@@ -285,7 +285,7 @@ export default function ResearchPage() {
                     <span style={{ color: "#fff" }}>{rb.topic}</span>
                     <span style={{ color: rb.color, whiteSpace: "nowrap" }}>{rb.freq}</span>
                   </div>
-                  <div style={{ height: 14, borderRadius: 999, background: "#141418", border: "2px solid #050508", overflow: "hidden" }}>
+                  <div style={{ height: 14, borderRadius: 999, background: "#0e0d12", border: "2px solid #050508", overflow: "hidden" }}>
                     <div
                       style={{
                         height: "100%", width: `${rb.pct}%`, borderRadius: 999,

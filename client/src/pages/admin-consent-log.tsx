@@ -23,12 +23,18 @@ interface ConsentLogRow {
   createdAt: string;
 }
 
-const TYPE_LABELS: Record<ConsentLogRow["consentType"], string> = {
-  terms_of_service: "Terms of Service",
-  privacy_policy: "Privacy Policy",
-  cookie: "Cookie",
-  parental: "Parental",
-  billing: "Billing",
+const TYPE_LABELS: Record<ConsentLogRow["consentType"], { en: string; af: string }> = {
+  terms_of_service: { en: "Terms of Service", af: "Diensvoorwaardes" },
+  privacy_policy: { en: "Privacy Policy", af: "Privaatheidsbeleid" },
+  cookie: { en: "Cookie", af: "Koekie" },
+  parental: { en: "Parental", af: "Ouerlik" },
+  billing: { en: "Billing", af: "Fakturering" },
+};
+
+const ACTION_LABELS: Record<ConsentLogRow["action"], { en: string; af: string }> = {
+  granted: { en: "granted", af: "toegestaan" },
+  revoked: { en: "revoked", af: "herroep" },
+  updated: { en: "updated", af: "bygewerk" },
 };
 
 const TYPE_COLOURS: Record<ConsentLogRow["consentType"], NeonHex> = {
@@ -129,10 +135,10 @@ export default function AdminConsentLogPage() {
                     {rows.map((row) => (
                       <tr key={row.id} className={adminTrClass} data-testid={`consent-row-${row.id}`}>
                         <td className={adminTdClass}>
-                          <AdminBadge color={TYPE_COLOURS[row.consentType]}>{TYPE_LABELS[row.consentType]}</AdminBadge>
+                          <AdminBadge color={TYPE_COLOURS[row.consentType]}>{isAf ? TYPE_LABELS[row.consentType].af : TYPE_LABELS[row.consentType].en}</AdminBadge>
                         </td>
                         <td className={adminTdClass}>
-                          <AdminBadge color={ACTION_COLOURS[row.action]}>{row.action}</AdminBadge>
+                          <AdminBadge color={ACTION_COLOURS[row.action]}>{isAf ? ACTION_LABELS[row.action].af : ACTION_LABELS[row.action].en}</AdminBadge>
                         </td>
                         <td className={`${adminTdClass} font-mono`}>{row.version || "—"}</td>
                         <td className={`${adminTdClass} whitespace-nowrap tabular-nums`}>
@@ -160,7 +166,7 @@ export default function AdminConsentLogPage() {
             </h2>
             <NeonShell color="#9FD8FF" className="p-5" testId="consent-metadata-panel">
               <pre className="text-xs text-white font-mono rounded-xl p-3 overflow-x-auto whitespace-pre-wrap" style={{ background: "#050508", border: "1px solid #1b1922" }}>
-                {JSON.stringify(rows[0].metadata, null, 2) ?? "null"}
+                {JSON.stringify(rows[0].metadata, null, 2)}
               </pre>
             </NeonShell>
           </section>

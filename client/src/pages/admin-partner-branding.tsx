@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { useLanguage } from "@/lib/language-context";
 import { AdminTopNav } from "@/components/admin-top-nav";
-import { NeonShell } from "@/components/admin-ui";
+import { NeonShell, AdminAlert } from "@/components/admin-ui";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Building2, Upload, Trash2, CheckCircle, Loader2, ImageIcon, Calendar, Clock, Send, History, ToggleLeft, ToggleRight } from "lucide-react";
 
@@ -67,12 +67,21 @@ function StatusBadge({ status, errorMessage, isAf }: { status: string; errorMess
       : status === "failed"
         ? { bg: "rgba(255,141,161,0.15)", border: "#FF8DA1", text: "#FF8DA1" }
         : { bg: "rgba(159,216,255,0.15)", border: "#9FD8FF", text: "#9FD8FF" };
+  // Translate the known statuses; unknown values fall back to the raw string.
+  const label =
+    status === "sent"
+      ? (isAf ? "Gestuur" : "Sent")
+      : status === "failed"
+        ? (isAf ? "Misluk" : "Failed")
+        : status === "skipped"
+          ? (isAf ? "Oorgeslaan" : "Skipped")
+          : status;
   return (
     <span
       className="inline-block text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full"
       style={{ background: color.bg, border: `1px solid ${color.border}`, color: color.text }}
     >
-      {status}
+      {label}
     </span>
   );
 }
@@ -90,7 +99,7 @@ export default function AdminPartnerBrandingPage() {
   const [localLogoPreview, setLocalLogoPreview] = useState<string | null>(null);
   const [clearLogo, setClearLogo] = useState(false);
 
-  const { data, isLoading } = useQuery<PartnerBranding>({
+  const { data, isLoading, isError: brandingError, refetch: refetchBranding } = useQuery<PartnerBranding>({
     queryKey: ["/api/admin/partner-branding"],
     select: (d) => d,
   });
@@ -109,7 +118,7 @@ export default function AdminPartnerBrandingPage() {
   const [scheduleSendHourSast, setScheduleSendHourSast] = useState(7);
   const [scheduleLoaded, setScheduleLoaded] = useState(false);
 
-  const { data: scheduleData, isLoading: scheduleLoading } = useQuery<{ config: ReportScheduleConfig }>({
+  const { data: scheduleData, isLoading: scheduleLoading, isError: scheduleError, refetch: refetchSchedule } = useQuery<{ config: ReportScheduleConfig }>({
     queryKey: ["/api/admin/report-schedule"],
   });
 
@@ -125,11 +134,11 @@ export default function AdminPartnerBrandingPage() {
     }
   }, [scheduleData, scheduleLoaded]);
 
-  const { data: sendLogData, isLoading: sendLogLoading, refetch: refetchLog } = useQuery<{ log: SendLogEntry[] }>({
+  const { data: sendLogData, isLoading: sendLogLoading, isError: sendLogError, refetch: refetchLog } = useQuery<{ log: SendLogEntry[] }>({
     queryKey: ["/api/admin/report-schedule/send-log"],
   });
 
-  const { data: optOutLogData, isLoading: optOutLogLoading } = useQuery<{ log: OptOutLogEntry[] }>({
+  const { data: optOutLogData, isLoading: optOutLogLoading, isError: optOutLogError, refetch: refetchOptOutLog } = useQuery<{ log: OptOutLogEntry[] }>({
     queryKey: ["/api/admin/report-schedule/opt-out-log"],
   });
 
@@ -284,6 +293,10 @@ export default function AdminPartnerBrandingPage() {
             <div className="flex items-center justify-center py-20">
               <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#C5B3FF" }} />
             </div>
+          ) : brandingError ? (
+            <AdminAlert testId="branding-load-error" onRetry={() => refetchBranding()} retryLabel={isAf ? "Probeer weer" : "Retry"}>
+              {isAf ? "Kon nie vennoothandels-instellings laai nie." : "Could not load partner branding settings."}
+            </AdminAlert>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Left: Form */}
@@ -307,7 +320,7 @@ export default function AdminPartnerBrandingPage() {
                       placeholder={isAf ? "bv. Hoërskool Stellenbosch" : "e.g. Stellenbosch High School"}
                       maxLength={80}
                       data-testid="input-partner-name"
-                      className="w-full rounded-xl bg-black text-white text-sm px-4 py-3 outline-none focus:ring-2 placeholder-white/85"
+                      className="w-full rounded-xl bg-black text-white text-sm px-4 py-3 outline-none focus:ring-2 placeholder-white"
                       style={{ border: "1px solid rgba(197,179,255,0.4)" }}
                     />
                     <p className="mt-1.5 text-[10px] text-white">
@@ -375,6 +388,10 @@ export default function AdminPartnerBrandingPage() {
                     {isAf ? "Hierdie is 'n benadering van hoe die PDF-kopstuk sal lyk." : "This approximates how the PDF header will look."}
                   </p>
 
+                  {/* PDF-mimic preview: the off-palette colours here (#1e1b4b
+                      indigo ground, #c4b5fd lavender text) deliberately mirror
+                      the generated parent-report PDF header, NOT the admin
+                      dialect — do not "fix" them to admin tokens. */}
                   <div className="rounded-xl overflow-hidden" style={{ background: "#1e1b4b" }} data-testid="report-header-preview">
                     <div className="px-5 py-4">
                       <div className="text-2xl font-black text-white" style={{ fontFamily: "'Poppins', system-ui, sans-serif" }}>BrainTrack™</div>
@@ -429,6 +446,10 @@ export default function AdminPartnerBrandingPage() {
             <div className="flex items-center justify-center py-10">
               <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#FFE29A" }} />
             </div>
+          ) : scheduleError ? (
+            <AdminAlert testId="schedule-load-error" onRetry={() => refetchSchedule()} retryLabel={isAf ? "Probeer weer" : "Retry"}>
+              {isAf ? "Kon nie skedule-instellings laai nie." : "Could not load schedule settings."}
+            </AdminAlert>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Left: Schedule config */}
@@ -656,6 +677,10 @@ export default function AdminPartnerBrandingPage() {
                 <div className="flex items-center justify-center py-8">
                   <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#9FD8FF" }} />
                 </div>
+              ) : sendLogError ? (
+                <AdminAlert testId="send-log-load-error" onRetry={() => refetchLog()} retryLabel={isAf ? "Probeer weer" : "Retry"}>
+                  {isAf ? "Kon nie die stuurlys laai nie." : "Could not load the send log."}
+                </AdminAlert>
               ) : sendLog.length === 0 ? (
                 <div className="text-center py-8">
                   <History className="w-10 h-10 mx-auto mb-3 opacity-20" />
@@ -740,6 +765,10 @@ export default function AdminPartnerBrandingPage() {
                 <div className="flex items-center justify-center py-8">
                   <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#FFE29A" }} />
                 </div>
+              ) : optOutLogError ? (
+                <AdminAlert testId="opt-out-log-load-error" onRetry={() => refetchOptOutLog()} retryLabel={isAf ? "Probeer weer" : "Retry"}>
+                  {isAf ? "Kon nie die afmeld-geskiedenis laai nie." : "Could not load the opt-out history."}
+                </AdminAlert>
               ) : (optOutLogData?.log ?? []).length === 0 ? (
                 <div className="text-center py-8">
                   <History className="w-10 h-10 mx-auto mb-3 opacity-20" />

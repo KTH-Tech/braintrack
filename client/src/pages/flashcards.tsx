@@ -5,9 +5,11 @@ import { useLanguage } from "@/lib/language-context";
 import { LearnerHeader } from "@/components/learner-header";
 import { GraffitiSplats, GraffitiMark } from "@/components/graffiti-splats";
 import {
+  AlertCircle,
   ArrowLeft,
   Brain,
   Layers,
+  RefreshCw,
   RotateCcw,
   Zap,
   Trophy,
@@ -66,7 +68,13 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
 
   // Pre-seeded deck sourced from dbe_verbatim_questions, scoped server-side
   // to the learner's onboarding-selected subjects.
-  const { data: deckData, isLoading: deckLoading } = useQuery<{ cards: FlashcardDef[] }>({
+  const {
+    data: deckData,
+    isLoading: deckLoading,
+    error: deckError,
+    refetch: refetchDeck,
+    isRefetching: deckRefetching,
+  } = useQuery<{ cards: FlashcardDef[] }>({
     queryKey: ["/api/flashcards/deck", isAf ? "af" : "en"],
     queryFn: async () => {
       const r = await fetch(`/api/flashcards/deck?lang=${isAf ? "af" : "en"}`, { credentials: "include" });
@@ -121,9 +129,11 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
     totalCards: number;
   }>({
     queryKey: [`/api/subjects/${selectedSubjectId}/topic-flashcards`, isAf ? "af" : "en"],
-    queryFn: () =>
-      fetch(`/api/subjects/${selectedSubjectId}/topic-flashcards?lang=${isAf ? "af" : "en"}`, { credentials: "include" })
-        .then(r => r.json()),
+    queryFn: async () => {
+      const r = await fetch(`/api/subjects/${selectedSubjectId}/topic-flashcards?lang=${isAf ? "af" : "en"}`, { credentials: "include" });
+      if (!r.ok) throw new Error(`Topic deck load failed: ${r.status}`);
+      return r.json();
+    },
     enabled: selectedSubject !== "all" && !!selectedSubjectId,
   });
 
@@ -375,7 +385,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
 
   if (deckLoading) {
     return (
-      <div className="rounded-2xl border border-dashed border-[#1b1922] p-8 text-center space-y-3" style={{ background: "linear-gradient(#1b1922, #1b1922), #050508", animation: "bt-fadeup .4s both" }}>
+      <div className="rounded-2xl border border-dashed border-[#1b1922] p-8 text-center space-y-3" style={{ background: "#0e0d12", animation: "bt-fadeup .4s both" }}>
         <Layers className="w-10 h-10 mx-auto" style={{ color: "#9FD8FF", animation: "bt-pulse 1.6s ease-in-out infinite" }} />
         <p className="text-sm text-white">
           {isAf ? "Laai amptelike DBE-flitskaarte..." : "Loading official DBE flashcards..."}
@@ -385,9 +395,53 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
     );
   }
 
+  if (deckError) {
+    return (
+      <div
+        className="p-8 text-center space-y-4 flex flex-col items-center"
+        style={{ background: "#0e0d12", border: "1.5px solid #FF8DA1", borderRadius: 18 }}
+        data-testid="flashcards-deck-error"
+      >
+        <div
+          className="w-14 h-14 rounded-2xl flex items-center justify-center"
+          style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #FF8DA1" }}
+        >
+          <AlertCircle className="w-7 h-7" style={{ color: "#FF8DA1" }} />
+        </div>
+        <div className="space-y-1">
+          <h3 className="text-lg font-bold text-white">
+            {isAf ? "Kon nie jou flitskaarte laai nie" : "Couldn't load your flashcards"}
+          </h3>
+          <p className="text-sm text-white max-w-sm mx-auto">
+            {isAf
+              ? "Ons kon nie aan die bediener koppel nie. Kyk jou internetverbinding en probeer weer."
+              : "We couldn't reach the server. Check your connection and try again."}
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+          <Button
+            type="button"
+            variant="primary"
+            onClick={() => refetchDeck()}
+            disabled={deckRefetching}
+            data-testid="button-retry-flashcards-deck"
+          >
+            <RefreshCw className={`w-4 h-4 ${deckRefetching ? "animate-spin" : ""}`} />
+            {deckRefetching ? (isAf ? "Probeer..." : "Retrying...") : isAf ? "Probeer Weer" : "Try Again"}
+          </Button>
+          <Link href="/dashboard">
+            <Button type="button" variant="outline">
+              {isAf ? "Terug na Paneelbord" : "Back to Dashboard"}
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   if (noneEnrolled) {
     return (
-      <div className="rounded-2xl border border-dashed border-[#1b1922] p-8 text-center space-y-3" style={{ background: "linear-gradient(#1b1922, #1b1922), #050508" }}>
+      <div className="rounded-2xl border border-dashed border-[#1b1922] p-8 text-center space-y-3" style={{ background: "#0e0d12" }}>
         <Layers className="w-10 h-10 mx-auto" style={{ color: "#C5B3FF" }} />
         <h3 className="text-lg font-bold text-white">{isAf ? "Geen flitskaarte gereed nie" : "No flashcards ready yet"}</h3>
         <p className="text-sm text-white max-w-sm mx-auto">
@@ -462,7 +516,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
             </span>
             <div
               className="flex flex-wrap gap-1.5 justify-center rounded-xl p-3"
-              style={{ background: "linear-gradient(#1b1922, #1b1922), #050508", border: "1.5px dashed rgba(159,245,232,0.4)" }}
+              style={{ background: "#0e0d12", border: "1.5px dashed rgba(159,245,232,0.4)" }}
               data-testid="stamp-wall"
             >
               {Array.from({ length: Math.min(totalGot, 40) }).map((_, i) => (
@@ -547,7 +601,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
               { icon: Layers, value: serverStats?.dueTomorrow ?? dueTomorrow,           label: isAf ? "Môre Reg"    : "Due Tomorrow", hex: "#FFB7E5" },
               { icon: Trophy, value: serverStats?.cardsMastered ?? 0,                   label: isAf ? "Bemeester"   : "Mastered",     hex: "#C5B3FF" },
             ] as const).map(({ icon: Icon, value, label, hex }) => (
-              <div key={label} className="rounded-xl p-3 text-center" style={{ background: "linear-gradient(#1b1922, #1b1922), #050508", border: `1px solid ${hex}55` }}>
+              <div key={label} className="rounded-xl p-3 text-center" style={{ background: "#0e0d12", border: `1px solid ${hex}` }}>
                 <Icon className="w-4 h-4 mx-auto mb-1" style={{ color: hex }} />
                 <p className="text-xl font-bold text-white">{value}</p>
                 <p className="text-[10px] text-white font-semibold uppercase tracking-wider">{label}</p>
@@ -555,7 +609,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
             ))}
           </div>
           {serverStats && (serverStats.currentStreak > 0 || serverStats.longestStreak > 0) && (
-            <div className="rounded-xl p-3 flex items-center justify-between" style={{ background: "linear-gradient(#1b1922, #1b1922), #050508", border: "1px solid rgba(255,226,154,.4)" }}>
+            <div className="rounded-xl p-3 flex items-center justify-between" style={{ background: "#0e0d12", border: "1px solid #FFE29A" }}>
               <div className="flex items-center gap-2 text-sm text-white">
                 <Zap className="w-4 h-4" style={{ color: "#FFE29A" }} />
                 <span>{isAf ? "Huidige reeks" : "Current streak"}: <strong>{serverStats.currentStreak}</strong> {isAf ? "dae" : "days"} 🔥</span>
@@ -572,7 +626,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
               {isAf ? "Kies 'n Vak" : "Choose a Subject"}
             </p>
             {subjects.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-[#1b1922] p-6 text-center space-y-1.5" style={{ background: "linear-gradient(#1b1922, #1b1922), #050508" }}>
+              <div className="rounded-2xl border border-dashed border-[#1b1922] p-6 text-center space-y-1.5" style={{ background: "#0e0d12" }}>
                 <Layers className="w-7 h-7 mx-auto" style={{ color: "#C5B3FF" }} />
                 <p className="text-sm font-semibold text-white">
                   {isAf ? "Geen vakke gereed nie" : "No subjects available"}
@@ -591,7 +645,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
                   onClick={() => { setSelectedSubject(sub.code); setSelectedTopic("all"); }}
                   className="w-full text-left rounded-2xl transition-all p-4"
                   style={{
-                    background: "linear-gradient(#1b1922, #1b1922), #050508",
+                    background: "#0e0d12",
                     border: pct > 0 ? `1.5px solid ${hex}` : "1px solid #1b1922",
                   }}
                   onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.borderColor = hex; }}
@@ -672,7 +726,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
 
         {/* Subject header */}
         <div className="rounded-2xl p-4 space-y-2.5"
-          style={{ background: "linear-gradient(#1b1922, #1b1922), #050508", border: "1.5px solid #9FD8FF" }}>
+          style={{ background: "#0e0d12", border: "1.5px solid #9FD8FF" }}>
           <div className="flex items-center justify-between">
             <h2 className="text-base font-black text-white">{selectedSubjectName}</h2>
             <span className="text-xs font-black" style={{ color: "#9FD8FF" }}>
@@ -737,8 +791,8 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
                   disabled={tot === 0}
                   className="w-full text-left rounded-2xl transition-all p-3.5 disabled:opacity-40"
                   style={{
-                    background: "linear-gradient(#1b1922, #1b1922), #050508",
-                    border: pct === 100 ? "1.5px solid #94F7C5" : pct > 0 ? "1.5px solid rgba(159,216,255,.55)" : "1px solid #1b1922",
+                    background: "#0e0d12",
+                    border: pct === 100 ? "1.5px solid #94F7C5" : pct > 0 ? "1.5px solid #9FD8FF" : "1px solid #1b1922",
                   }}
                   onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-6px)"; }}
                   onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}
@@ -892,14 +946,14 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
       <div className="flex justify-between items-center px-1 mb-1 select-none pointer-events-none">
         <div
           className="flex items-center gap-1 text-xs font-bold transition-opacity duration-150"
-          style={{ color: "#FF8DA1", opacity: swipeDelta < -20 ? Math.min(1, (Math.abs(swipeDelta) - 20) / 60) : 0.18 }}
+          style={{ color: "#FF8DA1", opacity: swipeDelta < -20 ? Math.min(1, (Math.abs(swipeDelta) - 20) / 60) : 0 }}
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           {isAf ? "Weet nie" : "Don't know"}
         </div>
         <div
           className="flex items-center gap-1 text-xs font-bold transition-opacity duration-150"
-          style={{ color: "#94F7C5", opacity: swipeDelta > 20 ? Math.min(1, (swipeDelta - 20) / 60) : 0.18 }}
+          style={{ color: "#94F7C5", opacity: swipeDelta > 20 ? Math.min(1, (swipeDelta - 20) / 60) : 0 }}
         >
           {isAf ? "Het dit!" : "Got it!"}
           <ArrowRight className="w-3.5 h-3.5" />
@@ -1022,7 +1076,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
                 key={quality}
                 onClick={() => handleGrade(quality)}
                 className="flex flex-col items-center gap-0.5 p-3 rounded-xl transition-all active:scale-95 hover:scale-[1.02]"
-                style={{ background: "linear-gradient(#1b1922, #1b1922), #050508", border: `2px solid ${hex}` }}
+                style={{ background: "#0e0d12", border: `2px solid ${hex}` }}
               >
                 <span className="font-bold text-sm" style={{ color: hex }}>{label}</span>
                 <span className="text-[10px] text-white">{desc}</span>
@@ -1049,7 +1103,7 @@ export default function FlashcardsPage() {
         backLabel={isAf ? "Tuis" : "Home"}
         title={isAf ? "Flitskaarte" : "Flashcards"}
         titleColor="#9FF5E8"
-        maxWidthClassName="max-w-7xl"
+        maxWidthClassName="max-w-2xl"
       />
 
       <main className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 py-8 space-y-6">
@@ -1080,7 +1134,7 @@ export default function FlashcardsPage() {
 
         <FlashcardReview isAf={isAf} />
 
-        <div className="rounded-2xl border border-dashed border-[#1b1922] p-5 text-center space-y-2" style={{ background: "linear-gradient(#1b1922, #1b1922), #050508" }}>
+        <div className="rounded-2xl border border-dashed border-[#1b1922] p-5 text-center space-y-2" style={{ background: "#0e0d12" }}>
           <p className="text-sm font-semibold text-white">
             {isAf ? "Soek jy 'n vasvra?" : "Looking for a quiz?"}
           </p>

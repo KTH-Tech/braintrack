@@ -1,0 +1,33 @@
+# BrainTrack
+
+> BrainTrack (braintrack.tech) is a South African Grade 12 (Matric) exam-preparation platform. It combines 10 years of official DBE NSC past papers with memos (2015–2025), a CAPS-aligned weekly study plan, an AI tutor ("Rizz"), exam-readiness tracking and weekly parent progress reports. The full platform is bilingual: English and Afrikaans.
+
+BrainTrack is operated by KTH Projects (Pty) Ltd t/a KTH-Tech (South African company registration 2025/627290/07). It serves South African learners preparing for the National Senior Certificate (NSC), and works with partner schools across South Africa. Payments are processed in South African Rand (ZAR) by Paystack; learner accounts for under-18s require a parent-consent step, and the platform is built for POPIA compliance.
+
+## Products and pricing (ZAR, see https://braintrack.tech/subscribe)
+
+- Student Life — R169 per month, recurring, cancel anytime. Full access: every CAPS subject, the full 10-year past-paper archive, Rizz AI tutor, adaptive study plan, weekly parent reports.
+- Prelim Sprint — R250 once-off. 6 weeks of full access built for the prelim exams: prelim-mode drills, mocks and predictor, 3 most recent years of past papers + memos. No recurring billing.
+- Finals Blitz — R250 once-off. 6 weeks of full access built for the October–November NSC finals: finals-mode drills, mocks and predictor, 3 most recent years of past papers + memos. No recurring billing.
+- Exam Season Pass — R550 once-off. Full platform access until 15 December 2026, including the full 10-year past-paper archive. No recurring billing.
+
+## Key pages
+
+- [Home](https://braintrack.tech/): Grade 12 Matric past papers, memos and AI tutor
+- [Past papers](https://braintrack.tech/past-papers): NSC Grade 12 past papers with memos, 2015–2025, all CAPS subjects
+- [Features](https://braintrack.tech/features): CAPS study plan, gap detection, AI tutor, parent dashboard
+- [Plans and pricing](https://braintrack.tech/subscribe): all four products above
+- [For schools](https://braintrack.tech/for-schools): school partnerships — no cost, no admin for the school
+- [Research](https://braintrack.tech/research): the learning science behind the platform
+- [NSC 2026 exam timetable](https://braintrack.tech/calendar): free printable exam timetable and study calendar
+- [About](https://braintrack.tech/about)
+- [Privacy policy (POPIA)](https://braintrack.tech/privacy-policy)
+- [Terms of service](https://braintrack.tech/terms-of-service)
+
+## Facts
+
+- Geography: South Africa only (pricing in ZAR, curriculum is the South African DBE CAPS curriculum, exam target is the NSC).
+- Languages: English (en-ZA) and Afrikaans (af-ZA) — same URLs, in-app language toggle. Afrikaans users search terms like "matriek vraestelle en memorandums" and "Graad 12 vorige vraestelle".
+- Audience: Grade 12 learners (matriculants), their parents, and South African high schools.
+- Contact: learn@kth-tech.com
+- Sitemap: https://braintrack.tech/sitemap.xml

@@ -5,7 +5,6 @@
 // XP strip, share row, footer. Bilingual EN/AF. Rizz has no landing-page
 // presence (owner decision) — the bot lives in signed-in areas only.
 import { useEffect, useRef, useState } from "react";
-import { Link } from "wouter";
 import {
   CalendarClock,
   BarChart3,
@@ -28,10 +27,10 @@ import {
 } from "lucide-react";
 import { useSEO } from "@/hooks/use-seo";
 import { useLanguage } from "@/lib/language-context";
+import { PRODUCTS_JSONLD } from "@/lib/seo-products";
 import { useRolePromptNav } from "@/components/role-prompt-modal";
-import iconTransparent from "@/assets/handoff/icon-transparent.png";
 import heroGraffiti from "@/assets/hero-graffiti.png";
-import { KthMark } from "@/components/kth-mark";
+import { PublicNav } from "@/components/public-nav";
 import { PublicFooter } from "@/components/public-footer";
 import { RizzDemo } from "@/components/landing/rizz-demo";
 
@@ -82,12 +81,12 @@ const COPY = {
     tDropHead1: "Everything you need to ",
     tDropHead2: "move real marks",
     features: [
-      { icon: "📅", color: "#9FF5E8", chipBg: "rgba(159,245,232,.14)", glow: "rgba(159,245,232,.25)", tilt: -1, title: "Dynamic study plans", body: "Rebuilt daily around what you actually got wrong." },
-      { icon: "📊", color: "#9FD8FF", chipBg: "rgba(159,216,255,.14)", glow: "rgba(159,216,255,.25)", tilt: 1, title: "DBE-data diagnostics", body: "Ten years of NSC trends — where matrics lose marks." },
-      { icon: "📝", color: "#FFB7E5", chipBg: "rgba(255,183,229,.14)", glow: "rgba(255,183,229,.25)", tilt: -1, title: "Exam-style papers + memos", body: "Exam-style questions with worked memos, drilled by topic." },
-      { icon: "🤖", color: "#C5B3FF", chipBg: "rgba(197,179,255,.14)", glow: "rgba(197,179,255,.25)", tilt: 1, title: "Rizz — your AI tutor", body: "EN + AF, 24/7. Explains it until it clicks." },
-      { icon: "👀", color: "#FFE29A", chipBg: "rgba(255,226,154,.14)", glow: "rgba(255,226,154,.25)", tilt: -1, title: "Parent visibility", body: "Weekly reports parents actually read." },
-      { icon: "🏆", color: "#94F7C5", chipBg: "rgba(148,247,197,.14)", glow: "rgba(148,247,197,.25)", tilt: 1, title: "XP, streaks & rewards", body: "Confetti for a nailed paper. Crowns for a streak." },
+      { icon: "📅", color: "#9FF5E8", tilt: -1, title: "Dynamic study plans", body: "Rebuilt daily around what you actually got wrong." },
+      { icon: "📊", color: "#9FD8FF", tilt: 1, title: "DBE-data diagnostics", body: "Ten years of NSC trends — where matrics lose marks." },
+      { icon: "📝", color: "#FFB7E5", tilt: -1, title: "Exam-style papers + memos", body: "Exam-style questions with worked memos, drilled by topic." },
+      { icon: "🤖", color: "#C5B3FF", tilt: 1, title: "Rizz — your AI tutor", body: "EN + AF, 24/7. Explains it until it clicks." },
+      { icon: "👀", color: "#FFE29A", tilt: -1, title: "Parent visibility", body: "Weekly reports parents actually read." },
+      { icon: "🏆", color: "#94F7C5", tilt: 1, title: "XP, streaks & rewards", body: "Confetti for a nailed paper. Crowns for a streak." },
     ],
     proofEye: "the receipts",
     proofHead1: "Not claims. ",
@@ -95,11 +94,11 @@ const COPY = {
     proofSub:
       "Loaded in BrainTrack — indexed, verified, searchable by topic.",
     proof: [
-      { icon: "📜", title: "A decade of NSC exam trends", detail: "2015 – 2025, studied sitting by sitting", color: "#9FF5E8", glow: "rgba(159,245,232,.28)" },
-      { icon: "🎯", title: "Every CAPS subject covered", detail: "mapped across the full curriculum", color: "#FFB7E5", glow: "rgba(255,183,229,.28)" },
-      { icon: "📝", title: "Modelled on real DBE exams", detail: "questions written to match the official format", color: "#9FD8FF", glow: "rgba(159,216,255,.28)" },
-      { icon: "🌍", title: "EN + AF, always", detail: "with African-language support built in", color: "#C5B3FF", glow: "rgba(197,179,255,.28)" },
-      { icon: "🧠", title: "Examiner patterns studied", detail: "profiled across the DBE archive", color: "#FFE29A", glow: "rgba(255,226,154,.28)" },
+      { icon: "📜", title: "A decade of NSC exam trends", detail: "2015 – 2025, studied sitting by sitting", color: "#9FF5E8" },
+      { icon: "🎯", title: "Every CAPS subject covered", detail: "mapped across the full curriculum", color: "#FFB7E5" },
+      { icon: "📝", title: "Modelled on real DBE exams", detail: "questions written to match the official format", color: "#9FD8FF" },
+      { icon: "🌍", title: "EN + AF, always", detail: "with African-language support built in", color: "#C5B3FF" },
+      { icon: "🧠", title: "Examiner patterns studied", detail: "profiled across the DBE archive", color: "#FFE29A" },
     ],
     tPosEye: "one ecosystem",
     tPosHead1: "Stop juggling apps. ",
@@ -211,12 +210,12 @@ const COPY = {
     tDropHead1: "Alles wat jy nodig het om ",
     tDropHead2: "regte punte te skuif",
     features: [
-      { icon: "📅", color: "#9FF5E8", chipBg: "rgba(159,245,232,.14)", glow: "rgba(159,245,232,.25)", tilt: -1, title: "Dinamiese studieplanne", body: "Daagliks herbou rondom wat jy verkeerd gekry het." },
-      { icon: "📊", color: "#9FD8FF", chipBg: "rgba(159,216,255,.14)", glow: "rgba(159,216,255,.25)", tilt: 1, title: "DBE-datadiagnostiek", body: "Tien jaar se NSS-neigings — waar matrieks punte verloor." },
-      { icon: "📝", color: "#FFB7E5", chipBg: "rgba(255,183,229,.14)", glow: "rgba(255,183,229,.25)", tilt: -1, title: "Eksamenstyl-vraestelle + memo's", body: "Eksamenstyl-vrae met uitgewerkte memo's, per onderwerp gedril." },
-      { icon: "🤖", color: "#C5B3FF", chipBg: "rgba(197,179,255,.14)", glow: "rgba(197,179,255,.25)", tilt: 1, title: "Rizz — jou KI-tutor", body: "AF + EN, 24/7. Verduidelik totdat dit klik." },
-      { icon: "👀", color: "#FFE29A", chipBg: "rgba(255,226,154,.14)", glow: "rgba(255,226,154,.25)", tilt: -1, title: "Ouersigbaarheid", body: "Weeklikse verslae wat ouers regtig lees." },
-      { icon: "🏆", color: "#94F7C5", chipBg: "rgba(148,247,197,.14)", glow: "rgba(148,247,197,.25)", tilt: 1, title: "XP, reekse & belonings", body: "Konfetti vir 'n geklopte vraestel. Krone vir 'n reeks." },
+      { icon: "📅", color: "#9FF5E8", tilt: -1, title: "Dinamiese studieplanne", body: "Daagliks herbou rondom wat jy verkeerd gekry het." },
+      { icon: "📊", color: "#9FD8FF", tilt: 1, title: "DBE-datadiagnostiek", body: "Tien jaar se NSS-neigings — waar matrieks punte verloor." },
+      { icon: "📝", color: "#FFB7E5", tilt: -1, title: "Eksamenstyl-vraestelle + memo's", body: "Eksamenstyl-vrae met uitgewerkte memo's, per onderwerp gedril." },
+      { icon: "🤖", color: "#C5B3FF", tilt: 1, title: "Rizz — jou KI-tutor", body: "AF + EN, 24/7. Verduidelik totdat dit klik." },
+      { icon: "👀", color: "#FFE29A", tilt: -1, title: "Ouersigbaarheid", body: "Weeklikse verslae wat ouers regtig lees." },
+      { icon: "🏆", color: "#94F7C5", tilt: 1, title: "XP, reekse & belonings", body: "Konfetti vir 'n geklopte vraestel. Krone vir 'n reeks." },
     ],
     proofEye: "die bewyse",
     proofHead1: "Nie beloftes nie. ",
@@ -224,11 +223,11 @@ const COPY = {
     proofSub:
       "In BrainTrack gelaai — geïndekseer, geverifieer, per onderwerp deursoekbaar.",
     proof: [
-      { icon: "📜", title: "'n Dekade se NSS-eksamenneigings", detail: "2015 – 2025, sitting vir sitting bestudeer", color: "#9FF5E8", glow: "rgba(159,245,232,.28)" },
-      { icon: "🎯", title: "Elke KABV-vak gedek", detail: "gekarteer oor die volle kurrikulum", color: "#FFB7E5", glow: "rgba(255,183,229,.28)" },
-      { icon: "📝", title: "Op regte DBE-eksamens gemodelleer", detail: "vrae geskryf om by die amptelike formaat te pas", color: "#9FD8FF", glow: "rgba(159,216,255,.28)" },
-      { icon: "🌍", title: "AF + EN, altyd", detail: "met Afrikataal-ondersteuning ingebou", color: "#C5B3FF", glow: "rgba(197,179,255,.28)" },
-      { icon: "🧠", title: "Eksaminatorpatrone bestudeer", detail: "geprofileer oor die DBE-argief", color: "#FFE29A", glow: "rgba(255,226,154,.28)" },
+      { icon: "📜", title: "'n Dekade se NSS-eksamenneigings", detail: "2015 – 2025, sitting vir sitting bestudeer", color: "#9FF5E8" },
+      { icon: "🎯", title: "Elke KABV-vak gedek", detail: "gekarteer oor die volle kurrikulum", color: "#FFB7E5" },
+      { icon: "📝", title: "Op regte DBE-eksamens gemodelleer", detail: "vrae geskryf om by die amptelike formaat te pas", color: "#9FD8FF" },
+      { icon: "🌍", title: "AF + EN, altyd", detail: "met Afrikataal-ondersteuning ingebou", color: "#C5B3FF" },
+      { icon: "🧠", title: "Eksaminatorpatrone bestudeer", detail: "geprofileer oor die DBE-argief", color: "#FFE29A" },
     ],
     tPosEye: "een ekosisteem",
     tPosHead1: "Hou op om apps te jongleer. ",
@@ -339,30 +338,19 @@ const SCATTER: Array<{
   glyph: string; color: string; size: number; rotate: number;
   style: React.CSSProperties;
 }> = [
-  { glyph: "★", color: "rgba(255,226,154,.85)", size: 38, rotate: -14, style: { top: 38, left: "7%" } },
-  { glyph: "⚡", color: "rgba(159,245,232,.85)", size: 34, rotate: 10, style: { top: 110, right: "8%" } },
-  { glyph: "✦", color: "rgba(197,179,255,.85)", size: 30, rotate: 8, style: { bottom: 230, left: "5%" } },
-  { glyph: "☻", color: "rgba(255,183,229,.85)", size: 30, rotate: -8, style: { bottom: 150, right: "6%" } },
-  { glyph: "👑", color: "rgba(159,216,255,.85)", size: 28, rotate: -6, style: { top: 200, left: "12%" } },
-  { glyph: "🔥", color: "rgba(255,183,229,.8)", size: 32, rotate: 12, style: { top: 300, right: "13%" } },
-  { glyph: "✏", color: "rgba(148,247,197,.8)", size: 24, rotate: -10, style: { top: 70, left: "26%" } },
-  { glyph: "⚡", color: "rgba(255,226,154,.8)", size: 26, rotate: 6, style: { bottom: 120, left: "22%" } },
-  { glyph: "★", color: "rgba(197,179,255,.8)", size: 22, rotate: -14, style: { top: 150, right: "24%" } },
-  { glyph: "✦", color: "rgba(159,245,232,.75)", size: 24, rotate: 9, style: { bottom: 260, right: "18%" } },
-  { glyph: "✱", color: "rgba(255,183,229,.75)", size: 22, rotate: -4, style: { top: 250, left: "4%" } },
-  { glyph: "↗", color: "rgba(159,216,255,.8)", size: 26, rotate: -12, style: { bottom: 80, right: "9%" } },
+  { glyph: "★", color: "#FFE29A", size: 38, rotate: -14, style: { top: 38, left: "7%" } },
+  { glyph: "⚡", color: "#9FF5E8", size: 34, rotate: 10, style: { top: 110, right: "8%" } },
+  { glyph: "✦", color: "#C5B3FF", size: 30, rotate: 8, style: { bottom: 230, left: "5%" } },
+  { glyph: "☻", color: "#FFB7E5", size: 30, rotate: -8, style: { bottom: 150, right: "6%" } },
+  { glyph: "👑", color: "#9FD8FF", size: 28, rotate: -6, style: { top: 200, left: "12%" } },
+  { glyph: "🔥", color: "#FFB7E5", size: 32, rotate: 12, style: { top: 300, right: "13%" } },
+  { glyph: "✏", color: "#94F7C5", size: 24, rotate: -10, style: { top: 70, left: "26%" } },
+  { glyph: "⚡", color: "#FFE29A", size: 26, rotate: 6, style: { bottom: 120, left: "22%" } },
+  { glyph: "★", color: "#C5B3FF", size: 22, rotate: -14, style: { top: 150, right: "24%" } },
+  { glyph: "✦", color: "#9FF5E8", size: 24, rotate: 9, style: { bottom: 260, right: "18%" } },
+  { glyph: "✱", color: "#FFB7E5", size: 22, rotate: -4, style: { top: 250, left: "4%" } },
+  { glyph: "↗", color: "#9FD8FF", size: 26, rotate: -12, style: { bottom: 80, right: "9%" } },
 ];
-
-function RainbowWordmark({ size = 24 }: { size?: number }) {
-  return (
-    <span
-      className="bt-wordmark"
-      style={{ fontSize: size, letterSpacing: "-.5px" }}
-    >
-      BrainTrack
-    </span>
-  );
-}
 
 function prefersReducedMotion() {
   return (
@@ -454,7 +442,7 @@ function CompareWall({ t, language }: { t: any; language: string }) {
     <div
       ref={ref}
       className={`btl-sec ${inView ? "bt-cmp-in" : ""}`}
-      style={{ maxWidth: 1020, margin: "104px auto 0", padding: "0 32px" }}
+      style={{ maxWidth: "var(--pub-maxw)", margin: "var(--pub-section) auto 0", padding: "0 var(--pub-gutter)" }}
       data-testid="section-compare"
     >
       <style>{`
@@ -615,72 +603,22 @@ function CompareWall({ t, language }: { t: any; language: string }) {
 }
 
 export default function LandingPage() {
-  const { language, toggleLanguage } = useLanguage();
+  const { language } = useLanguage();
   const t = COPY[language];
   const { handleCta, modal } = useRolePromptNav();
   const en = language === "en";
 
-  // FAQPage JSON-LD — five highest-intent SA matric-parent questions.
-  // Kept short + literal so Google can lift them into rich-result FAQ blocks
-  // on the SERP. Update copy here rather than duplicating a landing FAQ block.
-  const landingJsonLd: Record<string, unknown>[] = [
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: [
-        {
-          "@type": "Question",
-          name: "Is BrainTrack aligned with the South African CAPS curriculum?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text:
-              "Yes. Every subject, weekly plan and practice paper on BrainTrack is built to the official DBE CAPS curriculum for Grade 12, including English HL/FAL, Afrikaans HL/EAT, Mathematics, Physical Sciences, Life Sciences, Accounting, Business Studies, Economics, Geography, History, Life Orientation, CAT and IT.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "How much does BrainTrack cost?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text:
-              "BrainTrack is R169 per learner per month, charged at signup. Billing is handled securely by Paystack in South African Rand. You can cancel any time from the parent dashboard — no lock-in.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Does BrainTrack cover the NSC 2026 past papers and memos?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text:
-              "BrainTrack indexes ten years of NSC past papers and official memos (2015–2025) across every CAPS subject, plus exam-style practice questions written by BrainTrack examiners in the DBE format for NSC 2026 preparation.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Is BrainTrack available in Afrikaans as well as English?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text:
-              "Yes. The full platform — content, AI tutor, parent reports and past-paper library — is bilingual in English and Afrikaans, with a language toggle on every page.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Is BrainTrack safe for learners and POPIA-compliant?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text:
-              "Yes. BrainTrack is POPIA-compliant. Learner accounts under 18 require a parent-consent step where the parent completes payment at signup, no card details are ever stored by BrainTrack, and parents receive a weekly progress report.",
-          },
-        },
-      ],
-    },
-  ];
+  // Landing JSON-LD: the four live products with real ZAR prices (shared with
+  // /subscribe via seo-products.ts). NOTE: no FAQPage markup here on purpose —
+  // the landing page has no visible FAQ section, and Google requires FAQPage
+  // content to be user-visible on the page it annotates. If a visible FAQ
+  // block ever lands here, that is the moment to add matching FAQPage JSON-LD.
+  const landingJsonLd: Record<string, unknown>[] = [PRODUCTS_JSONLD];
 
   useSEO({
-    title: "BrainTrack™ | Grade 12 Matric Past Papers, Memos & AI Tutor — South Africa",
+    title: "Grade 12 Matric Past Papers & AI Tutor | BrainTrack™",
     description:
-      "Pass Matric with confidence. 10 years of NSC past papers + memos, CAPS-aligned weekly study plan, AI tutor and parent reports. Built for SA Grade 12. R169/month — cancel anytime.",
+      "Pass Matric with confidence. 10 years of NSC past papers + memos, a CAPS-aligned study plan and an AI tutor for SA Grade 12s. R169/month — cancel anytime.",
     canonical: "https://braintrack.tech/",
     ogTitle: "Matric Past Papers, Memos & AI Tutor for Grade 12 SA | BrainTrack™",
     ogDescription:
@@ -691,11 +629,8 @@ export default function LandingPage() {
   return (
     <div style={{ minHeight: "100vh", background: "#050508", overflowX: "hidden" }}>
       <style>{`
-        .btl-nav-link { color:#fff; cursor:pointer; transition:color .2s; }
-        .btl-nav-link:hover { color: var(--h, #9FF5E8); }
         .btl-cta { transition: transform .2s; }
         .btl-cta:hover { transform: translateY(-3px) rotate(-1deg); }
-        .btl-nav-cta:hover { transform: translateY(-2px); }
         .btl-feature {
           position: relative; overflow: hidden; height: 100%; box-sizing: border-box;
           transition: transform .38s cubic-bezier(.22,.75,.3,1), box-shadow .38s ease,
@@ -707,33 +642,23 @@ export default function LandingPage() {
           background: linear-gradient(90deg, transparent, var(--c), transparent);
           opacity: .4; transition: opacity .38s ease;
         }
-        /* accent bloom that swells from the top-left on hover */
-        .btl-feature::after {
-          content: ""; position: absolute; top: -55%; left: -20%; width: 90%; height: 90%;
-          background: radial-gradient(closest-side, var(--glow), transparent 72%);
-          opacity: 0; transition: opacity .45s ease; pointer-events: none; z-index: 0;
-        }
         .btl-feature > * { position: relative; z-index: 1; }
         .btl-feature:hover {
-          transform: translateY(-10px) rotate(var(--tilt, 0deg)) scale(1.012);
-          box-shadow: 0 26px 64px var(--glow);
+          transform: translate(-4px, -4px) rotate(var(--tilt, 0deg));
+          box-shadow: 6px 6px 0 0 var(--c);
           border-color: var(--c) !important;
           background: #0e0d12 !important;
         }
         .btl-feature:hover::before { opacity: 1; }
-        .btl-feature:hover::after { opacity: 1; }
         .btl-fchip { transition: transform .38s cubic-bezier(.22,.75,.3,1), box-shadow .38s ease; }
         .btl-feature:hover .btl-fchip { transform: translateY(-3px) scale(1.07); }
         .btl-proof-cell { transition: transform .35s cubic-bezier(.22,.75,.3,1), border-color .35s, box-shadow .35s; }
-        .btl-proof-cell:hover { transform: translateY(-6px); border-color: var(--c) !important; box-shadow: 0 18px 46px var(--glow); }
+        .btl-proof-cell:hover { transform: translate(-4px,-4px); border-color: var(--c) !important; box-shadow: 9px 9px 0 0 var(--c); }
         .btl-eco-chip { transition: transform .25s, box-shadow .25s, background .25s; }
         .btl-eco-chip:hover { transform: translateY(-2px); }
-        .btl-logo-img { transition: transform .25s; }
-        .btl-logo-img:hover { transform: scale(1.15) rotate(-4deg); }
         .btl-foot-link { color:#fff; cursor:pointer; transition:color .2s, opacity .2s; }
         .btl-foot-link:hover { color: var(--h, #9FD8FF); }
         @media (max-width: 860px) {
-          .btl-nav-links { display: none !important; }
           .btl-hero-head { font-size: 38px !important; letter-spacing: -1px !important; }
           .btl-grid3 { grid-template-columns: 1fr !important; }
           .btl-grid2 { grid-template-columns: 1fr !important; }
@@ -755,64 +680,13 @@ export default function LandingPage() {
           .btl-foot-left-cluster { flex-direction: column !important; text-align: center !important; align-items: center !important; }
           .btl-foot-links-min { justify-content: center !important; gap: 14px 20px !important; }
         }
-        @media (max-width: 480px) {
-          .btl-nav { padding: 12px 10px !important; gap: 6px !important; }
-          .btl-nav-left { gap: 6px !important; }
-          .btl-nav-left img { width: 34px !important; height: 34px !important; }
-          .btl-nav-left .bt-wordmark { font-size: 17px !important; }
-          .btl-nav-right { gap: 6px !important; }
-          .btl-nav-right [data-testid="lang-toggle"] span { padding: 5px 7px !important; }
-          .btl-nav-cta { padding: 8px 12px !important; font-size: 12px !important; }
-        }
       `}</style>
 
-      {/* ── Nav ─────────────────────────────────────────────── */}
-      <div
-        className="btl-nav"
-        style={{
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          gap: 32, padding: "16px 48px", position: "sticky", top: 0, zIndex: 50,
-          background: "rgba(5,5,8,.82)", backdropFilter: "blur(14px)",
-          borderBottom: "1px solid #C5B3FF",
-        }}
-      >
-        <div className="btl-nav-left" style={{ display: "flex", alignItems: "center", gap: 10, flex: "none", minWidth: 0 }}>
-          <img src={iconTransparent} alt="BrainTrack" className="btl-logo-img" style={{ width: 56, height: 56, objectFit: "contain", flex: "none" }} />
-          <RainbowWordmark size={24} />
-        </div>
-        <div className="btl-nav-right" style={{ display: "flex", alignItems: "center", gap: 22, fontSize: 14, fontWeight: 600, flex: "none" }}>
-          <span className="btl-nav-links" style={{ display: "flex", alignItems: "center", gap: 22 }}>
-            <Link href="/features"><span className="btl-nav-link" style={{ "--h": "#9FF5E8" } as React.CSSProperties}>{t.tFeatures}</span></Link>
-            <Link href="/research"><span className="btl-nav-link" style={{ "--h": "#9FD8FF" } as React.CSSProperties}>{t.tResearch}</span></Link>
-            <Link href="/features"><span className="btl-nav-link" style={{ "--h": "#FFB7E5" } as React.CSSProperties}>{t.tSubjects}</span></Link>
-            <Link href="/subscribe"><span className="btl-nav-link" style={{ "--h": "#FFE29A" } as React.CSSProperties}>{t.tPricing}</span></Link>
-            <Link href="/for-schools"><span className="btl-nav-link" style={{ "--h": "#C5B3FF" } as React.CSSProperties}>{t.tForSchools}</span></Link>
-          </span>
-          <span
-            onClick={toggleLanguage}
-            data-testid="lang-toggle"
-            style={{
-              display: "flex", alignItems: "center", gap: 2, fontSize: 12, fontWeight: 800,
-              border: "1.5px solid #9FD8FF", borderRadius: 8,
-              overflow: "hidden", cursor: "pointer", userSelect: "none", flex: "none",
-            }}
-          >
-            <span style={{ padding: "6px 10px", background: en ? "#9FF5E8" : "transparent", color: en ? "#050508" : "#fff" }}>EN</span>
-            <span style={{ padding: "6px 10px", background: en ? "transparent" : "#9FF5E8", color: en ? "#fff" : "#050508" }}>AF</span>
-          </span>
-          <a href="/signin" style={{ flex: "none" }}>
-            <button
-              className="pub-btn pub-btn-sm btl-nav-cta"
-              data-testid="button-nav-enter"
-            >
-              {t.tEnter}
-            </button>
-          </a>
-        </div>
-      </div>
+      {/* ── Nav — shared PublicNav (fixed 64px, has a working mobile menu) ── */}
+      <PublicNav />
 
       {/* ── Hero ────────────────────────────────────────────── */}
-      <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", padding: "40px 24px 36px", textAlign: "center" }}>
+      <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", padding: "104px 24px 36px", textAlign: "center" }}>
         <div
           aria-hidden
           style={{
@@ -845,7 +719,7 @@ export default function LandingPage() {
             {s.glyph}
           </span>
         ))}
-        <div style={{ maxWidth: 1040, width: "100%", marginTop: 8, position: "relative", zIndex: 2 }}>
+        <div style={{ maxWidth: "var(--pub-maxw)", width: "100%", marginTop: 8, position: "relative", zIndex: 2 }}>
           {/* Exam Predictor teaser — the hero differentiator, one tight honest
               line. Sells the 10-year corpus without bloating the trimmed hero. */}
           <div
@@ -853,7 +727,7 @@ export default function LandingPage() {
             style={{
               display: "inline-flex", alignItems: "center", gap: 8,
               margin: "0 auto 16px", padding: "8px 16px", borderRadius: 999,
-              border: "1.5px solid #9FF5E8", background: "rgba(159,245,232,.08)",
+              border: "1.5px solid #9FF5E8", background: "#050508",
               fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 13.5,
               color: "#fff", letterSpacing: ".2px",
             }}
@@ -861,6 +735,27 @@ export default function LandingPage() {
             <Target size={16} strokeWidth={2.6} style={{ color: "#9FF5E8" }} aria-hidden />
             {t.predictorBadge}
           </div>
+          {/* Screen-reader/crawler H1 — the visual hero headline is a graffiti
+              IMAGE (data-testid="hero-title"), so this sr-only <h1> gives
+              search + answer engines a real text H1 without touching the art. */}
+          <h1
+            data-testid="hero-title-sr"
+            style={{
+              position: "absolute",
+              width: 1,
+              height: 1,
+              padding: 0,
+              margin: -1,
+              overflow: "hidden",
+              clip: "rect(0 0 0 0)",
+              whiteSpace: "nowrap",
+              border: 0,
+            }}
+          >
+            {en
+              ? "BrainTrack — Grade 12 Matric past papers, memos & AI tutor for South Africa"
+              : "BrainTrack — Graad 12-matriek vraestelle, memorandums en KI-tutor vir Suid-Afrika"}
+          </h1>
           {/* Hero centerpiece — founder's final pick (2026-08-10): the graffiti
               art hero from the launch deploy. The transparent PNG's black
               linework vanished on the near-black ground before, so the art now
@@ -873,7 +768,7 @@ export default function LandingPage() {
               border: "2.5px solid #050508",
               borderRadius: 24,
               padding: "14px 14px 8px",
-              maxWidth: 1040,
+              maxWidth: "var(--pub-maxw)",
               margin: "0 auto",
               boxShadow: "8px 8px 0 0 #C5B3FF",
               animation: "bt-heromark 7s ease-in-out infinite",
@@ -952,7 +847,7 @@ export default function LandingPage() {
       </div>
 
       {/* ── Features ────────────────────────────────────────── */}
-      <div className="btl-sec" style={{ maxWidth: 1100, margin: "104px auto 0", padding: "0 32px" }}>
+      <div className="btl-sec" style={{ maxWidth: "var(--pub-maxw)", margin: "var(--pub-section) auto 0", padding: "0 var(--pub-gutter)" }}>
         <Reveal style={{ textAlign: "center", marginBottom: 58 }}>
           <div
             style={{
@@ -975,7 +870,7 @@ export default function LandingPage() {
               <div
                 className="btl-feature"
                 style={{
-                  "--tilt": `${f.tilt}deg`, "--glow": f.glow, "--c": f.color,
+                  "--tilt": `${f.tilt}deg`, "--c": f.color,
                   background: "#0e0d12",
                   border: `2px solid ${f.color}`, borderRadius: 22,
                   padding: 28, cursor: "default", width: "100%",
@@ -986,10 +881,10 @@ export default function LandingPage() {
                   style={{
                     width: 54, height: 54, borderRadius: 16,
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    background: f.chipBg, marginBottom: 18,
+                    background: "#0e0d12", marginBottom: 18,
                     color: f.color, // Lucide inherits color; the emoji stays as fallback below
-                    border: `1px solid ${f.color}`,
-                    boxShadow: `0 6px 18px ${f.glow}`,
+                    border: `1.5px solid ${f.color}`,
+                    boxShadow: `3px 3px 0 0 ${f.color}`,
                   }}
                 >
                   <span aria-hidden style={{ color: f.color, display: "inline-flex" }}>
@@ -1009,12 +904,12 @@ export default function LandingPage() {
       <RizzDemo language={language} />
 
       {/* ── Proof band: the receipts ────────────────────────── */}
-      <div className="btl-sec" style={{ maxWidth: 1100, margin: "112px auto 0", padding: "0 32px" }}>
+      <div className="btl-sec" style={{ maxWidth: "var(--pub-maxw)", margin: "var(--pub-section) auto 0", padding: "0 var(--pub-gutter)" }}>
         <div
           style={{
             position: "relative", overflow: "hidden", borderRadius: 30,
             border: "1.5px solid #9FD8FF",
-            background: "#0b0b12",
+            background: "#0e0d12",
             padding: "56px 40px 48px",
           }}
         >
@@ -1050,7 +945,7 @@ export default function LandingPage() {
                 display: "inline-flex", alignItems: "center", gap: 8, marginTop: 18,
                 border: "1.5px solid #94F7C5", borderRadius: 999, padding: "9px 18px",
                 fontSize: 13.5, fontWeight: 700, color: "#94F7C5",
-                background: "rgba(148,247,197,.08)",
+                background: "#050508",
               }}
             >
               <span aria-hidden>✓</span>
@@ -1069,11 +964,11 @@ export default function LandingPage() {
                 <div
                   className="btl-proof-cell"
                   style={{
-                    "--c": p.color, "--glow": p.glow,
+                    "--c": p.color,
                     position: "relative", padding: "26px 18px", textAlign: "center",
                     borderRadius: 22, border: "1.5px solid " + p.color,
                     background: "#0e0d12",
-                    boxShadow: "0 10px 34px " + p.glow, width: "100%", boxSizing: "border-box",
+                    boxShadow: "6px 6px 0 0 " + p.color, width: "100%", boxSizing: "border-box",
                   } as React.CSSProperties}
                 >
                   <div
@@ -1084,8 +979,8 @@ export default function LandingPage() {
                       marginBottom: 12,
                       color: p.color,
                       background: "#050508",
-                      border: `1.2px solid ${p.color}`,
-                      boxShadow: `0 6px 20px ${p.glow}`,
+                      border: `1.5px solid ${p.color}`,
+                      boxShadow: `3px 3px 0 0 ${p.color}`,
                     }}
                   >
                     <span style={{ color: p.color, display: "inline-flex" }}>
@@ -1104,7 +999,7 @@ export default function LandingPage() {
       </div>
 
       {/* ── XP strip ────────────────────────────────────────── */}
-      <div className="btl-sec" style={{ maxWidth: 1100, margin: "116px auto 0", padding: "0 32px" }}>
+      <div className="btl-sec" style={{ maxWidth: "var(--pub-maxw)", margin: "var(--pub-section) auto 0", padding: "0 var(--pub-gutter)" }}>
         <Reveal>
           <div className="btl-xp-card" style={{ background: "#0e0d12", border: "1.5px solid #C5B3FF", borderRadius: 28, padding: 52, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 44, flexWrap: "wrap" }}>
             <div style={{ maxWidth: 490 }}>
@@ -1151,7 +1046,7 @@ export default function LandingPage() {
           Once-off R550 charged in full now → full season access to
           15 Dec 2026, no recurring billing, no auto-renewal. Links to
           /subscribe?offer=exam-boost. */}
-      <div className="btl-sec" style={{ maxWidth: 760, margin: "112px auto 0", padding: "0 32px" }}>
+      <div className="btl-sec" style={{ maxWidth: "var(--pub-maxw)", margin: "var(--pub-section) auto 0", padding: "0 var(--pub-gutter)" }}>
         <a
           href="/subscribe?offer=exam-boost"
           data-testid="offer-exam-boost"

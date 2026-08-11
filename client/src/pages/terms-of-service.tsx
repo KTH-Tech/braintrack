@@ -99,7 +99,7 @@ export default function TermsOfServicePage() {
   const isAf = language === "af";
   useSEO({
     title: "Terms & Conditions | BrainTrack",
-    description: "BrainTrack terms and conditions covering platform usage, CAPS alignment, intellectual property, data protection and learner responsibilities. Powered by BrainTrack.",
+    description: "BrainTrack terms and conditions — platform usage, CAPS alignment, intellectual property, data protection and learner responsibilities.",
     canonical: "https://braintrack.tech/terms-of-service",
   });
 

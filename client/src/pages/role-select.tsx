@@ -11,15 +11,21 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import iconTransparent from "@/assets/handoff/icon-transparent.png";
 
-const CTA_GRADIENT =
-  "linear-gradient(100deg,#FFB7E5,#FFE29A,#9FF5E8,#C5B3FF,#FFB7E5)";
-
 type Role = "learner" | "parent";
 
-const ROLE_STYLES: Record<Role, { accent: string; soft: string; chipBg: string; emoji: string }> = {
-  learner: { accent: "#9FF5E8", soft: "rgba(159,245,232,", chipBg: "rgba(159,245,232,.14)", emoji: "🎓" },
-  parent: { accent: "#C5B3FF", soft: "rgba(197,179,255,", chipBg: "rgba(197,179,255,.14)", emoji: "🫶" },
+const ROLE_STYLES: Record<Role, { accent: string; emoji: string }> = {
+  learner: { accent: "#9FF5E8", emoji: "🎓" },
+  parent: { accent: "#C5B3FF", emoji: "🫶" },
 };
+
+// Solid Permanent-Marker glyphs — no blur, no glow. Replaces the old blurred
+// ambient radial glow behind the hero.
+const SCATTER: Array<{ glyph: string; color: string; size: number; rotate: number; style: React.CSSProperties }> = [
+  { glyph: "★", color: "#FFE29A", size: 26, rotate: -14, style: { top: "8%", left: "10%" } },
+  { glyph: "⚡", color: "#9FF5E8", size: 24, rotate: 10, style: { top: "14%", right: "9%" } },
+  { glyph: "✦", color: "#C5B3FF", size: 22, rotate: 8, style: { bottom: "18%", left: "7%" } },
+  { glyph: "☻", color: "#FFB7E5", size: 22, rotate: -8, style: { bottom: "12%", right: "8%" } },
+];
 
 export default function RoleSelectPage() {
   const { language, toggleLanguage } = useLanguage();
@@ -94,17 +100,22 @@ export default function RoleSelectPage() {
         .btrs-cta:hover:not(:disabled) { transform: translateY(-2px); }
       `}</style>
 
-      {/* Ambient glow (comp) */}
-      <div
-        aria-hidden
-        style={{
-          position: "absolute", top: "20%", left: "50%", transform: "translateX(-50%)",
-          width: 800, height: 480, maxWidth: "100vw",
-          background: "radial-gradient(ellipse,rgba(255,183,229,.14),rgba(159,216,255,.08) 55%,transparent 75%)",
-          filter: "blur(30px)", pointerEvents: "none",
-          animation: "bt-glowpulse 5s ease-in-out infinite",
-        }}
-      />
+      {/* Solid scatter glyphs — zero blur/glow, replaces the old ambient wash. */}
+      {SCATTER.map((s, i) => (
+        <span
+          key={i}
+          aria-hidden
+          style={{
+            position: "absolute", fontFamily: "'Bebas Neue', system-ui, sans-serif",
+            fontSize: s.size, color: s.color, transform: `rotate(${s.rotate}deg)`,
+            pointerEvents: "none", zIndex: 0,
+            animation: `bt-float ${7 + i}s ease-in-out infinite`,
+            ...s.style,
+          }}
+        >
+          {s.glyph}
+        </span>
+      ))}
 
       {/* Language toggle */}
       <button
@@ -114,7 +125,7 @@ export default function RoleSelectPage() {
           position: "absolute", top: 20, right: 20, zIndex: 3,
           display: "flex", alignItems: "center", gap: 2, fontSize: 12, fontWeight: 800,
           fontFamily: "'Poppins',sans-serif", background: "transparent",
-          border: "1.5px solid #1b1922", borderRadius: 8,
+          border: "1.5px solid #9FD8FF", borderRadius: 8,
           overflow: "hidden", cursor: "pointer", userSelect: "none", padding: 0,
         }}
       >
@@ -151,7 +162,7 @@ export default function RoleSelectPage() {
         >
           {isAf ? "Welkom! Wie is jy?" : "Welcome! Who are you?"}
         </div>
-        <div style={{ marginTop: 10, fontSize: 15, lineHeight: 1.6, color: "#fff", opacity: 0.94 }}>
+        <div style={{ marginTop: 10, fontSize: 15, lineHeight: 1.6, color: "#fff" }}>
           {isAf
             ? "Kies jou rol hieronder. Jy kan dit verander voor jy bevestig."
             : "Select your role below. You can change it before confirming."}
@@ -172,8 +183,9 @@ export default function RoleSelectPage() {
               data-testid={`button-role-${role}`}
               style={{
                 width: 220,
-                background: "linear-gradient(160deg,#0e0d12,#0e0d12)",
-                border: `2px solid ${isSel ? s.accent : `${s.soft}.45)`}`,
+                background: "#0e0d12",
+                border: `2.5px solid ${s.accent}`,
+                boxShadow: isSel ? `6px 6px 0 0 ${s.accent}` : "none",
                 borderRadius: 18, padding: "26px 20px", textAlign: "center",
                 cursor: roleMutation.isPending ? "default" : "pointer",
                 color: "#fff", fontFamily: "'Poppins',sans-serif",
@@ -183,14 +195,14 @@ export default function RoleSelectPage() {
               <div
                 style={{
                   width: 52, height: 52, margin: "0 auto 12px", borderRadius: 14,
-                  background: s.chipBg, display: "flex", alignItems: "center",
+                  background: "#0e0d12", border: `1.5px solid ${s.accent}`, display: "flex", alignItems: "center",
                   justifyContent: "center", fontSize: 24,
                 }}
               >
                 {s.emoji}
               </div>
               <div style={{ fontWeight: 800, fontSize: 18, color: s.accent }}>{label}</div>
-              <div style={{ fontSize: 12.5, lineHeight: 1.5, color: "#fff", opacity: 0.94, marginTop: 6 }}>{desc}</div>
+              <div style={{ fontSize: 12.5, lineHeight: 1.5, color: "#fff", marginTop: 6 }}>{desc}</div>
               {isSel && (
                 <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1, color: s.accent, marginTop: 8 }}>
                   ● {isAf ? "GEKIES" : "SELECTED"}
@@ -204,35 +216,33 @@ export default function RoleSelectPage() {
       <button
         onClick={handleConfirm}
         disabled={!selected || roleMutation.isPending}
-        className="btrs-cta"
+        className="pub-btn btrs-cta"
         data-testid="button-confirm-role"
         style={{
           width: 340, maxWidth: "92vw", position: "relative", zIndex: 2,
-          fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 16,
-          color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
-          animation: "bt-rainbow 5s linear infinite", border: "none",
-          borderRadius: 12, padding: 15, whiteSpace: "nowrap",
-          cursor: !selected || roleMutation.isPending ? "default" : "pointer",
+          whiteSpace: "nowrap",
           opacity: !selected || roleMutation.isPending ? 0.45 : 1,
-          display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+          cursor: !selected || roleMutation.isPending ? "default" : "pointer",
         }}
       >
-        {roleMutation.isPending ? (
-          <>
-            <Loader2 style={{ width: 16, height: 16 }} className="animate-spin" />
-            {isAf ? "Besig…" : "Setting up…"}
-          </>
-        ) : (
-          <>
-            {isAf
-              ? `Bevestig — Ek is 'n ${selected === "learner" ? "Leerder" : selected === "parent" ? "Ouer" : "…"}`
-              : `Confirm — I'm a ${selected === "learner" ? "Learner" : selected === "parent" ? "Parent" : "…"}`}
-            {" →"}
-          </>
-        )}
+        <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+          {roleMutation.isPending ? (
+            <>
+              <Loader2 style={{ width: 16, height: 16 }} className="animate-spin" />
+              {isAf ? "Besig…" : "Setting up…"}
+            </>
+          ) : (
+            <>
+              {isAf
+                ? `Bevestig — Ek is 'n ${selected === "learner" ? "Leerder" : selected === "parent" ? "Ouer" : "…"}`
+                : `Confirm — I'm a ${selected === "learner" ? "Learner" : selected === "parent" ? "Parent" : "…"}`}
+              {" →"}
+            </>
+          )}
+        </span>
       </button>
 
-      <div style={{ marginTop: 20, fontSize: 12.5, color: "#fff", opacity: 0.94, textAlign: "center", position: "relative", zIndex: 2, maxWidth: 420, lineHeight: 1.6 }}>
+      <div style={{ marginTop: 20, fontSize: 12.5, color: "#fff", textAlign: "center", position: "relative", zIndex: 2, maxWidth: 420, lineHeight: 1.6 }}>
         {isAf
           ? "Hierdie sal jou ervaring aanpas. Administrateurs word deur die skool gestel."
           : "This personalises your experience. Admin accounts are set by the school."}

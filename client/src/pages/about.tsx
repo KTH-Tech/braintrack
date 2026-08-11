@@ -145,7 +145,7 @@ export default function AboutPage() {
   const { isAuthenticated } = useAuth();
   useSEO({
     title: "About BrainTrack™ | Grade 12 CAPS Matric Revision Platform",
-    description: "BrainTrack™ is South Africa's Grade 12 Matric exam prep platform — CAPS-aligned weekly plans, 10 years of NSC past papers with memos, AI tutor, and progress tracking.",
+    description: "BrainTrack™ is South Africa's Grade 12 Matric prep platform — CAPS-aligned weekly plans, NSC past papers with memos, AI tutor and progress tracking.",
     canonical: "https://braintrack.tech/about",
     ogTitle: "About BrainTrack™ — South Africa's Grade 12 Matric Prep Platform",
     ogDescription: "BrainTrack™ combines CAPS-aligned weekly plans, 10 years of NSC past papers, AI tutor Rizz, and progress tracking to help Grade 12 learners improve Matric marks.",

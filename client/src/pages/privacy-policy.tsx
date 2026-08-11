@@ -96,7 +96,7 @@ export default function PrivacyPolicyPage() {
   const isAf = language === "af";
   useSEO({
     title: "Privacy Policy & POPIA Compliance | BrainTrack",
-    description: "BrainTrack privacy policy covering POPIA compliance, data protection, learner data security, and your rights as a South African user. Operated by KTH Projects (Pty) Ltd t/a KTH-Tech.",
+    description: "BrainTrack privacy policy — POPIA compliance, learner data protection and your rights. Operated by KTH Projects (Pty) Ltd t/a KTH-Tech.",
     canonical: "https://braintrack.tech/privacy-policy",
   });
 

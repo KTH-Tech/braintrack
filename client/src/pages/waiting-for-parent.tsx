@@ -371,7 +371,7 @@ export default function WaitingForParentPage() {
                           value={shareEmail}
                           onChange={(e) => setShareEmail(e.target.value)}
                           placeholder={t.shareEmailPrompt}
-                          className="h-12 bg-background text-white"
+                          className="h-12 bg-[#0e0d12] border-[#1b1922] text-white"
                           data-testid="input-consent-share-email"
                         />
                       )}
@@ -408,7 +408,7 @@ export default function WaitingForParentPage() {
                         className="w-6 h-6 rounded-full flex items-center justify-center flex-none"
                         style={step.complete
                           ? { background: "#94F7C5", color: "#050508" }
-                          : { border: "1.5px solid #1b1922", color: "#fff" }}
+                          : { border: "1.5px solid #9FD8FF", color: "#fff" }}
                       >
                         {step.complete ? <CheckCircle2 className="w-4 h-4" /> : <span className="text-[11px]">{i + 1}</span>}
                       </span>
@@ -428,7 +428,7 @@ export default function WaitingForParentPage() {
                     value={newEmail}
                     onChange={(e) => setNewEmail(e.target.value)}
                     placeholder={t.emailPlaceholder}
-                    className="h-12 bg-background text-white"
+                    className="h-12 bg-[#0e0d12] border-[#1b1922] text-white"
                     data-testid="input-waiting-parent-email"
                   />
                 )}

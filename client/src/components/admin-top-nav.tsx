@@ -147,13 +147,14 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
         <Link
           href="/learn/admin"
           data-testid="admin-nav-brand"
+          className="bt-admin-brand"
           style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 8px", cursor: "pointer" }}
         >
-          <img src={iconTransparent} alt="" style={{ width: 48, height: 48, objectFit: "contain", flex: "none" }} />
-          <span className="bt-wordmark" style={{ fontSize: 16, fontWeight: 900 }}>BrainTrack</span>
+          <img src={iconTransparent} alt="" className="bt-admin-brand-img" style={{ width: 48, height: 48, objectFit: "contain", flex: "none" }} />
+          <span className="bt-wordmark bt-admin-navlabel" style={{ fontSize: 16, fontWeight: 900 }}>BrainTrack</span>
         </Link>
         <span
-          className="uppercase"
+          className="uppercase bt-admin-navlabel"
           style={{
             alignSelf: "flex-start",
             margin: "8px 8px 10px",
@@ -172,7 +173,7 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
         {NAV_GROUPS.map((group) => (
           <div key={group.labelEn} style={{ display: "flex", flexDirection: "column", gap: 2, marginBottom: 6 }}>
             <div
-              className="uppercase"
+              className="uppercase bt-admin-navlabel"
               style={{
                 padding: "6px 10px 4px",
                 fontSize: 9,
@@ -191,6 +192,7 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
                   <div
                     data-testid={testId ?? `admin-nav-${key}`}
                     title={isAf ? labelAf : labelEn}
+                    className="bt-admin-navitem"
                     style={{
                       display: "flex",
                       alignItems: "center",
@@ -209,7 +211,7 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
                     onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = "transparent"; }}
                   >
                     <Icon style={{ width: 15, height: 15, flex: "none" }} />
-                    <span style={{ flex: 1, minWidth: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <span className="bt-admin-navlabel" style={{ flex: 1, minWidth: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                       {isAf ? labelAf : labelEn}
                     </span>
                   </div>
@@ -220,7 +222,7 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
         ))}
 
         <div style={{ marginTop: "auto", display: "flex", flexDirection: "column", gap: 6, paddingTop: 10 }}>
-          <div style={{ display: "flex", gap: 6 }}>
+          <div className="bt-admin-footrow" style={{ display: "flex", gap: 6 }}>
             <button
               onClick={toggleLanguage}
               data-testid="admin-nav-lang"
@@ -238,7 +240,7 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
                 transition: "border-color .2s",
               }}
               onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#9FD8FF"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#fff"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#1b1922"; }}
             >
               {isAf ? "EN" : "AF"}
             </button>
@@ -263,6 +265,8 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
           <a
             href="/api/auth/logout"
             data-testid="admin-nav-logout"
+            title={isAf ? "Teken Uit" : "Logout"}
+            className="bt-admin-navitem"
             style={{
               display: "flex",
               alignItems: "center",
@@ -280,16 +284,17 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
               transition: "all .2s",
             }}
             onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#FFB7E5"; e.currentTarget.style.color = "#FFB7E5"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#fff"; e.currentTarget.style.color = "#fff"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#1b1922"; e.currentTarget.style.color = "#fff"; }}
           >
-            <LogOut style={{ width: 15, height: 15 }} />
-            {isAf ? "Teken Uit" : "Logout"}
+            <LogOut style={{ width: 15, height: 15, flex: "none" }} />
+            <span className="bt-admin-navlabel">{isAf ? "Teken Uit" : "Logout"}</span>
           </a>
         </div>
       </aside>
 
       {/* The sidebar persists at every width (no top-bar fallback); it slims
-          to 200px under 861px — same approach as the learner dashboard.
+          to 200px under 861px, then collapses to a 60px icon-only rail under
+          640px — same approach as the learner dashboard's .bt-dash-sidebar.
           Following siblings of the sidebar are offset so existing admin page
           layouts keep working unchanged. */}
       <style>{`
@@ -297,6 +302,17 @@ export function AdminTopNav({ current }: AdminTopNavProps) {
         @media (max-width: 860px) {
           .bt-admin-sidebar { width: 200px !important; padding: 16px 10px !important; }
           .bt-admin-sidebar ~ * { margin-left: 200px !important; }
+        }
+        @media (max-width: 639px) {
+          .bt-admin-sidebar { width: 60px !important; padding: 14px 6px !important; align-items: center !important; }
+          .bt-admin-sidebar ~ * { margin-left: 60px !important; }
+          .bt-admin-navlabel { display: none !important; }
+          /* 44px min tap targets (Apple/WCAG) once labels collapse away. */
+          .bt-admin-navitem { justify-content: center !important; padding: 12px !important; min-width: 44px !important; min-height: 44px !important; }
+          .bt-admin-brand { justify-content: center !important; padding: 0 !important; }
+          .bt-admin-brand-img { width: 32px !important; height: 32px !important; }
+          .bt-admin-footrow { flex-direction: column !important; }
+          .bt-admin-footrow > * { width: 100% !important; min-height: 38px !important; }
         }
       `}</style>
     </>

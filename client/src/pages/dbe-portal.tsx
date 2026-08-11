@@ -144,9 +144,9 @@ function memoCovColorFor(pct: number | null | undefined): NeonHex {
 // over anything else (the only absolute element is NeonShell's 2px top accent
 // hairline, which sits above the padding, not over content). A fixed minHeight
 // keeps every card the same size so a row of them can't jump or collide.
-function StatCard({ label, value, sub, icon: Icon, onClick, valueColor, barPct }: {
+function StatCard({ label, value, sub, icon: Icon, onClick, valueColor, barPct, compact }: {
   label: string; value: string | number; sub?: string; icon?: any; onClick?: () => void; valueColor?: NeonHex;
-  barPct?: number | null;
+  barPct?: number | null; compact?: boolean;
 }) {
   const { language } = useLanguage();
   const resolvedColor: NeonHex = valueColor ?? "#9FD8FF";
@@ -156,17 +156,17 @@ function StatCard({ label, value, sub, icon: Icon, onClick, valueColor, barPct }
     <NeonShell
       color={resolvedColor}
       className={onClick ? "cursor-pointer" : ""}
-      style={{ padding: "16px 18px", borderRadius: 14, minHeight: 138, display: "flex", flexDirection: "column" }}
+      style={{ padding: compact ? "12px 16px" : "16px 18px", borderRadius: 14, minHeight: compact ? 92 : 148, display: "flex", flexDirection: "column" }}
       testId={`stat-${label.toLowerCase().replace(/\s/g, "-")}`}
     >
       <div onClick={onClick} className="flex flex-col" style={{ flex: 1 }}>
         {/* Line 1 — label + icon */}
         <div className="flex items-start justify-between gap-2">
-          <div className="uppercase text-white" style={{ fontSize: 11, fontWeight: 700, letterSpacing: "1px" }}>{label}</div>
-          {Icon && <Icon className="w-5 h-5 shrink-0" style={{ color: resolvedColor }} />}
+          <div className="uppercase text-white" style={{ fontSize: compact ? 10 : 11, fontWeight: 700, letterSpacing: "1px" }}>{label}</div>
+          {Icon && <Icon className={compact ? "w-4 h-4 shrink-0" : "w-5 h-5 shrink-0"} style={{ color: resolvedColor }} />}
         </div>
-        {/* Line 2 — big value */}
-        <div style={{ fontSize: 28, fontWeight: 900, color: resolvedColor, marginTop: 6, lineHeight: 1.1 }}>
+        {/* Line 2 — big display number (Bebas, brand display face) */}
+        <div style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: compact ? 26 : 42, fontWeight: 400, letterSpacing: "0.5px", color: resolvedColor, marginTop: compact ? 2 : 6, lineHeight: 1.05 }}>
           {typeof value === "number" ? formatNumber(value, language) : value}
         </div>
         {/* Line 3 — sub caption */}
@@ -607,6 +607,12 @@ function OverviewSubjectGrid({ subjects, status, statusLoading, seedSubject, gen
 }) {
   const { language } = useLanguage();
 
+  // Presentation-only per-card expander: primary info + ONE action stay
+  // visible; secondary metrics and handoff/export controls live behind it.
+  const [openCards, setOpenCards] = useState<Set<string>>(new Set());
+  const toggleCard = (subject: string) =>
+    setOpenCards((prev) => { const n = new Set(prev); if (n.has(subject)) n.delete(subject); else n.add(subject); return n; });
+
   const [sortKey, setSortKey] = useState<SubjectSortKey>(() => {
     try {
       const saved = localStorage.getItem(SUBJECT_SORT_LS_KEY);
@@ -683,7 +689,7 @@ function OverviewSubjectGrid({ subjects, status, statusLoading, seedSubject, gen
           ))}
         </div>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-3">
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(340px,1fr))", gap: 16 }}>
       {sortedSubjects.map((s, i) => {
         // Verbatim panel: Live/Empty reflects INGESTED papers only. Simulated
         // counts belong to the Simulator screen.
@@ -709,11 +715,13 @@ function OverviewSubjectGrid({ subjects, status, statusLoading, seedSubject, gen
         const cappedPapers = Math.min(s.papersDone, s.catalogPapers);
         const paperPct = s.catalogPapers > 0 ? Math.round((cappedPapers / s.catalogPapers) * 100) : 0;
 
+        const isCardOpen = openCards.has(s.subject);
+
         return (
-          <div key={s.subject} className="p-4 space-y-2" style={cardStyle} data-testid={`subject-${s.subject}`}>
+          <div key={s.subject} className="space-y-2" style={{ ...cardStyle, padding: "16px 18px" }} data-testid={`subject-${s.subject}`}>
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
-                <div className="truncate text-white" style={{ fontSize: 14, fontWeight: 700 }}>
+                <div className="truncate text-white" style={{ fontSize: 16, fontWeight: 700 }}>
                   {s.subject}
                 </div>
                 {/* DBE Portal is the VERBATIM panel — real ingested papers
@@ -743,20 +751,36 @@ function OverviewSubjectGrid({ subjects, status, statusLoading, seedSubject, gen
                 </span>
               ) : null}
             </div>
-            {/* Coverage metrics — each metric is a self-contained block: a
-                label+value row on its own line, then the bar on the next line.
-                Stacked in normal flow with margin between them, so no number,
-                label or bar can ever sit over another. */}
-            {(s.catalogPapers > 0 || hasMemoCov || (ready && s.memoCoverage !== undefined)) && (
+            {/* ONE slim always-visible progress bar: papers ingested. Memo
+                coverage + secondary controls live in the Details expander so
+                the grid scans as name → status → bar → action. */}
+            {s.catalogPapers > 0 && (
               <div data-testid={`subject-metrics-${s.subject}`}>
-                {s.catalogPapers > 0 && (
-                  <CoverageBar
-                    label={language === "af" ? "Vraestelle ingeneem" : "Papers ingested"}
-                    valueText={`${cappedPapers}/${s.catalogPapers}`}
-                    pct={paperPct}
-                    color={accent}
-                  />
-                )}
+                <CoverageBar
+                  label={language === "af" ? "Vraestelle ingeneem" : "Papers ingested"}
+                  valueText={`${cappedPapers}/${s.catalogPapers}`}
+                  pct={paperPct}
+                  color={accent}
+                />
+              </div>
+            )}
+            <div className="flex flex-wrap items-center gap-1.5 pt-1">
+              <button className={neonBtn} style={hasNothing ? cyanBtnStyle : ghostStyle} disabled={isRunning || seedSubject.isPending} onClick={() => seedSubject.mutate(s.subject)} data-testid={`btn-seed-${s.subject}`}>
+                {seedSubject.isPending && seedSubject.variables === s.subject ? <Loader2 className="w-3 h-3 animate-spin" /> : <Play className="w-3 h-3" />}
+                {hasNothing ? "Seed" : "Re-seed"}
+              </button>
+              <button
+                className={`${ghostBtn} ml-auto`}
+                style={ghostStyle}
+                onClick={() => toggleCard(s.subject)}
+                data-testid={`btn-more-${s.subject}`}
+                title={isCardOpen ? "Hide details" : "Memo coverage, Simulator handoff & exports"}
+              >
+                {isCardOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />} Details
+              </button>
+            </div>
+            {isCardOpen && (
+              <div className="space-y-2" style={{ borderTop: "1px solid #1b1922", paddingTop: 8 }}>
                 {hasMemoCov ? (
                   <CoverageBar
                     label={language === "af" ? "Memo-dekking" : "Memo coverage"}
@@ -774,25 +798,21 @@ function OverviewSubjectGrid({ subjects, status, statusLoading, seedSubject, gen
                     testId={`memo-cov-${s.subject}`}
                   />
                 ) : null}
+                <div className="flex flex-wrap gap-1.5">
+                  {/* Generation moved to the Simulator (verbatim/simulated split).
+                      This hands off once the subject has an ingested bank. */}
+                  <a className={neonBtn} style={purpleBtnStyle} href="/admin/simulator" data-testid={`btn-to-simulator-${s.subject}`} title="Generate & release simulated questions on the Simulator screen">
+                    <Sparkles className="w-3 h-3" /> Simulator →
+                  </a>
+                  <a className={ghostBtn} style={ghostStyle} href={`/api/admin/dbe-ingestion/export?subject=${encodeURIComponent(s.subject)}&format=json&minQuality=98`} download data-testid={`btn-download-json-${s.subject}`}>
+                    <Download className="w-3 h-3" /> JSON
+                  </a>
+                  <a className={ghostBtn} style={ghostStyle} href={`/api/admin/dbe-ingestion/export?subject=${encodeURIComponent(s.subject)}&format=csv&minQuality=98`} download data-testid={`btn-download-csv-${s.subject}`}>
+                    <Download className="w-3 h-3" /> CSV
+                  </a>
+                </div>
               </div>
             )}
-            <div className="flex flex-wrap gap-1.5 pt-1">
-              <button className={neonBtn} style={hasNothing ? cyanBtnStyle : ghostStyle} disabled={isRunning || seedSubject.isPending} onClick={() => seedSubject.mutate(s.subject)} data-testid={`btn-seed-${s.subject}`}>
-                {seedSubject.isPending && seedSubject.variables === s.subject ? <Loader2 className="w-3 h-3 animate-spin" /> : <Play className="w-3 h-3" />}
-                {hasNothing ? "Seed" : "Re-seed"}
-              </button>
-              {/* Generation moved to the Simulator (verbatim/simulated split).
-                  This hands off once the subject has an ingested bank. */}
-              <a className={neonBtn} style={purpleBtnStyle} href="/admin/simulator" data-testid={`btn-to-simulator-${s.subject}`} title="Generate & release simulated questions on the Simulator screen">
-                <Sparkles className="w-3 h-3" /> Simulator →
-              </a>
-              <a className={ghostBtn} style={ghostStyle} href={`/api/admin/dbe-ingestion/export?subject=${encodeURIComponent(s.subject)}&format=json&minQuality=98`} download data-testid={`btn-download-json-${s.subject}`}>
-                <Download className="w-3 h-3" /> JSON
-              </a>
-              <a className={ghostBtn} style={ghostStyle} href={`/api/admin/dbe-ingestion/export?subject=${encodeURIComponent(s.subject)}&format=csv&minQuality=98`} download data-testid={`btn-download-csv-${s.subject}`}>
-                <Download className="w-3 h-3" /> CSV
-              </a>
-            </div>
           </div>
         );
       })}
@@ -1190,6 +1210,23 @@ export default function DBEPortal() {
   const [activeTab, setActiveTab] = useState(() => {
     try { return JSON.parse(localStorage.getItem("braintrack:dbe-portal:ui") ?? "{}").activeTab ?? "overview"; } catch { return "overview"; }
   });
+  // Engine room (batch machinery) — collapsed by default, persisted like the
+  // other panels. Purely presentational: it only hides/shows already-wired
+  // controls.
+  const [engineOpen, setEngineOpen] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("braintrack:dbe-portal:ui") ?? "{}").engineRoomOpen ?? false; } catch { return false; }
+  });
+  const toggleEngineOpen = () => {
+    setEngineOpen((v: boolean) => {
+      const next = !v;
+      try {
+        const saved = JSON.parse(localStorage.getItem("braintrack:dbe-portal:ui") ?? "{}");
+        saved.engineRoomOpen = next;
+        localStorage.setItem("braintrack:dbe-portal:ui", JSON.stringify(saved));
+      } catch {}
+      return next;
+    });
+  };
   const [previewSubject, setPreviewSubject] = useState<string | null>(null);
   const [previewYear, setPreviewYear] = useState<number | null>(null);
   const [anyRunning, setAnyRunning] = useState(false);
@@ -1586,6 +1623,11 @@ export default function DBEPortal() {
 
   // ── Render ────────────────────────────────────────────────────────────────
 
+  // Engine room stays visible while any batch job it owns is running, so live
+  // progress (crunch / validate / seed-notes) can never be hidden mid-run.
+  const engineActive = !!crunchStatus?.running || !!validateStatus?.running || !!seedNotesStatus?.running;
+  const engineVisible = engineOpen || engineActive;
+
   return (
     <AdminGround className="dark">
       <AdminTopNav current="dbe-portal" />
@@ -1613,40 +1655,6 @@ export default function DBEPortal() {
         </div>
       </div>
 
-      {/* What-each-button-does legend. Native <details> so it's collapsible
-          without state and works on touch (the per-button title= tooltips
-          don't). Two groups: ingest the real DBE papers vs. generate + serve
-          simulated content. */}
-      <details style={{ margin: "16px 40px 0", border: "2px solid #9FD8FF", borderRadius: 14, boxShadow: "4px 4px 0 0 #9FD8FF", background: "#0e0d12" }}>
-        <summary style={{ cursor: "pointer", padding: "12px 16px", fontWeight: 800, color: "#9FD8FF", fontSize: 13, letterSpacing: 0.3 }}>
-          {language === "af" ? "Wat doen elke knoppie?" : "What each button does"}
-        </summary>
-        <div style={{ padding: "0 16px 16px", display: "grid", gap: 14 }}>
-          <div>
-            <p style={{ fontWeight: 800, color: "#FFE29A", fontSize: 12, textTransform: "uppercase", letterSpacing: 1, margin: "0 0 6px" }}>
-              {language === "af" ? "1 · Neem regte DBE-inhoud in" : "1 · Ingest real DBE content"}
-            </p>
-            <ul style={{ margin: 0, paddingLeft: 18, color: "#fff", fontSize: 13, lineHeight: 1.7 }}>
-              <li><strong>Run ingestion</strong> — downloads the actual DBE past papers, memos & supporting docs and extracts the verbatim questions (the source material).</li>
-              <li><strong>Force reingest</strong> — re-downloads & replaces everything for a subject. Use after a bad/partial ingest.</li>
-              <li><strong>Fill Missing</strong> — re-fetches memos only for questions that came in without one.</li>
-              <li><strong>Verify</strong> — checks ingested content integrity (hashes, coverage). <strong>Fix All</strong> repairs flagged rows. <strong>Clear</strong> deletes a subject's ingested data.</li>
-            </ul>
-          </div>
-          <div>
-            <p style={{ fontWeight: 800, color: "#94F7C5", fontSize: 12, textTransform: "uppercase", letterSpacing: 1, margin: "0 0 6px" }}>
-              {language === "af" ? "2 · Genereer gesimuleerde inhoud (wat leerders sien)" : "2 · Generate simulated content (what learners see)"}
-            </p>
-            <ul style={{ margin: 0, paddingLeft: 18, color: "#fff", fontSize: 13, lineHeight: 1.7 }}>
-              <li><strong>Build Questions</strong> — AI-generates ~50 original practice questions for a subject, grounded in the ingested examiner patterns.</li>
-              <li><strong>Crunch ×10</strong> — generates 10 more in one fast batch. Each run <strong>accumulates</strong> onto the subject's pool (it doesn't replace).</li>
-              <li>Learners are served the <strong>best-scoring</strong> simulated questions — quality rises toward the 99% target as you generate more.</li>
-              <li><strong>Rebuild Mastery</strong> recomputes learner mastery from attempts. <strong>Restart</strong> restarts a stalled pipeline.</li>
-            </ul>
-          </div>
-        </div>
-      </details>
-
       {/* OpenAI key missing banner */}
       {!openaiReady && !openAiBannerDismissed && (
         <div className="border-b border-[#FFE29A]/40 bg-[#FFE29A]/10" role="alert" data-testid="openai-missing-banner">
@@ -1673,9 +1681,11 @@ export default function DBEPortal() {
         </div>
       )}
 
-      <div className="mx-auto space-y-6" style={{ maxWidth: 1120, padding: 32 }}>
-        {/* Header */}
-        <div className="flex items-start justify-between gap-4 flex-wrap">
+      <div className="mx-auto space-y-10" style={{ maxWidth: 1120, padding: "32px 32px 48px" }}>
+        {/* Header band — identity + one-line purpose on the left, the 3 GLOBAL
+            actions right-aligned. Everything subject-level lives in the grid;
+            everything batch-level lives in the Engine room below. */}
+        <div className="flex items-end justify-between gap-4 flex-wrap">
           <div>
             <div style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: 14, letterSpacing: "1.5px", textTransform: "uppercase", color: "#C5B3FF" }}>
               {language === "af" ? "DBE Inhoudsportaal" : "DBE Content Portal"}
@@ -1684,7 +1694,7 @@ export default function DBEPortal() {
               Content operations
             </div>
             <p className="text-white text-[13px] mt-1">
-              {allSubjects.length} subjects · {formatNumber(totalDone, language)}/{formatNumber(totalPapers, language)} papers · {formatNumber(totalQuestions, language)} practice questions
+              Ingest real DBE past papers and keep every subject's question bank healthy.
             </p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
@@ -1696,6 +1706,11 @@ export default function DBEPortal() {
               onClick={() => { if (confirm("Clear ALL ingestion data? This cannot be undone.")) clearAllMutation.mutate(); }}
               disabled={clearAllMutation.isPending || anyRunning} data-testid="btn-clear-all">
               {clearAllMutation.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <AlertTriangle className="w-3.5 h-3.5" />} Clear All
+            </Button>
+            <Button size="sm" className="gap-2 rounded-[10px] border-0 font-extrabold text-[#050508] hover:text-[#050508] hover:-translate-y-[2px] transition-transform" style={{ background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)" }} onClick={() => seedAll.mutate()} disabled={seedAll.isPending}
+              title="Download and parse all DBE PDFs for all subjects across 2015–2025"
+              data-testid="btn-seed-all">
+              {seedAll.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />} Seed All Subjects (2015–2025)
             </Button>
           </div>
         </div>
@@ -1714,164 +1729,67 @@ export default function DBEPortal() {
             answer; the raw counts below are the supporting detail. */}
         <TriagePanel isAf={language === "af"} />
 
-        {/* KPI cards — responsive auto-fit grid at the top of the content area.
-            Each tile is a fixed-height flow-only StatCard (see component note);
-            percentage tiles carry a thin bar pinned to the bottom edge, count
-            tiles omit it. The grid gap + minmax guarantee tiles reflow onto new
-            rows rather than overlapping at any width (tested 1280px and 375px). */}
-        <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 16 }}>
-          <StatCard label="Papers Ingested" value={`${paperPct}%`} sub={`${totalDone}/${totalPapers} papers`} icon={FileText} valueColor="#9FF5E8" barPct={paperPct} />
-          <StatCard label="Subjects Ready" value={subjectsReady} sub={`of ${allSubjects.length} · ${subjectsReadyPct}%`} icon={CheckCircle2} valueColor="#FFB7E5" barPct={subjectsReadyPct} />
-          <StatCard label="Verbatim Qs" value={totalDBE} sub="exact NSC questions" icon={BookOpen} valueColor="#C5B3FF" />
-          <StatCard label="Simulated Qs" value={totalSim} sub={`${subjectsWithSim} subjects`} icon={Zap} valueColor="#FFE29A" />
-          <StatCard label="Memo Coverage" value={overallMemoCovPct !== null ? `${overallMemoCovPct}%` : "—"} sub={missingMemosData ? `${missingMemosData.totalMemoLessQuestions} missing` : "loading…"} icon={FileCheck} valueColor={memoCovColorFor(overallMemoCovPct)} barPct={overallMemoCovPct} />
-          <StatCard label="Avg Quality" value={avgQuality > 0 ? `${avgQuality}%` : "—"} sub="across scored subjects" icon={ShieldCheck} valueColor="#94F7C5" barPct={avgQuality > 0 ? avgQuality : null} />
-          <StatCard label="Mastery Built" value={subjectsWithMastery} sub={`of ${allSubjects.length} · ${masteryPct}%`} icon={GraduationCap} valueColor="#9FF5E8" barPct={masteryPct} />
-          <StatCard label="Topics Covered" value={topicsCovered} sub={`of ${topicsTotal} CAPS · ${topicsCoveredPct}%`} icon={BarChart3} valueColor="#FFB7E5" barPct={topicsCoveredPct} />
-          <StatCard label="High Yield" value={statusData?.highYieldTopics ?? 0} sub="3+ exam appearances" icon={Sparkles} valueColor="#C5B3FF" />
+        {/* KPI band — two tiers instead of nine identical tiles. Tier 1: the
+            five numbers an admin actually steers by, big Bebas display digits.
+            Tier 2: the four secondary counters as a slim compact strip. Same
+            StatCard component (and stat-* testids) throughout; every tile is
+            flow-only with a fixed minHeight so rows can't jump or collide. */}
+        <div className="space-y-3">
+          <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 16 }}>
+            <StatCard label="Papers Ingested" value={`${paperPct}%`} sub={`${totalDone}/${totalPapers} papers`} icon={FileText} valueColor="#9FF5E8" barPct={paperPct} />
+            <StatCard label="Subjects Ready" value={subjectsReady} sub={`of ${allSubjects.length} · ${subjectsReadyPct}%`} icon={CheckCircle2} valueColor="#FFB7E5" barPct={subjectsReadyPct} />
+            <StatCard label="Verbatim Qs" value={totalDBE} sub="exact NSC questions" icon={BookOpen} valueColor="#C5B3FF" />
+            <StatCard label="Memo Coverage" value={overallMemoCovPct !== null ? `${overallMemoCovPct}%` : "—"} sub={missingMemosData ? `${missingMemosData.totalMemoLessQuestions} missing` : "loading…"} icon={FileCheck} valueColor={memoCovColorFor(overallMemoCovPct)} barPct={overallMemoCovPct} />
+            <StatCard label="Avg Quality" value={avgQuality > 0 ? `${avgQuality}%` : "—"} sub="across scored subjects" icon={ShieldCheck} valueColor="#94F7C5" barPct={avgQuality > 0 ? avgQuality : null} />
+          </div>
+          <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))", gap: 16 }}>
+            <StatCard compact label="Simulated Qs" value={totalSim} sub={`${subjectsWithSim} subjects`} icon={Zap} valueColor="#FFE29A" />
+            <StatCard compact label="Mastery Built" value={subjectsWithMastery} sub={`of ${allSubjects.length} · ${masteryPct}%`} icon={GraduationCap} valueColor="#9FF5E8" barPct={masteryPct} />
+            <StatCard compact label="Topics Covered" value={topicsCovered} sub={`of ${topicsTotal} CAPS · ${topicsCoveredPct}%`} icon={BarChart3} valueColor="#FFB7E5" barPct={topicsCoveredPct} />
+            <StatCard compact label="High Yield" value={statusData?.highYieldTopics ?? 0} sub="3+ exam appearances" icon={Sparkles} valueColor="#C5B3FF" />
+          </div>
         </div>
 
-        {/* Primary actions row */}
-        <div className="space-y-0" style={{ background: "#0e0d12", border: "1px solid #1b1922", borderRadius: 20, padding: 24 }}>
-          {/* Row: Ingestion */}
-          <div className="flex items-center gap-3 flex-wrap pb-3">
-            <span className="uppercase text-white w-20 shrink-0" style={{ fontSize: 11, fontWeight: 700, letterSpacing: "1px" }}>Ingestion</span>
-            <Button size="sm" className="gap-2 rounded-[10px] border-0 font-extrabold text-[#050508] hover:text-[#050508] hover:-translate-y-[2px] transition-transform" style={{ background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)" }} onClick={() => seedAll.mutate()} disabled={seedAll.isPending}
-              title="Download and parse all DBE PDFs for all subjects across 2015–2025"
-              data-testid="btn-seed-all">
-              {seedAll.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />} Seed All Subjects (2015–2025)
-            </Button>
-          </div>
-
-          {/* Row: AI & Questions */}
-          <div className="flex items-center gap-3 flex-wrap py-3" style={{ borderTop: "1px solid #1b1922" }}>
-            <span className="uppercase text-white w-20 shrink-0" style={{ fontSize: 11, fontWeight: 700, letterSpacing: "1px", opacity: openaiReady ? 1 : 0.9 }}>
-              AI & Qs
-              {!openaiReady && <span className="block normal-case tracking-normal font-bold text-[9px] mt-0.5" style={{ color: "#FFB7E5" }}>No key</span>}
-            </span>
-            <Button size="sm" variant="outline" className="gap-2 rounded-[10px] border-0 font-extrabold text-[#050508] hover:text-[#050508] hover:-translate-y-[2px] transition-transform disabled:opacity-40"
-              style={{ background: "linear-gradient(100deg,#9FD8FF,#C5B3FF)" }}
-              onClick={() => generateAi.mutate(undefined)} disabled={generateAi.isPending || !openaiReady}
-              title={openaiReady ? "Generate AI practice questions for all subjects with DBE content" : "Requires OpenAI API key — configure AI_INTEGRATIONS_OPENAI_API_KEY"}
-              data-testid="btn-generate-ai">
-              {generateAi.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />} Generate AI Questions
-              {!openaiReady && <span className="ml-1 text-[9px] px-1 py-0.5 rounded font-black" style={{ background: "rgba(255,183,229,0.15)", color: "#FFB7E5", border: "1px solid rgba(255,183,229,0.3)" }}>Requires key</span>}
-            </Button>
-            {/* Crunch Time controls */}
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1.5" style={{ borderRadius: 10, border: `1.5px solid ${openaiReady ? "rgba(159,216,255,0.5)" : "#1b1922"}` }}>
-              <span className="text-[10px] uppercase font-bold" style={{ letterSpacing: "1px", color: openaiReady ? "#9FD8FF" : "#ffffff" }}>Papers</span>
-              <input type="number" min={1} max={20} value={papersPerSubject} onChange={(e) => setPapersPerSubject(Math.max(1, Math.min(20, Number(e.target.value) || 1)))} disabled={simulateAllMutation.isPending || crunchStatus?.running || anyRunning || !openaiReady} className="h-6 w-12 rounded bg-transparent px-1 text-center text-xs font-bold text-white focus:outline-none disabled:opacity-40" style={{ border: "1px solid #1b1922" }} data-testid="input-papers-per-subject" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-white">/subj</span>
+        {/* Subject library — the page's main working surface. Toolbar (search
+            + view tabs) sits directly on top of the grid it filters. */}
+        <div className="space-y-4">
+          <div>
+            <div className="text-white" style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: 24, letterSpacing: "0.5px", lineHeight: 1.1 }}>
+              {language === "af" ? "Vakbiblioteek" : "Subject library"}
             </div>
-            <Button size="sm" onClick={() => simulateAllMutation.mutate(papersPerSubject)} disabled={simulateAllMutation.isPending || crunchStatus?.running || anyRunning || !openaiReady} className="gap-2 rounded-[10px] border-0 font-extrabold text-[#050508] hover:text-[#050508] hover:-translate-y-[2px] transition-transform disabled:opacity-40" style={{ background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)" }}
-              title={openaiReady ? "Batch-generate AI practice papers across all subjects" : "Requires OpenAI API key"}
-              data-testid="btn-crunch-time">
-              {simulateAllMutation.isPending || crunchStatus?.running ? <><Loader2 className="w-4 h-4 animate-spin" />{crunchStatus?.running ? "Running…" : "Starting…"}</> : <><Zap className="w-4 h-4 fill-current" />Crunch Time</>}
-            </Button>
-            {crunchStatus?.running && (
-              <Button size="sm" variant="destructive" className="rounded-[10px] border-0 font-extrabold text-[#050508] hover:text-[#050508]" style={{ background: "#FFB7E5" }} onClick={() => stopSimulateAllMutation.mutate()} disabled={stopSimulateAllMutation.isPending || crunchStatus?.aborted} data-testid="btn-crunch-time-stop">
-                {crunchStatus?.aborted ? <><Loader2 className="w-3.5 h-3.5 animate-spin" />Stopping…</> : <>⏹ Stop</>}
-              </Button>
-            )}
-            {crunchStatus?.running && crunchStatus.total > 0 && (
-              <div className="flex items-center gap-2">
-                <div className="h-1.5 w-28 rounded-full overflow-hidden" style={{ background: "#1b1922" }}>
-                  <div className="h-full bg-gradient-to-r from-[#9FF5E8] to-[#FFB7E5] transition-all" style={{ width: `${Math.min(100, Math.round((crunchStatus.done / crunchStatus.total) * 100))}%` }} />
-                </div>
-                <span className="text-[11px] font-bold text-white tabular-nums">{formatNumber(crunchStatus.done, language)}/{formatNumber(crunchStatus.total, language)}</span>
-              </div>
-            )}
+            <p className="text-white text-xs mt-0.5">
+              {allSubjects.length} subjects · {formatNumber(totalDone, language)}/{formatNumber(totalPapers, language)} papers · {formatNumber(totalQuestions, language)} practice questions
+            </p>
           </div>
-
-          {/* Row: Validation */}
-          <div className="flex items-center gap-3 flex-wrap py-3" style={{ borderTop: "1px solid #1b1922" }}>
-            <span className="uppercase text-white w-20 shrink-0" style={{ fontSize: 11, fontWeight: 700, letterSpacing: "1px" }}>Validation</span>
-            <Button size="sm" variant="outline" className="gap-2 rounded-[10px] bg-transparent border-[#1b1922] text-white hover:border-[#9FD8FF] hover:bg-transparent hover:text-white" onClick={() => rebuildMasteryMutation.mutate()} disabled={rebuildMasteryMutation.isPending}
-              title="Recalculate mastery levels and topic coverage scores across all subjects"
-              data-testid="btn-rebuild-mastery">
-              {rebuildMasteryMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <GraduationCap className="w-4 h-4" />} Rebuild Mastery
-            </Button>
-            <Button size="sm" variant="outline" className="gap-2 rounded-[10px] bg-transparent border-[#1b1922] text-white hover:border-[#9FD8FF] hover:bg-transparent hover:text-white" onClick={() => validateAllMutation.mutate()} disabled={validateAllMutation.isPending || validateStatus?.running}
-              title="Score every ingested question for memo accuracy, CAPS alignment, and structural quality"
-              data-testid="btn-validate-ingestion">
-              {validateAllMutation.isPending || validateStatus?.running ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />} Validate All
-            </Button>
-            {validateStatus && !validateStatus.running && validateStatus.summary?.scoredTotal > 0 && (
-              <span className="text-[11px] font-bold text-[#9FD8FF]" data-testid="validate-summary">
-                {validateStatus.summary.avgQuality}% avg · {validateStatus.summary.clean} clean · {validateStatus.summary.garbled} garbled
-              </span>
-            )}
-          </div>
-
-          {/* Row: Nightly Jobs */}
-          <div className="flex items-center gap-3 flex-wrap pt-3" style={{ borderTop: "1px solid #1b1922" }}>
-            <span className="uppercase text-white w-20 shrink-0" style={{ fontSize: 11, fontWeight: 700, letterSpacing: "1px" }}>Nightly</span>
-            <Button size="sm" variant="outline" className="gap-2 rounded-[10px] bg-transparent border-[#1b1922] text-white hover:border-[#9FD8FF] hover:bg-transparent hover:text-white disabled:opacity-40"
-              onClick={() => seedNotesMutation.mutate(undefined)} disabled={seedNotesMutation.isPending || seedNotesStatus?.running || !openaiReady}
-              title={openaiReady ? "Generate one baseline AI study note per topic for all ingested subjects (skips topics that already have notes)" : "Requires OpenAI API key — configure AI_INTEGRATIONS_OPENAI_API_KEY"}>
-              {seedNotesMutation.isPending || seedNotesStatus?.running ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5" />} Seed Notes
-              {!openaiReady && <span className="ml-1 text-[9px] px-1 py-0.5 rounded font-black" style={{ background: "rgba(255,183,229,0.15)", color: "#FFB7E5", border: "1px solid rgba(255,183,229,0.3)" }}>Requires key</span>}
-            </Button>
-            {seedNotesStatus && !seedNotesStatus.running && (
-              (seedNotesStatus.total > 0 && seedNotesStatus.skipped === seedNotesStatus.total && seedNotesStatus.done === 0) ||
-              (seedNotesStatus.totalTopicsInDb > 0 && seedNotesStatus.topicsWithNotesInDb === seedNotesStatus.totalTopicsInDb)
-            ) && (
-              <Button size="sm" variant="outline" className="gap-2 rounded-[10px] border-0 font-extrabold text-[#050508] hover:text-[#050508] hover:-translate-y-[2px] transition-transform disabled:opacity-40"
-                style={{ background: "linear-gradient(100deg,#FFE29A,#FFB7E5)" }}
-                onClick={() => { if (openaiReady) seedNotesMutation.mutate(true); }}
-                disabled={!openaiReady}
-                title={openaiReady ? "All topics already have notes — use Force Re-seed to regenerate all notes from scratch" : "Requires OpenAI API key — configure AI_INTEGRATIONS_OPENAI_API_KEY"}>
-                <RefreshCw className="w-3.5 h-3.5" /> Force Re-seed
-                {!openaiReady && <span className="ml-1 text-[9px] px-1 py-0.5 rounded font-black" style={{ background: "rgba(255,183,229,0.15)", color: "#FFB7E5", border: "1px solid rgba(255,183,229,0.3)" }}>Requires key</span>}
-              </Button>
-            )}
-            {seedNotesStatus?.running && (
-              <Button size="sm" variant="destructive" className="rounded-[10px] border-0 font-extrabold text-[#050508] hover:text-[#050508]" style={{ background: "#FFB7E5" }} onClick={() => stopSeedNotesMutation.mutate()} disabled={stopSeedNotesMutation.isPending || seedNotesStatus.aborted}>⏹ Stop</Button>
-            )}
-            {seedNotesStatus?.running && seedNotesStatus.total > 0 && (
-              <div className="flex items-center gap-2 flex-wrap">
-                <div className="h-1.5 w-28 rounded-full overflow-hidden" style={{ background: "#1b1922" }}>
-                  <div className="h-full rounded-full transition-all" style={{ width: `${Math.min(100, Math.round(((seedNotesStatus.done + seedNotesStatus.skipped) / seedNotesStatus.total) * 100))}%`, background: "#94F7C5" }} />
-                </div>
-                <span className="text-[11px] font-bold text-[#94F7C5] tabular-nums">
-                  {Math.min(100, Math.round(((seedNotesStatus.done + seedNotesStatus.skipped) / seedNotesStatus.total) * 100))}% · {seedNotesStatus.done}✓ {seedNotesStatus.skipped}skip{seedNotesStatus.failed > 0 ? <span className="text-[#FFB7E5]"> {seedNotesStatus.failed}fail</span> : null}
-                </span>
-                {seedNotesStatus.currentSubject && (
-                  <span className="text-[11px] text-white truncate max-w-[160px]">{seedNotesStatus.currentSubject}</span>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white" />
-          <Input placeholder="Search subjects…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-transparent rounded-[10px] border-[#1b1922] text-white placeholder:text-white focus-visible:border-[#9FD8FF]" data-testid="input-search" />
-        </div>
 
         {/* Main tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-6 p-0 h-auto flex-wrap gap-2.5 bg-transparent border-0 shadow-none justify-start">
-            {[
-              { value: "overview", label: "Overview" },
-              { value: "advanced", label: `Advanced (${filtered.length})` },
-              { value: "core", label: `Core NSC (${coreSubjects.length})` },
-              { value: "languages", label: `Languages (${languageSubjects.length})` },
-              { value: "technical", label: `Technical (${technicalSubjects.length})` },
-              { value: "sync", label: "Sync & Ops" },
-            ].map((tab) => (
-              <TabsTrigger key={tab.value} value={tab.value} data-testid={`tab-${tab.value}`}
-                className="rounded-[10px] text-sm font-bold px-5 py-2.5 border-[1.5px] border-white/[.18] bg-transparent text-white hover:border-[#9FD8FF] hover:text-white data-[state=active]:bg-[#9FD8FF] data-[state=active]:text-[#050508] data-[state=active]:border-[#9FD8FF] data-[state=active]:shadow-none transition-colors">
-                {tab.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+          {/* Toolbar: search + view pills in one row above the grid */}
+          <div className="flex items-center gap-3 flex-wrap mb-6">
+            <div className="relative flex-1" style={{ minWidth: 220, maxWidth: 320 }}>
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white" />
+              <Input placeholder="Search subjects…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-transparent rounded-[10px] border-[#1b1922] text-white placeholder:text-white focus-visible:border-[#9FD8FF]" data-testid="input-search" />
+            </div>
+            <TabsList className="p-0 h-auto flex-wrap gap-2.5 bg-transparent border-0 shadow-none justify-start">
+              {[
+                { value: "overview", label: "Overview" },
+                { value: "advanced", label: `Advanced (${filtered.length})` },
+                { value: "core", label: `Core NSC (${coreSubjects.length})` },
+                { value: "languages", label: `Languages (${languageSubjects.length})` },
+                { value: "technical", label: `Technical (${technicalSubjects.length})` },
+                { value: "sync", label: "Sync & Ops" },
+              ].map((tab) => (
+                <TabsTrigger key={tab.value} value={tab.value} data-testid={`tab-${tab.value}`}
+                  className="rounded-[10px] text-sm font-bold px-5 py-2.5 border-[1.5px] border-white/[.18] bg-transparent text-white hover:border-[#9FD8FF] hover:text-white data-[state=active]:bg-[#9FD8FF] data-[state=active]:text-[#050508] data-[state=active]:border-[#9FD8FF] data-[state=active]:shadow-none transition-colors">
+                  {tab.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
 
           {/* Overview tab — simple subject cards */}
           <TabsContent value="overview" className="space-y-5">
             <OverviewSubjectGrid subjects={filtered} status={statusData} statusLoading={statusLoading} seedSubject={seedSubject} generateAi={generateAi} restart={restartMutation} openaiReady={openaiReady} />
-            <MissingMemosPanel />
           </TabsContent>
 
           {/* Advanced tab — accordion with year-by-year detail */}
@@ -1994,6 +1912,181 @@ export default function DBEPortal() {
             </Card>
           </TabsContent>
         </Tabs>
+        </div>
+
+        {/* Engine room — batch machinery (AI generation, validation, nightly
+            jobs, memo backfill). Deliberately BELOW the subject grid and
+            collapsed by default: day-to-day triage happens above; this is the
+            heavy plant you open on purpose. It forces itself visible while one
+            of its jobs is running so live progress is never hidden. */}
+        <div className="space-y-4" style={{ borderTop: "1px solid #1b1922", paddingTop: 32 }} data-testid="engine-room">
+          <div className="flex items-end justify-between gap-3 flex-wrap">
+            <div>
+              <div className="text-white" style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: 24, letterSpacing: "0.5px", lineHeight: 1.1 }}>
+                {language === "af" ? "Enjinkamer" : "Engine room"}
+              </div>
+              <p className="text-white text-xs mt-0.5">
+                {language === "af"
+                  ? "Grootmaat-generering, validering en nagtelike take — die swaar masjinerie."
+                  : "Batch generation, validation and nightly jobs — the heavy machinery."}
+              </p>
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              {engineActive && (
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.1em] rounded-md px-2 py-1" style={{ color: "#FFE29A", border: "1px solid rgba(255,226,154,0.7)" }}>
+                  <Loader2 className="w-3 h-3 animate-spin" /> {language === "af" ? "Taak loop" : "Job running"}
+                </span>
+              )}
+              <Button size="sm" variant="outline" className="gap-1.5 rounded-[10px] bg-transparent border-[#1b1922] text-white hover:border-[#9FD8FF] hover:bg-transparent hover:text-white" onClick={toggleEngineOpen} disabled={engineActive && engineVisible && !engineOpen} data-testid="btn-toggle-engine-room">
+                {engineVisible ? <><ChevronUp className="w-3.5 h-3.5" /> Collapse</> : <><ChevronDown className="w-3.5 h-3.5" /> Expand</>}
+              </Button>
+            </div>
+          </div>
+
+          {engineVisible && (
+            <>
+              {/* What-each-button-does legend. Native <details> so it's collapsible
+                  without state and works on touch (the per-button title= tooltips
+                  don't). Two groups: ingest the real DBE papers vs. generate + serve
+                  simulated content. */}
+              <details style={{ border: "2px solid #9FD8FF", borderRadius: 14, boxShadow: "4px 4px 0 0 #9FD8FF", background: "#0e0d12" }}>
+                <summary style={{ cursor: "pointer", padding: "12px 16px", fontWeight: 800, color: "#9FD8FF", fontSize: 13, letterSpacing: 0.3 }}>
+                  {language === "af" ? "Wat doen elke knoppie?" : "What each button does"}
+                </summary>
+                <div style={{ padding: "0 16px 16px", display: "grid", gap: 14 }}>
+                  <div>
+                    <p style={{ fontWeight: 800, color: "#FFE29A", fontSize: 12, textTransform: "uppercase", letterSpacing: 1, margin: "0 0 6px" }}>
+                      {language === "af" ? "1 · Neem regte DBE-inhoud in" : "1 · Ingest real DBE content"}
+                    </p>
+                    <ul style={{ margin: 0, paddingLeft: 18, color: "#fff", fontSize: 13, lineHeight: 1.7 }}>
+                      <li><strong>Run ingestion</strong> — downloads the actual DBE past papers, memos & supporting docs and extracts the verbatim questions (the source material).</li>
+                      <li><strong>Force reingest</strong> — re-downloads & replaces everything for a subject. Use after a bad/partial ingest.</li>
+                      <li><strong>Fill Missing</strong> — re-fetches memos only for questions that came in without one.</li>
+                      <li><strong>Verify</strong> — checks ingested content integrity (hashes, coverage). <strong>Fix All</strong> repairs flagged rows. <strong>Clear</strong> deletes a subject's ingested data.</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p style={{ fontWeight: 800, color: "#94F7C5", fontSize: 12, textTransform: "uppercase", letterSpacing: 1, margin: "0 0 6px" }}>
+                      {language === "af" ? "2 · Genereer gesimuleerde inhoud (wat leerders sien)" : "2 · Generate simulated content (what learners see)"}
+                    </p>
+                    <ul style={{ margin: 0, paddingLeft: 18, color: "#fff", fontSize: 13, lineHeight: 1.7 }}>
+                      <li><strong>Build Questions</strong> — AI-generates ~50 original practice questions for a subject, grounded in the ingested examiner patterns.</li>
+                      <li><strong>Crunch ×10</strong> — generates 10 more in one fast batch. Each run <strong>accumulates</strong> onto the subject's pool (it doesn't replace).</li>
+                      <li>Learners are served the <strong>best-scoring</strong> simulated questions — quality rises toward the 99% target as you generate more.</li>
+                      <li><strong>Rebuild Mastery</strong> recomputes learner mastery from attempts. <strong>Restart</strong> restarts a stalled pipeline.</li>
+                    </ul>
+                  </div>
+                </div>
+              </details>
+
+              {/* Batch machinery rows */}
+              <div className="space-y-0" style={{ background: "#0e0d12", border: "1px solid #1b1922", borderRadius: 20, padding: 24 }}>
+                {/* Row: AI & Questions */}
+                <div className="flex items-center gap-3 flex-wrap pb-3">
+                  <span className="uppercase text-white w-20 shrink-0" style={{ fontSize: 11, fontWeight: 700, letterSpacing: "1px", opacity: openaiReady ? 1 : 0.9 }}>
+                    AI & Qs
+                    {!openaiReady && <span className="block normal-case tracking-normal font-bold text-[9px] mt-0.5" style={{ color: "#FFB7E5" }}>No key</span>}
+                  </span>
+                  <Button size="sm" variant="outline" className="gap-2 rounded-[10px] border-0 font-extrabold text-[#050508] hover:text-[#050508] hover:-translate-y-[2px] transition-transform disabled:opacity-40"
+                    style={{ background: "linear-gradient(100deg,#9FD8FF,#C5B3FF)" }}
+                    onClick={() => generateAi.mutate(undefined)} disabled={generateAi.isPending || !openaiReady}
+                    title={openaiReady ? "Generate AI practice questions for all subjects with DBE content" : "Requires OpenAI API key — configure AI_INTEGRATIONS_OPENAI_API_KEY"}
+                    data-testid="btn-generate-ai">
+                    {generateAi.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />} Generate AI Questions
+                    {!openaiReady && <span className="ml-1 text-[9px] px-1 py-0.5 rounded font-black" style={{ background: "rgba(255,183,229,0.15)", color: "#FFB7E5", border: "1px solid rgba(255,183,229,0.3)" }}>Requires key</span>}
+                  </Button>
+                  {/* Crunch Time controls */}
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1.5" style={{ borderRadius: 10, border: `1.5px solid ${openaiReady ? "rgba(159,216,255,0.5)" : "#1b1922"}` }}>
+                    <span className="text-[10px] uppercase font-bold" style={{ letterSpacing: "1px", color: openaiReady ? "#9FD8FF" : "#ffffff" }}>Papers</span>
+                    <input type="number" min={1} max={20} value={papersPerSubject} onChange={(e) => setPapersPerSubject(Math.max(1, Math.min(20, Number(e.target.value) || 1)))} disabled={simulateAllMutation.isPending || crunchStatus?.running || anyRunning || !openaiReady} className="h-6 w-12 rounded bg-transparent px-1 text-center text-xs font-bold text-white focus:outline-none disabled:opacity-40" style={{ border: "1px solid #1b1922" }} data-testid="input-papers-per-subject" />
+                    <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-white">/subj</span>
+                  </div>
+                  <Button size="sm" onClick={() => simulateAllMutation.mutate(papersPerSubject)} disabled={simulateAllMutation.isPending || crunchStatus?.running || anyRunning || !openaiReady} className="gap-2 rounded-[10px] border-0 font-extrabold text-[#050508] hover:text-[#050508] hover:-translate-y-[2px] transition-transform disabled:opacity-40" style={{ background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)" }}
+                    title={openaiReady ? "Batch-generate AI practice papers across all subjects" : "Requires OpenAI API key"}
+                    data-testid="btn-crunch-time">
+                    {simulateAllMutation.isPending || crunchStatus?.running ? <><Loader2 className="w-4 h-4 animate-spin" />{crunchStatus?.running ? "Running…" : "Starting…"}</> : <><Zap className="w-4 h-4 fill-current" />Crunch Time</>}
+                  </Button>
+                  {crunchStatus?.running && (
+                    <Button size="sm" variant="destructive" className="rounded-[10px] border-0 font-extrabold text-[#050508] hover:text-[#050508]" style={{ background: "#FFB7E5" }} onClick={() => stopSimulateAllMutation.mutate()} disabled={stopSimulateAllMutation.isPending || crunchStatus?.aborted} data-testid="btn-crunch-time-stop">
+                      {crunchStatus?.aborted ? <><Loader2 className="w-3.5 h-3.5 animate-spin" />Stopping…</> : <>⏹ Stop</>}
+                    </Button>
+                  )}
+                  {crunchStatus?.running && crunchStatus.total > 0 && (
+                    <div className="flex items-center gap-2">
+                      <div className="h-1.5 w-28 rounded-full overflow-hidden" style={{ background: "#1b1922" }}>
+                        <div className="h-full bg-gradient-to-r from-[#9FF5E8] to-[#FFB7E5] transition-all" style={{ width: `${Math.min(100, Math.round((crunchStatus.done / crunchStatus.total) * 100))}%` }} />
+                      </div>
+                      <span className="text-[11px] font-bold text-white tabular-nums">{formatNumber(crunchStatus.done, language)}/{formatNumber(crunchStatus.total, language)}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Row: Validation */}
+                <div className="flex items-center gap-3 flex-wrap py-3" style={{ borderTop: "1px solid #1b1922" }}>
+                  <span className="uppercase text-white w-20 shrink-0" style={{ fontSize: 11, fontWeight: 700, letterSpacing: "1px" }}>Validation</span>
+                  <Button size="sm" variant="outline" className="gap-2 rounded-[10px] bg-transparent border-[#1b1922] text-white hover:border-[#9FD8FF] hover:bg-transparent hover:text-white" onClick={() => rebuildMasteryMutation.mutate()} disabled={rebuildMasteryMutation.isPending}
+                    title="Recalculate mastery levels and topic coverage scores across all subjects"
+                    data-testid="btn-rebuild-mastery">
+                    {rebuildMasteryMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <GraduationCap className="w-4 h-4" />} Rebuild Mastery
+                  </Button>
+                  <Button size="sm" variant="outline" className="gap-2 rounded-[10px] bg-transparent border-[#1b1922] text-white hover:border-[#9FD8FF] hover:bg-transparent hover:text-white" onClick={() => validateAllMutation.mutate()} disabled={validateAllMutation.isPending || validateStatus?.running}
+                    title="Score every ingested question for memo accuracy, CAPS alignment, and structural quality"
+                    data-testid="btn-validate-ingestion">
+                    {validateAllMutation.isPending || validateStatus?.running ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />} Validate All
+                  </Button>
+                  {validateStatus && !validateStatus.running && validateStatus.summary?.scoredTotal > 0 && (
+                    <span className="text-[11px] font-bold text-[#9FD8FF]" data-testid="validate-summary">
+                      {validateStatus.summary.avgQuality}% avg · {validateStatus.summary.clean} clean · {validateStatus.summary.garbled} garbled
+                    </span>
+                  )}
+                </div>
+
+                {/* Row: Nightly Jobs */}
+                <div className="flex items-center gap-3 flex-wrap pt-3" style={{ borderTop: "1px solid #1b1922" }}>
+                  <span className="uppercase text-white w-20 shrink-0" style={{ fontSize: 11, fontWeight: 700, letterSpacing: "1px" }}>Nightly</span>
+                  <Button size="sm" variant="outline" className="gap-2 rounded-[10px] bg-transparent border-[#1b1922] text-white hover:border-[#9FD8FF] hover:bg-transparent hover:text-white disabled:opacity-40"
+                    onClick={() => seedNotesMutation.mutate(undefined)} disabled={seedNotesMutation.isPending || seedNotesStatus?.running || !openaiReady}
+                    title={openaiReady ? "Generate one baseline AI study note per topic for all ingested subjects (skips topics that already have notes)" : "Requires OpenAI API key — configure AI_INTEGRATIONS_OPENAI_API_KEY"}>
+                    {seedNotesMutation.isPending || seedNotesStatus?.running ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5" />} Seed Notes
+                    {!openaiReady && <span className="ml-1 text-[9px] px-1 py-0.5 rounded font-black" style={{ background: "rgba(255,183,229,0.15)", color: "#FFB7E5", border: "1px solid rgba(255,183,229,0.3)" }}>Requires key</span>}
+                  </Button>
+                  {seedNotesStatus && !seedNotesStatus.running && (
+                    (seedNotesStatus.total > 0 && seedNotesStatus.skipped === seedNotesStatus.total && seedNotesStatus.done === 0) ||
+                    (seedNotesStatus.totalTopicsInDb > 0 && seedNotesStatus.topicsWithNotesInDb === seedNotesStatus.totalTopicsInDb)
+                  ) && (
+                    <Button size="sm" variant="outline" className="gap-2 rounded-[10px] border-0 font-extrabold text-[#050508] hover:text-[#050508] hover:-translate-y-[2px] transition-transform disabled:opacity-40"
+                      style={{ background: "linear-gradient(100deg,#FFE29A,#FFB7E5)" }}
+                      onClick={() => { if (openaiReady) seedNotesMutation.mutate(true); }}
+                      disabled={!openaiReady}
+                      title={openaiReady ? "All topics already have notes — use Force Re-seed to regenerate all notes from scratch" : "Requires OpenAI API key — configure AI_INTEGRATIONS_OPENAI_API_KEY"}>
+                      <RefreshCw className="w-3.5 h-3.5" /> Force Re-seed
+                      {!openaiReady && <span className="ml-1 text-[9px] px-1 py-0.5 rounded font-black" style={{ background: "rgba(255,183,229,0.15)", color: "#FFB7E5", border: "1px solid rgba(255,183,229,0.3)" }}>Requires key</span>}
+                    </Button>
+                  )}
+                  {seedNotesStatus?.running && (
+                    <Button size="sm" variant="destructive" className="rounded-[10px] border-0 font-extrabold text-[#050508] hover:text-[#050508]" style={{ background: "#FFB7E5" }} onClick={() => stopSeedNotesMutation.mutate()} disabled={stopSeedNotesMutation.isPending || seedNotesStatus.aborted}>⏹ Stop</Button>
+                  )}
+                  {seedNotesStatus?.running && seedNotesStatus.total > 0 && (
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <div className="h-1.5 w-28 rounded-full overflow-hidden" style={{ background: "#1b1922" }}>
+                        <div className="h-full rounded-full transition-all" style={{ width: `${Math.min(100, Math.round(((seedNotesStatus.done + seedNotesStatus.skipped) / seedNotesStatus.total) * 100))}%`, background: "#94F7C5" }} />
+                      </div>
+                      <span className="text-[11px] font-bold text-[#94F7C5] tabular-nums">
+                        {Math.min(100, Math.round(((seedNotesStatus.done + seedNotesStatus.skipped) / seedNotesStatus.total) * 100))}% · {seedNotesStatus.done}✓ {seedNotesStatus.skipped}skip{seedNotesStatus.failed > 0 ? <span className="text-[#FFB7E5]"> {seedNotesStatus.failed}fail</span> : null}
+                      </span>
+                      {seedNotesStatus.currentSubject && (
+                        <span className="text-[11px] text-white truncate max-w-[160px]">{seedNotesStatus.currentSubject}</span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Missing-memo backfill console */}
+              <MissingMemosPanel />
+            </>
+          )}
+        </div>
       </div>
 
       {/* Question preview dialog */}

@@ -50,37 +50,6 @@ interface SubjectMastery {
   };
 }
 
-interface DbeAvailableSubject {
-  subject: string;
-  papers: { subject: string; year: number; paperNumber: number; session: string; questionCount: number; totalMarks: number }[];
-}
-
-const DBE_NAME_TO_CODE: Record<string, string> = {
-  "Afrikaans FAL": "AFRF",
-  "Afrikaans First Additional Language": "AFRF",
-  "Afrikaans FAL ": "AFRF",
-  "Afrikaans Home Language": "AFRH",
-  "English FAL": "ENGF",
-  "English First Additional Language": "ENGF",
-  "English Home Language": "ENGH",
-  "Business Studies": "BUS",
-  "Mathematics": "MATH",
-  "Mathematical Literacy": "MATL",
-  "Physical Sciences": "PHYS",
-  "Life Sciences": "LIFE",
-  "Accounting": "ACC",
-  "Geography": "GEO",
-  "History": "HIS",
-  "Economics": "ECO",
-  "Tourism": "TOUR",
-  "Computer Applications Technology": "CAT",
-  "Information Technology": "IT",
-  "Consumer Studies": "CON",
-  "Agricultural Sciences": "AGR",
-  "Engineering Graphics and Design": "EGD",
-  "Visual Arts": "ART",
-};
-
 const EXAM_CONFIG: Record<string, {
   papers: { id: string; name: string; nameAf: string; totalMarks: number; duration: number; sections: string }[];
   active: boolean;
@@ -293,11 +262,8 @@ const EXAM_CONFIG: Record<string, {
 };
 
 // Comp gradient constants — mirror landing.tsx
-const CTA_GRADIENT =
-  "linear-gradient(100deg,#FFB7E5,#FFE29A,#9FF5E8,#C5B3FF,#FFB7E5)";
 const HEADLINE_GRADIENT =
   "linear-gradient(95deg,#9FD8FF,#9FF5E8,#C5B3FF,#FFB7E5)";
-const ACTION_GRADIENT = "linear-gradient(100deg,#9FF5E8,#C5B3FF)";
 
 // Comp pastel accents cycled per subject card
 const RAINBOW_ACCENTS: { hex: string; halo: string }[] = [
@@ -373,8 +339,8 @@ function SubjectExamCard({ subject, isAf, t, colorIndex }: { subject: Subject; i
       className="btx-subject-card"
       style={{
         position: "relative",
-        background: "#0b0b12",
-        border: `1.5px solid ${accent.hex}55`,
+        background: "#0e0d12",
+        border: `1.5px solid ${accent.hex}`,
         borderRadius: 22,
         padding: 24,
         overflow: "hidden",
@@ -457,11 +423,11 @@ function SubjectExamCard({ subject, isAf, t, colorIndex }: { subject: Subject; i
               style={{
                 textAlign: "center", borderRadius: 12, padding: "8px 4px",
                 background: "#1b1922",
-                border: `1px solid ${s.hex}44`,
+                border: `1px solid ${s.hex}`,
               }}
             >
               <div style={{ fontSize: 16, fontWeight: 900, color: s.hex }}>{s.v}</div>
-              <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "1.2px", textTransform: "uppercase", color: "#fff" }}>{s.k}</div>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "1.2px", textTransform: "uppercase", color: "#fff" }}>{s.k}</div>
             </div>
           ))}
         </div>
@@ -764,8 +730,8 @@ export default function ExamModePage() {
           className="btx-hero"
           style={{
             position: "relative",
-            background: "#0b0b12",
-            border: "1.5px solid rgba(255,183,229,.3)",
+            background: "#0e0d12",
+            border: "1.5px solid #FFB7E5",
             borderRadius: 22,
             padding: "38px 34px",
             textAlign: "center",
@@ -887,7 +853,7 @@ export default function ExamModePage() {
                   "--c": hex, "--glow": glow,
                   height: "100%",
                   background: "linear-gradient(160deg,#1b1922,#1b1922)",
-                  border: `1.5px solid ${hex}55`,
+                  border: `1.5px solid ${hex}`,
                   borderRadius: 22, padding: 26, cursor: "pointer",
                 } as React.CSSProperties}
               >
@@ -952,8 +918,8 @@ export default function ExamModePage() {
           <div
             style={{
               position: "relative",
-              background: "#0b0b12",
-              border: "1.5px solid rgba(255,226,154,.4)",
+              background: "#0e0d12",
+              border: "1.5px solid #FFE29A",
               borderRadius: 22,
               padding: "48px 32px",
               textAlign: "center",

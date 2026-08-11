@@ -2,7 +2,10 @@
 // "Luxury Street Graffiti EdTech" comp (BrainTrack.dc.html, PRICING section).
 // All signup/trial/billing logic, form state, API flows, redirects and
 // data-testids are preserved — only the presentation changed.
-// NOTE: billing runs via Netcash (the comp said "Paystack" — copy kept neutral).
+// NOTE: billing runs via Paystack — the sole payment provider. The
+// "netcash" URL param/ref names below are a legacy holdover from an earlier
+// provider and are left as-is (they're wired into the live return-URL
+// contract), but nothing in this file talks to Netcash.
 import { useState, useEffect, useRef, type ReactNode } from "react";
 import { Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
@@ -16,27 +19,21 @@ import {
   Send,
   RefreshCw,
   CreditCard,
-  Landmark,
-  ChevronRight,
   XCircle,
   ShieldCheck,
   Lock,
-  Star,
   Clock,
   BookOpen,
-  GraduationCap,
-  HeartHandshake,
   Sparkles,
-  MessageCircle,
 } from "lucide-react";
 import { useLanguage } from "@/lib/language-context";
 import { useAuth } from "@/hooks/use-auth";
 import { useSEO } from "@/hooks/use-seo";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { PRODUCTS_JSONLD } from "@/lib/seo-products";
 import { ConfettiBurst } from "@/components/confetti-burst";
 import { KthTechChip } from "@/components/brand/KthTechLogo";
-import { PaymentIconsRow, PaystackBadge } from "@/components/brand/PaymentIcons";
 import { PaymentThankYou } from "@/components/payment-thank-you";
 import { PublicNav } from "@/components/public-nav";
 import { PublicFooter } from "@/components/public-footer";
@@ -98,8 +95,6 @@ interface ExamCountdownResp {
   urgencyMessageAf: string;
 }
 
-const CTA_GRADIENT =
-  "linear-gradient(100deg,#FFB7E5,#FFE29A,#9FF5E8,#C5B3FF,#FFB7E5)";
 const HEADLINE_GRADIENT =
   "linear-gradient(95deg,#9FD8FF,#9FF5E8,#C5B3FF,#FFB7E5)";
 
@@ -112,10 +107,6 @@ const SCOPED_CSS = `
   .bts-nav-link:hover { color:#9FF5E8; }
   .bts-nav-cta { transition: transform .2s; }
   .bts-nav-cta:hover { transform: translateY(-2px); }
-  .bts-outline-btn { transition: transform .15s, border-color .2s, color .2s; }
-  .bts-outline-btn:hover { border-color:#9FF5E8 !important; color:#9FF5E8 !important; transform: translate(-3px,-3px); }
-  .bts-rainbow-btn { transition: transform .15s; }
-  .bts-rainbow-btn:hover { transform: translate(-3px,-3px); }
   .bts-method-btn { transition: border-color .2s, transform .15s; }
   .bts-method-btn:hover { border-color: var(--c) !important; transform: translate(-3px,-3px); }
   .bts-plan-card { transition: transform .18s; }
@@ -130,30 +121,18 @@ const SCOPED_CSS = `
   }
 `;
 
-const RAINBOW_BTN_STYLE: React.CSSProperties = {
-  fontFamily: "'Poppins',sans-serif", fontWeight: 900, fontSize: 15,
-  color: "#050508", background: CTA_GRADIENT, backgroundSize: "200% 100%",
-  animation: "bt-rainbow 5s linear infinite", border: "2.5px solid #050508",
-  borderRadius: 12, padding: "15px 24px", cursor: "pointer",
-  boxShadow: "5px 5px 0 0 #fff",
-};
-
-const OUTLINE_BTN_STYLE: React.CSSProperties = {
-  fontFamily: "'Poppins',sans-serif", fontWeight: 800, fontSize: 15,
-  color: "#fff", background: "#050508",
-  border: "2px solid #fff", borderRadius: 12,
-  padding: "14px 24px", cursor: "pointer",
-};
-
-/** Centered dark screen for the flow states (success / payment / errors). */
-function WallScreen({ children, testId }: { children: ReactNode; testId?: string }) {
+/** Centered dark screen for the flow states (success / payment / errors).
+ *  `maxWidth` defaults to the narrow 520px single-column layout most of
+ *  these screens use; PaymentPickerScreen passes a wider value so it can
+ *  fit the full four-card product grid instead of a single squeezed card. */
+function WallScreen({ children, testId, maxWidth = 520 }: { children: ReactNode; testId?: string; maxWidth?: number }) {
   return (
     <div className="min-h-screen" style={{ background: "#050508", color: "#fff", overflowX: "hidden" }}>
       <style>{SCOPED_CSS}</style>
       <PublicNav />
       <main style={{ paddingTop: 64 }}>
         <div style={{ minHeight: "calc(100vh - 65px)", display: "flex", alignItems: "center", justifyContent: "center", padding: "56px 16px" }}>
-          <div style={{ maxWidth: 520, width: "100%" }} data-testid={testId}>{children}</div>
+          <div style={{ maxWidth, width: "100%" }} data-testid={testId}>{children}</div>
         </div>
       </main>
       <PublicFooter />
@@ -172,6 +151,227 @@ function WallCallout({ color, children, className = "" }: { color: string; child
       }}
     >
       {children}
+    </div>
+  );
+}
+
+// Pay-now product catalogue. Server owns every amount — the client only picks
+// WHICH product. `product` maps to the /api/paystack/initialize whitelist
+// (null → premium/default). Copy is pure pay-now: full access from payment.
+// Module-level (not component-local) so every screen that offers products —
+// the main pricing grid AND the lapsed/cancelled-user PaymentPickerScreen —
+// reuses this ONE catalogue instead of each redefining its own subset.
+type SubscribeProduct = {
+  key: string;
+  product: "exam_boost" | "prelim_sprint" | "finals_blitz" | null;
+  name: string;
+  price: string;
+  priceUnit: string;
+  tagline: string;
+  perks: string[];
+  accent: string;
+  shadow: string;
+  star: string;
+  badge?: string;
+  testId: string;
+};
+
+function buildSubscribeProducts(isAf: boolean): SubscribeProduct[] {
+  return [
+    {
+      key: "monthly",
+      product: null,
+      name: "Student Life",
+      price: "R169",
+      priceUnit: isAf ? "/maand" : "/month",
+      tagline: isAf
+        ? "Volle toegang van vandag · kanselleer enige tyd."
+        : "Full access from today · cancel anytime.",
+      perks: isAf
+        ? [
+            "Alles oopgesluit, elke vak",
+            "Volle 10-jaar vraestel-argief",
+            "👑 Onderskeiding-HK: albei oorlogskamers + wenke-kluis",
+            "Rizz KI-tutor + aanpasbare studieplan",
+            "Weeklikse ouerverslae",
+          ]
+        : [
+            "Everything unlocked, every subject",
+            "Full 10-year past-paper archive",
+            "👑 Distinction HQ: both war-rooms + exam-tips vault",
+            "Rizz AI tutor + adaptive study plan",
+            "Weekly parent reports",
+          ],
+      accent: "#FFB7E5",
+      shadow: "#FFE29A",
+      star: "#FFE29A",
+      testId: "button-subscribe-premium-cta",
+    },
+    {
+      key: "sprint",
+      product: "prelim_sprint",
+      name: isAf ? "Voorlopige Sprint" : "Prelim Sprint",
+      price: "R250",
+      priceUnit: isAf ? "eenmalig" : "once-off",
+      tagline: isAf
+        ? "Eenmalig R250 · 6 weke volle toegang — vir voorlopige eksamens."
+        : "Once-off R250 · 6 weeks full access — built for prelims.",
+      perks: isAf
+        ? [
+            "🎯 6-weke Voorlopige Oorlogskamer-paneel",
+            "3 mees onlangse jare se vraestelle + memo's",
+            "Voorlopige-modus drille, proewe & voorspeller",
+            "Weeklikse ouerverslae",
+            "Een betaling, geen herhalende fakturering",
+          ]
+        : [
+            "🎯 6-week Prelim War-Room dashboard",
+            "3 most recent years of past papers + memos",
+            "Prelim-mode drills, mocks & predictor",
+            "Weekly parent reports",
+            "One payment, no recurring billing",
+          ],
+      accent: "#9FD8FF",
+      shadow: "#9FF5E8",
+      star: "#9FF5E8",
+      testId: "button-subscribe-sprint-cta",
+    },
+    {
+      key: "finals",
+      product: "finals_blitz",
+      name: isAf ? "Finale Blitz" : "Finals Blitz",
+      price: "R250",
+      priceUnit: isAf ? "eenmalig" : "once-off",
+      tagline: isAf
+        ? "Eenmalig R250 · 6 weke volle toegang — vir die Okt–Nov-finale."
+        : "Once-off R250 · 6 weeks full access — built for the Oct–Nov finals.",
+      perks: isAf
+        ? [
+            "🔥 6-weke Finale Oorlogskamer-paneel",
+            "3 mees onlangse jare se vraestelle + memo's",
+            "Finale-modus drille, proewe & voorspeller",
+            "Weeklikse ouerverslae",
+            "Een betaling, geen herhalende fakturering",
+          ]
+        : [
+            "🔥 6-week Finals War-Room dashboard",
+            "3 most recent years of past papers + memos",
+            "Finals-mode drills, mocks & predictor",
+            "Weekly parent reports",
+            "One payment, no recurring billing",
+          ],
+      accent: "#C5B3FF",
+      shadow: "#FFB7E5",
+      star: "#C5B3FF",
+      testId: "button-subscribe-finals-cta",
+    },
+    {
+      key: "season",
+      product: "exam_boost",
+      name: isAf ? "Eksamen Seisoenkaart" : "Exam Season Pass",
+      price: "R550",
+      priceUnit: isAf ? "eenmalig" : "once-off",
+      tagline: isAf
+        ? "Eenmalig R550 · volle seisoentoegang tot 15 Des 2026."
+        : "Once-off R550 · full season access to 15 Dec 2026.",
+      perks: isAf
+        ? [
+            "Volle platform tot 15 Des 2026",
+            "Volle 10-jaar vraestel-argief",
+            "👑 Onderskeiding-HK: albei oorlogskamers + wenke-kluis",
+            "Weeklikse ouerverslae",
+            "Een betaling, geen herhalende fakturering",
+          ]
+        : [
+            "Full platform access to 15 Dec 2026",
+            "Full 10-year past-paper archive",
+            "👑 Distinction HQ: both war-rooms + exam-tips vault",
+            "Weekly parent reports",
+            "One payment, no recurring billing",
+          ],
+      accent: "#94F7C5",
+      shadow: "#9FD8FF",
+      star: "#94F7C5",
+      badge: isAf ? "beste waarde 👑" : "best value 👑",
+      testId: "button-subscribe-season-cta",
+    },
+  ];
+}
+
+/** The shared four-card product grid — used by both the main pricing screen
+ *  and PaymentPickerScreen (lapsed/cancelled users), so every payment
+ *  surface offers the same full catalogue instead of a narrowed subset. */
+function ProductGrid({
+  products,
+  isAf,
+  onSelect,
+}: {
+  products: SubscribeProduct[];
+  isAf: boolean;
+  onSelect: (product: SubscribeProduct["product"]) => void;
+}) {
+  return (
+    <div className="bts-grid4" style={{ maxWidth: "var(--pub-maxw)", margin: "0 auto" }}>
+      {products.map((prod) => (
+        <div
+          key={prod.key}
+          className="bts-plan-card"
+          data-testid={`subscribe-card-${prod.key}`}
+          style={{
+            background: "#0e0d12",
+            border: `2.5px solid ${prod.accent}`,
+            borderRadius: 18,
+            boxShadow: `6px 6px 0 0 ${prod.shadow}`,
+            padding: 28,
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          {prod.badge && (
+            <span
+              data-testid={`subscribe-badge-${prod.key}`}
+              style={{
+                position: "absolute", top: -13, left: 28,
+                fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: 15, color: "#050508",
+                background: "linear-gradient(100deg,#9FF5E8,#FFE29A)", borderRadius: 999,
+                padding: "5px 16px", transform: "rotate(-2deg)",
+              }}
+            >
+              {prod.badge}
+            </span>
+          )}
+          <div style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 16, color: "#fff" }}>{prod.name}</div>
+          <div
+            data-testid={prod.key === "monthly" ? "text-subscribe-price" : `text-subscribe-price-${prod.key}`}
+            style={{ display: "flex", alignItems: "baseline", gap: 6, margin: "8px 0 2px" }}
+          >
+            <span style={{ fontSize: 42, fontWeight: 900, letterSpacing: "-1px", color: "#fff" }}>{prod.price}</span>
+            <span style={{ fontSize: 15, fontWeight: 700, color: "#fff" }}>{prod.priceUnit}</span>
+          </div>
+          <div style={{ fontSize: 13.5, color: "#fff", marginBottom: 18, lineHeight: 1.5 }}>
+            {prod.tagline}
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 11, flex: 1 }}>
+            {prod.perks.map((pp) => (
+              <div key={pp} style={{ display: "flex", gap: 10, fontSize: 13.5, lineHeight: 1.4, color: "#fff" }}>
+                <span style={{ color: prod.star, fontWeight: 900 }}>★</span>
+                <span>{pp}</span>
+              </div>
+            ))}
+          </div>
+          <button
+            onClick={() => onSelect(prod.product)}
+            className="pub-btn pub-btn-block"
+            data-testid={prod.testId}
+            style={{ marginTop: 22 }}
+          >
+            {prod.key === "monthly"
+              ? (isAf ? "Registreer nou" : "Sign up now")
+              : (isAf ? "Betaal nou" : "Pay now")}
+          </button>
+        </div>
+      ))}
     </div>
   );
 }
@@ -232,16 +432,31 @@ export default function SubscribePage() {
       ? "Student Life — volle toegang vanaf vandag | BrainTrack"
       : "Student Life — full access from today | BrainTrack",
     description: isAf
-      ? "Kies jou plan en begin dadelik. R169/maand (kanselleer enige tyd), of 'n eenmalige seisoen- of sprintkaart. Volle toegang tot NSC-vraestelle, KI-tutor en meer."
+      ? "Kies jou plan en begin dadelik. R169/maand (kanselleer enige tyd), of 'n eenmalige seisoen- of sprintkaart. Volle toegang tot NSC-vraestelle en KI-tutor."
       : "Pick your plan and start immediately. R169/month (cancel anytime), or a once-off season or sprint pass. Full access to NSC past papers, AI tutor and more.",
     canonical: "https://braintrack.tech/subscribe",
+    ogUrl: "https://braintrack.tech/subscribe",
+    locale: isAf ? "af_ZA" : "en_ZA",
+    // The four live products with real ZAR amounts — shared with the landing
+    // page via seo-products.ts so both surfaces publish one price sheet.
+    jsonLd: [
+      PRODUCTS_JSONLD,
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: "https://braintrack.tech/" },
+          { "@type": "ListItem", position: 2, name: "Plans & Pricing", item: "https://braintrack.tech/subscribe" },
+        ],
+      },
+    ],
   });
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const nc = params.get("netcash");
-    // Netcash success returns the lapsed/converting user — show a payment
-    // confirmation (PaymentSuccessScreen), not the trial WhatsApp-resend
+    // A Paystack success return for the lapsed/converting user — show a
+    // payment confirmation (PaymentThankYou), not the trial WhatsApp-resend
     // success screen. Until the subscription query resolves, show a loader.
     if (nc === "success") setPageState("loading");
     if (nc === "cancel") setPageState("payment_cancelled");
@@ -322,11 +537,12 @@ export default function SubscribePage() {
         return null;
       }
       const data = await res.json();
-      // When returning from Netcash with ?netcash=success we want to confirm
+      // When returning from Paystack with ?netcash=success we want to confirm
       // the payment landed (status=active, billingMethod != trial) and show
-      // the PaymentSuccessScreen. While the webhook is still in flight the
-      // sub may briefly read as trial — fall back to the generic success
-      // screen in that case so the parent still sees a positive confirmation.
+      // the payment-confirmation screen (PaymentThankYou). While the webhook
+      // is still in flight the sub may briefly read as trial — fall back to
+      // the generic success screen in that case so the parent still sees a
+      // positive confirmation.
       if (netcashReturnRef.current === "success") {
         const method: BillingMethod | null = data?.billingMethod ?? null;
         if (data?.status === "active" && method && method !== "trial" && method !== "lapsed") {
@@ -337,7 +553,7 @@ export default function SubscribePage() {
         }
         return data;
       }
-      // Other Netcash return states (e.g. cancel) — URL-param state is
+      // Other Paystack return states (e.g. cancel) — URL-param state is
       // authoritative; do not let the subscription query override it.
       if (netcashReturnRef.current) return data;
       // Paystack pay-now return: the dedicated verify effect owns the screen
@@ -495,141 +711,10 @@ export default function SubscribePage() {
     );
   }
 
-  // Pay-now product catalogue. Server owns every amount — the client only picks
-  // WHICH product. `product` maps to the /api/paystack/initialize whitelist
-  // (null → premium/default). Copy is pure pay-now: full access from payment.
-  const PRODUCTS: Array<{
-    key: string;
-    product: "exam_boost" | "prelim_sprint" | "finals_blitz" | null;
-    name: string;
-    price: string;
-    priceUnit: string;
-    tagline: string;
-    perks: string[];
-    accent: string;
-    shadow: string;
-    star: string;
-    badge?: string;
-    testId: string;
-  }> = [
-    {
-      key: "monthly",
-      product: null,
-      name: "Student Life",
-      price: "R169",
-      priceUnit: isAf ? "/maand" : "/month",
-      tagline: isAf
-        ? "Volle toegang van vandag · kanselleer enige tyd."
-        : "Full access from today · cancel anytime.",
-      perks: isAf
-        ? [
-            "Alles oopgesluit, elke vak",
-            "Volle 10-jaar vraestel-argief",
-            "👑 Onderskeiding-HK: albei oorlogskamers + wenke-kluis",
-            "Rizz KI-tutor + aanpasbare studieplan",
-            "Weeklikse ouerverslae",
-          ]
-        : [
-            "Everything unlocked, every subject",
-            "Full 10-year past-paper archive",
-            "👑 Distinction HQ: both war-rooms + exam-tips vault",
-            "Rizz AI tutor + adaptive study plan",
-            "Weekly parent reports",
-          ],
-      accent: "#FFB7E5",
-      shadow: "#FFE29A",
-      star: "#FFE29A",
-      testId: "button-subscribe-premium-cta",
-    },
-    {
-      key: "sprint",
-      product: "prelim_sprint",
-      name: isAf ? "Voorlopige Sprint" : "Prelim Sprint",
-      price: "R250",
-      priceUnit: isAf ? "eenmalig" : "once-off",
-      tagline: isAf
-        ? "Eenmalig R250 · 6 weke volle toegang — vir voorlopige eksamens."
-        : "Once-off R250 · 6 weeks full access — built for prelims.",
-      perks: isAf
-        ? [
-            "🎯 6-weke Voorlopige Oorlogskamer-paneel",
-            "3 mees onlangse jare se vraestelle + memo's",
-            "Voorlopige-modus drille, proewe & voorspeller",
-            "Weeklikse ouerverslae",
-            "Een betaling, geen herhalende fakturering",
-          ]
-        : [
-            "🎯 6-week Prelim War-Room dashboard",
-            "3 most recent years of past papers + memos",
-            "Prelim-mode drills, mocks & predictor",
-            "Weekly parent reports",
-            "One payment, no recurring billing",
-          ],
-      accent: "#9FD8FF",
-      shadow: "#9FF5E8",
-      star: "#9FF5E8",
-      testId: "button-subscribe-sprint-cta",
-    },
-    {
-      key: "finals",
-      product: "finals_blitz",
-      name: isAf ? "Finale Blitz" : "Finals Blitz",
-      price: "R250",
-      priceUnit: isAf ? "eenmalig" : "once-off",
-      tagline: isAf
-        ? "Eenmalig R250 · 6 weke volle toegang — vir die Okt–Nov-finale."
-        : "Once-off R250 · 6 weeks full access — built for the Oct–Nov finals.",
-      perks: isAf
-        ? [
-            "🔥 6-weke Finale Oorlogskamer-paneel",
-            "3 mees onlangse jare se vraestelle + memo's",
-            "Finale-modus drille, proewe & voorspeller",
-            "Weeklikse ouerverslae",
-            "Een betaling, geen herhalende fakturering",
-          ]
-        : [
-            "🔥 6-week Finals War-Room dashboard",
-            "3 most recent years of past papers + memos",
-            "Finals-mode drills, mocks & predictor",
-            "Weekly parent reports",
-            "One payment, no recurring billing",
-          ],
-      accent: "#C5B3FF",
-      shadow: "#FFB7E5",
-      star: "#C5B3FF",
-      testId: "button-subscribe-finals-cta",
-    },
-    {
-      key: "season",
-      product: "exam_boost",
-      name: isAf ? "Eksamen Seisoenkaart" : "Exam Season Pass",
-      price: "R550",
-      priceUnit: isAf ? "eenmalig" : "once-off",
-      tagline: isAf
-        ? "Eenmalig R550 · volle seisoentoegang tot 15 Des 2026."
-        : "Once-off R550 · full season access to 15 Dec 2026.",
-      perks: isAf
-        ? [
-            "Volle platform tot 15 Des 2026",
-            "Volle 10-jaar vraestel-argief",
-            "👑 Onderskeiding-HK: albei oorlogskamers + wenke-kluis",
-            "Weeklikse ouerverslae",
-            "Een betaling, geen herhalende fakturering",
-          ]
-        : [
-            "Full platform access to 15 Dec 2026",
-            "Full 10-year past-paper archive",
-            "👑 Distinction HQ: both war-rooms + exam-tips vault",
-            "Weekly parent reports",
-            "One payment, no recurring billing",
-          ],
-      accent: "#94F7C5",
-      shadow: "#9FD8FF",
-      star: "#94F7C5",
-      badge: isAf ? "beste waarde 👑" : "best value 👑",
-      testId: "button-subscribe-season-cta",
-    },
-  ];
+  // Pay-now product catalogue — shared module-level builder (see
+  // buildSubscribeProducts above) so this screen and PaymentPickerScreen
+  // never drift out of sync with each other's product list.
+  const PRODUCTS = buildSubscribeProducts(isAf);
 
   return (
     <div className="min-h-screen" style={{ background: "#050508", overflowX: "hidden", color: "#fff" }}>
@@ -640,7 +725,7 @@ export default function SubscribePage() {
 
       <main style={{ paddingTop: 64 }}>
       {/* ── Pricing ─────────────────────────────────────────── */}
-      <div data-testid="subscribe-plan-panel" style={{ maxWidth: 1080, margin: "0 auto", padding: "56px 32px 100px" }}>
+      <div data-testid="subscribe-plan-panel" style={{ maxWidth: "var(--pub-maxw)", margin: "0 auto", padding: "56px var(--pub-gutter) 100px" }}>
         <div style={{ textAlign: "center" }}>
           {/* Adult learner journey rail — /subscribe is the LAST onboarding
               step, not a standalone pricing page. */}
@@ -720,7 +805,7 @@ export default function SubscribePage() {
           {/* ── "Appears as KTH-TECH" charging-entity note ── */}
           <div
             data-testid="subscribe-payment-strip"
-            style={{ maxWidth: 780, margin: "0 auto 30px" }}
+            style={{ maxWidth: "var(--pub-maxw)", margin: "0 auto 30px" }}
           >
             <span
               data-testid="subscribe-kth-charging-entity"
@@ -741,7 +826,7 @@ export default function SubscribePage() {
         </div>
 
         {errorMsg && (
-          <div style={{ maxWidth: 900, margin: "0 auto 24px" }}>
+          <div style={{ maxWidth: "var(--pub-maxw)", margin: "0 auto 24px" }}>
             <WallCallout color="#FFE29A">
               <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
                 <AlertCircle style={{ width: 20, height: 20, flex: "none", marginTop: 2, color: "#FFE29A" }} />
@@ -751,73 +836,12 @@ export default function SubscribePage() {
           </div>
         )}
 
-        {/* ── Four pay-now product cards ── */}
-        <div className="bts-grid4" style={{ maxWidth: 1100, margin: "0 auto" }}>
-          {PRODUCTS.map((prod) => (
-            <div
-              key={prod.key}
-              className="bts-plan-card"
-              data-testid={`subscribe-card-${prod.key}`}
-              style={{
-                background: "#0e0d12",
-                border: `2.5px solid ${prod.accent}`,
-                borderRadius: 18,
-                boxShadow: `6px 6px 0 0 ${prod.shadow}`,
-                padding: 28,
-                position: "relative",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              {prod.badge && (
-                <span
-                  data-testid={`subscribe-badge-${prod.key}`}
-                  style={{
-                    position: "absolute", top: -13, left: 28,
-                    fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: 15, color: "#050508",
-                    background: "linear-gradient(100deg,#9FF5E8,#FFE29A)", borderRadius: 999,
-                    padding: "5px 16px", transform: "rotate(-2deg)",
-                  }}
-                >
-                  {prod.badge}
-                </span>
-              )}
-              <div style={{ fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: 16, color: "#fff" }}>{prod.name}</div>
-              <div
-                data-testid={prod.key === "monthly" ? "text-subscribe-price" : `text-subscribe-price-${prod.key}`}
-                style={{ display: "flex", alignItems: "baseline", gap: 6, margin: "8px 0 2px" }}
-              >
-                <span style={{ fontSize: 42, fontWeight: 900, letterSpacing: "-1px", color: "#fff" }}>{prod.price}</span>
-                <span style={{ fontSize: 15, fontWeight: 700, color: "#fff" }}>{prod.priceUnit}</span>
-              </div>
-              <div style={{ fontSize: 13.5, color: "#fff", marginBottom: 18, lineHeight: 1.5 }}>
-                {prod.tagline}
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 11, flex: 1 }}>
-                {prod.perks.map((pp) => (
-                  <div key={pp} style={{ display: "flex", gap: 10, fontSize: 13.5, lineHeight: 1.4, color: "#fff" }}>
-                    <span style={{ color: prod.star, fontWeight: 900 }}>★</span>
-                    <span>{pp}</span>
-                  </div>
-                ))}
-              </div>
-              <button
-                onClick={() => handlePaystackCheckout(prod.product ?? undefined)}
-                className="pub-btn pub-btn-block"
-                data-testid={prod.testId}
-                style={{ marginTop: 22 }}
-              >
-                {prod.key === "monthly"
-                  ? (isAf ? "Registreer nou" : "Sign up now")
-                  : (isAf ? "Betaal nou" : "Pay now")}
-              </button>
-            </div>
-          ))}
-        </div>
+        {/* ── Four pay-now product cards — shared ProductGrid (see above) ── */}
+        <ProductGrid products={PRODUCTS} isAf={isAf} onSelect={(p) => handlePaystackCheckout(p ?? undefined)} />
 
         {/* ── Statement descriptor — parents recognise the charge on their
              bank statement, heading off "I don't recognise this" chargebacks. ── */}
-        <div style={{ maxWidth: 1020, margin: "22px auto 0", display: "flex", justifyContent: "center" }}>
+        <div style={{ maxWidth: "var(--pub-maxw)", margin: "22px auto 0", display: "flex", justifyContent: "center" }}>
           <span
             data-testid="subscribe-statement-descriptor"
             style={{
@@ -833,7 +857,7 @@ export default function SubscribePage() {
         </div>
 
         {/* ── Cancel / trust footer — pay-now, factual language ── */}
-        <div style={{ maxWidth: 900, margin: "36px auto 0" }}>
+        <div style={{ maxWidth: "var(--pub-maxw)", margin: "36px auto 0" }}>
           <div
             data-testid="subscribe-guarantee-block"
             className="bts-guarantee-grid"
@@ -906,52 +930,6 @@ export default function SubscribePage() {
   );
 }
 
-// ── Testimonial constants ────────────────────────────────────────────
-// These three quotes are copied verbatim from
-// client/src/components/landing/reviews-ribbon.tsx — the 2025 test cohort
-// (~900 learners) corpus. Selected for CRO on /subscribe: two parent voices
-// (the payer) + one learner voice, all short enough to scan on mobile.
-const SUBSCRIBE_TESTIMONIALS = [
-  {
-    role: "parent-1",
-    roleEn: "Parent",
-    roleAf: "Ouer",
-    quoteEn: "The parent report helped us support our child without taking over the study process.",
-    Icon: HeartHandshake,
-    color: "#C5B3FF",
-  },
-  {
-    role: "learner-1",
-    roleEn: "Grade 12 Learner",
-    roleAf: "Graad 12 Leerder",
-    quoteEn: "BrainTrack showed me what to study, not just how much I still had to study.",
-    Icon: GraduationCap,
-    color: "#9FF5E8",
-  },
-  {
-    role: "parent-2",
-    roleEn: "Parent",
-    roleAf: "Ouer",
-    quoteEn: "We could see progress, weaker areas and the next priorities in one place.",
-    Icon: HeartHandshake,
-    color: "#FFE29A",
-  },
-] as const;
-
-const trustPillStyle: React.CSSProperties = {
-  display: "inline-flex",
-  alignItems: "center",
-  gap: 6,
-  fontFamily: "'Poppins',sans-serif",
-  fontSize: 12.5,
-  fontWeight: 700,
-  color: "#fff",
-  background: "#0e0d12",
-  border: "1px solid #9FD8FF",
-  borderRadius: 999,
-  padding: "7px 12px",
-};
-
 const cancelBlockStyle: React.CSSProperties = {
   background: "#050508",
   border: "2px solid #FFFFFF",
@@ -974,18 +952,10 @@ function PaymentPickerScreen({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const t = {
-    headline: isAf ? "Kies jou betaalmetode" : "Choose your payment method",
+    headline: isAf ? "Kies jou plan" : "Choose your plan",
     subheadline: isAf
-      ? "Aktiveer Student Life om volle toegang te kry — jou toegang begin dadelik ná betaling."
-      : "Activate Student Life to get full access — your access begins immediately after payment.",
-    charge: isAf ? "Wat word gehef" : "What you'll be charged",
-    chargeDetail: isAf
-      ? "R169/maand · Kanselleer enige tyd · Geen verborgde fooie nie"
-      : "R169/month · Cancel anytime · No hidden fees",
-    paystack: isAf ? "Betaal met Paystack" : "Pay with Paystack",
-    paystackDesc: isAf
-      ? "Veilige betaalblad — kaart, EFT of SnapScan. Jou intekening hernu outomaties elke maand."
-      : "Secure checkout — card, EFT or SnapScan. Your subscription renews automatically each month.",
+      ? "Kies 'n plan om volle toegang te kry — jou toegang begin dadelik ná betaling."
+      : "Pick a plan to get full access — your access begins immediately after payment.",
     paystackBadge: isAf ? "Veilig" : "Secure",
     loading: isAf ? "Verwerk..." : "Processing...",
     cancelledTitle: isAf ? "Betaling gekanselleer" : "Payment cancelled",
@@ -1001,13 +971,13 @@ function PaymentPickerScreen({
       : "Secure payment processed by Paystack. You will be redirected to the Paystack checkout page.",
   };
 
-  async function handlePaystackCheckout(product?: "exam_boost" | "prelim_sprint") {
+  async function handlePaystackCheckout(product?: "exam_boost" | "prelim_sprint" | "finals_blitz") {
     setLoadingMethod("card");
     setErrorMsg(null);
     try {
       // product picks WHICH offer (server owns the amounts): omitted =
       // R169/month Student Life; "exam_boost" = once-off R550 season pass;
-      // "prelim_sprint" = once-off R250 six-week prelim sprint.
+      // "prelim_sprint"/"finals_blitz" = once-off R250 six-week war-room pass.
       const res = await apiRequest("POST", "/api/paystack/initialize", product ? { product } : {});
       const data = await res.json() as {
         authorizationUrl?: string;
@@ -1044,27 +1014,15 @@ function PaymentPickerScreen({
     }
   }
 
-  const anyLoading = loadingMethod !== null;
-
-  // ?offer=exam-boost — the R550 Exam Season Pass. Pay-now: the full R550 is
-  // charged immediately, unlocking season access to 15 Dec 2026. No R1, no
-  // trial, no recurring billing. The landing-page offer card links here.
-  const wantsExamBoost =
-    typeof window !== "undefined" &&
-    new URLSearchParams(window.location.search).get("offer") === "exam-boost";
-  const boost = {
-    charge: isAf ? "Eenmalig R550" : "Once-off R550",
-    chargeDetail: isAf
-      ? "Eenmalig R550 · volle seisoentoegang tot 15 Des 2026 · geen herhalende fakturering. Verskyn op jou staat as KTH-TECH."
-      : "Once-off R550 · full season access to 15 Dec 2026 · no recurring billing. Appears on your statement as KTH-TECH.",
-    button: isAf ? "Betaal R550 nou" : "Pay R550 now",
-    buttonSub: isAf
-      ? "Eenmalige betaling. Volle toegang tot 15 Des 2026 — geen hernuwing."
-      : "One-off payment. Full access to 15 Dec 2026 — no renewals.",
-  };
+  // Lapsed/cancelled users get the SAME four-product catalogue as the main
+  // pricing screen (buildSubscribeProducts / ProductGrid, defined above) —
+  // previously this screen only ever offered one hardcoded plan (Student
+  // Life, or Exam Blast when arriving via ?offer=exam-boost), hiding Prelim
+  // Sprint and Finals Blitz entirely.
+  const products = buildSubscribeProducts(isAf);
 
   return (
-    <WallScreen>
+    <WallScreen maxWidth={1100}>
       <div style={{ textAlign: "center", marginBottom: 32 }}>
         <CreditCard style={{ width: 36, height: 36, margin: "0 auto 20px", color: "#9FF5E8" }} />
         <div
@@ -1081,7 +1039,7 @@ function PaymentPickerScreen({
 
       {/* Cancelled banner */}
       {showCancelledBanner && (
-        <div style={{ marginBottom: 20 }}>
+        <div style={{ maxWidth: 640, margin: "0 auto 20px" }}>
           <WallCallout color="#FFE29A">
             <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
               <XCircle style={{ width: 20, height: 20, flex: "none", marginTop: 2, color: "#FFE29A" }} />
@@ -1096,7 +1054,7 @@ function PaymentPickerScreen({
 
       {/* Error banner */}
       {errorMsg && (
-        <div style={{ marginBottom: 20 }}>
+        <div style={{ maxWidth: 640, margin: "0 auto 20px" }}>
           <WallCallout color="#FFE29A">
             <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
               <AlertCircle style={{ width: 20, height: 20, flex: "none", marginTop: 2, color: "#FFE29A" }} />
@@ -1106,91 +1064,13 @@ function PaymentPickerScreen({
         </div>
       )}
 
-      {/* ── Selected plan card — which product shows is driven by the
-          existing ?offer=exam-boost flag (wantsExamBoost). Student Life is
-          the default; Exam Blast swaps in the season-pass copy. ── */}
-      <div
-        data-testid="subscribe-plan-choice"
-        style={{
-          background: "#050508",
-          border: `2.5px solid ${wantsExamBoost ? "#94F7C5" : "#FFB7E5"}`,
-          borderRadius: 22,
-          boxShadow: `6px 6px 0 0 ${wantsExamBoost ? "#9FD8FF" : "#FFE29A"}`,
-          padding: 26,
-          marginBottom: 28,
-        }}
-      >
-        {/* Plan name + price headline */}
-        <div style={{ display: "flex", alignItems: "baseline", flexWrap: "wrap", gap: 8, marginBottom: 4 }}>
-          <span style={{ fontWeight: 800, fontSize: 18, color: "#fff" }}>
-            {wantsExamBoost ? "Exam Blast" : "Student Life"}
-          </span>
-        </div>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginBottom: 4 }}>
-          <span style={{ fontSize: 40, fontWeight: 900, letterSpacing: "-1px", color: "#fff" }}>
-            {wantsExamBoost ? "R550" : "R169"}
-          </span>
-          <span style={{ fontSize: 15, fontWeight: 700, color: "#fff" }}>
-            {wantsExamBoost
-              ? (isAf ? "seisoenkaart" : "season pass")
-              : (isAf ? "/maand" : "/month")}
-          </span>
-        </div>
-
-        {/* Charge summary — Exam Season Pass swaps in the once-off R550 copy;
-            monthly shows the R169/month recurring charge. Both pay-now. */}
-        <div style={{ marginTop: 16, marginBottom: 20 }}>
-          <WallCallout color={wantsExamBoost ? "#94F7C5" : "#FFE29A"}>
-            <p style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: 16, color: wantsExamBoost ? "#94F7C5" : "#FFE29A", margin: "0 0 4px" }}>
-              {wantsExamBoost ? boost.charge : t.charge}
-            </p>
-            <p style={{ fontWeight: 800, fontSize: 17, color: wantsExamBoost ? "#94F7C5" : "#FFE29A", margin: 0, lineHeight: 1.5 }}>
-              {wantsExamBoost ? boost.chargeDetail : t.chargeDetail}
-            </p>
-          </WallCallout>
-        </div>
-
-        {/* Paystack checkout — sole payment provider */}
-        <button
-          onClick={() => handlePaystackCheckout(wantsExamBoost ? "exam_boost" : undefined)}
-          disabled={anyLoading}
-          className="bts-method-btn"
-          data-testid="button-paystack-checkout"
-          style={{
-            "--c": "#94F7C5",
-            width: "100%", textAlign: "left", background: "#050508",
-            border: "2px solid #fff", borderRadius: 18, padding: "18px 20px",
-            cursor: anyLoading ? "not-allowed" : "pointer", opacity: anyLoading ? 0.6 : 1,
-            fontFamily: "'Poppins',sans-serif", color: "#fff",
-          } as React.CSSProperties}
-        >
-          <div style={{ display: "flex", alignItems: "flex-start", gap: 16 }}>
-            <div style={{ width: 44, height: 44, flex: "none", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(148,247,197,.14)" }}>
-              {anyLoading ? (
-                <Loader2 className="animate-spin" style={{ width: 20, height: 20, color: "#94F7C5" }} />
-              ) : (
-                <CreditCard style={{ width: 20, height: 20, color: "#94F7C5" }} />
-              )}
-            </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                <span style={{ fontWeight: 700, color: "#fff" }}>{wantsExamBoost ? boost.button : t.paystack}</span>
-                <span style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: 15, color: "#94F7C5" }}>
-                  {t.paystackBadge}
-                </span>
-              </div>
-              <p style={{ fontSize: 13.5, color: "#fff", lineHeight: 1.55, margin: 0 }}>
-                {wantsExamBoost ? boost.buttonSub : t.paystackDesc}
-              </p>
-            </div>
-            <ChevronRight style={{ width: 20, height: 20, flex: "none", marginTop: 2, color: "#94F7C5" }} />
-          </div>
-        </button>
+      <div style={{ marginBottom: 28 }}>
+        <ProductGrid products={products} isAf={isAf} onSelect={(p) => handlePaystackCheckout(p ?? undefined)} />
       </div>
 
       <p style={{ textAlign: "center", color: "#fff", fontSize: 12, padding: "0 16px", lineHeight: 1.7, marginBottom: 28 }}>
         {t.secure}
-      </p>{/* plan-choice card closed above */}
+      </p>
 
       <button
         onClick={() => (window.location.href = homeHref)} // nosemgrep: no-raw-window-location-href-variable
@@ -1467,8 +1347,8 @@ function SuccessScreen({
               <button
                 onClick={handleResend}
                 disabled={resendLoading || cooldownSecs > 0}
-                className="bts-rainbow-btn"
-                style={{ ...RAINBOW_BTN_STYLE, display: "inline-flex", alignItems: "center", gap: 8, opacity: resendLoading || cooldownSecs > 0 ? 0.6 : 1, cursor: resendLoading || cooldownSecs > 0 ? "not-allowed" : "pointer" }}
+                className="pub-btn"
+                style={{ display: "inline-flex", alignItems: "center", gap: 8, opacity: resendLoading || cooldownSecs > 0 ? 0.6 : 1, cursor: resendLoading || cooldownSecs > 0 ? "not-allowed" : "pointer" }}
               >
                 {resendLoading ? (
                   <Loader2 className="animate-spin" style={{ width: 16, height: 16 }} />
@@ -1509,8 +1389,8 @@ function SuccessScreen({
           <button
             onClick={handleResend}
             disabled={resendLoading || cooldownSecs > 0}
-            className="bts-outline-btn"
-            style={{ ...OUTLINE_BTN_STYLE, display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 24, opacity: resendLoading || cooldownSecs > 0 ? 0.6 : 1 }}
+            className="pub-btn-outline"
+            style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 24, opacity: resendLoading || cooldownSecs > 0 ? 0.6 : 1 }}
           >
             {resendLoading ? (
               <Loader2 className="animate-spin" style={{ width: 16, height: 16 }} />
@@ -1526,111 +1406,7 @@ function SuccessScreen({
         <div style={{ display: "flex", justifyContent: "center" }}>
           <button
             onClick={() => navigate("/dashboard")}
-            className="bts-rainbow-btn"
-            style={RAINBOW_BTN_STYLE}
-          >
-            {isAf ? "Gaan na Dashboard" : "Go to Dashboard"}
-          </button>
-        </div>
-      </div>
-    </WallScreen>
-  );
-}
-
-function PaymentSuccessScreen({
-  isAf,
-  navigate,
-  billingMethod,
-}: {
-  isAf: boolean;
-  navigate: any;
-  billingMethod: BillingMethod | null;
-}) {
-  const isDebicheck = billingMethod === "debicheck";
-  const methodLabel = isDebicheck
-    ? (isAf ? "DebiCheck Debietorder" : "DebiCheck Debit Order")
-    : (isAf ? "Herhalende Kaartbetaling" : "Recurring Card Payment");
-  const methodDesc = isDebicheck
-    ? (isAf
-        ? "Jou bank sal R169 elke maand aftrek volgens jou gemagtigde debietorder."
-        : "Your bank will debit R169 each month via your authorised debit order.")
-    : (isAf
-        ? "Jou kaart sal elke maand met R169 gehef word deur KTH-Tech. Jou kaartbesonderhede word veilig deur Paystack gestoor."
-        : "Your card will be charged R169 each month by KTH-Tech. Your card details are securely stored by Paystack.");
-
-  return (
-    <WallScreen testId="payment-success-panel">
-      <div style={{ textAlign: "center" }}>
-        <CheckCircle2 style={{ width: 56, height: 56, margin: "0 auto 24px", color: "#94F7C5" }} />
-
-        <div
-          role="heading"
-          aria-level={1}
-          data-testid="payment-success-heading"
-          style={{ fontSize: 36, fontWeight: 900, letterSpacing: "-1px", lineHeight: 1.1, marginBottom: 16, fontFamily: "'Poppins',sans-serif", color: "#fff" }}
-        >
-          <span style={{ background: HEADLINE_GRADIENT, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent" }}>
-            {isAf ? "Betaling suksesvol" : "Payment successful"}
-          </span>
-        </div>
-        <p style={{ color: "#fff", fontSize: 17, marginBottom: 32 }}>
-          {isAf
-            ? "Student Life is nou aktief op jou rekening."
-            : "Student Life is now active on your account."}
-        </p>
-
-        {/* Payment method */}
-        <div style={{ marginBottom: 20 }}>
-          <WallCallout color="#9FD8FF">
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 8 }}>
-              {isDebicheck ? (
-                <Landmark style={{ width: 20, height: 20, flex: "none", marginTop: 2, color: "#9FD8FF" }} />
-              ) : (
-                <CreditCard style={{ width: 20, height: 20, flex: "none", marginTop: 2, color: "#9FD8FF" }} />
-              )}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: 16, color: "#9FD8FF", margin: "0 0 2px" }}>
-                  {isAf ? "Betaalmetode" : "Payment method"}
-                </p>
-                <p style={{ fontWeight: 700, color: "#fff", margin: 0 }} data-testid="payment-success-method">
-                  {methodLabel}
-                </p>
-              </div>
-            </div>
-            <p style={{ fontSize: 14, color: "#fff", lineHeight: 1.6, margin: 0 }}>
-              {methodDesc}
-            </p>
-          </WallCallout>
-        </div>
-
-        {/* Billing */}
-        <div style={{ marginBottom: 32 }}>
-          <WallCallout color="#FFE29A">
-            <p style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: 16, color: "#FFE29A", margin: "0 0 4px" }}>
-              {isAf ? "Maandeliks gehef" : "Billed monthly"}
-            </p>
-            <p style={{ fontWeight: 800, fontSize: 17, color: "#FFE29A", margin: "0 0 6px" }}>
-              {isAf
-                ? "R169/maand · Kanselleer enige tyd"
-                : "R169/month · Cancel anytime"}
-            </p>
-            {/* Statement descriptor — parents see "KTH-TECH" on their bank
-                statement, not "BrainTrack". Saying it up-front here prevents
-                "I don't recognise this charge" chargebacks. */}
-            <p style={{ fontSize: 13, color: "#fff", margin: 0 }}>
-              {isAf
-                ? "Verskyn op jou staat as KTH-TECH."
-                : "Appears on your statement as KTH-TECH."}
-            </p>
-          </WallCallout>
-        </div>
-
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="bts-rainbow-btn"
-            data-testid="button-payment-success-dashboard"
-            style={RAINBOW_BTN_STYLE}
+            className="pub-btn"
           >
             {isAf ? "Gaan na Dashboard" : "Go to Dashboard"}
           </button>
@@ -1661,8 +1437,8 @@ function NotConfiguredScreen({ isAf, homeHref }: { isAf: boolean, homeHref: stri
         </p>
         <a
           href={homeHref}
-          className="bts-outline-btn"
-          style={{ ...OUTLINE_BTN_STYLE, display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}
+          className="pub-btn-outline"
+          style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}
         >
           {isAf ? "Terug" : "Back"}
         </a>

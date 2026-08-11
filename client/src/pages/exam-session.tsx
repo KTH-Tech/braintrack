@@ -90,7 +90,7 @@ function GlassCard({ children, accent, className = "", style, testId }: {
       className={`relative overflow-hidden ${className}`}
       data-testid={testId}
       style={{
-        background: "#1b1922",
+        background: "#0e0d12",
         border: accent ? `1.5px solid ${accent}` : "1px solid #1b1922",
         borderRadius: 22,
         ...style,
@@ -164,7 +164,13 @@ export default function ExamSessionPage() {
 
   const { data: allPapers, isLoading: papersLoading } = useQuery<any[]>({
     queryKey: ["/api/exam-papers"],
-    queryFn: () => fetch("/api/exam-papers", { credentials: "include" }).then(r => r.json()),
+    queryFn: async () => {
+      // AUDIT FIX: guard r.ok so an HTML error page doesn't JSON-parse crash —
+      // failures now flow into the query error/empty UI instead.
+      const r = await fetch("/api/exam-papers", { credentials: "include" });
+      if (!r.ok) throw new Error(`exam-papers ${r.status}`);
+      return r.json();
+    },
   });
 
   const { data: subjects } = useQuery<any[]>({
@@ -185,7 +191,13 @@ export default function ExamSessionPage() {
 
   const { data: questionsData, isLoading: questionsLoading } = useQuery<any[]>({
     queryKey: ["/api/exam-papers", matchedPaper?.id, "questions"],
-    queryFn: () => fetch(`/api/exam-papers/${matchedPaper!.id}/questions`, { credentials: "include" }).then(r => r.json()),
+    queryFn: async () => {
+      // AUDIT FIX: guard r.ok so failures hit the error/empty UI instead of a
+      // JSON-parse crash on a non-JSON error response.
+      const r = await fetch(`/api/exam-papers/${matchedPaper!.id}/questions`, { credentials: "include" });
+      if (!r.ok) throw new Error(`exam-questions ${r.status}`);
+      return r.json();
+    },
     enabled: !!matchedPaper,
   });
 

@@ -9,14 +9,15 @@ import { AdminTopNav } from "@/components/admin-top-nav";
 import { useLanguage } from "@/lib/language-context";
 import { useSEO } from "@/hooks/use-seo";
 
-const PASTEL = ["#9FD8FF", "#9FF5E8", "#94F7C5", "#FFE29A", "#FFE29A", "#FFB7E5", "#C5B3FF"];
+const PASTEL = ["#9FD8FF", "#9FF5E8", "#94F7C5", "#FFE29A", "#FFB7E5", "#C5B3FF"];
 
 // Handy one-tap presets for the links the team shares most.
+// `label` also seeds the stable data-testid, so it stays English.
 const PRESETS = [
-  { label: "Home", path: "/" },
-  { label: "Sign Up", path: "/subscribe" },
-  { label: "Past Papers", path: "/past-papers" },
-  { label: "Features", path: "/features" },
+  { label: "Home", labelAf: "Tuis", path: "/" },
+  { label: "Sign Up", labelAf: "Sluit Aan", path: "/subscribe" },
+  { label: "Past Papers", labelAf: "Ou Vraestelle", path: "/past-papers" },
+  { label: "Features", labelAf: "Kenmerke", path: "/features" },
 ];
 
 type Size = 256 | 512 | 1024;
@@ -130,7 +131,7 @@ export default function AdminQrGeneratorPage() {
                     data-testid="input-qr-value"
                     placeholder="https://app.braintrack.tech"
                     className="flex-1 rounded-xl px-3 py-2.5 text-sm text-white outline-none"
-                    style={{ background: "#0a0b12", border: "1.5px solid rgba(159,245,232,0.4)" }}
+                    style={{ background: "#0e0d12", border: "1.5px solid #1b1922" }}
                   />
                   <button
                     onClick={copyLink}
@@ -168,7 +169,7 @@ export default function AdminQrGeneratorPage() {
                       }}
                       data-testid={`button-qr-preset-${p.label.toLowerCase().replace(/\s+/g, "-")}`}
                     >
-                      {p.label}
+                      {isAf ? p.labelAf : p.label}
                     </button>
                   ))}
                 </div>
@@ -184,7 +185,7 @@ export default function AdminQrGeneratorPage() {
                     <button
                       key={c}
                       onClick={() => setColorIdx(i)}
-                      aria-label={`Colour ${i + 1}`}
+                      aria-label={isAf ? `Kleur ${i + 1}` : `Colour ${i + 1}`}
                       data-testid={`button-qr-color-${i}`}
                       className="w-9 h-9 rounded-xl transition-transform hover:scale-110"
                       style={{
@@ -210,7 +211,7 @@ export default function AdminQrGeneratorPage() {
                       className={btnSecondary}
                       style={
                         size === s
-                          ? { background: "#9FF5E8", color: "#0a0a0a", border: "1.5px solid #9FF5E8" }
+                          ? { background: "#9FF5E8", color: "#050508", border: "1.5px solid #9FF5E8" }
                           : { background: "#050508", color: "#9FF5E8", border: "1.5px solid #9FF5E8" }
                       }
                     >
@@ -235,7 +236,7 @@ export default function AdminQrGeneratorPage() {
             <div className="flex flex-col items-center gap-3">
               <div
                 className="rounded-2xl p-4"
-                style={{ background: "#0a0a0a", border: `1.5px solid ${fg}` }}
+                style={{ background: "#0e0d12", border: `1.5px solid ${fg}` }}
               >
                 {/* White quiet-zone card — the QR is the deliberate light
                     exception to the dark palette, so it actually scans. */}

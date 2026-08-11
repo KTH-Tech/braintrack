@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useState, useEffect, useCallback, useRef } from "react";
-import type { CSSProperties, ReactNode, MouseEvent as ReactMouseEvent } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { Link } from "wouter";
 import { useLanguage } from "@/lib/language-context";
 import { formatDate } from "@/lib/formatters";
@@ -57,31 +57,11 @@ const rainbowText: CSSProperties = {
   color: "transparent",
 };
 
-const cardStyle = (accent?: string, radius = 22): CSSProperties => ({
-  background: "linear-gradient(#1b1922, #1b1922), #050508",
+const cardStyle = (accent?: string, radius = 18): CSSProperties => ({
+  background: "#0e0d12",
   border: accent ? `1.5px solid ${accent}` : "1px solid #1b1922",
   borderRadius: radius,
 });
-
-const primaryBtnStyle: CSSProperties = {
-  background: "linear-gradient(100deg,#9FF5E8,#C5B3FF)",
-  color: "#050508",
-  border: "none",
-  borderRadius: 12,
-  fontWeight: 800,
-};
-
-const secondaryBtnStyle = (accent = "#1b1922", color = "#fff"): CSSProperties => ({
-  background: "transparent",
-  border: `1.5px solid ${accent}`,
-  color,
-  borderRadius: 12,
-  fontWeight: 700,
-});
-
-function primaryHover(e: ReactMouseEvent<HTMLButtonElement>, on: boolean) {
-  e.currentTarget.style.transform = on ? "translateY(-2px)" : "none";
-}
 
 /* Full-page shell for standalone states (loading / error / empty). */
 function PageShell({ children, center }: { children: ReactNode; center?: boolean }) {
@@ -254,7 +234,7 @@ export default function DailyChallengePage() {
         <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
           <div className="h-16 w-full animate-pulse" style={{ background: "#1b1922", borderRadius: 18 }} />
           <div className="h-3 w-full animate-pulse rounded-full" style={{ background: "#1b1922" }} />
-          <div className="h-80 animate-pulse" style={{ background: "#1b1922", borderRadius: 24 }} />
+          <div className="h-80 animate-pulse" style={{ background: "#1b1922", borderRadius: 18 }} />
         </div>
       </PageShell>
     );
@@ -263,7 +243,7 @@ export default function DailyChallengePage() {
   if (!fetchError && data && (!challenge || questions.length === 0)) {
     return (
       <PageShell center>
-        <div className="max-w-md w-full p-10 flex flex-col items-center text-center gap-4" style={cardStyle("#9FD8FF", 24)}>
+        <div className="max-w-md w-full p-10 flex flex-col items-center text-center gap-4" style={cardStyle("#9FD8FF")}>
           <div
             className="w-14 h-14 rounded-2xl flex items-center justify-center"
             style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #9FD8FF" }}
@@ -288,7 +268,7 @@ export default function DailyChallengePage() {
             </Link>
             <Link href="/dashboard">
               <Button variant="outline">
-                Dashboard
+                {isAf ? "Paneelbord" : "Dashboard"}
               </Button>
             </Link>
           </div>
@@ -304,7 +284,7 @@ export default function DailyChallengePage() {
       return (
         <PageShell>
           <div className="max-w-3xl mx-auto px-4 py-12">
-            <div className="p-10 flex flex-col items-center text-center gap-4" style={cardStyle("#FFE29A", 24)} data-testid="daily-challenge-not-ready">
+            <div className="p-10 flex flex-col items-center text-center gap-4" style={cardStyle("#FFE29A")} data-testid="daily-challenge-not-ready">
               <div
                 className="w-14 h-14 rounded-2xl flex items-center justify-center"
                 style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #FFE29A" }}
@@ -354,7 +334,7 @@ export default function DailyChallengePage() {
     return (
       <PageShell>
         <div className="max-w-3xl mx-auto px-4 py-12">
-          <div className="p-10 flex flex-col items-center text-center gap-4" style={cardStyle("#FF8DA1", 24)} data-testid="daily-challenge-error">
+          <div className="p-10 flex flex-col items-center text-center gap-4" style={cardStyle("#FF8DA1")} data-testid="daily-challenge-error">
             <div
               className="w-14 h-14 rounded-2xl flex items-center justify-center"
               style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #FF8DA1" }}
@@ -396,7 +376,7 @@ export default function DailyChallengePage() {
   if (timeUpNoAnswers && !showResults && !isCompleted) {
     return (
       <PageShell center>
-        <div className="max-w-md w-full p-10 flex flex-col items-center text-center gap-4" style={cardStyle("#FFE29A", 24)} data-testid="daily-challenge-time-up">
+        <div className="max-w-md w-full p-10 flex flex-col items-center text-center gap-4" style={cardStyle("#FFE29A")} data-testid="daily-challenge-time-up">
           <div
             className="w-14 h-14 rounded-2xl flex items-center justify-center"
             style={{ background: "rgba(5,5,8,.6)", border: "1.5px solid #FFE29A" }}
@@ -442,7 +422,7 @@ export default function DailyChallengePage() {
         backLabel={isAf ? "Tuis" : "Home"}
         title={isAf ? "Daaglikse uitdaging" : "Daily Challenge"}
         titleColor="#9FF5E8"
-        maxWidthClassName="max-w-4xl"
+        maxWidthClassName="max-w-3xl"
         titleExtra={
           <>
             <PlanScopeBadge isAf={isAf} />
@@ -582,7 +562,7 @@ export default function DailyChallengePage() {
             </div>
 
             {/* Question card */}
-            <div className="relative overflow-hidden" style={{ ...cardStyle(undefined, 24), animation: "bt-fadeup .5s .05s both" }}>
+            <div className="relative overflow-hidden" style={{ ...cardStyle(), animation: "bt-fadeup .5s .05s both" }}>
               {/* Rainbow top stripe */}
               <div className="absolute top-0 inset-x-0 h-1" style={{ background: RAINBOW_GRADIENT }} aria-hidden="true" />
               <div className="p-6 sm:p-8 space-y-6">
@@ -616,14 +596,14 @@ export default function DailyChallengePage() {
                         className="w-full min-h-0 text-left p-4 transition-all duration-200 font-semibold text-base"
                         style={{
                           borderRadius: 18,
-                          background: isSelected ? halo("#9FF5E8", 0.08) : "#1b1922",
-                          border: isSelected ? "2px solid #9FF5E8" : "2px solid #1b1922",
+                          background: isSelected ? halo("#9FF5E8", 0.08) : "#0e0d12",
+                          border: isSelected ? "2px solid #9FF5E8" : "2px solid #9FD8FF",
                         }}
                         onMouseEnter={(e) => {
-                          if (!isSelected) e.currentTarget.style.border = "2px solid rgba(159,245,232,.5)";
+                          if (!isSelected) e.currentTarget.style.border = "2px solid #9FF5E8";
                         }}
                         onMouseLeave={(e) => {
-                          if (!isSelected) e.currentTarget.style.border = "2px solid #1b1922";
+                          if (!isSelected) e.currentTarget.style.border = "2px solid #9FD8FF";
                         }}
                         data-testid={`button-option-${i}`}
                       >
@@ -751,7 +731,7 @@ function ResultsView({
       {/* Trophy hero */}
       <div
         className="relative overflow-hidden"
-        style={{ ...cardStyle(grade.hex, 26), animation: "bt-fadeup .5s both" }}
+        style={{ ...cardStyle(grade.hex), animation: "bt-fadeup .5s both" }}
       >
         <div className="absolute top-0 inset-x-0 h-1" style={{ background: RAINBOW_GRADIENT }} aria-hidden="true" />
         <div className="p-8 text-center space-y-4 relative">
@@ -767,7 +747,7 @@ function ResultsView({
           />
           <div className="relative">
             <div
-              className="w-20 h-20 mx-auto rounded-3xl flex items-center justify-center"
+              className="w-20 h-20 mx-auto rounded-2xl flex items-center justify-center"
               style={{
                 background: "rgba(5,5,8,.6)",
                 border: `1.5px solid ${grade.hex}`,
@@ -833,7 +813,7 @@ function ResultsView({
       </div>
 
       {/* Next challenge unlock */}
-      <div style={{ ...cardStyle(undefined, 20), animation: "bt-fadeup .5s .05s both" }} data-testid="card-next-challenge">
+      <div style={{ ...cardStyle(), animation: "bt-fadeup .5s .05s both" }} data-testid="card-next-challenge">
         <div className="p-4 flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-3">
             <div
@@ -858,7 +838,7 @@ function ResultsView({
               size="sm"
               data-testid="button-back-home"
             >
-              Dashboard
+              {isAf ? "Paneelbord" : "Dashboard"}
             </Button>
           </Link>
         </div>
@@ -907,8 +887,8 @@ function ResultsView({
                     isToday ? "scale-110" : ""
                   }`}
                   style={{
-                    background: dayHex ? halo(dayHex, 0.08) : "#1b1922",
-                    border: dayHex ? `2px solid ${halo(dayHex, 0.5)}` : "2px solid #1b1922",
+                    background: dayHex ? halo(dayHex, 0.08) : "#0e0d12",
+                    border: dayHex ? `2px solid ${dayHex}` : "2px solid #1b1922",
                   }}
                   data-testid={`history-day-${i}`}
                   title={formatDate(date, isAf ? "af" : "en", { weekday: "long", day: "numeric", month: "short" })}
@@ -959,9 +939,9 @@ function ResultsView({
               key={i}
               className="overflow-hidden transition-all"
               style={{
-                background: "linear-gradient(#1b1922, #1b1922), #050508",
-                border: `1.5px solid ${halo(rowHex, 0.45)}`,
-                borderRadius: 20,
+                background: "#0e0d12",
+                border: `1.5px solid ${rowHex}`,
+                borderRadius: 18,
               }}
             >
               <div className="p-5 space-y-3">
@@ -1002,11 +982,11 @@ function ResultsView({
                               ? halo("#94F7C5", 0.1)
                               : wasSelected && !isAnswer
                               ? halo("#FF8DA1", 0.1)
-                              : "#1b1922",
+                              : "#0e0d12",
                             border: isAnswer
-                              ? `1px solid ${halo("#94F7C5", 0.5)}`
+                              ? "1px solid #94F7C5"
                               : wasSelected && !isAnswer
-                              ? `1px solid ${halo("#FF8DA1", 0.5)}`
+                              ? "1px solid #FF8DA1"
                               : "1px solid #1b1922",
                           }}
                         >
@@ -1022,7 +1002,7 @@ function ResultsView({
                         className="p-3 flex items-center gap-2 mt-2"
                         style={{
                           borderRadius: 12,
-                          border: `1px solid ${halo("#94F7C5", 0.5)}`,
+                          border: "1px solid #94F7C5",
                           background: halo("#94F7C5", 0.1),
                         }}
                         data-testid={`callout-correct-answer-${i}`}
@@ -1041,7 +1021,7 @@ function ResultsView({
                         style={{
                           borderRadius: 12,
                           background: halo("#9FD8FF", 0.08),
-                          border: `1px solid ${halo("#9FD8FF", 0.4)}`,
+                          border: "1px solid #9FD8FF",
                         }}
                       >
                         <p className="text-xs font-semibold text-white leading-relaxed">

@@ -84,18 +84,19 @@ function setMeta(name: string, content: string, attr: "name" | "property" = "nam
   el.setAttribute("content", content);
 }
 
-function setLink(rel: string, href: string, hreflang?: string) {
-  const sel = hreflang
-    ? `link[rel="${rel}"][hreflang="${hreflang}"]`
-    : `link[rel="${rel}"]:not([hreflang])`;
-  let el = document.querySelector(sel) as HTMLLinkElement | null;
+function setLink(rel: string, href: string) {
+  let el = document.querySelector(`link[rel="${rel}"]:not([hreflang])`) as HTMLLinkElement | null;
   if (!el) {
     el = document.createElement("link");
     el.setAttribute("rel", rel);
-    if (hreflang) el.setAttribute("hreflang", hreflang);
     document.head.appendChild(el);
   }
   el.setAttribute("href", href);
+}
+
+/** Remove any legacy hreflang alternates a previous deploy may have left in <head>. */
+function clearHreflangLinks() {
+  document.querySelectorAll('link[rel="alternate"][hreflang]').forEach((el) => el.remove());
 }
 
 function setJsonLd(id: string, data: Record<string, unknown> | Record<string, unknown>[]) {
@@ -151,13 +152,15 @@ export function useSEO({
     setMeta("og:locale:alternate", locale === "af_ZA" ? "en_ZA" : "af_ZA", "property");
     if (ogUrl ?? canonical) setMeta("og:url", (ogUrl ?? canonical)!, "property");
 
-    // Canonical + hreflang for en-ZA / af-ZA
+    // Canonical only — hreflang is intentionally NOT emitted. EN/AF share the
+    // exact same URL (in-app toggle, no /af/ or ?lang= variants), and hreflang
+    // pairs pointing two languages at one identical URL are contradictory and
+    // ignored by Google. Language targeting is carried by og:locale (below) and
+    // the <html lang> attribute, which language-context.tsx switches live.
     if (canonical) {
       setLink("canonical", canonical);
-      setLink("alternate", canonical, "en-ZA");
-      setLink("alternate", canonical, "af-ZA");
-      setLink("alternate", canonical, "x-default");
     }
+    clearHreflangLinks();
 
     // Twitter
     setMeta("twitter:card", twitterCard, "name");

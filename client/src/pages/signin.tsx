@@ -11,7 +11,6 @@ import { useLanguage } from "@/lib/language-context";
 import { PublicNav } from "@/components/public-nav";
 import { PublicFooter } from "@/components/public-footer";
 
-const CTA_GRADIENT = "linear-gradient(100deg,#FFB7E5,#FFE29A,#9FF5E8,#C5B3FF,#FFB7E5)";
 const HEADLINE_GRADIENT = "linear-gradient(95deg,#9FD8FF,#9FF5E8,#C5B3FF,#FFB7E5)";
 
 const COPY = {
@@ -40,6 +39,9 @@ const COPY = {
     haveAccount: "Already have an account?",
     signInInstead: "Log on",
     passwordHint: "At least 10 characters.",
+    forgotPassword: "Forgot your password?",
+    forgotPasswordHint: "Email us to reset it — ",
+    forgotPasswordLink: "learn@kth-tech.com",
     backHome: "← Back to home",
   },
   af: {
@@ -67,6 +69,9 @@ const COPY = {
     haveAccount: "Het jy reeds 'n rekening?",
     signInInstead: "Meld aan",
     passwordHint: "Ten minste 10 karakters.",
+    forgotPassword: "Wagwoord vergeet?",
+    forgotPasswordHint: "E-pos ons om dit terug te stel — ",
+    forgotPasswordLink: "learn@kth-tech.com",
     backHome: "← Terug na tuisblad",
   },
 } as const;
@@ -214,7 +219,7 @@ export default function SignInPage() {
               border: "2.5px solid #9FF5E8",
               borderRadius: 20,
               padding: 26,
-              boxShadow: "6px 6px 0 0 #C5B3FF",
+              boxShadow: "6px 6px 0 0 #9FF5E8",
               boxSizing: "border-box",
             }}
           >
@@ -265,6 +270,19 @@ export default function SignInPage() {
                 {!isSignIn && (
                   <div style={{ fontSize: 12.5, color: "#fff", marginTop: 6 }}>{t.passwordHint}</div>
                 )}
+                {isSignIn && (
+                  <div style={{ fontSize: 12.5, color: "#fff", marginTop: 8, lineHeight: 1.6 }}>
+                    <span style={{ fontWeight: 800 }}>{t.forgotPassword}</span>{" "}
+                    {t.forgotPasswordHint}
+                    <a
+                      href={`mailto:learn@kth-tech.com?subject=${encodeURIComponent("Password reset request")}`}
+                      data-testid="link-forgot-password"
+                      style={{ color: "#9FD8FF", fontWeight: 800, textDecoration: "underline" }}
+                    >
+                      {t.forgotPasswordLink}
+                    </a>
+                  </div>
+                )}
               </div>
 
               {!isSignIn && (
@@ -292,13 +310,8 @@ export default function SignInPage() {
                 </div>
               )}
 
-              <button type="submit" className="bts-cta" disabled={submit.isPending} data-testid="button-submit-auth"
-                style={{
-                  fontFamily: "'Poppins',sans-serif", fontWeight: 900, fontSize: 16, color: "#050508",
-                  background: CTA_GRADIENT, backgroundSize: "200% 100%", animation: "bt-rainbow 5s linear infinite",
-                  border: "2.5px solid #050508", borderRadius: 12, padding: "15px 20px", cursor: "pointer",
-                  boxShadow: "5px 5px 0 0 #fff", marginTop: 4,
-                }}>
+              <button type="submit" className="pub-btn pub-btn-block bts-cta" disabled={submit.isPending} data-testid="button-submit-auth"
+                style={{ marginTop: 4 }}>
                 {submit.isPending ? (isSignIn ? t.signingIn : t.creating) : (isSignIn ? t.signIn : t.signUp)}
               </button>
             </form>

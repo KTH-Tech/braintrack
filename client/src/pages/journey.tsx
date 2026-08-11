@@ -84,25 +84,6 @@ const marker = (color: string, size = 16): CSSProperties => ({
   display: "inline-block",
 });
 
-/* Cute sticker callout — small rotated speech-bubble chip, same graffiti
-   language as the landing-page mural stickers (FOCUS/PLAN/ACHIEVE etc.),
-   recreated in CSS since those live baked into the mural artwork. */
-const sticker = (color: string, rotate: number, pos: CSSProperties): CSSProperties => ({
-  position: "absolute",
-  ...pos,
-  transform: `rotate(${rotate}deg)`,
-  fontFamily: "'Bebas Neue', sans-serif",
-  fontSize: 16,
-  lineHeight: 1.2,
-  color,
-  background: "rgba(5,5,8,.88)",
-  border: `1.5px solid ${color}`,
-  borderRadius: 14,
-  padding: "6px 11px",
-  whiteSpace: "nowrap",
-  zIndex: 3,
-});
-
 const T = {
   en: {
     pageTitle: "Learning Journey",
@@ -112,9 +93,6 @@ const T = {
     heroLabel: "Journey",
     heroSubtitle: "Your personal learning journey — every milestone, every spark.",
     hypeLine: "Every step counts. Let's get it! 🚀",
-    sticker1: "You've got this!",
-    sticker2: "Momentum building ⚡",
-    sticker3: "Streak mode: ON 🔥",
     examReadyLink: "Exam Readiness",
     rizzSays: "Rizz says",
     statDays: "Days",
@@ -137,9 +115,6 @@ const T = {
     heroLabel: "Leerreis",
     heroSubtitle: "Jou persoonlike leerreis — elke mylpaal, elke vonk.",
     hypeLine: "Elke tree tel. Kom ons doen dit! 🚀",
-    sticker1: "Jy kan dit doen!",
-    sticker2: "Momentum bou ⚡",
-    sticker3: "Reeks-modus: AAN 🔥",
     examReadyLink: "Eksamengereedheid",
     rizzSays: "Rizz sê",
     statDays: "Dae",
@@ -176,7 +151,7 @@ export default function JourneyPage() {
   const backHref = isParentView ? "/parent" : "/dashboard";
   const backLabel = isParentView ? t.backTitle : t.homeTitle;
 
-  const { data: journey, isLoading } = useQuery<JourneyData>({
+  const { data: journey, isLoading, isError, refetch } = useQuery<JourneyData>({
     queryKey: [journeyUrl],
   });
 
@@ -307,9 +282,46 @@ export default function JourneyPage() {
           <div className="flex justify-center py-24">
             <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#9FF5E8" }} />
           </div>
+        ) : isError ? (
+          /* Fetch failed — without this branch the page rendered the empty
+             "Start studying to unlock your first milestone!" state, which
+             reads as data loss. Retry re-runs the existing query. */
+          <section
+            className="relative rounded-3xl p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4"
+            style={{
+              background: "#0e0d12",
+              border: "1.5px solid #FF8DA1",
+              borderRadius: 22,
+              boxShadow: "4px 4px 0 0 #FF8DA1",
+            }}
+            data-testid="journey-error-card"
+          >
+            <div className="flex-1 min-w-0">
+              <p className="font-black text-base text-white">
+                {isAf ? "Kon nie jou reis laai nie" : "Couldn't load your journey"}
+              </p>
+              <p className="text-sm text-white mt-1 leading-relaxed">
+                {isAf
+                  ? "Kontroleer jou verbinding en probeer weer."
+                  : "Check your connection and try again."}
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="primary"
+              className="shrink-0"
+              onClick={() => refetch()}
+              data-testid="button-journey-retry"
+            >
+              {isAf ? "Probeer weer" : "Try again"}
+            </Button>
+          </section>
         ) : (
           <>
-            {/* ── Rizz narrator card (Rizz-branded — keeps #6EE7F9) ── */}
+            {/* ── Rizz narrator card (Rizz-branded — keeps #6EE7F9) ──
+                Gated on `journey` so a missing payload never renders an
+                empty quote bubble. */}
+            {journey && (
             <section
               className="relative rounded-3xl p-5 sm:p-6 overflow-hidden"
               style={{
@@ -343,11 +355,12 @@ export default function JourneyPage() {
                     {t.rizzSays}
                   </span>
                   <p className="text-sm sm:text-base text-white leading-relaxed font-medium italic">
-                    "{isAf ? journey?.rizzCommentAf : journey?.rizzComment}"
+                    "{isAf ? journey.rizzCommentAf : journey.rizzComment}"
                   </p>
                 </div>
               </div>
             </section>
+            )}
 
             {/* ── Stats bar — 5 pastel chips ── */}
             {journey?.stats && (
@@ -531,13 +544,13 @@ export default function JourneyPage() {
                         className="flex items-start gap-3 p-4"
                         style={{
                           background: "linear-gradient(#1b1922, #1b1922), #050508",
-                          border: `1px dashed ${hex}55`,
+                          border: `1px dashed ${hex}`,
                           borderRadius: 18,
                         }}
                       >
                         <div
                           className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-                          style={{ background: "rgba(5,5,8,.6)", border: `1px dashed ${hex}66` }}
+                          style={{ background: "rgba(5,5,8,.6)", border: `1px dashed ${hex}` }}
                         >
                           <Icon className="w-4 h-4" style={{ color: hex }} />
                         </div>

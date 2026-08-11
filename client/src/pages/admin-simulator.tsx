@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AdminTopNav } from "@/components/admin-top-nav";
+import { AdminAlert } from "@/components/admin-ui";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/lib/language-context";
@@ -97,7 +98,7 @@ export default function AdminSimulatorPage() {
   const [bulkGen, setBulkGen] = useState<{ done: number; total: number } | null>(null);
   const [bulkRel, setBulkRel] = useState<{ done: number; total: number } | null>(null);
 
-  const { data, isLoading } = useQuery<{ subjects: SubjectRow[]; releaseBar: number }>({
+  const { data, isLoading, isError: overviewError, refetch: refetchOverview } = useQuery<{ subjects: SubjectRow[]; releaseBar: number }>({
     queryKey: ["/api/admin/simulator/overview"],
     refetchInterval: 15000, // generation runs elsewhere; keep counts fresh
   });
@@ -403,6 +404,17 @@ export default function AdminSimulatorPage() {
           <div style={{ display: "flex", justifyContent: "center", padding: 60 }}>
             <Loader2 className="animate-spin" style={{ width: 28, height: 28, color: P.mint }} />
           </div>
+        ) : overviewError ? (
+          <AdminAlert
+            onRetry={() => refetchOverview()}
+            retryLabel={t("Retry", "Probeer weer")}
+            testId="admin-simulator-overview-error"
+          >
+            {t(
+              "Couldn't load the subject overview — the simulator couldn't reach the server. This is not the same as an empty bank.",
+              "Kon nie die vakoorsig laai nie — die simulator kon nie die bediener bereik nie. Dit is nie dieselfde as 'n leë bank nie.",
+            )}
+          </AdminAlert>
         ) : !subjects.length ? (
           <div style={{ background: "#050508", border: `2.5px solid ${P.butter}`, boxShadow: `5px 5px 0 0 ${P.butter}`, borderRadius: 18, padding: 26 }}>
             <p style={{ margin: 0, fontWeight: 700 }}>
@@ -1317,7 +1329,9 @@ function CoverageModal({
                     {tp.frequencyRank != null && (
                       <span style={{ fontSize: 10.5, fontWeight: 800 }}>#{tp.frequencyRank}</span>
                     )}
-                    <span style={{ fontSize: 11.5, fontWeight: 800, color: tp.simulatedCount > 0 ? P.mint : "#fff", opacity: tp.simulatedCount > 0 ? 1 : 0.55 }}>
+                    {/* Zero is signalled by the mint/white colour switch alone —
+                        never by fading the text (faded white reads grey). */}
+                    <span style={{ fontSize: 11.5, fontWeight: 800, color: tp.simulatedCount > 0 ? P.mint : "#fff" }}>
                       {tp.simulatedCount} {t("sim", "sim")}
                     </span>
                     {!tp.covered && (

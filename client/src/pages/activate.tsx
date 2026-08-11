@@ -125,7 +125,7 @@ export default function ActivatePage() {
       <header className="border-b border-border/40 bg-background/95 supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-end">
-            <button onClick={toggleLanguage} className="flex items-center gap-1 px-2 py-1.5 rounded-md text-white hover:text-white transition-colors" data-testid="button-language-toggle">
+            <button onClick={toggleLanguage} className="flex items-center gap-1 px-2 py-1.5 rounded-md text-white hover:opacity-80 transition-opacity" data-testid="button-language-toggle">
               <Globe className="h-4 w-4" />
               <span className="text-xs font-semibold">{language === "en" ? "EN" : "AF"}</span>
             </button>
@@ -138,9 +138,15 @@ export default function ActivatePage() {
           {activationStatus === "success" ? (
             <Card className="text-center">
               <CardContent className="pt-8 pb-8">
-                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-500/20 flex items-center justify-center">
-                  <CheckCircle2 className="w-10 h-10 text-green-500" />
+                <div className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center" style={{ background: "rgba(148,247,197,.15)" }}>
+                  <CheckCircle2 className="w-10 h-10" style={{ color: "#94F7C5" }} />
                 </div>
+                <p
+                  className="uppercase mb-1"
+                  style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 16, letterSpacing: "0.16em", color: "#94F7C5", transform: "rotate(-2deg)", display: "inline-block" }}
+                >
+                  {isAf ? "jy's binne!" : "you're in!"}
+                </p>
                 <h2 className="text-2xl font-semibold mb-2">
                   {isAf ? "Jou rekening is aktief!" : "Account Activated!"}
                 </h2>
@@ -154,14 +160,14 @@ export default function ActivatePage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <Brain className="w-5 h-5 text-primary" />
-                    <span>{isAf ? "Rizz as jou persoonlike tutor" : "Rizz assistance"}</span>
+                    <span>{isAf ? "Rizz as jou persoonlike tutor" : "Rizz as your personal tutor"}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Trophy className="w-5 h-5 text-primary" />
                     <span>{isAf ? "Spoor jou vordering na" : "Track your progress"}</span>
                   </div>
                 </div>
-                <Button variant="gradient" className="w-full" onClick={() => window.location.href = "/signin"}>
+                <Button variant="primary" className="w-full" onClick={() => window.location.href = "/signin"}>
                   <Sparkles className="w-4 h-4 mr-2" />
                   {isAf ? "Kom ons begin!" : "Start Learning"}
                 </Button>
@@ -175,14 +181,14 @@ export default function ActivatePage() {
           ) : activationStatus === "expired" ? (
             <Card className="text-center">
               <CardContent className="pt-8 pb-8">
-                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-amber-500/20 flex items-center justify-center">
-                  <XCircle className="w-10 h-10 text-amber-500" />
+                <div className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center" style={{ background: "rgba(255,226,154,.15)" }}>
+                  <XCircle className="w-10 h-10" style={{ color: "#FFE29A" }} />
                 </div>
                 <h2 className="text-2xl font-semibold mb-2">{isAf ? "Die skakel is verval" : "Link Expired"}</h2>
                 <p className="text-white mb-6">
                   {isAf ? "Hierdie aktiveringsskakel het verval. Vra jou ouer om 'n nuwe skakel aan te vra." : "This activation link has expired. Please ask your parent to request a new activation link."}
                 </p>
-                <Button variant="outline" className="border-green-500/50" onClick={() => navigate("/")}>
+                <Button variant="outline" className="border-[#94F7C5]" onClick={() => navigate("/")}>
                   {isAf ? "Terug na Tuisblad" : "Go to Homepage"}
                 </Button>
               </CardContent>
@@ -190,14 +196,14 @@ export default function ActivatePage() {
           ) : activationStatus === "error" ? (
             <Card className="text-center">
               <CardContent className="pt-8 pb-8">
-                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-destructive/20 flex items-center justify-center">
-                  <XCircle className="w-10 h-10 text-destructive" />
+                <div className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center" style={{ background: "rgba(255,141,161,.15)" }}>
+                  <XCircle className="w-10 h-10" style={{ color: "#FF8DA1" }} />
                 </div>
                 <h2 className="text-2xl font-semibold mb-2">{isAf ? "Ongeldige skakel" : "Invalid Link"}</h2>
                 <p className="text-white mb-6">
                   {isAf ? "Hierdie aktiveringsskakel is ongeldig of al gebruik. Kyk jou WhatsApp vir die regte skakel." : "This activation link is invalid or has already been used. Please check your WhatsApp for the correct link."}
                 </p>
-                <Button variant="outline" className="border-green-500/50" onClick={() => setActivationStatus("pending")}>
+                <Button variant="outline" className="border-[#94F7C5]" onClick={() => setActivationStatus("pending")}>
                   {isAf ? "Probeer weer" : "Try Again"}
                 </Button>
               </CardContent>
@@ -208,10 +214,16 @@ export default function ActivatePage() {
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/20 flex items-center justify-center">
                   <Sparkles className="w-8 h-8 text-primary" />
                 </div>
+                <p
+                  className="uppercase mx-auto"
+                  style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 16, letterSpacing: "0.16em", color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}
+                >
+                  {isAf ? "amper daar!" : "almost there!"}
+                </p>
                 <CardTitle className="text-2xl">
                   {isAf ? "Aktiveer jou rekening" : "Activate Your Account"}
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-white">
                   {isAf ? "Jou ouer het 'n BrainTrack™-intekening vir jou gekoop. Voer jou aktiveringskode in om te begin leer!" : "Your parent has purchased a BrainTrack™ subscription for you. Enter your activation code to get started."}
                 </CardDescription>
               </CardHeader>
@@ -237,8 +249,8 @@ export default function ActivatePage() {
                     <p className="text-xs text-white text-center">
                       {isAf ? "Kyk jou WhatsApp vir die aktiveringsskakel van jou ouer" : "Check your WhatsApp for the activation link from your parent"}
                     </p>
-                    <Button 
-                      variant="gradient" 
+                    <Button
+                      variant="primary"
                       className="w-full"
                       onClick={handleVerify}
                       disabled={code.length < 6 || verifyMutation.isPending}
@@ -317,7 +329,7 @@ export default function ActivatePage() {
                     </div>
 
                     <Button
-                      variant="gradient"
+                      variant="primary"
                       className="w-full"
                       onClick={handleActivate}
                       disabled={!canActivate || activateMutation.isPending}

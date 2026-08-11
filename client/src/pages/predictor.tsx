@@ -17,6 +17,13 @@ import { Target, TrendingUp, Zap, Sparkles } from "lucide-react";
    coarse likelihood band — never a fabricated precise percentage. */
 
 const BG = "#050508";
+const marker = (color: string, size = 15): CSSProperties => ({
+  fontFamily: "'Bebas Neue', sans-serif",
+  fontSize: size,
+  color,
+  transform: "rotate(-2deg)",
+  display: "inline-block",
+});
 const cardStyle = (accent?: string, radius = 20): CSSProperties => ({
   background: "linear-gradient(#0e0d12, #0e0d12), #050508",
   border: accent ? `1.5px solid ${accent}` : "1px solid #1b1922",
@@ -63,8 +70,13 @@ const T = {
     honest: "Ranked by how often each topic actually appeared — not a guess.",
     noSubjects: "Pick your subjects first, then we'll predict your paper.",
     goSubjects: "Choose subjects",
+    eyebrow: "The Predictor",
     comingSoon: "Corpus still loading",
     comingSoonBody: "We're still reading the past papers for this subject. Check back soon.",
+    practiceCta: "Practise this subject",
+    errorTitle: "Couldn't read the papers",
+    errorBody: "Something went wrong loading this subject's predictions.",
+    retry: "Try again",
     highYield: "HIGH-YIELD",
     drill: "Drill this",
     marksAvg: (m: number) => `~${m} marks avg`,
@@ -81,8 +93,13 @@ const T = {
     honest: "Gerangskik volgens hoe gereeld elke onderwerp werklik verskyn het — nie 'n raaiskoot nie.",
     noSubjects: "Kies eers jou vakke, dan voorspel ons jou vraestel.",
     goSubjects: "Kies vakke",
+    eyebrow: "Die Voorspeller",
     comingSoon: "Korpus laai nog",
     comingSoonBody: "Ons lees steeds die vorige vraestelle vir hierdie vak. Kyk binnekort weer.",
+    practiceCta: "Oefen hierdie vak",
+    errorTitle: "Kon nie die vraestelle lees nie",
+    errorBody: "Iets het verkeerd geloop met die laai van hierdie vak se voorspellings.",
+    retry: "Probeer weer",
     highYield: "HOË-OPBRENGS",
     drill: "Oefen dit",
     marksAvg: (m: number) => `~${m} punte gem.`,
@@ -105,19 +122,29 @@ function SubjectPredictor({
   isAf: boolean;
 }) {
   const t = isAf ? T.af : T.en;
-  const { data, isLoading } = useQuery<PredictorResponse>({
+  const { data, isLoading, isError, refetch } = useQuery<PredictorResponse>({
     queryKey: ["/api/predictor", subjectName],
     queryFn: () =>
       fetch(`/api/predictor/${encodeURIComponent(subjectName)}`, { credentials: "include" }).then(
         (r) => r.json(),
       ),
   });
+  // Empty topics reads the same as "corpus not ready" to the learner — reuse
+  // the coming-soon card rather than rendering a blank section under the header.
+  const topics = data?.topics ?? [];
+  const showComingSoon = !isLoading && !isError && !!data && (data.comingSoon || topics.length === 0);
+  const showTopics = !isLoading && !isError && !!data && !data.comingSoon && topics.length > 0;
 
   return (
     <section className="mb-8" data-testid={`predictor-subject-${subjectId}`}>
       <div className="flex items-center gap-2 mb-3">
         <Target className="w-5 h-5" style={{ color: "#9FF5E8" }} />
-        <h2 className="text-lg font-black text-white truncate">{displayName}</h2>
+        <h2
+          className="truncate"
+          style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, color: "#fff", letterSpacing: "0.03em" }}
+        >
+          {displayName}
+        </h2>
       </div>
 
       {isLoading && (
@@ -126,7 +153,29 @@ function SubjectPredictor({
         </div>
       )}
 
-      {!isLoading && data?.comingSoon && (
+      {!isLoading && isError && (
+        <div
+          style={cardStyle("#FF8DA1")}
+          className="p-5"
+          data-testid={`predictor-error-${subjectId}`}
+        >
+          <p className="text-sm font-black" style={{ color: "#FF8DA1" }}>
+            {t.errorTitle}
+          </p>
+          <p className="text-sm text-white mt-1">{t.errorBody}</p>
+          <Button
+            variant="primary"
+            size="sm"
+            className="mt-3"
+            onClick={() => refetch()}
+            data-testid={`predictor-retry-${subjectId}`}
+          >
+            {t.retry}
+          </Button>
+        </div>
+      )}
+
+      {showComingSoon && (
         <div
           style={cardStyle("#C5B3FF")}
           className="p-5"
@@ -136,12 +185,22 @@ function SubjectPredictor({
             {t.comingSoon}
           </p>
           <p className="text-sm text-white mt-1">{t.comingSoonBody}</p>
+          <Link href={`/subject/${subjectId}`}>
+            <Button
+              variant="primary"
+              size="sm"
+              className="mt-3"
+              data-testid={`predictor-practice-cta-${subjectId}`}
+            >
+              {t.practiceCta} →
+            </Button>
+          </Link>
         </div>
       )}
 
-      {!isLoading && data && !data.comingSoon && (
+      {showTopics && (
         <div className="grid gap-3">
-          {data.topics.map((topic, i) => {
+          {topics.map((topic, i) => {
             const hex = BAND_HEX[topic.likelihood] ?? "#C5B3FF";
             const bandLabel = isAf ? BAND_AF[topic.likelihood] ?? topic.likelihood : topic.likelihood;
             const recurrence =
@@ -182,7 +241,7 @@ function SubjectPredictor({
                       </span>
                     )}
                     {topic.frequencyRank > 0 && (
-                      <span className="text-xs font-bold text-white/90">{t.rank(topic.frequencyRank)}</span>
+                      <span className="text-xs font-bold text-white">{t.rank(topic.frequencyRank)}</span>
                     )}
                   </div>
                 </div>
@@ -251,8 +310,11 @@ export default function PredictorPage() {
             </span>
             <PlanScopeBadge isAf={isAf} />
           </span>
+          <div className="mb-1">
+            <span style={marker("#9FF5E8", 16)}>{t.eyebrow}</span>
+          </div>
           <h1 className="text-2xl sm:text-3xl font-black text-white leading-tight">{t.heroLine}</h1>
-          <p className="text-sm font-bold text-white/90 mt-2">{t.honest}</p>
+          <p className="text-sm font-bold text-white mt-2">{t.honest}</p>
         </div>
 
         {mySubjects.length === 0 ? (

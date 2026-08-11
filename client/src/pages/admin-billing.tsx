@@ -10,6 +10,7 @@ import {
   Users, Send, Link2, X, ChevronRight, CalendarPlus, Gift, History, ChevronDown, ShieldCheck, Ban, FileText,
 } from "lucide-react";
 import { ToastAction } from "@/components/ui/toast";
+import { useLanguage } from "@/lib/language-context";
 
 type BillingRow = {
   userId: string;
@@ -200,6 +201,8 @@ function ActionBtn({
 }
 
 function ConsentBtn({ userId }: { userId: string }) {
+  const { language } = useLanguage();
+  const isAf = language === "af";
   return (
     <Link
       href={`/learn/admin/consent/${userId}`}
@@ -211,12 +214,14 @@ function ConsentBtn({ userId }: { userId: string }) {
       }}
     >
       <FileText className="w-3 h-3" />
-      Consent
+      {isAf ? "Toestemming" : "Consent"}
     </Link>
   );
 }
 
 function LinksBtn({ userId, userName, onClick }: { userId: string; userName: string | null; onClick: (userId: string, name: string | null) => void }) {
+  const { language } = useLanguage();
+  const isAf = language === "af";
   return (
     <button
       type="button"
@@ -230,7 +235,7 @@ function LinksBtn({ userId, userName, onClick }: { userId: string; userName: str
       }}
     >
       <Link2 className="w-3 h-3" />
-      Links
+      {isAf ? "Skakels" : "Links"}
     </button>
   );
 }
@@ -244,6 +249,8 @@ function LinkHistoryModal({
   userName: string | null;
   onClose: () => void;
 }) {
+  const { language } = useLanguage();
+  const isAf = language === "af";
   const { data: rows, isLoading, isError } = useQuery<LinkHistoryRow[]>({
     queryKey: [`/api/admin/onboarding-link-history?userId=${userId}`],
     staleTime: 30_000,
@@ -262,7 +269,7 @@ function LinkHistoryModal({
         <div className="flex items-center gap-3 px-5 py-4 border-b border-[#1b1922] shrink-0">
           <Link2 className="w-4 h-4 shrink-0" style={{ color: "#9FD8FF" }} />
           <div className="flex-1 min-w-0">
-            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white">Onboarding Link History</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white">{isAf ? "Aanboord-skakelgeskiedenis" : "Onboarding Link History"}</p>
             <p className="text-sm font-bold text-white truncate">{userName || userId}</p>
           </div>
           <button
@@ -278,19 +285,19 @@ function LinkHistoryModal({
         <div className="overflow-y-auto flex-1 p-4">
           {isLoading && (
             <div className="flex items-center justify-center gap-2 py-12 text-white text-sm">
-              <RefreshCw className="w-4 h-4 animate-spin" /> Loading…
+              <RefreshCw className="w-4 h-4 animate-spin" /> {isAf ? "Laai…" : "Loading…"}
             </div>
           )}
 
           {!isLoading && isError && (
             <div className="flex items-center justify-center gap-2 py-12 text-sm" style={{ color: "#FF8DA1" }}>
               <AlertTriangle className="w-4 h-4 shrink-0" />
-              Could not load link history — check server logs.
+              {isAf ? "Kon nie skakelgeskiedenis laai nie — kontroleer bedienerlogs." : "Could not load link history — check server logs."}
             </div>
           )}
 
           {!isLoading && !isError && (!rows || rows.length === 0) && (
-            <p className="text-sm text-white italic text-center py-12">No onboarding links found for this user.</p>
+            <p className="text-sm text-white italic text-center py-12">{isAf ? "Geen aanboord-skakels vir hierdie gebruiker gevind nie." : "No onboarding links found for this user."}</p>
           )}
 
           {!isLoading && !isError && rows && rows.length > 0 && (
@@ -327,7 +334,7 @@ function LinkHistoryModal({
                           )}
                           {(r.retryCount ?? 0) > 0 && (
                             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "#9FF5E822", color: "#9FF5E8" }}>
-                              {r.retryCount} retry
+                              {r.retryCount} {isAf ? "herprobeer" : "retry"}
                             </span>
                           )}
                         </div>
@@ -335,28 +342,28 @@ function LinkHistoryModal({
                         <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px]">
                           {r.sentTo && (
                             <div>
-                              <span className="text-white">Sent to </span>
+                              <span className="text-white">{isAf ? "Gestuur aan " : "Sent to "}</span>
                               <span className="text-white font-mono">{r.sentTo}</span>
                             </div>
                           )}
                           <div>
-                            <span className="text-white">Issued </span>
+                            <span className="text-white">{isAf ? "Uitgereik " : "Issued "}</span>
                             <span className="text-white">{fmtDateTime(r.createdAt)}</span>
                           </div>
                           {r.deliveryUpdatedAt && (
                             <div>
-                              <span className="text-white">Status updated </span>
+                              <span className="text-white">{isAf ? "Status bygewerk " : "Status updated "}</span>
                               <span className="text-white">{fmtDateTime(r.deliveryUpdatedAt)}</span>
                             </div>
                           )}
                           {r.usedAt && (
                             <div>
-                              <span className="text-white">Opened </span>
+                              <span className="text-white">{isAf ? "Oopgemaak " : "Opened "}</span>
                               <span className="text-white">{fmtDateTime(r.usedAt)}</span>
                             </div>
                           )}
                           <div>
-                            <span className="text-white">Expires </span>
+                            <span className="text-white">{isAf ? "Verval " : "Expires "}</span>
                             <span className="text-white">{fmtDateTime(r.expiresAt)}</span>
                           </div>
                         </div>
@@ -377,9 +384,13 @@ function LinkHistoryModal({
 
         <div className="px-5 py-3 border-t border-[#1b1922] shrink-0 flex items-center justify-between">
           <span className="text-[10px] text-white">
-            {rows ? `${rows.length} link${rows.length !== 1 ? "s" : ""} issued` : ""}
+            {rows
+              ? isAf
+                ? `${rows.length} skakel${rows.length !== 1 ? "s" : ""} uitgereik`
+                : `${rows.length} link${rows.length !== 1 ? "s" : ""} issued`
+              : ""}
           </span>
-          <span className="text-[10px] text-white">Read-only — resend is a parent action</span>
+          <span className="text-[10px] text-white">{isAf ? "Lees-alleen — herstuur is 'n oueraksie" : "Read-only — resend is a parent action"}</span>
         </div>
       </div>
     </div>
@@ -388,6 +399,8 @@ function LinkHistoryModal({
 
 export default function AdminBillingPage() {
   const [activeTab, setActiveTab] = useState<Tab>("trials");
+  const { language } = useLanguage();
+  const isAf = language === "af";
   const { toast } = useToast();
   const qc = useQueryClient();
   const [inFlight, setInFlight] = useState<Set<string>>(new Set());
@@ -479,42 +492,45 @@ export default function AdminBillingPage() {
       qc.invalidateQueries({ queryKey: ["/api/admin/billing/last-nudged"] });
       qc.invalidateQueries({ queryKey: ["/api/admin/billing/reminder-history"] });
       if (data.ok) {
-        toast({ title: "Reminder sent", description: `Push notification delivered to ${data.sent} device(s).` });
+        toast({
+          title: isAf ? "Herinnering gestuur" : "Reminder sent",
+          description: isAf ? `Stootkennisgewing afgelewer aan ${data.sent} toestel(le).` : `Push notification delivered to ${data.sent} device(s).`,
+        });
       } else if (data.reason === "recently_nudged") {
         const lastSentTime = data.lastSentAt
           ? new Date(data.lastSentAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-          : "earlier today";
+          : (isAf ? "vroeër vandag" : "earlier today");
         toast({
-          title: "Already nudged today",
-          description: `Last sent at ${lastSentTime}. Send again anyway?`,
+          title: isAf ? "Reeds vandag gestoot" : "Already nudged today",
+          description: isAf ? `Laas gestuur om ${lastSentTime}. Stuur in elk geval weer?` : `Last sent at ${lastSentTime}. Send again anyway?`,
           variant: "destructive",
           action: (
             <ToastAction
-              altText="Send anyway"
+              altText={isAf ? "Stuur in elk geval" : "Send anyway"}
               onClick={() => {
                 markInFlight(userId, true);
                 sendReminderMutation.mutate({ userId, type, force: true });
               }}
             >
-              Send anyway
+              {isAf ? "Stuur in elk geval" : "Send anyway"}
             </ToastAction>
           ),
         });
       } else {
         toast({
-          title: "Reminder not sent",
+          title: isAf ? "Herinnering nie gestuur nie" : "Reminder not sent",
           description: data.reason === "no_push_subscription"
-            ? "User has no push subscription registered."
+            ? (isAf ? "Gebruiker het geen stootintekening geregistreer nie." : "User has no push subscription registered.")
             : data.reason === "push_not_configured"
-            ? "VAPID push keys are not configured on this environment."
-            : "Could not send — check server logs.",
+            ? (isAf ? "VAPID-stootsleutels is nie op hierdie omgewing gekonfigureer nie." : "VAPID push keys are not configured on this environment.")
+            : (isAf ? "Kon nie stuur nie — kontroleer bedienerlogs." : "Could not send — check server logs."),
           variant: "destructive",
         });
       }
     },
     onError: (_err, { userId }) => {
       markInFlight(userId, false);
-      toast({ title: "Error sending reminder", variant: "destructive" });
+      toast({ title: isAf ? "Fout met stuur van herinnering" : "Error sending reminder", variant: "destructive" });
     },
   });
 
@@ -525,14 +541,14 @@ export default function AdminBillingPage() {
     },
     onSuccess: (_data, userId) => {
       markInFlight(userId, false);
-      toast({ title: "Marked as lapsed", description: "Subscription status updated to lapsed." });
+      toast({ title: isAf ? "As verstreke gemerk" : "Marked as lapsed", description: isAf ? "Intekeningstatus opgedateer na verstreke." : "Subscription status updated to lapsed." });
       qc.invalidateQueries({ queryKey: ["/api/admin/billing?status=grace"] });
       qc.invalidateQueries({ queryKey: ["/api/admin/billing/summary"] });
       qc.invalidateQueries({ queryKey: ["/api/admin/billing/action-log"] });
     },
     onError: (_err, userId) => {
       markInFlight(userId, false);
-      toast({ title: "Error marking lapsed", variant: "destructive" });
+      toast({ title: isAf ? "Fout met merk as verstreke" : "Error marking lapsed", variant: "destructive" });
     },
   });
 
@@ -544,14 +560,14 @@ export default function AdminBillingPage() {
     onSuccess: (data, userId) => {
       markInFlight(userId, false);
       const until = data.newTrialEndsAt ? fmtDate(data.newTrialEndsAt) : "—";
-      toast({ title: "Trial extended", description: `Trial extended by 7 days — now ends ${until}.` });
+      toast({ title: isAf ? "Proeftydperk verleng" : "Trial extended", description: isAf ? `Proeftydperk met 7 dae verleng — eindig nou ${until}.` : `Trial extended by 7 days — now ends ${until}.` });
       qc.invalidateQueries({ queryKey: ["/api/admin/billing?status=trial&ending=2"] });
       qc.invalidateQueries({ queryKey: ["/api/admin/billing/summary"] });
       qc.invalidateQueries({ queryKey: ["/api/admin/billing/action-log"] });
     },
     onError: (_err, userId) => {
       markInFlight(userId, false);
-      toast({ title: "Error extending trial", variant: "destructive" });
+      toast({ title: isAf ? "Fout met verlenging van proeftydperk" : "Error extending trial", variant: "destructive" });
     },
   });
 
@@ -563,7 +579,7 @@ export default function AdminBillingPage() {
     onSuccess: (data, userId) => {
       markInFlight(userId, false);
       const until = data.newTrialEndsAt ? fmtDate(data.newTrialEndsAt) : "—";
-      toast({ title: "Fresh trial granted", description: `14-day trial granted — ends ${until}.` });
+      toast({ title: isAf ? "Nuwe proeftydperk toegestaan" : "Fresh trial granted", description: isAf ? `14-dae proeftydperk toegestaan — eindig ${until}.` : `14-day trial granted — ends ${until}.` });
       qc.invalidateQueries({ queryKey: ["/api/admin/billing?status=lapsed"] });
       qc.invalidateQueries({ queryKey: ["/api/admin/billing?status=trial&ending=2"] });
       qc.invalidateQueries({ queryKey: ["/api/admin/billing/summary"] });
@@ -571,7 +587,7 @@ export default function AdminBillingPage() {
     },
     onError: (_err, userId) => {
       markInFlight(userId, false);
-      toast({ title: "Error granting trial", variant: "destructive" });
+      toast({ title: isAf ? "Fout met toestaan van proeftydperk" : "Error granting trial", variant: "destructive" });
     },
   });
 
@@ -582,7 +598,7 @@ export default function AdminBillingPage() {
     },
     onSuccess: (_data, userId) => {
       markInFlight(userId, false);
-      toast({ title: "Marked as active", description: "Subscription status overridden to active." });
+      toast({ title: isAf ? "As aktief gemerk" : "Marked as active", description: isAf ? "Intekeningstatus oorskryf na aktief." : "Subscription status overridden to active." });
       qc.invalidateQueries({ queryKey: ["/api/admin/billing?status=lapsed"] });
       qc.invalidateQueries({ queryKey: ["/api/admin/billing?status=grace"] });
       qc.invalidateQueries({ queryKey: ["/api/admin/billing/summary"] });
@@ -590,7 +606,7 @@ export default function AdminBillingPage() {
     },
     onError: (_err, userId) => {
       markInFlight(userId, false);
-      toast({ title: "Error marking active", variant: "destructive" });
+      toast({ title: isAf ? "Fout met merk as aktief" : "Error marking active", variant: "destructive" });
     },
   });
 
@@ -619,10 +635,12 @@ export default function AdminBillingPage() {
     markActiveMutation.mutate(userId);
   }
 
+  // Tab keeps the functional wording ("Trials — Expiring 48h"); the KPI tile
+  // is the one labelled "Legacy trials" — both describe summary.trial.
   const tabConfig: { id: Tab; label: string; color: string; count: number | undefined }[] = [
-    { id: "trials", label: "Trials — Expiring 48h", color: "#FFE29A", count: summary?.trial },
-    { id: "grace", label: "Grace Period", color: "#FFE29A", count: summary?.grace },
-    { id: "lapsed", label: "Lapsed", color: "#FFB7E5", count: summary?.lapsed },
+    { id: "trials", label: isAf ? "Proewe — Verstryk 48u" : "Trials — Expiring 48h", color: "#FFE29A", count: summary?.trial },
+    { id: "grace", label: isAf ? "Grasieperiode" : "Grace Period", color: "#FFE29A", count: summary?.grace },
+    { id: "lapsed", label: isAf ? "Verstreke" : "Lapsed", color: "#FFB7E5", count: summary?.lapsed },
   ];
 
   return (
@@ -640,11 +658,11 @@ export default function AdminBillingPage() {
         <div className="max-w-7xl mx-auto flex items-center gap-4">
           <div className="min-w-0">
             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white">Admin</p>
-            <div role="heading" aria-level={1} className="text-base font-black text-white leading-tight">Billing & Operations</div>
+            <div role="heading" aria-level={1} className="text-base font-black text-white leading-tight">{isAf ? "Fakturering & Bedrywighede" : "Billing & Operations"}</div>
           </div>
           <div className="ml-auto flex items-center gap-3">
             <span className="text-[10px] text-white">
-              Updated {fmtDateTime(lastUpdatedRef.current.toISOString())}
+              {isAf ? "Bygewerk" : "Updated"} {fmtDateTime(lastUpdatedRef.current.toISOString())}
             </span>
             <button
               type="button"
@@ -657,7 +675,7 @@ export default function AdminBillingPage() {
               className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg text-white hover:text-white transition"
               style={{ border: "1px solid #1b1922" }}
             >
-              <RefreshCw className="w-3 h-3" /> Refresh
+              <RefreshCw className="w-3 h-3" /> {isAf ? "Verfris" : "Refresh"}
             </button>
           </div>
         </div>
@@ -667,37 +685,37 @@ export default function AdminBillingPage() {
 
         {/* KPI Strip */}
         <section data-testid="billing-kpi-strip">
-          <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white mb-3">Live Billing KPIs</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white mb-3">{isAf ? "Lewende Fakturering-KPI's" : "Live Billing KPIs"}</p>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             <NeonTile
-              color="#9FF5E8" label="Active" testId="kpi-active"
+              color="#9FF5E8" label={isAf ? "Aktief" : "Active"} testId="kpi-active"
               value={summary?.active ?? "—"} icon={Zap}
-              subLabel="Paid subscribers"
+              subLabel={isAf ? "Betalende intekenare" : "Paid subscribers"}
             />
             <NeonTile
-              color="#FFE29A" label="Legacy trials" testId="kpi-trial"
+              color="#FFE29A" label={isAf ? "Legasieproewe" : "Legacy trials"} testId="kpi-trial"
               value={summary?.trial ?? "—"} icon={Clock}
-              subLabel="Grandfathered legacy access"
+              subLabel={isAf ? "Oorgeërfde legasietoegang" : "Grandfathered legacy access"}
             />
             <NeonTile
-              color="#FFE29A" label="Grace" testId="kpi-grace"
+              color="#FFE29A" label={isAf ? "Grasie" : "Grace"} testId="kpi-grace"
               value={summary?.grace ?? "—"} icon={AlertTriangle}
-              subLabel="3-day grace window"
+              subLabel={isAf ? "3-dae grasievenster" : "3-day grace window"}
             />
             <NeonTile
-              color="#FFB7E5" label="Lapsed" testId="kpi-lapsed"
+              color="#FFB7E5" label={isAf ? "Verstreke" : "Lapsed"} testId="kpi-lapsed"
               value={summary?.lapsed ?? "—"} icon={XCircle}
-              subLabel="Need reactivation"
+              subLabel={isAf ? "Benodig heraktivering" : "Need reactivation"}
             />
             <NeonTile
-              color="#FFFFFF" label="Cancelled" testId="kpi-cancelled"
+              color="#FFFFFF" label={isAf ? "Gekanselleer" : "Cancelled"} testId="kpi-cancelled"
               value={summary?.cancelled ?? "—"} icon={Ban}
-              subLabel="Voluntarily cancelled"
+              subLabel={isAf ? "Vrywillig gekanselleer" : "Voluntarily cancelled"}
             />
             <NeonTile
               color="#C5B3FF" label="MRR" testId="kpi-mrr"
               value={summary ? fmtMrr(summary.mrr) : "—"} icon={TrendingUp}
-              subLabel="Monthly recurring revenue"
+              subLabel={isAf ? "Maandelikse herhalende inkomste" : "Monthly recurring revenue"}
             />
           </div>
         </section>
@@ -713,17 +731,20 @@ export default function AdminBillingPage() {
                 <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#FF8DA1" }} />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-black" style={{ color: "#FF8DA1" }}>
-                    {stuckLinks.count} onboarding link{stuckLinks.count !== 1 ? "s" : ""} stuck &gt;24h — learners may be unable to onboard
+                    {isAf
+                      ? `${stuckLinks.count} aanboord-skakel${stuckLinks.count !== 1 ? "s" : ""} vas >24u — leerders kan dalk nie aanboord nie`
+                      : `${stuckLinks.count} onboarding link${stuckLinks.count !== 1 ? "s" : ""} stuck >24h — learners may be unable to onboard`}
                   </p>
                   <p className="text-xs text-white mt-1">
-                    These links have been in a non-delivered state for over 24 hours and the learner hasn't tapped them yet.
-                    Re-send from the parent's confirmation card or check WhatsApp/Twilio configuration.
+                    {isAf
+                      ? "Hierdie skakels is al meer as 24 uur in 'n nie-afgelewerde toestand en die leerder het hulle nog nie getik nie. Herstuur vanaf die ouer se bevestigingskaart of kontroleer WhatsApp/Twilio-konfigurasie."
+                      : "These links have been in a non-delivered state for over 24 hours and the learner hasn't tapped them yet. Re-send from the parent's confirmation card or check WhatsApp/Twilio configuration."}
                   </p>
                   <div className="mt-3 overflow-x-auto">
                     <table className="w-full text-[11px]" style={{ borderCollapse: "collapse" }}>
                       <thead>
                         <tr>
-                          {["Sent To", "Status", "Age", "Retries"].map(h => (
+                          {(isAf ? ["Gestuur Aan", "Status", "Ouderdom", "Herprobeer"] : ["Sent To", "Status", "Age", "Retries"]).map(h => (
                             <th key={h} className="text-left pb-1.5 pr-4 font-bold uppercase tracking-wider text-white">{h}</th>
                           ))}
                         </tr>
@@ -733,14 +754,18 @@ export default function AdminBillingPage() {
                           <tr key={l.jti} style={{ borderTop: "1px solid #1b1922" }}>
                             <td className="py-1.5 pr-4 font-mono text-white">{l.sentTo}</td>
                             <td className="py-1.5 pr-4" style={{ color: "#FF8DA1" }}>{l.deliveryStatus}</td>
-                            <td className="py-1.5 pr-4 text-white">{l.hoursAgo}h ago</td>
+                            <td className="py-1.5 pr-4 text-white">{isAf ? `${l.hoursAgo}u gelede` : `${l.hoursAgo}h ago`}</td>
                             <td className="py-1.5 text-white">{l.retryCount}</td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
                     {stuckLinks.count > 10 && (
-                      <p className="text-[10px] text-white mt-2">+ {stuckLinks.count - 10} more — check Admin Billing → Onboarding Link History per learner</p>
+                      <p className="text-[10px] text-white mt-2">
+                        {isAf
+                          ? `+ ${stuckLinks.count - 10} meer — kyk Admin Fakturering → Aanboord-skakelgeskiedenis per leerder`
+                          : `+ ${stuckLinks.count - 10} more — check Admin Billing → Onboarding Link History per learner`}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -762,8 +787,10 @@ export default function AdminBillingPage() {
                   data-testid={`billing-tab-${id}`}
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition"
                   style={{
+                    // Inactive tabs dim the border only — the text stays
+                    // full-strength token colour (faded text reads grey).
                     border: `1.5px solid ${active ? color : color + "44"}`,
-                    color: active ? color : color + "99",
+                    color,
                     background: active ? `${color}18` : "transparent",
                   }}
                 >
@@ -828,22 +855,22 @@ export default function AdminBillingPage() {
             <div className="flex items-center gap-2 mb-3">
               <MessageSquare className="w-4 h-4" style={{ color: "#9FD8FF" }} />
               <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white">
-                Onboarding WhatsApp Links — last {smsStats.days} days
+                {isAf ? `Aanboord-WhatsApp-skakels — laaste ${smsStats.days} dae` : `Onboarding WhatsApp Links — last ${smsStats.days} days`}
               </p>
             </div>
             <div
               className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-2 rounded-2xl p-4"
-              style={{ border: "1px solid #9FD8FF44", background: "rgba(125,211,252,0.04)" }}
+              style={{ border: "1px solid #9FD8FF44", background: "rgba(159,216,255,0.04)" }}
               data-testid="onboarding-sms-stats"
             >
               {([
-                { k: "total",       label: "Issued",       color: "#ffffff" },
-                { k: "sent",        label: "Sent",         color: "#94F7C5" },
-                { k: "delivered",   label: "Delivered",    color: "#9FD8FF" },
-                { k: "opened",      label: "Opened",       color: "#FFE29A" },
-                { k: "failed",      label: "Failed",       color: "#FF8DA1" },
-                { k: "pending",     label: "Pending",      color: "#C5B3FF" },
-                { k: "autoRetried", label: "Auto-retried", color: "#9FF5E8" },
+                { k: "total",       label: isAf ? "Uitgereik" : "Issued",             color: "#ffffff" },
+                { k: "sent",        label: isAf ? "Gestuur" : "Sent",                 color: "#94F7C5" },
+                { k: "delivered",   label: isAf ? "Afgelewer" : "Delivered",          color: "#9FD8FF" },
+                { k: "opened",      label: isAf ? "Oopgemaak" : "Opened",             color: "#FFE29A" },
+                { k: "failed",      label: isAf ? "Misluk" : "Failed",                color: "#FF8DA1" },
+                { k: "pending",     label: isAf ? "Hangend" : "Pending",              color: "#C5B3FF" },
+                { k: "autoRetried", label: isAf ? "Outo-herprobeer" : "Auto-retried", color: "#9FF5E8" },
               ] as Array<{ k: keyof Pick<SmsStats, "total"|"sent"|"delivered"|"opened"|"failed"|"pending"|"autoRetried">; label: string; color: string }>
               ).map(c => (
                 <div key={c.k} className="rounded-xl bg-[#0e0d12] px-3 py-2" data-testid={`sms-stat-${c.k}`}>
@@ -854,7 +881,9 @@ export default function AdminBillingPage() {
             </div>
             {smsStats.notConfigured > 0 && (
               <p className="text-xs text-white mt-2">
-                {smsStats.notConfigured} link(s) couldn't be sent — Twilio not configured on this environment.
+                {isAf
+                  ? `${smsStats.notConfigured} skakel(s) kon nie gestuur word nie — Twilio nie op hierdie omgewing gekonfigureer nie.`
+                  : `${smsStats.notConfigured} link(s) couldn't be sent — Twilio not configured on this environment.`}
               </p>
             )}
           </section>
@@ -868,7 +897,7 @@ export default function AdminBillingPage() {
             className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-white hover:text-white transition mb-3"
           >
             <History className="w-4 h-4" style={{ color: "#9FF5E8" }} />
-            <span style={{ color: "#9FF5E8" }}>Admin Action History</span>
+            <span style={{ color: "#9FF5E8" }}>{isAf ? "Admin-aksiegeskiedenis" : "Admin Action History"}</span>
             <ChevronDown
               className="w-3 h-3 transition-transform"
               style={{ color: "#9FF5E8", transform: actionLogOpen ? "rotate(180deg)" : "rotate(0deg)" }}
@@ -888,12 +917,12 @@ export default function AdminBillingPage() {
             >
               {actionLogLoading && (
                 <div className="flex items-center justify-center gap-2 py-10 text-white text-sm">
-                  <RefreshCw className="w-4 h-4 animate-spin" /> Loading…
+                  <RefreshCw className="w-4 h-4 animate-spin" /> {isAf ? "Laai…" : "Loading…"}
                 </div>
               )}
 
               {!actionLogLoading && (!actionLog || actionLog.length === 0) && (
-                <p className="text-sm text-white italic text-center py-10">No billing actions recorded yet.</p>
+                <p className="text-sm text-white italic text-center py-10">{isAf ? "Nog geen faktureringsaksies aangeteken nie." : "No billing actions recorded yet."}</p>
               )}
 
               {!actionLogLoading && actionLog && actionLog.length > 0 && (
@@ -901,21 +930,21 @@ export default function AdminBillingPage() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr>
-                        <Th>Timestamp</Th>
-                        <Th>Action</Th>
-                        <Th>Target User</Th>
+                        <Th>{isAf ? "Tydstempel" : "Timestamp"}</Th>
+                        <Th>{isAf ? "Aksie" : "Action"}</Th>
+                        <Th>{isAf ? "Teikengebruiker" : "Target User"}</Th>
                         <Th>Admin</Th>
-                        <Th>Details</Th>
+                        <Th>{isAf ? "Besonderhede" : "Details"}</Th>
                       </tr>
                     </thead>
                     <tbody>
                       {actionLog.map(row => {
                         const meta = row.details?.metadata;
                         const actionLabel: Record<string, { label: string; color: string }> = {
-                          "billing.extend_trial":  { label: "Extend Trial",  color: "#9FF5E8" },
-                          "billing.grant_trial":   { label: "Grant Trial",   color: "#94F7C5" },
-                          "billing.mark_lapsed":   { label: "Mark Lapsed",   color: "#FFB7E5" },
-                          "billing.mark_active":   { label: "Mark Active",   color: "#9FF5E8" },
+                          "billing.extend_trial":  { label: isAf ? "Verleng Proef" : "Extend Trial",   color: "#9FF5E8" },
+                          "billing.grant_trial":   { label: isAf ? "Staan Proef Toe" : "Grant Trial",  color: "#94F7C5" },
+                          "billing.mark_lapsed":   { label: isAf ? "Merk Verstreke" : "Mark Lapsed",   color: "#FFB7E5" },
+                          "billing.mark_active":   { label: isAf ? "Merk Aktief" : "Mark Active",      color: "#9FF5E8" },
                         };
                         const { label, color } = actionLabel[row.action] ?? { label: row.action, color: "#ffffff" };
                         return (
@@ -944,7 +973,7 @@ export default function AdminBillingPage() {
                             <Td>
                               <div className="text-[10px] text-white space-y-0.5">
                                 {meta?.days !== undefined && (
-                                  <div>+{meta.days} days</div>
+                                  <div>+{meta.days} {isAf ? "dae" : "days"}</div>
                                 )}
                                 {meta?.newTrialEndsAt && (
                                   <div>→ {fmtDate(meta.newTrialEndsAt)}</div>
@@ -964,7 +993,9 @@ export default function AdminBillingPage() {
 
               {!actionLogLoading && actionLog && actionLog.length > 0 && (
                 <div className="px-4 py-2 border-t border-[#1b1922] text-[10px] text-white">
-                  Showing last {actionLog.length} action{actionLog.length !== 1 ? "s" : ""}
+                  {isAf
+                    ? `Wys laaste ${actionLog.length} aksie${actionLog.length !== 1 ? "s" : ""}`
+                    : `Showing last ${actionLog.length} action${actionLog.length !== 1 ? "s" : ""}`}
                 </div>
               )}
             </div>
@@ -979,7 +1010,7 @@ export default function AdminBillingPage() {
             className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-white hover:text-white transition mb-3"
           >
             <History className="w-4 h-4" style={{ color: "#C5B3FF" }} />
-            <span style={{ color: "#C5B3FF" }}>Reminder History</span>
+            <span style={{ color: "#C5B3FF" }}>{isAf ? "Herinneringsgeskiedenis" : "Reminder History"}</span>
             <ChevronDown
               className="w-3 h-3 transition-transform"
               style={{ color: "#C5B3FF", transform: reminderHistoryOpen ? "rotate(180deg)" : "rotate(0deg)" }}
@@ -994,17 +1025,17 @@ export default function AdminBillingPage() {
           {reminderHistoryOpen && (
             <div
               className="rounded-2xl overflow-hidden"
-              style={{ border: "1px solid #C5B3FF44", background: "rgba(192,132,252,0.03)" }}
+              style={{ border: "1px solid #C5B3FF44", background: "rgba(197,179,255,0.03)" }}
               data-testid="reminder-history-panel"
             >
               {reminderHistoryLoading && (
                 <div className="flex items-center justify-center gap-2 py-10 text-white text-sm">
-                  <RefreshCw className="w-4 h-4 animate-spin" /> Loading…
+                  <RefreshCw className="w-4 h-4 animate-spin" /> {isAf ? "Laai…" : "Loading…"}
                 </div>
               )}
 
               {!reminderHistoryLoading && (!reminderHistory || reminderHistory.length === 0) && (
-                <p className="text-sm text-white italic text-center py-10">No reminders dispatched yet.</p>
+                <p className="text-sm text-white italic text-center py-10">{isAf ? "Nog geen herinneringe gestuur nie." : "No reminders dispatched yet."}</p>
               )}
 
               {!reminderHistoryLoading && reminderHistory && reminderHistory.length > 0 && (
@@ -1012,12 +1043,12 @@ export default function AdminBillingPage() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr>
-                        <Th>Sent At</Th>
-                        <Th>Target Learner</Th>
-                        <Th>Type</Th>
-                        <Th>Delivered</Th>
-                        <Th>Failed</Th>
-                        <Th>Reason</Th>
+                        <Th>{isAf ? "Gestuur Om" : "Sent At"}</Th>
+                        <Th>{isAf ? "Teikenleerder" : "Target Learner"}</Th>
+                        <Th>{isAf ? "Tipe" : "Type"}</Th>
+                        <Th>{isAf ? "Afgelewer" : "Delivered"}</Th>
+                        <Th>{isAf ? "Misluk" : "Failed"}</Th>
+                        <Th>{isAf ? "Rede" : "Reason"}</Th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1078,7 +1109,9 @@ export default function AdminBillingPage() {
 
               {!reminderHistoryLoading && reminderHistory && reminderHistory.length > 0 && (
                 <div className="px-4 py-2 border-t border-[#1b1922] text-[10px] text-white">
-                  Showing last {reminderHistory.length} dispatch{reminderHistory.length !== 1 ? "es" : ""}
+                  {isAf
+                    ? `Wys laaste ${reminderHistory.length} versending${reminderHistory.length !== 1 ? "s" : ""}`
+                    : `Showing last ${reminderHistory.length} dispatch${reminderHistory.length !== 1 ? "es" : ""}`}
                 </div>
               )}
             </div>
@@ -1087,8 +1120,9 @@ export default function AdminBillingPage() {
 
         <p className="text-xs text-white flex items-center gap-1.5 pt-2 border-t border-[#1b1922]">
           <AlertTriangle className="w-3 h-3" />
-          Data from the Netcash webhook. Failed recurring payments enter a 3-day grace period before lapsing.
-          Lapse enforcement runs daily at 04:30 UTC. Auto-refreshes every 30 s.
+          {isAf
+            ? "Data vanaf die Netcash-webhaak. Mislukte herhalende betalings gaan 'n 3-dae grasieperiode binne voordat hulle verstryk. Verstryking word daagliks om 04:30 UTC afgedwing. Verfris outomaties elke 30 s."
+            : "Data from the Netcash webhook. Failed recurring payments enter a 3-day grace period before lapsing. Lapse enforcement runs daily at 04:30 UTC. Auto-refreshes every 30 s."}
         </p>
       </main>
     </div>
@@ -1134,9 +1168,15 @@ function LearnerCell({ row }: { row: BillingRow }) {
 }
 
 function LastNudgedBadge({ sentAt }: { sentAt: string | undefined }) {
+  const { language } = useLanguage();
+  const isAf = language === "af";
   if (!sentAt) return <span className="text-white text-xs">—</span>;
   const daysAgoVal = Math.floor((Date.now() - new Date(sentAt).getTime()) / 86_400_000);
-  const label = daysAgoVal === 0 ? "Today" : daysAgoVal === 1 ? "Yesterday" : `${daysAgoVal}d ago`;
+  const label = daysAgoVal === 0
+    ? (isAf ? "Vandag" : "Today")
+    : daysAgoVal === 1
+      ? (isAf ? "Gister" : "Yesterday")
+      : (isAf ? `${daysAgoVal}d gelede` : `${daysAgoVal}d ago`);
   const color = daysAgoVal === 0 ? "#94F7C5" : daysAgoVal <= 2 ? "#9FD8FF" : "#C5B3FF";
   return (
     <div>
@@ -1152,8 +1192,10 @@ function LastNudgedBadge({ sentAt }: { sentAt: string | undefined }) {
 }
 
 function MethodBadge({ method }: { method: string | null }) {
+  const { language } = useLanguage();
+  const isAf = language === "af";
   const color = method === "debicheck" ? "#9FD8FF" : method === "card" ? "#94F7C5" : "#ffffff";
-  const label = method ?? "none";
+  const label = method ?? (isAf ? "geen" : "none");
   return (
     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: `${color}22`, color }}>
       {label}
@@ -1168,23 +1210,25 @@ function TrialsTable({ rows, isLoading, inFlight, onSendReminder, onExtendTrial,
   onOpenLinks: (userId: string, userName: string | null) => void;
   lastNudgedMap: Record<string, string>;
 }) {
+  const { language } = useLanguage();
+  const isAf = language === "af";
   const color = "#FFE29A";
   if (isLoading) return <LoadingState />;
-  if (rows.length === 0) return <EmptyState message="No active trials." />;
+  if (rows.length === 0) return <EmptyState message={isAf ? "Geen aktiewe proewe nie." : "No active trials."} />;
 
   return (
     <TableShell color={color}>
       <thead>
         <tr>
-          <Th>Learner</Th>
-          <Th>Method</Th>
-          <Th>Trial Started</Th>
-          <Th>Trial Ends</Th>
-          <Th>Days Left</Th>
-          <Th>D13 Sent</Th>
-          <Th>D14 Sent</Th>
-          <Th>Last Nudged</Th>
-          <Th>Actions</Th>
+          <Th>{isAf ? "Leerder" : "Learner"}</Th>
+          <Th>{isAf ? "Metode" : "Method"}</Th>
+          <Th>{isAf ? "Proef Begin" : "Trial Started"}</Th>
+          <Th>{isAf ? "Proef Eindig" : "Trial Ends"}</Th>
+          <Th>{isAf ? "Dae Oor" : "Days Left"}</Th>
+          <Th>{isAf ? "D13 Gestuur" : "D13 Sent"}</Th>
+          <Th>{isAf ? "D14 Gestuur" : "D14 Sent"}</Th>
+          <Th>{isAf ? "Laas Gestoot" : "Last Nudged"}</Th>
+          <Th>{isAf ? "Aksies" : "Actions"}</Th>
         </tr>
       </thead>
       <tbody>
@@ -1204,7 +1248,7 @@ function TrialsTable({ rows, isLoading, inFlight, onSendReminder, onExtendTrial,
                   className="font-black text-sm"
                   style={{ color: days !== null && days <= 2 ? "#FFE29A" : color }}
                 >
-                  {days !== null ? (days <= 0 ? "Expired" : `${days}d`) : "—"}
+                  {days !== null ? (days <= 0 ? (isAf ? "Verstryk" : "Expired") : `${days}d`) : "—"}
                 </span>
               </Td>
               <Td>
@@ -1221,7 +1265,7 @@ function TrialsTable({ rows, isLoading, inFlight, onSendReminder, onExtendTrial,
               <Td>
                 <div className="flex gap-2 flex-wrap">
                   <ActionBtn
-                    label="Extend 7 days"
+                    label={isAf ? "Verleng 7 dae" : "Extend 7 days"}
                     color="#9FF5E8"
                     icon={CalendarPlus}
                     disabled={inFlight.has(r.userId)}
@@ -1229,7 +1273,7 @@ function TrialsTable({ rows, isLoading, inFlight, onSendReminder, onExtendTrial,
                     testId={`btn-extend-${r.userId}`}
                   />
                   <ActionBtn
-                    label="Send Reminder"
+                    label={isAf ? "Stuur Herinnering" : "Send Reminder"}
                     color={urgentColor}
                     icon={Bell}
                     disabled={inFlight.has(r.userId)}
@@ -1255,21 +1299,23 @@ function GraceTable({ rows, isLoading, inFlight, onSendReminder, onMarkLapsed, o
   onOpenLinks: (userId: string, userName: string | null) => void;
   lastNudgedMap: Record<string, string>;
 }) {
+  const { language } = useLanguage();
+  const isAf = language === "af";
   const color = "#FFE29A";
   if (isLoading) return <LoadingState />;
-  if (rows.length === 0) return <EmptyState message="No subscriptions in grace period." />;
+  if (rows.length === 0) return <EmptyState message={isAf ? "Geen intekeninge in grasieperiode nie." : "No subscriptions in grace period."} />;
 
   return (
     <TableShell color={color}>
       <thead>
         <tr>
-          <Th>Learner</Th>
-          <Th>Method</Th>
-          <Th>Payment Failed</Th>
-          <Th>Grace Expires</Th>
-          <Th>Grace Days Left</Th>
-          <Th>Last Nudged</Th>
-          <Th>Actions</Th>
+          <Th>{isAf ? "Leerder" : "Learner"}</Th>
+          <Th>{isAf ? "Metode" : "Method"}</Th>
+          <Th>{isAf ? "Betaling Misluk" : "Payment Failed"}</Th>
+          <Th>{isAf ? "Grasie Verstryk" : "Grace Expires"}</Th>
+          <Th>{isAf ? "Grasiedae Oor" : "Grace Days Left"}</Th>
+          <Th>{isAf ? "Laas Gestoot" : "Last Nudged"}</Th>
+          <Th>{isAf ? "Aksies" : "Actions"}</Th>
         </tr>
       </thead>
       <tbody>
@@ -1291,14 +1337,14 @@ function GraceTable({ rows, isLoading, inFlight, onSendReminder, onMarkLapsed, o
                   className="font-black text-sm"
                   style={{ color: graceDays !== null && graceDays <= 1 ? "#FF8DA1" : color }}
                 >
-                  {graceDays !== null ? (graceDays <= 0 ? "Expired" : `${graceDays}d`) : "—"}
+                  {graceDays !== null ? (graceDays <= 0 ? (isAf ? "Verstryk" : "Expired") : `${graceDays}d`) : "—"}
                 </span>
               </Td>
               <Td><LastNudgedBadge sentAt={lastNudgedMap[r.userId]} /></Td>
               <Td>
                 <div className="flex gap-2 flex-wrap">
                   <ActionBtn
-                    label="Send Reminder"
+                    label={isAf ? "Stuur Herinnering" : "Send Reminder"}
                     color={color}
                     icon={Bell}
                     disabled={inFlight.has(r.userId)}
@@ -1306,7 +1352,7 @@ function GraceTable({ rows, isLoading, inFlight, onSendReminder, onMarkLapsed, o
                     testId={`btn-remind-${r.userId}`}
                   />
                   <ActionBtn
-                    label="Mark Lapsed"
+                    label={isAf ? "Merk Verstreke" : "Mark Lapsed"}
                     color="#FFB7E5"
                     icon={XCircle}
                     disabled={inFlight.has(r.userId)}
@@ -1333,21 +1379,23 @@ function LapsedTable({ rows, isLoading, inFlight, onSendOutreach, onGrantTrial, 
   onOpenLinks: (userId: string, userName: string | null) => void;
   lastNudgedMap: Record<string, string>;
 }) {
+  const { language } = useLanguage();
+  const isAf = language === "af";
   const color = "#FFB7E5";
   if (isLoading) return <LoadingState />;
-  if (rows.length === 0) return <EmptyState message="No lapsed subscriptions." />;
+  if (rows.length === 0) return <EmptyState message={isAf ? "Geen verstreke intekeninge nie." : "No lapsed subscriptions."} />;
 
   return (
     <TableShell color={color}>
       <thead>
         <tr>
-          <Th>Learner</Th>
-          <Th>Plan</Th>
-          <Th>Method</Th>
-          <Th>Lapsed Since</Th>
-          <Th>Days Lapsed</Th>
-          <Th>Last Nudged</Th>
-          <Th>Actions</Th>
+          <Th>{isAf ? "Leerder" : "Learner"}</Th>
+          <Th>{isAf ? "Pakket" : "Plan"}</Th>
+          <Th>{isAf ? "Metode" : "Method"}</Th>
+          <Th>{isAf ? "Verstreke Sedert" : "Lapsed Since"}</Th>
+          <Th>{isAf ? "Dae Verstreke" : "Days Lapsed"}</Th>
+          <Th>{isAf ? "Laas Gestoot" : "Last Nudged"}</Th>
+          <Th>{isAf ? "Aksies" : "Actions"}</Th>
         </tr>
       </thead>
       <tbody>
@@ -1368,7 +1416,7 @@ function LapsedTable({ rows, isLoading, inFlight, onSendOutreach, onGrantTrial, 
               <Td>
                 <div className="flex gap-2 flex-wrap">
                   <ActionBtn
-                    label="Mark Active"
+                    label={isAf ? "Merk Aktief" : "Mark Active"}
                     color="#9FF5E8"
                     icon={ShieldCheck}
                     disabled={inFlight.has(r.userId)}
@@ -1376,7 +1424,7 @@ function LapsedTable({ rows, isLoading, inFlight, onSendOutreach, onGrantTrial, 
                     testId={`btn-mark-active-${r.userId}`}
                   />
                   <ActionBtn
-                    label="Grant Fresh Trial"
+                    label={isAf ? "Staan Nuwe Proef Toe" : "Grant Fresh Trial"}
                     color="#94F7C5"
                     icon={Gift}
                     disabled={inFlight.has(r.userId)}
@@ -1384,7 +1432,7 @@ function LapsedTable({ rows, isLoading, inFlight, onSendOutreach, onGrantTrial, 
                     testId={`btn-grant-trial-${r.userId}`}
                   />
                   <ActionBtn
-                    label="Reactivate Outreach"
+                    label={isAf ? "Heraktiveer-uitreik" : "Reactivate Outreach"}
                     color={color}
                     icon={Send}
                     disabled={inFlight.has(r.userId)}
@@ -1404,9 +1452,11 @@ function LapsedTable({ rows, isLoading, inFlight, onSendOutreach, onGrantTrial, 
 }
 
 function LoadingState() {
+  const { language } = useLanguage();
+  const isAf = language === "af";
   return (
     <div className="flex items-center justify-center gap-2 py-16 text-white text-sm">
-      <RefreshCw className="w-4 h-4 animate-spin" /> Loading…
+      <RefreshCw className="w-4 h-4 animate-spin" /> {isAf ? "Laai…" : "Loading…"}
     </div>
   );
 }

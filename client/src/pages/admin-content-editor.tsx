@@ -2,7 +2,17 @@ import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { AdminTopNav } from "@/components/admin-top-nav";
-import { AdminGround, NeonShell, AdminBadge, adminSelectClass, adminSelectStyle, adminInputClass, adminInputStyle, adminTextareaClass, adminTextareaStyle, type NeonHex } from "@/components/admin-ui";
+import { AdminGround, NeonShell, AdminBadge, ADMIN_ERROR, adminSelectClass, adminSelectStyle, adminInputClass, adminInputStyle, adminTextareaClass, adminTextareaStyle, type NeonHex } from "@/components/admin-ui";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/lib/language-context";
@@ -135,6 +145,56 @@ function SourceBadge({ source }: { source: string }) {
   return <AdminBadge color={isAdmin ? HEX.pink : HEX.cyan}>{source}</AdminBadge>;
 }
 
+// ── Delete confirmation ──────────────────────────────────────────────────────
+// Same AlertDialog confirm pattern as admin-reports' delete-user dialog, but
+// styled with the admin error token instead of raw Tailwind reds.
+function ConfirmDeleteDialog({
+  pending, isPending, onCancel, onConfirm, testIdPrefix,
+}: {
+  pending: { id: number; label: string } | null;
+  isPending: boolean;
+  onCancel: () => void;
+  onConfirm: (id: number) => void;
+  testIdPrefix: string;
+}) {
+  const { language } = useLanguage();
+  const isAf = language === "af";
+  return (
+    <AlertDialog open={!!pending} onOpenChange={(open) => { if (!open) onCancel(); }}>
+      <AlertDialogContent className="bg-[#0e0d12] border-[#1b1922] text-white">
+        <AlertDialogHeader>
+          <AlertDialogTitle style={{ color: ADMIN_ERROR }}>
+            {isAf ? "Verwyder hierdie item?" : "Delete this item?"}
+          </AlertDialogTitle>
+          <AlertDialogDescription className="text-white">
+            {isAf
+              ? `Hierdie sal "${pending?.label ?? ""}" permanent verwyder. Hierdie aksie kan nie ongedaan gemaak word nie.`
+              : `This will permanently delete "${pending?.label ?? ""}". This action cannot be undone.`}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel className="bg-[#0e0d12] border-[#1b1922] text-white hover:bg-[#1b1922]" data-testid={`${testIdPrefix}-cancel-delete`}>
+            {isAf ? "Kanselleer" : "Cancel"}
+          </AlertDialogCancel>
+          <AlertDialogAction
+            style={{ background: ADMIN_ERROR, color: "#050508" }}
+            disabled={isPending}
+            onClick={(e) => {
+              e.preventDefault();
+              if (pending) onConfirm(pending.id);
+            }}
+            data-testid={`${testIdPrefix}-confirm-delete`}
+          >
+            {isPending
+              ? (isAf ? "Besig om te verwyder…" : "Deleting…")
+              : (isAf ? "Verwyder" : "Delete")}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
 // ── Plain textarea ────────────────────────────────────────────────────────────
 function Field({
   label, value, onChange, rows = 3,
@@ -190,9 +250,11 @@ function SearchBar({
   count: number;
   right?: React.ReactNode;
 }) {
+  const { language } = useLanguage();
+  const isAf = language === "af";
   return (
-    <div className="flex items-center gap-3">
-      <div className="relative flex-1">
+    <div className="flex items-center gap-3 flex-wrap">
+      <div className="relative flex-1 min-w-[200px]">
         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white" />
         <input
           className={`${adminInputClass} pl-8`} style={adminInputStyle}
@@ -202,7 +264,7 @@ function SearchBar({
         />
       </div>
       {right}
-      <span className="shrink-0 text-xs text-white">{count} rows</span>
+      <span className="shrink-0 text-xs text-white">{count} {isAf ? "rye" : "rows"}</span>
     </div>
   );
 }
@@ -227,6 +289,8 @@ function CoverageBanner({
   showUnreviewedOnly: boolean;
   onToggleFilter: () => void;
 }) {
+  const { language } = useLanguage();
+  const isAf = language === "af";
   const total = rows.length;
   const reviewed = rows.filter((r) => r.source === "admin").length;
   const unreviewed = total - reviewed;
@@ -254,11 +318,13 @@ function CoverageBanner({
             ? <CheckCircle2 size={14} style={{ color: tone }} />
             : <AlertCircle size={14} style={{ color: tone }} />}
           <span className="text-xs font-bold" style={{ color: tone }}>
-            {isEmpty ? `No ${label} yet` : `${reviewed} of ${total} ${label} reviewed`}
+            {isEmpty
+              ? (isAf ? `Nog geen ${label} nie` : `No ${label} yet`)
+              : (isAf ? `${reviewed} van ${total} ${label} nagegaan` : `${reviewed} of ${total} ${label} reviewed`)}
           </span>
           {unreviewed > 0 && (
             <span className="text-xs text-white">
-              — {unreviewed} seed-only
+              — {unreviewed} {isAf ? "slegs-saad" : "seed-only"}
             </span>
           )}
         </div>
@@ -284,7 +350,7 @@ function CoverageBanner({
           }}
         >
           <Filter size={11} />
-          {showUnreviewedOnly ? "All rows" : "Unreviewed"}
+          {showUnreviewedOnly ? (isAf ? "Alle rye" : "All rows") : (isAf ? "Nie nagegaan" : "Unreviewed")}
         </button>
       )}
     </div>
@@ -425,6 +491,8 @@ function BulkImportPanel({
   onImported: () => void;
 }) {
   const { toast } = useToast();
+  const { language } = useLanguage();
+  const isAf = language === "af";
   const [open, setOpen] = useState(false);
   const [raw, setRaw] = useState("");
   const [parseError, setParseError] = useState<string | null>(null);
@@ -450,16 +518,20 @@ function BulkImportPanel({
       setResult(data);
       onImported();
       if (data.errored === 0) {
-        toast({ title: `Bulk import complete — ${data.created} created, ${data.updated} updated` });
+        toast({
+          title: isAf
+            ? `Grootmaat-invoer voltooi — ${data.created} geskep, ${data.updated} bygewerk`
+            : `Bulk import complete — ${data.created} created, ${data.updated} updated`,
+        });
       } else {
         toast({
-          title: `Import finished with ${data.errored} error(s)`,
-          description: `${data.created} created, ${data.updated} updated`,
+          title: isAf ? `Invoer voltooi met ${data.errored} fout(e)` : `Import finished with ${data.errored} error(s)`,
+          description: isAf ? `${data.created} geskep, ${data.updated} bygewerk` : `${data.created} created, ${data.updated} updated`,
           variant: "destructive",
         });
       }
     },
-    onError: (e: Error) => toast({ title: "Import failed", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: isAf ? "Invoer misluk" : "Import failed", description: e.message, variant: "destructive" }),
   });
 
   function handleImport() {
@@ -493,15 +565,17 @@ function BulkImportPanel({
         style={{ color: open ? accent : "#fff" }}
       >
         <Upload size={13} />
-        Bulk Import
+        {isAf ? "Grootmaat-invoer" : "Bulk Import"}
         {open ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
       </button>
 
       {open && (
         <div className="absolute right-0 top-full mt-2 z-40 w-[min(640px,90vw)] text-left">
         <NeonShell color={accent} className="p-5">
+          {/* Title + buttons are translated; the schema-hint prose below stays
+              English-only for now (technical JSON guidance, low traffic). */}
           <p className="mb-1 text-sm font-bold" style={{ color: accent }}>
-            Bulk Import — {type === "notes" ? "Topic Notes" : "Flashcards"}
+            {isAf ? "Grootmaat-invoer" : "Bulk Import"} — {type === "notes" ? (isAf ? "Onderwerpnotas" : "Topic Notes") : (isAf ? "Flitskaarte" : "Flashcards")}
           </p>
           <p className="mb-3 text-xs text-white">
             Paste a JSON array. Notes upsert on <code className="text-white">(topicId, language)</code>.
@@ -573,7 +647,7 @@ function BulkImportPanel({
 
           <div className="flex justify-end gap-2">
             <Button size="sm" variant="ghost" className="text-white" onClick={() => setOpen(false)}>
-              Close
+              {isAf ? "Maak toe" : "Close"}
             </Button>
             <Button
               size="sm"
@@ -583,7 +657,7 @@ function BulkImportPanel({
               disabled={importMutation.isPending || !raw.trim()}
             >
               {importMutation.isPending ? <Loader2 size={12} className="animate-spin mr-1" /> : <Upload size={12} className="mr-1" />}
-              Import
+              {isAf ? "Voer in" : "Import"}
             </Button>
           </div>
         </NeonShell>
@@ -598,10 +672,13 @@ function BulkImportPanel({
 // ────────────────────────────────────────────────────────────────────────────
 function TopicNotesTab() {
   const { toast } = useToast();
+  const { language } = useLanguage();
+  const isAf = language === "af";
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [showUnreviewedOnly, setShowUnreviewedOnly] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<{ id: number; label: string } | null>(null);
   const [draft, setDraft] = useState<NoteDraft>({ summary: "", keyConcepts: [], workedExamples: [] });
   const [creating, setCreating] = useState(false);
   const [newNote, setNewNote] = useState<NewTopicNote>({ topicId: "", language: "en", summary: "", keyConcepts: "[]", workedExamples: "[]" });
@@ -615,33 +692,34 @@ function TopicNotesTab() {
     mutationFn: ({ id, body }: { id: number; body: NoteDraft }) =>
       apiRequest("PUT", `/api/admin/topic-notes/${id}`, body).then((r) => r.json()),
     onSuccess: () => {
-      toast({ title: "Topic note saved" });
+      toast({ title: isAf ? "Onderwerpnota gestoor" : "Topic note saved" });
       qc.invalidateQueries({ queryKey: ["/api/admin/topic-notes"] });
       setEditingId(null);
     },
-    onError: (e: Error) => toast({ title: "Save failed", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: isAf ? "Stoor misluk" : "Save failed", description: e.message, variant: "destructive" }),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) =>
       apiRequest("DELETE", `/api/admin/topic-notes/${id}`).then((r) => r.json()),
     onSuccess: () => {
-      toast({ title: "Topic note deleted" });
+      toast({ title: isAf ? "Onderwerpnota verwyder" : "Topic note deleted" });
       qc.invalidateQueries({ queryKey: ["/api/admin/topic-notes"] });
+      setPendingDelete(null);
     },
-    onError: (e: Error) => toast({ title: "Delete failed", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: isAf ? "Verwydering misluk" : "Delete failed", description: e.message, variant: "destructive" }),
   });
 
   const createMutation = useMutation({
     mutationFn: (body: Record<string, unknown>) =>
       apiRequest("POST", "/api/admin/topic-notes", body).then((r) => r.json()),
     onSuccess: () => {
-      toast({ title: "Topic note created" });
+      toast({ title: isAf ? "Onderwerpnota geskep" : "Topic note created" });
       qc.invalidateQueries({ queryKey: ["/api/admin/topic-notes"] });
       setCreating(false);
       setNewNote({ topicId: "", language: "en", summary: "", keyConcepts: "[]", workedExamples: "[]" });
     },
-    onError: (e: Error) => toast({ title: "Create failed", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: isAf ? "Skep misluk" : "Create failed", description: e.message, variant: "destructive" }),
   });
 
   const filtered = useMemo(() => {
@@ -683,7 +761,7 @@ function TopicNotesTab() {
   return (
     <div className="flex flex-col gap-4">
       <CoverageBanner
-        label="topic notes"
+        label={isAf ? "onderwerpnotas" : "topic notes"}
         rows={rows}
         accent={HEX.cyan}
         showUnreviewedOnly={showUnreviewedOnly}
@@ -835,7 +913,7 @@ function TopicNotesTab() {
                   </Button>
                   <Button
                     size="sm" variant="ghost" className="text-[#FFB7E5] hover:text-[#FFB7E5]"
-                    onClick={() => deleteMutation.mutate(row.id)}
+                    onClick={() => setPendingDelete({ id: row.id, label: `${row.subjectName} › ${row.topicName}` })}
                     disabled={deleteMutation.isPending}
                     data-testid={`delete-note-${row.id}`}
                   >
@@ -870,8 +948,16 @@ function TopicNotesTab() {
       ))}
 
       {filtered.length === 0 && !creating && (
-        <div className="py-16 text-center text-white text-sm">No topic notes found.</div>
+        <div className="py-16 text-center text-white text-sm">{isAf ? "Geen onderwerpnotas gevind nie." : "No topic notes found."}</div>
       )}
+
+      <ConfirmDeleteDialog
+        pending={pendingDelete}
+        isPending={deleteMutation.isPending}
+        onCancel={() => setPendingDelete(null)}
+        onConfirm={(id) => deleteMutation.mutate(id)}
+        testIdPrefix="note"
+      />
     </div>
   );
 }
@@ -881,10 +967,13 @@ function TopicNotesTab() {
 // ────────────────────────────────────────────────────────────────────────────
 function TopicFlashcardsTab() {
   const { toast } = useToast();
+  const { language } = useLanguage();
+  const isAf = language === "af";
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [showUnreviewedOnly, setShowUnreviewedOnly] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<{ id: number; label: string } | null>(null);
   const [draft, setDraft] = useState<FlashcardDraft>({ front: "", back: "", cardType: "concept", orderIndex: 0 });
   const [creating, setCreating] = useState(false);
   const [newCard, setNewCard] = useState<NewFlashcard>({ topicId: "", language: "en", front: "", back: "", cardType: "concept", orderIndex: 0 });
@@ -898,33 +987,34 @@ function TopicFlashcardsTab() {
     mutationFn: ({ id, body }: { id: number; body: FlashcardDraft }) =>
       apiRequest("PUT", `/api/admin/topic-flashcards/${id}`, body).then((r) => r.json()),
     onSuccess: () => {
-      toast({ title: "Flashcard saved" });
+      toast({ title: isAf ? "Flitskaart gestoor" : "Flashcard saved" });
       qc.invalidateQueries({ queryKey: ["/api/admin/topic-flashcards"] });
       setEditingId(null);
     },
-    onError: (e: Error) => toast({ title: "Save failed", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: isAf ? "Stoor misluk" : "Save failed", description: e.message, variant: "destructive" }),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) =>
       apiRequest("DELETE", `/api/admin/topic-flashcards/${id}`).then((r) => r.json()),
     onSuccess: () => {
-      toast({ title: "Flashcard deleted" });
+      toast({ title: isAf ? "Flitskaart verwyder" : "Flashcard deleted" });
       qc.invalidateQueries({ queryKey: ["/api/admin/topic-flashcards"] });
+      setPendingDelete(null);
     },
-    onError: (e: Error) => toast({ title: "Delete failed", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: isAf ? "Verwydering misluk" : "Delete failed", description: e.message, variant: "destructive" }),
   });
 
   const createMutation = useMutation({
     mutationFn: (body: NewFlashcard) =>
       apiRequest("POST", "/api/admin/topic-flashcards", body).then((r) => r.json()),
     onSuccess: () => {
-      toast({ title: "Flashcard created" });
+      toast({ title: isAf ? "Flitskaart geskep" : "Flashcard created" });
       qc.invalidateQueries({ queryKey: ["/api/admin/topic-flashcards"] });
       setCreating(false);
       setNewCard({ topicId: "", language: "en", front: "", back: "", cardType: "concept", orderIndex: 0 });
     },
-    onError: (e: Error) => toast({ title: "Create failed", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: isAf ? "Skep misluk" : "Create failed", description: e.message, variant: "destructive" }),
   });
 
   const filtered = useMemo(() => {
@@ -955,7 +1045,7 @@ function TopicFlashcardsTab() {
   return (
     <div className="flex flex-col gap-4">
       <CoverageBanner
-        label="flashcards"
+        label={isAf ? "flitskaarte" : "flashcards"}
         rows={rows}
         accent={HEX.violet}
         showUnreviewedOnly={showUnreviewedOnly}
@@ -1107,7 +1197,7 @@ function TopicFlashcardsTab() {
                   </Button>
                   <Button
                     size="sm" variant="ghost" className="text-[#FFB7E5] hover:text-[#FFB7E5]"
-                    onClick={() => deleteMutation.mutate(row.id)}
+                    onClick={() => setPendingDelete({ id: row.id, label: row.front })}
                     disabled={deleteMutation.isPending}
                     data-testid={`delete-card-${row.id}`}
                   >
@@ -1153,8 +1243,16 @@ function TopicFlashcardsTab() {
       ))}
 
       {filtered.length === 0 && !creating && (
-        <div className="py-16 text-center text-white text-sm">No flashcards found.</div>
+        <div className="py-16 text-center text-white text-sm">{isAf ? "Geen flitskaarte gevind nie." : "No flashcards found."}</div>
       )}
+
+      <ConfirmDeleteDialog
+        pending={pendingDelete}
+        isPending={deleteMutation.isPending}
+        onCancel={() => setPendingDelete(null)}
+        onConfirm={(id) => deleteMutation.mutate(id)}
+        testIdPrefix="card"
+      />
     </div>
   );
 }
@@ -1164,10 +1262,13 @@ function TopicFlashcardsTab() {
 // ────────────────────────────────────────────────────────────────────────────
 function LiteratureNotesTab() {
   const { toast } = useToast();
+  const { language } = useLanguage();
+  const isAf = language === "af";
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [showUnreviewedOnly, setShowUnreviewedOnly] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<{ id: number; label: string } | null>(null);
   const [draft, setDraft] = useState<LitNoteDraft>({ summary: "", themes: [], characters: [], literaryDevices: [], essayFrameworks: [] });
   const [creating, setCreating] = useState(false);
   const [newNote, setNewNote] = useState<NewLitNote>({ workId: "", language: "en", summary: "" });
@@ -1181,33 +1282,34 @@ function LiteratureNotesTab() {
     mutationFn: ({ id, body }: { id: number; body: LitNoteDraft }) =>
       apiRequest("PUT", `/api/admin/literature-notes/${id}`, body).then((r) => r.json()),
     onSuccess: () => {
-      toast({ title: "Literature note saved" });
+      toast({ title: isAf ? "Literatuurnota gestoor" : "Literature note saved" });
       qc.invalidateQueries({ queryKey: ["/api/admin/literature-notes"] });
       setEditingId(null);
     },
-    onError: (e: Error) => toast({ title: "Save failed", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: isAf ? "Stoor misluk" : "Save failed", description: e.message, variant: "destructive" }),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) =>
       apiRequest("DELETE", `/api/admin/literature-notes/${id}`).then((r) => r.json()),
     onSuccess: () => {
-      toast({ title: "Literature note deleted" });
+      toast({ title: isAf ? "Literatuurnota verwyder" : "Literature note deleted" });
       qc.invalidateQueries({ queryKey: ["/api/admin/literature-notes"] });
+      setPendingDelete(null);
     },
-    onError: (e: Error) => toast({ title: "Delete failed", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: isAf ? "Verwydering misluk" : "Delete failed", description: e.message, variant: "destructive" }),
   });
 
   const createMutation = useMutation({
     mutationFn: (body: NewLitNote) =>
       apiRequest("POST", "/api/admin/literature-notes", body).then((r) => r.json()),
     onSuccess: () => {
-      toast({ title: "Literature note created" });
+      toast({ title: isAf ? "Literatuurnota geskep" : "Literature note created" });
       qc.invalidateQueries({ queryKey: ["/api/admin/literature-notes"] });
       setCreating(false);
       setNewNote({ workId: "", language: "en", summary: "" });
     },
-    onError: (e: Error) => toast({ title: "Create failed", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: isAf ? "Skep misluk" : "Create failed", description: e.message, variant: "destructive" }),
   });
 
   const filtered = useMemo(() => {
@@ -1244,7 +1346,7 @@ function LiteratureNotesTab() {
   return (
     <div className="flex flex-col gap-4">
       <CoverageBanner
-        label="literature notes"
+        label={isAf ? "literatuurnotas" : "literature notes"}
         rows={rows}
         accent={HEX.pink}
         showUnreviewedOnly={showUnreviewedOnly}
@@ -1357,7 +1459,7 @@ function LiteratureNotesTab() {
                   </Button>
                   <Button
                     size="sm" variant="ghost" className="text-[#FFB7E5] hover:text-[#FFB7E5]"
-                    onClick={() => deleteMutation.mutate(row.id)}
+                    onClick={() => setPendingDelete({ id: row.id, label: row.workTitle })}
                     disabled={deleteMutation.isPending}
                     data-testid={`delete-lit-${row.id}`}
                   >
@@ -1381,8 +1483,16 @@ function LiteratureNotesTab() {
       ))}
 
       {filtered.length === 0 && !creating && (
-        <div className="py-16 text-center text-white text-sm">No literature notes found.</div>
+        <div className="py-16 text-center text-white text-sm">{isAf ? "Geen literatuurnotas gevind nie." : "No literature notes found."}</div>
       )}
+
+      <ConfirmDeleteDialog
+        pending={pendingDelete}
+        isPending={deleteMutation.isPending}
+        onCancel={() => setPendingDelete(null)}
+        onConfirm={(id) => deleteMutation.mutate(id)}
+        testIdPrefix="lit"
+      />
     </div>
   );
 }

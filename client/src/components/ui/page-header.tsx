@@ -2,13 +2,16 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { NeonIcon, type NeonAccent } from "./neon-icon";
 
+// Brand hex values (nearest match to the old Tailwind palette colors), glow
+// text-shadows removed — the public/signed-in system uses flat solid ink,
+// never neon bloom.
 const ACCENT_TEXT: Record<NeonAccent, string> = {
-  pink: "text-pink-300 [text-shadow:0_0_10px_rgba(236,72,153,0.45)]",
-  cyan: "text-cyan-200 [text-shadow:0_0_10px_rgba(6,182,212,0.45)]",
-  blue: "text-blue-300 [text-shadow:0_0_10px_rgba(59,130,246,0.45)]",
-  green: "text-emerald-300 [text-shadow:0_0_10px_rgba(34,197,94,0.45)]",
-  orange: "text-orange-300 [text-shadow:0_0_10px_rgba(249,115,22,0.45)]",
-  gold: "text-yellow-200 [text-shadow:0_0_10px_rgba(250,204,21,0.45)]",
+  pink: "text-[#FFB7E5]",
+  cyan: "text-[#6EE7F9]",
+  blue: "text-[#9FD8FF]",
+  green: "text-[#94F7C5]",
+  orange: "text-[#FFE29A]",
+  gold: "text-[#C5B3FF]",
 };
 
 interface BaseHeaderProps {

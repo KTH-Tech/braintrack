@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AdminTopNav } from "@/components/admin-top-nav";
 import {
-  NeonShell, AdminBadge, AdminButton, halo,
+  NeonShell, AdminBadge, AdminButton, AdminAlert, ADMIN_ERROR, halo,
   adminInputClass, adminInputStyle, adminSelectClass, adminSelectStyle,
   adminTableWrapClass, adminTableWrapStyle, adminThClass,
   type NeonHex,
@@ -89,10 +89,10 @@ interface PartnerReport {
   commission: number;
 }
 
-function MiniBar({ value, max, color = "bg-primary" }: { value: number; max: number; color?: string }) {
+function MiniBar({ value, max, color = "bg-[#9FD8FF]" }: { value: number; max: number; color?: string }) {
   const pct = max > 0 ? Math.min(100, Math.round((value / max) * 100)) : 0;
   return (
-    <div className="w-full h-2 bg-muted rounded-full overflow-hidden mt-2">
+    <div className="w-full h-2 rounded-full overflow-hidden mt-2" style={{ background: "#1b1922" }}>
       <div className={`h-full rounded-full transition-all duration-500 ${color}`} style={{ width: `${pct}%` }} />
     </div>
   );
@@ -337,8 +337,7 @@ function SchoolOnboardingForm({ onClose, onSuccess }: { onClose: () => void; onS
                   {done ? "✓" : i + 1}
                 </div>
                 <span
-                  className="text-[10px] font-bold uppercase tracking-[0.14em] whitespace-nowrap"
-                  style={{ color: active ? "#fff" : done ? "#fff" : "#fff" }}
+                  className="text-[10px] font-bold uppercase tracking-[0.14em] whitespace-nowrap text-white"
                 >
                   {s}
                 </span>
@@ -1074,11 +1073,11 @@ export default function AdminReportsPage() {
   const { toast } = useToast();
 
   const { data: stats } = useQuery<UserStat>({ queryKey: ["/api/admin/reports/stats"] });
-  const { data: schoolsData } = useQuery<{ schools: SchoolRow[] }>({ queryKey: ["/api/admin/reports/schools"] });
-  const { data: partnersData } = useQuery<{ partners: PartnerReport[] }>({ queryKey: ["/api/admin/reports/partners"] });
-  const { data: parentReportsData } = useQuery<{ reports: any[] }>({ queryKey: ["/api/admin/reports/parents"] });
+  const { data: schoolsData, isError: schoolsError, refetch: refetchSchools } = useQuery<{ schools: SchoolRow[] }>({ queryKey: ["/api/admin/reports/schools"] });
+  const { data: partnersData, isError: partnersError, refetch: refetchPartners } = useQuery<{ partners: PartnerReport[] }>({ queryKey: ["/api/admin/reports/partners"] });
+  const { data: parentReportsData, isError: parentsError, refetch: refetchParents } = useQuery<{ reports: any[] }>({ queryKey: ["/api/admin/reports/parents"] });
   const { data: learnersData } = useQuery<{ learners: any[] }>({ queryKey: ["/api/admin/reports/learners"] });
-  const { data: learnersV2Data } = useQuery<{ learners: any[]; total: number }>({
+  const { data: learnersV2Data, isError: learnersError, refetch: refetchLearners } = useQuery<{ learners: any[]; total: number }>({
     queryKey: ["/api/admin/reports/learners-v2", learnerSearch, learnerGrade, learnerSubscription],
     queryFn: () => {
       const params = new URLSearchParams();
@@ -1089,7 +1088,7 @@ export default function AdminReportsPage() {
     },
     enabled: activeTab === "learners",
   });
-  const { data: partnerStatsData } = useQuery<{ stats: any[]; totalClicks: number; totalTrials: number }>({ queryKey: ["/api/admin/reports/partner-stats"] });
+  const { data: partnerStatsData, isError: partnerStatsError, refetch: refetchPartnerStats } = useQuery<{ stats: any[]; totalClicks: number; totalTrials: number }>({ queryKey: ["/api/admin/reports/partner-stats"] });
 
   const bulkTrialMutation = useMutation({
     mutationFn: (learnerIds: string[]) =>
@@ -1179,12 +1178,12 @@ export default function AdminReportsPage() {
           </section>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
-            <GlowStatCard label={language === "af" ? "👥 Totale Gebruikers" : "👥 Total Users"} value={stats?.totalUsers ?? 0} icon={Users} color="#9FF5E8" />
-            <GlowStatCard label={language === "af" ? "🎓 Leerders" : "🎓 Learners"} value={stats?.learners ?? 0} icon={UserCheck} color="#9FD8FF" />
-            <GlowStatCard label={language === "af" ? "👪 Ouers" : "👪 Parents"} value={stats?.parents ?? 0} icon={Users} color="#C5B3FF" />
-            <GlowStatCard label={language === "af" ? "⚡ Aktief Vandag" : "⚡ Active Today"} value={stats?.activeToday ?? 0} icon={TrendingUp} color="#94F7C5" />
-            <GlowStatCard label={language === "af" ? "🔓 Op Proeflopie" : "🔓 On Trial"} value={stats?.trialUsers ?? 0} icon={Clock} color="#FFE29A" />
-            <GlowStatCard label={language === "af" ? "💰 Ingeteken" : "💰 Subscribed"} value={stats?.subscribedUsers ?? 0} sub={language === "af" ? "R169/maand" : "R169/month"} icon={DollarSign} color="#FFB7E5" />
+            <GlowStatCard label={language === "af" ? "Totale Gebruikers" : "Total Users"} value={stats?.totalUsers ?? 0} icon={Users} color="#9FF5E8" />
+            <GlowStatCard label={language === "af" ? "Leerders" : "Learners"} value={stats?.learners ?? 0} icon={UserCheck} color="#9FD8FF" />
+            <GlowStatCard label={language === "af" ? "Ouers" : "Parents"} value={stats?.parents ?? 0} icon={Users} color="#C5B3FF" />
+            <GlowStatCard label={language === "af" ? "Aktief Vandag" : "Active Today"} value={stats?.activeToday ?? 0} icon={TrendingUp} color="#94F7C5" />
+            <GlowStatCard label={language === "af" ? "Op Proeflopie" : "On Trial"} value={stats?.trialUsers ?? 0} icon={Clock} color="#FFE29A" />
+            <GlowStatCard label={language === "af" ? "Ingeteken" : "Subscribed"} value={stats?.subscribedUsers ?? 0} sub={language === "af" ? "R169/maand" : "R169/month"} icon={DollarSign} color="#FFB7E5" />
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -1354,7 +1353,15 @@ export default function AdminReportsPage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {filteredLearners.length === 0 ? (
+                        {learnersError ? (
+                          <TableRow>
+                            <TableCell colSpan={8} className="p-4">
+                              <AdminAlert onRetry={() => refetchLearners()}>
+                                {language === "af" ? "Kon nie leerders laai nie." : "Could not load learners."}
+                              </AdminAlert>
+                            </TableCell>
+                          </TableRow>
+                        ) : filteredLearners.length === 0 ? (
                           <TableRow>
                             <TableCell colSpan={8} className="p-0">
                               <EmptyState icon={GraduationCap} title={language === "af" ? "Geen leerders gevind nie" : "No learners found"} description={language === "af" ? "Probeer jou filters of soekterm aanpas." : "Try adjusting your filters or search term."} />
@@ -1450,7 +1457,9 @@ export default function AdminReportsPage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {(parentReportsData?.reports ?? []).length === 0 ? (
+                        {parentsError ? (
+                          <TableRow><TableCell colSpan={7} className="p-4"><AdminAlert onRetry={() => refetchParents()}>{language === "af" ? "Kon nie ouerrekeninge laai nie." : "Could not load parent accounts."}</AdminAlert></TableCell></TableRow>
+                        ) : (parentReportsData?.reports ?? []).length === 0 ? (
                           <TableRow><TableCell colSpan={7} className="p-0"><EmptyState icon={Users} title={language === "af" ? "Nog geen ouerrekeninge nie" : "No parent accounts yet"} description={language === "af" ? "Ouerdata sal opdateer namate ouers registreer en hul kinders se rekeninge skakel." : "Parent data will populate as parents register and link their children's accounts."} /></TableCell></TableRow>
                         ) : (
                           (parentReportsData?.reports ?? []).filter(r => r.parentName?.toLowerCase().includes(search.toLowerCase())).map((r: any, i: number) => (
@@ -1459,20 +1468,21 @@ export default function AdminReportsPage() {
                               <TableCell className="text-sm">{r.childCount}</TableCell>
                               <TableCell className="text-center text-sm">{r.subjectCount}</TableCell>
                               <TableCell className="text-center">
-                                <Badge variant="outline" className={`text-[10px] ${r.accuracy >= 70 ? "bg-[#0e0d12] border-[#1b1922] text-white" : "bg-[#0e0d12] border-[#1b1922] text-white"}`}>{r.accuracy}%</Badge>
+                                <AdminBadge color={r.accuracy >= 70 ? "#94F7C5" : ADMIN_ERROR as NeonHex}>{r.accuracy}%</AdminBadge>
                               </TableCell>
                               <TableCell className="text-center text-sm">{r.questionsAnswered}</TableCell>
                               <TableCell className="text-center">
-                                <Badge variant="outline" className={`text-[10px] ${r.isSubscribed ? "bg-[#0e0d12] border-[#1b1922] text-white" : "bg-[#0e0d12] border-[#1b1922] text-white"}`}>
+                                <AdminBadge color={r.isSubscribed ? "#94F7C5" : "#FFE29A"}>
                                   {r.isSubscribed ? (language === "af" ? "Aktief" : "Active") : (language === "af" ? "Proeflopie" : "Trial")}
-                                </Badge>
+                                </AdminBadge>
                               </TableCell>
                               <TableCell className="text-center">
                                 {r.parentId ? (
                                   <Button
                                     size="sm"
                                     variant="ghost"
-                                    className="h-7 w-7 p-0 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                    className="h-7 w-7 p-0 hover:bg-[#1b1922]"
+                                    style={{ color: ADMIN_ERROR }}
                                     onClick={() => setPendingDelete({ id: r.parentId, label: r.parentName || r.parentEmail || r.parentId })}
                                     title={language === "af" ? "Verwyder ouer" : "Delete parent"}
                                     data-testid={`button-delete-parent-${r.parentId}`}
@@ -1493,7 +1503,7 @@ export default function AdminReportsPage() {
 
             {/* ===== SCHOOLS ===== */}
             <TabsContent value="schools">
-              <div className="flex gap-5">
+              <div className="flex flex-col lg:flex-row gap-5">
                 {/* Main schools list */}
                 <div className="flex-1 min-w-0 space-y-4">
                   <div className="bg-black rounded-2xl p-4 border border-[#1b1922] flex items-center justify-between gap-3">
@@ -1536,13 +1546,15 @@ export default function AdminReportsPage() {
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {(schoolsData?.schools ?? []).length === 0 ? (
+                            {schoolsError ? (
+                              <TableRow><TableCell colSpan={7} className="p-4"><AdminAlert onRetry={() => refetchSchools()}>{language === "af" ? "Kon nie skole laai nie." : "Could not load schools."}</AdminAlert></TableCell></TableRow>
+                            ) : (schoolsData?.schools ?? []).length === 0 ? (
                               <TableRow><TableCell colSpan={7} className="p-0"><EmptyState icon={School} title={language === "af" ? "Nog geen skole nie" : "No schools yet"} description={language === "af" ? "Voeg jou eerste skool by met die knoppie hierbo." : "Onboard your first school using the button above."} /></TableCell></TableRow>
                             ) : (
                               (schoolsData?.schools ?? []).map((s, i) => (
                                 <TableRow
                                   key={s.id ?? i}
-                                  className={`hover:bg-[#1b1922] even:bg-[#1b1922] cursor-pointer transition-colors ${selectedSchoolId === s.id ? "bg-[#0e0d12] border-l-2 border-l-primary" : ""}`}
+                                  className={`hover:bg-[#1b1922] even:bg-[#1b1922] cursor-pointer transition-colors ${selectedSchoolId === s.id ? "bg-[#0e0d12] border-l-2 border-l-[#9FF5E8]" : ""}`}
                                   onClick={() => setSelectedSchoolId(selectedSchoolId === s.id ? null : (s.id ?? null))}
                                 >
                                   <TableCell>
@@ -1555,9 +1567,9 @@ export default function AdminReportsPage() {
                                   <TableCell className="text-center text-sm font-medium">{s.learnerCount}</TableCell>
                                   <TableCell className="text-center font-semibold text-white text-sm">R{formatNumber(s.learnerCount * 35, language)}</TableCell>
                                   <TableCell className="text-center">
-                                    <Badge variant="outline" className={`text-[10px] ${s.avgAccuracy >= 70 ? "bg-[#0e0d12] border-[#1b1922] text-white" : "bg-[#0e0d12] border-[#1b1922] text-white"}`}>
+                                    <AdminBadge color={s.avgAccuracy >= 70 ? "#94F7C5" : ADMIN_ERROR as NeonHex}>
                                       {s.avgAccuracy}%
-                                    </Badge>
+                                    </AdminBadge>
                                   </TableCell>
                                 </TableRow>
                               ))
@@ -1571,7 +1583,7 @@ export default function AdminReportsPage() {
 
                 {/* School detail side panel */}
                 {selectedSchoolId && (
-                  <div className="w-96 flex-shrink-0">
+                  <div className="w-full lg:w-96 lg:flex-shrink-0">
                     <Card className="bg-black border-[#1b1922] rounded-2xl sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto">
                       <CardContent className="p-4">
                         <SchoolDetailPanel schoolId={selectedSchoolId} onClose={() => setSelectedSchoolId(null)} />
@@ -1590,24 +1602,22 @@ export default function AdminReportsPage() {
                   <span>{language === "af" ? <><strong>Vennote verdien kommissie per omgeskakelde leerder.</strong> Elke vennoot kry 'n unieke verwysingskode + skakel.</> : <><strong>Partners earn commission per converted learner.</strong> Each partner gets a unique referral code + link.</>}</span>
                 </p>
                 <div className="flex items-center gap-2 shrink-0">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="text-xs gap-1.5 border-amber-500/40 text-amber-600 hover:bg-amber-500/10"
+                  <AdminButton
+                    color="#FFE29A"
+                    className="text-xs"
                     onClick={() => { setPartnerBulkResult(null); setPartnerBulkText(""); setShowPartnerBulk(true); }}
-                    data-testid="button-bulk-import-partners"
+                    testId="button-bulk-import-partners"
                   >
                     <FileText className="w-3.5 h-3.5" /> {language === "af" ? "Massa-invoer" : "Bulk Import"}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="text-xs gap-1.5 border-amber-500/40 text-amber-600 hover:bg-amber-500/10"
+                  </AdminButton>
+                  <AdminButton
+                    color="#FFE29A"
+                    className="text-xs"
                     onClick={() => setShowAddPartner(true)}
-                    data-testid="button-add-partner"
+                    testId="button-add-partner"
                   >
                     <Plus className="w-3.5 h-3.5" /> {language === "af" ? "Voeg Vennoot By" : "Add Partner"}
-                  </Button>
+                  </AdminButton>
                 </div>
               </div>
               <Card className="bg-black border-[#1b1922] rounded-2xl">
@@ -1626,13 +1636,15 @@ export default function AdminReportsPage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {(partnersData?.partners ?? []).length === 0 ? (
+                        {partnersError ? (
+                          <TableRow><TableCell colSpan={6} className="p-4"><AdminAlert onRetry={() => refetchPartners()}>{language === "af" ? "Kon nie vennote laai nie." : "Could not load partners."}</AdminAlert></TableCell></TableRow>
+                        ) : (partnersData?.partners ?? []).length === 0 ? (
                           <TableRow><TableCell colSpan={6} className="p-0"><EmptyState icon={Handshake} title={language === "af" ? "Nog geen vennoot-verwysings nie" : "No partner referrals yet"} description={language === "af" ? "Vennote sal hier verskyn wanneer verwysingskodes deur leerders gebruik word." : "Partners will appear here when referral codes are used by learners."} /></TableCell></TableRow>
                         ) : (
                           (partnersData?.partners ?? []).map((p, i) => (
                             <TableRow key={i} className="hover:bg-[#1b1922] even:bg-[#1b1922]">
                               <TableCell className="font-medium text-sm">{p.partnerName}</TableCell>
-                              <TableCell><code className="text-[10px] bg-muted/70 px-2 py-1 rounded-md font-mono">{p.partnerCode}</code></TableCell>
+                              <TableCell><code className="text-[10px] px-2 py-1 rounded-md font-mono text-white" style={{ background: "#1b1922" }}>{p.partnerCode}</code></TableCell>
                               <TableCell className="text-center text-sm">{p.referrals}</TableCell>
                               <TableCell className="text-center text-sm">{p.conversions}</TableCell>
                               <TableCell className="text-center text-sm font-medium">R{formatNumber(p.revenue, language)}</TableCell>
@@ -1677,18 +1689,20 @@ export default function AdminReportsPage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {(partnerStatsData?.stats ?? []).length === 0 ? (
+                        {partnerStatsError ? (
+                          <TableRow><TableCell colSpan={6} className="p-4"><AdminAlert onRetry={() => refetchPartnerStats()}>{language === "af" ? "Kon nie klik-statistieke laai nie." : "Could not load click stats."}</AdminAlert></TableCell></TableRow>
+                        ) : (partnerStatsData?.stats ?? []).length === 0 ? (
                           <TableRow><TableCell colSpan={6} className="p-0"><EmptyState icon={MousePointerClick} title={language === "af" ? "Nog geen vennootskakel-klikke nie" : "No partner link clicks yet"} description={language === "af" ? "Statistieke sal opdateer namate vennootskakels deur potensiële gebruikers besoek word." : "Stats will populate as partner links are visited by potential users."} /></TableCell></TableRow>
                         ) : (
                           (partnerStatsData?.stats ?? []).map((s: any, i: number) => {
                             const convPct = s.clicks > 0 ? Math.round((s.trialStarts / s.clicks) * 100) : 0;
                             return (
                               <TableRow key={i} className="hover:bg-[#1b1922] even:bg-[#1b1922]">
-                                <TableCell><code className="text-[10px] bg-muted/70 px-2 py-1 rounded-md font-mono">{s.source}</code></TableCell>
+                                <TableCell><code className="text-[10px] px-2 py-1 rounded-md font-mono text-white" style={{ background: "#1b1922" }}>{s.source}</code></TableCell>
                                 <TableCell className="text-center text-sm font-medium">{s.clicks}</TableCell>
                                 <TableCell className="text-center text-sm font-medium">{s.trialStarts}</TableCell>
                                 <TableCell className="text-center">
-                                  <Badge variant="outline" className={`text-[10px] ${convPct >= 20 ? "bg-[#0e0d12] border-[#1b1922] text-white" : convPct >= 5 ? "bg-[#0e0d12] border-[#1b1922] text-white" : "bg-red-500/10 border-red-500/30 text-white"}`}>{convPct}%</Badge>
+                                  <AdminBadge color={convPct >= 20 ? "#94F7C5" : convPct >= 5 ? "#FFE29A" : ADMIN_ERROR as NeonHex}>{convPct}%</AdminBadge>
                                 </TableCell>
                                 <TableCell className="text-xs text-white">{s.firstClick ? formatDate(s.firstClick, language, {}) : '—'}</TableCell>
                                 <TableCell className="text-xs text-white">{s.lastClick ? formatDate(s.lastClick, language, {}) : '—'}</TableCell>
@@ -1711,9 +1725,9 @@ export default function AdminReportsPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-xs text-white mb-4">
-                    {language === "af" ? "Aanmeldings en klikke toegeskryf aan" : "Sign-ups and clicks attributed to"} <code className="bg-muted/50 px-1.5 py-0.5 rounded text-[10px]">?ref=partner</code>,{" "}
-                    <code className="bg-muted/50 px-1.5 py-0.5 rounded text-[10px]">?ref=channel</code>, {language === "af" ? "en" : "and"}{" "}
-                    <code className="bg-muted/50 px-1.5 py-0.5 rounded text-[10px]">?ref=growth</code> {language === "af" ? "skakels." : "links."}
+                    {language === "af" ? "Aanmeldings en klikke toegeskryf aan" : "Sign-ups and clicks attributed to"} <code className="px-1.5 py-0.5 rounded text-[10px] text-white" style={{ background: "#1b1922" }}>?ref=partner</code>,{" "}
+                    <code className="px-1.5 py-0.5 rounded text-[10px] text-white" style={{ background: "#1b1922" }}>?ref=channel</code>, {language === "af" ? "en" : "and"}{" "}
+                    <code className="px-1.5 py-0.5 rounded text-[10px] text-white" style={{ background: "#1b1922" }}>?ref=growth</code> {language === "af" ? "skakels." : "links."}
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     {["ref:partner", "ref:channel", "ref:growth"].map((source) => {
@@ -1723,9 +1737,9 @@ export default function AdminReportsPage() {
                         : source === "ref:channel"
                           ? (language === "af" ? "Kanaal-leier" : "Channel Lead")
                           : (language === "af" ? "Groei-leier" : "Growth Lead");
-                      const accent = source === "ref:partner" ? "text-white bg-cyan-500/10 border-cyan-500/20" : source === "ref:channel" ? "text-white bg-cyan-500/10 border-cyan-500/20" : "text-white bg-emerald-500/10 border-emerald-500/20";
+                      const accentColor: NeonHex = source === "ref:partner" ? "#9FD8FF" : source === "ref:channel" ? "#C5B3FF" : "#94F7C5";
                       return (
-                        <div key={source} className={`rounded-2xl border p-4 ${accent}`}>
+                        <div key={source} className="rounded-2xl border p-4 text-white" style={{ background: halo(accentColor, 0.1), borderColor: halo(accentColor, 0.35) }}>
                           <p className="text-xs font-bold uppercase tracking-wider mb-1">{label}</p>
                           <p className="text-2xl font-bold">{stat?.clicks ?? 0}</p>
                           <p className="text-[10px] mt-0.5">{language === "af" ? "klikke" : "clicks"} · {stat?.trialStarts ?? 0} {language === "af" ? "proeflopies" : "trials"}</p>
@@ -1794,7 +1808,7 @@ export default function AdminReportsPage() {
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="text-xs text-white space-y-1.5 p-3 rounded-lg bg-muted/40 border border-border">
+            <div className="text-xs text-white space-y-1.5 p-3 rounded-lg" style={{ background: "#0e0d12", border: "1px solid #1b1922" }}>
               {language === "af" ? (
                 <>
                   <p><strong>Twee formate ondersteun:</strong></p>
@@ -1827,7 +1841,7 @@ export default function AdminReportsPage() {
                 <p className="text-[11px] text-white">
                   {(() => {
                     const { rows, error } = parseBulkSchools(bulkText);
-                    if (error) return <span className="text-amber-600">{error}</span>;
+                    if (error) return <span style={{ color: ADMIN_ERROR }}>{error}</span>;
                     return language === "af"
                       ? `${rows.length} skool${rows.length === 1 ? "" : "e"} gereed om in te voer`
                       : `${rows.length} school${rows.length === 1 ? "" : "s"} ready to import`;
@@ -1862,22 +1876,22 @@ export default function AdminReportsPage() {
             </div>
 
             {bulkResult && (
-              <div className="space-y-2 border-t border-border pt-3">
+              <div className="space-y-2 pt-3" style={{ borderTop: "1px solid #1b1922" }}>
                 <div className="grid grid-cols-4 gap-2 text-center text-xs">
-                  <div className="rounded-lg border border-border p-2">
-                    <p className="text-lg font-bold tabular-nums">{bulkResult.summary?.received ?? 0}</p>
+                  <div className="rounded-lg p-2" style={{ border: "1px solid #1b1922" }}>
+                    <p className="text-lg font-bold tabular-nums text-white">{bulkResult.summary?.received ?? 0}</p>
                     <p className="text-[10px] text-white uppercase">{language === "af" ? "Ontvang" : "Received"}</p>
                   </div>
-                  <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/5 p-2">
-                    <p className="text-lg font-bold tabular-nums text-emerald-600">{bulkResult.summary?.inserted ?? 0}</p>
+                  <div className="rounded-lg p-2" style={{ border: `1px solid ${halo("#94F7C5", 0.4)}`, background: halo("#94F7C5", 0.06) }}>
+                    <p className="text-lg font-bold tabular-nums" style={{ color: "#94F7C5" }}>{bulkResult.summary?.inserted ?? 0}</p>
                     <p className="text-[10px] text-white uppercase">{language === "af" ? "Ingevoeg" : "Inserted"}</p>
                   </div>
-                  <div className="rounded-lg border border-amber-500/40 bg-amber-500/5 p-2">
-                    <p className="text-lg font-bold tabular-nums text-amber-600">{bulkResult.summary?.skipped ?? 0}</p>
+                  <div className="rounded-lg p-2" style={{ border: `1px solid ${halo("#FFE29A", 0.4)}`, background: halo("#FFE29A", 0.06) }}>
+                    <p className="text-lg font-bold tabular-nums" style={{ color: "#FFE29A" }}>{bulkResult.summary?.skipped ?? 0}</p>
                     <p className="text-[10px] text-white uppercase">{language === "af" ? "Oorgeslaan" : "Skipped"}</p>
                   </div>
-                  <div className="rounded-lg border border-red-500/40 bg-red-500/5 p-2">
-                    <p className="text-lg font-bold tabular-nums text-red-600">{bulkResult.summary?.failed ?? 0}</p>
+                  <div className="rounded-lg p-2" style={{ border: `1px solid ${ADMIN_ERROR}66`, background: "rgba(255,141,161,0.06)" }}>
+                    <p className="text-lg font-bold tabular-nums" style={{ color: ADMIN_ERROR }}>{bulkResult.summary?.failed ?? 0}</p>
                     <p className="text-[10px] text-white uppercase">{language === "af" ? "Misluk" : "Failed"}</p>
                   </div>
                 </div>
@@ -1886,10 +1900,10 @@ export default function AdminReportsPage() {
                     <summary className="cursor-pointer text-white">{language === "af" ? "Sien besonderhede" : "View details"}</summary>
                     <div className="mt-2 space-y-1 max-h-40 overflow-y-auto">
                       {bulkResult.skipped?.map((s: any, i: number) => (
-                        <div key={`sk-${i}`} className="text-amber-700">{language === "af" ? "Ry" : "Row"} {s.row}: {s.name} — {s.reason}</div>
+                        <div key={`sk-${i}`} style={{ color: "#FFE29A" }}>{language === "af" ? "Ry" : "Row"} {s.row}: {s.name} — {s.reason}</div>
                       ))}
                       {bulkResult.failed?.map((f: any, i: number) => (
-                        <div key={`fl-${i}`} className="text-red-700">{language === "af" ? "Ry" : "Row"} {f.row}: {f.name ?? (language === "af" ? "(geen naam)" : "(no name)")} — {f.reason}</div>
+                        <div key={`fl-${i}`} style={{ color: ADMIN_ERROR }}>{language === "af" ? "Ry" : "Row"} {f.row}: {f.name ?? (language === "af" ? "(geen naam)" : "(no name)")} — {f.reason}</div>
                       ))}
                     </div>
                   </details>
@@ -1914,14 +1928,7 @@ export default function AdminReportsPage() {
               >
                 <Handshake className="w-4 h-4" style={{ color: "#FFE29A" }} />
               </span>
-              <span
-                style={{
-                  background: "linear-gradient(90deg, #FFE29A, #FFE29A, #FFE29A, #FFE29A)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                }}
-              >
+              <span style={{ color: "#FFE29A" }}>
                 {language === "af" ? "Voeg Vennoot By" : "Add Partner"}
               </span>
             </DialogTitle>
@@ -1942,7 +1949,7 @@ export default function AdminReportsPage() {
             const canSubmit = nameOk && emailOk && codeOk && phoneOk && commOk && !addPartnerMutation.isPending;
             const fieldBase = "w-full text-sm rounded-lg px-3 py-2 bg-black text-white placeholder:text-white focus:outline-none transition-none";
             const fieldStyle = (ok: boolean) => ({
-              border: ok ? "1px solid rgba(255,226,154,0.35)" : "1px solid #ef4444",
+              border: ok ? "1px solid rgba(255,226,154,0.35)" : `1px solid ${ADMIN_ERROR}`,
             });
             const labelCls = "text-[10px] font-black uppercase tracking-[0.1em] mb-1.5 block whitespace-nowrap";
             const provinces = [
@@ -1978,7 +1985,7 @@ export default function AdminReportsPage() {
                       maxLength={12}
                       data-testid="input-partner-code"
                     />
-                    <p className="text-[10px] mt-1" style={{ color: codeOk ? "#fff" : "#ef4444" }}>
+                    <p className="text-[10px] mt-1" style={{ color: codeOk ? "#fff" : ADMIN_ERROR }}>
                       {codeOk ? (language === "af" ? "Laat leeg om outomaties te genereer · 3–12 letters/syfers" : "Leave blank to auto-generate · 3–12 letters/numbers") : (language === "af" ? "Slegs 3–12 letters/syfers" : "3–12 letters/numbers only")}
                     </p>
                   </div>
@@ -1999,7 +2006,7 @@ export default function AdminReportsPage() {
                       />
                       <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm font-black" style={{ color: "#FFE29A" }}>%</span>
                     </div>
-                    <p className="text-[10px] mt-1" style={{ color: commOk ? "#fff" : "#ef4444" }}>
+                    <p className="text-[10px] mt-1" style={{ color: commOk ? "#fff" : ADMIN_ERROR }}>
                       {language === "af" ? "Per leerder · verstek 10%" : "Per learner · default 10%"}
                     </p>
                   </div>
@@ -2027,7 +2034,7 @@ export default function AdminReportsPage() {
                       onChange={e => setPartnerForm(f => ({ ...f, contactEmail: e.target.value }))}
                       placeholder="partner@example.co.za"
                     />
-                    {!emailOk && <p className="text-[10px] mt-1" style={{ color: "#ef4444" }}>{language === "af" ? "Nie 'n geldige e-pos nie" : "Not a valid email"}</p>}
+                    {!emailOk && <p className="text-[10px] mt-1" style={{ color: ADMIN_ERROR }}>{language === "af" ? "Nie 'n geldige e-pos nie" : "Not a valid email"}</p>}
                   </div>
 
                   <div>
@@ -2042,7 +2049,7 @@ export default function AdminReportsPage() {
                       maxLength={17}
                       placeholder="+27 XX XXX XXXX"
                     />
-                    {!phoneOk && <p className="text-[10px] mt-1" style={{ color: "#ef4444" }}>{language === "af" ? "Benodig 9 syfers na +27" : "Needs 9 digits after +27"}</p>}
+                    {!phoneOk && <p className="text-[10px] mt-1" style={{ color: ADMIN_ERROR }}>{language === "af" ? "Benodig 9 syfers na +27" : "Needs 9 digits after +27"}</p>}
                   </div>
 
                   <div>
@@ -2099,15 +2106,15 @@ export default function AdminReportsPage() {
                   >
                     {language === "af" ? "Kanselleer" : "Cancel"}
                   </button>
-                  <Button
-                    size="sm"
-                    variant="primary"
+                  <AdminButton
+                    color="#FFE29A"
+                    solid
                     disabled={!canSubmit}
                     onClick={() => addPartnerMutation.mutate()}
-                    data-testid="button-create-partner"
+                    testId="button-create-partner"
                   >
                     {addPartnerMutation.isPending ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> {language === "af" ? "Skep…" : "Creating…"}</> : <><Handshake className="w-3.5 h-3.5" /> {language === "af" ? "Skep vennoot" : "Create partner"}</>}
-                  </Button>
+                  </AdminButton>
                 </div>
               </div>
             );
@@ -2124,7 +2131,7 @@ export default function AdminReportsPage() {
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="text-xs text-white space-y-1.5 p-3 rounded-lg bg-muted/40 border border-border">
+            <div className="text-xs text-white space-y-1.5 p-3 rounded-lg" style={{ background: "#0e0d12", border: "1px solid #1b1922" }}>
               <p><strong>{language === "af" ? "Twee formate ondersteun:" : "Two formats supported:"}</strong></p>
               <p><strong>CSV</strong> — {language === "af"
                 ? "eerste ry opsionele opskrifte (name, contactEmail, contactPhone, schoolCode, commissionRate, province, district, notes). Sonder opskrifte word kolomme in daardie volgorde gelees."
@@ -2149,7 +2156,7 @@ export default function AdminReportsPage() {
                 <p className="text-[11px] text-white">
                   {(() => {
                     const { rows, error } = parseBulkPartners(partnerBulkText);
-                    if (error) return <span className="text-amber-600">{error}</span>;
+                    if (error) return <span style={{ color: ADMIN_ERROR }}>{error}</span>;
                     return language === "af"
                       ? `${rows.length} ${rows.length === 1 ? "vennoot" : "vennote"} gereed om in te voer`
                       : `${rows.length} partner${rows.length === 1 ? "" : "s"} ready to import`;
@@ -2157,8 +2164,9 @@ export default function AdminReportsPage() {
                 </p>
                 <div className="flex gap-2">
                   <Button size="sm" variant="outline" onClick={() => { setPartnerBulkText(""); setPartnerBulkResult(null); }}>{language === "af" ? "Maak skoon" : "Clear"}</Button>
-                  <Button
-                    size="sm"
+                  <AdminButton
+                    color="#FFE29A"
+                    solid
                     disabled={partnerBulkMutation.isPending}
                     onClick={() => {
                       const { rows, error } = parseBulkPartners(partnerBulkText);
@@ -2168,31 +2176,30 @@ export default function AdminReportsPage() {
                       }
                       partnerBulkMutation.mutate(rows);
                     }}
-                    data-testid="button-bulk-partners-submit"
-                    variant="primary"
+                    testId="button-bulk-partners-submit"
                   >
                     {partnerBulkMutation.isPending ? (language === "af" ? "Voer in…" : "Importing…") : (language === "af" ? "Voer in" : "Import")}
-                  </Button>
+                  </AdminButton>
                 </div>
               </div>
             </div>
             {partnerBulkResult && (
-              <div className="space-y-2 border-t border-border pt-3">
+              <div className="space-y-2 pt-3" style={{ borderTop: "1px solid #1b1922" }}>
                 <div className="grid grid-cols-4 gap-2 text-center text-xs">
-                  <div className="rounded-lg border border-border p-2">
-                    <p className="text-lg font-bold tabular-nums">{partnerBulkResult.summary?.received ?? 0}</p>
+                  <div className="rounded-lg p-2" style={{ border: "1px solid #1b1922" }}>
+                    <p className="text-lg font-bold tabular-nums text-white">{partnerBulkResult.summary?.received ?? 0}</p>
                     <p className="text-[10px] text-white uppercase">{language === "af" ? "Ontvang" : "Received"}</p>
                   </div>
-                  <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/5 p-2">
-                    <p className="text-lg font-bold tabular-nums text-emerald-600">{partnerBulkResult.summary?.inserted ?? 0}</p>
+                  <div className="rounded-lg p-2" style={{ border: `1px solid ${halo("#94F7C5", 0.4)}`, background: halo("#94F7C5", 0.06) }}>
+                    <p className="text-lg font-bold tabular-nums" style={{ color: "#94F7C5" }}>{partnerBulkResult.summary?.inserted ?? 0}</p>
                     <p className="text-[10px] text-white uppercase">{language === "af" ? "Ingevoeg" : "Inserted"}</p>
                   </div>
-                  <div className="rounded-lg border border-amber-500/40 bg-amber-500/5 p-2">
-                    <p className="text-lg font-bold tabular-nums text-amber-600">{partnerBulkResult.summary?.skipped ?? 0}</p>
+                  <div className="rounded-lg p-2" style={{ border: `1px solid ${halo("#FFE29A", 0.4)}`, background: halo("#FFE29A", 0.06) }}>
+                    <p className="text-lg font-bold tabular-nums" style={{ color: "#FFE29A" }}>{partnerBulkResult.summary?.skipped ?? 0}</p>
                     <p className="text-[10px] text-white uppercase">{language === "af" ? "Oorgeslaan" : "Skipped"}</p>
                   </div>
-                  <div className="rounded-lg border border-red-500/40 bg-red-500/5 p-2">
-                    <p className="text-lg font-bold tabular-nums text-red-600">{partnerBulkResult.summary?.failed ?? 0}</p>
+                  <div className="rounded-lg p-2" style={{ border: `1px solid ${ADMIN_ERROR}66`, background: "rgba(255,141,161,0.06)" }}>
+                    <p className="text-lg font-bold tabular-nums" style={{ color: ADMIN_ERROR }}>{partnerBulkResult.summary?.failed ?? 0}</p>
                     <p className="text-[10px] text-white uppercase">{language === "af" ? "Misluk" : "Failed"}</p>
                   </div>
                 </div>
@@ -2201,7 +2208,7 @@ export default function AdminReportsPage() {
                     <summary className="cursor-pointer text-white">{language === "af" ? "Sien bygevoegde vennote + kodes" : "View added partners + codes"}</summary>
                     <div className="mt-2 space-y-1 max-h-40 overflow-y-auto font-mono">
                       {partnerBulkResult.inserted.map((p: any, i: number) => (
-                        <div key={`in-${i}`} className="text-emerald-700">{p.name} → <code className="bg-muted/60 px-1">{p.code}</code></div>
+                        <div key={`in-${i}`} style={{ color: "#94F7C5" }}>{p.name} → <code className="px-1 text-white" style={{ background: "#1b1922" }}>{p.code}</code></div>
                       ))}
                     </div>
                   </details>
@@ -2211,10 +2218,10 @@ export default function AdminReportsPage() {
                     <summary className="cursor-pointer text-white">{language === "af" ? "Sien probleme" : "View issues"}</summary>
                     <div className="mt-2 space-y-1 max-h-40 overflow-y-auto">
                       {partnerBulkResult.skipped?.map((s: any, i: number) => (
-                        <div key={`sk-${i}`} className="text-amber-700">{language === "af" ? "Ry" : "Row"} {s.row}: {s.name} — {s.reason}</div>
+                        <div key={`sk-${i}`} style={{ color: "#FFE29A" }}>{language === "af" ? "Ry" : "Row"} {s.row}: {s.name} — {s.reason}</div>
                       ))}
                       {partnerBulkResult.failed?.map((f: any, i: number) => (
-                        <div key={`fl-${i}`} className="text-red-700">{language === "af" ? "Ry" : "Row"} {f.row}: {f.name ?? (language === "af" ? "(geen naam)" : "(no name)")} — {f.reason}</div>
+                        <div key={`fl-${i}`} style={{ color: ADMIN_ERROR }}>{language === "af" ? "Ry" : "Row"} {f.row}: {f.name ?? (language === "af" ? "(geen naam)" : "(no name)")} — {f.reason}</div>
                       ))}
                     </div>
                   </details>
@@ -2228,7 +2235,7 @@ export default function AdminReportsPage() {
       <AlertDialog open={!!pendingDelete} onOpenChange={(open) => { if (!open) setPendingDelete(null); }}>
         <AlertDialogContent className="bg-[#0e0d12] border-[#1b1922] text-white">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-red-400">
+            <AlertDialogTitle style={{ color: ADMIN_ERROR }}>
               {language === "af" ? "Verwyder gebruiker?" : "Delete user?"}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-white">
@@ -2242,7 +2249,8 @@ export default function AdminReportsPage() {
               {language === "af" ? "Kanselleer" : "Cancel"}
             </AlertDialogCancel>
             <AlertDialogAction
-              className="bg-red-600 hover:bg-red-500 text-white"
+              className="text-[#050508] hover:opacity-90"
+              style={{ background: ADMIN_ERROR }}
               disabled={deleteUserMutation.isPending}
               onClick={(e) => {
                 e.preventDefault();
@@ -2278,7 +2286,7 @@ interface CohortPressureRow {
 
 function GamificationTab() {
   const { language } = useLanguage();
-  const { data: dauData } = useQuery<{ data: Array<{ date: string; activeUsers: number }>; from: string; to: string }>({
+  const { data: dauData, isError: dauError, refetch: refetchDau } = useQuery<{ data: Array<{ date: string; activeUsers: number }>; from: string; to: string }>({
     queryKey: ["/api/admin/analytics/dau"],
   });
   const { data: quizData } = useQuery<{ total: number; completed: number; rate: number }>({
@@ -2287,7 +2295,7 @@ function GamificationTab() {
   const { data: badgeData } = useQuery<{ totalBadgesAwarded: number; uniqueUsers: number; avgPerUser: number }>({
     queryKey: ["/api/admin/analytics/badge-rate"],
   });
-  const { data: readinessData } = useQuery<Array<{ schoolName: string; avgReadiness: number; learnerCount: number }>>({
+  const { data: readinessData, isError: readinessError, refetch: refetchReadiness } = useQuery<Array<{ schoolName: string; avgReadiness: number; learnerCount: number }>>({
     queryKey: ["/api/admin/analytics/readiness-by-school"],
   });
 
@@ -2333,23 +2341,27 @@ function GamificationTab() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="rounded-2xl">
+          <Card className="rounded-2xl bg-black border-[#1b1922]">
             <CardContent className="p-5 space-y-4">
               <div className="flex items-center gap-2">
                 <Activity className="w-4 h-4 text-white" />
                 <h3 className="font-bold text-sm text-white">{language === "af" ? "Daaglikse Aktiewe Gebruikers (Laaste 30 Dae)" : "Daily Active Users (Last 30 Days)"}</h3>
               </div>
-              {dauData?.data?.length ? (
+              {dauError ? (
+                <AdminAlert onRetry={() => refetchDau()}>
+                  {language === "af" ? "Kon nie DAU-data laai nie." : "Could not load DAU data."}
+                </AdminAlert>
+              ) : dauData?.data?.length ? (
                 <div className="flex items-end gap-0.5 h-24">
                   {dauData.data.slice(-30).map((d, i) => {
                     const pct = peakDau > 0 ? (Number(d.activeUsers) / peakDau) * 100 : 0;
                     return (
                       <div key={i} className="flex-1 flex flex-col items-center justify-end h-full group relative">
                         <div
-                          className="w-full rounded-t-sm bg-cyan-500/60 group-hover:bg-cyan-500 transition-colors"
-                          style={{ height: `${Math.max(4, pct)}%` }}
+                          className="w-full rounded-t-sm transition-colors group-hover:brightness-125"
+                          style={{ height: `${Math.max(4, pct)}%`, background: halo("#9FF5E8", 0.6) }}
                         />
-                        <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[9px] bg-background border border-border rounded px-1 hidden group-hover:block whitespace-nowrap z-10">
+                        <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[9px] rounded px-1 hidden group-hover:block whitespace-nowrap z-10 text-white" style={{ background: "#0e0d12", border: "1px solid #1b1922" }}>
                           {d.date}: {d.activeUsers}
                         </div>
                       </div>
@@ -2368,25 +2380,29 @@ function GamificationTab() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-2xl">
+          <Card className="rounded-2xl bg-black border-[#1b1922]">
             <CardContent className="p-5 space-y-4">
               <div className="flex items-center gap-2">
                 <School className="w-4 h-4" style={{ color: "#9FF5E8" }} />
                 <h3 className="font-bold text-sm text-white">{language === "af" ? "Gem. Eksamengereedheid per Skool" : "Avg Exam Readiness by School"}</h3>
               </div>
-              {readinessData?.length ? (
+              {readinessError ? (
+                <AdminAlert onRetry={() => refetchReadiness()}>
+                  {language === "af" ? "Kon nie skoolgereedheid laai nie." : "Could not load school readiness."}
+                </AdminAlert>
+              ) : readinessData?.length ? (
                 <div className="space-y-2">
                   {readinessData.slice(0, 8).map((row, i) => {
                     const pct = Math.min(100, row.avgReadiness);
-                    const color = pct >= 70 ? "bg-emerald-500" : pct >= 50 ? "bg-amber-500" : "bg-red-500";
+                    const color = pct >= 70 ? "#94F7C5" : pct >= 50 ? "#FFE29A" : ADMIN_ERROR;
                     return (
                       <div key={i} className="space-y-1">
                         <div className="flex justify-between text-xs">
                           <span className="font-semibold text-white truncate max-w-[60%]">{row.schoolName}</span>
                           <span className="text-white">{pct.toFixed(0)}% · {row.learnerCount} {language === "af" ? "leerders" : "learners"}</span>
                         </div>
-                        <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-                          <div className={`h-full rounded-full ${color} transition-all`} style={{ width: `${pct}%` }} />
+                        <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "#1b1922" }}>
+                          <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: color }} />
                         </div>
                       </div>
                     );
@@ -2444,12 +2460,12 @@ function ReminderCampaignView() {
   const [milestonesInput, setMilestonesInput] = useState<string>("");
   const [editingKey, setEditingKey] = useState<string | null>(null);
 
-  const { data: campaignData, isLoading: campaignLoading } = useQuery<{ campaigns: CampaignSetting[] }>({
+  const { data: campaignData, isLoading: campaignLoading, isError: campaignError, refetch: refetchCampaigns } = useQuery<{ campaigns: CampaignSetting[] }>({
     queryKey: ["/api/admin/timetable/reminder-campaigns"],
     staleTime: 30000,
   });
 
-  const { data: logData, isLoading: logLoading } = useQuery<{ log: ReminderLogEntry[] }>({
+  const { data: logData, isLoading: logLoading, isError: logError, refetch: refetchLog } = useQuery<{ log: ReminderLogEntry[] }>({
     queryKey: ["/api/admin/timetable/reminder-log"],
     staleTime: 30000,
   });
@@ -2516,7 +2532,7 @@ function ReminderCampaignView() {
       <Card className="bg-black border-[#1b1922] rounded-2xl">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
-            <Bell className="w-4 h-4 text-primary" />
+            <Bell className="w-4 h-4" style={{ color: "#9FD8FF" }} />
             {language === "af" ? "Eksamen-Aftel Herinnering-Veldtogte" : "Exam Countdown Reminder Campaigns"}
           </CardTitle>
           <p className="text-xs text-white">
@@ -2525,7 +2541,11 @@ function ReminderCampaignView() {
         </CardHeader>
         <CardContent className="space-y-4">
           {campaignLoading ? (
-            <div className="space-y-2">{[1, 2].map(i => <div key={i} className="h-14 rounded-xl bg-muted/50 animate-pulse" />)}</div>
+            <div className="space-y-2">{[1, 2].map(i => <div key={i} className="h-14 rounded-xl animate-pulse" style={{ background: "#0e0d12" }} />)}</div>
+          ) : campaignError ? (
+            <AdminAlert onRetry={() => refetchCampaigns()}>
+              {language === "af" ? "Kon nie veldtog-instellings laai nie." : "Could not load campaign settings."}
+            </AdminAlert>
           ) : campaigns.length === 0 ? (
             <div className="flex flex-col items-center py-8 text-center gap-2">
               <Bell className="w-8 h-8 text-white" />
@@ -2534,26 +2554,27 @@ function ReminderCampaignView() {
           ) : (
             <div className="space-y-3">
               {campaigns.map(c => (
-                <div key={c.cohortKey} className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl border border-border/60 p-4 bg-muted/10">
+                <div key={c.cohortKey} className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl p-4" style={{ border: "1px solid #1b1922", background: "#0e0d12" }}>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold truncate">{cohortLabel(c.cohortKey)}</p>
                     {editingKey === c.cohortKey ? (
                       <div className="flex items-center gap-2 mt-2">
                         <input
-                          className="text-xs border border-border rounded px-2 py-1 bg-background w-32"
+                          className={`${adminInputClass} w-32`}
+                          style={adminInputStyle}
                           placeholder="30,14,7"
                           value={milestonesInput}
                           onChange={e => setMilestonesInput(e.target.value)}
                         />
-                        <Button size="sm" variant="default" className="h-7 text-xs" onClick={() => saveMilestones(c.cohortKey)} disabled={milestonesMutation.isPending}>
+                        <AdminButton color="#9FD8FF" solid className="h-7" onClick={() => saveMilestones(c.cohortKey)} disabled={milestonesMutation.isPending}>
                           {language === "af" ? "Stoor" : "Save"}
-                        </Button>
+                        </AdminButton>
                         <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setEditingKey(null)}>{language === "af" ? "Kanselleer" : "Cancel"}</Button>
                       </div>
                     ) : (
                       <div className="flex items-center gap-1.5 mt-1 flex-wrap">
                         {(c.milestones || [30, 14, 7]).map(m => (
-                          <Badge key={m} variant="outline" className="text-[10px] px-1.5 py-0.5">{m}d</Badge>
+                          <AdminBadge key={m} color="#9FD8FF" className="normal-case">{m}d</AdminBadge>
                         ))}
                         <Button size="sm" variant="ghost" className="h-5 text-[10px] px-1.5 py-0.5 text-white" onClick={() => { setEditingKey(c.cohortKey); setMilestonesInput((c.milestones || [30,14,7]).join(",")); }}>
                           {language === "af" ? "Wysig dae" : "Edit days"}
@@ -2562,45 +2583,43 @@ function ReminderCampaignView() {
                     )}
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    <Button
-                      size="sm"
-                      variant={c.enabled ? "default" : "outline"}
-                      className={`h-8 text-xs gap-1.5 ${c.enabled ? "bg-[#9FF5E8] hover:bg-[#9FF5E8]/90 text-black border-0" : "border-border/60"}`}
+                    <AdminButton
+                      color="#9FF5E8"
+                      solid={c.enabled}
                       onClick={() => toggleMutation.mutate({ cohortKey: c.cohortKey, enabled: !c.enabled })}
                       disabled={toggleMutation.isPending}
                     >
                       {c.enabled ? <Bell className="w-3 h-3" /> : <BellOff className="w-3 h-3" />}
                       {c.enabled ? (language === "af" ? "Geaktiveer" : "Enabled") : (language === "af" ? "Gedeaktiveer" : "Disabled")}
-                    </Button>
+                    </AdminButton>
                   </div>
                 </div>
               ))}
             </div>
           )}
 
-          <div className="flex flex-wrap gap-2 pt-2 border-t border-border/30">
-            <Button
-              size="sm"
-              variant="default"
-              className="gap-1.5 h-8 text-xs"
+          <div className="flex flex-wrap gap-2 pt-2" style={{ borderTop: "1px solid #1b1922" }}>
+            <AdminButton
+              color="#9FD8FF"
+              solid
               onClick={() => sendMutation.mutate(undefined)}
               disabled={sendMutation.isPending}
             >
               {sendMutation.isPending ? <RotateCcw className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
               {sendMutation.isPending ? (language === "af" ? "Stuur tans…" : "Dispatching…") : (language === "af" ? "Stuur Herinneringe Nou" : "Send Reminders Now")}
-            </Button>
+            </AdminButton>
           </div>
 
           {runResult && (
-            <div className="rounded-xl border border-border/60 bg-muted/10 p-4 text-xs space-y-1">
+            <div className="rounded-xl p-4 text-xs space-y-1" style={{ border: "1px solid #1b1922", background: "#0e0d12" }}>
               <p className="font-semibold text-sm">{language === "af" ? "Laaste Aflewering Resultaat" : "Last Dispatch Result"}</p>
               <p>{language === "af" ? "Leerders geskandeer" : "Learners scanned"}: <span className="font-mono font-bold">{runResult.learnersScanned}</span></p>
               <p>{language === "af" ? "Kennisgewings gestuur" : "Notifications sent"}: <span className="font-mono font-bold text-[#9FF5E8]">{runResult.notificationsSent}</span></p>
               <p>{language === "af" ? "Oorgeslaan (reeds gestuur of veldtog af)" : "Skipped (already sent or campaign off)"}: <span className="font-mono font-bold text-white">{runResult.notificationsSkipped}</span></p>
               {runResult.errors.length > 0 && (
                 <div className="pt-1">
-                  <p className="font-semibold text-destructive">{language === "af" ? "Foute" : "Errors"} ({runResult.errors.length}):</p>
-                  {runResult.errors.slice(0, 5).map((e, i) => <p key={i} className="text-destructive/80 font-mono truncate">{e}</p>)}
+                  <p className="font-semibold" style={{ color: ADMIN_ERROR }}>{language === "af" ? "Foute" : "Errors"} ({runResult.errors.length}):</p>
+                  {runResult.errors.slice(0, 5).map((e, i) => <p key={i} className="font-mono truncate" style={{ color: `${ADMIN_ERROR}cc` }}>{e}</p>)}
                 </div>
               )}
             </div>
@@ -2615,7 +2634,7 @@ function ReminderCampaignView() {
       <Card className="bg-black border-[#1b1922] rounded-2xl">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
-            <FileText className="w-4 h-4 text-primary" />
+            <FileText className="w-4 h-4" style={{ color: "#9FD8FF" }} />
             {language === "af" ? "Herinnering Stuur-Log" : "Reminder Send Log"}
           </CardTitle>
           <p className="text-xs text-white">
@@ -2624,7 +2643,11 @@ function ReminderCampaignView() {
         </CardHeader>
         <CardContent>
           {logLoading ? (
-            <div className="space-y-2">{[1,2,3].map(i => <div key={i} className="h-8 rounded bg-muted/50 animate-pulse" />)}</div>
+            <div className="space-y-2">{[1,2,3].map(i => <div key={i} className="h-8 rounded animate-pulse" style={{ background: "#0e0d12" }} />)}</div>
+          ) : logError ? (
+            <AdminAlert onRetry={() => refetchLog()}>
+              {language === "af" ? "Kon nie herinnering-log laai nie." : "Could not load the reminder log."}
+            </AdminAlert>
           ) : log.length === 0 ? (
             <div className="flex flex-col items-center py-10 text-center gap-2">
               <Bell className="w-8 h-8 text-white" />
@@ -2816,7 +2839,7 @@ function CustomReminderCard() {
                 key={t.id}
                 type="button"
                 onClick={() => applyTemplate(t)}
-                className={`text-[11px] px-2.5 py-1 rounded-full border transition ${activeTemplate === t.id ? "ring-2 ring-offset-2 ring-offset-background ring-[#C5B3FF] " : ""}${t.tone} hover:opacity-80`}
+                className={`text-[11px] px-2.5 py-1 rounded-full border transition ${activeTemplate === t.id ? "ring-2 ring-offset-2 ring-offset-black ring-[#C5B3FF] " : ""}${t.tone} hover:opacity-80`}
                 data-testid={`template-${t.id}`}
               >
                 {language === "af" ? t.labelAf : t.labelEn}
@@ -2829,7 +2852,8 @@ function CustomReminderCard() {
           <div>
             <label className="text-xs font-semibold mb-1 block">{language === "af" ? "Titel" : "Title"}</label>
             <input
-              className="w-full text-sm border border-border rounded-lg px-3 py-2 bg-background"
+              className={adminInputClass}
+              style={adminInputStyle}
               value={title}
               onChange={e => { setTitle(e.target.value); setActiveTemplate(null); }}
               placeholder={language === "af" ? "bv. ⏰ 7 dae oor" : "e.g. ⏰ 7 days to go"}
@@ -2840,7 +2864,8 @@ function CustomReminderCard() {
           <div>
             <label className="text-xs font-semibold mb-1 block">{language === "af" ? "Deurkliek-URL" : "Click-through URL"}</label>
             <input
-              className="w-full text-sm border border-border rounded-lg px-3 py-2 bg-background"
+              className={adminInputClass}
+              style={adminInputStyle}
               value={url}
               onChange={e => setUrl(e.target.value)}
               placeholder="/dashboard"
@@ -2868,7 +2893,8 @@ function CustomReminderCard() {
             <select
               value={target}
               onChange={e => setTarget(e.target.value as any)}
-              className="w-full text-sm border border-border rounded-lg px-3 py-2 bg-background"
+              className={`${adminSelectClass} w-full`}
+              style={adminSelectStyle}
               data-testid="select-custom-target"
             >
               <option value="all">{language === "af" ? "Alle leerders" : "All learners"}</option>
@@ -2882,7 +2908,8 @@ function CustomReminderCard() {
               <select
                 value={schoolId}
                 onChange={e => setSchoolId(e.target.value)}
-                className="w-full text-sm border border-border rounded-lg px-3 py-2 bg-background"
+                className={`${adminSelectClass} w-full`}
+                style={adminSelectStyle}
                 data-testid="select-custom-school"
               >
                 <option value="">{language === "af" ? "— Kies 'n skool —" : "— Choose a school —"}</option>
@@ -2896,7 +2923,8 @@ function CustomReminderCard() {
             <div className="md:col-span-2">
               <label className="text-xs font-semibold mb-1 block">{language === "af" ? "Leerder gebruiker-ID" : "Learner user ID"}</label>
               <input
-                className="w-full text-sm border border-border rounded-lg px-3 py-2 bg-background font-mono"
+                className={`${adminInputClass} font-mono`}
+                style={adminInputStyle}
                 value={userId}
                 onChange={e => setUserId(e.target.value)}
                 placeholder="user_xxx"
@@ -2910,21 +2938,21 @@ function CustomReminderCard() {
           <p className="text-[11px] text-white">
             {language === "af" ? "Stootkennisgewings word onmiddellik gestuur. Leerders sonder 'n stootintekening kry 'n e-pos-bedoelingslog." : "Push notifications go out instantly. Learners without a push subscription get an email-intent log."}
           </p>
-          <Button
-            size="sm"
+          <AdminButton
+            color="#C5B3FF"
+            solid
             disabled={!valid || sendCustom.isPending}
             onClick={() => sendCustom.mutate()}
-            data-testid="button-send-custom"
-            variant="primary"
+            testId="button-send-custom"
           >
             {sendCustom.isPending ? (language === "af" ? "Stuur…" : "Sending…") : (language === "af" ? "Stuur nou" : "Send now")}
-          </Button>
+          </AdminButton>
         </div>
 
         {result && (
-          <div className="grid grid-cols-4 gap-2 text-center text-xs border-t border-border pt-3">
-            <div className="rounded-lg border border-border p-2">
-              <p className="text-lg font-bold tabular-nums">{result.recipientsTargeted}</p>
+          <div className="grid grid-cols-4 gap-2 text-center text-xs pt-3" style={{ borderTop: "1px solid #1b1922" }}>
+            <div className="rounded-lg p-2" style={{ border: "1px solid #1b1922" }}>
+              <p className="text-lg font-bold tabular-nums text-white">{result.recipientsTargeted}</p>
               <p className="text-[10px] text-white uppercase">{language === "af" ? "Geteiken" : "Targeted"}</p>
             </div>
             <div className="rounded-lg border border-[#9FF5E8]/40 bg-[#9FF5E8]/10 p-2">
@@ -3098,7 +3126,7 @@ function ParentRatePromptCard() {
 
 function ExamPressureView() {
   const { language } = useLanguage();
-  const { data, isLoading } = useQuery<{ cohort: CohortPressureRow[] }>({
+  const { data, isLoading, isError, refetch } = useQuery<{ cohort: CohortPressureRow[] }>({
     queryKey: ["/api/admin/timetable/cohort-pressure"],
     staleTime: 60000,
   });
@@ -3109,10 +3137,10 @@ function ExamPressureView() {
     ? { final_sprint: "Finale Sprong", exam_prep_mode: "Eksamen Voorb.", focused_revision: "Gefokus Hers.", build_mastery: "Bou Bemeestering" }
     : { final_sprint: "Final Sprint", exam_prep_mode: "Exam Prep", focused_revision: "Focused Rev.", build_mastery: "Build Mastery" };
   const urgencyColor: Record<string, string> = {
-    final_sprint: "bg-red-100 border-red-200 text-red-800",
-    exam_prep_mode: "bg-amber-100 border-amber-200 text-amber-800",
-    focused_revision: "bg-blue-100 border-blue-200 text-blue-800",
-    build_mastery: "bg-emerald-100 border-emerald-200 text-emerald-800",
+    final_sprint: ADMIN_ERROR,
+    exam_prep_mode: "#FFE29A",
+    focused_revision: "#9FD8FF",
+    build_mastery: "#94F7C5",
   };
 
   return (
@@ -3120,7 +3148,7 @@ function ExamPressureView() {
       <Card className="bg-black border-[#1b1922] rounded-2xl">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-primary" />
+            <Calendar className="w-4 h-4" style={{ color: "#9FD8FF" }} />
             {language === "af" ? "NSS 2026 — Kohort Eksamendruk Hitkaart" : "NSC 2026 — Cohort Exam Pressure Heatmap"}
           </CardTitle>
           <p className="text-xs text-white">
@@ -3130,8 +3158,12 @@ function ExamPressureView() {
         <CardContent>
           {isLoading ? (
             <div className="space-y-2">
-              {[1, 2, 3].map(i => <div key={i} className="h-12 rounded-xl bg-muted/50 animate-pulse" />)}
+              {[1, 2, 3].map(i => <div key={i} className="h-12 rounded-xl animate-pulse" style={{ background: "#0e0d12" }} />)}
             </div>
+          ) : isError ? (
+            <AdminAlert onRetry={() => refetch()}>
+              {language === "af" ? "Kon nie eksamendruk-data laai nie." : "Could not load exam pressure data."}
+            </AdminAlert>
           ) : cohort.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <Calendar className="w-10 h-10 text-white mb-3" />
@@ -3156,21 +3188,21 @@ function ExamPressureView() {
                 </TableHeader>
                 <TableBody>
                   {cohort.map((row, i) => (
-                    <TableRow key={i} className={`hover:bg-[#1b1922] even:bg-[#1b1922] ${row.lowReadinessCount > 0 ? "border-l-2 border-red-300" : ""}`}>
+                    <TableRow key={i} className="hover:bg-[#1b1922] even:bg-[#1b1922]" style={row.lowReadinessCount > 0 ? { borderLeft: `2px solid ${ADMIN_ERROR}` } : undefined}>
                       <TableCell className="font-medium text-sm">{row.subjectName}</TableCell>
                       <TableCell className="text-center text-sm">P{row.paperNumber}</TableCell>
                       <TableCell className="text-xs text-white">
                         {formatDate(row.examDate + "T00:00:00", language, { weekday: "short", day: "numeric", month: "short", year: "numeric" })}
                       </TableCell>
                       <TableCell className="text-center">
-                        <span className={`text-sm font-bold ${row.daysRemaining <= 14 ? "text-red-600" : row.daysRemaining <= 30 ? "text-amber-600" : "text-white"}`}>
+                        <span className="text-sm font-bold" style={{ color: row.daysRemaining <= 14 ? ADMIN_ERROR : row.daysRemaining <= 30 ? "#FFE29A" : "#fff" }}>
                           {row.daysRemaining}
                         </span>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" className={`text-[10px] font-semibold ${urgencyColor[row.urgencyState] || urgencyColor.build_mastery}`}>
+                        <AdminBadge color={(urgencyColor[row.urgencyState] || urgencyColor.build_mastery) as NeonHex}>
                           {urgencyLabel[row.urgencyState] || row.urgencyState}
-                        </Badge>
+                        </AdminBadge>
                       </TableCell>
                       <TableCell className="text-center">
                         <div className="flex items-center justify-center gap-1.5">
@@ -3181,8 +3213,8 @@ function ExamPressureView() {
                       <TableCell className="text-center">
                         {row.lowReadinessCount > 0 ? (
                           <div className="flex items-center justify-center gap-1">
-                            <AlertTriangle className="w-3 h-3 text-red-500" />
-                            <span className="text-sm font-bold text-red-600">{row.lowReadinessCount}</span>
+                            <AlertTriangle className="w-3 h-3" style={{ color: ADMIN_ERROR }} />
+                            <span className="text-sm font-bold" style={{ color: ADMIN_ERROR }}>{row.lowReadinessCount}</span>
                           </div>
                         ) : (
                           <CheckCircle2 className="w-4 h-4 text-white mx-auto" />
@@ -3253,7 +3285,7 @@ function DailyFocusPushView() {
   const [page, setPage] = useState(0);
   const PAGE_SIZE = 25;
 
-  const { data: trendData, isLoading: trendLoading } = useQuery<DailyFocusTrendData>({
+  const { data: trendData, isLoading: trendLoading, isError: trendError, refetch: refetchTrend } = useQuery<DailyFocusTrendData>({
     queryKey: ["/api/admin/push/daily-focus-log/trend"],
     queryFn: async () => {
       const res = await fetch("/api/admin/push/daily-focus-log/trend?days=7");
@@ -3269,7 +3301,7 @@ function DailyFocusPushView() {
     failed: Number(p.failed),
   }));
 
-  const { data, isLoading, isError } = useQuery<DailyFocusPushData>({
+  const { data, isLoading, isError, refetch } = useQuery<DailyFocusPushData>({
     queryKey: ["/api/admin/push/daily-focus-log", selectedDate],
     queryFn: async () => {
       const res = await fetch(`/api/admin/push/daily-focus-log?date=${selectedDate}&limit=500`);
@@ -3334,7 +3366,11 @@ function DailyFocusPushView() {
         </CardHeader>
         <CardContent className="pt-0">
           {trendLoading ? (
-            <div className="h-48 rounded-xl bg-muted/40 animate-pulse" />
+            <div className="h-48 rounded-xl animate-pulse" style={{ background: "#0e0d12" }} />
+          ) : trendError ? (
+            <AdminAlert onRetry={() => refetchTrend()}>
+              {language === "af" ? "Kon nie tendensdata laai nie." : "Could not load trend data."}
+            </AdminAlert>
           ) : trendPoints.length === 0 ? (
             <div className="flex flex-col items-center gap-3 py-10 text-center">
               <BellOff className="w-7 h-7 text-white" />
@@ -3363,7 +3399,7 @@ function DailyFocusPushView() {
                 />
                 <Legend wrapperStyle={{ fontSize: 11, color: "#fff", paddingTop: 8 }} />
                 <Bar dataKey="learnersReached" name={trendLabels.learnersReached} fill="#9FF5E8" radius={[3, 3, 0, 0]} />
-                <Bar dataKey="failed" name={trendLabels.failed} fill="#f87171" radius={[3, 3, 0, 0]} />
+                <Bar dataKey="failed" name={trendLabels.failed} fill={ADMIN_ERROR} radius={[3, 3, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           )}
@@ -3396,28 +3432,28 @@ function DailyFocusPushView() {
           {/* Summary counters */}
           {isLoading ? (
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-              {[1,2,3,4,5].map(i => <div key={i} className="h-20 rounded-xl bg-muted/40 animate-pulse" />)}
+              {[1,2,3,4,5].map(i => <div key={i} className="h-20 rounded-xl animate-pulse" style={{ background: "#0e0d12" }} />)}
             </div>
           ) : isError ? (
-            <div className="flex items-center gap-2 text-red-500 text-sm py-4">
-              <AlertCircle className="w-4 h-4" /> {language === "af" ? "Kon nie data laai nie." : "Could not load data."}
-            </div>
+            <AdminAlert onRetry={() => refetch()}>
+              {language === "af" ? "Kon nie data laai nie." : "Could not load data."}
+            </AdminAlert>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-              <div className="rounded-xl bg-blue-500/10 border border-blue-500/20 p-4 text-center">
-                <div className="text-2xl font-black text-blue-400">{Number(summary?.learners_reached ?? 0)}</div>
+              <div className="rounded-xl p-4 text-center" style={{ background: halo("#9FD8FF", 0.1), border: `1px solid ${halo("#9FD8FF", 0.2)}` }}>
+                <div className="text-2xl font-black" style={{ color: "#9FD8FF" }}>{Number(summary?.learners_reached ?? 0)}</div>
                 <div className="text-[10px] text-white mt-1 uppercase tracking-wide">{t.learnersReached}</div>
               </div>
-              <div className="rounded-xl bg-purple-500/10 border border-purple-500/20 p-4 text-center">
-                <div className="text-2xl font-black text-purple-400">{Number(summary?.parents_reached ?? 0)}</div>
+              <div className="rounded-xl p-4 text-center" style={{ background: halo("#C5B3FF", 0.1), border: `1px solid ${halo("#C5B3FF", 0.2)}` }}>
+                <div className="text-2xl font-black" style={{ color: "#C5B3FF" }}>{Number(summary?.parents_reached ?? 0)}</div>
                 <div className="text-[10px] text-white mt-1 uppercase tracking-wide">{t.parentsReached}</div>
               </div>
-              <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-4 text-center">
-                <div className="text-2xl font-black text-red-400">{Number(summary?.failed ?? 0)}</div>
+              <div className="rounded-xl p-4 text-center" style={{ background: "rgba(255,141,161,0.1)", border: `1px solid ${ADMIN_ERROR}33` }}>
+                <div className="text-2xl font-black" style={{ color: ADMIN_ERROR }}>{Number(summary?.failed ?? 0)}</div>
                 <div className="text-[10px] text-white mt-1 uppercase tracking-wide">{t.failed}</div>
               </div>
-              <div className="rounded-xl bg-yellow-500/10 border border-yellow-500/20 p-4 text-center">
-                <div className="text-2xl font-black text-yellow-400">{skipped}</div>
+              <div className="rounded-xl p-4 text-center" style={{ background: halo("#FFE29A", 0.1), border: `1px solid ${halo("#FFE29A", 0.2)}` }}>
+                <div className="text-2xl font-black" style={{ color: "#FFE29A" }}>{skipped}</div>
                 <div className="text-[10px] text-white mt-1 uppercase tracking-wide">{t.skipped}</div>
               </div>
               <div className="rounded-xl bg-[#0e0d12] border border-[#1b1922] p-4 text-center">
@@ -3443,9 +3479,15 @@ function DailyFocusPushView() {
         <CardContent className="p-0">
           {isLoading ? (
             <div className="space-y-2 p-4">
-              {[1,2,3,4,5].map(i => <div key={i} className="h-10 rounded-lg bg-muted/40 animate-pulse" />)}
+              {[1,2,3,4,5].map(i => <div key={i} className="h-10 rounded-lg animate-pulse" style={{ background: "#0e0d12" }} />)}
             </div>
-          ) : isError ? null : allRows.length === 0 ? (
+          ) : isError ? (
+            <div className="p-4">
+              <AdminAlert onRetry={() => refetch()}>
+                {language === "af" ? "Kon nie gebruikerrekords laai nie." : "Could not load user records."}
+              </AdminAlert>
+            </div>
+          ) : allRows.length === 0 ? (
             <div className="flex flex-col items-center gap-3 py-12 text-center">
               <BellOff className="w-8 h-8 text-white" />
               <p className="text-sm text-white">{t.noData}</p>
@@ -3469,7 +3511,7 @@ function DailyFocusPushView() {
                       <TableRow key={`${row.user_id}-${i}`} className="border-[#1b1922] hover:bg-[#1b1922]">
                         <TableCell className="py-2">
                           <div className="flex flex-col gap-0.5">
-                            <span className="text-xs font-medium text-foreground">
+                            <span className="text-xs font-medium text-white">
                               {row.first_name || row.last_name
                                 ? `${row.first_name ?? ""} ${row.last_name ?? ""}`.trim()
                                 : row.email ?? row.user_id}
@@ -3480,28 +3522,21 @@ function DailyFocusPushView() {
                           </div>
                         </TableCell>
                         <TableCell className="py-2">
-                          <Badge
-                            variant="outline"
-                            className={`text-[10px] px-2 py-0.5 capitalize ${
-                              row.channel === "learner"
-                                ? "border-blue-500/40 text-blue-400"
-                                : "border-purple-500/40 text-purple-400"
-                            }`}
-                          >
+                          <AdminBadge color={row.channel === "learner" ? "#9FD8FF" : "#C5B3FF"} className="capitalize">
                             {row.channel}
-                          </Badge>
+                          </AdminBadge>
                         </TableCell>
                         <TableCell className="py-2">
                           <span className="text-[11px] text-white font-mono">{row.payload_tag ?? "—"}</span>
                         </TableCell>
                         <TableCell className="py-2">
                           {row.success ? (
-                            <div className="flex items-center gap-1 text-green-400">
+                            <div className="flex items-center gap-1" style={{ color: "#94F7C5" }}>
                               <CheckCircle2 className="w-3.5 h-3.5" />
                               <span className="text-[11px]">{language === "af" ? "Geslaag" : "Sent"}</span>
                             </div>
                           ) : (
-                            <div className="flex items-center gap-1 text-red-400">
+                            <div className="flex items-center gap-1" style={{ color: ADMIN_ERROR }}>
                               <AlertCircle className="w-3.5 h-3.5" />
                               <span className="text-[11px]">{language === "af" ? "Misluk" : "Failed"}</span>
                             </div>
@@ -3509,7 +3544,7 @@ function DailyFocusPushView() {
                         </TableCell>
                         <TableCell className="py-2 max-w-[200px]">
                           {row.error ? (
-                            <span className="text-[10px] text-red-400/80 font-mono truncate block" title={row.error}>
+                            <span className="text-[10px] font-mono truncate block" style={{ color: `${ADMIN_ERROR}cc` }} title={row.error}>
                               {row.error}
                             </span>
                           ) : (

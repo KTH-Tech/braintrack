@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { AdminTopNav } from "@/components/admin-top-nav";
-import { AdminGround, NeonShell, AdminBadge, adminInputClass, adminInputStyle, type NeonHex } from "@/components/admin-ui";
+import { AdminGround, NeonShell, AdminBadge, AdminAlert, adminInputClass, adminInputStyle, type NeonHex } from "@/components/admin-ui";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -101,11 +101,11 @@ export default function AdminProductsPage() {
     toggleTitle: isAf ? "Wissel taal" : "Toggle Language",
   };
 
-  const { data: plansData, isLoading: plansLoading } = useQuery<{ plans: Plan[] }>({
+  const { data: plansData, isLoading: plansLoading, isError: plansError, refetch: refetchPlans } = useQuery<{ plans: Plan[] }>({
     queryKey: ["/api/admin/plans"],
   });
 
-  const { data: productsData, isLoading: productsLoading } = useQuery<{ products: Product[] }>({
+  const { data: productsData, isLoading: productsLoading, isError: productsError, refetch: refetchProducts } = useQuery<{ products: Product[] }>({
     queryKey: ["/api/admin/products"],
   });
 
@@ -204,23 +204,32 @@ export default function AdminProductsPage() {
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {plansLoading ? (
                 <p className="text-sm text-white col-span-3">{tr.loadingPlans}</p>
+              ) : plansError ? (
+                <div className="col-span-3">
+                  <AdminAlert testId="plans-load-error" onRetry={() => refetchPlans()} retryLabel={isAf ? "Probeer weer" : "Retry"}>
+                    {isAf ? "Kon nie pakkette laai nie." : "Could not load plans."}
+                  </AdminAlert>
+                </div>
               ) : plans.length === 0 ? (
                 <div className="col-span-3 text-center py-16 text-white">
                   <CreditCard className="w-8 h-8 mx-auto mb-3 opacity-40" />
                   <p className="text-sm font-medium">{tr.noPlans}</p>
-                  <p className="text-xs mt-1">{tr.noPlansHelp} <code className="bg-muted px-1 rounded text-xs">npm run db:seed</code> {tr.ifEmpty}</p>
+                  <p className="text-xs mt-1">{tr.noPlansHelp} <code className="bg-[#0e0d12] border border-[#1b1922] px-1 rounded text-xs">npm run db:seed</code> {tr.ifEmpty}</p>
                 </div>
               ) : plans.map(plan => {
                 const tierEntry = tierLabel[plan.tier] ?? { en: `Tier ${plan.tier}`, af: `Vlak ${plan.tier}`, color: "#9FD8FF" as NeonHex };
                 const tier = { label: isAf ? tierEntry.af : tierEntry.en, color: tierEntry.color };
                 const featureList: string[] = Array.isArray(plan.features) ? plan.features as string[] : [];
                 return (
-                  <NeonShell key={plan.id} color={plan.is_active ? tier.color : "#9FD8FF"} className={`transition-opacity ${!plan.is_active ? "opacity-50" : ""}`}>
+                  <NeonShell key={plan.id} color={tier.color} dimmed={!plan.is_active}>
                     <div className="p-5 pt-4 space-y-3">
                       <div className="flex items-start justify-between gap-2">
                         <div>
                           <h3 className="text-base font-black text-white">{isAf ? plan.name_af : plan.name_en}</h3>
-                          <AdminBadge color={tier.color} className="mt-1">{tier.label}</AdminBadge>
+                          <span className="inline-flex items-center gap-1.5 mt-1">
+                            <AdminBadge color={tier.color}>{tier.label}</AdminBadge>
+                            {!plan.is_active && <AdminBadge color="#FFB7E5">{tr.inactive}</AdminBadge>}
+                          </span>
                         </div>
                         <div className="text-right">
                           <div className="text-lg font-black text-white">R{plan.monthly_price_rands}<span className="text-xs font-normal text-white">{tr.perMonth}</span></div>
@@ -245,7 +254,7 @@ export default function AdminProductsPage() {
                               {typeof f === "string" ? f : JSON.stringify(f)}
                             </li>
                           ))}
-                          {featureList.length > 4 && <li className="text-[10px] text-white ml-4.5">+{featureList.length - 4} {tr.more}</li>}
+                          {featureList.length > 4 && <li className="text-[10px] text-white ml-5">+{featureList.length - 4} {tr.more}</li>}
                         </ul>
                       )}
                       <div className="flex items-center justify-between pt-2" style={{ borderTop: "1px solid #1b1922" }}>
@@ -283,6 +292,10 @@ export default function AdminProductsPage() {
             </div>
             {productsLoading ? (
               <p className="text-sm text-white">{tr.loadingProducts}</p>
+            ) : productsError ? (
+              <AdminAlert testId="products-load-error" onRetry={() => refetchProducts()} retryLabel={isAf ? "Probeer weer" : "Retry"}>
+                {isAf ? "Kon nie produkte laai nie." : "Could not load products."}
+              </AdminAlert>
             ) : products.length === 0 ? (
               <div className="text-center py-16 text-white">
                 <Package className="w-8 h-8 mx-auto mb-3 opacity-40" />
@@ -306,11 +319,14 @@ export default function AdminProductsPage() {
                     </h3>
                     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                       {products.filter(p => p.category === cat).map(product => (
-                        <NeonShell key={product.id} color="#FFB7E5" className={`transition-opacity ${!product.is_active ? "opacity-50" : ""}`}>
+                        <NeonShell key={product.id} color="#FFB7E5" dimmed={!product.is_active}>
                           <div className="p-4">
                             <div className="flex items-start justify-between gap-2 mb-2">
                               <div className="flex-1 min-w-0">
-                                <p className="font-bold text-sm text-white truncate">{isAf ? product.name_af : product.name_en}</p>
+                                <p className="font-bold text-sm text-white truncate">
+                                  {isAf ? product.name_af : product.name_en}
+                                  {!product.is_active && <AdminBadge color="#FFB7E5" className="ml-2 align-middle">{tr.inactive}</AdminBadge>}
+                                </p>
                                 <p className="text-[11px] text-white mt-0.5 line-clamp-2">{(isAf && product.description_af) ? product.description_af : product.description_en}</p>
                               </div>
                               <div className="text-right shrink-0">
@@ -358,7 +374,7 @@ export default function AdminProductsPage() {
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <button
-                        aria-label="Decrease threshold"
+                        aria-label={isAf ? "Verminder drempel" : "Decrease threshold"}
                         onClick={() => setNudgeThresholdInput(Math.max(1, currentThreshold - 1))}
                         disabled={currentThreshold <= 1 || configLoading}
                         className="h-8 w-8 rounded-lg flex items-center justify-center text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all"
@@ -370,7 +386,7 @@ export default function AdminProductsPage() {
                         {configLoading ? "…" : currentThreshold}
                       </span>
                       <button
-                        aria-label="Increase threshold"
+                        aria-label={isAf ? "Verhoog drempel" : "Increase threshold"}
                         onClick={() => setNudgeThresholdInput(Math.min(100, currentThreshold + 1))}
                         disabled={currentThreshold >= 100 || configLoading}
                         className="h-8 w-8 rounded-lg flex items-center justify-center text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all"
@@ -432,7 +448,7 @@ export default function AdminProductsPage() {
               {/* Name row */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-bold uppercase tracking-widest text-white">Name (EN)</Label>
+                  <Label className="text-xs font-bold uppercase tracking-widest text-white">{isAf ? "Naam (EN)" : "Name (EN)"}</Label>
                   <Input
                     value={form.nameEn}
                     onChange={e => setField("nameEn", e.target.value)}
@@ -441,7 +457,7 @@ export default function AdminProductsPage() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-bold uppercase tracking-widest text-white">Name (AF)</Label>
+                  <Label className="text-xs font-bold uppercase tracking-widest text-white">{isAf ? "Naam (AF)" : "Name (AF)"}</Label>
                   <Input
                     value={form.nameAf}
                     onChange={e => setField("nameAf", e.target.value)}
@@ -463,7 +479,7 @@ export default function AdminProductsPage() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-bold uppercase tracking-widest text-white">Category</Label>
+                  <Label className="text-xs font-bold uppercase tracking-widest text-white">{isAf ? "Kategorie" : "Category"}</Label>
                   <Input
                     value={form.category}
                     onChange={e => setField("category", e.target.value)}
@@ -476,7 +492,7 @@ export default function AdminProductsPage() {
                   </datalist>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-bold uppercase tracking-widest text-white">Price (R)</Label>
+                  <Label className="text-xs font-bold uppercase tracking-widest text-white">{isAf ? "Prys (R)" : "Price (R)"}</Label>
                   <Input
                     type="number"
                     min={0}
@@ -490,7 +506,7 @@ export default function AdminProductsPage() {
 
               {/* Description EN */}
               <div className="space-y-1.5">
-                <Label className="text-xs font-bold uppercase tracking-widest text-white">Description (EN)</Label>
+                <Label className="text-xs font-bold uppercase tracking-widest text-white">{isAf ? "Beskrywing (EN)" : "Description (EN)"}</Label>
                 <Textarea
                   value={form.descriptionEn}
                   onChange={e => setField("descriptionEn", e.target.value)}
@@ -502,7 +518,7 @@ export default function AdminProductsPage() {
 
               {/* Description AF */}
               <div className="space-y-1.5">
-                <Label className="text-xs font-bold uppercase tracking-widest text-white">Description (AF)</Label>
+                <Label className="text-xs font-bold uppercase tracking-widest text-white">{isAf ? "Beskrywing (AF)" : "Description (AF)"}</Label>
                 <Textarea
                   value={form.descriptionAf}
                   onChange={e => setField("descriptionAf", e.target.value)}

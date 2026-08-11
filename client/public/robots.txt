@@ -31,16 +31,19 @@ Allow: /features
 Allow: /research
 Allow: /subscribe
 Allow: /for-schools
-Allow: /partner-schools
 Allow: /past-papers
 Allow: /calendar
 Allow: /privacy-policy
 Allow: /terms-of-service
 Allow: /cookie-policy
 Allow: /refund-policy
+Allow: /llms.txt
 
 # Auth-gated learner surface — indexing would leak thin pages and dead links.
 Disallow: /dashboard
+Disallow: /classroom
+Disallow: /predictor
+Disallow: /learn/
 Disallow: /subjects
 Disallow: /subject/
 Disallow: /tutor

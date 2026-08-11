@@ -31,15 +31,21 @@ export default function ParentPurchasePage() {
         className="prismglass-panel max-w-lg w-full text-center px-6 py-10 sm:px-10 sm:py-12 relative z-10"
         data-testid="parent-purchase-coming-soon"
       >
-        <div className="absolute -top-3 right-4 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.15em] bg-gradient-to-r from-[#FFE29A] to-[#FFB7E5] text-white border border-[#FFE29A] shadow-lg">
+        <div className="absolute -top-3 right-4 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.15em] bg-gradient-to-r from-[#FFE29A] to-[#FFB7E5] text-[#050508] border border-[#FFE29A] shadow-lg">
           ⭐ Early Tester
         </div>
 
-        <div className="w-14 h-14 mx-auto rounded-2xl flex items-center justify-center bg-primary/10 border border-primary/30 mb-5">
-          <Sparkles className="w-7 h-7 text-primary" />
+        <div
+          className="w-14 h-14 mx-auto rounded-2xl flex items-center justify-center mb-5"
+          style={{ background: "#0e0d12", border: "1.5px solid #C5B3FF" }}
+        >
+          <Sparkles className="w-7 h-7" style={{ color: "#C5B3FF" }} />
         </div>
 
-        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-primary mb-2">
+        <p
+          className="uppercase mb-2"
+          style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 16, letterSpacing: "0.22em", color: "#9FF5E8", transform: "rotate(-2deg)", display: "inline-block" }}
+        >
           {isAf ? "Student Life" : "Student Life"}
         </p>
 
@@ -49,7 +55,7 @@ export default function ParentPurchasePage() {
 
         <div className="flex items-center justify-center gap-2 mb-4 text-xs font-bold text-foreground">
           <Zap className="w-3.5 h-3.5 text-[#FFE29A]" />
-          <span style={{ color: "#6EE7F9" }}>
+          <span style={{ color: "#9FF5E8" }}>
             {isAf ? "Jy kry alles nou — geen wag" : "You get everything now — no waiting"}
           </span>
         </div>
@@ -68,7 +74,7 @@ export default function ParentPurchasePage() {
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link href={homeHref}>
-            <Button className="w-full sm:w-auto" data-testid="button-back-home">
+            <Button variant="primary" className="w-full sm:w-auto" data-testid="button-back-home">
               <ArrowLeft className="w-4 h-4 mr-2" />
               {isAuthenticated
                 ? isAf
