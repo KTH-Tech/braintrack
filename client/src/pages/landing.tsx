@@ -30,6 +30,7 @@ import { useLanguage } from "@/lib/language-context";
 import { PRODUCTS_JSONLD } from "@/lib/seo-products";
 import { useRolePromptNav } from "@/components/role-prompt-modal";
 import heroGraffiti from "@/assets/hero-graffiti.png";
+import heroGraffitiAf from "@/assets/hero-graffiti-af.png";
 import { PublicNav } from "@/components/public-nav";
 import { PublicFooter } from "@/components/public-footer";
 import { RizzDemo } from "@/components/landing/rizz-demo";
@@ -776,7 +777,7 @@ export default function LandingPage() {
             }}
           >
             <img
-              src={heroGraffiti}
+              src={language === "af" ? heroGraffitiAf : heroGraffiti}
               alt={t.heroAlt}
               data-testid="hero-title"
               style={{ display: "block", width: "100%", height: "auto", objectFit: "contain" }}
