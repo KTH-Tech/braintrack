@@ -69,6 +69,11 @@ type CoverageReport = {
 type SortKey = "readiness" | "quality" | "total" | "name";
 type FilterKey = "all" | "unreleased" | "released" | "below";
 type GenCount = 10 | 25 | 50;
+/** Language the WRITTEN-RESPONSE generator (Generate Exam / High-Yield /
+ * Coverage's "generate missing") writes in — threaded to /simulate-subject
+ * and /generate-topic as `language`. Global, like genCount: one toggle
+ * drives every generate action on this page instead of a per-subject picker. */
+type GenLang = "en" | "af";
 
 const P = { mint: "#94F7C5", sky: "#9FD8FF", pink: "#FFB7E5", butter: "#FFE29A", violet: "#C5B3FF" };
 const ACCENTS = [P.mint, P.sky, P.pink, P.violet, P.butter];
@@ -90,6 +95,7 @@ export default function AdminSimulatorPage() {
 
   // Toolbar state (all client-side over fetched subjects)
   const [genCount, setGenCount] = useState<GenCount>(10);
+  const [genLang, setGenLang] = useState<GenLang>("en");
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<SortKey>("readiness");
   const [filter, setFilter] = useState<FilterKey>("all");
@@ -107,7 +113,7 @@ export default function AdminSimulatorPage() {
 
   const crunch = useMutation({
     mutationFn: async (subject: string) => {
-      const r = await apiRequest("POST", "/api/admin/dbe-ingestion/simulate-subject", { subject, count: genCount });
+      const r = await apiRequest("POST", "/api/admin/dbe-ingestion/simulate-subject", { subject, count: genCount, language: genLang });
       return r.json();
     },
     onMutate: (s) => markBusy(s, "simulate"),
@@ -233,7 +239,7 @@ export default function AdminSimulatorPage() {
   // Sequentially generate for a list of CAPS topics (already ordered high-yield
   // first by the endpoint). One /generate-topic call per topic (count=1) so the
   // owner sees "3/10…" progress; refreshes coverage + overview at the end.
-  async function generateForTopics(subject: string, topicsToGen: string[], count: number = genCount, label?: string) {
+  async function generateForTopics(subject: string, topicsToGen: string[], count: number = genCount, label?: string, lang: GenLang = genLang) {
     if (topicsToGen.length === 0 || covGen) return;
     let ok = 0;
     let failed = 0;
@@ -241,7 +247,7 @@ export default function AdminSimulatorPage() {
       const topic = topicsToGen[i];
       setCovGen({ done: i, total: topicsToGen.length, current: topic });
       try {
-        const r = await apiRequest("POST", "/api/admin/simulator/generate-topic", { subject, topic, count });
+        const r = await apiRequest("POST", "/api/admin/simulator/generate-topic", { subject, topic, count, language: lang });
         const d = await r.json();
         if (Number(d?.generated ?? 0) > 0) ok++;
         else failed++;
@@ -339,7 +345,7 @@ export default function AdminSimulatorPage() {
     let failed = 0;
     for (let i = 0; i < targets.length; i++) {
       try {
-        const r = await apiRequest("POST", "/api/admin/dbe-ingestion/simulate-subject", { subject: targets[i], count: genCount });
+        const r = await apiRequest("POST", "/api/admin/dbe-ingestion/simulate-subject", { subject: targets[i], count: genCount, language: genLang });
         const d = await r.json();
         banked += Number(d?.generated ?? 0);
       } catch {
@@ -492,6 +498,39 @@ export default function AdminSimulatorPage() {
                 ))}
               </div>
 
+              {/* Generation LANGUAGE selector — drives Generate Exam, High-Yield,
+                  Coverage's "generate missing", and Generate for ALL. Written-
+                  response content only (Quiz MCQs is a separate pipeline). */}
+              <div style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
+                <span style={{ fontSize: 12 }}>{t("Language", "Taal")}:</span>
+                {([
+                  ["en", "EN"],
+                  ["af", "AF"],
+                ] as [GenLang, string][]).map(([l, label]) => (
+                  <button
+                    key={l}
+                    onClick={() => setGenLang(l)}
+                    disabled={anyBusy}
+                    data-testid={`sim-lang-${l}`}
+                    title={t("Language the generator writes new questions in", "Taal waarin die generator nuwe vrae skryf")}
+                    style={{
+                      background: genLang === l ? P.violet : "transparent",
+                      color: genLang === l ? "#050508" : "#fff",
+                      border: `2px solid ${P.violet}`,
+                      borderRadius: 9,
+                      padding: "6px 11px",
+                      fontWeight: 900,
+                      fontSize: 12.5,
+                      cursor: anyBusy ? "not-allowed" : "pointer",
+                      opacity: anyBusy ? 0.55 : 1,
+                      minHeight: 36,
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+
               <div style={{ flex: "1 1 auto" }} />
 
               <button
@@ -503,7 +542,7 @@ export default function AdminSimulatorPage() {
                 {bulkGen ? <Loader2 className="animate-spin" style={{ width: 15, height: 15 }} /> : <Layers style={{ width: 15, height: 15 }} />}
                 {bulkGen
                   ? `${t("Generating", "Genereer")} ${bulkGen.done}/${bulkGen.total}…`
-                  : `${t("Generate for ALL", "Genereer vir ALMAL")} (${visible.length} ×${genCount})`}
+                  : `${t("Generate for ALL", "Genereer vir ALMAL")} (${visible.length} ×${genCount} · ${genLang.toUpperCase()})`}
               </button>
 
               <button
@@ -740,7 +779,7 @@ export default function AdminSimulatorPage() {
                           }}
                         >
                           {subjOp === "simulate" ? <Loader2 className="animate-spin" style={{ width: 15, height: 15 }} /> : <Zap style={{ width: 15, height: 15 }} />}
-                          {t("Generate Exam", "Genereer Eksamen")} ×{genCount}
+                          {t("Generate Exam", "Genereer Eksamen")} ×{genCount} · {genLang.toUpperCase()}
                         </button>
                         {/* Read-only QA — verify stored scores meet the
                             release criteria before/after release. */}
@@ -786,7 +825,7 @@ export default function AdminSimulatorPage() {
                           onClick={() => generateHighYield(s.subject)}
                           disabled={covGen !== null || lockThis}
                           data-testid={`sim-highyield-${s.subject}`}
-                          title={t(`Generate for this subject's HIGH-YIELD (top exam-frequency) CAPS topics — missing first, ×${genCount} each`, `Genereer vir hierdie vak se HOË-OPBRENGS (top eksamenfrekwensie) KABV-onderwerpe — ontbrekende eerste, ×${genCount} elk`)}
+                          title={t(`Generate for this subject's HIGH-YIELD (top exam-frequency) CAPS topics — missing first, ×${genCount} each, in ${genLang.toUpperCase()}`, `Genereer vir hierdie vak se HOË-OPBRENGS (top eksamenfrekwensie) KABV-onderwerpe — ontbrekende eerste, ×${genCount} elk, in ${genLang.toUpperCase()}`)}
                           style={{
                             display: "inline-flex", alignItems: "center", gap: 6,
                             background: P.butter, color: "#050508",
