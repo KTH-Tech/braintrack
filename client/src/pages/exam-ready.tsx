@@ -991,16 +991,25 @@ export default function ExamReadyPage() {
                       const matchingSubjectIds = (subjects ?? [])
                         .filter(s => s.code && CODE_TO_SIM_CODE[s.code] === selectedSubject)
                         .map(s => s.id);
+                      // AUDIT FIX: /api/exam-papers returns EN and AF rows mixed —
+                      // matching on subjectId/paperNumber alone could silently hand
+                      // an Afrikaans-preferring learner an English-tagged paper (or
+                      // vice versa) for a REAL, TIMED, monitored session. Filter to
+                      // the learner's language first; if nothing exists in that
+                      // language, block with a clear message rather than starting
+                      // the wrong-language paper silently.
+                      const wantedLang = isAfrikaans ? "Afrikaans" : "English";
+                      const inLanguage = (examPapers ?? []).filter(
+                        p => matchingSubjectIds.includes(p.subjectId) && p.language === wantedLang,
+                      );
                       const matchedPaper =
-                        (examPapers ?? []).find(
-                          p => matchingSubjectIds.includes(p.subjectId) && p.paperNumber === selectedPaperNum,
-                        ) ?? (examPapers ?? []).find(p => matchingSubjectIds.includes(p.subjectId));
+                        inLanguage.find(p => p.paperNumber === selectedPaperNum) ?? inLanguage[0];
                       if (!matchedPaper) {
                         toast({
-                          title: isAfrikaans ? "Fout" : "Error",
+                          title: isAfrikaans ? "Nie beskikbaar in Afrikaans nie" : "Not available in this language",
                           description: isAfrikaans
-                            ? "Kon nie eksamen-sessie begin nie. Probeer asseblief 'n ander vraestel."
-                            : "Could not start an exam session. Please try another paper.",
+                            ? "Hierdie vraestel is nog nie in Afrikaans beskikbaar nie. Kies asseblief 'n ander vraestel of wissel na Engels."
+                            : "This paper isn't available in English yet. Please try another paper or switch language.",
                           variant: "destructive",
                         });
                         return;

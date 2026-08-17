@@ -278,7 +278,7 @@ export default function ProgressPage() {
         };
       case "practise_weakest":
         return {
-          title: isAf ? `Fokus op ${nextMove.subjectName}` : `Focus on ${nextMove.subjectName}`,
+          title: isAf ? `Fokus op ${nextMove.subjectNameAf ?? nextMove.subjectName}` : `Focus on ${nextMove.subjectName}`,
           body: isAf
             ? `Dis jou laagste vak op ${nextMove.accuracy}%. 'n Kort sessie hier skuif jou totaal die vinnigste.`
             : `It's your lowest subject at ${nextMove.accuracy}%. A short session here moves your overall number fastest.`,
@@ -287,7 +287,7 @@ export default function ProgressPage() {
         };
       case "widen":
         return {
-          title: isAf ? `Begin met ${nextMove.subjectName}` : `Open up ${nextMove.subjectName}`,
+          title: isAf ? `Begin met ${nextMove.subjectNameAf ?? nextMove.subjectName}` : `Open up ${nextMove.subjectName}`,
           body: isAf
             ? "Alles wat jy aangepak het lyk gesond. Tyd om 'n vak by te voeg wat jy nog nie aangeraak het nie."
             : "Everything you've touched is looking healthy. Time to pick up a subject you haven't started yet.",
@@ -699,7 +699,7 @@ export default function ProgressPage() {
                               >
                                 <span className="text-2xl shrink-0">{getSubjectIcon(subject.subjectName)}</span>
                                 <div className="min-w-0 flex-1">
-                                  <p className="font-bold text-white text-sm truncate">{subject.subjectName}</p>
+                                  <p className="font-bold text-white text-sm truncate">{isAf ? subject.subjectNameAf : subject.subjectName}</p>
                                   <p className="text-[11px] font-bold uppercase tracking-widest mt-0.5" style={{ color: hex }}>
                                     {isAf ? "Nog nie begin nie" : "Not started yet"}
                                   </p>
@@ -910,7 +910,7 @@ export default function ProgressPage() {
                                   <div className="flex items-center justify-between mb-2.5 gap-2">
                                     <span className="font-bold text-white flex items-center gap-2 text-sm min-w-0 flex-1">
                                       <span className="text-lg shrink-0">{getSubjectIcon(subject.subjectName)}</span>
-                                      <span className="truncate">{subject.subjectName}</span>
+                                      <span className="truncate">{isAf ? subject.subjectNameAf : subject.subjectName}</span>
                                     </span>
                                     <span className="font-bold text-base shrink-0" style={{ color: barColor }}>
                                       {subject.accuracy}%
@@ -961,7 +961,7 @@ export default function ProgressPage() {
                                     data-testid={`idle-subject-${subject.subjectId}`}
                                   >
                                     <span>{getSubjectIcon(subject.subjectName)}</span>
-                                    {subject.subjectName}
+                                    {isAf ? subject.subjectNameAf : subject.subjectName}
                                   </span>
                                 </Link>
                               ))}
@@ -1023,8 +1023,8 @@ export default function ProgressPage() {
                                       data-testid={`topic-strength-${t.topicId}`}
                                     >
                                       <div className="min-w-0 flex-1">
-                                        <p className="font-bold text-white text-[13px] truncate">{t.topicName}</p>
-                                        <p className="text-[10px] font-semibold text-white truncate">{t.subjectName}</p>
+                                        <p className="font-bold text-white text-[13px] truncate">{isAf ? t.topicNameAf : t.topicName}</p>
+                                        <p className="text-[10px] font-semibold text-white truncate">{isAf ? t.subjectNameAf : t.subjectName}</p>
                                       </div>
                                       <span className="font-black text-base shrink-0" style={{ color: HEX.mint }}>
                                         {t.masteryScore}%
@@ -1052,9 +1052,9 @@ export default function ProgressPage() {
                                           data-testid={`topic-focus-${t.topicId}`}
                                         >
                                           <div className="min-w-0 flex-1">
-                                            <p className="font-bold text-white text-[13px] truncate">{t.topicName}</p>
+                                            <p className="font-bold text-white text-[13px] truncate">{isAf ? t.topicNameAf : t.topicName}</p>
                                             <p className="text-[10px] font-semibold text-white truncate">
-                                              {t.subjectName} · {t.questionsAttempted} {isAf ? "vrae" : "Qs"}
+                                              {isAf ? t.subjectNameAf : t.subjectName} · {t.questionsAttempted} {isAf ? "vrae" : "Qs"}
                                             </p>
                                           </div>
                                           <span className="font-black text-base shrink-0" style={{ color: hex }}>
@@ -1118,7 +1118,7 @@ export default function ProgressPage() {
                                 >
                                   <div className="min-w-0 flex-1 flex items-center gap-2">
                                     <span className="text-lg shrink-0">{getSubjectIcon(topic.subjectName)}</span>
-                                    <p className="font-bold text-white text-sm truncate">{topic.topicName}</p>
+                                    <p className="font-bold text-white text-sm truncate">{isAf ? topic.topicNameAf : topic.topicName}</p>
                                   </div>
                                   <span className="font-bold text-base shrink-0 ml-3" style={{ color: hex }}>{topic.accuracy}%</span>
                                   <ArrowRight className="w-4 h-4 shrink-0 ml-2" style={{ color: hex }} />

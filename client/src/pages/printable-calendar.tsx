@@ -13,15 +13,24 @@ import brandLogo from "@/assets/handoff/icon-transparent.png";
 // hardcoded list here carried fabricated dates (Maths P1 was 7 days off).
 type PrintableExam = { date: string; subject: string; time: string };
 function useOfficialExamDates(): { exams: PrintableExam[]; isLoading: boolean; isError: boolean } {
+  const { language } = useLanguage();
+  const isAf = language === "af";
   const { data, isLoading, isError } = useQuery<any>({ queryKey: ["/api/timetable"], staleTime: 60 * 60 * 1000 });
   const entries = data?.entries ?? [];
   const exams = entries
     .filter((e: any) => !e.isNonExaminationDay && (e.session === "November" || !e.session))
-    .map((e: any) => ({
-      date: String(e.examDate ?? e.exam_date ?? "").slice(0, 10),
-      subject: e.paperNumber ? `${e.subjectName ?? e.subject_name} P${e.paperNumber}` : (e.subjectName ?? e.subject_name ?? ""),
-      time: String(e.startTime ?? e.start_time ?? "09:00").slice(0, 5),
-    }))
+    .map((e: any) => {
+      // AUDIT FIX: subject names were always English — nsc_timetable has no
+      // Afrikaans column, so /api/timetable now attaches subjectNameAf via a
+      // server-side lookup map. "P" (Paper) becomes "V" (Vraestel) for AF.
+      const name = (isAf ? e.subjectNameAf : e.subjectName) ?? e.subjectName ?? e.subject_name ?? "";
+      const paperLabel = isAf ? "V" : "P";
+      return {
+        date: String(e.examDate ?? e.exam_date ?? "").slice(0, 10),
+        subject: e.paperNumber ? `${name} ${paperLabel}${e.paperNumber}` : name,
+        time: String(e.startTime ?? e.start_time ?? "09:00").slice(0, 5),
+      };
+    })
     .sort((a: PrintableExam, b: PrintableExam) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
   return { exams, isLoading, isError };
 }

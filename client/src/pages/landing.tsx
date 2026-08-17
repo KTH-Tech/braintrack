@@ -30,6 +30,7 @@ import { useLanguage } from "@/lib/language-context";
 import { PRODUCTS_JSONLD } from "@/lib/seo-products";
 import { useRolePromptNav } from "@/components/role-prompt-modal";
 import heroGraffiti from "@/assets/hero-graffiti.png";
+import heroGraffitiAf from "@/assets/hero-graffiti-af.png";
 import { PublicNav } from "@/components/public-nav";
 import { PublicFooter } from "@/components/public-footer";
 import { RizzDemo } from "@/components/landing/rizz-demo";
@@ -756,27 +757,12 @@ export default function LandingPage() {
               ? "BrainTrack — Grade 12 Matric past papers, memos & AI tutor for South Africa"
               : "BrainTrack — Graad 12-matriek vraestelle, memorandums en KI-tutor vir Suid-Afrika"}
           </h1>
-          {/* Hero centerpiece — founder's final pick (2026-08-10): the graffiti
-              art hero from the launch deploy. The transparent PNG's black
-              linework vanished on the near-black ground before, so the art now
-              sits on a light "concrete wall" panel (every stroke visible) with
-              a slow float (bt-heromark @ --mr:0deg = pure bob, exempt from the
-              reduced-motion kill-switch via its own media rule). */}
-          <div
-            style={{
-              background: "#FBF7ED",
-              border: "2.5px solid #050508",
-              borderRadius: 24,
-              padding: "14px 14px 8px",
-              maxWidth: "var(--pub-maxw)",
-              margin: "0 auto",
-              boxShadow: "8px 8px 0 0 #C5B3FF",
-              animation: "bt-heromark 7s ease-in-out infinite",
-              ["--mr" as any]: "0deg",
-            }}
-          >
+          {/* Hero centerpiece — BRAINTRACK MX-26 graffiti art (2026-08-14).
+              Transparent PNG, no panel behind it, no float animation — sits
+              directly on the page ground. */}
+          <div style={{ maxWidth: "var(--pub-maxw)", margin: "0 auto" }}>
             <img
-              src={heroGraffiti}
+              src={language === "af" ? heroGraffitiAf : heroGraffiti}
               alt={t.heroAlt}
               data-testid="hero-title"
               style={{ display: "block", width: "100%", height: "auto", objectFit: "contain" }}

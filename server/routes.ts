@@ -8300,6 +8300,7 @@ Create comprehensive study notes for the topic provided.`;
         return {
           subjectId: s.id,
           subjectName: s.name,
+          subjectNameAf: s.nameAfrikaans,
           accuracy: acc,
           initialMark,
           improvement,
@@ -8315,7 +8316,9 @@ Create comprehensive study notes for the topic provided.`;
         .map(sp => ({
           topicId: sp.subjectId,
           topicName: sp.subjectName,
+          topicNameAf: sp.subjectNameAf,
           subjectName: sp.subjectName,
+          subjectNameAf: sp.subjectNameAf,
           accuracy: sp.accuracy,
         }));
 
@@ -8373,8 +8376,10 @@ Create comprehensive study notes for the topic provided.`;
       let topicMasteryList: Array<{
         topicId: number;
         topicName: string;
+        topicNameAf: string;
         subjectId: number;
         subjectName: string;
+        subjectNameAf: string;
         masteryScore: number;
         masteryBand: "red" | "amber" | "green";
         questionsAttempted: number;
@@ -8390,7 +8395,9 @@ Create comprehensive study notes for the topic provided.`;
                 masteryBand: topicMastery.masteryBand,
                 questionsAttempted: topicMastery.questionsAttempted,
                 topicName: topics.name,
+                topicNameAf: topics.nameAfrikaans,
                 subjectName: subjects.name,
+                subjectNameAf: subjects.nameAfrikaans,
               })
               .from(topicMastery)
               .innerJoin(topics, eq(topics.id, topicMastery.topicId))
@@ -8405,8 +8412,10 @@ Create comprehensive study notes for the topic provided.`;
         topicMasteryList = tmRows.map(r => ({
           topicId: r.topicId,
           topicName: r.topicName,
+          topicNameAf: r.topicNameAf,
           subjectId: r.subjectId,
           subjectName: r.subjectName,
+          subjectNameAf: r.subjectNameAf,
           masteryScore: r.masteryScore,
           masteryBand: (r.masteryBand === "green" || r.masteryBand === "amber" ? r.masteryBand : "red"),
           questionsAttempted: r.questionsAttempted,
@@ -11511,11 +11520,16 @@ Create comprehensive study notes for the topic provided.`;
   }
 
   // ── Simulator screen ──────────────────────────────────────────────────────
-  // GET /api/admin/simulator/overview — per-subject state of the simulated
-  // pool: how much exists, its quality, passages, and release versions.
-  app.get("/api/admin/simulator/overview", isAuthenticated, requireRole("admin"), async (_req: any, res) => {
+  // GET /api/admin/simulator/overview?language=en|af — per-subject state of
+  // the simulated pool: how much exists, its quality, passages, and release
+  // versions. LANGUAGE-SCOPED: every count is for the requested language
+  // only (default "en") — mixing EN+AF into one number made the Afrikaans
+  // tab's counts look frozen no matter how much AF content was generated,
+  // since the total was dominated by the (usually much larger) EN pool.
+  app.get("/api/admin/simulator/overview", isAuthenticated, requireRole("admin"), async (req: any, res) => {
     try {
       const { dbeSimulatedQuestions: sqT } = await import("@shared/schema");
+      const overviewLang: LangCode = normalizeLang(req.query.language);
       let stats: Array<{ subject: string; total: number; avgQuality: number; ge92: number; withStimulus: number; released: number; unreleasedEligible: number; latestVersion: number; topics: number }>;
       let migrationPending = false;
       try {
@@ -11532,6 +11546,7 @@ Create comprehensive study notes for the topic provided.`;
             topics: sql<number>`count(distinct ${sqT.topic})::int`,
           })
           .from(sqT)
+          .where(eq(sqT.language, overviewLang))
           .groupBy(sqT.subject)
           .orderBy(sqT.subject);
       } catch {
@@ -11539,6 +11554,7 @@ Create comprehensive study notes for the topic provided.`;
         // missing) — degrade to the pre-migration columns via raw SQL so the
         // Simulator still lists subjects WITH working Generate buttons,
         // instead of an empty page. Release stays disabled until migrated.
+        // `language` predates 0036/0037, so it's safe to filter on here too.
         migrationPending = true;
         console.warn("[simulator/overview] falling back to pre-0036/0037 columns — run the pending migrations");
         const r = await db.execute<{ subject: string; total: number; avgquality: number; ge92: number; topics: number }>(sql`
@@ -11546,7 +11562,7 @@ Create comprehensive study notes for the topic provided.`;
                  ROUND(AVG(COALESCE(quality_score,0)))::int AS avgquality,
                  COUNT(*) FILTER (WHERE COALESCE(quality_score,0) >= 92)::int AS ge92,
                  COUNT(DISTINCT topic)::int AS topics
-            FROM dbe_simulated_questions GROUP BY subject ORDER BY subject`);
+            FROM dbe_simulated_questions WHERE language = ${overviewLang} GROUP BY subject ORDER BY subject`);
         stats = (r.rows ?? []).map((x) => ({
           subject: x.subject, total: x.total, avgQuality: x.avgquality, ge92: x.ge92,
           withStimulus: 0, released: 0, unreleasedEligible: 0, latestVersion: 0, topics: x.topics,
@@ -13079,9 +13095,17 @@ Return ONLY valid JSON: { "accuracy": N, "capsAlignment": N, "structureScore": N
         ? req.body.topic.trim().slice(0, 200)
         : null;
 
+    // Language to generate IN (not just translate after — the source exemplars,
+    // the AI prompt, and the stored row are all pinned to this language). Short
+    // code ("en"/"af"), same convention as generated_questions.language and
+    // dbe_simulated_questions.language. Defaults to English (unchanged
+    // behaviour for every existing caller that doesn't pass this).
+    const targetLangCode = normalizeLang(req.body?.language);
+    const targetLangDb = toDbLanguage(targetLangCode); // "English" | "Afrikaans" — matches dbe_verbatim_questions.language
+
     try {
       const { dbeVerbatimQuestions: vqTable, dbeTopicFrequency: tfTable, topics: topicsTable } = await import("@shared/schema");
-      const { eq, desc, inArray } = await import("drizzle-orm");
+      const { eq, and, desc, inArray } = await import("drizzle-orm");
 
       // === STEP 1: Pull top high-yield topics from mastery data ===
       const highYieldTopics = await db
@@ -13105,6 +13129,13 @@ Return ONLY valid JSON: { "accuracy": N, "capsAlignment": N, "structureScore": N
       // === STEP 2: Fetch verbatim questions — prioritize high-yield topics ===
       let sourceQuestions: any[] = [];
 
+      // Every exemplar query is pinned to the target language — an Afrikaans
+      // run must never be seeded from English source papers (or vice versa),
+      // else the AI is asked to write Afrikaans from English exemplars and the
+      // register/vocabulary drifts. `and()` composes cleanly with either the
+      // targeted or untargeted subject filter below.
+      const langCond = eq(vqTable.language, targetLangDb);
+
       if (highYieldTopicNames.length > 0) {
         // First try questions matching high-yield topics
         sourceQuestions = await db
@@ -13118,7 +13149,7 @@ Return ONLY valid JSON: { "accuracy": N, "capsAlignment": N, "structureScore": N
             qualityScore: vqTable.qualityScore,
           })
           .from(vqTable)
-          .where(eq(vqTable.subject, subject))
+          .where(and(eq(vqTable.subject, subject), langCond))
           .orderBy(desc(vqTable.predictiveRating), desc(vqTable.qualityScore))
           .limit(40);
 
@@ -13133,6 +13164,7 @@ Return ONLY valid JSON: { "accuracy": N, "capsAlignment": N, "structureScore": N
       }
 
       // Fallback: no mastery data yet — sample best-quality verbatim questions
+      // (still language-pinned — never silently mixes languages into one batch)
       if (sourceQuestions.length === 0) {
         sourceQuestions = await db
           .select({
@@ -13145,13 +13177,15 @@ Return ONLY valid JSON: { "accuracy": N, "capsAlignment": N, "structureScore": N
             qualityScore: vqTable.qualityScore,
           })
           .from(vqTable)
-          .where(eq(vqTable.subject, subject))
+          .where(and(eq(vqTable.subject, subject), langCond))
           .orderBy(desc(vqTable.predictiveRating), desc(vqTable.qualityScore))
           .limit(20);
       }
 
       if (sourceQuestions.length === 0) {
-        return res.status(400).json({ error: `No ingested questions found for "${subject}". Ingest papers first.` });
+        return res.status(400).json({
+          error: `No ingested ${targetLangDb} questions found for "${subject}". Ingest ${targetLangDb} papers in the DBE Portal first.`,
+        });
       }
 
       const sampleQuestions = sourceQuestions.slice(0, 10).map((q, i) => ({
@@ -13244,6 +13278,15 @@ The sum of "marks" across markingScheme MUST equal the question's "marks" field.
         ? `\n\nTOPIC LOCK: EVERY question in this batch MUST be strictly about the CAPS topic "${targetTopic}" — do NOT drift to other topics. Set each question's "topic" field to exactly "${targetTopic}".`
         : "";
 
+      // Language instruction — every field the model writes (questionText,
+      // stimulusText, memoText, markingScheme criteria, topic label) must be in
+      // the target language, in authentic NSC Afrikaans exam register (not a
+      // literal/machine translation of English exam phrasing). English is the
+      // default and needs no extra instruction (the base prompt is English).
+      const languagePrompt = targetLangCode === "af"
+        ? `\n\nLANGUAGE: Write EVERY field — questionText, stimulusText, memoText, and every markingScheme "criterion" — entirely in AFRIKAANS, using authentic NSC Afrikaans exam register and terminology (not a literal translation of English exam phrasing). The "topic" field may stay in its normal CAPS form. Do not mix English and Afrikaans within a single question.`
+        : "";
+
       // === STEP 3b: Generate 50 questions in 5 batches of 10 ===
       const BATCHES = 5;
       const PER_BATCH = 10;
@@ -13277,7 +13320,7 @@ Requirements:
   — invent original passages in authentic NSC register. Questions that need
   no source text must omit stimulusText entirely. The memo must be gradable
   from the stimulusText + question alone.
-${masteryContext}${markingLogicPrompt}${topicFocusPrompt}
+${masteryContext}${markingLogicPrompt}${topicFocusPrompt}${languagePrompt}
 Return JSON: { "questions": [{ "questionText": "...", "stimulusText": "... (only when required)", "memoText": "...", "marks": N, "cognitiveLevel": "knowledge|application|higher_order", "topic": "...", "markingScheme": [{ "criterion": "...", "marks": N }] }] }`,
               },
               { role: "user", content: JSON.stringify(batchSample) },
@@ -13399,6 +13442,12 @@ Return one entry per question, same order as input. JSON: { "scores": [{ "idx": 
             markingLogic,
           },
           batchId: result.finishedAt,
+          // The language actually generated (exemplars + prompt were both
+          // pinned to this above) — included in baseRow so BOTH the primary
+          // insert and the pre-0036 fallback path store it correctly; the
+          // column's own DB default ("en") must never silently mislabel an
+          // Afrikaans batch if the fallback path is ever hit.
+          language: targetLangCode,
         };
         try {
           await db.insert(dbeSimulatedQuestions).values({
@@ -13409,7 +13458,6 @@ Return one entry per question, same order as input. JSON: { "scores": [{ "idx": 
               typeof q.stimulusText === "string" && q.stimulusText.trim().length >= 40
                 ? q.stimulusText.trim().slice(0, 4000)
                 : null,
-            language: "en", // generator currently produces English; AF next
           });
         } catch {
           // Migration 0036 not applied yet — bank the question without the
@@ -13443,7 +13491,7 @@ Return one entry per question, same order as input. JSON: { "scores": [{ "idx": 
               year: yearNow,
               month: monthNow,
               paperNumber: 1,
-              language: "English",
+              language: targetLangDb,
               paperUrl: "ai://generated",
               memoUrl: "ai://generated",
               source: "BrainTrack AI",
@@ -13517,6 +13565,7 @@ Return one entry per question, same order as input. JSON: { "scores": [{ "idx": 
         const allFlashRows = generated.map((q: any) => ({
           subject,
           topic: q.topic ?? null,
+          language: targetLangCode,
           front: String(q.questionText ?? "").slice(0, 800),
           back: String(q.memoText ?? "").slice(0, 1200),
           difficulty:
@@ -13689,6 +13738,10 @@ Return one entry per question, same order as input. JSON: { "scores": [{ "idx": 
       const subject = String(req.body?.subject ?? "").trim();
       if (!subject) return res.status(400).json({ error: "subject is required" });
       const count = Math.max(1, Math.min(20, Number(req.body?.count ?? 10)));
+      // Threaded through to /simulate so this "Crunch"-style trigger can also
+      // generate an Afrikaans batch — defaults to English (unchanged for every
+      // existing caller that doesn't pass it).
+      const language = normalizeLang(req.body?.language);
       if (simulateAllProgress.running) {
         return res.status(409).json({ error: "Another generation run is in progress — wait or stop it first" });
       }
@@ -13709,7 +13762,7 @@ Return one entry per question, same order as input. JSON: { "scores": [{ "idx": 
             const r = await fetch(`${baseUrl}/api/admin/dbe-ingestion/simulate`, {
               method: "POST",
               headers: { "Content-Type": "application/json", "Cookie": cookies },
-              body: JSON.stringify({ subject }),
+              body: JSON.stringify({ subject, language }),
             });
             if (r.ok) simulateAllProgress.done++;
             else {
@@ -13728,7 +13781,8 @@ Return one entry per question, same order as input. JSON: { "scores": [{ "idx": 
       return res.json({
         queued: count,
         subject,
-        message: `Generating ${count} papers + quizzes + daily challenges for ${subject}`,
+        language,
+        message: `Generating ${count} papers + quizzes + daily challenges for ${subject} (${language})`,
       });
     } catch (err: any) {
       simulateAllProgress.running = false;
@@ -13750,6 +13804,7 @@ Return one entry per question, same order as input. JSON: { "scores": [{ "idx": 
       if (!subject) return res.status(400).json({ error: "subject is required" });
       if (!topic) return res.status(400).json({ error: "topic is required" });
       const count = Math.max(1, Math.min(5, Number(req.body?.count ?? 1)));
+      const language = normalizeLang(req.body?.language);
 
       const port = process.env.PORT || 5000;
       const baseUrl = `http://localhost:${port}`;
@@ -13763,7 +13818,7 @@ Return one entry per question, same order as input. JSON: { "scores": [{ "idx": 
           const r = await fetch(`${baseUrl}/api/admin/dbe-ingestion/simulate`, {
             method: "POST",
             headers: { "Content-Type": "application/json", Cookie: cookies },
-            body: JSON.stringify({ subject, topic }),
+            body: JSON.stringify({ subject, topic, language }),
           });
           const body = await r.json().catch(() => ({}));
           if (r.ok) {
@@ -13785,6 +13840,148 @@ Return one entry per question, same order as input. JSON: { "scores": [{ "idx": 
         droppedForQuality: dropped,
         errors,
         message: `${generated} question(s) banked for "${topic}"${errors.length ? ` · ${errors.length} run(s) failed` : ""}`,
+      });
+    } catch (err: any) {
+      return res.status(500).json({ error: safeError(err) });
+    }
+  });
+
+  // POST /api/admin/dbe-ingestion/translate-to-af { subject, count? }
+  //
+  // Sidesteps the Afrikaans verbatim-exemplar bottleneck: instead of requiring
+  // freshly-ingested Afrikaans DBE papers to seed generation (the normal
+  // /simulate path), this TRANSLATES already-vetted ENGLISH simulated
+  // questions (dbe_simulated_questions, language="en") into authentic NSC
+  // Afrikaans exam register. Marks, topic, cognitiveLevel and the QA scores
+  // (qualityScore/capsAlignment/structureScore) are carried over unchanged
+  // from the source — translation changes wording, not structure or CAPS
+  // alignment, so re-scoring would just re-measure what the English row
+  // already proved. Every inserted row records `metadata.translatedFromId`
+  // so a source question is never translated twice and the provenance stays
+  // auditable (never conflated with content generated fresh in Afrikaans).
+  app.post("/api/admin/dbe-ingestion/translate-to-af", isAuthenticated, requireRole("admin"), async (req: any, res) => {
+    try {
+      const subject = String(req.body?.subject ?? "").trim();
+      if (!subject) return res.status(400).json({ error: "subject is required" });
+      const count = Math.max(1, Math.min(30, Number(req.body?.count ?? 10)));
+
+      const { dbeSimulatedQuestions: sqT } = await import("@shared/schema");
+      const { isMemoContentless } = await import("./memo-clean");
+
+      // Source ids already translated (so re-running "Translate" tops up the
+      // AF pool instead of duplicating the same questions over and over).
+      const alreadyTranslated = await db.execute<{ src: string }>(sql`
+        SELECT metadata->>'translatedFromId' AS src FROM dbe_simulated_questions
+         WHERE subject = ${subject} AND language = 'af' AND metadata->>'translatedFromId' IS NOT NULL`);
+      const usedIds = new Set((alreadyTranslated.rows ?? []).map((r) => r.src));
+
+      const enCandidates = await db
+        .select()
+        .from(sqT)
+        .where(and(
+          eq(sqT.subject, subject),
+          eq(sqT.language, "en"),
+          sql`${sqT.memoText} IS NOT NULL`,
+          sql`length(trim(${sqT.memoText})) >= 20`,
+        ))
+        .orderBy(sql`COALESCE(${sqT.qualityScore}, 0) DESC`)
+        .limit(count * 3); // over-fetch — some will already be translated
+
+      const untranslated = enCandidates
+        .filter((r) => !usedIds.has(String(r.id)) && !isMemoContentless(r.memoText ?? null))
+        .slice(0, count);
+
+      if (untranslated.length === 0) {
+        return res.status(400).json({
+          error: enCandidates.length === 0
+            ? `No English simulated questions found for "${subject}" yet — generate English content first.`
+            : `Every English question for "${subject}" has already been translated to Afrikaans. Generate more English content, then translate again.`,
+        });
+      }
+
+      // Batch 5 at a time — keeps the JSON payload (and failure blast radius)
+      // small, same pattern as the main generator's batching.
+      const BATCH = 5;
+      let translated = 0;
+      let failed = 0;
+      for (let i = 0; i < untranslated.length; i += BATCH) {
+        const batch = untranslated.slice(i, i + BATCH);
+        try {
+          const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+              {
+                role: "system",
+                content: `You are a professional South African NSC Grade 12 exam translator. You are given ${batch.length} ALREADY-VETTED English exam questions for ${subject} — do NOT invent new content, do NOT change the meaning, marks, or marking logic. Translate EACH one into authentic AFRIKAANS NSC exam register — idiomatic Afrikaans matching real DBE Afrikaans papers' terminology and phrasing, NOT a literal/machine translation. Translate questionText, stimulusText (if present), memoText, and every markingScheme "criterion" string. Leave "idx" as given so answers map back correctly.
+
+Return JSON: { "translations": [{ "idx": N, "questionText": "...", "stimulusText": "... (only if the source had one)", "memoText": "...", "markingScheme": [{ "criterion": "...", "marks": N }] }] }`,
+              },
+              {
+                role: "user",
+                content: JSON.stringify(batch.map((q, idx) => ({
+                  idx,
+                  questionText: q.questionText,
+                  stimulusText: q.stimulusText ?? undefined,
+                  memoText: q.memoText,
+                  markingScheme: (q.metadata as any)?.markingScheme ?? [],
+                }))),
+              },
+            ],
+            temperature: 0.4,
+            max_tokens: 3500,
+            response_format: { type: "json_object" },
+          });
+
+          const raw = response.choices[0]?.message?.content ?? "{}";
+          const parsed = JSON.parse(raw);
+          const results: any[] = parsed.translations ?? parsed.data ?? [];
+
+          for (const r of results) {
+            const src = batch[r.idx];
+            if (!src || typeof r.questionText !== "string" || typeof r.memoText !== "string") continue;
+            const baseRow = {
+              subject,
+              questionText: r.questionText,
+              memoText: r.memoText,
+              marks: src.marks,
+              cognitiveLevel: src.cognitiveLevel,
+              topic: src.topic,
+              qualityScore: src.qualityScore,
+              capsAlignment: (src as any).capsAlignment ?? null,
+              structureScore: (src as any).structureScore ?? null,
+              metadata: {
+                ...((src.metadata as any) ?? {}),
+                markingScheme: Array.isArray(r.markingScheme) ? r.markingScheme : (src.metadata as any)?.markingScheme ?? [],
+                translatedFromId: String(src.id),
+                translatedAt: new Date().toISOString(),
+              },
+              batchId: `translate-${subject}`,
+              language: "af" as const,
+            };
+            try {
+              await db.insert(sqT).values({
+                ...baseRow,
+                stimulusText: typeof r.stimulusText === "string" && r.stimulusText.trim().length >= 40 ? r.stimulusText.trim().slice(0, 4000) : null,
+              });
+            } catch {
+              await db.insert(sqT).values(baseRow);
+            }
+            translated++;
+          }
+          failed += batch.length - results.length;
+        } catch (batchErr: any) {
+          failed += batch.length;
+          console.log(`[TRANSLATE-AF] batch failed for ${subject}: ${batchErr.message}`);
+        }
+        if (i + BATCH < untranslated.length) await new Promise((r) => setTimeout(r, 400));
+      }
+
+      return res.json({
+        subject,
+        requested: untranslated.length,
+        translated,
+        failed,
+        message: `${translated} question(s) translated to Afrikaans for "${subject}"${failed ? ` · ${failed} failed` : ""}`,
       });
     } catch (err: any) {
       return res.status(500).json({ error: safeError(err) });
@@ -16391,6 +16588,14 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
 
   // GET /api/dbe/questions — paginated questions for a given subject/year/paper
   // source: "verbatim" | "ai" | "all" (default "all")
+  //
+  // LANGUAGE: previously had NO language filter at all — verbatim and
+  // simulated rows in both English and Afrikaans were returned indiscriminately,
+  // so a learner could open a "past paper" and get a random EN/AF mix. Real DBE
+  // papers exist as two distinct physical documents per language (not
+  // translations of each other), so this is a hard filter — no EN fallback for
+  // verbatim content, matching the "never fabricate/mix verbatim" rule
+  // elsewhere in this file.
   app.get("/api/dbe/questions", isAuthenticated, async (req: any, res) => {
     const { subject, year, paperNumber, page = "1", limit = "50", source = "all" } = req.query as Record<string, string>;
     if (!subject) return res.status(400).json({ error: "subject required" });
@@ -16399,11 +16604,19 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       const wantVerbatim = source === "verbatim" || source === "all";
       const wantAi = source === "ai" || source === "all";
 
+      const [dbeQUser] = await db
+        .select({ preferredLanguage: users.preferredLanguage })
+        .from(users)
+        .where(eq(users.id, req.user.claims.sub));
+      const dbeQLang = resolveRequestLang(req.query.lang, dbeQUser?.preferredLanguage);
+      const dbeQLangDb = toDbLanguage(dbeQLang);
+
       const verbatimRowsRaw = wantVerbatim
         ? await (async () => {
             // Task #394 — release-gate: learners only see released rows.
             const conditions = [
               eq(dbeVerbatimQuestions.subject, subject),
+              eq(dbeVerbatimQuestions.language, dbeQLangDb),
               sql`${dbeVerbatimQuestions.releasedAt} IS NOT NULL`,
             ];
             if (year) conditions.push(eq(dbeVerbatimQuestions.year, Number(year)));
@@ -16450,7 +16663,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
 
       const aiRows = wantAi && !year && !paperNumber
         ? await db.select().from(dbeSimulatedQuestions)
-            .where(eq(dbeSimulatedQuestions.subject, subject))
+            .where(and(eq(dbeSimulatedQuestions.subject, subject), eq(dbeSimulatedQuestions.language, dbeQLang)))
             .orderBy(dbeSimulatedQuestions.id)
         : [];
 
@@ -16478,7 +16691,7 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         year: null,
         session: null,
         paperNumber: null,
-        language: "en",
+        language: r.language,
         questionNumber: String(r.id),
         questionText: r.questionText,
         memoText: r.memoText,
@@ -16823,46 +17036,64 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
       // them today), leaving "content preparing" everywhere. Best-first means
       // learners always get the strongest content that exists, and the served
       // quality rises automatically toward the 92–99 target as the generator
-      // improves. Only real gates: a subject match and a gradable memo.
-      const simConds = [
-        eq(sqT.subject, subject),
-        sql`${sqT.memoText} IS NOT NULL`,
-        sql`length(trim(${sqT.memoText})) >= 20`,
-      ];
-      if (topic) simConds.push(eq(sqT.topic, topic));
+      // improves. Real gates: a subject match, the LEARNER'S language, and a
+      // gradable memo. Language is honoured with an honest fallback (never a
+      // silent switch) — see fetchSimCandidates below.
+      const isMemoGradable = (r: { memoText?: string | null; marks?: number | null }) =>
+        !isMemoContentless(r.memoText ?? null) && !!parseMemoToScheme(r.memoText ?? "", r.marks ?? 1);
 
-      let candidates: any[];
-      try {
-        candidates = await db
-          .select()
-          .from(sqT)
-          .where(and(...simConds))
-          // Best score first, then random within — variety without starving.
-          .orderBy(sql`COALESCE(${sqT.qualityScore}, 0) DESC, RANDOM()`)
-          .limit(count * 3);
-      } catch {
-        // Migrations 0036/0037 not applied — drizzle's typed SELECT projects
-        // the new columns and fails. Serve via raw SQL on the pre-migration
-        // columns so learners still get questions (without passages).
-        console.warn("[mini-mock] falling back to pre-0036 columns — run pending migrations");
-        const r = await db.execute<any>(sql`
-          SELECT id, subject, question_text AS "questionText", memo_text AS "memoText",
-                 marks, cognitive_level AS "cognitiveLevel", topic,
-                 quality_score AS "qualityScore"
-            FROM dbe_simulated_questions
-           WHERE subject = ${subject}
-             AND memo_text IS NOT NULL AND length(trim(memo_text)) >= 20
-             ${topic ? sql`AND topic = ${topic}` : sql``}
-           ORDER BY COALESCE(quality_score,0) DESC, RANDOM()
-           LIMIT ${count * 3}`);
-        candidates = (r.rows ?? []).map((x) => ({ ...x, stimulusText: null }));
+      async function fetchSimCandidates(lang: LangCode): Promise<any[]> {
+        const conds = [
+          eq(sqT.subject, subject),
+          eq(sqT.language, lang),
+          sql`${sqT.memoText} IS NOT NULL`,
+          sql`length(trim(${sqT.memoText})) >= 20`,
+        ];
+        if (topic) conds.push(eq(sqT.topic, topic));
+        try {
+          return await db
+            .select()
+            .from(sqT)
+            .where(and(...conds))
+            // Best score first, then random within — variety without starving.
+            .orderBy(sql`COALESCE(${sqT.qualityScore}, 0) DESC, RANDOM()`)
+            .limit(count * 3);
+        } catch {
+          // Migrations 0036/0037 not applied — drizzle's typed SELECT projects
+          // the new columns and fails. Serve via raw SQL on the pre-migration
+          // columns so learners still get questions (without passages). The
+          // `language` column predates 0036/0037 (default "en"), so it's safe
+          // to filter on here too.
+          console.warn("[mini-mock] falling back to pre-0036 columns — run pending migrations");
+          const r = await db.execute<any>(sql`
+            SELECT id, subject, question_text AS "questionText", memo_text AS "memoText",
+                   marks, cognitive_level AS "cognitiveLevel", topic,
+                   quality_score AS "qualityScore"
+              FROM dbe_simulated_questions
+             WHERE subject = ${subject}
+               AND language = ${lang}
+               AND memo_text IS NOT NULL AND length(trim(memo_text)) >= 20
+               ${topic ? sql`AND topic = ${topic}` : sql``}
+             ORDER BY COALESCE(quality_score,0) DESC, RANDOM()
+             LIMIT ${count * 3}`);
+          return (r.rows ?? []).map((x: any) => ({ ...x, stimulusText: null }));
+        }
       }
 
-      // Same gradability guard as before — a memo must clean down to a real
-      // marking scheme, else the learner answers and gets nothing back.
-      const markable = candidates.filter(
-        (r) => !isMemoContentless(r.memoText) && !!parseMemoToScheme(r.memoText ?? "", r.marks ?? 1),
-      );
+      // Pass 1: the learner's own language. Pass 2 (only if pass 1 found
+      // NOTHING gradable, and only when the learner asked for Afrikaans):
+      // fall back to English and report it honestly via languageMeta — a
+      // partial pass-1 result (some but fewer than `count`) is NOT topped up
+      // from the other language, matching the "best available, never silently
+      // mixed" rule the rest of the app follows.
+      let servedLang: LangCode = requestedLang;
+      let candidates = await fetchSimCandidates(requestedLang);
+      let markable = candidates.filter(isMemoGradable);
+      if (markable.length === 0 && requestedLang !== "en") {
+        servedLang = "en";
+        candidates = await fetchSimCandidates("en");
+        markable = candidates.filter(isMemoGradable);
+      }
       const rows = markable.slice(0, count);
 
       const questions = rows.map((r, i) => ({
@@ -16884,16 +17115,13 @@ Return JSON: { "title": "...", "content": "...markdown body...", "keyPoints": ["
         simulated: true,
       }));
 
-      // NOTE: dbe_simulated_questions has no language column yet, so this serves
-      // whatever the generator produced (currently EN). Afrikaans needs the
-      // simulated generator + schema extended before AF mini-mocks fill.
       res.json({
         subject,
         topic,
         questions,
         simulated: true,
         contentPreparing: questions.length === 0,
-        language: languageMeta(requestedLang, requestedLang),
+        language: languageMeta(requestedLang, servedLang),
       });
     } catch (err: any) {
       res.status(500).json({ error: safeError(err) });
@@ -22044,12 +22272,22 @@ Return a JSON object:
   // ============================================
 
   // GET /api/timetable — full timetable for year/session (public-ish, learner accessible)
+  //
+  // LANGUAGE: nsc_timetable stores only an English subjectName — no Afrikaans
+  // column exists (a schema change, not a quick fix). DIRECTIVE_AF_NAMES is
+  // already a complete, tested EN→AF map for the fixed NSC subject catalog
+  // (used elsewhere in nsc-timetable.ts), so we attach subjectNameAf here
+  // rather than leave the printable calendar's exam subject names English-only.
   app.get("/api/timetable", async (req: Request, res: Response) => {
     try {
       const year = parseInt(String(req.query.year || "2026"), 10);
       const session = req.query.session ? String(req.query.session) : undefined;
-      const { getNscTimetableForAdmin } = await import("./nsc-timetable");
-      const entries = await storage.getNscTimetable(year, session);
+      const { DIRECTIVE_AF_NAMES } = await import("./nsc-timetable");
+      const entriesRaw = await storage.getNscTimetable(year, session);
+      const entries = entriesRaw.map((e: any) => ({
+        ...e,
+        subjectNameAf: DIRECTIVE_AF_NAMES[e.subjectName] || e.subjectName,
+      }));
       res.json({ year, session: session || "November", entries });
     } catch (err: any) {
       console.error("[Timetable] GET /api/timetable error:", err);

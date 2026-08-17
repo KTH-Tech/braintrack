@@ -5,7 +5,7 @@ import { AdminAlert } from "@/components/admin-ui";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/lib/language-context";
-import { Zap, Rocket, Loader2, FileText, BookOpen, Search, Layers, PackageCheck, ClipboardCheck, X, Check, Target } from "lucide-react";
+import { Zap, Rocket, Loader2, FileText, BookOpen, Search, Layers, PackageCheck, ClipboardCheck, X, Check, Target, Languages } from "lucide-react";
 
 /**
  * Simulator — the owner's dedicated screen for the simulated content pipeline
@@ -69,6 +69,11 @@ type CoverageReport = {
 type SortKey = "readiness" | "quality" | "total" | "name";
 type FilterKey = "all" | "unreleased" | "released" | "below";
 type GenCount = 10 | 25 | 50;
+/** Language the WRITTEN-RESPONSE generator (Generate Exam / High-Yield /
+ * Coverage's "generate missing") writes in — threaded to /simulate-subject
+ * and /generate-topic as `language`. Global, like genCount: one toggle
+ * drives every generate action on this page instead of a per-subject picker. */
+type GenLang = "en" | "af";
 
 const P = { mint: "#94F7C5", sky: "#9FD8FF", pink: "#FFB7E5", butter: "#FFE29A", violet: "#C5B3FF" };
 const ACCENTS = [P.mint, P.sky, P.pink, P.violet, P.butter];
@@ -82,14 +87,15 @@ export default function AdminSimulatorPage() {
   // in-flight generate/release on one subject never disables the buttons on the
   // others. A single shared `busySubject` used to lock the whole grid — clicking
   // Generate on one card froze every other card until it finished.
-  const [busyOps, setBusyOps] = useState<Record<string, "simulate" | "release" | "mcq">>({});
-  const markBusy = (s: string, op: "simulate" | "release" | "mcq") =>
+  const [busyOps, setBusyOps] = useState<Record<string, "simulate" | "release" | "mcq" | "translate">>({});
+  const markBusy = (s: string, op: "simulate" | "release" | "mcq" | "translate") =>
     setBusyOps((p) => ({ ...p, [s]: op }));
   const clearBusy = (s: string) =>
     setBusyOps((p) => { const n = { ...p }; delete n[s]; return n; });
 
   // Toolbar state (all client-side over fetched subjects)
   const [genCount, setGenCount] = useState<GenCount>(10);
+  const [activeTab, setActiveTab] = useState<GenLang>("en");
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<SortKey>("readiness");
   const [filter, setFilter] = useState<FilterKey>("all");
@@ -98,8 +104,15 @@ export default function AdminSimulatorPage() {
   const [bulkGen, setBulkGen] = useState<{ done: number; total: number } | null>(null);
   const [bulkRel, setBulkRel] = useState<{ done: number; total: number } | null>(null);
 
+  // Overview is LANGUAGE-SCOPED to the active tab — switching tabs refetches
+  // counts for that language only, instead of one EN+AF-mixed number that
+  // never visibly moved when generating/translating into Afrikaans.
   const { data, isLoading, isError: overviewError, refetch: refetchOverview } = useQuery<{ subjects: SubjectRow[]; releaseBar: number }>({
-    queryKey: ["/api/admin/simulator/overview"],
+    queryKey: ["/api/admin/simulator/overview", activeTab],
+    queryFn: async () => {
+      const r = await apiRequest("GET", `/api/admin/simulator/overview?language=${activeTab}`);
+      return r.json();
+    },
     refetchInterval: 15000, // generation runs elsewhere; keep counts fresh
   });
   const releaseBar = data?.releaseBar ?? 92;
@@ -107,7 +120,7 @@ export default function AdminSimulatorPage() {
 
   const crunch = useMutation({
     mutationFn: async (subject: string) => {
-      const r = await apiRequest("POST", "/api/admin/dbe-ingestion/simulate-subject", { subject, count: genCount });
+      const r = await apiRequest("POST", "/api/admin/dbe-ingestion/simulate-subject", { subject, count: genCount, language: activeTab });
       return r.json();
     },
     onMutate: (s) => markBusy(s, "simulate"),
@@ -119,6 +132,30 @@ export default function AdminSimulatorPage() {
       toast({ title: isAf ? "Genereer klaar" : "Generation done", description: `${d?.generated ?? "?"} ${isAf ? "vrae gebank" : "questions banked"}` }),
     onError: (e: any) =>
       toast({ title: isAf ? "Genereer het misluk" : "Generation failed", description: String(e?.message ?? e), variant: "destructive" }),
+  });
+
+  // AF tab only: translate already-vetted ENGLISH simulated questions into
+  // Afrikaans instead of requiring fresh Afrikaans verbatim exemplars (which
+  // may not be ingested yet for every subject). Invalidates BOTH language
+  // tabs' overview — the source EN pool isn't touched, but re-running this
+  // is what actually moves the Afrikaans counts.
+  const translateToAf = useMutation({
+    mutationFn: async (subject: string) => {
+      const r = await apiRequest("POST", "/api/admin/dbe-ingestion/translate-to-af", { subject, count: genCount });
+      return r.json();
+    },
+    onMutate: (s) => markBusy(s, "translate"),
+    onSettled: (_d, _e, s) => {
+      clearBusy(s);
+      qc.invalidateQueries({ queryKey: ["/api/admin/simulator/overview"] });
+    },
+    onSuccess: (d: any) =>
+      toast({
+        title: d?.translated > 0 ? (isAf ? `${d.translated} vertaal` : `${d.translated} translated`) : (isAf ? "Niks vertaal nie" : "Nothing translated"),
+        description: d?.message ?? "",
+      }),
+    onError: (e: any) =>
+      toast({ title: isAf ? "Vertaling het misluk" : "Translation failed", description: String(e?.message ?? e), variant: "destructive" }),
   });
 
   // Daily-quiz MCQs — generate + STRICT verify (solver-agree + on-syllabus) +
@@ -233,7 +270,7 @@ export default function AdminSimulatorPage() {
   // Sequentially generate for a list of CAPS topics (already ordered high-yield
   // first by the endpoint). One /generate-topic call per topic (count=1) so the
   // owner sees "3/10…" progress; refreshes coverage + overview at the end.
-  async function generateForTopics(subject: string, topicsToGen: string[], count: number = genCount, label?: string) {
+  async function generateForTopics(subject: string, topicsToGen: string[], count: number = genCount, label?: string, lang: GenLang = activeTab) {
     if (topicsToGen.length === 0 || covGen) return;
     let ok = 0;
     let failed = 0;
@@ -241,7 +278,7 @@ export default function AdminSimulatorPage() {
       const topic = topicsToGen[i];
       setCovGen({ done: i, total: topicsToGen.length, current: topic });
       try {
-        const r = await apiRequest("POST", "/api/admin/simulator/generate-topic", { subject, topic, count });
+        const r = await apiRequest("POST", "/api/admin/simulator/generate-topic", { subject, topic, count, language: lang });
         const d = await r.json();
         if (Number(d?.generated ?? 0) > 0) ok++;
         else failed++;
@@ -339,7 +376,7 @@ export default function AdminSimulatorPage() {
     let failed = 0;
     for (let i = 0; i < targets.length; i++) {
       try {
-        const r = await apiRequest("POST", "/api/admin/dbe-ingestion/simulate-subject", { subject: targets[i], count: genCount });
+        const r = await apiRequest("POST", "/api/admin/dbe-ingestion/simulate-subject", { subject: targets[i], count: genCount, language: activeTab });
         const d = await r.json();
         banked += Number(d?.generated ?? 0);
       } catch {
@@ -399,6 +436,38 @@ export default function AdminSimulatorPage() {
             `Genereer oorspronklike, eksaminator-gegronde eksameninhoud — vrae + memo + ondersteunende materiaal — en stel dit dan vry aan leerders. Vrygestelde inhoud voed BEIDE die Mini Mock ÉN die Volle Eksamen (/exam/full); leerders sien nooit die woordelikse DBE-vraestelle nie. Elke vrystelling kry 'n weergawenommer en BOU op die vorige een — niks word ooit teruggetrek nie. Vrystellingsdrempel: ${releaseBar}%+ kwaliteit.`,
           )}
         </p>
+
+        {/* ── LANGUAGE TABS ────────────────────────────────────────────────
+            Everything below — KPIs, subject counts, Generate/Release — is
+            SCOPED to whichever tab is active. This is the actual fix for
+            "counts don't update in Afrikaans": there is no longer one
+            EN+AF-mixed number, each tab fetches and shows only its own
+            language's data. */}
+        <div role="tablist" style={{ display: "inline-flex", gap: 8, marginBottom: 20, background: "#0e0d12", border: "2px solid #1b1922", borderRadius: 14, padding: 5 }}>
+          {([
+            ["en", t("English", "Engels")],
+            ["af", t("Afrikaans", "Afrikaans")],
+          ] as [GenLang, string][]).map(([l, label]) => (
+            <button
+              key={l}
+              role="tab"
+              aria-selected={activeTab === l}
+              onClick={() => setActiveTab(l)}
+              data-testid={`sim-tab-${l}`}
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 8,
+                background: activeTab === l ? P.violet : "transparent",
+                color: activeTab === l ? "#050508" : "#fff",
+                border: "none", borderRadius: 10,
+                padding: "9px 20px",
+                fontWeight: 900, fontSize: 14, letterSpacing: 0.2,
+                cursor: "pointer", minHeight: 40,
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
 
         {isLoading ? (
           <div style={{ display: "flex", justifyContent: "center", padding: 60 }}>
@@ -503,7 +572,7 @@ export default function AdminSimulatorPage() {
                 {bulkGen ? <Loader2 className="animate-spin" style={{ width: 15, height: 15 }} /> : <Layers style={{ width: 15, height: 15 }} />}
                 {bulkGen
                   ? `${t("Generating", "Genereer")} ${bulkGen.done}/${bulkGen.total}…`
-                  : `${t("Generate for ALL", "Genereer vir ALMAL")} (${visible.length} ×${genCount})`}
+                  : `${t("Generate for ALL", "Genereer vir ALMAL")} (${visible.length} ×${genCount} · ${activeTab.toUpperCase()})`}
               </button>
 
               <button
@@ -740,8 +809,35 @@ export default function AdminSimulatorPage() {
                           }}
                         >
                           {subjOp === "simulate" ? <Loader2 className="animate-spin" style={{ width: 15, height: 15 }} /> : <Zap style={{ width: 15, height: 15 }} />}
-                          {t("Generate Exam", "Genereer Eksamen")} ×{genCount}
+                          {t("Generate Exam", "Genereer Eksamen")} ×{genCount} · {activeTab.toUpperCase()}
                         </button>
+                        {/* AF tab only: translate the already-vetted ENGLISH
+                            pool instead of requiring fresh Afrikaans verbatim
+                            exemplars — the practical unblock when a subject
+                            has no ingested Afrikaans DBE papers yet. */}
+                        {activeTab === "af" && (
+                          <button
+                            onClick={() => translateToAf.mutate(s.subject)}
+                            disabled={lockThis}
+                            data-testid={`sim-translate-${s.subject}`}
+                            title={t(
+                              "Translate already-vetted English simulated questions into authentic NSC Afrikaans — works even with no Afrikaans verbatim papers ingested yet",
+                              "Vertaal reeds-geverifieerde Engelse gesimuleerde vrae na outentieke NSS-Afrikaans — werk selfs sonder ingeneemde Afrikaanse woordelikse vraestelle",
+                            )}
+                            style={{
+                              display: "inline-flex", alignItems: "center", gap: 7,
+                              background: subjOp === "translate" ? "transparent" : P.violet,
+                              color: subjOp === "translate" ? "#fff" : "#050508",
+                              border: `2px solid ${P.violet}`, borderRadius: 10,
+                              padding: "10px 16px", fontWeight: 900, fontSize: 13.5,
+                              cursor: lockThis ? "not-allowed" : "pointer", opacity: lockThis && subjOp !== "translate" ? 0.5 : 1,
+                              minHeight: 44,
+                            }}
+                          >
+                            {subjOp === "translate" ? <Loader2 className="animate-spin" style={{ width: 15, height: 15 }} /> : <Languages style={{ width: 15, height: 15 }} />}
+                            {t("Translate from EN", "Vertaal vanaf EN")} ×{genCount}
+                          </button>
+                        )}
                         {/* Read-only QA — verify stored scores meet the
                             release criteria before/after release. */}
                         <button
@@ -786,7 +882,7 @@ export default function AdminSimulatorPage() {
                           onClick={() => generateHighYield(s.subject)}
                           disabled={covGen !== null || lockThis}
                           data-testid={`sim-highyield-${s.subject}`}
-                          title={t(`Generate for this subject's HIGH-YIELD (top exam-frequency) CAPS topics — missing first, ×${genCount} each`, `Genereer vir hierdie vak se HOË-OPBRENGS (top eksamenfrekwensie) KABV-onderwerpe — ontbrekende eerste, ×${genCount} elk`)}
+                          title={t(`Generate for this subject's HIGH-YIELD (top exam-frequency) CAPS topics — missing first, ×${genCount} each, in ${activeTab.toUpperCase()}`, `Genereer vir hierdie vak se HOË-OPBRENGS (top eksamenfrekwensie) KABV-onderwerpe — ontbrekende eerste, ×${genCount} elk, in ${activeTab.toUpperCase()}`)}
                           style={{
                             display: "inline-flex", alignItems: "center", gap: 6,
                             background: P.butter, color: "#050508",

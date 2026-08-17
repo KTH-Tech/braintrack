@@ -27,6 +27,7 @@
 export interface SubjectProgress {
   subjectId: number;
   subjectName: string;
+  subjectNameAf: string;
   accuracy: number;
   questionsAttempted: number;
   papersCompleted: number;
@@ -55,8 +56,10 @@ export interface ActivityDay {
 export interface TopicMasteryEntry {
   topicId: number;
   topicName: string;
+  topicNameAf: string;
   subjectId: number;
   subjectName: string;
+  subjectNameAf: string;
   masteryScore: number;
   masteryBand: "red" | "amber" | "green";
   questionsAttempted: number;
@@ -68,7 +71,7 @@ export interface ProgressStats {
   totalQuestionsAttempted: number;
   totalPapersCompleted: number;
   subjectProgress: SubjectProgress[];
-  weakTopics: { topicId: number; topicName: string; subjectName: string; accuracy: number }[];
+  weakTopics: { topicId: number; topicName: string; topicNameAf: string; subjectName: string; subjectNameAf: string; accuracy: number }[];
   recentActivity: ActivityDay[];
   /** Topic-level mastery from `topic_mastery`. Empty when nothing is banded. */
   topicMastery?: TopicMasteryEntry[];
@@ -270,6 +273,7 @@ export interface NextMove {
   kind: NextMoveKind;
   subjectId?: number;
   subjectName?: string;
+  subjectNameAf?: string;
   /** Accuracy of the named subject, when one is named. */
   accuracy?: number;
 }
@@ -294,6 +298,7 @@ export function pickNextMove(stats: ProgressStats | null | undefined): NextMove 
       kind: "practise_weakest",
       subjectId: focus[0].subjectId,
       subjectName: focus[0].subjectName,
+      subjectNameAf: focus[0].subjectNameAf,
       accuracy: focus[0].accuracy,
     };
   }
@@ -303,6 +308,7 @@ export function pickNextMove(stats: ProgressStats | null | undefined): NextMove 
       kind: "widen",
       subjectId: notStarted[0].subjectId,
       subjectName: notStarted[0].subjectName,
+      subjectNameAf: notStarted[0].subjectNameAf,
     };
   }
 

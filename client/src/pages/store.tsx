@@ -69,6 +69,8 @@ const T = {
     purchaseConfirmed: "Purchase confirmed!",
     itemUnlocked: "Item unlocked.",
     notEnoughCoins: "Not enough coins",
+    notEnoughCoinsDesc: "You don't have enough coins for this yet — keep earning and come back.",
+    alreadyUnlocked: "Already unlocked",
     couldNotUnlock: "Could not unlock",
     tryAgain: "Please try again.",
     earnCoins: "Earn coins by answering questions, building streaks, and completing challenges.",
@@ -96,6 +98,8 @@ const T = {
     purchaseConfirmed: "Aankoop bevestig!",
     itemUnlocked: "Item ontsluit.",
     notEnoughCoins: "Nie genoeg munte nie",
+    notEnoughCoinsDesc: "Jy het nog nie genoeg munte hiervoor nie — hou aan verdien en kom terug.",
+    alreadyUnlocked: "Reeds ontsluit",
     couldNotUnlock: "Kon nie ontsluit nie",
     tryAgain: "Probeer asseblief weer.",
     earnCoins: "Verdien munte deur vrae te beantwoord, reekse te bou en uitdagings te voltooi.",
@@ -166,11 +170,18 @@ export default function StorePage() {
       });
     },
     onError: (err: any) => {
+      // AUDIT FIX: `description` used to fall back to the raw `err.message`
+      // (English server text, sometimes raw JSON) whenever it was non-empty —
+      // which is nearly always, so Afrikaans learners saw untranslated/raw
+      // error text instead of a localized message. Map the two known server
+      // errors explicitly; anything else falls back to the generic localized
+      // "try again" rather than ever showing server text directly.
       const msg = err?.message || "";
-      const isInsufficient = /insufficient|too few|nie genoeg|munte/i.test(msg);
+      const isInsufficient = /insufficient/i.test(msg);
+      const isAlready = /already unlocked/i.test(msg);
       toast({
-        title: isInsufficient ? t.notEnoughCoins : t.couldNotUnlock,
-        description: msg || t.tryAgain,
+        title: isInsufficient ? t.notEnoughCoins : isAlready ? t.alreadyUnlocked : t.couldNotUnlock,
+        description: isInsufficient ? t.notEnoughCoinsDesc : t.tryAgain,
         variant: "destructive",
       });
       setUnlocking(null);

@@ -149,9 +149,9 @@ export default function DbePracticePage() {
   });
 
   const { data, isLoading, isError, refetch, isRefetching } = useQuery<QuestionsResponse>({
-    queryKey: ["/api/dbe/questions", subject, yearParam, paperParam, sourceFilter],
+    queryKey: ["/api/dbe/questions", subject, yearParam, paperParam, sourceFilter, language],
     queryFn: async () => {
-      const qs = new URLSearchParams({ subject, source: sourceFilter });
+      const qs = new URLSearchParams({ subject, source: sourceFilter, lang: language });
       if (yearParam) qs.set("year", yearParam);
       if (paperParam) qs.set("paperNumber", paperParam);
       qs.set("limit", "500");

@@ -597,7 +597,7 @@ export interface DailyDirective {
   isExamToday: boolean;
 }
 
-const DIRECTIVE_AF_NAMES: Record<string, string> = {
+export const DIRECTIVE_AF_NAMES: Record<string, string> = {
   "Mathematics": "Wiskunde",
   "Mathematical Literacy": "Wiskundige Geletterdheid",
   "Technical Mathematics": "Tegniese Wiskunde",
