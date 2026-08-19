@@ -10208,10 +10208,18 @@ Create comprehensive study notes for the topic provided.`;
         FROM dbe_topic_coverage
         GROUP BY subject
       `);
+      // AUDIT FIX: was a blind `.set()` — when two raw DB spellings alias to the
+      // same canonical subject (e.g. "Civil technology" vs "Civil Technology",
+      // the exact collision SUBJECT_ALIASES exists for), the second row silently
+      // overwrote the first instead of merging, dropping that spelling's data
+      // from every DBE Portal count derived from this map. Same fix applied to
+      // topicMap and qualityMap below.
       const masteryYearsMap = new Map<string, number[]>();
       for (const row of masteryCoverageYears.rows) {
         const canonicalKey = SUBJECT_ALIASES[row.subject as string] ?? (row.subject as string);
-        masteryYearsMap.set(canonicalKey, (row.mastery_years as number[]) ?? []);
+        const incoming = (row.mastery_years as number[]) ?? [];
+        const existing = masteryYearsMap.get(canonicalKey) ?? [];
+        masteryYearsMap.set(canonicalKey, Array.from(new Set([...existing, ...incoming])).sort((a, b) => a - b));
       }
 
       const topicCounts = await db.execute(sql`
@@ -10254,12 +10262,36 @@ Create comprehensive study notes for the topic provided.`;
       const qualityMap = new Map<string, any>();
       for (const row of qualityStats.rows) {
         const canonicalKey = SUBJECT_ALIASES[row.subject as string] ?? (row.subject as string);
-        qualityMap.set(canonicalKey, row);
+        const existing = qualityMap.get(canonicalKey);
+        if (!existing) {
+          qualityMap.set(canonicalKey, row);
+          continue;
+        }
+        const existingTotal = Number(existing.total_questions ?? 0);
+        const incomingTotal = Number(row.total_questions ?? 0);
+        const mergedTotal = existingTotal + incomingTotal;
+        // Weighted average across both spellings' question counts — falls back
+        // to a plain average if both totals are 0 (avoids a divide-by-zero).
+        const weightedAvg = (existingVal: number, incomingVal: number) =>
+          mergedTotal > 0
+            ? Math.round((existingVal * existingTotal + incomingVal * incomingTotal) / mergedTotal)
+            : Math.round(((existingVal ?? 0) + (incomingVal ?? 0)) / 2);
+        qualityMap.set(canonicalKey, {
+          years_imported: Number(existing.years_imported ?? 0) + Number(row.years_imported ?? 0),
+          avg_quality_score: weightedAvg(Number(existing.avg_quality_score ?? 0), Number(row.avg_quality_score ?? 0)),
+          unscored_count: Number(existing.unscored_count ?? 0) + Number(row.unscored_count ?? 0),
+          total_questions: mergedTotal,
+          avg_predictive_rating: weightedAvg(Number(existing.avg_predictive_rating ?? 0), Number(row.avg_predictive_rating ?? 0)),
+        });
       }
       const topicMap = new Map<string, any>();
       for (const row of topicCounts.rows) {
         const canonicalKey = SUBJECT_ALIASES[row.subject as string] ?? (row.subject as string);
-        topicMap.set(canonicalKey, row);
+        const existing = topicMap.get(canonicalKey);
+        topicMap.set(canonicalKey, existing ? {
+          topics_covered: Number(existing.topics_covered ?? 0) + Number(row.topics_covered ?? 0),
+          high_yield_topics: Number(existing.high_yield_topics ?? 0) + Number(row.high_yield_topics ?? 0),
+        } : row);
       }
       const capsTopicMap = new Map<string, number>();
       for (const row of capsTopicCounts.rows) {
