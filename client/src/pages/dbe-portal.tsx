@@ -165,8 +165,11 @@ function StatCard({ label, value, sub, icon: Icon, onClick, valueColor, barPct, 
           <div className="uppercase text-white" style={{ fontSize: compact ? 10 : 11, fontWeight: 700, letterSpacing: "1px" }}>{label}</div>
           {Icon && <Icon className={compact ? "w-4 h-4 shrink-0" : "w-5 h-5 shrink-0"} style={{ color: resolvedColor }} />}
         </div>
-        {/* Line 2 — big display number (Bebas, brand display face) */}
-        <div style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: compact ? 26 : 42, fontWeight: 400, letterSpacing: "0.5px", color: resolvedColor, marginTop: compact ? 2 : 6, lineHeight: 1.05 }}>
+        {/* Line 2 — big display number. AUDIT FIX: was Bebas Neue (the
+            learner-app display face) -- admin pages are Poppins-only per
+            admin-ui.tsx, which is why this page read as a different font
+            from the rest of the admin suite. */}
+        <div style={{ fontSize: compact ? 26 : 40, fontWeight: 900, letterSpacing: "-0.3px", color: resolvedColor, marginTop: compact ? 2 : 6, lineHeight: 1.05 }}>
           {typeof value === "number" ? formatNumber(value, language) : value}
         </div>
         {/* Line 3 — sub caption */}
@@ -1687,10 +1690,12 @@ export default function DBEPortal() {
             everything batch-level lives in the Engine room below. */}
         <div className="flex items-end justify-between gap-4 flex-wrap">
           <div>
-            <div style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: 14, letterSpacing: "1.5px", textTransform: "uppercase", color: "#C5B3FF" }}>
+            {/* AUDIT FIX: both lines were Bebas Neue -- admin pages are
+                Poppins-only, see the StatCard fix above for why. */}
+            <div style={{ fontSize: 13, fontWeight: 800, letterSpacing: "1.2px", textTransform: "uppercase", color: "#C5B3FF" }}>
               {language === "af" ? "DBE Inhoudsportaal" : "DBE Content Portal"}
             </div>
-            <div className="text-white" data-testid="page-title" style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: "clamp(28px,5vw,40px)", fontWeight: 400, letterSpacing: "0.5px", lineHeight: 1.05 }}>
+            <div className="text-white" data-testid="page-title" style={{ fontSize: "clamp(26px,4.5vw,36px)", fontWeight: 900, letterSpacing: "-0.3px", lineHeight: 1.1 }}>
               Content operations
             </div>
             <p className="text-white text-[13px] mt-1">
@@ -1754,7 +1759,7 @@ export default function DBEPortal() {
             + view tabs) sits directly on top of the grid it filters. */}
         <div className="space-y-4">
           <div>
-            <div className="text-white" style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: 24, letterSpacing: "0.5px", lineHeight: 1.1 }}>
+            <div className="text-white" style={{ fontSize: 20, fontWeight: 900, letterSpacing: "-0.2px", lineHeight: 1.2 }}>
               {language === "af" ? "Vakbiblioteek" : "Subject library"}
             </div>
             <p className="text-white text-xs mt-0.5">
@@ -1922,7 +1927,7 @@ export default function DBEPortal() {
         <div className="space-y-4" style={{ borderTop: "1px solid #1b1922", paddingTop: 32 }} data-testid="engine-room">
           <div className="flex items-end justify-between gap-3 flex-wrap">
             <div>
-              <div className="text-white" style={{ fontFamily: "'Bebas Neue', system-ui, sans-serif", fontSize: 24, letterSpacing: "0.5px", lineHeight: 1.1 }}>
+              <div className="text-white" style={{ fontSize: 20, fontWeight: 900, letterSpacing: "-0.2px", lineHeight: 1.2 }}>
                 {language === "af" ? "Enjinkamer" : "Engine room"}
               </div>
               <p className="text-white text-xs mt-0.5">
