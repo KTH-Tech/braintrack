@@ -68,9 +68,19 @@ export async function computeDbeMappingReport(): Promise<DbeMappingReport> {
   // Per-subject aggregates. `caps_matched` joins each question's free-text
   // topic to the CAPS taxonomy: topics.name = dbe.topic for the matching
   // subject (subjects.name = dbe.subject). Case-insensitive, trimmed.
+  // AUDIT FIX: dbe_verbatim_questions.subject carries case-variant duplicates
+  // of the same real subject (e.g. "Civil Technology" vs "Civil technology" —
+  // the ingestion pipeline writes the catalog's raw spelling verbatim). All
+  // three queries below used to GROUP BY the raw column with no
+  // canonicalization, so one real subject silently split into two report
+  // rows with each half's stats understated. COALESCE to the authoritative
+  // `subjects.name` (case-insensitive match) when one exists, so SQL's own
+  // GROUP BY merges the raw spellings correctly instead of a fragile JS
+  // post-merge — falls back to the raw spelling only for subjects with no
+  // matching `subjects` row yet.
   const perSubject: any = await db.execute(sql`
     SELECT
-      d.subject                                             AS subject,
+      COALESCE(s.name, d.subject)                           AS subject,
       COUNT(*)::int                                         AS questions_ingested,
       COUNT(d.topic)::int                                   AS topic_mapped_count,
       COUNT(DISTINCT d.year)::int                           AS distinct_years,
@@ -90,17 +100,19 @@ export async function computeDbeMappingReport(): Promise<DbeMappingReport> {
       ON t.subject_id = s.id
      AND d.topic IS NOT NULL
      AND lower(trim(t.name)) = lower(trim(d.topic))
-    GROUP BY d.subject
-    ORDER BY d.subject ASC
+    GROUP BY COALESCE(s.name, d.subject)
+    ORDER BY COALESCE(s.name, d.subject) ASC
   `);
 
   const rows: any[] = (perSubject.rows ?? perSubject) as any[];
 
   // Distinct year list + up to 3 source paper URLs per subject (provenance).
+  // Same canonicalization as perSubject above, so lookups by r.subject match.
   const yearsRes: any = await db.execute(sql`
-    SELECT subject, array_agg(DISTINCT year ORDER BY year) AS years
-    FROM dbe_verbatim_questions
-    GROUP BY subject
+    SELECT COALESCE(s.name, d.subject) AS subject, array_agg(DISTINCT d.year ORDER BY d.year) AS years
+    FROM dbe_verbatim_questions d
+    LEFT JOIN subjects s ON lower(trim(s.name)) = lower(trim(d.subject))
+    GROUP BY COALESCE(s.name, d.subject)
   `);
   const yearsMap = new Map<string, number[]>();
   for (const r of (yearsRes.rows ?? yearsRes) as any[]) {
@@ -112,7 +124,11 @@ export async function computeDbeMappingReport(): Promise<DbeMappingReport> {
     FROM (
       SELECT subject, source_paper_url,
              ROW_NUMBER() OVER (PARTITION BY subject ORDER BY source_paper_url) AS rn
-      FROM (SELECT DISTINCT subject, source_paper_url FROM dbe_verbatim_questions) u
+      FROM (
+        SELECT DISTINCT COALESCE(s.name, d.subject) AS subject, d.source_paper_url
+        FROM dbe_verbatim_questions d
+        LEFT JOIN subjects s ON lower(trim(s.name)) = lower(trim(d.subject))
+      ) u
     ) ranked
     WHERE rn <= 3
   `);

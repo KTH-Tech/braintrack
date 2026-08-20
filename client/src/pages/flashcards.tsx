@@ -1065,7 +1065,7 @@ function FlashcardReview({ isAf }: { isAf: boolean }) {
           <p className="text-xs text-center text-white font-semibold">
             {isAf ? "Hoe goed het jy dit geken?" : "How well did you know this?"}
           </p>
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {[
               { quality: 1, label: isAf ? "Weer" : "Again", labelShort: "1", hex: "#FF8DA1", desc: isAf ? "<1 min" : "<1 min" },
               { quality: 2, label: isAf ? "Moeilik" : "Hard", labelShort: "2", hex: "#FFE29A", desc: isAf ? "1 dag" : "1 day" },

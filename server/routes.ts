@@ -11205,10 +11205,50 @@ Create comprehensive study notes for the topic provided.`;
         GROUP BY subject
       `);
 
+      // AUDIT FIX: contentRows/tupleRows are grouped by dbe_verbatim_questions'
+      // RAW subject column, same source that genuinely carries case-variant
+      // spellings (confirmed: the ingestion pipeline writes the catalog's raw
+      // spelling verbatim). catalogCounts above is canonicalized via `canonical`;
+      // these two maps weren't, so a subject with mixed-case rows split into two
+      // report entries — one keyed by the canonical name (understated stats,
+      // missing the other spelling's rows) and one keyed by the raw variant
+      // (misread as catalogPapers=0 and misclassified "catalog_thin" even though
+      // real catalog coverage exists). Canonicalize + merge here too.
       const contentBySubject = new Map<string, any>();
-      for (const r of contentRows.rows as any[]) contentBySubject.set(r.subject, r);
+      for (const r of contentRows.rows as any[]) {
+        const name = canonical.get(String(r.subject).toLowerCase()) ?? r.subject;
+        const existing = contentBySubject.get(name);
+        if (!existing) { contentBySubject.set(name, r); continue; }
+        const existingTotal = Number(existing.rows_total ?? 0);
+        const incomingTotal = Number(r.rows_total ?? 0);
+        const mergedTotal = existingTotal + incomingTotal;
+        contentBySubject.set(name, {
+          rows_total: mergedTotal,
+          rows_released: Number(existing.rows_released ?? 0) + Number(r.rows_released ?? 0),
+          avg_qlen: mergedTotal > 0
+            ? Math.round((Number(existing.avg_qlen ?? 0) * existingTotal + Number(r.avg_qlen ?? 0) * incomingTotal) / mergedTotal)
+            : 0,
+          marks_null: Number(existing.marks_null ?? 0) + Number(r.marks_null ?? 0),
+          topic_null: Number(existing.topic_null ?? 0) + Number(r.topic_null ?? 0),
+        });
+      }
       const tuplesBySubject = new Map<string, any>();
-      for (const r of tupleRows.rows as any[]) tuplesBySubject.set(r.subject, r);
+      for (const r of tupleRows.rows as any[]) {
+        const name = canonical.get(String(r.subject).toLowerCase()) ?? r.subject;
+        const existing = tuplesBySubject.get(name);
+        if (!existing) { tuplesBySubject.set(name, r); continue; }
+        const existingTuples = Number(existing.tuples ?? 0);
+        const incomingTuples = Number(r.tuples ?? 0);
+        const mergedTuples = existingTuples + incomingTuples;
+        tuplesBySubject.set(name, {
+          tuples: mergedTuples,
+          tuples_pass_gate: Number(existing.tuples_pass_gate ?? 0) + Number(r.tuples_pass_gate ?? 0),
+          tuples_released: Number(existing.tuples_released ?? 0) + Number(r.tuples_released ?? 0),
+          memo_pct: mergedTuples > 0
+            ? Math.round((Number(existing.memo_pct ?? 0) * existingTuples + Number(r.memo_pct ?? 0) * incomingTuples) / mergedTuples)
+            : 0,
+        });
+      }
 
       const names = new Set<string>([...catalogCounts.keys(), ...contentBySubject.keys()]);
       const subjects = [...names].map((subject) => {
